@@ -1,0 +1,18 @@
+# Build artifacts
+build/
+*.gba
+*.elf
+*.map
+*.sav
+*.d
+bn_ofiles.txt
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Native test binaries
+bin/
+cli_game
