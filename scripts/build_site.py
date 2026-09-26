@@ -29,6 +29,7 @@ ASSETS = SITE / "assets"
 GRAPHICS = ROOT / "graphics"
 # Public URL used for canonical links, Open Graph and the sitemap (override with SITE_URL=...).
 SITE_URL = os.environ.get("SITE_URL", "https://slay-the-gba.netlify.app").rstrip("/")
+ARTICLE_URL = "https://alexandre-enouf.fr/blog/slay-the-gba-vibe-coding-game-boy-advance/"
 PAGES: list[str] = []  # indexable pages, collected for sitemap.xml
 
 # ---------------------------------------------------------------------------------------------
@@ -208,7 +209,7 @@ def page(title: str, body: str, *, depth: int = 0, active: str = "", theme: str 
 </main>
 <footer class="foot">
   <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
-  <p>Données : bible du projet (patch v0.111.0 Beta). <a href="{up}mentions.html">Mentions légales &amp; confidentialité</a></p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). <a href="{up}mentions.html">Mentions légales &amp; confidentialité</a> · <a href="{ARTICLE_URL}" target="_blank" rel="noopener">Comment ce jeu a été vibe codé</a></p>
   <div class="ae-footer">
     <a class="ae-logo" href="https://alexandre-enouf.fr/" target="_blank" rel="noopener">Alexandre <em>Enouf</em></a>
     <span class="ae-tag">Développeur produit &amp; Builder IA · Paris, France</span>
@@ -370,7 +371,7 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
     <p class="kicker">Game Boy Advance · 5 cartouches</p>
     <h1>SLAY THE GBA</h1>
     <p class="lead">Slay the Spire 2 réinventé en 240×160 : deckbuilding roguelike, arène de combat façon Pokémon GBA et une cartouche par héros.</p>
-    <div class="cta"><a class="btn" href="#cartouches">Choisir un héros ►</a><a class="btn ghost" href="#telecharger">▼ Télécharger les ROMs</a><a class="btn ghost" href="bible/index.html">Lire la bible</a></div>
+    <div class="cta"><a class="btn" href="#cartouches">Choisir un héros ►</a><a class="btn ghost" href="#telecharger">▼ Télécharger les ROMs</a><a class="btn ghost" href="bible/index.html">Lire la bible</a><a class="btn ghost" href="{ARTICLE_URL}" target="_blank" rel="noopener">📖 L'histoire du projet</a></div>
   </div>
 </section>
 
