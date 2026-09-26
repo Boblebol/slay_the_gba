@@ -1,0 +1,741 @@
+{
+  "events": [
+    {
+      "id": "ABYSSAL_BATHS",
+      "slug": "abyssal-baths",
+      "name": "Bains abyssaux",
+      "imagePath": "/images/events/abyssal_baths.webp",
+      "descriptionClean": "Vous découvrez dans une pièce solitaire.\n\nDe la vapeur s'élève de bassins bouillonnants d'un liquide brûlant, dont les couleurs ondulent selon un rythme hypnotique. Des excroissances incrustées de coquillages pendent du plafond, laissant goutter une substance visqueuse qui grésille et frémit au contact du sol. L'air est lourd, saturé de sel, et d'une substance qui paraît sans aucun doute organique.\n\nÀ mesure que vous vous approchez du plus grand bassin, le liquide se met à onduler. Les eaux bouillonnent avec de plus en plus d'intensité, comme si elles pressentaient votre arrivée.",
+      "optionCount": 2,
+      "acts": [
+        "act1b"
+      ],
+      "shared": false
+    },
+    {
+      "id": "AMALGAMATOR",
+      "slug": "amalgamator",
+      "name": "Amalgamateur",
+      "imagePath": "/images/events/amalgamator.webp",
+      "descriptionClean": "BANG ! BANG !!!\n\nVous entendez les échos du métal battant le métal de l’autre côté d’un mur...\n\nVous collez l’oreille contre la paroi, quand celle-ci s’ouvre soudain, révélant une énorme silhouette à six bras attelée à son ouvrage.\nSon « visage » est un tourbillon de glyphes lumineux qui dansent en cercle.\n\n« Un être doté d’un Esprit Ascendant a trouvé mon atelier ? Le moment est venu de réaliser quelque ALLIAGE ! »",
+      "optionCount": 2,
+      "acts": [
+        "act2"
+      ],
+      "shared": false
+    },
+    {
+      "id": "AROMA_OF_CHAOS",
+      "slug": "aroma-of-chaos",
+      "name": "Arôme du chaos",
+      "imagePath": "/images/events/aroma_of_chaos.webp",
+      "descriptionClean": "Après vous être frayé un chemin à travers un sous-bois dense, vous débouchez dans une clairière. Une nostalgie, impossible à situer, vous frappe de plein fouet.\n\nUn mélange de parfums de fleurs, de pourriture fétide, et autre chose, quelque chose d’indéfinissable. L’odeur s’intensifie à chacun de vos pas, et vous avez l’impression que le monde autour de vous se tord et se déforme.\n\nSubmergé(e) par une sensation de chaos mouvant, vous commencez à en perdre toute notion de vous-même.",
+      "optionCount": 2,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "BATTLEWORN_DUMMY",
+      "slug": "battleworn-dummy",
+      "name": "Mannequin de combat usé",
+      "imagePath": "/images/events/battleworn_dummy.webp",
+      "descriptionClean": "À mesure que vous vous approchez, il grésille et bourdonne, puis s’illumine brusquement !\n\n« BZZZT ! SÉQUENCE D’ENTRAÎNEMENT INITIÉE !!! VOUS AVEZ 3 TOURS POUR ME VAINCRE !\nRÉGLEZ LE PARAMÈTRE OU SUBISSEZ UNE HUMILIATION LÉTALE.\nOptions disponibles : »\n\nAprès ce message terrifiant, le mannequin énonce les instructions en détail.\n\nQue choisissez-vous ?",
+      "optionCount": 3,
+      "acts": [
+        "act3"
+      ],
+      "shared": false
+    },
+    {
+      "id": "BRAIN_LEECH",
+      "slug": "brain-leech",
+      "name": "Sangsue cérébrale",
+      "imagePath": "/images/events/brain_leech.webp",
+      "descriptionClean": "*poum*\n\nVous ressentez une douleur aiguë sur le dessus du crâne tandis qu’une pensée poignarde votre esprit.\n\n« PARTAGER CONNAISSANCE ??? »\n\nVous hésitez sur la marche à suivre...",
+      "optionCount": 2,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "BUGSLAYER",
+      "slug": "bugslayer",
+      "name": "Tueur d’insectes",
+      "imagePath": "/images/events/bugslayer.webp",
+      "descriptionClean": "Alors que vous affrontez un essaim d’insectes agressifs, vous remarquez soudain qu’un Puissant Guerrier à l’allure rude combattait à vos côtés depuis le début !\n\nSentant venir la défaite, les insectes s’éparpillent. Vous vous tournez vers votre nouveau compagnon.\n« Veux-tu quelques conseils pour exterminer ces nuisibles ? »\n\nQuelle courtoisie. Vous acceptez son offre d’un hochement de la tête.",
+      "optionCount": 2,
+      "acts": [
+        "act2"
+      ],
+      "shared": false
+    },
+    {
+      "id": "BYRDONIS_NEST",
+      "slug": "byrdonis-nest",
+      "name": "Nid d’oizodon",
+      "imagePath": "/images/events/byrdonis_nest.webp",
+      "descriptionClean": "Vous apercevez une Énorme Bête se traînant pour chasser un Oizo Vert blessé.\n\nDans l’alcôve d’où l’oizo a pris la fuite, un œuf solitaire gît, abandonné et sans surveillance. \n\nVotre estomac gargouille...",
+      "optionCount": 2,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "COLORFUL_PHILOSOPHERS",
+      "slug": "colorful-philosophers",
+      "name": "Philosophes multicolores",
+      "imagePath": "/images/events/colorful_philosophers.webp",
+      "descriptionClean": "Devant vous se dresse un spectacle épique.\nPerchées sur un dais, 3 statues de couleurs différentes sont engagées dans un débat enflammé portant sur les implications philosophiques du concept de la couleur.\n\nÀ mesure que vous écoutez, vous comprenez que l’enjeu réel de la discussion consiste à déterminer laquelle des couleurs est LA MEILLEURE.\n\nVous intervenez pour donner votre avis.",
+      "optionCount": 6,
+      "acts": [
+        "act2"
+      ],
+      "shared": false
+    },
+    {
+      "id": "COLOSSAL_FLOWER",
+      "slug": "colossal-flower",
+      "name": "Fleur colossale",
+      "imagePath": "/images/events/colossal_flower.webp",
+      "descriptionClean": "Une fleur colossale pousse au sommet d’un monticule d’ossements.\n\nAu rythme des pulsations de ses pétales aux couleurs changeantes, vous gagnez la sensation qu’un Puissant amas de pollen niche en son centre ; mais les pétales ondoyantes sont aussi tranchants que des lames de rasoir, et leurs mouvements imprévisibles.\n\nVous pourriez vous contenter d’un peu de nectar doré, mais la tentation du trésor au centre est extrêmement forte...",
+      "optionCount": 2,
+      "acts": [
+        "act2"
+      ],
+      "shared": false
+    },
+    {
+      "id": "CRYSTAL_SPHERE",
+      "slug": "crystal-sphere",
+      "name": "Sphère de cristal",
+      "imagePath": "/images/events/crystal_sphere.webp",
+      "descriptionClean": "« J’avais prédit votre venue...! »\n\nUne voix rauque se fait entendre lorsque vous pénétrez dans une hutte mystique.\n\n« Votre destin vous amène. Nous devons interroger vos fortunes et votre avenir afin que vous puissiez TOUS NOUS SAUVER !! »\n« Bien, voici les prestations possibles pour les révélations de la Sphère de cristal. Et n’oubliez pas de signer cette décharge, » dit-elle en sortant une plume et un parchemin.",
+      "optionCount": 2,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "DENSE_VEGETATION",
+      "slug": "dense-vegetation",
+      "name": "Jungle dense",
+      "imagePath": "/images/events/dense_vegetation.webp",
+      "descriptionClean": "Après avoir emprunté le mauvais chemin depuis un bon moment, vous vous trouvez dans une épaisse jungle de fougères, de buissons et de lianes. Surtout de lianes. L’épuisement vous gagne, et une pensée sombre vous vient à l’esprit :\n\n« Tu es perdu, pris au dépourvu, et la mort approche inexorablement. »\n\nQue faites-vous ?",
+      "optionCount": 2,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "DOLL_ROOM",
+      "slug": "doll-room",
+      "name": "Salle aux poupées",
+      "imagePath": "/images/events/doll_room.webp",
+      "descriptionClean": "Vous entrez dans une pièce dissimulée...\n\nElle est remplie de toutes sortes de poupées. Chacune d’entre elles est unique : leurs expressions vont de la joie à la tristesse, et leurs tenues traversent les siècles, voire même des mondes inconnus au vôtre.\n\nUn chœur de murmures gagne progressivement en intensité, jusqu’à tel point que les poupées sont en train de hurler plus fort les unes que les autres, tentant de vous interpeller...\n\nVous devez en choisir une et partir le plus vite possible.",
+      "optionCount": 3,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "DOORS_OF_LIGHT_AND_DARK",
+      "slug": "doors-of-light-and-dark",
+      "name": "Portes de l’ombre et de la lumière",
+      "imagePath": "/images/events/doors_of_light_and_dark.webp",
+      "descriptionClean": "Une porte existe là où il n’y en avait pas quelques instants plus tôt...\n\nLorsque vous entrez, vous découvrez deux portes scintillantes ainsi qu’un portier élégamment vêtu.\n« Un visiteur, enfin ! Venez, je vous en prie ! Choisissez une porte, n’importe laquelle ! »\n\nSommes-nous toujours dans la Tour ? Comment cet endroit peut-il être aussi propre ?",
+      "optionCount": 2,
+      "acts": [
+        "act1b"
+      ],
+      "shared": false
+    },
+    {
+      "id": "DROWNING_BEACON",
+      "slug": "drowning-beacon",
+      "name": "Phare englouti",
+      "imagePath": "/images/events/drowning_beacon.webp",
+      "descriptionClean": "Après avoir traversé un paysage onirique d’eaux calmes et de rochers, vous émergez face à un phare en train de s'enfoncer dans la boue et qui émet une lueur d'anti-lumière.\n\nVous pouvez mettre en bouteille un peu du liquide faiblement luminescent qui s’est accumulé ici, ou bien vous pouvez tenter d’atteindre le sommet du phare afin d’en récupérer la lentille.",
+      "optionCount": 2,
+      "acts": [
+        "act1b"
+      ],
+      "shared": false
+    },
+    {
+      "id": "ENDLESS_CONVEYOR",
+      "slug": "endless-conveyor",
+      "name": "Convoyeur sans fin",
+      "imagePath": "/images/events/endless_conveyor.webp",
+      "descriptionClean": "Vous vous traînez jusque dans une baraque à l'enseigne lumineuse (mais de travers) :\n« FESTIN À VOLONTÉ — PAYEZ SELON VOTRE FAIM ! »\n\nÀ l'intérieur, un chef cuisinier svelte doté de nombreux bras prépare avec dextérité des bouchées alléchantes qu'il pose sur un convoyeur en chitine sinueux.\n\nDe l'un de ses bras, le chef indique un panneau :\n40 Pièces d'or par assiette",
+      "optionCount": 1,
+      "acts": [
+        "act1b"
+      ],
+      "shared": false
+    },
+    {
+      "id": "FAKE_MERCHANT",
+      "slug": "the-merchant",
+      "name": "Le Marchand ???",
+      "descriptionClean": "À faire",
+      "optionCount": 0,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "FIELD_OF_MAN_SIZED_HOLES",
+      "slug": "field-of-man-sized-holes",
+      "name": "Champ de trous à taille corporelle",
+      "imagePath": "/images/events/field_of_man_sized_holes.webp",
+      "descriptionClean": "Vous vous arrêtez devant un énorme champ dans lequel sont taillées de larges silhouettes de corps.\n\nL’une de ces silhouettes correspond à la vôtre.\n\nLa correspondance est parfaite...",
+      "optionCount": 2,
+      "acts": [
+        "act2"
+      ],
+      "shared": false
+    },
+    {
+      "id": "GRAVE_OF_THE_FORGOTTEN",
+      "slug": "grave-of-the-forgotten",
+      "name": "Tombe du guerrier oublié",
+      "imagePath": "/images/events/grave_of_the_forgotten.webp",
+      "descriptionClean": "Vous découvrez une tombe solitaire surmontée d’une flamme bleue tourbillonnante...\n\nUn guerrier orgueilleux est tombé au combat, mais son âme ne trouve pas le repos. Elle veut continuer à se battre, et vous pouvez ressentir qu’elle implore de voyager à vos côtés.\n\nMais peut-être vaudrait-il mieux pour elle qu’elle se confronte à la réalité ?",
+      "optionCount": 3,
+      "acts": [
+        "act3"
+      ],
+      "shared": false
+    },
+    {
+      "id": "HUNGRY_FOR_MUSHROOMS",
+      "slug": "hungry-for-mushrooms",
+      "name": "Affamé de champis",
+      "imagePath": "/images/events/hungry_for_mushrooms.webp",
+      "descriptionClean": "Depuis combien de temps n’avez-vous rien mangé ?\n... attends, d’où vient cette odeur incroyable ?\n\nVous suivez l’odeur et arrivez dans un campement accueillant où cuisent toutes sortes de champignons appétissants ! Vous avez si faim que vous ne vous préoccupez pas de leur innocuité.\n(Si faim que vous ne remarquez même pas l’aventurier mort qui gît à terre.)",
+      "optionCount": 2,
+      "acts": [
+        "act3"
+      ],
+      "shared": false
+    },
+    {
+      "id": "INFESTED_AUTOMATON",
+      "slug": "infested-automaton",
+      "name": "Automate infesté",
+      "imagePath": "/images/events/infested_automaton.webp",
+      "descriptionClean": "Vous arrivez dans une salle remplie de robots morts.\n\nUn seul automate paraît encore en service, mais son cœur faiblement lumineux est englouti par une excroissance organique grotesque, et il ne réagit plus.",
+      "optionCount": 2,
+      "acts": [
+        "act2"
+      ],
+      "shared": false
+    },
+    {
+      "id": "JUNGLE_MAZE_ADVENTURE",
+      "slug": "jungle-maze-adventure",
+      "name": "Aventure du labyrinthe de la jungle",
+      "imagePath": "/images/events/jungle_maze_adventure.webp",
+      "descriptionClean": "Dans une clairière, vous tombez sur une Bande d’aventuriers hétéroclite. L’air démoralisés, ils vous indiquent un labyrinthe géant.\n\nIls vous proposent d’unir vos forces aux leurs pour vous embarquer dans une Quête épique, dans le but de piller les trésors de ce labyrinthe. Étant vous-même un aventurier expérimenté, vous ne vous faites pas d’illusions sur les pièges mortels et les gardiens redoutables dont est sûrement rempli ce labyrinthe.\n\nCe serait plus simple si vous travailliez ensemble, mais il faudra alors partager le butin.",
+      "optionCount": 2,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "LOST_WISP",
+      "slug": "the-lost-wisp",
+      "name": "Feu follet égaré",
+      "imagePath": "/images/events/lost_wisp.webp",
+      "descriptionClean": "Au loin se dresse une scène étrange. Des montagnes et des montagnes d’insectes morts, disposés tout autour d’un petit granule lumineux.\nCe dernier semble attirer toutes sortes de bestioles ; mais voilà que vous voyez en émaner des flammes !\n\nVous vous approchez pour l’examiner.",
+      "optionCount": 3,
+      "acts": [
+        "act2"
+      ],
+      "shared": false
+    },
+    {
+      "id": "LUMINOUS_CHOIR",
+      "slug": "luminous-choir",
+      "name": "Chœur lumineux",
+      "imagePath": "/images/events/luminous_choir.webp",
+      "descriptionClean": "Vous arrivez dans une clairière baignée d’une étrange lueur bleue. Tout autour de vous, des champignons géants aux chapeaux gonflés répandent des ondes colorées par bioluminescence. Tandis que vous vous approchez, les champignons commencent à émettre des mélodies obsédantes et envoûtantes qui résonnent jusque dans votre poitrine.\n\nVous remarquez quelque chose de brillant, incrusté dans la chair du plus grand des champignons, et qui pulse au rythme de leur musique.",
+      "optionCount": 3,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "MORPHIC_GROVE",
+      "slug": "morphic-grove",
+      "name": "Bosquet des Morphiques",
+      "imagePath": "/images/events/morphic_grove.webp",
+      "descriptionClean": "Vous pénétrez dans un bosquet d’arbres cristallins, et ceux-ci se mettent à vaciller avec entrain !\nUn chœur chaleureux vous assaille en guise de salutations : c'est un groupe de Morphiques gazouillants, émergeant depuis les arbres.\n\nL'un des Morphiques se tient dans un coin à l’écart des autres. Celui-ci n’est clairement pas de nature sociable.\n\nVous approchez-vous du groupe ou de l’individu solitaire ?",
+      "optionCount": 2,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "POTION_COURIER",
+      "slug": "potion-courier",
+      "name": "Coursier de potions",
+      "imagePath": "/images/events/potion_courier.webp",
+      "descriptionClean": "Une odeur acerbe commence à planer dans l’air, et vous tombez bientôt sur un Coursier de potions effondré par terre.\nPas un mouvement. Pas un signe de vie. Mort !?\nSes affaires semblent avoir été fouillées, mais vous apercevez un lot de Potions à l’odeur âcre avec un mot : \"Destinataire : Le Marchand\".",
+      "optionCount": 2,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "PUNCH_OFF",
+      "slug": "punch-off",
+      "name": "À coups de poing",
+      "imagePath": "/images/events/punch_off.webp",
+      "descriptionClean": "Deux Assemblages de pugilat sont en pleine bagarre, et vous apercevez entre eux un trésor...\n\nDevriez-vous essayer de l’attraper ?",
+      "optionCount": 2,
+      "acts": [
+        "act1b"
+      ],
+      "shared": false
+    },
+    {
+      "id": "RANWID_THE_ELDER",
+      "slug": "ranwid-the-elder",
+      "name": "Ranwid l’Aîné",
+      "imagePath": "/images/events/ranwid_the_elder.webp",
+      "descriptionClean": "Vous êtes approché par la personne la plus âgée que vous ayez jamais vue.\n « Nous nous rencontrons à nouveau... c’est moi, Ranwid ! »\n\nVous ne connaissez pas cet homme.",
+      "optionCount": 5,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "REFLECTIONS",
+      "slug": "reflections-snoitcelfer",
+      "name": "Reflets stelfeR",
+      "imagePath": "/images/events/reflections.webp",
+      "descriptionClean": "Que se passe-t-il ? Quelque chose ici ne tourne pas rond...\n...dnor sap enruot en ici esohc euqleuQ ? il-t-essap es euQ",
+      "optionCount": 2,
+      "acts": [
+        "act3"
+      ],
+      "shared": false
+    },
+    {
+      "id": "RELIC_TRADER",
+      "slug": "relic-trader",
+      "name": "Trafiquant de reliques",
+      "imagePath": "/images/events/relic_trader.webp",
+      "descriptionClean": "Vous tournez un coin sur votre route lorsque vous vous retrouvez nez-à-nez avec une figure voilée.\n\n« Bienvenue ! T’as quelque chose à troquer ? »\nvous demande-t-elle en ouvrant grand son manteau, révélant par-dessous un éventail de marchandises plus suspectes les unes que les autres..",
+      "optionCount": 3,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "ROOM_FULL_OF_CHEESE",
+      "slug": "room-full-of-cheese",
+      "name": "Salle du Fromage",
+      "imagePath": "/images/events/room_full_of_cheese.webp",
+      "descriptionClean": "Cette salle est remplie de fromage !!!\n\nVous jetez un œil tout autour de vous pour vous assurer qu’il n’y a pas de pièges, et remarquez qu’au-dessus de vous se trouve... encore du fromage. Les bougies dans la pièce semblent être faites de fromage. Le mobilier est aussi en fromage.\nSoudain, la porte se referme derrière vous.\n\nElle est aussi faite de fromage.",
+      "optionCount": 2,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "ROUND_TEA_PARTY",
+      "slug": "the-round-tea-party",
+      "name": "Le thé de la table ronde",
+      "imagePath": "/images/events/round_tea_party.webp",
+      "descriptionClean": "Vous trouvez par hasard une invitation à une collation postméridienne destinée à un certain « Monseigneur Galalot » ; vous décidez de vous y rendre à sa place.\n\nAprès être entré à l’intérieur d’une rotonde sans prétention, vous vous retrouvez parmi un groupe de commandants, de généraux, de seigneurs de guerre et de mercenaires en train de prendre... le thé ?\nUn gigantesque chevalier portant sur la tête une couronne dorée prend la parole.\n\n« C’est à cette heure tardive que vous vous manifestez pour prendre le Thé ?! »",
+      "optionCount": 2,
+      "acts": [
+        "act3"
+      ],
+      "shared": false
+    },
+    {
+      "id": "SAPPHIRE_SEED",
+      "slug": "sapphire-seed",
+      "name": "Graine de saphir",
+      "imagePath": "/images/events/sapphire_seed.webp",
+      "descriptionClean": "Vous manquez de peu de marcher sur un éclat de... graine ? Sa couleur ne laisse aucun doute : il s’agit d’une Graine de saphir ! Ces graines extraordinaires étaient pourtant portées disparues !?\n\nLa légende voudrait que leur consommation pourrait fortement amplifier votre endurance. Mais si vous plantiez plutôt la graine pour la faire croître ?",
+      "optionCount": 2,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "SELF_HELP_BOOK",
+      "slug": "self-help-book",
+      "name": "Développement personnel",
+      "imagePath": "/images/events/self_help_book.webp",
+      "descriptionClean": "À terre gît un tome intitulé :\n« Les 3 méthodes secrètes pour terrasser la Tour ».\n\nLe livre est incrusté de sang ; vous le jugez donc hautement douteux à première vue.\n\nLe lisez-vous ?",
+      "optionCount": 7,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "SLIPPERY_BRIDGE",
+      "slug": "slippery-bridge",
+      "name": "Pont glissant",
+      "imagePath": "/images/events/slippery_bridge.webp",
+      "descriptionClean": "Alors que vous êtes en train de traverser un pont en bois chancelant, un torrent de pluie se lève soudainement. De puissantes rafales de vent vous assaillent, menaçant de mettre fin à votre périple.",
+      "optionCount": 2,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "SPIRALING_WHIRLPOOL",
+      "slug": "spiraling-whirlpool",
+      "name": "Tourbillon aquatique",
+      "imagePath": "/images/events/spiraling_whirlpool.webp",
+      "descriptionClean": "Vous tombez sur un Énorme tourbillon aquatique. L’eau, qui dessine des remous avec une précision ravissante, s’écrase sur les murs, somptueusement ornés de motifs dessinant des spirales. \n\nTourne et tourne et tourne et tourne...\n....et tourne encore... quel spectacle......\n\nQue faites-vous ?",
+      "optionCount": 3,
+      "acts": [
+        "act1b"
+      ],
+      "shared": false
+    },
+    {
+      "id": "SPIRIT_GRAFTER",
+      "slug": "spirit-grafter",
+      "name": "Esprit greffeur",
+      "imagePath": "/images/events/spirit_grafter.webp",
+      "descriptionClean": "Un cocon pend au-dessus de votre tête, gigotant et se tortillant dans tous les sens ; il est sur le point d’éclore !\n\n...le gigotement cesse. Le cocon prend feu ! Que se passe-t-il ? \nDans une déflagration de flammes et de lumière, un Esprit greffeur vous fonce dessus, menaçant de fusionner avec votre être. »",
+      "optionCount": 2,
+      "acts": [
+        "act2"
+      ],
+      "shared": false
+    },
+    {
+      "id": "STONE_OF_ALL_TIME",
+      "slug": "stone-of-all-time",
+      "name": "Pierre de tous les temps",
+      "imagePath": "/images/events/stone_of_all_time.webp",
+      "descriptionClean": "Un énorme rocher sied au centre d’une cour abandonnée.\n\nVous trouvez une plaque avec l’inscription suivante :\nPierre de tous les temps.\n\nSa présence, sa forme et les parures qui la recouvrent indiquent que cette cour fut construite autour de cette Pierre, et que celle-ci n’a jamais quitté son emplacement.",
+      "optionCount": 4,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "SUNKEN_STATUE",
+      "slug": "the-sunken-statue",
+      "name": "La statue engloutie",
+      "imagePath": "/images/events/sunken_statue.webp",
+      "descriptionClean": "Vous apercevez une statue érodée par le temps, à moitié immergée dans un bassin ; ses mains agrippent une épée en pierre.\n\nPar ailleurs, vous remarquez que quelque chose scintille au fond du lac.\nDes offrandes votives ?\n\nVous ne diriez pas non à un peu d’argent...",
+      "optionCount": 2,
+      "acts": [
+        "act1a",
+        "act1b"
+      ],
+      "shared": false
+    },
+    {
+      "id": "SUNKEN_TREASURY",
+      "slug": "sunken-treasury",
+      "name": "Trésor englouti",
+      "imagePath": "/images/events/sunken_treasury.webp",
+      "descriptionClean": "Un sentier vous mène jusqu’à une chambre forte partiellement engloutie.\nVous apercevez 2 coffres, mais seulement 1 clé d’aspect fragile.\n\nLe premier coffre : Lorsque vous le secouez, vous entendez des cliquetis et des tintements. Quelques pièces d’or.\nLe deuxième coffre : Énorme, orné de décorations, et assurément maudit. Beaucoup de pièces d’or !",
+      "optionCount": 2,
+      "acts": [
+        "act1b"
+      ],
+      "shared": false
+    },
+    {
+      "id": "SYMBIOTE",
+      "slug": "symbiote",
+      "name": "Symbiote",
+      "imagePath": "/images/events/symbiote.webp",
+      "descriptionClean": "Au cours de votre périple, vous tombez sur un polype sombre et amorphe. Vous avez le pressentiment qu’il est très ancien, et très maléfique. \n\nApprochez...",
+      "optionCount": 3,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "TABLET_OF_TRUTH",
+      "slug": "tablet-of-truth",
+      "name": "Stèle de la Vérité",
+      "imagePath": "/images/events/tablet_of_truth.webp",
+      "descriptionClean": "Vous venez à bout de deux Gardiens de la Tribu et entrez dans un caveau sécurisé.\n\nÀ l’intérieur, vous trouvez une stèle recouverte d’inscriptions qui vous semblent familières. Votre intuition vous dit que vous êtes capable de déchiffrer cette langue sans trop de difficulté... Cependant, une fois que vous commencerez à traduire, vous aurez besoin de toute votre concentration.\n\nUne énergie apaisante émane de la stèle, et vous pourriez la détruire afin de libérer son pouvoir guérisseur au lieu de la lire.",
+      "optionCount": 2,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "TEA_MASTER",
+      "slug": "tea-master",
+      "name": "Maître de thé",
+      "imagePath": "/images/events/tea_master.webp",
+      "descriptionClean": "Vous arrivez par hasard dans une petite cahute mal éclairée ; l’atmosphère à l’intérieur est calme et contemplative, et, partout, des variétés de thé dont l’exhaustivité frôle l’obsession sont exposées.\n\nL’homme à l’intérieur vous indique une sélection de thés, chacun étiqueté d’un prix élevé.",
+      "optionCount": 5,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "THE_FUTURE_OF_POTIONS",
+      "slug": "the-future-of-potions",
+      "name": "L’avenir des potions ?",
+      "imagePath": "/images/events/the_future_of_potions.webp",
+      "descriptionClean": "Vous vous apprêtez à tourner au coin lorsque vous ressentez un léger bourdonnement, et découvrez un énorme appareil qui pivote sur son axe !\nVous remarquez qu’il dispose d’emplacements où des liquides semblent pouvoir être transformés en petits comprimés faciles à digérer.\n\nL’idée de convertir vos potions tonifiantes en toutes petites bouchées vous gêne un peu, mais c’est peut-être l’occasion d’essayer de nouvelles choses ?",
+      "optionCount": 1,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "THE_LANTERN_KEY",
+      "slug": "the-lantern-key",
+      "name": "La clé de la lanterne",
+      "descriptionClean": "Vous apercevez une clé faiblement luminescente et êtes sur le point de la ramasser lorsque...\n\n« La voilà, je la cherchais partout ! Si tu permets... »\n\nCette personne ne vous inspire pas confiance, mais il vaut peut-être mieux ne pas juger les gens trop vite.",
+      "optionCount": 2,
+      "acts": [
+        "act2"
+      ],
+      "shared": false
+    },
+    {
+      "id": "THE_LEGENDS_WERE_TRUE",
+      "slug": "the-legends-were-true",
+      "name": "La légende disait vrai",
+      "imagePath": "/images/events/the_legends_were_true.webp",
+      "descriptionClean": "Vous pénétrez dans une pièce où règne le noir total, lorsque, soudain, une lueur venue d’au-dessus transperce l’obscurité — au même moment, la porte claque derrière vous.\n\nDevant vous, illuminé, se tient un podium sur lequel est posé une carte dessinée. Vous ressentez l’envie pressante de vous en emparer.\n\nTout ceci est très suspect.",
+      "optionCount": 2,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "THIS_OR_THAT",
+      "slug": "this-or-that",
+      "name": "Ceci ou Cela ?",
+      "imagePath": "/images/events/this_or_that.webp",
+      "descriptionClean": "Des bras jaillissent soudainement d’un trou dans le sol, tenant d’une part un un sac suspect rempli de richesses et d’autre part une relique clairement maudite.\n\n« Ceci... ou Cela ? »\nchuchote une voix rauque d’en-dessous.",
+      "optionCount": 2,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "TINKER_TIME",
+      "slug": "tinker-time",
+      "name": "Bricolage",
+      "imagePath": "/images/events/tinker_time.webp",
+      "descriptionClean": "Après avoir traversé un véritable océan de cadavres, vous tombez sur une ingénieure aux airs de savante folle en train de farfouiller à la recherche de quelque chose d’utile.\n\n« Oui. Salut, bonjour ! Tu as l’air d’être un guerrier compétent... J’ai besoin de quelqu’un pour tester mon prochain atrociteur ! Ça t’intéresse ? »",
+      "optionCount": 1,
+      "acts": [
+        "act3"
+      ],
+      "shared": false
+    },
+    {
+      "id": "TRASH_HEAP",
+      "slug": "trash-heap",
+      "name": "Tas de déchets",
+      "imagePath": "/images/events/trash_heap.webp",
+      "descriptionClean": "Vous découvrez un gigantesque tas d’armes et de breloques abandonnées, ainsi que toutes sortes de babioles insolites. Le tas paraît vibrer et se mouvoir, comme s’il grandissait de l’intérieur...\n\nSi vous cherchez en surface, vous trouverez sans doute des objets de valeur. Mais si vous fouillez plus en profondeur, vous pourriez trouver des trésors exotiques.",
+      "optionCount": 2,
+      "acts": [
+        "act1b"
+      ],
+      "shared": false
+    },
+    {
+      "id": "TRIAL",
+      "slug": "the-trial",
+      "name": "Le procès",
+      "imagePath": "/images/events/trial.webp",
+      "descriptionClean": "Vous vous joignez à une file de personnes en train d’entrer dans un énorme bâtiment.\n\nTandis que vous passez sous une arche dorée, un beuglement de cors se fait entendre, des confettis jaillissent, et des banderoles se déploient du plafond !\n\n« Citoyen -1, vous êtes LE DÉCIDEUR pour le Procès d’aujourd’hui. »",
+      "optionCount": 2,
+      "acts": [
+        "act3"
+      ],
+      "shared": false
+    },
+    {
+      "id": "UNREST_SITE",
+      "slug": "unrest-site",
+      "name": "Site sans repos",
+      "imagePath": "/images/events/unrest_site.webp",
+      "descriptionClean": "Vous découvrez un Site de repos isolé et allumez un feu de camp pour vous reposer.\nOu du moins, c’est ce que vous pensiez.\n\nUne fois le feu allumé, il se met à croître de tous côtés et semble s’étendre vers un bosquet d’arbres dégoulinant de sève.\n\nEssayez-vous de trouver le sommeil malgré tout ?",
+      "optionCount": 2,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "WAR_HISTORIAN_REPY",
+      "slug": "war-historian-repy",
+      "name": "Répi, historien de la guerre",
+      "imagePath": "/images/events/war_historian_repy.webp",
+      "descriptionClean": "Un érudit est piégé dans une cage qui pend du plafond, juste à côté d’un coffre trésor..\n\nL’érudit marmonne quelque chose à propos de soi-disantes « Clés à usage unique » tout en griffonnant furieusement sur son parchemin.\n\nIl semblerait que vous puissiez déverrouiller soit la cage, soit le coffre.",
+      "optionCount": 2,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "WATERLOGGED_SCRIPTORIUM",
+      "slug": "waterlogged-scriptorium",
+      "name": "Scriptorium englouti",
+      "imagePath": "/images/events/waterlogged_scriptorium.webp",
+      "descriptionClean": "Tandis que vous faites votre chemin à travers les passages embourbés, vous tombez sur une silhouette émaciée qui tient une petite boutique. Sur les nombreuses étagères sont tassées des liasses de vélins et parchemins humides.\n\nRemarquant qu’un client est entré, le scribe-commerçant accourt pour vous servir puis vous indique le matériel exposé sur le bureau.",
+      "optionCount": 5,
+      "acts": [
+        "act1b"
+      ],
+      "shared": false
+    },
+    {
+      "id": "WELCOME_TO_WONGOS",
+      "slug": "welcome-to-wongo-s",
+      "name": "Bienvenue chez Wongo’s",
+      "imagePath": "/images/events/welcome_to_wongos.webp",
+      "descriptionClean": "« Bienvenue chez Wongo’s. Nous avons tout ce que vous désirez à prix Wongtastique, » annonce le vendeur le moins enthousiaste que vous ayez jamais rencontré.\n\n« Jetez un œil à nos articles et passez un bon moment chez Wongo’s, » poursuit-elle, sans même lever la tête. »",
+      "optionCount": 7,
+      "acts": [
+        "act1a",
+        "act1b",
+        "act2",
+        "act3"
+      ],
+      "shared": true
+    },
+    {
+      "id": "WELLSPRING",
+      "slug": "wellspring",
+      "name": "Source mystique",
+      "imagePath": "/images/events/wellspring.webp",
+      "descriptionClean": "Vous suivez un bruit de clapotis jusqu’à sa source et vous trouvez captivé par un bassin paisible. À la surface de l’eau vert émeraude flottent des granules lumineux.\n\nVous avez envie de vous baigner. Quel est le pire qui puisse arriver ?",
+      "optionCount": 2,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "WHISPERING_HOLLOW",
+      "slug": "whispering-hollow",
+      "name": "Vallon des Murmures",
+      "imagePath": "/images/events/whispering_hollow.webp",
+      "descriptionClean": "Vous vous frayez un chemin à travers un vallon d’arbres morts et découvrez un arbre blanc comme de l’os, solitaire parmi les autres. Des boules d’argile pendent des branches, qui s’incurvent vers l’intérieur à la manière d’une cage thoracique.\n\nComme cet arbre est sinistre. Il murmure\n\n...faire échange.....",
+      "optionCount": 2,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "WOOD_CARVINGS",
+      "slug": "wood-carvings",
+      "name": "Gravures sur bois",
+      "imagePath": "/images/events/wood_carvings.webp",
+      "descriptionClean": "Vous ouvrez une petite boîte poussiéreuse et y trouvez 3 minutieuses figurines en bois gravées :\n\nUn oiseau, un serpent, et... un tore ?\n\nUn piédestal à proximité est muni d’emplacements qui correspondent au bas des figurines. Laquelle des figurines placez-vous sur le piédestal ?",
+      "optionCount": 4,
+      "acts": [
+        "act1a"
+      ],
+      "shared": false
+    },
+    {
+      "id": "ZEN_WEAVER",
+      "slug": "zen-weaver",
+      "name": "Tisseur zen",
+      "imagePath": "/images/events/zen_weaver.webp",
+      "descriptionClean": "Vous traversez par inadvertance une toile d’araignée —PANIQUE !\nMais rapidement, une vague de calme vous gagne...\n\n« Du calme. Il faut que tu arrêtes de défaire ma toile. »\n\nComment avez-vous réussi à vous calmer si vite ?\nUne toute petite araignée descend à votre rencontre. Elle semble bien vouloir vous apprendre quelques techniques en échange de pièces d’or.",
+      "optionCount": 4,
+      "acts": [
+        "act2"
+      ],
+      "shared": false
+    }
+  ]
+}
