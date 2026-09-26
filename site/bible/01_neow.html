@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Neow — Mère de la Résurrection (exilée) — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html" class="on">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><p class="crumb"><a href="index.html">◄ Bible</a></p><div class="md"><h1 id="neow-mere-de-la-resurrection-exilee">Neow — Mère de la Résurrection (exilée)</h1>
+<blockquote>
+<p><strong>Patch de Référence :</strong> <code>v0.111.0 Beta</code> (Dernier patch officiel)
+<strong>Acte d'apparition :</strong> Acte 1
+<strong>Déblocage (Epoch) :</strong> <code>NeowEpoch</code>
+<strong>Thème Visuel / Couleur :</strong> <code>#28454F</code></p>
+</blockquote>
+<h2 id="portraits-illustrations">🎨 Portraits &amp; Illustrations</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Icône Ancien</th>
+<th style="text-align: center;">Illustration Principale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img alt="Neow" loading="lazy" src="../../bible/images/ancients/icon/neow.webp" /></td>
+<td style="text-align: center;"><img alt="Neow Art" loading="lazy" src="../../bible/images/ancients/art/neow.webp" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="integration-visuelle-gba-butano">🎮 Intégration Visuelle GBA (Butano)</h3>
+<ul>
+<li><strong>Palette suggérée pour la GBA :</strong> Teinte dominante <code>#28454F</code>. À mapper sur une palette 16 couleurs (15 couleurs + transparent) pour le BG de portrait.</li>
+<li><strong>Dimensions portrait GBA :</strong> 64x64 pixels (mode 4 bpp tilemap) positionné à <code>(X: 16, Y: 24)</code> sur l'écran 240x160.</li>
+<li><strong>Couleur des boutons / encadrements UI :</strong> <code>rgba(0, 26, 51, 0.5)</code> converti en code couleur GBA 15-bit BGR555.</li>
+</ul>
+<h2 id="role-lore-dans-lascension">📜 Rôle &amp; Lore dans l'Ascension</h2>
+<p><strong>Notes de conception :</strong>
+* <code>neow_first_room</code>
+* <code>neow_third_option</code>
+* <code>neow_modifier_run</code></p>
+<h3 id="paires-de-reliques-exclusives">⚠️ Paires de Reliques Exclusives</h3>
+<p>Certaines reliques ne peuvent pas être choisies ou générées ensemble dans un même tirage :
+* ❌ <code>CursedPearl</code> et <code>GoldenPearl</code> s'excluent mutuellement.
+* ❌ <code>HeftyTablet</code> et <code>ArcaneScroll</code> s'excluent mutuellement.
+* ❌ <code>LeafyPoultice</code> et <code>NewLeaf</code> s'excluent mutuellement.
+* ❌ <code>PrecariousShears</code> et <code>PreciseScissors</code> s'excluent mutuellement.
+* ❌ <code>NeowsSacrifice</code> et <code>PhialHolster</code> s'excluent mutuellement.
+* ❌ <code>NeowsSacrifice</code> et <code>LostCoffer</code> s'excluent mutuellement.</p>
+<h2 id="regles-des-slots-choix">🎲 Règles des Slots &amp; Choix</h2>
+<ul>
+<li><strong>Nombre total d'options :</strong> 30 reliques disponibles.</li>
+<li><strong>Structure des tirages :</strong> 2 slot(s).</li>
+<li><strong>Slot #1</strong> (Groupe : <em>blessing</em>) : <strong>2</strong> choix parmi <strong>20</strong> reliques présentées.</li>
+<li><strong>Slot #2</strong> (Groupe : <em>curse</em>) : <strong>1</strong> choix parmi <strong>10</strong> reliques présentées.</li>
+</ul>
+<h2 id="catalogue-complet-des-reliques-classees-par-tier">🏆 Catalogue Complet des Reliques (Classées par Tier)</h2>
+<h3 id="tier-s-4-reliques">⭐ Tier S (4 reliques)</h3>
+<h4 id="coffret-perdu-lost_coffer"><img alt="Coffret perdu" loading="lazy" src="../../bible/images/relics/lost_coffer.webp" /> Coffret perdu (<code>LOST_COFFER</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Gagnez 1 récompense de carte et obtenez 1 <strong>Potion</strong> aléatoire.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Gestion Potion :</strong> Ajoute une potion à l'inventaire <code>PotionInventory</code> ou modifie le nombre d'emplacements.</li>
+</ul>
+<h4 id="etui-a-fioles-phial_holster"><img alt="Étui à fioles" loading="lazy" src="../../bible/images/relics/phial_holster.webp" /> Étui à fioles (<code>PHIAL_HOLSTER</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Gagnez 1 nouvel emplacement de potion et obtenez 2 <strong>Potions</strong> aléatoires.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Gestion Potion :</strong> Ajoute une potion à l'inventaire <code>PotionInventory</code> ou modifie le nombre d'emplacements.</li>
+</ul>
+<h4 id="perle-maudite-cursed_pearl"><img alt="Perle maudite" loading="lazy" src="../../bible/images/relics/cursed_pearl.webp" /> Perle maudite (<code>CURSED_PEARL</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Recevez Cupidité. Obtenez 333 <strong>Pièces d'or</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Majeur Prioritaire :</strong> À implémenter en priorité dans le prototype MVP en raison de son fort impact stratégique.</li>
+</ul>
+<h4 id="cataplasme-leafy_poultice"><img alt="Cataplasme" loading="lazy" src="../../bible/images/relics/leafy_poultice.webp" /> Cataplasme (<code>LEAFY_POULTICE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> <strong>Transformez</strong> 1 <strong>Frappe</strong> et 1 <strong>Défense</strong> et perdez 12 PV Max.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet de Survie :</strong> Modifie <code>PlayerEntity::heal()</code> ou déclenche un soin passif en début/fin de combat.</li>
+</ul>
+<h3 id="tier-a-6-reliques">⭐ Tier A (6 reliques)</h3>
+<h4 id="perle-doree-golden_pearl"><img alt="Perle dorée" loading="lazy" src="../../bible/images/relics/golden_pearl.webp" /> Perle dorée (<code>GOLDEN_PEARL</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Lorsque vous obtenez cette relique, gagnez 150 <strong>Pièces d'or</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Économie Run :</strong> Incrémente <code>RunState::gold</code>. Impact direct sur les boutiques du marchand.</li>
+</ul>
+<h4 id="presse-papier-en-plomb-lead_paperweight"><img alt="Presse-papier en plomb" loading="lazy" src="../../bible/images/relics/lead_paperweight.webp" /> Presse-papier en plomb (<code>LEAD_PAPERWEIGHT</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Choisissez 1 carte Incolore parmi 2 à ajoutez à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="parchemin-enorme-massive_scroll"><img alt="Parchemin énorme" loading="lazy" src="../../bible/images/relics/massive_scroll.webp" /> Parchemin énorme (<code>MASSIVE_SCROLL</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Choisissez 1 <strong>Carte Multijoueur</strong> parmi 3 à ajouter à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Transformation de Cartes :</strong> Déclenche un sous-état d'interface (<code>CardSelectScene</code>) pour transformer, épurer ou choisir des cartes.</li>
+</ul>
+<h4 id="nouvelle-page-new_leaf"><img alt="Nouvelle page" loading="lazy" src="../../bible/images/relics/new_leaf.webp" /> Nouvelle page (<code>NEW_LEAF</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> <strong>Transformez</strong> 1 carte.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="petite-capsule-small_capsule"><img alt="Petite capsule" loading="lazy" src="../../bible/images/relics/small_capsule.webp" /> Petite capsule (<code>SMALL_CAPSULE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Obtenez une <strong>Relique</strong> aléatoire.</li>
+<li><strong>Choix Alternatif (Either/Or) :</strong> <code>Pierre volcanique</code></li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="talisman-de-neow-neows_talisman"><img alt="Talisman de Neow" loading="lazy" src="../../bible/images/relics/neows_talisman.webp" /> Talisman de Neow (<code>NEOWS_TALISMAN</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> <strong>Améliorez</strong> 1 de vos <strong>Frappes</strong> et 1 de vos <strong>Défenses</strong>.</li>
+<li><strong>Choix Alternatif (Either/Or) :</strong> <code>Pommandre</code></li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-b-6-reliques">⭐ Tier B (6 reliques)</h3>
+<h4 id="conque-retentissante-booming_conch"><img alt="Conque retentissante" loading="lazy" src="../../bible/images/relics/booming_conch.webp" /> Conque retentissante (<code>BOOMING_CONCH</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Au début des combats d'<strong>Élite</strong>, piochez 2 cartes supplémentaires et gagnez ⚡1⚡.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="tourment-de-neow-neows_torment"><img alt="Tourment de Neow" loading="lazy" src="../../bible/images/relics/neows_torment.webp" /> Tourment de Neow (<code>NEOWS_TORMENT</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Ajoutez 1 <strong>Fureur de Neow</strong> à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Fureur de Neow</code> (NEOWS_FURY) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Fureur de Neow" loading="lazy" src="../../bible/images/cards/event/neows_fury.webp" /> <strong>Fureur de Neow</strong> (<code>NEOWS_FURY</code>) — <em>Attaque</em> (Coût : <code>1</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> Infligez 10 dégâts.
+Placez jusqu'à 2 cartes de votre <strong>Défausse</strong> dans votre <strong>Main</strong>.
+<strong>Épuisement</strong>.</li>
+<li><strong>Effet amélioré :</strong> Infligez 14 dégâts.
+Placez jusqu'à 3 cartes de votre <strong>Défausse</strong> dans votre <strong>Main</strong>.
+<strong>Épuisement</strong>.</li>
+<li><strong>Amélioration :</strong> <code>damage: +4, cards: +1</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="ciseaux-precis-precise_scissors"><img alt="Ciseaux précis" loading="lazy" src="../../bible/images/relics/precise_scissors.webp" /> Ciseaux précis (<code>PRECISE_SCISSORS</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Retirez 1 carte de votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="pommandre-pomander"><img alt="Pommandre" loading="lazy" src="../../bible/images/relics/pomander.webp" /> Pommandre (<code>POMANDER</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> <strong>Améliorez</strong> une carte.</li>
+<li><strong>Choix Alternatif (Either/Or) :</strong> <code>Talisman de Neow</code></li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="tablette-lourde-hefty_tablet"><img alt="Tablette lourde" loading="lazy" src="../../bible/images/relics/hefty_tablet.webp" /> Tablette lourde (<code>HEFTY_TABLET</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Choisissez 1 carte Rare parmi 3 à ajouter à votre <strong>Deck</strong>. Ajoutez 1 Blessure à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Blessure</code> (INJURY) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Blessure" loading="lazy" src="../../bible/images/cards/curse/injury.webp" /> <strong>Blessure</strong> (<code>INJURY</code>) — <em>Malédiction</em> (Coût : <code>0</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> <strong>Injouable</strong>.</li>
+<li><strong>Effet amélioré :</strong> <strong>Injouable</strong>.</li>
+</ul>
+</li>
+</ul>
+<h4 id="grande-capsule-large_capsule"><img alt="Grande capsule" loading="lazy" src="../../bible/images/relics/large_capsule.webp" /> Grande capsule (<code>LARGE_CAPSULE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Obtenez 2 <strong>Reliques aléatoires</strong>. Ajoutez une <strong>Frappe</strong> et une <strong>Défense</strong> à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-c-5-reliques">⭐ Tier C (5 reliques)</h3>
+<h4 id="parchemin-arcanique-arcane_scroll"><img alt="Parchemin arcanique" loading="lazy" src="../../bible/images/relics/arcane_scroll.webp" /> Parchemin arcanique (<code>ARCANE_SCROLL</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Obtenez une <strong>Carte Rare</strong> aléatoire.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Transformation de Cartes :</strong> Déclenche un sous-état d'interface (<code>CardSelectScene</code>) pour transformer, épurer ou choisir des cartes.</li>
+</ul>
+<h4 id="pierre-volcanique-lava_rock"><img alt="Pierre volcanique" loading="lazy" src="../../bible/images/relics/lava_rock.webp" /> Pierre volcanique (<code>LAVA_ROCK</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Le Boss de l'Acte 1 octroie 2 <strong>Reliques</strong> lorsqu'il est vaincu.</li>
+<li><strong>Choix Alternatif (Either/Or) :</strong> <code>Petite capsule</code></li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="osselets-de-neow-neows_bones"><img alt="Osselets de Neow" loading="lazy" src="../../bible/images/relics/neows_bones.webp" /> Osselets de Neow (<code>NEOWS_BONES</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Gagnez 2 <strong>Reliques</strong> de Neow aléatoires. Ajoutez 1 Malédiction aléatoire à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="forces-precaires-precarious_shears"><img alt="Forces précaires" loading="lazy" src="../../bible/images/relics/precarious_shears.webp" /> Forces précaires (<code>PRECARIOUS_SHEARS</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Retirez 2 cartes de votre <strong>Deck</strong>. Perdez 16 PV.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="creuset-en-argent-silver_crucible"><img alt="Creuset en argent" loading="lazy" src="../../bible/images/relics/silver_crucible.webp" /> Creuset en argent (<code>SILVER_CRUCIBLE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Vos 3 premières récompenses de carte sont <strong>Améliorées</strong>. Le premier Coffre trésor que vous ouvrez est vide.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-d-4-reliques">⭐ Tier D (4 reliques)</h3>
+<h4 id="caisse-de-parchemins-scroll_boxes"><img alt="Caisse de parchemins" loading="lazy" src="../../bible/images/relics/scroll_boxes.webp" /> Caisse de parchemins (<code>SCROLL_BOXES</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Choisissez 1 pack de cartes parmi 2 à ajouter à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Transformation de Cartes :</strong> Déclenche un sous-état d'interface (<code>CardSelectScene</code>) pour transformer, épurer ou choisir des cartes.</li>
+</ul>
+<h4 id="bottes-ailees-winged_boots"><img alt="Bottes ailées" loading="lazy" src="../../bible/images/relics/winged_boots.webp" /> Bottes ailées (<code>WINGED_BOOTS</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Vous pouvez ignorer les trajets indiqués sur la carte lorsque vous choisissez la prochaine salle 3 fois.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="huitre-nourrissante-nutritious_oyster"><img alt="Huître nourrissante" loading="lazy" src="../../bible/images/relics/nutritious_oyster.webp" /> Huître nourrissante (<code>NUTRITIOUS_OYSTER</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Augmentez vos PV Max de 11.</li>
+<li><strong>Choix Alternatif (Either/Or) :</strong> <code>Humidificateur en pierre</code></li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="humidificateur-en-pierre-stone_humidifier"><img alt="Humidificateur en pierre" loading="lazy" src="../../bible/images/relics/stone_humidifier.webp" /> Humidificateur en pierre (<code>STONE_HUMIDIFIER</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Lorsque vous vous <strong>Reposez</strong> à un <strong>Site de repos</strong>, augmentez vos PV Max de 5.</li>
+<li><strong>Choix Alternatif (Either/Or) :</strong> <code>Huître nourrissante</code></li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="non-classe-special-5-reliques">⭐ Non classé (Spécial) (5 reliques)</h3>
+<h4 id="canne-a-peche-fishing_rod"><img alt="Canne à pêche" loading="lazy" src="../../bible/images/relics/fishing_rod.webp" /> Canne à pêche (<code>FISHING_ROD</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>Untiered</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Tous les 3 combats normaux, <strong>Améliorez</strong> une carte aléatoire de votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="kaleidoscope-kaleidoscope"><img alt="Kaléidoscope" loading="lazy" src="../../bible/images/relics/kaleidoscope.webp" /> Kaléidoscope (<code>KALEIDOSCOPE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>Untiered</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Recevez 2 récompenses de cartes d'autres personnages.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="baguette-de-rhabdomancie-dowsing_rod"><img alt="Baguette de rhabdomancie" loading="lazy" src="../../bible/images/relics/dowsing_rod.webp" /> Baguette de rhabdomancie (<code>DOWSING_ROD</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>Untiered</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Ajoutez 1 <strong>Rhabdomancie</strong> à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Rhabdomancie</code> (DOWSING) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Rhabdomancie" loading="lazy" src="../../bible/images/cards/quest/dowsing.webp" /> <strong>Rhabdomancie</strong> (<code>DOWSING</code>) — <em>Quête</em> (Coût : <code>0</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> <strong>Injouable</strong>.
+Après avoir visité encore 5 salles <strong>?</strong>, se transforme en <strong>Abondance</strong>.</li>
+<li><strong>Effet amélioré :</strong> <strong>Injouable</strong>.
+Après avoir visité encore 5 salles <strong>?</strong>, se transforme en <strong>Abondance</strong>.</li>
+</ul>
+</li>
+</ul>
+<h4 id="sacrifice-de-neow-neows_sacrifice"><img alt="Sacrifice de Neow" loading="lazy" src="../../bible/images/relics/neows_sacrifice.webp" /> Sacrifice de Neow (<code>NEOWS_SACRIFICE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>Untiered</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Obtenez 1 <strong>Ambre gris</strong> et ajoutez 1 Culpabilité à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Culpabilité</code> (GUILTY) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Culpabilité" loading="lazy" src="../../bible/images/cards/curse/guilty.webp" /> <strong>Culpabilité</strong> (<code>GUILTY</code>) — <em>Malédiction</em> (Coût : <code>0</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> <strong>Injouable</strong>.
+Retiré de votre <strong>Deck</strong> au bout de 5 combats.</li>
+<li><strong>Effet amélioré :</strong> <strong>Injouable</strong>.
+Retiré de votre <strong>Deck</strong> au bout de 5 combats.</li>
+</ul>
+</li>
+</ul>
+<h4 id="tresse-soyeuse-silken_tress"><img alt="Tresse soyeuse" loading="lazy" src="../../bible/images/relics/silken_tress.webp" /> Tresse soyeuse (<code>SILKEN_TRESS</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>Untiered</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Perdez toutes vos Pièces d'or. <strong>Envoûtez</strong> toutes les cartes de votre première récompense de cartes avec Glamour.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h2 id="dialogues-repliques">💬 Dialogues &amp; Répliques</h2>
+<p>Les dialogues s'affichent dans la boîte de dialogue inférieure (240x40 px) sur la GBA avec défilement fluide au bouton <code>A</code> :</p>
+<h3 id="premiere-rencontre-toutes-runs-confondues">🗣️ Première Rencontre (Toutes runs confondues)</h3>
+<ul>
+<li>👑 <strong>Ancien</strong> :<blockquote>
+<p>Je t'ai... reconstitué....<br />
+...va... ..monte.....</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="soldat-de-fer-ironclad">🗣️ Soldat de Fer (Ironclad)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>..lève-toi.. mon.. guerrier...<br />
+..le moment est venu... de combattre...à nouveau...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>..encore.. sombré.. dans la rage... bien...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>..souviens-toi.. la.. première..fois<br />
+...que tu ..vins...auprès de moi..</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>..si..furieux...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...si..utile...</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-silencieuse-silent">🗣️ La Silencieuse (Silent)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...de retour.. de... l'extérieur ?<br />
+..je savais... que vous... reviendriez...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...votre..<br />
+ ...trophée.. vous attend...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>..tous deux...connaissent..l'agonie..de la..famille...</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>SILENT</strong> :</p>
+<blockquote>
+<p>...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>..toujours...en quête..d'approbation...?<br />
+...QUELLE SOTTISE...</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-defectueux-defect">🗣️ Le Défectueux (Defect)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...assemblage.. qu'es-tu...<br />
+.... devenu...?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...il.. peut...<br />
+....vous.. ...réparer....</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...Je.. ne... ..peux pas...<br />
+....te faire.. oublier....</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>DEFECT</strong> :</p>
+<blockquote>
+<p><em><bips déterminés></em></p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...bien....</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-regent-regent">🗣️ Le Régent (Regent)</h3>
+<ul>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Énorme créature bleue, je suis le futur Roi !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>..mon petit...<br />
+...tu... me.. ..reverras... ...encore....</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...encore..?</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Pourquoi je n'arrive pas à gagner ?!</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...reçois.. ma... ..bénédiction...</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>...oui, merci, Neow.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-necrolieuse-necrobinder">🗣️ La Nécrolieuse (Necrobinder)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...nous.... avons... ..le même... ..but....</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p>IL A TUÉ TOUS CEUX QUE J'AIME !!</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...je te donne..... mon pouvoir...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Il... respire.. ....encore...</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p>Est-ce ...même... possible...?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>... L'Architecte.... ..faiblit....<br />
+..et nous.... plus puissantes...</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="generique-tout-personnage">🗣️ Générique (Tout Personnage)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...salutations... ..encore.....</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...réveille-toi...<br />
+..Réveille-toi.....</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>..reçois.... ma....<br />
+..bénédiction.. ...et pars......</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>..Je t'ai... ..ramenée / ... ..à la vie...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>...tue.. l'ARCHITECTE</p>
+</blockquote>
+</li>
+</ul>
+<hr />
+<p>⬅️ <a href="livrets.html">Retour au Sommaire de la Bible</a> | ⚙️ <a href="spec_technique_gba.html">Spécifications Techniques GBA</a></p></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

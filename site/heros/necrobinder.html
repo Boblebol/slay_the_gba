@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Nécrolieuse — Slay the GBA</title>
+<meta name="description" content="Invocation de Titos, âmes, Fatalité et manipulation de la mort.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="hero-necrobinder">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html" class="on">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html">Bible</a></nav>
+</header>
+<main>
+
+<section class="hero-banner small" style="background-image:url(../assets/bg/battle_necrobinder.png)">
+  <div class="hero-inner split">
+    <img class="pix giant" src="../assets/sprites/hero_necrobinder.png" alt="La Nécrolieuse">
+    <div><p class="kicker">Cartouche slay_necrobinder.gba</p><h1>La Nécrolieuse</h1><p class="lead">Gardienne des morts et des os</p>
+    <p>Invocation de Titos, âmes, Fatalité et manipulation de la mort.</p></div>
+  </div>
+</section>
+<div class="stats"><div><b>65</b><span>PV</span></div><div><b>3</b><span>énergie</span></div><div><b>91</b><span>cartes</span></div>
+<div><b>35</b><span>attaques</span></div><div><b>36</b><span>compétences</span></div><div><b>20</b><span>pouvoirs</span></div></div>
+<section class="panel "><h2>Fiche</h2><div class="sheet">
+<div class="relic big"><img src="../../bible/images/relics/bound_phylactery.webp" alt=""><div><b>Relique de départ : Phylactère enchaîné</b><p>Relique de départ : invoque et lie Titos, son familier squelette.</p></div></div>
+<div><h3>Deck de départ</h3><p>4× Frappe, 4× Défense, 1× Déchaînement, 1× Garde du corps</p><h3>Zone de la cartouche</h3><p>Crypte d&#x27;Outre-Tombe</p></div>
+<img class="pix energy" src="../assets/sprites/energy_necrobinder.png" alt="Orbe d'énergie">
+</div></section>
+<section class="panel"><h2>Toutes les cartes (91)</h2><div class="filters" data-target=".cards">
+  <input type="search" placeholder="Rechercher une carte…" data-search>
+  <div class="chips"><button class="on" data-filter-type="">Tous types</button><button data-filter-type="Attack">Attaque</button><button data-filter-type="Skill">Compétence</button><button data-filter-type="Power">Pouvoir</button></div>
+  <div class="chips"><button class="on" data-filter-rarity="">Toutes raretés</button><button data-filter-rarity="Basic">Base</button><button data-filter-rarity="Common">Commune</button><button data-filter-rarity="Uncommon">Peu commune</button><button data-filter-rarity="Rare">Rare</button><button data-filter-rarity="Ancient">Ancienne</button></div>
+  <p class="count"></p>
+</div><div class="cards"><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Basic" data-name="déchaînement unleash">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/unleash.webp" alt="Déchaînement"><span class="gem">1</span></div>
+  <h4>Déchaînement</h4>
+  <p class="meta">Attaque · Base</p>
+  <p class="desc"><b class="kw">Titos</b> inflige 6 dégâts.<br>Inflige un montant de dégâts supplémentaires égal aux PV actuels de <b class="kw">Titos</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Titos</b> inflige 9 dégâts.<br>Inflige un montant de dégâts supplémentaires égal aux PV actuels de <b class="kw">Titos</b>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Basic" data-name="défense defend_necrobinder">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/defend_necrobinder.webp" alt="Défense"><span class="gem">1</span></div>
+  <h4>Défense</h4>
+  <p class="meta">Compétence · Base</p>
+  <p class="desc">Gagnez 5 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 8 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Basic" data-name="frappe strike_necrobinder">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/strike_necrobinder.webp" alt="Frappe"><span class="gem">1</span></div>
+  <h4>Frappe</h4>
+  <p class="meta">Attaque · Base</p>
+  <p class="desc">Infligez 6 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Basic" data-name="garde du corps bodyguard">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/bodyguard.webp" alt="Garde du corps"><span class="gem">1</span></div>
+  <h4>Garde du corps</h4>
+  <p class="meta">Compétence · Base</p>
+  <p class="desc"><b class="kw">Invoquez</b> pour 5.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Invoquez</b> pour 7.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Common" data-name="adjuration invoke">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/invoke.webp" alt="Adjuration"><span class="gem">1</span></div>
+  <h4>Adjuration</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Au prochain tour, <b class="kw">Invoquez</b> pour 2 et gagnez 2 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au prochain tour, <b class="kw">Invoquez</b> pour 3 et gagnez 3 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Common" data-name="anti-pulsation negative_pulse">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/negative_pulse.webp" alt="Anti-pulsation"><span class="gem">1</span></div>
+  <h4>Anti-pulsation</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 5 d&#x27;<b class="kw">Armure</b>.<br>Appliquez 7 de <b class="kw">Fatalité</b> sur TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 6 d&#x27;<b class="kw">Armure</b>.<br>Appliquez 11 de <b class="kw">Fatalité</b> sur TOUS les ennemis.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="chiquenaude poke">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/poke.webp" alt="Chiquenaude"><span class="gem">0</span></div>
+  <h4>Chiquenaude</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc"><b class="kw">Titos</b> inflige 6 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Titos</b> inflige 9 dégâts.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="claquement de doigts snap">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/snap.webp" alt="Claquement de doigts"><span class="gem">1</span></div>
+  <h4>Claquement de doigts</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc"><b class="kw">Titos</b> inflige 7 dégâts.<br>Ajoutez <b class="kw">Retenue</b> à une carte dans votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Titos</b> inflige 10 dégâts.<br>Ajoutez <b class="kw">Retenue</b> à une carte dans votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="drain de puissance drain_power">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/drain_power.webp" alt="Drain de puissance"><span class="gem">1</span></div>
+  <h4>Drain de puissance</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 10 dégâts.<br><b class="kw">Améliorez</b> 2 cartes aléatoires de votre <b class="kw">Défausse</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 12 dégâts.<br><b class="kw">Améliorez</b> 3 cartes aléatoires de votre <b class="kw">Défausse</b>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Common" data-name="défi defy">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/defy.webp" alt="Défi"><span class="gem">1</span></div>
+  <h4>Défi</h4>
+  <p class="meta">Compétence · Commune · Ethereal</p>
+  <p class="desc"><b class="kw">Éthéré</b>.<br>Gagnez 6 d&#x27;<b class="kw">Armure</b>.<br>Appliquez <b class="kw">Affaibli</b> (1).</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Éthéré</b>.<br>Gagnez 9 d&#x27;<b class="kw">Armure</b>.<br>Appliquez <b class="kw">Affaibli</b> (1).</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="déflagration tombale graveblast">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/graveblast.webp" alt="Déflagration tombale"><span class="gem">1</span></div>
+  <h4>Déflagration tombale</h4>
+  <p class="meta">Attaque · Commune · Exhaust</p>
+  <p class="desc">Infligez 4 dégâts.<br>Placez une carte de votre <b class="kw">Défausse</b> dans votre <b class="kw">Main</b>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 6 dégâts.<br>Placez une carte de votre <b class="kw">Défausse</b> dans votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="exaction reave">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/reave.webp" alt="Exaction"><span class="gem">1</span></div>
+  <h4>Exaction</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 10 dégâts.<br>Ajoutez une <b class="kw">Âme</b> à votre <b class="kw">Pioche</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 13 dégâts.<br>Ajoutez une <b class="kw">Âme+</b> à votre <b class="kw">Pioche</b>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Common" data-name="feu follet wisp">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/wisp.webp" alt="Feu follet"><span class="gem">0</span></div>
+  <h4>Feu follet</h4>
+  <p class="meta">Compétence · Commune · Exhaust</p>
+  <p class="desc">Gagnez 1 <span class="nrg">●</span>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Gagnez 1 <span class="nrg">●</span>.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Common" data-name="fossoyeur grave_warden">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/grave_warden.webp" alt="Fossoyeur"><span class="gem">1</span></div>
+  <h4>Fossoyeur</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 8 d&#x27;<b class="kw">Armure</b>.<br>Ajoutez une <b class="kw">Âme</b> à votre <b class="kw">Pioche</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 11 d&#x27;<b class="kw">Armure</b>.<br>Ajoutez une <b class="kw">Âme</b> à votre <b class="kw">Pioche</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="frappe du fléau blight_strike">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/blight_strike.webp" alt="Frappe du fléau"><span class="gem">1</span></div>
+  <h4>Frappe du fléau</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 8 dégâts.<br>Appliquez un montant de <b class="kw">Fatalité</b> égal aux dégâts infligés.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 10 dégâts.<br>Appliquez un montant de <b class="kw">Fatalité</b> égal aux dégâts infligés.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="frappe du sculpteur sculpting_strike">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/sculpting_strike.webp" alt="Frappe du sculpteur"><span class="gem">1</span></div>
+  <h4>Frappe du sculpteur</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 9 dégâts.<br>Ajoutez <b class="kw">Éthéré</b> à une carte dans votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 12 dégâts.<br>Ajoutez <b class="kw">Éthéré</b> à une carte dans votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="moisson reap">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/reap.webp" alt="Moisson"><span class="gem">3</span></div>
+  <h4>Moisson</h4>
+  <p class="meta">Attaque · Commune · Retain</p>
+  <p class="desc"><b class="kw">Retenue</b>.<br>Infligez 27 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Infligez 33 dégâts.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Common" data-name="pestilence scourge">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/scourge.webp" alt="Pestilence"><span class="gem">1</span></div>
+  <h4>Pestilence</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Appliquez 13 de <b class="kw">Fatalité</b>.<br>Piochez 1 carte.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez 16 de <b class="kw">Fatalité</b>.<br>Piochez 2 cartes.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="profanation defile">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/defile.webp" alt="Profanation"><span class="gem">1</span></div>
+  <h4>Profanation</h4>
+  <p class="meta">Attaque · Commune · Ethereal</p>
+  <p class="desc"><b class="kw">Éthéré</b>.<br>Infligez 13 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Éthéré</b>.<br>Infligez 17 dégâts.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="raser flatten">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/flatten.webp" alt="Raser"><span class="gem">2</span></div>
+  <h4>Raser</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc"><b class="kw">Titos</b> inflige 12 dégâts.<br>Cette carte coûte 0 <span class="nrg">●</span> si <b class="kw">Titos</b> a déjà attaqué pendant ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Titos</b> inflige 16 dégâts.<br>Cette carte coûte 0 <span class="nrg">●</span> si <b class="kw">Titos</b> a déjà attaqué pendant ce tour.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Common" data-name="râblure pull_aggro">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/pull_aggro.webp" alt="Râblure"><span class="gem">2</span></div>
+  <h4>Râblure</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc"><b class="kw">Invoquez</b> pour 4.<br>Gagnez 7 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Invoquez</b> pour 5.<br>Gagnez 9 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="semence sow">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/sow.webp" alt="Semence"><span class="gem">1</span></div>
+  <h4>Semence</h4>
+  <p class="meta">Attaque · Commune · Retain</p>
+  <p class="desc"><b class="kw">Retenue</b>.<br>Infligez 8 dégâts à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Infligez 11 dégâts à TOUS les ennemis.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Common" data-name="terreur fear">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/fear.webp" alt="Terreur"><span class="gem">1</span></div>
+  <h4>Terreur</h4>
+  <p class="meta">Attaque · Commune · Ethereal</p>
+  <p class="desc"><b class="kw">Éthéré</b>.<br>Infligez 7 dégâts.<br>Appliquez <b class="kw">Vulnérable</b> (1).</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Éthéré</b>.<br>Infligez 8 dégâts.<br>Appliquez <b class="kw">Vulnérable</b> (2).</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Common" data-name="vie après la mort afterlife">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/afterlife.webp" alt="Vie après la mort"><span class="gem">1</span></div>
+  <h4>Vie après la mort</h4>
+  <p class="meta">Compétence · Commune · Exhaust</p>
+  <p class="desc"><b class="kw">Invoquez</b> pour 6.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Invoquez</b> pour 9.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Uncommon" data-name="amitié friendship">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/friendship.webp" alt="Amitié"><span class="gem">1</span></div>
+  <h4>Amitié</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Perdez 2 de <b class="kw">Force</b>.<br>Gagnez 1 <span class="nrg">●</span> au début de chaque tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Perdez 1 de <b class="kw">Force</b>.<br>Gagnez 1 <span class="nrg">●</span> au début de chaque tour.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="amoindrissement debilitate">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/debilitate.webp" alt="Amoindrissement"><span class="gem">1</span></div>
+  <h4>Amoindrissement</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 10 dégâts.<br>L&#x27;efficacité de <b class="kw">Vulnérable</b> et <b class="kw">Affaibli</b> sur l&#x27;ennemi est doublée pendant les 2 prochains tours.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 12 dégâts.<br>L&#x27;efficacité de <b class="kw">Vulnérable</b> et <b class="kw">Affaibli</b> sur l&#x27;ennemi est doublée pendant les 3 prochains tours.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Uncommon" data-name="calcification calcify">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/calcify.webp" alt="Calcification"><span class="gem">1</span></div>
+  <h4>Calcification</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Les attaques de <b class="kw">Titos</b> infligent 4 dégâts supplémentaires.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Les attaques de <b class="kw">Titos</b> infligent 6 dégâts supplémentaires.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="capture spirituelle capture_spirit">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/capture_spirit.webp" alt="Capture spirituelle"><span class="gem">1</span></div>
+  <h4>Capture spirituelle</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">L&#x27;ennemi perd 3 PV.<br>Ajoutez 3 <b class="kw">Âmes</b> à votre <b class="kw">Pioche</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">L&#x27;ennemi perd 4 PV.<br>Ajoutez 4 <b class="kw">Âmes</b> à votre <b class="kw">Pioche</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="cliquetis rattle">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/rattle.webp" alt="Cliquetis"><span class="gem">1</span></div>
+  <h4>Cliquetis</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc"><b class="kw">Titos</b> inflige 7 dégâts.<br>Se déclenche un nombre de fois supplémentaires égal au nombre de fois qu&#x27;il a déjà attaqué ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Titos</b> inflige 9 dégâts.<br>Se déclenche un nombre de fois supplémentaires égal au nombre de fois qu&#x27;il a déjà attaqué ce tour.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="césure severance">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/severance.webp" alt="Césure"><span class="gem">2</span></div>
+  <h4>Césure</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 13 dégâts.<br>Ajoutez une <b class="kw">Âme</b> à votre <b class="kw">Pioche</b>, à votre <b class="kw">Main</b> et à votre <b class="kw">Défausse</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 18 dégâts.<br>Ajoutez une <b class="kw">Âme</b> à votre <b class="kw">Pioche</b>, à votre <b class="kw">Main</b> et à votre <b class="kw">Défausse</b>.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Uncommon" data-name="danse macabre danse_macabre">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/danse_macabre.webp" alt="Danse Macabre"><span class="gem">1</span></div>
+  <h4>Danse Macabre</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsque vous jouez une carte qui coûte 2 <span class="nrg">●</span> ou plus, gagnez 4 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous jouez une carte qui coûte 2 <span class="nrg">●</span> ou plus, gagnez 6 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="droitier right_hand_hand">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/right_hand_hand.webp" alt="Droitier"><span class="gem">0</span></div>
+  <h4>Droitier</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc"><b class="kw">Titos</b> inflige 4 dégâts.<br>Lorsque vous jouez une carte qui coûte 2 <span class="nrg">●</span> ou plus, cette carte retourne dans votre <b class="kw">Main</b> depuis la <b class="kw">Défausse</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Titos</b> inflige 6 dégâts.<br>Lorsque vous jouez une carte qui coûte 2 <span class="nrg">●</span> ou plus, cette carte retourne dans votre <b class="kw">Main</b> depuis la <b class="kw">Défausse</b>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="décomposition parse">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/parse.webp" alt="Décomposition"><span class="gem">1</span></div>
+  <h4>Décomposition</h4>
+  <p class="meta">Compétence · Peu commune · Ethereal</p>
+  <p class="desc"><b class="kw">Éthéré</b>.<br>Piochez 3 cartes.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Éthéré</b>.<br>Piochez 4 cartes.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Uncommon" data-name="décompte countdown">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/countdown.webp" alt="Décompte"><span class="gem">1</span></div>
+  <h4>Décompte</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Au début de votre tour, appliquez 6 de <b class="kw">Fatalité</b> à un ennemi aléatoire.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au début de votre tour, appliquez 9 de <b class="kw">Fatalité</b> à un ennemi aléatoire.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="délai delay">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/delay.webp" alt="Délai"><span class="gem">2</span></div>
+  <h4>Délai</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 11 d&#x27;<b class="kw">Armure</b>.<br>Au prochain tour,<br>gagnez 1 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 13 d&#x27;<b class="kw">Armure</b>.<br>Au prochain tour,<br>gagnez 2 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="déterrer dredge">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/dredge.webp" alt="Déterrer"><span class="gem">1</span></div>
+  <h4>Déterrer</h4>
+  <p class="meta">Compétence · Peu commune · Exhaust</p>
+  <p class="desc">Placez 3 cartes de votre <b class="kw">Défausse</b> dans votre <b class="kw">Main</b>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Placez 3 cartes de votre <b class="kw">Défausse</b> dans votre <b class="kw">Main</b>.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="détonation osseuse bone_shards">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/bone_shards.webp" alt="Détonation osseuse"><span class="gem">1</span></div>
+  <h4>Détonation osseuse</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Si <b class="kw">Titos</b> est en vie, il inflige 9 dégâts à TOUS les ennemis, et vous gagnez 9 d&#x27;<b class="kw">Armure</b>.<br><b class="kw">Titos</b> périt.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Si <b class="kw">Titos</b> est en vie, il inflige 12 dégâts à TOUS les ennemis, et vous gagnez 12 d&#x27;<b class="kw">Armure</b>.<br><b class="kw">Titos</b> périt.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="enfers underworld">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/underworld.webp" alt="Enfers"><span class="gem">2</span></div>
+  <h4>Enfers</h4>
+  <p class="meta">Compétence · Peu commune · Exhaust</p>
+  <p class="desc">Lorsque les autres joueurs infligent des dégâts pendant ce tour, appliquez le même montant de <b class="kw">Fatalité</b>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque les autres joueurs infligent des dégâts pendant ce tour, appliquez le même montant de <b class="kw">Fatalité</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="enterrer bury">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/bury.webp" alt="Enterrer"><span class="gem">4</span></div>
+  <h4>Enterrer</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 52 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 63 dégâts.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Uncommon" data-name="hanter haunt">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/haunt.webp" alt="Hanter"><span class="gem">1</span></div>
+  <h4>Hanter</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsque vous jouez une <b class="kw">Âme</b>, un ennemi aléatoire perd 7 PV.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous jouez une <b class="kw">Âme</b>, un ennemi aléatoire perd 9 PV.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="inéluctable no_escape">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/no_escape.webp" alt="Inéluctable"><span class="gem">1</span></div>
+  <h4>Inéluctable</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Appliquez 10 de <b class="kw">Fatalité</b>, plus 5 de <b class="kw">Fatalité</b> supplémentaire pour tous les 10 points de <b class="kw">Fatalité</b> déjà présents sur l&#x27;ennemi.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez 15 de <b class="kw">Fatalité</b>, plus 5 de <b class="kw">Fatalité</b> supplémentaire pour tous les 10 points de <b class="kw">Fatalité</b> déjà présents sur l&#x27;ennemi.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="légion d&#x27;ossements legion_of_bone">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/legion_of_bone.webp" alt="Légion d&#x27;ossements"><span class="gem">2</span></div>
+  <h4>Légion d&#x27;ossements</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">TOUS les joueurs <b class="kw">Invoquent</b> pour 6.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">TOUS les joueurs <b class="kw">Invoquent</b> pour 8.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Uncommon" data-name="létalité lethality">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/lethality.webp" alt="Létalité"><span class="gem">1</span></div>
+  <h4>Létalité</h4>
+  <p class="meta">Pouvoir · Peu commune · Ethereal</p>
+  <p class="desc"><b class="kw">Éthéré</b>.<br>La première Attaque jouée chaque tour inflige 50% de dégâts supplémentaires.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Éthéré</b>.<br>La première Attaque jouée chaque tour inflige 75% de dégâts supplémentaires.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="marche funeste death_march">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/death_march.webp" alt="Marche funeste"><span class="gem">1</span></div>
+  <h4>Marche funeste</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 8 dégâts.<br>Inflige 4 dégâts supplémentaires pour chaque carte piochée durant votre tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts.<br>Inflige 6 dégâts supplémentaires pour chaque carte piochée durant votre tour.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="mélancolie melancholy">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/melancholy.webp" alt="Mélancolie"><span class="gem">3</span></div>
+  <h4>Mélancolie</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 13 d&#x27;<b class="kw">Armure</b>.<br>Réduisez le coût de cette carte de 1 <span class="nrg">●</span> lorsque N&#x27;IMPORTE QUEL PERSONNAGE périt.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 17 d&#x27;<b class="kw">Armure</b>.<br>Réduisez le coût de cette carte de 1 <span class="nrg">●</span> lorsque N&#x27;IMPORTE QUEL PERSONNAGE périt.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="oraison dirge">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/dirge.webp" alt="Oraison"><span class="gem">X</span></div>
+  <h4>Oraison</h4>
+  <p class="meta">Compétence · Peu commune · Exhaust</p>
+  <p class="desc"><b class="kw">Invoquez</b> pour 3 X fois.<br>Ajoutez X <b class="kw">Âmes</b> à votre <b class="kw">Pioche</b>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Invoquez</b> pour 4 X fois.<br>Ajoutez X <b class="kw">Âmes+</b> à votre <b class="kw">Pioche</b>.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="perce-voile veilpiercer">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/veilpiercer.webp" alt="Perce-voile"><span class="gem">1</span></div>
+  <h4>Perce-voile</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 10 dégâts.<br>La prochaine carte <b class="kw">Éthérée</b> que vous jouez coûte 0 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 13 dégâts.<br>La prochaine carte <b class="kw">Éthérée</b> que vous jouez coûte 0 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Uncommon" data-name="pluie de papier pagestorm">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/pagestorm.webp" alt="Pluie de papier"><span class="gem">1</span></div>
+  <h4>Pluie de papier</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsque vous piochez une carte <b class="kw">Éthérée</b>, piochez 1 carte.</p>
+  
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="porte-mort deathbringer">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/deathbringer.webp" alt="Porte-mort"><span class="gem">2</span></div>
+  <h4>Porte-mort</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Appliquez 21 de <b class="kw">Fatalité</b> et <b class="kw">Affaibli</b> (1) à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez 26 de <b class="kw">Fatalité</b> et <b class="kw">Affaibli</b> (1) à TOUS les ennemis.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="purge cleanse">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/cleanse.webp" alt="Purge"><span class="gem">1</span></div>
+  <h4>Purge</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc"><b class="kw">Invoquez</b> pour 3.<br><b class="kw">Épuisez</b> 1 carte de votre <b class="kw">Pioche</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Invoquez</b> pour 5.<br><b class="kw">Épuisez</b> 1 carte de votre <b class="kw">Pioche</b>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="putréfaction putrefy">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/putrefy.webp" alt="Putréfaction"><span class="gem">1</span></div>
+  <h4>Putréfaction</h4>
+  <p class="meta">Compétence · Peu commune · Exhaust</p>
+  <p class="desc">Appliquez <b class="kw">Affaibli</b> (2).<br>Appliquez <b class="kw">Vulnérable</b> (2).<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez <b class="kw">Affaibli</b> (3).<br>Appliquez <b class="kw">Vulnérable</b> (3).<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="six pieds sous terre pull_from_below">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/pull_from_below.webp" alt="Six pieds sous terre"><span class="gem">1</span></div>
+  <h4>Six pieds sous terre</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 5 dégâts pour chaque carte <b class="kw">Éthérée</b> jouée pendant ce combat.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 7 dégâts pour chaque carte <b class="kw">Éthérée</b> jouée pendant ce combat.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="stimulation spur">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/spur.webp" alt="Stimulation"><span class="gem">1</span></div>
+  <h4>Stimulation</h4>
+  <p class="meta">Compétence · Peu commune · Retain</p>
+  <p class="desc"><b class="kw">Retenue</b>.<br><b class="kw">Invoquez</b> pour 3.<br><b class="kw">Titos</b> récupère 5 PV.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br><b class="kw">Invoquez</b> pour 5.<br><b class="kw">Titos</b> récupère 7 PV.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="sursis borrowed_time">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/borrowed_time.webp" alt="Sursis"><span class="gem">1</span></div>
+  <h4>Sursis</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 4 <span class="nrg">●</span>.<br>Les cartes coûtent 1 <span class="nrg">●</span> de plus ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 6 <span class="nrg">●</span>.<br>Les cartes coûtent 1 <span class="nrg">●</span> de plus ce tour.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="tope là high_five">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/high_five.webp" alt="Tope là"><span class="gem">2</span></div>
+  <h4>Tope là</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc"><b class="kw">Titos</b> inflige 11 dégâts<br>et applique <b class="kw">Vulnérable</b> (2) <br>à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Titos</b> inflige 13 dégâts<br>et applique <b class="kw">Vulnérable</b> (3) <br>à TOUS les ennemis.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="toucher atrophiant enfeebling_touch">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/enfeebling_touch.webp" alt="Toucher atrophiant"><span class="gem">1</span></div>
+  <h4>Toucher atrophiant</h4>
+  <p class="meta">Compétence · Peu commune · Ethereal</p>
+  <p class="desc"><b class="kw">Éthéré</b>.<br>L&#x27;ennemi perd 8 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Éthéré</b>.<br>L&#x27;ennemi perd 11 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Uncommon" data-name="tour de chair sleight_of_flesh">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/sleight_of_flesh.webp" alt="Tour de chair"><span class="gem">2</span></div>
+  <h4>Tour de chair</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsque vous appliquez un effet néfaste sur un ennemi, celui-ci subit 9 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous appliquez un effet néfaste sur un ennemi, celui-ci subit 13 dégâts.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="va chercher fetch">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/fetch.webp" alt="Va chercher"><span class="gem">0</span></div>
+  <h4>Va chercher</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc"><b class="kw">Titos</b> inflige 3 dégâts.<br>Si c&#x27;est la première fois du tour que cette carte est jouée, piochez 1 carte.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Titos</b> inflige 6 dégâts.<br>Si c&#x27;est la première fois du tour que cette carte est jouée, piochez 1 carte.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Uncommon" data-name="voile shroud">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/shroud.webp" alt="Voile"><span class="gem">1</span></div>
+  <h4>Voile</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsque vous appliquez de la <b class="kw">Fatalité</b>, gagnez 3 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous appliquez de la <b class="kw">Fatalité</b>, gagnez 4 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Uncommon" data-name="à l&#x27;agonie deaths_door">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/deaths_door.webp" alt="À l&#x27;agonie"><span class="gem">1</span></div>
+  <h4>À l&#x27;agonie</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 6 d&#x27;<b class="kw">Armure</b>.<br>Si vous avez appliqué de la <b class="kw">Fatalité</b> pendant ce tour, gagnez l&#x27;<b class="kw">Armure</b> 2 fois supplémentaires.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 7 d&#x27;<b class="kw">Armure</b>.<br>Si vous avez appliqué de la <b class="kw">Fatalité</b> pendant ce tour, gagnez l&#x27;<b class="kw">Armure</b> 2 fois supplémentaires.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Uncommon" data-name="à l&#x27;attaque ! sic_em">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/sic_em.webp" alt="À l&#x27;attaque !"><span class="gem">1</span></div>
+  <h4>À l&#x27;attaque !</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc"><b class="kw">Titos</b> inflige 5 dégâts.<br>Lorsque <b class="kw">Titos</b> touche cet ennemi pendant ce tour, <b class="kw">Invoquez</b> pour 3.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Titos</b> inflige 6 dégâts.<br>Lorsque <b class="kw">Titos</b> touche cet ennemi pendant ce tour, <b class="kw">Invoquez</b> pour 4.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Uncommon" data-name="âme sœur soulbound">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/soulbound.webp" alt="Âme sœur"><span class="gem">1</span></div>
+  <h4>Âme sœur</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Choisissez un allié.<br>Lorsque vous créez une <b class="kw">Âme</b>, ajoutez une <b class="kw">Âme</b> à sa <b class="kw">Pioche</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Choisissez un allié.<br>Lorsque vous créez une <b class="kw">Âme</b>, ajoutez une <b class="kw">Âme</b> à sa <b class="kw">Pioche</b>.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Rare" data-name="appel du néant call_of_the_void">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/call_of_the_void.webp" alt="Appel du néant"><span class="gem">1</span></div>
+  <h4>Appel du néant</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Au début de votre tour, ajoutez 1 carte aléatoire à votre <b class="kw">Main</b>. Elle gagne <b class="kw">Éthéré</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Au début de votre tour, ajoutez 1 carte aléatoire à votre <b class="kw">Main</b>. Elle gagne <b class="kw">Éthéré</b>.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Rare" data-name="cacophonie cacophony">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/cacophony.webp" alt="Cacophonie"><span class="gem">2</span></div>
+  <h4>Cacophonie</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Toutes les 33 cartes piochées par TOUS les joueurs, infligez 66 dégâts à un ennemi aléatoire.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Toutes les 33 cartes piochées par TOUS les joueurs, infligez 99 dégâts à un ennemi aléatoire.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Rare" data-name="cri de la banshee banshees_cry">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/banshees_cry.webp" alt="Cri de la banshee"><span class="gem">9</span></div>
+  <h4>Cri de la banshee</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 33 dégâts à TOUS les ennemis.<br>Coûte 2 <span class="nrg">●</span> de moins pour chaque carte <b class="kw">Éthérée</b> jouée pendant ce combat.</p>
+  
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Rare" data-name="destin partagé shared_fate">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/shared_fate.webp" alt="Destin partagé"><span class="gem">0</span></div>
+  <h4>Destin partagé</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Perdez 2 de <b class="kw">Force</b>.<br>L&#x27;ennemi perd 2 de <b class="kw">Force</b>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Perdez 2 de <b class="kw">Force</b>.<br>L&#x27;ennemi perd 3 de <b class="kw">Force</b>.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Rare" data-name="domaine demesne">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/demesne.webp" alt="Domaine"><span class="gem">3</span></div>
+  <h4>Domaine</h4>
+  <p class="meta">Pouvoir · Rare · Ethereal</p>
+  <p class="desc"><b class="kw">Éthéré</b>.<br>Au début de votre tour, gagnez 1 <span class="nrg">●</span> et piochez 1 carte supplémentaire.</p>
+  
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Rare" data-name="dévoration de vie devour_life">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/devour_life.webp" alt="Dévoration de vie"><span class="gem">1</span></div>
+  <h4>Dévoration de vie</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsque vous jouez une <b class="kw">Âme</b>, <b class="kw">Invoquez</b> pour 1.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous jouez une <b class="kw">Âme</b>, <b class="kw">Invoquez</b> pour 2.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Rare" data-name="eidolon eidolon">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/eidolon.webp" alt="Eidolon"><span class="gem">2</span></div>
+  <h4>Eidolon</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Jouez TOUTES les cartes <b class="kw">Éthérées</b> dans votre pile de cartes <b class="kw">Épuisées</b>.<br><b class="kw">Épuisement</b>.</p>
+  
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Rare" data-name="esprit des cendres spirit_of_ash">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/spirit_of_ash.webp" alt="Esprit des cendres"><span class="gem">1</span></div>
+  <h4>Esprit des cendres</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsque vous jouez une carte <b class="kw">Éthérée</b>, gagnez 4 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous jouez une carte <b class="kw">Éthérée</b>, gagnez 5 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Rare" data-name="fin des temps end_of_days">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/end_of_days.webp" alt="Fin des temps"><span class="gem">3</span></div>
+  <h4>Fin des temps</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Appliquez 29 de <b class="kw">Fatalité</b> à TOUS les ennemis.<br>Les ennemis avec au moins autant de <b class="kw">Fatalité</b> que de PV périssent.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez 37 de <b class="kw">Fatalité</b> à TOUS les ennemis.<br>Les ennemis avec au moins autant de <b class="kw">Fatalité</b> que de PV périssent.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Rare" data-name="forme de la faucheuse reaper_form">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/reaper_form.webp" alt="Forme de la Faucheuse"><span class="gem">3</span></div>
+  <h4>Forme de la Faucheuse</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsque vos Attaques infligent des dégâts, appliquez le même montant de <b class="kw">Fatalité</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Lorsque vos Attaques infligent des dégâts, appliquez le même montant de <b class="kw">Fatalité</b>.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Rare" data-name="influx neuronal neurosurge">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/neurosurge.webp" alt="Influx neuronal"><span class="gem">0</span></div>
+  <h4>Influx neuronal</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Gagnez 3 <span class="nrg">●</span>.<br>Piochez 2 cartes.<br>Au début de votre tour, appliquez 3 de <b class="kw">Fatalité</b> à vous-même.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 4 <span class="nrg">●</span>.<br>Piochez 2 cartes.<br>Au début de votre tour, appliquez 3 de <b class="kw">Fatalité</b> à vous-même.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Rare" data-name="joug squeeze">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/squeeze.webp" alt="Joug"><span class="gem">3</span></div>
+  <h4>Joug</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc"><b class="kw">Titos</b> inflige 25 dégâts.<br>Inflige 5 dégâts supplémentaires pour CHACUNE de vos autres Attaques de <b class="kw">Titos</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Titos</b> inflige 30 dégâts.<br>Inflige 6 dégâts supplémentaires pour CHACUNE de vos autres Attaques de <b class="kw">Titos</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Rare" data-name="l&#x27;heure est venue times_up">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/times_up.webp" alt="L&#x27;heure est venue"><span class="gem">2</span></div>
+  <h4>L&#x27;heure est venue</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez un montant de dégâts égal à la quantité de <b class="kw">Fatalité</b> sur l&#x27;ennemi.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Infligez un montant de dégâts égal à la quantité de <b class="kw">Fatalité</b> sur l&#x27;ennemi.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Rare" data-name="la faux the_scythe">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/the_scythe.webp" alt="La faux"><span class="gem">2</span></div>
+  <h4>La faux</h4>
+  <p class="meta">Attaque · Rare · Exhaust</p>
+  <p class="desc">Infligez 13 dégâts.<br>Augmentez les dégâts de cette carte de 5 de façon permanente.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 13 dégâts.<br>Augmentez les dégâts de cette carte de 7 de façon permanente.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Rare" data-name="maîtrise nécrologique necro_mastery">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/necro_mastery.webp" alt="Maîtrise nécrologique"><span class="gem">2</span></div>
+  <h4>Maîtrise nécrologique</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc"><b class="kw">Invoquez</b> pour 5.<br>Lorsque <b class="kw">Titos</b> perd des PV,<br>TOUS les ennemis en perdent le même montant.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Invoquez</b> pour 8.<br>Lorsque <b class="kw">Titos</b> perd des PV,<br>TOUS les ennemis en perdent le même montant.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Rare" data-name="misère misery">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/misery.webp" alt="Misère"><span class="gem">0</span></div>
+  <h4>Misère</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 7 dégâts.<br>Appliquez tous les effets néfastes présent sur l&#x27;ennemi à TOUS les autres ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Infligez 9 dégâts.<br>Appliquez tous les effets néfastes présent sur l&#x27;ennemi à TOUS les autres ennemis.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Rare" data-name="mort-vivant undeath">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/undeath.webp" alt="Mort-vivant"><span class="gem">0</span></div>
+  <h4>Mort-vivant</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Gagnez 7 d&#x27;<b class="kw">Armure</b>.<br>Ajoutez une copie de cette carte à votre <b class="kw">Défausse</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 9 d&#x27;<b class="kw">Armure</b>.<br>Ajoutez une copie de cette carte à votre <b class="kw">Défausse</b>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Rare" data-name="oblitération oblivion">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/oblivion.webp" alt="Oblitération"><span class="gem">0</span></div>
+  <h4>Oblitération</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Lorsque vous jouez une carte ce tour, appliquez 3 de <b class="kw">Fatalité</b> sur l&#x27;ennemi.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous jouez une carte ce tour, appliquez 4 de <b class="kw">Fatalité</b> sur l&#x27;ennemi.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Rare" data-name="pendaison hang">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/hang.webp" alt="Pendaison"><span class="gem">1</span></div>
+  <h4>Pendaison</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 10 dégâts.<br>Double les dégâts de TOUTES les cartes Pendaison que vous jouez sur cet ennemi.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 13 dégâts.<br>Double les dégâts de TOUTES les cartes Pendaison que vous jouez sur cet ennemi.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Rare" data-name="réanimation reanimate">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/reanimate.webp" alt="Réanimation"><span class="gem">3</span></div>
+  <h4>Réanimation</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc"><b class="kw">Invoquez</b> pour 20.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Invoquez</b> pour 25.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Rare" data-name="sacrifice sacrifice">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/sacrifice.webp" alt="Sacrifice"><span class="gem">1</span></div>
+  <h4>Sacrifice</h4>
+  <p class="meta">Compétence · Rare · Retain</p>
+  <p class="desc"><b class="kw">Retenue</b>.<br>Si <b class="kw">Titos</b> est en vie, il périt, et vous gagnez un montant d&#x27;<b class="kw">Armure</b> égal au triple de ses PV Max.</p>
+  
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Rare" data-name="sentinelle sentry_mode">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/sentry_mode.webp" alt="Sentinelle"><span class="gem">2</span></div>
+  <h4>Sentinelle</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Au début de votre tour, ajoutez 1 <b class="kw">Balayage optique</b> à votre <b class="kw">Main</b>.</p>
+  
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Rare" data-name="séance seance">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/seance.webp" alt="Séance"><span class="gem">1</span></div>
+  <h4>Séance</h4>
+  <p class="meta">Compétence · Rare · Ethereal</p>
+  <p class="desc"><b class="kw">Éthéré</b>.<br>Transformez une carte de votre <b class="kw">Pioche</b> en <b class="kw">Âme</b>.</p>
+  
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Rare" data-name="tempête d&#x27;âmes soul_storm">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/soul_storm.webp" alt="Tempête d&#x27;âmes"><span class="gem">1</span></div>
+  <h4>Tempête d&#x27;âmes</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 9 dégâts.<br>Inflige 4 dégâts supplémentaires pour chaque <b class="kw">Âme</b> dans votre pile de cartes <b class="kw">Épuisées</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts.<br>Inflige 6 dégâts supplémentaires pour chaque <b class="kw">Âme</b> dans votre pile de cartes <b class="kw">Épuisées</b>.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Rare" data-name="transfiguration transfigure">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/transfigure.webp" alt="Transfiguration"><span class="gem">1</span></div>
+  <h4>Transfiguration</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Ajoutez <b class="kw">Écho</b> à une carte dans votre <b class="kw">Main</b>.<br>Elle coûte 1 <span class="nrg">●</span> supplémentaire.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Ajoutez <b class="kw">Écho</b> à une carte dans votre <b class="kw">Main</b>.<br>Elle coûte 1 <span class="nrg">●</span> supplémentaire.</p></details>
+</article><article class="card t-skill p-necrobinder" data-type="Skill" data-rarity="Rare" data-name="vision de l&#x27;au-delà glimpse_beyond">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/glimpse_beyond.webp" alt="Vision de l&#x27;au-delà"><span class="gem">1</span></div>
+  <h4>Vision de l&#x27;au-delà</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">TOUS les joueurs ajoutent 3 <b class="kw">Âmes</b> à leur <b class="kw">Pioche</b>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">TOUS les joueurs ajoutent 4 <b class="kw">Âmes</b> à leur <b class="kw">Pioche</b>.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Rare" data-name="éradication eradicate">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/eradicate.webp" alt="Éradication"><span class="gem">X</span></div>
+  <h4>Éradication</h4>
+  <p class="meta">Attaque · Rare · Retain</p>
+  <p class="desc"><b class="kw">Retenue</b>.<br>Infligez 11 dégâts X fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Infligez 14 dégâts X fois.</p></details>
+</article><article class="card t-power p-necrobinder" data-type="Power" data-rarity="Ancient" data-name="grimoire interdit forbidden_grimoire">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/forbidden_grimoire.webp" alt="Grimoire interdit"><span class="gem">2</span></div>
+  <h4>Grimoire interdit</h4>
+  <p class="meta">Pouvoir · Ancienne · Eternal</p>
+  <p class="desc">À la fin du combat, vous pouvez retirer une carte de votre <b class="kw">Deck</b>.<br><b class="kw">Éternel</b>.</p>
+  
+</article><article class="card t-attack p-necrobinder" data-type="Attack" data-rarity="Ancient" data-name="protecteur protector">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/necrobinder/protector.webp" alt="Protecteur"><span class="gem">1</span></div>
+  <h4>Protecteur</h4>
+  <p class="meta">Attaque · Ancienne</p>
+  <p class="desc"><b class="kw">Titos</b> inflige 10 dégâts.<br>Inflige un montant de dégâts supplémentaires égal aux <b class="kw">PV Max</b> <b class="kw">de Titos</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Titos</b> inflige 15 dégâts.<br>Inflige un montant de dégâts supplémentaires égal aux <b class="kw">PV Max</b> <b class="kw">de Titos</b>.</p></details>
+</article></div></section>
+<section class="panel "><h2>Reliques exclusives</h2><div class="relics"><div class="relic"><img loading="lazy" src="../../bible/images/relics/big_hat.webp" alt=""><div><b>Grand chapeau</b><p>Au début de chaque combat, ajoutez 2 cartes <b class="kw">Éthérées</b> aléatoires à votre <b class="kw">Main</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/bone_flute.webp" alt=""><div><b>Flûte d&#x27;os</b><p>Chaque fois que <b class="kw">Titos</b> attaque, gagnez 2 d&#x27;<b class="kw">Armure</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/book_repair_knife.webp" alt=""><div><b>Couteau à reliure</b><p>Chaque fois qu&#x27;un ennemi non-Serviteur succombe à <b class="kw">Fatalité</b>, récupérez 3 PV.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/bookmark.webp" alt=""><div><b>Marque-page</b><p>À la fin de chaque tour, réduisez le coût d&#x27;une carte <b class="kw">Retenue</b> aléatoire de 1 jusqu&#x27;à ce qu&#x27;elle soit jouée.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/bound_phylactery.webp" alt=""><div><b>Phylactère enchaîné</b><p>Au début de votre tour, <b class="kw">Invoquez</b> pour 1.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/funerary_mask.webp" alt=""><div><b>Masque funéraire</b><p>Au début de chaque combat, ajoutez 3 <b class="kw">Âmes</b> à votre <b class="kw">Pioche</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/ivory_tile.webp" alt=""><div><b>Tuile en ivoire</b><p>Lorsque vous jouez une carte qui coûte 3 <span class="nrg">●</span> ou plus, gagnez 1 <span class="nrg">●</span>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/undying_sigil.webp" alt=""><div><b>Sceau immortel</b><p>Les ennemis affligés d&#x27;au moins autant de <b class="kw">Fatalité</b> que de PV infligent 50% de dégâts en moins.</p></div></div></div></section>
+<section class="panel livret"><div class="md"><h1 id="livret-dinstruction-officiel-slay-the-spire-2-edition-la-necrolieuse">⚫ Livret d'Instruction Officiel — Slay the Spire 2 : Édition La Nécrolieuse</h1>
+<pre><code>========================================================================================
+                      NINTENDO® GAME BOY ADVANCE™ INSTRUCTION BOOKLET
+                 ÉDITION LA NÉCROLIEUSE — RÉFÉRENCE : AGB-P-ASGN-FRA
+========================================================================================
+</code></pre>
+<blockquote>
+<p><strong>Sceau Officiel de Qualité Nintendo® :</strong><br />
+Ce livret officiel garantit l'authenticité et la fidélité de votre cartouche Game Boy Advance <em>Slay the Spire 2 — Édition La Nécrolieuse</em>. Conservez ce manuel pour maîtriser la gestion des Âmes, le bouclier protecteur de votre familier Osty et les sortilèges nécrotiques.</p>
+</blockquote>
+<hr />
+<h2 id="1-histoire-contexte-de-la-necrolieuse">📜 1. Histoire &amp; Contexte de La Nécrolieuse</h2>
+<p>Sorcier d'outre-tombe liée à jamais aux âmes errantes de la Tour, <strong>La Nécrolieuse</strong> (<em>The Necrobinder</em>) chemine escortée par son familier squelettique géant, <strong>Osty</strong>.<br />
+Bien que sa constitution physique soit plus fragile (65 PV initiaux), La Nécrolieuse compense cette faiblesse par une présence au combat dédoublée : Osty s'interpose physiquement devant chaque assaut ennemi, encaissant les coups à sa place pendant qu'elle moissonne les âmes pour lancer des malédictions nécrotiques.</p>
+<ul>
+<li><strong>Points de Vie Initiaux :</strong> 65 PV.</li>
+<li><strong>Or de Départ :</strong> 99 Pièces d'or.</li>
+<li><strong>Relique de Départ :</strong> <strong>Lien d'Outre-Tombe</strong> (<em>Gravebinding</em>) — Au début de chaque combat, <strong>invoque immédiatement le familier Osty avec 12 PV et 4 Armure</strong> !</li>
+</ul>
+<hr />
+<h2 id="2-le-familier-osty-la-moisson-dames">💀 2. Le Familier Osty &amp; La Moisson d'Âmes</h2>
+<h3 id="osty-le-protecteur">Osty le Protecteur</h3>
+<p>Osty possède sa propre barre de points de vie et d'armure distincte de La Nécrolieuse :
+* <strong>Interposition Totale :</strong> Tous les dégâts subis par votre camp sont <strong>d'abord infligés à l'armure d'Osty, puis aux PV d'Osty</strong>. La Nécrolieuse ne perd aucun point de vie tant qu'Osty est debout !
+* <strong>Mort &amp; Réanimation d'Osty :</strong> Si les PV d'Osty tombent à 0, il s'effondre. Vous pouvez le réinvoquer au cours du combat en jouant des cartes de réanimation comme <strong>Garde du Corps</strong> ou <strong>Retour d'Outre-Tombe</strong> !</p>
+<h3 id="la-ressource-des-ames-souls">La Ressource des Âmes (<em>Souls</em>)</h3>
+<p>Chaque attaque nécrotique victorieuse ou élimination d'ennemi récolte des <strong>Âmes (💀)</strong> :
+* Les Âmes sont stockées dans votre jauge (jusqu'à 10 âmes).
+* Elles servent de carburant mystique pour réanimer Osty, déchaîner des vagues spectrales ou régénérer votre essence vitale.</p>
+<hr />
+<h2 id="3-maniement-des-commandes-game-boy-advance">🎮 3. Maniement des Commandes Game Boy Advance</h2>
+<table>
+<thead>
+<tr>
+<th>Bouton</th>
+<th>Action sur la Carte de la Tour</th>
+<th>Action dans l'Arène Yu-Gi-Oh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Croix Directionnelle (◄ / ►)</strong></td>
+<td>Choisir la voie sur la carte</td>
+<td>Parcourir vos cartes en main / Pointer le monstre à faucher</td>
+</tr>
+<tr>
+<td><strong>Croix Directionnelle (▲ / ▼)</strong></td>
+<td>Faire défiler les étages de la Tour</td>
+<td>Examiner la description des incantations</td>
+</tr>
+<tr>
+<td><strong>Bouton A</strong></td>
+<td><strong>Entrer dans la salle / Lancer le combat</strong></td>
+<td><strong>Invoquer / Faucher / Jouer la carte sélectionnée</strong></td>
+</tr>
+<tr>
+<td><strong>Bouton B</strong></td>
+<td>Annuler</td>
+<td>Annuler le mode de ciblage</td>
+</tr>
+<tr>
+<td><strong>Bouton START</strong></td>
+<td>Menu Pause &amp; Sauvegarde</td>
+<td><strong>Fin de Tour immédiate</strong></td>
+</tr>
+<tr>
+<td><strong>Bouton SELECT</strong></td>
+<td><strong>Consulter le Deck</strong></td>
+<td><strong>Consulter la Défausse &amp; les Âmes</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-structure-des-ecrans-de-jeu-resolution-240-160">📺 4. Structure des Écrans de Jeu (Résolution 240 × 160)</h2>
+<pre><code>┌────────────────────────────────────────────────────────┐
+│  [ZONE 1]              [ZONE 2]              [ZONE 3]  │
+│  Cultiste [30/50]      Ver Mâchoire [35/42]  [K.O.]    │
+│  ! ATK 6               ! 7D                            │
+│                                                        │
+│  [HÉROS] La Nécrolieuse  PV 65/65 (+0B)   NRG: [●][●][●]│
+│  Familier Osty : 10/12 PV (+4B) | Âmes récoltées : 💀4 │
+│────────────────────────────────────────────────────────│
+│  [Déchaînement+] (1E) | 11 dégâts + 2 Âmes récoltées   │
+│  Main : [1]  [2]  &gt;[3]&lt;  [4]  [5]                      │
+│  G/D : Carte   A : Jouer   START : Fin de Tour         │
+└────────────────────────────────────────────────────────┘
+</code></pre>
+<p>L'arène Yu-Gi-Oh affiche l'état de santé exact d'Osty juste sous votre jauge de vie, garantissant une vision claire de votre bouclier biologique !</p>
+<hr />
+<h2 id="5-systeme-de-teintes-style-pokemon">🎨 5. Système de Teintes (Style Pokémon)</h2>
+<ol>
+<li><strong>Classique (Noir Osseux) :</strong> Robe de deuil noire et ossements blanchis d'Osty.</li>
+<li><strong>Chromatique / Shiny (Brumes Spectrales) :</strong> Tissu indigo et feux follets vert émeraude.</li>
+<li><strong>Ténèbres / Shadow (Nécropole d'Ébène) :</strong> Ténèbres absolues et crâne d'onyx scintillant.</li>
+<li><strong>Dorée / Golden (Reine Squelette d'Or) :</strong> Squelette d'Osty doré et diadème réservé aux champions de l'Ascension 10.</li>
+</ol>
+<hr />
+<h2 id="6-catalogue-officiel-des-20-cartes-communes-de-ledition">🃏 6. Catalogue Officiel des 20 Cartes Communes de l'Édition</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">N°</th>
+<th style="text-align: left;">Carte</th>
+<th style="text-align: center;">Coût</th>
+<th style="text-align: center;">Type</th>
+<th>Effet Standard</th>
+<th>Version Améliorée (<code>+</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">01</td>
+<td style="text-align: left;"><strong>Frappe</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 6 dégâts à un ennemi.</td>
+<td>Inflige <strong>9 dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">02</td>
+<td style="text-align: left;"><strong>Défense</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 5 points d'Armure.</td>
+<td>Confère <strong>8 points d'Armure</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">03</td>
+<td style="text-align: left;"><strong>Déchaînement</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 8 dégâts. Récolte <strong>+1 Âme</strong>.</td>
+<td>Inflige <strong>11 dégâts</strong>. Récolte <strong>+2 Âmes</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">04</td>
+<td style="text-align: left;"><strong>Garde du Corps</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 6 Armure. Si Osty est à 0 PV, le réanime avec 8 PV !</td>
+<td>Confère <strong>9 Armure</strong>. Réanime Osty avec <strong>12 PV</strong> !</td>
+</tr>
+<tr>
+<td style="text-align: center;">05</td>
+<td style="text-align: left;"><strong>Moisson d'Âmes</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Récolte +2 Âmes immédiatement.</td>
+<td>Récolte <strong>+3 Âmes</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">06</td>
+<td style="text-align: left;"><strong>Fauche Spectral</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 10 dégâts à TOUS les ennemis. Récolte +1 Âme par monstre touché.</td>
+<td>Inflige <strong>14 dégâts</strong> à TOUS les ennemis.</td>
+</tr>
+<tr>
+<td style="text-align: center;">07</td>
+<td style="text-align: left;"><strong>Suture d'Osty</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Restaure 8 PV à Osty.</td>
+<td>Restaure <strong>12 PV</strong> à Osty.</td>
+</tr>
+<tr>
+<td style="text-align: center;">08</td>
+<td style="text-align: left;"><strong>Pacte Macabre</strong></td>
+<td style="text-align: center;">0E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Consomme 2 Âmes. Gagnez +1 Énergie et piochez 2 cartes.</td>
+<td>Piochez <strong>3 cartes</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">09</td>
+<td style="text-align: left;"><strong>Frappe Sépulcrale</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 7 dégâts. Si Osty a plus de 10 PV, inflige 7 dégâts de plus.</td>
+<td>Inflige <strong>10 dégâts (+10)</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">10</td>
+<td style="text-align: left;"><strong>Mur d'Os</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 14 Armure à Osty.</td>
+<td>Confère <strong>18 Armure</strong> à Osty.</td>
+</tr>
+<tr>
+<td style="text-align: center;">11</td>
+<td style="text-align: left;"><strong>Malédiction Foudroyante</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 5 dégâts et applique 2 Vulnérable. Récolte 1 Âme.</td>
+<td>Inflige <strong>8 dégâts</strong> et applique <strong>3 Vulnérable</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">12</td>
+<td style="text-align: left;"><strong>Horde Rampante</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>À chaque tour, Osty attaque automatiquement pour 4 dégâts.</td>
+<td>Osty attaque pour <strong>7 dégâts</strong> par tour !</td>
+</tr>
+<tr>
+<td style="text-align: center;">13</td>
+<td style="text-align: left;"><strong>Transfusion</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Transfère 4 PV d'Osty vers La Nécrolieuse pour vous soigner !</td>
+<td>Transfère <strong>6 PV</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">14</td>
+<td style="text-align: left;"><strong>Toucher Mortel</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 8 dégâts. Si cette carte tue le monstre, récolte 4 Âmes.</td>
+<td>Inflige <strong>11 dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">15</td>
+<td style="text-align: left;"><strong>Armure d'Épines</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>Chaque fois qu'Osty subit des dégâts, l'attaquant subit 3 dégâts d'épines.</td>
+<td>Inflige <strong>5 dégâts d'épines</strong> !</td>
+</tr>
+<tr>
+<td style="text-align: center;">16</td>
+<td style="text-align: left;"><strong>Cri des Trépassés</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Applique 2 Faiblesse à TOUS les monstres ennemis.</td>
+<td>Applique <strong>3 Faiblesse</strong> à TOUS les monstres.</td>
+</tr>
+<tr>
+<td style="text-align: center;">17</td>
+<td style="text-align: left;"><strong>Os Renforcés</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>Augmente les PV max d'Osty de +8 pour tout le combat.</td>
+<td>Augmente les PV max d'Osty de <strong>+12 PV</strong> !</td>
+</tr>
+<tr>
+<td style="text-align: center;">18</td>
+<td style="text-align: left;"><strong>Résurrection</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Consomme 4 Âmes. Réanime Osty à son maximum de PV !</td>
+<td>Coût réduit à <strong>1E</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">19</td>
+<td style="text-align: left;"><strong>Festin Funèbre</strong></td>
+<td style="text-align: center;">0E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige des dégâts égaux au nombre d'Âmes récoltées x 2.</td>
+<td>Inflige des dégâts égaux aux <strong>Âmes x 3</strong> !</td>
+</tr>
+<tr>
+<td style="text-align: center;">20</td>
+<td style="text-align: left;"><strong>Danse Macabre</strong></td>
+<td style="text-align: center;">3E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 18 dégâts. Osty gagne 10 Armure et vous récoltez 3 Âmes.</td>
+<td>Inflige <strong>24 dégâts</strong> et récolte <strong>4 Âmes</strong>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-guide-de-survie-strategie-de-duel">⚔️ 7. Guide de Survie &amp; Stratégie de Duel</h2>
+<ol>
+<li><strong>La Préservation d'Osty :</strong> Osty est votre seconde barre de vie. Surveillez en permanence ses PV au milieu de l'écran. Utilisez <strong>Garde du Corps</strong> dès qu'il faiblit.</li>
+<li><strong>Moissonner pour Survivre :</strong> Conservez toujours au moins 2 ou 3 Âmes en réserve pour être en mesure de réanimer Osty immédiatement s'il venait à périr face à une grosse attaque d'un Élite.</li>
+<li><strong>Le combo Festin Funèbre :</strong> À 6 ou 8 Âmes accumulées, <strong>Festin Funèbre (0E)</strong> devient l'attaque la plus rentable de toute la Tour, infligeant entre 18 et 24 dégâts pour zéro énergie !</li>
+</ol></div></section>
+
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

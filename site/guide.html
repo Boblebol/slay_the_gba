@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="index.html"><img src="assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="index.html">Accueil</a><a href="heros.html">Héros</a><a href="cartes.html">Cartes</a><a href="bestiaire.html">Bestiaire</a><a href="reliques.html">Reliques</a><a href="potions.html">Potions</a><a href="evenements.html">Évènements</a><a href="anciens.html">Anciens</a><a href="guide.html" class="on">Guide</a><a href="bible/index.html">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><div class="md"><h1 id="tome-19-boucle-de-gameplay-roguelike-carte-systeme-dascension-1-a-10">🗺️ Tome 19 — Boucle de Gameplay Roguelike, Carte &amp; Système d'Ascension (1 à 10)</h1>
+<blockquote>
+<p><strong>Référence de conception et d'implémentation pour le moteur <code>slay_the_gba</code></strong><br />
+<strong>Source :</strong> Règles fondamentales de <em>Slay the Spire</em> &amp; <em>Slay the Spire 2</em> (<code>v0.111.0 Beta</code>)<br />
+<strong>Composants C++ associés :</strong> <a href="../include/engine/map.h"><code>include/engine/map.h</code></a>, <a href="../src/engine/map.cpp"><code>src/engine/map.cpp</code></a>, <a href="../include/engine/run.h"><code>include/engine/run.h</code></a>, <a href="../src/engine/run.cpp"><code>src/engine/run.cpp</code></a></p>
+</blockquote>
+<hr />
+<h2 id="1-vue-densemble-de-la-boucle-de-gameplay-the-roguelike-run-loop">1. 🔄 Vue d'Ensemble de la Boucle de Gameplay (The Roguelike Run Loop)</h2>
+<p>Dans <em>Slay the Spire 2</em>, chaque tentative (<em>Run</em>) est une ascension impitoyable à travers 3 Actes consécutifs, régie par la gestion d'un <strong>Master Deck</strong>, de <strong>Reliques</strong>, de <strong>Potions</strong>, de <strong>Points de Vie (PV)</strong> et d'<strong>Or</strong>.</p>
+<pre><code class="language-mermaid">flowchart TD
+    Start([&quot;Départ : Choix du Héros&quot;]) --&gt; Init[&quot;Deck de départ (10-12 cartes)\nRelique de départ unique\n99 Or &amp; PV Max&quot;]
+    Init --&gt; Neow[&quot;Étage 1 : Bénédiction de Neow / L'Ancien&quot;]
+    Neow --&gt; MapAct1[&quot;Carte Acte 1 (15 étages bifurqués)&quot;]
+
+    subgraph ActLoop [&quot;Navigation dans l'Acte&quot;]
+        MapAct1 --&gt; Node{&quot;Type de Salle&quot;}
+        Node --&gt;|Combat normal| Battle[&quot;Combat de Monstre\nRécompense : Or, 1 carte / 3, Potion&quot;]
+        Node --&gt;|Combat Élite| Elite[&quot;Combat d'Élite\nRécompense : Relique, Or++, Carte rare&quot;]
+        Node --&gt;|Feu de Camp| Camp[&quot;Feu de Camp (Étage 14 garanti)\nRepose (+30% PV) ou Forger (+)&quot;]
+        Node --&gt;|Coffre Trésor| Chest[&quot;Trésor (Étage 7 garanti)\nRelique gratuite + Or&quot;]
+        Node --&gt;|Marchand| Shop[&quot;Boutique\nAchat/Retrait de cartes, reliques&quot;]
+        Node --&gt;|Événement ?| Event[&quot;Événement Mystère\nChoix narratifs &amp; paris risqués&quot;]
+
+        Battle --&gt; NextFloor[&quot;Progression vers l'étage suivant&quot;]
+        Elite --&gt; NextFloor
+        Camp --&gt; NextFloor
+        Chest --&gt; NextFloor
+        Shop --&gt; NextFloor
+        Event --&gt; NextFloor
+        NextFloor --&gt; BossCheck{&quot;Étage 16 ?&quot;}
+        BossCheck --&gt;|Non| Node
+    end
+
+    BossCheck --&gt;|Oui| Boss[&quot;Boss de Fin d'Acte (Sommet)&quot;]
+    Boss --&gt; BossWin{&quot;Victoire ?&quot;}
+    BossWin --&gt;|Défaite| GameOver([&quot;💀 Défaite : Fin de tentative&quot;])
+    BossWin --&gt;|Victoire| AncientTransition[&quot;Rencontre d'Ancien / Relique de Boss\nSoin d'entre-actes&quot;]
+
+    AncientTransition --&gt; NextAct{&quot;Acte Actuel&quot;}
+    NextAct --&gt;|Fin Acte 1| MapAct2[&quot;Génération Carte Acte 2&quot;] --&gt; ActLoop
+    NextAct --&gt;|Fin Acte 2| MapAct3[&quot;Génération Carte Acte 3&quot;] --&gt; ActLoop
+    NextAct --&gt;|Fin Acte 3| Victory([&quot;🏆 Victoire Finale de la Tour !&quot;])
+    Victory --&gt; UnlockAscension[&quot;Déblocage du niveau d'Ascension supérieur (1 à 10)&quot;]
+</code></pre>
+<hr />
+<h2 id="2-configuration-initiale-par-personnage-etage-1">2. 🏛️ Configuration Initiale par Personnage (Étage 1)</h2>
+<p>Chaque héros débute son ascension avec des statistiques et un deck asymétriques :</p>
+<table>
+<thead>
+<tr>
+<th>Héros</th>
+<th style="text-align: center;">PV Max</th>
+<th style="text-align: center;">Or</th>
+<th>Relique de Départ</th>
+<th>Composition du Deck de Départ (10 à 12 cartes)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Soldat de Fer</strong> (<em>Ironclad</em>)</td>
+<td style="text-align: center;"><strong>80</strong></td>
+<td style="text-align: center;">99</td>
+<td><strong>Sang ardent</strong> (<em>Burning Blood</em>) : Récupère 6 PV à la fin de chaque combat.</td>
+<td>5 Frappe, 4 Défense, 1 Fracassement (<em>Bash</em>)</td>
+</tr>
+<tr>
+<td><strong>La Silencieuse</strong> (<em>Silent</em>)</td>
+<td style="text-align: center;"><strong>70</strong></td>
+<td style="text-align: center;">99</td>
+<td><strong>Anneau du serpent</strong> (<em>Ring of the Snake</em>) : Pioche 2 cartes supplémentaires au tour 1.</td>
+<td>5 Frappe, 5 Défense, 1 Neutralisation (<em>Neutralize</em>), 1 Survivant (<em>Survivor</em>)</td>
+</tr>
+<tr>
+<td><strong>Le Défectueux</strong> (<em>Defect</em>)</td>
+<td style="text-align: center;"><strong>75</strong></td>
+<td style="text-align: center;">99</td>
+<td><strong>Noyau fissuré</strong> (<em>Cracked Core</em>) : Canalise 1 Orbe d'Éclair au début du combat.</td>
+<td>4 Frappe, 4 Défense, 1 Éclair (<em>Zap</em>), 1 Double distribution (<em>Dualcast</em>)</td>
+</tr>
+<tr>
+<td><strong>Le Régent</strong> (<em>Regent</em>)</td>
+<td style="text-align: center;"><strong>75</strong></td>
+<td style="text-align: center;">99</td>
+<td><strong>Droit divin</strong> (<em>Divine Right</em>) : Octroie 1 Énergie supplémentaire tous les 3 tours.</td>
+<td>4 Frappe, 4 Défense, 1 Étoile filante (<em>Falling Star</em>), 1 Vénération (<em>Venerate</em>)</td>
+</tr>
+<tr>
+<td><strong>La Nécrolieuse</strong> (<em>Necrobinder</em>)</td>
+<td style="text-align: center;"><strong>65</strong></td>
+<td style="text-align: center;">99</td>
+<td><strong>Phylactère lié</strong> (<em>Bound Phylactery</em>) : Conserve les cadavres pour invoquer des sbires.</td>
+<td>4 Frappe, 4 Défense, 1 Déchaînement (<em>Unleash</em>), 1 Garde du corps (<em>Bodyguard</em>)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-structure-de-la-carte-types-de-salles">3. 🗺️ Structure de la Carte &amp; Types de Salles</h2>
+<p>Chaque Acte est composé de <strong>15 étages progressifs + 1 sommet de Boss</strong> (16 étages au total), répartis sur <strong>3 couloirs verticaux (Lanes : Gauche, Centre, Droite)</strong> reliés par des chemins directionnels ascendants.</p>
+<h3 id="typologie-des-salles-et-regles-de-generation">Typologie des Salles et Règles de Génération</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Icône</th>
+<th>Type de Salle</th>
+<th>Étage Garanti / Règle d'apparition</th>
+<th>Effet &amp; Choix disponibles</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">⚔️</td>
+<td><strong>Combat Normal</strong> (<code>MONSTER</code>)</td>
+<td><strong>Étage 1 toujours combat</strong>. Fréquence ~45%.</td>
+<td>Affronte des monstres de base. Victoire = 15-30 Or, sélection de 1 carte parmi 3 (ou passer), chance de potion (40%).</td>
+</tr>
+<tr>
+<td style="text-align: center;">😈</td>
+<td><strong>Combat d'Élite</strong> (<code>ELITE</code>)</td>
+<td>Ne peut apparaître avant l'étage 6. Fréquence ~20% au-delà.</td>
+<td>Ennemis redoutables avec patterns complexes. Victoire = <strong>Relique garantie</strong>, 35-50 Or, carte avec taux de Rares augmenté.</td>
+</tr>
+<tr>
+<td style="text-align: center;">🔥</td>
+<td><strong>Feu de Camp</strong> (<code>REST_SITE</code>)</td>
+<td><strong>Étage 14 garanti (avant-boss)</strong>. Fréquence ~15%.</td>
+<td><strong>Se Reposer</strong> (rend 30% des PV max) <strong>OU</strong> <strong>Forger</strong> (améliore définitivement une carte du deck en version <code>+</code>).</td>
+</tr>
+<tr>
+<td style="text-align: center;">🎁</td>
+<td><strong>Salle au Trésor</strong> (<code>TREASURE</code>)</td>
+<td><strong>Étage 7 garanti (mi-parcours)</strong>.</td>
+<td>Ouvre un grand coffre contenant une <strong>Relique majeure</strong> et une bourse d'or. Aucun combat.</td>
+</tr>
+<tr>
+<td style="text-align: center;">💰</td>
+<td><strong>Marchand de la Tour</strong> (<code>SHOP</code>)</td>
+<td>Fréquence ~10%. Pas d'étages consécutifs.</td>
+<td>Dépensez votre Or : 5 cartes en vente, 3 reliques, 3 potions, et service de retrait (<em>Card Removal</em> : 75 Or + 25 par retrait).</td>
+</tr>
+<tr>
+<td style="text-align: center;">❓</td>
+<td><strong>Événement Mystère</strong> (<code>EVENT</code>)</td>
+<td>Fréquence ~20%.</td>
+<td>Rencontres scénarisées, sanctuaires anciens, jeux de hasard, offres démoniaques (sacrifier des PV ou accepter une malédiction contre des récompenses).</td>
+</tr>
+<tr>
+<td style="text-align: center;">👑</td>
+<td><strong>Boss de l'Acte</strong> (<code>BOSS</code>)</td>
+<td><strong>Étage 16 (Sommet)</strong>. Accessible depuis les 3 couloirs.</td>
+<td>Boss titanesque de l'Acte. Victoire = transition d'Acte, sélection d'Ancien / Relique de Boss, soin d'Acte.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-le-systeme-dascension-niveaux-1-a-10">4. 📈 Le Système d'Ascension (Niveaux 1 à 10)</h2>
+<p>L'<strong>Ascension</strong> est le système de difficulté évolutif de <em>Slay the Spire</em>. Chaque victoire complète (Acte 3 battu) débloque le niveau d'Ascension suivant pour le personnage victorieux. <strong>Les modificateurs sont cumulatifs</strong> : l'Ascension 5 inclut les handicaps des Ascensions 1, 2, 3, 4 et 5 !</p>
+<pre><code class="language-mermaid">flowchart LR
+    A0[&quot;A0 : Standard&quot;] --&gt; A1[&quot;A1 : Élites + fréquents&quot;]
+    A1 --&gt; A2[&quot;A2 : Monstres +20% Dégâts&quot;]
+    A2 --&gt; A3[&quot;A3 : Élites + Dégâts&quot;]
+    A3 --&gt; A4[&quot;A4 : Boss + Dégâts&quot;]
+    A4 --&gt; A5[&quot;A5 : Soin Boss 75%&quot;]
+    A5 --&gt; A6[&quot;A6 : Départ 90% PV&quot;]
+    A6 --&gt; A7[&quot;A7 : Monstres +15% PV&quot;]
+    A7 --&gt; A8[&quot;A8 : Élites + PV&quot;]
+    A8 --&gt; A9[&quot;A9 : Boss + PV&quot;]
+    A9 --&gt; A10[&quot;A10 : Fléau permanent&quot;]
+</code></pre>
+<h3 id="tableau-exhaustif-des-10-paliers-dascension">Tableau Exhaustif des 10 Paliers d'Ascension</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Niveau</th>
+<th>Nom Officiel</th>
+<th>Description du Handicap</th>
+<th>Impact Mécanique sur GBA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><strong>Ascension 0</strong></td>
+<td><em>Mode Standard</em></td>
+<td>Difficulté par défaut du jeu.</td>
+<td>Multiplicateurs à 100%, 0 malédiction de départ.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Ascension 1</strong></td>
+<td><em>Élites Renforcés</em></td>
+<td>Les salles d'Élites apparaissent plus fréquemment sur la carte.</td>
+<td>Augmentation du ratio d'Élites sur la carte (<code>MapGraph::generate</code>).</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Ascension 2</strong></td>
+<td><em>Monstres Meurtris</em></td>
+<td>Les attaques de tous les monstres normaux infligent plus de dégâts (+20%).</td>
+<td>Multiplicateur de dégâts : <code>x1.20</code> (<code>get_enemy_damage_multiplier()</code>).</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Ascension 3</strong></td>
+<td><em>Élites Féroces</em></td>
+<td>Les attaques des monstres Élites infligent plus de dégâts.</td>
+<td>Les patterns offensifs des Élites infligent +25% de dégâts bruts.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Ascension 4</strong></td>
+<td><em>Boss Impitoyables</em></td>
+<td>Les attaques des Boss d'actes infligent plus de dégâts.</td>
+<td>Les attaques signature des Boss sont augmentées de 2 à 4 points de dégâts.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Ascension 5</strong></td>
+<td><em>Soin Réduit</em></td>
+<td>La régénération de fin d'acte ne rend que 75% des PV manquants (au lieu de 100%).</td>
+<td>Lors du passage d'acte : <code>hp += (max_hp - hp) * 75 / 100</code>.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Ascension 6</strong></td>
+<td><em>Départ Éprouvé</em></td>
+<td>Le héros commence son ascension avec 10% de PV en moins.</td>
+<td><code>hp = (max_hp * 9) / 10</code> (ex: Ironclad débute à 72/80 PV, Necrobinder à 58/65 PV).</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Ascension 7</strong></td>
+<td><em>Monstres Robustes</em></td>
+<td>Les monstres normaux ont plus de Points de Vie (+15%).</td>
+<td>Multiplicateur de PV ennemis : <code>x1.15</code> (<code>get_enemy_hp_multiplier()</code>).</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Ascension 8</strong></td>
+<td><em>Élites Robustes</em></td>
+<td>Les monstres Élites possèdent une réserve de PV accrue (+20%).</td>
+<td>Les PV max de tous les monstres Élites sont multipliés par <code>x1.20</code>.</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Ascension 9</strong></td>
+<td><em>Boss Colossaux</em></td>
+<td>Les Boss d'Actes possèdent une réserve de PV accrue (+25%).</td>
+<td>Les Boss ont des seuils de PV nettement plus élevés (ex: 300+ PV).</td>
+</tr>
+<tr>
+<td style="text-align: center;"><strong>Ascension 10</strong></td>
+<td><em>Fléau de l'Ascension</em></td>
+<td>Vous débutez la tentative avec la carte malédiction <strong>Fléau</strong> (<em>Ascender's Bane</em>) dans votre deck.</td>
+<td>La carte insupportable (Injouable, Éthérée) est insérée d'office au deck de départ.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-architecture-moteur-gba-c20-slay_the_gba">5. 🛠️ Architecture Moteur GBA C++20 (<code>slay_the_gba</code>)</h2>
+<p>Pour respecter les contraintes strictes de la Game Boy Advance (32 Ko de Fast WRAM, 256 Ko de WRAM, processeur ARM7TDMI 16.78 MHz), toute la boucle est implémentée <strong>sans aucune allocation dynamique sur le tas</strong> (<code>malloc</code>/<code>new</code>).</p>
+<h3 id="1-le-graphe-de-carte-mapgraph">1. Le Graphe de Carte (<code>MapGraph</code>)</h3>
+<ul>
+<li>Déclaré dans <a href="../include/engine/map.h"><code>include/engine/map.h</code></a>.</li>
+<li>Stocké dans un <code>FixedVector&lt;MapNode, 50&gt;</code> (45 nœuds de couloir + 1 nœud de Boss = 46 nœuds au total).</li>
+<li>Chaque nœud connaît son numéro d'étage (<code>0</code> à <code>15</code>), son couloir (<code>0</code> à <code>2</code>), son type de salle (<code>RoomType</code>), et jusqu'à 3 liens enfants (<code>children</code>).</li>
+</ul>
+<pre><code class="language-cpp">enum class RoomType : uint8_t {
+    MONSTER = 0,
+    EVENT,
+    SHOP,
+    REST_SITE,
+    TREASURE,
+    ELITE,
+    BOSS
+};
+
+struct MapNode {
+    uint8_t floor;      // 0 à 15 (15 = Boss)
+    uint8_t lane;       // 0: Gauche, 1: Centre, 2: Droite
+    RoomType type;
+    uint8_t children[3];
+    uint8_t children_count;
+};
+</code></pre>
+<h3 id="2-le-gestionnaire-de-tentative-runmanager">2. Le Gestionnaire de Tentative (<code>RunManager</code>)</h3>
+<ul>
+<li>Déclaré dans <a href="../include/engine/run.h"><code>include/engine/run.h</code></a>.</li>
+<li>Coordonne les transitions d'écrans via l'énumération <code>RunPhase</code> :</li>
+<li><code>MAP_NAVIGATION</code> : Sélection de la prochaine salle au D-Pad.</li>
+<li><code>IN_COMBAT</code> : Moteur de combat Butano 60 FPS.</li>
+<li><code>REWARD_SCREEN</code> : Choix d'une carte parmi 3 et collecte de l'Or.</li>
+<li><code>CAMPFIRE</code> : Écran de repos ou forge.</li>
+<li><code>SHOP</code> : Écran de transaction avec le Marchand.</li>
+<li><code>ANCIENT_BLESSING</code> : Écran de dialogue et de choix d'Ancien (Neow, Darv, etc.).</li>
+<li><code>VICTORY_ACT</code> : Écran de triomphe final et déblocage de l'Ascension.</li>
+</ul>
+<pre><code class="language-cpp">class RunManager {
+public:
+    CharacterId character = CharacterId::IRONCLAD;
+    uint8_t ascension_level = 0; // 0 à 10
+    uint8_t current_act = 1;     // 1, 2, 3
+    uint8_t current_floor = 1;   // 1 à 16
+    int16_t hp = 80;
+    int16_t max_hp = 80;
+    int16_t gold = 99;
+
+    FixedVector&lt;CardId, 50&gt; master_deck;
+    FixedVector&lt;std::string_view, 25&gt; relics;
+    FixedVector&lt;std::string_view, 3&gt; potions;
+
+    MapGraph map;
+    int current_node_index = -1;
+    RunPhase phase = RunPhase::MAP_NAVIGATION;
+
+    CombatEngine combat;
+    FixedVector&lt;CardId, 3&gt; current_card_rewards;
+    int16_t gold_reward = 0;
+    // ...
+};
+</code></pre>
+<hr />
+<h2 id="6-validation-tests-unitaires-automatises">6. 🎮 Validation &amp; Tests Unitaires Automatisés</h2>
+<p>L'ensemble de la boucle de jeu et les règles d'Ascension sont validés par la suite de tests unitaires C++20 (<code>make test</code>) :</p>
+<pre><code class="language-bash">=== Slay The GBA Engine Test ===
+[PASS] Procedural Map Graph: 16 floors generated (3 start branches, 1 Boss summit)
+[PASS] Run Loop: Deck, Combat, Burning Blood (+6 HP), Card Reward &amp; Gold picked
+[PASS] Campfire: Rest healed HP back to max
+[PASS] Ascension 0-10: Levels, handicap HP (A6/A10), dmg mult (A2), and HP mult (A7) verified
+[PASS] Act Progression: Act 3 Boss victory triggers Run Completed
+=== All Engine Tests Passed Successfully! ===
+</code></pre>
+<hr />
+<p><em>Tome 19 rédigé pour le projet Slay The GBA — Version patch v0.111.0 Beta.</em></p></div></section><section class="panel "><div class="md"><h1 id="tome-21-interface-style-pokemon-navigation-de-carte-inspecteur-de-deck">Tome 21 — Interface Style Pokémon, Navigation de Carte &amp; Inspecteur de Deck</h1>
+<h2 id="1-vision-architecture-uiux">1. Vision &amp; Architecture UI/UX</h2>
+<p>Ce tome spécifie l'expérience joueur immersive combinant deux philosophies emblématiques :
+1. <strong>La navigation et progression de <em>Slay the Spire</em></strong> : exploration procédurale de 16 étages, vision des embranchements futurs, gestion et consultation permanente du Deck principal via raccourci manette.
+2. <strong>L'ergonomie des combats et événements inspirée des jeux <em>Pokémon GBA (Génération 3)</em></strong> : disposition en diagonale de l'arène (héros vu de dos/trois-quarts en bas à gauche, monstre en haut à droite), boîtes de statut à jauges dynamiques, menu d'action 4 directions, et fenêtres de dialogue pour les événements mystères.</p>
+<hr />
+<h2 id="2-navigation-de-carte-classique-slay-the-spire">2. Navigation de Carte Classique (<em>Slay the Spire</em>)</h2>
+<h3 id="disposition-ecran-defilement-d-pad">Disposition Écran &amp; Défilement D-Pad</h3>
+<p>Sur l'écran GBA (240x160 pixels), la carte de l'Acte est visualisée verticalement :
+- <strong>Défilement vertical (Haut / Bas)</strong> : Permet d'inspecter les étages 1 à 16 (sommet de la Tour avec le Boss) pour planifier son cheminement (repérer les Feux de camp, Boutiques et Élites).
+- <strong>Sélection des embranchements (Gauche / Droite)</strong> : Met en surbrillance l'une des voies connectées accessibles depuis la salle actuelle (<code>MapGraph::get_next_nodes</code>).
+- <strong>Confirmation (Bouton A)</strong> : Valide le déplacement et fait entrer le joueur dans la salle choisie.
+- <strong>Consultation rapide du Deck (Bouton SELECT)</strong> : Bascule instantanément sur l'Inspecteur de Deck.</p>
+<pre><code>┌────────────────────────────────────────────────────────┐
+│  🗺️  CARTE DE LA TOUR — ACTE 1   PV:80/80   OR:99 💰   │
+├────────────────────────────────────────────────────────┤
+│  Étage 16 :               👑 [BOSS GUARDIAN]           │
+│  Étage 15 :     [Feu]            [Feu]           [Feu] │
+│  Étage 14 :    [Combat]        [Élite]         [Shop]  │
+│  ...                                                   │
+│  Étage  2 :   👉[Combat]        [Event ?]       [Shop] │
+│  Étage  1 :    *[Combat]                               │
+├────────────────────────────────────────────────────────┤
+│  &gt; Voie Gauche (Étage 2) : Combat de Monstre [Combat]  │
+│  Haut/Bas: Défiler   G/D: Choisir Route   A: Entrer    │
+│  SELECT: Registre du Deck                              │
+└────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="typologie-des-salles-et-icones-gba">Typologie des Salles et Icônes GBA</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Type de Salle</th>
+<th style="text-align: center;">Icône GBA</th>
+<th style="text-align: left;">Libellé Écran</th>
+<th style="text-align: left;">Comportement à l'entrée</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>MONSTER</code></td>
+<td style="text-align: center;"><code>[Combat]</code></td>
+<td style="text-align: left;">Combat Standard</td>
+<td style="text-align: left;">Lance le combat contre un monstre de l'acte</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ELITE</code></td>
+<td style="text-align: center;"><code>[Élite]</code></td>
+<td style="text-align: left;">Combat d'Élite</td>
+<td style="text-align: left;">Combat difficile, récompense relique majeure</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>REST_SITE</code></td>
+<td style="text-align: center;"><code>[Feu]</code></td>
+<td style="text-align: left;">Feu de Camp</td>
+<td style="text-align: left;">Choix : Se reposer (+30% PV) ou Forger (+1 carte)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>SHOP</code></td>
+<td style="text-align: center;"><code>[Shop]</code></td>
+<td style="text-align: left;">Marchand de la Tour</td>
+<td style="text-align: left;">Achats de cartes, reliques, potions et purge de carte</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TREASURE</code></td>
+<td style="text-align: center;"><code>[Coffre]</code></td>
+<td style="text-align: left;">Salle au Trésor</td>
+<td style="text-align: left;">Coffre scellé (+50 Or et 1 relique gratuite)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>EVENT</code></td>
+<td style="text-align: center;"><code>[Event ?]</code></td>
+<td style="text-align: left;">Événement Mystère</td>
+<td style="text-align: left;">Rencontre narrative avec choix style Pokémon</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>BOSS</code></td>
+<td style="text-align: center;"><code>[BOSS]</code></td>
+<td style="text-align: left;">Gardien de l'Étage</td>
+<td style="text-align: left;">Combat de boss final de l'acte</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-registre-inspecteur-de-deck-deckviewer">3. Registre &amp; Inspecteur de Deck (<code>DeckViewer</code>)</h2>
+<p>Accessible à tout moment en navigation (et via le menu en combat) par la touche <strong>SELECT</strong> ou l'option dédiée :
+- <strong>En-tête</strong> : Identité du Héros, Teinte/Couleur choisie (<em>Flamme Azur</em>, etc.), PV actuels/Max, Or possédé, Étage courant.
+- <strong>Barre de Reliques</strong> : Liste de toutes les reliques passives actives (<em>Sang Ardent</em>, <em>Vajra</em>, <em>Akabeko</em>...).
+- <strong>Inventaire du Deck</strong> : Défilement carte par carte avec affichage clair du statut d'amélioration (<code>+</code>), coût en Énergie, Type (Attaque, Compétence, Pouvoir) et description complète des effets.
+- <strong>Touche B ou SELECT</strong> : Retour immédiat à l'écran de navigation sans transition superflue.</p>
+<hr />
+<h2 id="4-arene-de-combat-style-pokemon-gba-gen-3">4. Arène de Combat Style Pokémon (GBA Gen 3)</h2>
+<h3 id="disposition-spatiale-240x160">Disposition Spatiale (240x160)</h3>
+<ul>
+<li><strong>Socles de combat (Piédestaux)</strong> :</li>
+<li>Joueur : Positionné en bas à gauche <code>(x = -65, y = 14)</code>.</li>
+<li>Ennemi : Positionné en haut à droite <code>(x = 65, y = -34)</code>.</li>
+<li><strong>Boîte de Statut Ennemi (Haut-Gauche)</strong> :</li>
+<li>Nom du monstre et Étage.</li>
+<li>Jauge de PV proportionnelle <code>[████████░░]</code> avec décompte numérique <code>34/44</code>.</li>
+<li>Bouclier d'Armure dynamique (<code>+6B</code>).</li>
+<li>Bulle d'Intention (<em>Attaque 11 dégâts</em>, <em>Buff Force +3</em>).</li>
+<li>Badges d'états et altérations (<code>[STR+3]</code>, <code>[VULN:1]</code>, <code>[POISON:7]</code>).</li>
+<li><strong>Boîte de Statut Héros (Bas-Droite / Centre-Droit)</strong> :</li>
+<li>Nom du Héros et Teinte active (<code>[Shiny]</code>).</li>
+<li>Jauge de PV proportionnelle <code>[██████████]</code> avec décompte <code>80/80</code>.</li>
+<li>Bouclier d'Armure (<code>+5B</code>).</li>
+<li>Compteur d'Énergie <code>[●][●][●] (3/3)</code>.</li>
+<li>Jauge de ressource spécifique selon l'édition de cartouche :<ul>
+<li><em>Soldat de Fer</em> : <code>FORCE: +2 | MÉTALLISATION: 3</code></li>
+<li><em>La Silencieuse</em> : <code>POISON ENNEMI: 7</code></li>
+<li><em>Le Défectueux</em> : <code>ORBES: [⚡ Foudre] [❄️ Glace] [🌑 Dark]</code> (3 emplacements)</li>
+<li><em>Le Régent</em> : <code>ÉTOILES SOUVERAINES: ⭐⭐⭐ (3/5)</code></li>
+<li><em>La Nécrolieuse</em> : <code>ÂMES: 4 | OSTY LE MINION: 12 PV [Intercepte]</code></li>
+</ul>
+</li>
+</ul>
+<pre><code>┌────────────────────────────────────────────────────────┐
+│ [ENNEMI] Cultist (Étage 1)                             │
+│ PV: [==========] 44/44                                 │
+│ Intent: Attaque 6 dégâts                               │
+│                                                        │
+│                           [HÉROS] Soldat de Fer [Shiny]│
+│                           PV: [==========] 80/80  [+5B]│
+│                           ÉNERGIE: [●][●][●] (3/3)     │
+│                           RESSOURCE: STR: +0 | METAL: 0│
+├────────────────────────────────────────────────────────┤
+│ Que doit faire Soldat de Fer ?                         │
+│  &gt; [1] CARTES (Attaques)         [2] SAC (Potions : 1) │
+│    [3] MON DECK (Select)         [4] FIN DE TOUR       │
+└────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="menu-daction-4-directions-type-pokemon">Menu d'Action 4 Directions (Type Pokémon)</h3>
+<p>Le pavé de commande inférieur adopte la structure 2x2 des jeux Pokémon :
+1. <strong><code>[1] CARTES</code></strong> : Ouvre le sous-menu des cartes en main.
+   - Présentation façon "Capacités Pokémon" : Nom de la carte, coût en Énergie (remplaçant les PP), type et description complète de l'effet.
+   - Touche A pour déclencher la carte.
+   - Touche B pour annuler et revenir au menu principal.
+2. <strong><code>[2] SAC</code></strong> : Affiche les potions portées à la ceinture (jusqu'à 3 fioles) pour utilisation instantanée.
+3. <strong><code>[3] MON DECK</code></strong> : Ouvre l'overlay de consultation des cartes et reliques sans passer son tour.
+4. <strong><code>[4] FIN DE TOUR</code></strong> : Conclut le tour du joueur, applique les statuts de fin de tour et déclenche l'animation d'offensive de l'ennemi.</p>
+<h3 id="sensations-animations-de-combat">Sensations &amp; Animations de Combat</h3>
+<ul>
+<li><strong>Respiration au repos (Idle Bobbing)</strong> : Flottement subtil de 1 pixel alterné toutes les 24 frames.</li>
+<li><strong>Fente offensive (Player Lunge)</strong> : Déplacement rapide vers l'ennemi lors du jeu d'une carte d'attaque.</li>
+<li><strong>Secousse de dégâts (Enemy Shake &amp; Flicker)</strong> : Trépidation latérale de l'ennemi et clignotement lors de la réception d'un coup.</li>
+<li><strong>Indicateur de dégâts flottant</strong> : Affichage temporaire du montant de dégâts infligés au-dessus de la cible (<code>-9 HP !</code>).</li>
+</ul>
+<hr />
+<h2 id="5-evenements-mysteres-style-pokemon">5. Événements Mystères Style Pokémon</h2>
+<p>Les salles <code>[Event ?]</code> abandonnent les pavés textuels rigides pour adopter la scénarisation des rencontres de PNJ / Pokémon légendaires :
+- <strong>Cadre de Dialogue immersif</strong> : Texte narratif avec défilement fluide et typographie rétro.
+- <strong>Boîte de Choix interactive</strong> : 2 à 3 alternatives explicites avec indication des bénéfices et sacrifices.
+- <strong>Résolution avec feedback sonore et visuel</strong> : Message d'issue confirmant l'octroi d'Or, la guérison, l'amélioration d'une carte ou l'obtention d'une relique.</p>
+<pre><code>┌────────────────────────────────────────────────────────┐
+│  ❓ MANNEQUIN D'ENTRAÎNEMENT USÉ                       │
+├────────────────────────────────────────────────────────┤
+│  « BZZZT ! SÉQUENCE D'ENTRAÎNEMENT INITIÉE !           │
+│    Réglez vos coups ou subissez l'humiliation ! »      │
+├────────────────────────────────────────────────────────┤
+│  &gt; [1] Attaque acharnée (Subissez 6 dégâts, +60 Or)    │
+│    [2] Réparer les rouages (Améliorez 1 carte du deck) │
+│    [3] Prendre la fuite (Continuer la route)           │
+└────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="6-automatisation-des-builds-nettoyage-make-clean">6. Automatisation des Builds &amp; Nettoyage (<code>make clean</code>)</h2>
+<p>Afin d'éviter tout conflit de cache et d'éliminer les versions obsolètes de l'application :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Commande Makefile</th>
+<th style="text-align: left;">Action effectuée</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>make clean</code></td>
+<td style="text-align: left;">Supprime les ROMs obsolètes (ex: <code>slay_the_gba.gba</code>), les <code>.elf</code>, <code>.map</code>, fichiers temporaires, répertoires <code>bin/</code> et <code>build_*</code>. <strong>Préserve les 5 ROMs officielles</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>make clean-all</code></td>
+<td style="text-align: left;">Nettoyage complet incluant la suppression de <strong>toutes</strong> les cartouches <code>.gba</code> pour repartir d'un dépôt totalement vierge.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>make all-roms</code></td>
+<td style="text-align: left;">Compile proprement et simultanément les 5 éditions de cartouches (<code>slay_ironclad.gba</code>, <code>slay_silent.gba</code>, <code>slay_defect.gba</code>, <code>slay_regent.gba</code>, <code>slay_necrobinder.gba</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>make test</code></td>
+<td style="text-align: left;">Exécute la suite de tests unitaires C++20 déterministes (100% PASS).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>make test-e2e</code></td>
+<td style="text-align: left;">Exécute la simulation complète de bout en bout de la boucle de jeu (100% PASS).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>make play</code></td>
+<td style="text-align: left;">Lance le simulateur interactif complet dans le terminal.</td>
+</tr>
+</tbody>
+</table></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

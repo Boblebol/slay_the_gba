@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Silencieuse — Slay the GBA</title>
+<meta name="description" content="Poisons exponentiels, dagues, défausse et esquive.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="hero-silent">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html" class="on">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html">Bible</a></nav>
+</header>
+<main>
+
+<section class="hero-banner small" style="background-image:url(../assets/bg/battle_silent.png)">
+  <div class="hero-inner split">
+    <img class="pix giant" src="../assets/sprites/hero_silent.png" alt="La Silencieuse">
+    <div><p class="kicker">Cartouche slay_silent.gba</p><h1>La Silencieuse</h1><p class="lead">Chasseresse mortelle des brumes</p>
+    <p>Poisons exponentiels, dagues, défausse et esquive.</p></div>
+  </div>
+</section>
+<div class="stats"><div><b>70</b><span>PV</span></div><div><b>3</b><span>énergie</span></div><div><b>91</b><span>cartes</span></div>
+<div><b>27</b><span>attaques</span></div><div><b>46</b><span>compétences</span></div><div><b>18</b><span>pouvoirs</span></div></div>
+<section class="panel "><h2>Fiche</h2><div class="sheet">
+<div class="relic big"><img src="../../bible/images/relics/ring_of_the_snake.webp" alt=""><div><b>Relique de départ : Anneau du serpent</b><p>Au début de chaque combat, piochez 2 cartes supplémentaires.</p></div></div>
+<div><h3>Deck de départ</h3><p>5× Frappe, 5× Défense, 1× Neutralisation, 1× Survivant</p><h3>Zone de la cartouche</h3><p>Marais du Venin</p></div>
+<img class="pix energy" src="../assets/sprites/energy_silent.png" alt="Orbe d'énergie">
+</div></section>
+<section class="panel"><h2>Toutes les cartes (91)</h2><div class="filters" data-target=".cards">
+  <input type="search" placeholder="Rechercher une carte…" data-search>
+  <div class="chips"><button class="on" data-filter-type="">Tous types</button><button data-filter-type="Attack">Attaque</button><button data-filter-type="Skill">Compétence</button><button data-filter-type="Power">Pouvoir</button></div>
+  <div class="chips"><button class="on" data-filter-rarity="">Toutes raretés</button><button data-filter-rarity="Basic">Base</button><button data-filter-rarity="Common">Commune</button><button data-filter-rarity="Uncommon">Peu commune</button><button data-filter-rarity="Rare">Rare</button><button data-filter-rarity="Ancient">Ancienne</button></div>
+  <p class="count"></p>
+</div><div class="cards"><article class="card t-skill p-silent" data-type="Skill" data-rarity="Basic" data-name="défense defend_silent">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/defend_silent.webp" alt="Défense"><span class="gem">1</span></div>
+  <h4>Défense</h4>
+  <p class="meta">Compétence · Base</p>
+  <p class="desc">Gagnez 5 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 8 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Basic" data-name="frappe strike_silent">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/strike_silent.webp" alt="Frappe"><span class="gem">1</span></div>
+  <h4>Frappe</h4>
+  <p class="meta">Attaque · Base</p>
+  <p class="desc">Infligez 6 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Basic" data-name="neutralisation neutralize">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/neutralize.webp" alt="Neutralisation"><span class="gem">0</span></div>
+  <h4>Neutralisation</h4>
+  <p class="meta">Attaque · Base</p>
+  <p class="desc">Infligez 3 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (1).</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 4 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (2).</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Basic" data-name="survivant survivor">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/survivor.webp" alt="Survivant"><span class="gem">1</span></div>
+  <h4>Survivant</h4>
+  <p class="meta">Compétence · Base</p>
+  <p class="desc">Gagnez 8 d&#x27;<b class="kw">Armure</b>.<br>Défaussez 1 carte.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 11 d&#x27;<b class="kw">Armure</b>.<br>Défaussez 1 carte.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Common" data-name="anticipation anticipate">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/anticipate.webp" alt="Anticipation"><span class="gem">0</span></div>
+  <h4>Anticipation</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 2 de <b class="kw">Dextérité</b> jusqu&#x27;à la fin du tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 4 de <b class="kw">Dextérité</b> jusqu&#x27;à la fin du tour.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Common" data-name="cape et épée cloak_and_dagger">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/cloak_and_dagger.webp" alt="Cape et épée"><span class="gem">1</span></div>
+  <h4>Cape et épée</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 6 d&#x27;<b class="kw">Armure</b>.<br>Ajoutez 1 <b class="kw">Surin</b> à votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 6 d&#x27;<b class="kw">Armure</b>.<br>Ajoutez 2 <b class="kw">Surins</b> à votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Common" data-name="coup bas sucker_punch">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/sucker_punch.webp" alt="Coup bas"><span class="gem">1</span></div>
+  <h4>Coup bas</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 8 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (1).</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 10 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (2).</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Common" data-name="danse des lames blade_dance">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/blade_dance.webp" alt="Danse des lames"><span class="gem">1</span></div>
+  <h4>Danse des lames</h4>
+  <p class="meta">Compétence · Commune · Exhaust</p>
+  <p class="desc">Ajoutez 3 <b class="kw">Surins</b> à votre <b class="kw">Main</b>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Ajoutez 4 <b class="kw">Surins</b> à votre <b class="kw">Main</b>.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Common" data-name="dérobade dodge_and_roll">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/dodge_and_roll.webp" alt="Dérobade"><span class="gem">1</span></div>
+  <h4>Dérobade</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 4 d&#x27;<b class="kw">Armure</b>.<br>Au prochain tour, gagnez 4 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 6 d&#x27;<b class="kw">Armure</b>.<br>Au prochain tour, gagnez 6 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Common" data-name="déviation deflect">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/deflect.webp" alt="Déviation"><span class="gem">0</span></div>
+  <h4>Déviation</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 4 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 7 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Common" data-name="frappe initiale leading_strike">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/leading_strike.webp" alt="Frappe initiale"><span class="gem">1</span></div>
+  <h4>Frappe initiale</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 3 dégâts.<br>Ajoutez 2 <b class="kw">Surins</b> à votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 6 dégâts.<br>Ajoutez 2 <b class="kw">Surins</b> à votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Common" data-name="hurlement perçant piercing_wail">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/piercing_wail.webp" alt="Hurlement perçant"><span class="gem">1</span></div>
+  <h4>Hurlement perçant</h4>
+  <p class="meta">Compétence · Commune · Exhaust</p>
+  <p class="desc">TOUS les ennemis perdent 6 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">TOUS les ennemis perdent 8 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Common" data-name="intouchable untouchable">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/untouchable.webp" alt="Intouchable"><span class="gem">2</span></div>
+  <h4>Intouchable</h4>
+  <p class="meta">Compétence · Commune · Sly</p>
+  <p class="desc"><b class="kw">Ruse</b>.<br>Gagnez 6 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Ruse</b>.<br>Gagnez 9 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Common" data-name="lancer de couteau dagger_throw">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/dagger_throw.webp" alt="Lancer de couteau"><span class="gem">1</span></div>
+  <h4>Lancer de couteau</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 9 dégâts.<br>Piochez 1 carte.<br>Défaussez 1 carte.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 12 dégâts.<br>Piochez 1 carte.<br>Défaussez 1 carte.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Common" data-name="morsure de serpent snakebite">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/snakebite.webp" alt="Morsure de serpent"><span class="gem">2</span></div>
+  <h4>Morsure de serpent</h4>
+  <p class="meta">Compétence · Commune · Retain</p>
+  <p class="desc"><b class="kw">Retenue</b>.<br>Appliquez 7 de <b class="kw">Poison</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Appliquez 10 de <b class="kw">Poison</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Common" data-name="pluie de couteaux dagger_spray">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/dagger_spray.webp" alt="Pluie de couteaux"><span class="gem">1</span></div>
+  <h4>Pluie de couteaux</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 4 dégâts à TOUS les ennemis 2 fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 6 dégâts à TOUS les ennemis 2 fois.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Common" data-name="poignard empoisonné poisoned_stab">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/poisoned_stab.webp" alt="Poignard empoisonné"><span class="gem">1</span></div>
+  <h4>Poignard empoisonné</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 6 dégâts.<br>Appliquez 3 de <b class="kw">Poison</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 8 dégâts.<br>Appliquez 4 de <b class="kw">Poison</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Common" data-name="poison mortel deadly_poison">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/deadly_poison.webp" alt="Poison mortel"><span class="gem">1</span></div>
+  <h4>Poison mortel</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Appliquez 5 de <b class="kw">Poison</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez 7 de <b class="kw">Poison</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Common" data-name="prédateur predator">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/predator.webp" alt="Prédateur"><span class="gem">2</span></div>
+  <h4>Prédateur</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 15 dégâts.<br>Au prochain tour, piochez 2 cartes.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 20 dégâts.<br>Au prochain tour, piochez 2 cartes.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Common" data-name="préparatifs prepared">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/prepared.webp" alt="Préparatifs"><span class="gem">0</span></div>
+  <h4>Préparatifs</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Piochez 1 carte.<br>Défaussez 1 carte.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Piochez 2 cartes.<br>Défaussez 2 cartes.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Common" data-name="ricochet ricochet">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/ricochet.webp" alt="Ricochet"><span class="gem">2</span></div>
+  <h4>Ricochet</h4>
+  <p class="meta">Attaque · Commune · Sly</p>
+  <p class="desc"><b class="kw">Ruse</b>.<br>Infligez 3 dégâts à un ennemi aléatoire 4 fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Ruse</b>.<br>Infligez 3 dégâts à un ennemi aléatoire 5 fois.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Common" data-name="salto arrière backflip">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/backflip.webp" alt="Salto arrière"><span class="gem">1</span></div>
+  <h4>Salto arrière</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 5 d&#x27;<b class="kw">Armure</b>.<br>Piochez 2 cartes.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 8 d&#x27;<b class="kw">Armure</b>.<br>Piochez 2 cartes.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Common" data-name="tic tac flick_flack">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/flick_flack.webp" alt="Tic tac"><span class="gem">1</span></div>
+  <h4>Tic tac</h4>
+  <p class="meta">Attaque · Commune · Sly</p>
+  <p class="desc"><b class="kw">Ruse</b>.<br>Infligez 7 dégâts à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Ruse</b>.<br>Infligez 9 dégâts à TOUS les ennemis.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Common" data-name="trancher slice">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/slice.webp" alt="Trancher"><span class="gem">0</span></div>
+  <h4>Trancher</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 6 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Uncommon" data-name="accélérant accelerant">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/accelerant.webp" alt="Accélérant"><span class="gem">1</span></div>
+  <h4>Accélérant</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Les effets du <b class="kw">Poison</b> se déclenchent 1 fois supplémentaire.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Les effets du <b class="kw">Poison</b> se déclenchent 2 fois supplémentaires.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="acrobaties acrobatics">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/acrobatics.webp" alt="Acrobaties"><span class="gem">1</span></div>
+  <h4>Acrobaties</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Piochez 3 cartes.<br>Défaussez 1 carte.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Piochez 4 cartes.<br>Défaussez 1 carte.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="balayage leg_sweep">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/leg_sweep.webp" alt="Balayage"><span class="gem">2</span></div>
+  <h4>Balayage</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Appliquez <b class="kw">Affaibli</b> (2).<br>Gagnez 11 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez <b class="kw">Affaibli</b> (3).<br>Gagnez 14 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="brouillard haze">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/haze.webp" alt="Brouillard"><span class="gem">2</span></div>
+  <h4>Brouillard</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Appliquez 4 de <b class="kw">Poison</b> et <b class="kw">Affaibli</b> (1) à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez 6 de <b class="kw">Poison</b> et <b class="kw">Affaibli</b> (2) à TOUS les ennemis.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="coup de poker calculated_gamble">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/calculated_gamble.webp" alt="Coup de poker"><span class="gem">0</span></div>
+  <h4>Coup de poker</h4>
+  <p class="meta">Compétence · Peu commune · Exhaust</p>
+  <p class="desc">Défaussez votre <b class="kw">Main</b>,<br>puis piochez le même nombre de cartes que vous avez défaussé.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Défaussez votre <b class="kw">Main</b>,<br>puis piochez le même nombre de cartes que vous avez défaussé.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Uncommon" data-name="coup décisif finisher">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/finisher.webp" alt="Coup décisif"><span class="gem">1</span></div>
+  <h4>Coup décisif</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 6 dégâts pour chaque Attaque déjà jouée ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 8 dégâts pour chaque Attaque déjà jouée ce tour.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Uncommon" data-name="coup résonnant echoing_slash">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/echoing_slash.webp" alt="Coup résonnant"><span class="gem">1</span></div>
+  <h4>Coup résonnant</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 10 dégâts à TOUS les ennemis.<br>Répétez cet effet pour chaque ennemi tué.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 13 dégâts à TOUS les ennemis.<br>Répétez cet effet pour chaque ennemi tué.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Uncommon" data-name="coup sournois backstab">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/backstab.webp" alt="Coup sournois"><span class="gem">0</span></div>
+  <h4>Coup sournois</h4>
+  <p class="meta">Attaque · Peu commune · Exhaust Innate</p>
+  <p class="desc"><b class="kw">Inné</b>.<br>Infligez 11 dégâts.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Infligez 15 dégâts.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="décoction concoct">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/concoct.webp" alt="Décoction"><span class="gem">0</span></div>
+  <h4>Décoction</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Choisissez un autre joueur. Lorsque ses Attaques infligent des dégâts non-bloqués par l&#x27;Armure pendant ce tour, elles appliquent 3 de <b class="kw">Poison</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Choisissez un autre joueur. Lorsque ses Attaques infligent des dégâts non-bloqués par l&#x27;Armure pendant ce tour, elles appliquent 4 de <b class="kw">Poison</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Uncommon" data-name="embrocher skewer">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/skewer.webp" alt="Embrocher"><span class="gem">X</span></div>
+  <h4>Embrocher</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 8 dégâts X fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 11 dégâts X fois.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Uncommon" data-name="entaille precise_cut">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/precise_cut.webp" alt="Entaille"><span class="gem">0</span></div>
+  <h4>Entaille</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 13 dégâts.<br>Inflige 2 dégâts en moins pour chaque autre carte dans votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 16 dégâts.<br>Inflige 2 dégâts en moins pour chaque autre carte dans votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Uncommon" data-name="excès de vitesse speedster">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/speedster.webp" alt="Excès de vitesse"><span class="gem">2</span></div>
+  <h4>Excès de vitesse</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsque vous piochez une carte pendant votre tour, infligez 2 dégâts à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Lorsque vous piochez une carte pendant votre tour, infligez 2 dégâts à TOUS les ennemis.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="expertise expertise">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/expertise.webp" alt="Expertise"><span class="gem">1</span></div>
+  <h4>Expertise</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Piochez 2 cartes.<br>Elles sont <b class="kw">Retenues</b> pendant ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Piochez 3 cartes.<br>Elles sont <b class="kw">Retenues</b> pendant ce tour.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="fiole rebondissante bouncing_flask">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/bouncing_flask.webp" alt="Fiole rebondissante"><span class="gem">2</span></div>
+  <h4>Fiole rebondissante</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Appliquez 3 de <b class="kw">Poison</b> à un ennemi aléatoire 3 fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez 3 de <b class="kw">Poison</b> à un ennemi aléatoire 4 fois.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Uncommon" data-name="fléchettes flechettes">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/flechettes.webp" alt="Fléchettes"><span class="gem">1</span></div>
+  <h4>Fléchettes</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 5 dégâts pour chaque Compétence dans votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 7 dégâts pour chaque Compétence dans votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Uncommon" data-name="jeu de jambes footwork">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/footwork.webp" alt="Jeu de jambes"><span class="gem">1</span></div>
+  <h4>Jeu de jambes</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Gagnez 2 de <b class="kw">Dextérité</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 3 de <b class="kw">Dextérité</b>.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Uncommon" data-name="lames fantomatiques phantom_blades">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/phantom_blades.webp" alt="Lames fantomatiques"><span class="gem">1</span></div>
+  <h4>Lames fantomatiques</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Vos <b class="kw">Surins</b> gagnent <b class="kw">Retenue</b>.<br>Le premier <b class="kw">Surin</b> que vous jouez chaque tour inflige 9 dégâts supplémentaires.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Vos <b class="kw">Surins</b> gagnent <b class="kw">Retenue</b>.<br>Le premier <b class="kw">Surin</b> que vous jouez chaque tour inflige 12 dégâts supplémentaires.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Uncommon" data-name="lames infinies infinite_blades">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/infinite_blades.webp" alt="Lames infinies"><span class="gem">1</span></div>
+  <h4>Lames infinies</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Au début de votre tour, ajoutez 1 <b class="kw">Surin</b> à votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Au début de votre tour, ajoutez 1 <b class="kw">Surin</b> à votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Uncommon" data-name="localisation pinpoint">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/pinpoint.webp" alt="Localisation"><span class="gem">3</span></div>
+  <h4>Localisation</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 15 dégâts.<br>Coûte 1 <span class="nrg">●</span> en moins pour chaque Compétence jouée pendant ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 19 dégâts.<br>Coûte 1 <span class="nrg">●</span> en moins pour chaque Compétence jouée pendant ce tour.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Uncommon" data-name="memento mori memento_mori">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/memento_mori.webp" alt="Memento mori"><span class="gem">1</span></div>
+  <h4>Memento mori</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 9 dégâts.<br>Inflige 4 dégâts supplémentaires pour chaque carte défaussée ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 11 dégâts.<br>Inflige 5 dégâts supplémentaires pour chaque carte défaussée ce tour.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="mirage mirage">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/mirage.webp" alt="Mirage"><span class="gem">1</span></div>
+  <h4>Mirage</h4>
+  <p class="meta">Compétence · Peu commune · Exhaust</p>
+  <p class="desc">Gagnez un montant d&#x27;<b class="kw">Armure</b> égal au <b class="kw">Poison</b> présent sur TOUS les ennemis.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez un montant d&#x27;<b class="kw">Armure</b> égal au <b class="kw">Poison</b> présent sur TOUS les ennemis.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="oubli fade">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/fade.webp" alt="Oubli"><span class="gem">0</span></div>
+  <h4>Oubli</h4>
+  <p class="meta">Compétence · Peu commune · Retain</p>
+  <p class="desc"><b class="kw">Retenue</b>.<br>Un autre joueur gagne 6 de <b class="kw">Dextérité</b> pendant ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Un autre joueur gagne 9 de <b class="kw">Dextérité</b> pendant ce tour.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="pas de côté sidestep">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/sidestep.webp" alt="Pas de côté"><span class="gem">0</span></div>
+  <h4>Pas de côté</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Au prochain tour, gagnez 1 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au prochain tour, gagnez 2 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="passe-passe up_my_sleeve">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/up_my_sleeve.webp" alt="Passe-passe"><span class="gem">2</span></div>
+  <h4>Passe-passe</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Ajoutez 3 <b class="kw">Surins</b> à votre <b class="kw">Main</b>.<br>Réduisez le coût de cette carte de 1.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Ajoutez 4 <b class="kw">Surins</b> à votre <b class="kw">Main</b>.<br>Réduisez le coût de cette carte de 1.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="plan d&#x27;évasion escape_plan">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/escape_plan.webp" alt="Plan d&#x27;évasion"><span class="gem">0</span></div>
+  <h4>Plan d&#x27;évasion</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Piochez 1 carte.<br>Si vous piochez une Compétence, gagnez 3 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Piochez 1 carte.<br>Si vous piochez une Compétence, gagnez 5 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="poignards dissimulés hidden_daggers">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/hidden_daggers.webp" alt="Poignards dissimulés"><span class="gem">0</span></div>
+  <h4>Poignards dissimulés</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Défaussez 2 cartes.<br>Ajoutez 2 <b class="kw">Surins</b> à votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Défaussez 2 cartes.<br>Ajoutez 2 <b class="kw">Surins+</b> à votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="point faible expose">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/expose.webp" alt="Point faible"><span class="gem">0</span></div>
+  <h4>Point faible</h4>
+  <p class="meta">Compétence · Peu commune · Exhaust</p>
+  <p class="desc">Retirez tous les <b class="kw">Artéfacts</b> et toute l&#x27;<b class="kw">Armure</b> de l&#x27;ennemi.<br>Appliquez <b class="kw">Vulnérable</b> (2).<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Retirez tous les <b class="kw">Artéfacts</b> et toute l&#x27;<b class="kw">Armure</b> de l&#x27;ennemi.<br>Appliquez <b class="kw">Vulnérable</b> (3).<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Uncommon" data-name="précipitation dash">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/dash.webp" alt="Précipitation"><span class="gem">2</span></div>
+  <h4>Précipitation</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Gagnez 10 d&#x27;<b class="kw">Armure</b>.<br>Infligez 10 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 13 d&#x27;<b class="kw">Armure</b>.<br>Infligez 13 dégâts.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Uncommon" data-name="précision accuracy">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/accuracy.webp" alt="Précision"><span class="gem">1</span></div>
+  <h4>Précision</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Les <b class="kw">Surins</b> infligent 4 dégâts supplémentaires.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Les <b class="kw">Surins</b> infligent 6 dégâts supplémentaires.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="réflexes reflex">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/reflex.webp" alt="Réflexes"><span class="gem">3</span></div>
+  <h4>Réflexes</h4>
+  <p class="meta">Compétence · Peu commune · Sly</p>
+  <p class="desc"><b class="kw">Ruse</b>.<br>Piochez 2 cartes.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Ruse</b>.<br>Piochez 3 cartes.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Uncommon" data-name="strangulation strangle">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/strangle.webp" alt="Strangulation"><span class="gem">1</span></div>
+  <h4>Strangulation</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 8 dégâts.<br>Lorsque vous jouez une carte pendant ce tour, l&#x27;ennemi perd 2 PV.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 10 dégâts.<br>Lorsque vous jouez une carte pendant ce tour, l&#x27;ennemi perd 3 PV.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Uncommon" data-name="surgissement pounce">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/pounce.webp" alt="Surgissement"><span class="gem">2</span></div>
+  <h4>Surgissement</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 14 dégâts.<br>La prochaine Compétence que vous jouez coûte 0 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 20 dégâts.<br>La prochaine Compétence que vous jouez coûte 0 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="symphonie de lames blade_symphony">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/blade_symphony.webp" alt="Symphonie de lames"><span class="gem">2</span></div>
+  <h4>Symphonie de lames</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Ajoutez 2 <b class="kw">Surins</b> à la <b class="kw">Main</b> de TOUS les joueurs.</p>
+  
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="tactique tactician">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/tactician.webp" alt="Tactique"><span class="gem">3</span></div>
+  <h4>Tactique</h4>
+  <p class="meta">Compétence · Peu commune · Sly</p>
+  <p class="desc"><b class="kw">Ruse</b>.<br>Gagnez 1 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Ruse</b>.<br>Gagnez 2 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="trucage hand_trick">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/hand_trick.webp" alt="Trucage"><span class="gem">1</span></div>
+  <h4>Trucage</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 7 d&#x27;<b class="kw">Armure</b>.<br>Ajoutez <b class="kw">Ruse</b> à une Compétence dans votre <b class="kw">Main</b> jusqu&#x27;à la fin du tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 10 d&#x27;<b class="kw">Armure</b>.<br>Ajoutez <b class="kw">Ruse</b> à une Compétence dans votre <b class="kw">Main</b> jusqu&#x27;à la fin du tour.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Uncommon" data-name="vapeurs toxiques noxious_fumes">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/noxious_fumes.webp" alt="Vapeurs toxiques"><span class="gem">1</span></div>
+  <h4>Vapeurs toxiques</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Au début de votre tour, appliquez 2 de <b class="kw">Poison</b> à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au début de votre tour, appliquez 3 de <b class="kw">Poison</b> à TOUS les ennemis.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="venin mousseux bubble_bubble">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/bubble_bubble.webp" alt="Venin mousseux"><span class="gem">1</span></div>
+  <h4>Venin mousseux</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Si l&#x27;ennemi est affligé de <b class="kw">Poison</b>, appliquez 9 de <b class="kw">Poison</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Si l&#x27;ennemi est affligé de <b class="kw">Poison</b>, appliquez 12 de <b class="kw">Poison</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Uncommon" data-name="vision trouble blur">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/blur.webp" alt="Vision trouble"><span class="gem">1</span></div>
+  <h4>Vision trouble</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 5 d&#x27;<b class="kw">Armure</b>.<br>Vous ne perdez pas votre <b class="kw">Armure</b> au début de votre prochain tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 8 d&#x27;<b class="kw">Armure</b>.<br>Vous ne perdez pas votre <b class="kw">Armure</b> au début de votre prochain tour.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Rare" data-name="abrasif abrasive">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/abrasive.webp" alt="Abrasif"><span class="gem">3</span></div>
+  <h4>Abrasif</h4>
+  <p class="meta">Pouvoir · Rare · Sly</p>
+  <p class="desc"><b class="kw">Ruse</b>.<br>Gagnez 1 de <b class="kw">Dextérité</b>.<br>Gagnez 4 <b class="kw">Épines</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Ruse</b>.<br>Gagnez 1 de <b class="kw">Dextérité</b>.<br>Gagnez 6 <b class="kw">Épines</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="adrénaline adrenaline">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/adrenaline.webp" alt="Adrénaline"><span class="gem">0</span></div>
+  <h4>Adrénaline</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Gagnez 1 <span class="nrg">●</span>.<br>Piochez 2 cartes.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 2 <span class="nrg">●</span>.<br>Piochez 2 cartes.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Rare" data-name="assassiner assassinate">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/assassinate.webp" alt="Assassiner"><span class="gem">0</span></div>
+  <h4>Assassiner</h4>
+  <p class="meta">Attaque · Rare · Innate Exhaust</p>
+  <p class="desc"><b class="kw">Inné</b>.<br>Infligez 10 dégâts.<br>Appliquez <b class="kw">Vulnérable</b> (1).<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Infligez 13 dégâts.<br>Appliquez <b class="kw">Vulnérable</b> (2).<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="bullet time bullet_time">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/bullet_time.webp" alt="Bullet Time"><span class="gem">3</span></div>
+  <h4>Bullet Time</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Vous ne pouvez plus piocher de cartes pendant ce tour. TOUTES les cartes de votre <b class="kw">Main</b> coûtent 0 jusqu&#x27;à la fin du tour.</p>
+  
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="camouflage shadowmeld">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/shadowmeld.webp" alt="Camouflage"><span class="gem">1</span></div>
+  <h4>Camouflage</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Double les quantités d&#x27;<b class="kw">Armure</b> que vous gagnez pendant ce tour.</p>
+  
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="cauchemar nightmare">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/nightmare.webp" alt="Cauchemar"><span class="gem">3</span></div>
+  <h4>Cauchemar</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Choisissez une carte.<br>Au prochain tour, ajoutez 3 copies de cette carte à votre <b class="kw">Main</b>.<br><b class="kw">Épuisement</b>.</p>
+  
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Rare" data-name="clou du spectacle grand_finale">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/grand_finale.webp" alt="Clou du spectacle"><span class="gem">0</span></div>
+  <h4>Clou du spectacle</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Ne peut être joué que si votre <b class="kw">Pioche</b> est vide. Infligez 60 dégâts à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Ne peut être joué que si votre <b class="kw">Pioche</b> est vide. Infligez 75 dégâts à TOUS les ennemis.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="déflagration burst">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/burst.webp" alt="Déflagration"><span class="gem">1</span></div>
+  <h4>Déflagration</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">La prochaine compétence que vous jouez ce tour sera jouée une fois supplémentaire.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Les 2 prochaines compétences que vous jouez ce tour seront jouées une fois supplémentaire.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="encerclement flanking">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/flanking.webp" alt="Encerclement"><span class="gem">2</span></div>
+  <h4>Encerclement</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">L&#x27;ennemi subit le double des dégâts d&#x27;attaque infligés par les autres joueurs jusqu&#x27;à la fin du tour.</p>
+  
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Rare" data-name="envenimer envenom">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/envenom.webp" alt="Envenimer"><span class="gem">2</span></div>
+  <h4>Envenimer</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Chaque fois qu&#x27;une Attaque inflige des dégâts non bloqués, appliquez 1 de <b class="kw">Poison</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Chaque fois qu&#x27;une Attaque inflige des dégâts non bloqués, appliquez 2 de <b class="kw">Poison</b>.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Rare" data-name="forme du serpent serpent_form">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/serpent_form.webp" alt="Forme du serpent"><span class="gem">3</span></div>
+  <h4>Forme du serpent</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsque vous jouez une carte, infligez 4 dégâts à un ennemi aléatoire.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous jouez une carte, infligez 6 dégâts à un ennemi aléatoire.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Rare" data-name="furtif sneaky">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/sneaky.webp" alt="Furtif"><span class="gem">2</span></div>
+  <h4>Furtif</h4>
+  <p class="meta">Pouvoir · Rare · Sly</p>
+  <p class="desc"><b class="kw">Ruse</b>.<br>Lorsqu&#x27;un autre joueur attaque un ennemi, gagnez 1 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Ruse</b>.<br>Lorsqu&#x27;un autre joueur attaque un ennemi, gagnez 2 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Rare" data-name="grands desseins master_planner">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/master_planner.webp" alt="Grands desseins"><span class="gem">2</span></div>
+  <h4>Grands desseins</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsque vous jouez une Compétence, elle gagne <b class="kw">Ruse</b>.</p>
+  
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Rare" data-name="image rémanente afterimage">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/afterimage.webp" alt="Image rémanente"><span class="gem">1</span></div>
+  <h4>Image rémanente</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsque vous jouez une carte, gagnez 1 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Lorsque vous jouez une carte, gagnez 1 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Rare" data-name="la traque the_hunt">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/the_hunt.webp" alt="La traque"><span class="gem">1</span></div>
+  <h4>La traque</h4>
+  <p class="meta">Attaque · Rare · Exhaust</p>
+  <p class="desc">Infligez 10 dégâts.<br><b class="kw">Coup de grâce</b> : obtenez une récompense de carte supplémentaire.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 15 dégâts.<br><b class="kw">Coup de grâce</b> : obtenez une récompense de carte supplémentaire.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="lame d&#x27;encre blade_of_ink">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/blade_of_ink.webp" alt="Lame d&#x27;encre"><span class="gem">1</span></div>
+  <h4>Lame d&#x27;encre</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Ajoutez 2 <b class="kw">Surins</b> Encrés à votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Ajoutez 3 <b class="kw">Surins</b> Encrés à votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="malaise malaise">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/malaise.webp" alt="Malaise"><span class="gem">X</span></div>
+  <h4>Malaise</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">L&#x27;ennemi perd X de <b class="kw">Force</b>. Appliquez <b class="kw">Affaibli</b> (X).<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">L&#x27;ennemi perd X+1 de <b class="kw">Force</b>. Appliquez <b class="kw">Affaibli</b> (X+1).<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Rare" data-name="meurtre murder">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/murder.webp" alt="Meurtre"><span class="gem">3</span></div>
+  <h4>Meurtre</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 1 dégâts.<br>Inflige 1 dégâts supplémentaires pour chaque carte piochée pendant ce combat.</p>
+  
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="pas de l&#x27;ombre shadow_step">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/shadow_step.webp" alt="Pas de l&#x27;ombre"><span class="gem">1</span></div>
+  <h4>Pas de l&#x27;ombre</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Défaussez votre <b class="kw">Main</b>.<br>Au prochain tour, les Attaques infligent le double de dégâts.</p>
+  
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Rare" data-name="pistage tracking">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/tracking.webp" alt="Pistage"><span class="gem">2</span></div>
+  <h4>Pistage</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Les ennemis <b class="kw">Affaiblis</b> subissent 50% des dégâts infligés par les Attaques en plus.</p>
+  
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="piège à poignards knife_trap">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/knife_trap.webp" alt="Piège à poignards"><span class="gem">2</span></div>
+  <h4>Piège à poignards</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Jouez chaque <b class="kw">Surin</b> depuis votre pile de cartes <b class="kw">Épuisées</b> sur l&#x27;ennemi.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Améliorez</b> et jouez chaque <b class="kw">Surin</b> depuis votre pile de cartes <b class="kw">Épuisées</b> sur l&#x27;ennemi.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Rare" data-name="préméditation well_laid_plans">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/well_laid_plans.webp" alt="Préméditation"><span class="gem">2</span></div>
+  <h4>Préméditation</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">À la fin de votre tour, vous ne défaussez plus votre <b class="kw">Main</b>.</p>
+  
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Rare" data-name="savoir-faire tools_of_the_trade">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/tools_of_the_trade.webp" alt="Savoir-faire"><span class="gem">1</span></div>
+  <h4>Savoir-faire</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Au début de votre tour, piochez 1 carte et défaussez 1 carte.</p>
+  
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="tempête d&#x27;acier storm_of_steel">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/storm_of_steel.webp" alt="Tempête d&#x27;acier"><span class="gem">1</span></div>
+  <h4>Tempête d&#x27;acier</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Défaussez votre <b class="kw">Main</b>.<br>Ajoutez autant de <b class="kw">Surins</b> à votre <b class="kw">Main</b> que de cartes défaussées.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Défaussez votre <b class="kw">Main</b>.<br>Ajoutez autant de <b class="kw">Surins+</b> à votre <b class="kw">Main</b> que de cartes défaussées.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="vague corrosive corrosive_wave">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/corrosive_wave.webp" alt="Vague corrosive"><span class="gem">1</span></div>
+  <h4>Vague corrosive</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Lorsque vous piochez une carte ce tour, appliquez 2 de <b class="kw">Poison</b> à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous piochez une carte ce tour, appliquez 3 de <b class="kw">Poison</b> à TOUS les ennemis.</p></details>
+</article><article class="card t-skill p-silent" data-type="Skill" data-rarity="Rare" data-name="épidémie outbreak">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/outbreak.webp" alt="Épidémie"><span class="gem">3</span></div>
+  <h4>Épidémie</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Appliquez 9 de <b class="kw">Poison</b> sur TOUS les ennemis.<br>Le <b class="kw">Poison</b> se déclenche immédiatement.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez 12 de <b class="kw">Poison</b> sur TOUS les ennemis.<br>Le <b class="kw">Poison</b> se déclenche immédiatement.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Rare" data-name="éventail de couteaux fan_of_knives">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/fan_of_knives.webp" alt="Éventail de couteaux"><span class="gem">2</span></div>
+  <h4>Éventail de couteaux</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Les <b class="kw">Surins</b> touchent désormais TOUS les ennemis.<br>Ajoutez 4 <b class="kw">Surins</b> à votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Les <b class="kw">Surins</b> touchent désormais TOUS les ennemis.<br>Ajoutez 5 <b class="kw">Surins</b> à votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-power p-silent" data-type="Power" data-rarity="Ancient" data-name="forme spectrale wraith_form">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/wraith_form.webp" alt="Forme spectrale"><span class="gem">3</span></div>
+  <h4>Forme spectrale</h4>
+  <p class="meta">Pouvoir · Ancienne</p>
+  <p class="desc">Gagnez <b class="kw">Intangible</b> (2).<br>Au début de votre tour, perdez 1 de <b class="kw">Dextérité</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez <b class="kw">Intangible</b> (3).<br>Au début de votre tour, perdez 1 de <b class="kw">Dextérité</b>.</p></details>
+</article><article class="card t-attack p-silent" data-type="Attack" data-rarity="Ancient" data-name="répression suppress">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/silent/suppress.webp" alt="Répression"><span class="gem">0</span></div>
+  <h4>Répression</h4>
+  <p class="meta">Attaque · Ancienne · Innate</p>
+  <p class="desc"><b class="kw">Inné</b>.<br>Infligez 11 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (3).</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Infligez 17 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (5).</p></details>
+</article></div></section>
+<section class="panel "><h2>Reliques exclusives</h2><div class="relics"><div class="relic"><img loading="lazy" src="../../bible/images/relics/helical_dart.webp" alt=""><div><b>Fléchette hélicoïdale</b><p>Chaque fois que vous jouez un <b class="kw">Surin</b>, gagnez 1 de <b class="kw">Dextérité</b> jusqu&#x27;à la fin du tour.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/ninja_scroll.webp" alt=""><div><b>Parchemin de ninja</b><p>Au début de chaque combat, ajoutez 3 <b class="kw">Surins</b> à votre <b class="kw">Main</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/paper_krane.webp" alt=""><div><b>Grû en papier</b><p>Les ennemis <b class="kw">Affaiblis</b> vous infligent 40% de dégâts en moins plutôt que 25%.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/ring_of_the_snake.webp" alt=""><div><b>Anneau du serpent</b><p>Au début de chaque combat, piochez 2 cartes supplémentaires.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/snecko_skull.webp" alt=""><div><b>Crâne de geckobra</b><p>Vous appliquez 1 de <b class="kw">Poison</b> en plus à chaque fois que vous appliquez du <b class="kw">Poison</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/tingsha.webp" alt=""><div><b>Tingsha</b><p>Pour chaque carte que vous défaussez pendant votre tour, infligez 3 dégâts à un ennemi aléatoire.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/tough_bandages.webp" alt=""><div><b>Bandages résistants</b><p>Chaque fois que vous défaussez une carte pendant votre tour, gagnez 3 d&#x27;<b class="kw">Armure</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/twisted_funnel.webp" alt=""><div><b>Entonnoir torsadé</b><p>Au début de chaque combat, appliquez 4 de <b class="kw">Poison</b> à TOUS les ennemis.</p></div></div></div></section>
+<section class="panel livret"><div class="md"><h1 id="livret-dinstruction-officiel-slay-the-spire-2-edition-la-silencieuse">🟢 Livret d'Instruction Officiel — Slay the Spire 2 : Édition La Silencieuse</h1>
+<pre><code>========================================================================================
+                      NINTENDO® GAME BOY ADVANCE™ INSTRUCTION BOOKLET
+                  ÉDITION LA SILENCIEUSE — RÉFÉRENCE : AGB-P-ASGS-FRA
+========================================================================================
+</code></pre>
+<blockquote>
+<p><strong>Sceau Officiel de Qualité Nintendo® :</strong><br />
+Ce livret officiel garantit l'authenticité et la fidélité de votre cartouche Game Boy Advance <em>Slay the Spire 2 — Édition La Silencieuse</em>. Conservez ce manuel pour maîtriser l'art de l'assassinat silencieux, du poison corrosif et du cyclage rapide de deck.</p>
+</blockquote>
+<hr />
+<h2 id="1-histoire-contexte-de-la-silencieuse">📜 1. Histoire &amp; Contexte de La Silencieuse</h2>
+<p>Chasseresse redoutée issue des Terres de Brume, <strong>La Silencieuse</strong> (<em>The Silent</em>) dissimule son visage sous un crâne de fauve cornu.<br />
+Là où les guerriers misent sur la force brute, elle privilégie l'agilité féline, les surins empoisonnés dissimulés sous sa cape et les toxines foudroyantes qui consument ses ennemis de l'intérieur en ignorant totalement leurs armures.</p>
+<ul>
+<li><strong>Points de Vie Initiaux :</strong> 70 PV.</li>
+<li><strong>Or de Départ :</strong> 99 Pièces d'or.</li>
+<li><strong>Relique de Départ :</strong> <strong>Anneau du Serpent</strong> (<em>Ring of the Snake</em>) — Vous piochez <strong>2 cartes supplémentaires au 1er tour</strong> de chaque combat (démarrage à 7 cartes en main !).</li>
+</ul>
+<hr />
+<h2 id="2-maniement-des-commandes-game-boy-advance">🎮 2. Maniement des Commandes Game Boy Advance</h2>
+<pre><code>                              [L]                        [R]
+                               │                          │
+                         ┌─────┴──────────────────────────┴─────┐
+                         │                                      │
+                         │    ▲             ÉCRAN               │
+                         │  ◄   ►          240x160         (B)  │
+                         │    ▼                           (A)   │
+                         │               [SEL]  [START]         │
+                         └──────────────────────────────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Bouton</th>
+<th>Action sur la Carte de la Tour</th>
+<th>Action dans l'Arène Yu-Gi-Oh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Croix Directionnelle (◄ / ►)</strong></td>
+<td>Choisir votre embranchement de salle</td>
+<td>Parcourir vos cartes en main / Pointer le monstre à empoisonner</td>
+</tr>
+<tr>
+<td><strong>Croix Directionnelle (▲ / ▼)</strong></td>
+<td>Faire défiler la carte de la Tour</td>
+<td>Examiner la description détaillée d'une carte</td>
+</tr>
+<tr>
+<td><strong>Bouton A</strong></td>
+<td><strong>Entrer dans la salle / Lancer le combat</strong></td>
+<td><strong>Jouer la carte sélectionnée / Valider l'assaut</strong></td>
+</tr>
+<tr>
+<td><strong>Bouton B</strong></td>
+<td>Annuler</td>
+<td>Annuler le mode de ciblage</td>
+</tr>
+<tr>
+<td><strong>Bouton START</strong></td>
+<td>Menu Pause</td>
+<td><strong>Fin de Tour immédiate</strong></td>
+</tr>
+<tr>
+<td><strong>Bouton SELECT</strong></td>
+<td><strong>Consulter le Registre du Deck</strong></td>
+<td><strong>Consulter la Défausse &amp; les Cartes Défaussées</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-structure-des-ecrans-de-jeu-resolution-240-160">📺 3. Structure des Écrans de Jeu (Résolution 240 × 160)</h2>
+<h3 id="ecran-a-carte-de-la-tour">Écran A : Carte de la Tour</h3>
+<p>Affiche en temps réel vos 70 PV, votre or et la composition de votre deck. Grâce à l'agilité de La Silencieuse, scrutez les routes à forte concentration de feux de camp <code>[R]</code> et de boutiques <code>[$]</code> pour affiner votre réserve de cartes.</p>
+<h3 id="ecran-b-arene-de-duel-yu-gi-oh-1-a-3-monstres">Écran B : Arène de Duel Yu-Gi-Oh (1 à 3 Monstres)</h3>
+<pre><code>┌────────────────────────────────────────────────────────┐
+│  [ZONE 1]              [ZONE 2]              [ZONE 3]  │
+│  Gremlin [32/40]       Morpion [18/18]       [K.O.]    │
+│  [POISON: 9] ! ATK 7   [POISON: 4] ! 5D                │
+│                                                        │
+│  [HÉROS] La Silencieuse  PV 68/70 (+11B)  NRG: [●][●][●]│
+│  Ressource : Toxine Active   Relique : Anneau Serpent  │
+│────────────────────────────────────────────────────────│
+│  [Dague Empoisonnée+] (1E) | 4 dégâts + 4 Poison       │
+│  Main : [1]  &gt;[2]&lt;  [3]  [4]  [5]  [6]  [7]            │
+│  G/D : Carte   A : Jouer   START : Fin de Tour         │
+└────────────────────────────────────────────────────────┘
+</code></pre>
+<p>Au tour 1, l'Anneau du Serpent déploie 7 cartes dans votre plateau de cartes ! Vous pouvez immédiatement paralyser l'ennemi avec <strong>Neutralisation</strong> ou charger plusieurs stacks de venin.</p>
+<hr />
+<h2 id="4-systeme-de-teintes-style-pokemon">🎨 4. Système de Teintes (Style Pokémon)</h2>
+<ol>
+<li><strong>Classique (Vert Venin) :</strong> La cape de velours vert et le crâne d'ébène de la chasseresse.</li>
+<li><strong>Chromatique / Shiny (Mante Émeraude) :</strong> Teinte turquoise lumineuse inspirée des vipères des mers.</li>
+<li><strong>Ténèbres / Shadow (Ombre Nocturne) :</strong> Une tenue d'assassin furtif totalement noire aux yeux ambrés.</li>
+<li><strong>Dorée / Golden (Venin d'Or) :</strong> Armure cérémonielle dorée réservée aux maîtres de l'Ascension 10.</li>
+</ol>
+<hr />
+<h2 id="5-catalogue-officiel-des-20-cartes-communes-de-ledition">🃏 5. Catalogue Officiel des 20 Cartes Communes de l'Édition</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">N°</th>
+<th style="text-align: left;">Carte</th>
+<th style="text-align: center;">Coût</th>
+<th style="text-align: center;">Type</th>
+<th>Effet Standard</th>
+<th>Version Améliorée (<code>+</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">01</td>
+<td style="text-align: left;"><strong>Frappe</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 6 dégâts à un ennemi.</td>
+<td>Inflige <strong>9 dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">02</td>
+<td style="text-align: left;"><strong>Défense</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 5 points d'Armure.</td>
+<td>Confère <strong>8 points d'Armure</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">03</td>
+<td style="text-align: left;"><strong>Neutralisation</strong></td>
+<td style="text-align: center;">0E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 3 dégâts. Applique 1 Faiblesse.</td>
+<td>Inflige <strong>4 dégâts</strong>. Applique <strong>2 Faiblesse</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">04</td>
+<td style="text-align: left;"><strong>Survivant</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 8 Armure. Défausse 1 carte de votre choix.</td>
+<td>Confère <strong>11 Armure</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">05</td>
+<td style="text-align: left;"><strong>Dague Empoisonnée</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 3 dégâts et applique 3 Poison.</td>
+<td>Inflige <strong>4 dégâts</strong> et applique <strong>4 Poison</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">06</td>
+<td style="text-align: left;"><strong>Poison Mortel</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Applique 5 Poison directement sur la cible.</td>
+<td>Applique <strong>7 Poison</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">07</td>
+<td style="text-align: left;"><strong>Acrobatie</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Pioche 3 cartes. Défausse 1 carte.</td>
+<td>Pioche <strong>4 cartes</strong>. Défausse 1 carte.</td>
+</tr>
+<tr>
+<td style="text-align: center;">08</td>
+<td style="text-align: left;"><strong>Poignard Volant</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 8 dégâts. Ajoute 1 Surin (0E / 4 dégâts) en main.</td>
+<td>Inflige <strong>10 dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">09</td>
+<td style="text-align: left;"><strong>Roulade</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 6 Armure ce tour et 6 Armure au tour suivant.</td>
+<td>Confère <strong>8 Armure</strong> à chaque tour.</td>
+</tr>
+<tr>
+<td style="text-align: center;">10</td>
+<td style="text-align: left;"><strong>Dague en Éventail</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 12 dégâts à TOUS les ennemis.</td>
+<td>Inflige <strong>15 dégâts</strong> à TOUS les ennemis.</td>
+</tr>
+<tr>
+<td style="text-align: center;">11</td>
+<td style="text-align: left;"><strong>Catalyseur</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Double le montant de Poison actuel sur la cible.</td>
+<td><strong>TRIPLE</strong> le montant de Poison !</td>
+</tr>
+<tr>
+<td style="text-align: center;">12</td>
+<td style="text-align: left;"><strong>Fumigène</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Applique 2 Faiblesse et 2 Vulnérable à un ennemi.</td>
+<td>Applique <strong>3 Faiblesse et 3 Vulnérable</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">13</td>
+<td style="text-align: left;"><strong>Surin Caché</strong></td>
+<td style="text-align: center;">0E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 4 dégâts. Épuisement.</td>
+<td>Inflige <strong>6 dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">14</td>
+<td style="text-align: left;"><strong>Nuage Toxique</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>Au début de chaque tour, applique 2 Poison à TOUS les monstres.</td>
+<td>Applique <strong>3 Poison</strong> à chaque tour.</td>
+</tr>
+<tr>
+<td style="text-align: center;">15</td>
+<td style="text-align: left;"><strong>Pluie de Dagues</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 1 dégât 5 fois de suite.</td>
+<td>Inflige 1 dégât <strong>6 fois de suite</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">16</td>
+<td style="text-align: left;"><strong>Pied Léger</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>Gagnez +2 Dextérité permanente (augmente toute armure).</td>
+<td>Gagnez <strong>+3 Dextérité permanente</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">17</td>
+<td style="text-align: left;"><strong>Feinte</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 7 Armure. Pioche 1 carte.</td>
+<td>Confère <strong>9 Armure</strong>. Pioche <strong>2 cartes</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">18</td>
+<td style="text-align: left;"><strong>Poignard Rapide</strong></td>
+<td style="text-align: center;">0E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 4 dégâts. Pioche 1 carte.</td>
+<td>Inflige <strong>6 dégâts</strong>. Pioche 1 carte.</td>
+</tr>
+<tr>
+<td style="text-align: center;">19</td>
+<td style="text-align: left;"><strong>Fiole de Venin</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Chaque fois qu'une attaque touche, applique 1 Poison.</td>
+<td>Coût réduit à <strong>0E</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">20</td>
+<td style="text-align: left;"><strong>Esquive Parfaite</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 4 Armure pour chaque monstre attaquant ce tour.</td>
+<td>Confère <strong>6 Armure</strong> par monstre.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-guide-de-survie-strategie-de-duel">⚔️ 6. Guide de Survie &amp; Stratégie de Duel</h2>
+<ol>
+<li><strong>La puissance exponentielle du Poison :</strong> Le Poison inflige ses dégâts directement à chaque début de tour du monstre, puis son montant diminue de 1. Combiné avec <strong>Catalyseur</strong>, un monstre à 10 Poison passe instantanément à 30 Poison !</li>
+<li><strong>Neutralisation Tour 1 :</strong> Réduire de 25% les attaques ennemies avec la Faiblesse garantit que vos points de vie resteront intacts lors des premiers tours critiques.</li>
+<li><strong>Surins et Dextérité :</strong> Associer <strong>Pied Léger</strong> avec des compétences défensives vous permet d'atteindre 20+ d'Armure par tour pour un coût minimal en énergie.</li>
+</ol></div></section>
+
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bible — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html" class="on">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><h1>La bible complète</h1><p>Tous les tomes de conception du projet, rendus depuis <code>bible/</code>.</p><ol class='toc'><li><a href="00_personnages.html">Les 5 Personnages Jouables — Slay the Spire 2 sur Game Boy Advance</a></li><li><a href="01_neow.html">Neow — Mère de la Résurrection (exilée)</a></li><li><a href="02_darv.html">Darv — L&#x27;Amasseur</a></li><li><a href="03_orobas.html">Orobas — Arc-en-ciel Vivant</a></li><li><a href="04_pael.html">Paël — Dragon de Cire</a></li><li><a href="05_tezcatara.html">Tezcatara — Nourricière de la Flamme</a></li><li><a href="06_nonupeipe.html">Nonupeipée — Incarnation de la Fortune</a></li><li><a href="07_tanx.html">Tanx — Roi Chimère</a></li><li><a href="08_vakuu.html">Vakuu — Le Premier Démon</a></li><li><a href="09_cartes_ironclad.html">Cartes — Soldat de Fer (Ironclad)</a></li><li><a href="10_cartes_silent.html">Cartes — La Silencieuse (Silent)</a></li><li><a href="11_cartes_defect.html">Cartes — Le Défectueux (Defect)</a></li><li><a href="12_cartes_regent.html">Cartes — Le Régent (Regent)</a></li><li><a href="13_cartes_necrobinder.html">Cartes — La Nécrolieuse (Necrobinder)</a></li><li><a href="14_cartes_incolores_et_maledictions.html">Cartes Incolores, Malédictions, Quêtes &amp; Événements</a></li><li><a href="15_reliques_globales.html">Encyclopédie Complète des Reliques (Slay the Spire 2)</a></li><li><a href="16_bestiaire_monstres.html">Bestiaire Complet des Monstres (Slay the Spire 2)</a></li><li><a href="17_potions.html">Alchimie &amp; Potions (Slay the Spire 2)</a></li><li><a href="18_evenements.html">Événements &amp; Points d&#x27;Interrogation (Slay the Spire 2)</a></li><li><a href="19_boucle_de_gameplay_et_ascension.html">Tome 19 — Boucle de Gameplay Roguelike, Carte &amp; Système d&#x27;Ascension (1 à 10)</a></li><li><a href="20_sauvegardes_encyclopedie_et_ressources.html">Tome 20 — Profils de Sauvegarde, Autosave, Encyclopédies &amp; Ressources des Personnages</a></li><li><a href="21_interface_pokemon_et_navigation_carte.html">Tome 21 — Interface Style Pokémon, Navigation de Carte &amp; Inspecteur de Deck</a></li><li><a href="spec_technique_gba.html">Spécifications Techniques GBA — Système des Anciens</a></li><li><a href="livrets.html">Collection des Livrets Officiels de Jeu Game Boy Advance — Slay the Spire 2</a> <span class=meta>livret</span></li><li><a href="livret_defect.html">Livret d&#x27;Instruction Officiel — Slay the Spire 2 : Édition Le Défectueux</a> <span class=meta>livret</span></li><li><a href="livret_ironclad.html">Livret d&#x27;Instruction Officiel — Slay the Spire 2 : Édition Soldat de Fer</a> <span class=meta>livret</span></li><li><a href="livret_necrobinder.html">Livret d&#x27;Instruction Officiel — Slay the Spire 2 : Édition La Nécrolieuse</a> <span class=meta>livret</span></li><li><a href="livret_regent.html">Livret d&#x27;Instruction Officiel — Slay the Spire 2 : Édition Le Régent</a> <span class=meta>livret</span></li><li><a href="livret_silent.html">Livret d&#x27;Instruction Officiel — Slay the Spire 2 : Édition La Silencieuse</a> <span class=meta>livret</span></li></ol></section><section class="panel "><div class="md"><h1 id="la-bible-des-anciens-slay-the-spire-2-sur-game-boy-advance">🗡️ La Bible des Anciens — Slay the Spire 2 sur Game Boy Advance</h1>
+<blockquote>
+<p><strong>Référence officielle de conception et d'implémentation pour le projet <code>slay_the_gba</code></strong><br />
+<strong>Source :</strong> <a href="https://slaythespire2.net/fr/ancient">Slay the Spire 2 Guide &amp; Wiki — Les Anciens</a><br />
+<strong>Version du jeu :</strong> <code>v0.111.0 Beta</code> (Dernier patch officiel — Août 2026)<br />
+<strong>Dossier d'assets :</strong> <a href="../../bible/images/"><code>bible/images/</code></a> (137 illustrations, icônes et cartes locales)</p>
+</blockquote>
+<hr />
+<h2 id="sommaire">📖 Sommaire</h2>
+<ol start="0">
+<li><a href="00_personnages.html">Guide des 5 Personnages Jouables (00_personnages.md)</a></li>
+<li><a href="#1--introduction--vision-de-ladaptation-gba">Introduction &amp; Vision de l'Adaptation GBA</a></li>
+<li><a href="#2--matrice-comparative-des-8-anciens">Matrice Comparative des 8 Anciens</a></li>
+<li><a href="#3--index-des-tomes-individuels">Index des Tomes Individuels</a></li>
+<li><a href="#4--tier-list-globale-des-reliques-danciens">Tier List Globale des Reliques d'Anciens</a></li>
+<li><a href="#5--règles-de-tirage-slots--exclusions">Règles de Tirage, Slots &amp; Exclusions</a></li>
+<li><a href="#6--spécifications--ergonomie-gba-240x160">Spécifications &amp; Ergonomie GBA (240x160)</a></li>
+<li><a href="#7--fiche-technique--code-c20">Fiche Technique &amp; Code C++20</a></li>
+<li><a href="#8--encyclopédie-complète-de-slay-the-spire-2-patch-v01110-beta">Encyclopédie Complète de Slay the Spire 2</a></li>
+<li><a href="19_boucle_de_gameplay_et_ascension.html">Boucle de Gameplay Roguelike &amp; Ascension 1 à 10 (19_boucle_de_gameplay_et_ascension.md)</a></li>
+<li><a href="20_sauvegardes_encyclopedie_et_ressources.html">Profils de Sauvegarde, Autosave, Encyclopédies &amp; Ressources (20_sauvegardes_encyclopedie_et_ressources.md)</a></li>
+<li><a href="21_interface_pokemon_et_navigation_carte.html">Interface Style Pokémon, Navigation de Carte &amp; Inspecteur de Deck (21_interface_pokemon_et_navigation_carte.md)</a></li>
+<li><a href="index.html">Collection des 5 Livrets de Jeu GBA Officiels (livrets_gba/README.md)</a></li>
+</ol>
+<hr />
+<h2 id="1-introduction-vision-de-ladaptation-gba">1. 🌟 Introduction &amp; Vision de l'Adaptation GBA</h2>
+<p>Dans <strong>Slay the Spire 2</strong>, le système des <strong>Anciens</strong> (<em>The Ancients</em>) constitue l'évolution majeure des événements d'ascension. Remplaçant et étendant la simple bénédiction initiale de Neow du premier opus, les Anciens interviennent désormais :</p>
+<ul>
+<li><strong>Au début de la tentative (Acte 1)</strong> : <strong>Neow</strong> vous ressuscite et vous propose un système sophistiqué de bénédictions et malédictions.</li>
+<li><strong>Entre les Actes (Transition d'Actes 2 &amp; 3)</strong> : Vous rencontrez des divinités ou monstres cosmiques (Orobas, Paël, Tezcatara, Nonupeipée, Tanx, Vakuu) qui façonnent la construction de votre deck via des reliques exclusives surpuissantes et des cartes uniques.</li>
+<li><strong>En tout lieu (Wildcard)</strong> : <strong>Darv l'Amasseur</strong>, capable de remplacer un slot d'Ancien pour troquer des reliques de Boss légendaires du premier jeu (Pyramide runique, Œil de Geckobra, Boîte de Pandore).</li>
+</ul>
+<h3 id="objectif-pour-slay_the_gba">🎯 Objectif pour <code>slay_the_gba</code></h3>
+<p>Transposer cette mécanique riche et tactique sur la <strong>Nintendo Game Boy Advance</strong> grâce au moteur <strong>Butano</strong> (C++20), en respectant scrupuleusement :
+* La résolution native de <strong>240 × 160 pixels</strong>.
+* Le format palette 16 couleurs (4 bpp) pour les portraits et les reliques.
+* Une ergonomie au D-Pad / Boutons A et B fluide et lisible sans surcharger l'écran.
+* Une architecture logicielle zéro allocation dynamique pendant la scène de draft.</p>
+<hr />
+<h2 id="2-matrice-comparative-des-8-anciens">2. 📊 Matrice Comparative des 8 Anciens</h2>
+<table>
+<thead>
+<tr>
+<th>Ancien</th>
+<th>Titre / Rôle</th>
+<th style="text-align: center;">Acte</th>
+<th style="text-align: center;">Thème</th>
+<th style="text-align: center;">Reliques</th>
+<th>Structure de Choix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Neow" loading="lazy" src="../../bible/images/ancients/icon/neow.webp" /> <strong>Neow</strong></td>
+<td>Mère de la Résurrection (exilée)</td>
+<td style="text-align: center;"><code>Acte 1</code></td>
+<td style="text-align: center;"><code>#28454F</code></td>
+<td style="text-align: center;"><strong>30</strong></td>
+<td>2 parmi 20 + 1 parmi 10</td>
+</tr>
+<tr>
+<td><img alt="Darv" loading="lazy" src="../../bible/images/ancients/icon/darv.webp" /> <strong>Darv</strong></td>
+<td>L'Amasseur</td>
+<td style="text-align: center;"><code>Tous actes</code></td>
+<td style="text-align: center;"><code>#512E66</code></td>
+<td style="text-align: center;"><strong>12</strong></td>
+<td>3 parmi 12</td>
+</tr>
+<tr>
+<td><img alt="Orobas" loading="lazy" src="../../bible/images/ancients/icon/orobas.webp" /> <strong>Orobas</strong></td>
+<td>Arc-en-ciel Vivant</td>
+<td style="text-align: center;"><code>Acte 2</code></td>
+<td style="text-align: center;"><code>#5C5F7A</code></td>
+<td style="text-align: center;"><strong>10</strong></td>
+<td>1 parmi 4 + 1 parmi 4 + 1 parmi 2</td>
+</tr>
+<tr>
+<td><img alt="Paël" loading="lazy" src="../../bible/images/ancients/icon/pael.webp" /> <strong>Paël</strong></td>
+<td>Dragon de Cire</td>
+<td style="text-align: center;"><code>Acte 2</code></td>
+<td style="text-align: center;"><code>#332C29</code></td>
+<td style="text-align: center;"><strong>10</strong></td>
+<td>1 parmi 3 + 1 parmi 4 + 1 parmi 3</td>
+</tr>
+<tr>
+<td><img alt="Tezcatara" loading="lazy" src="../../bible/images/ancients/icon/tezcatara.webp" /> <strong>Tezcatara</strong></td>
+<td>Nourricière de la Flamme</td>
+<td style="text-align: center;"><code>Acte 2</code></td>
+<td style="text-align: center;"><code>#33251E</code></td>
+<td style="text-align: center;"><strong>10</strong></td>
+<td>1 parmi 3 + 1 parmi 3 + 1 parmi 4</td>
+</tr>
+<tr>
+<td><img alt="Nonupeipée" loading="lazy" src="../../bible/images/ancients/icon/nonupeipe.webp" /> <strong>Nonupeipée</strong></td>
+<td>Incarnation de la Fortune</td>
+<td style="text-align: center;"><code>Acte 3</code></td>
+<td style="text-align: center;"><code>#0A494D</code></td>
+<td style="text-align: center;"><strong>10</strong></td>
+<td>3 parmi 10</td>
+</tr>
+<tr>
+<td><img alt="Tanx" loading="lazy" src="../../bible/images/ancients/icon/tanx.webp" /> <strong>Tanx</strong></td>
+<td>Roi Chimère</td>
+<td style="text-align: center;"><code>Acte 3</code></td>
+<td style="text-align: center;"><code>#731717</code></td>
+<td style="text-align: center;"><strong>10</strong></td>
+<td>3 parmi 10</td>
+</tr>
+<tr>
+<td><img alt="Vakuu" loading="lazy" src="../../bible/images/ancients/icon/vakuu.webp" /> <strong>Vakuu</strong></td>
+<td>Le Premier Démon</td>
+<td style="text-align: center;"><code>Acte 3</code></td>
+<td style="text-align: center;"><code>#3C1931</code></td>
+<td style="text-align: center;"><strong>10</strong></td>
+<td>1 parmi 3 + 1 parmi 3 + 1 parmi 4</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-index-des-tomes-individuels">3. 📚 Index des Tomes Individuels</h2>
+<p>Chaque Ancien dispose de son tome dédié comprenant son artwork complet, son lore, l'intégralité de ses dialogues par personnage (Ironclad, Silent, Defect, Regent, Necrobinder), et l'analyse détaillée de chacune de ses reliques avec ses notes d'implémentation C++ pour la GBA :</p>
+<h3 id="1-neow-mere-de-la-resurrection-exilee"><a href="01_neow.html">1. Neow — Mère de la Résurrection (exilée)</a></h3>
+<p><img alt="Neow Portrait" loading="lazy" src="../../bible/images/ancients/icon/neow.webp" /><br />
+Mère de la Résurrection exilée. Offre 2 bénédictions majeures et propose un système de malédictions volontaires pour obtenir d'immenses avantages au départ de l'Acte 1.<br />
+👉 <strong><a href="01_neow.html">Consulter le Tome de Neow</a></strong></p>
+<h3 id="2-darv-lamasseur"><a href="02_darv.html">2. Darv — L'Amasseur</a></h3>
+<p><img alt="Darv Portrait" loading="lazy" src="../../bible/images/ancients/icon/darv.webp" /><br />
+L'Amasseur mystérieux. Peut apparaître dans n'importe quel acte en remplacement. Propose les célèbres reliques de Boss classiques (Pyramide runique, Astrolabe, Snecko Eye, Boîte de Pandore).<br />
+👉 <strong><a href="02_darv.html">Consulter le Tome de Darv</a></strong></p>
+<h3 id="3-orobas-arc-en-ciel-vivant"><a href="03_orobas.html">3. Orobas — Arc-en-ciel Vivant</a></h3>
+<p><img alt="Orobas Portrait" loading="lazy" src="../../bible/images/ancients/icon/orobas.webp" /><br />
+L'Arc-en-ciel Vivant. Ancien de l'Acte 2 spécialisé dans la manipulation des gemmes, de l'alchimie et de la dent archaïque offrant des cartes d'attaque/défense élémentaires.<br />
+👉 <strong><a href="03_orobas.html">Consulter le Tome de Orobas</a></strong></p>
+<h3 id="4-pael-dragon-de-cire"><a href="04_pael.html">4. Paël — Dragon de Cire</a></h3>
+<p><img alt="Paël Portrait" loading="lazy" src="../../bible/images/ancients/icon/pael.webp" /><br />
+Le Dragon de Cire. Ancien de l'Acte 2 dont les reliques sont forgées à partir de son propre corps (Larmes, Œil, Sang, Chair, Griffe, Aile, Corne).<br />
+👉 <strong><a href="04_pael.html">Consulter le Tome de Paël</a></strong></p>
+<h3 id="5-tezcatara-nourriciere-de-la-flamme"><a href="05_tezcatara.html">5. Tezcatara — Nourricière de la Flamme</a></h3>
+<p><img alt="Tezcatara Portrait" loading="lazy" src="../../bible/images/ancients/icon/tezcatara.webp" /><br />
+La Nourricière de la Flamme. Mère protectrice et chaleureuse de l'Acte 2 offrant du réconfort, des soupes, des cookies et la Flamme Éclatante.<br />
+👉 <strong><a href="05_tezcatara.html">Consulter le Tome de Tezcatara</a></strong></p>
+<h3 id="6-nonupeipee-incarnation-de-la-fortune"><a href="06_nonupeipe.html">6. Nonupeipée — Incarnation de la Fortune</a></h3>
+<p><img alt="Nonupeipée Portrait" loading="lazy" src="../../bible/images/ancients/icon/nonupeipe.webp" /><br />
+L'Incarnation de la Fortune. Reine de l'opulence et de la chance de l'Acte 3, proposant des parures, le Diadème de diamant et la prestigieuse carte Apothéose.<br />
+👉 <strong><a href="06_nonupeipe.html">Consulter le Tome de Nonupeipée</a></strong></p>
+<h3 id="7-tanx-roi-chimere"><a href="07_tanx.html">7. Tanx — Roi Chimère</a></h3>
+<p><img alt="Tanx Portrait" loading="lazy" src="../../bible/images/ancients/icon/tanx.webp" /><br />
+Le Roi Chimère. Guerrier brutal de l'Acte 3 axé sur les armes de guerre dévastatrices (Couperet, Saï, Gourdin, Sifflet de Tanx, Griffes).<br />
+👉 <strong><a href="07_tanx.html">Consulter le Tome de Tanx</a></strong></p>
+<h3 id="8-vakuu-le-premier-demon"><a href="08_vakuu.html">8. Vakuu — Le Premier Démon</a></h3>
+<p><img alt="Vakuu Portrait" loading="lazy" src="../../bible/images/ancients/icon/vakuu.webp" /><br />
+Le Premier Démon. Entité ténébreuse de l'Acte 3 proposant des pactes faustiens contre des cartes légendaires comme Apparition et Vœu.<br />
+👉 <strong><a href="08_vakuu.html">Consulter le Tome de Vakuu</a></strong></p>
+<hr />
+<h2 id="4-tier-list-globale-des-reliques-danciens">4. 🏆 Tier List Globale des Reliques d'Anciens</h2>
+<p>Basée sur les classements officiels de la communauté et du patch <code>v0.111.0 Beta</code> :</p>
+<h3 id="tier-s-17-reliques">⭐ Tier S (17 Reliques)</h3>
+<table>
+<thead>
+<tr>
+<th>Relique</th>
+<th style="text-align: center;">Ancien</th>
+<th>Effet Synthétique</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Coffret perdu" loading="lazy" src="../../bible/images/relics/lost_coffer.webp" /> <strong>Coffret perdu</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Gagnez 1 récompense de carte et obtenez 1 <g>Potion</g> aléatoire.</td>
+</tr>
+<tr>
+<td><img alt="Étui à fioles" loading="lazy" src="../../bible/images/relics/phial_holster.webp" /> <strong>Étui à fioles</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Gagnez 1 nouvel emplacement de potion et obtenez 2 <g>Potions</g> aléatoires.</td>
+</tr>
+<tr>
+<td><img alt="Perle maudite" loading="lazy" src="../../bible/images/relics/cursed_pearl.webp" /> <strong>Perle maudite</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Recevez Cupidité. Obtenez 333 <g>Pièces d'or</g>.</td>
+</tr>
+<tr>
+<td><img alt="Cataplasme" loading="lazy" src="../../bible/images/relics/leafy_poultice.webp" /> <strong>Cataplasme</strong></td>
+<td style="text-align: center;">Neow</td>
+<td><g>Transformez</g> 1 <g>Frappe</g> et 1 <g>Défense</g> et perdez 12 PV Max.</td>
+</tr>
+<tr>
+<td><img alt="Boîte de Pandore" loading="lazy" src="../../bible/images/relics/pandoras_box.webp" /> <strong>Boîte de Pandore</strong></td>
+<td style="text-align: center;">Darv</td>
+<td><g>Transformez</g> TOUTES vos <g>Frappes</g> et vos <g>Défenses</g>.</td>
+</tr>
+<tr>
+<td><img alt="Pyramide runique" loading="lazy" src="../../bible/images/relics/runic_pyramid.webp" /> <strong>Pyramide runique</strong></td>
+<td style="text-align: center;">Darv</td>
+<td>À la fin de votre tour, vous ne défaussez pas votre <g>Main</g>.</td>
+</tr>
+<tr>
+<td><img alt="Caisse d'alchimie" loading="lazy" src="../../bible/images/relics/alchemical_coffer.webp" /> <strong>Caisse d'alchimie</strong></td>
+<td style="text-align: center;">Orobas</td>
+<td>Gagnez 4 emplacements de potion avec des <g>Potions</g> aléatoires.</td>
+</tr>
+<tr>
+<td><img alt="Perle radieuse" loading="lazy" src="../../bible/images/relics/radiant_pearl.webp" /> <strong>Perle radieuse</strong></td>
+<td style="text-align: center;">Orobas</td>
+<td>Au début de chaque combat, ajoutez 1 <g>Luminescence</g> à votre <g>Main</g>.</td>
+</tr>
+<tr>
+<td><img alt="Larmes de Paël" loading="lazy" src="../../bible/images/relics/paels_tears.webp" /> <strong>Larmes de Paël</strong></td>
+<td style="text-align: center;">Paël</td>
+<td>Si vous terminez votre tour sans avoir dépensé toute votre <e/>, gagnez <e>2</e> supplé...</td>
+</tr>
+<tr>
+<td><img alt="Œil de Paël" loading="lazy" src="../../bible/images/relics/paels_eye.webp" /> <strong>Œil de Paël</strong></td>
+<td style="text-align: center;">Paël</td>
+<td>Lorsque vous terminez votre tour sans avoir joué de cartes pour la première fois dans u...</td>
+</tr>
+<tr>
+<td><img alt="Sang de Paël" loading="lazy" src="../../bible/images/relics/paels_blood.webp" /> <strong>Sang de Paël</strong></td>
+<td style="text-align: center;">Paël</td>
+<td>Au début de votre tour, piochez 1 carte supplémentaire.</td>
+</tr>
+<tr>
+<td><img alt="Livre d'histoires" loading="lazy" src="../../bible/images/relics/storybook.webp" /> <strong>Livre d'histoires</strong></td>
+<td style="text-align: center;">Tezcatara</td>
+<td>Ajoutez 1 <g>Flamme éclatante</g> à votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Diadème de diamant" loading="lazy" src="../../bible/images/relics/diamond_diadem.webp" /> <strong>Diadème de diamant</strong></td>
+<td style="text-align: center;">Nonupeipée</td>
+<td>Démarrez chaque combat avec 20 d'<g>Armure</g>. Vous ne perdez pas votre <g>Armure</g> ...</td>
+</tr>
+<tr>
+<td><img alt="Couperet à viande" loading="lazy" src="../../bible/images/relics/meat_cleaver.webp" /> <strong>Couperet à viande</strong></td>
+<td style="text-align: center;">Tanx</td>
+<td>Vous pouvez <g>Cuisiner</g> aux Sites de Repos.</td>
+</tr>
+<tr>
+<td><img alt="Saï" loading="lazy" src="../../bible/images/relics/sai.webp" /> <strong>Saï</strong></td>
+<td style="text-align: center;">Tanx</td>
+<td>Au début de votre tour, gagnez 7 d'<g>Armure</g>.</td>
+</tr>
+<tr>
+<td><img alt="Cape distinguée" loading="lazy" src="../../bible/images/relics/distinguished_cape.webp" /> <strong>Cape distinguée</strong></td>
+<td style="text-align: center;">Vakuu</td>
+<td>Ajoutez 2 Malédictions aléatoires et 3 <g>Apparitions</g> à votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Masque serti" loading="lazy" src="../../bible/images/relics/jeweled_mask.webp" /> <strong>Masque serti</strong></td>
+<td style="text-align: center;">Vakuu</td>
+<td>Au début de chaque combat, placez un Pouvoir aléatoire de votre <g>Pioche</g> dans votr...</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tier-a-25-reliques">⭐ Tier A (25 Reliques)</h3>
+<table>
+<thead>
+<tr>
+<th>Relique</th>
+<th style="text-align: center;">Ancien</th>
+<th>Effet Synthétique</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Perle dorée" loading="lazy" src="../../bible/images/relics/golden_pearl.webp" /> <strong>Perle dorée</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Lorsque vous obtenez cette relique, gagnez 150 <g>Pièces d'or</g>.</td>
+</tr>
+<tr>
+<td><img alt="Presse-papier en plomb" loading="lazy" src="../../bible/images/relics/lead_paperweight.webp" /> <strong>Presse-papier en plomb</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Choisissez 1 carte Incolore parmi 2 à ajoutez à votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Parchemin énorme" loading="lazy" src="../../bible/images/relics/massive_scroll.webp" /> <strong>Parchemin énorme</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Choisissez 1 <g>Carte Multijoueur</g> parmi 3 à ajouter à votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Nouvelle page" loading="lazy" src="../../bible/images/relics/new_leaf.webp" /> <strong>Nouvelle page</strong></td>
+<td style="text-align: center;">Neow</td>
+<td><g>Transformez</g> 1 carte.</td>
+</tr>
+<tr>
+<td><img alt="Petite capsule" loading="lazy" src="../../bible/images/relics/small_capsule.webp" /> <strong>Petite capsule</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Obtenez une <g>Relique</g> aléatoire.</td>
+</tr>
+<tr>
+<td><img alt="Talisman de Neow" loading="lazy" src="../../bible/images/relics/neows_talisman.webp" /> <strong>Talisman de Neow</strong></td>
+<td style="text-align: center;">Neow</td>
+<td><g>Améliorez</g> 1 de vos <g>Frappes</g> et 1 de vos <g>Défenses</g>.</td>
+</tr>
+<tr>
+<td><img alt="Astrolabe" loading="lazy" src="../../bible/images/relics/astrolabe.webp" /> <strong>Astrolabe</strong></td>
+<td style="text-align: center;">Darv</td>
+<td><g>Transformez</g> 3 cartes, puis <g>Améliorez</g>-les.</td>
+</tr>
+<tr>
+<td><img alt="Cage vide" loading="lazy" src="../../bible/images/relics/empty_cage.webp" /> <strong>Cage vide</strong></td>
+<td style="text-align: center;">Darv</td>
+<td>Retirez 2 cartes de votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Bois flotté" loading="lazy" src="../../bible/images/relics/driftwood.webp" /> <strong>Bois flotté</strong></td>
+<td style="text-align: center;">Orobas</td>
+<td>Vous disposez d'une relance gratuite pour chaque récompense de carte.</td>
+</tr>
+<tr>
+<td><img alt="Dent archaïque" loading="lazy" src="../../bible/images/relics/archaic_tooth.webp" /> <strong>Dent archaïque</strong></td>
+<td style="text-align: center;">Orobas</td>
+<td><g>Transformez</g> une carte de base en sa version d'Ancien.</td>
+</tr>
+<tr>
+<td><img alt="Chair de Paël" loading="lazy" src="../../bible/images/relics/paels_flesh.webp" /> <strong>Chair de Paël</strong></td>
+<td style="text-align: center;">Paël</td>
+<td>Gagnez <e>1</e> supplémentaire au début de votre 3ème tour et au début de chaque tour s...</td>
+</tr>
+<tr>
+<td><img alt="Griffe de Paël" loading="lazy" src="../../bible/images/relics/paels_claw.webp" /> <strong>Griffe de Paël</strong></td>
+<td style="text-align: center;">Paël</td>
+<td><g>Envoûtez</g> toutes vos <g>Défenses</g> avec Viscosité.</td>
+</tr>
+<tr>
+<td><img alt="Délicieux biscuit" loading="lazy" src="../../bible/images/relics/yummy_cookie_defect.webp" /> <strong>Délicieux biscuit</strong></td>
+<td style="text-align: center;">Tezcatara</td>
+<td><g>Améliorez</g> 4 cartes.</td>
+</tr>
+<tr>
+<td><img alt="Grooos câlin" loading="lazy" src="../../bible/images/relics/biiig_hug.webp" /> <strong>Grooos câlin</strong></td>
+<td style="text-align: center;">Tezcatara</td>
+<td>Retirez 4 cartes de votre <g>Deck</g>. Lorsque vous mélangez votre <g>Pioche</g>, ajout...</td>
+</tr>
+<tr>
+<td><img alt="Boussole dorée" loading="lazy" src="../../bible/images/relics/golden_compass.webp" /> <strong>Boussole dorée</strong></td>
+<td style="text-align: center;">Tezcatara</td>
+<td>Remplacez la carte de l'<g>Acte</g> 2 par un chemin unique.</td>
+</tr>
+<tr>
+<td><img alt="Fougère délicate" loading="lazy" src="../../bible/images/relics/delicate_frond.webp" /> <strong>Fougère délicate</strong></td>
+<td style="text-align: center;">Nonupeipée</td>
+<td>Au début de chaque combat, remplissez vos emplacements de potion vides avec des <g>Poti...</td>
+</tr>
+<tr>
+<td><img alt="Coffre à bijoux" loading="lazy" src="../../bible/images/relics/jewelry_box.webp" /> <strong>Coffre à bijoux</strong></td>
+<td style="text-align: center;">Nonupeipée</td>
+<td>Ajoutez 1 <g>Apothéose</g> à votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Anneau à signet" loading="lazy" src="../../bible/images/relics/signet_ring.webp" /> <strong>Anneau à signet</strong></td>
+<td style="text-align: center;">Nonupeipée</td>
+<td>Lorsque vous obtenez cette relique, obtenez 888 <g>Pièces d'or</g>.</td>
+</tr>
+<tr>
+<td><img alt="Gourdin de fer" loading="lazy" src="../../bible/images/relics/iron_club.webp" /> <strong>Gourdin de fer</strong></td>
+<td style="text-align: center;">Tanx</td>
+<td>Toutes les 4 cartes jouées, vous piochez 1 carte.</td>
+</tr>
+<tr>
+<td><img alt="Sifflet de Tanx" loading="lazy" src="../../bible/images/relics/tanxs_whistle.webp" /> <strong>Sifflet de Tanx</strong></td>
+<td style="text-align: center;">Tanx</td>
+<td>Ajoutez 1 <g>Sifflet</g> à votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Hache de lancer" loading="lazy" src="../../bible/images/relics/throwing_axe.webp" /> <strong>Hache de lancer</strong></td>
+<td style="text-align: center;">Tanx</td>
+<td>La première carte que vous jouez chaque combat est jouée une fois de plus.</td>
+</tr>
+<tr>
+<td><img alt="Tri-boomerang" loading="lazy" src="../../bible/images/relics/tri_boomerang.webp" /> <strong>Tri-boomerang</strong></td>
+<td style="text-align: center;">Tanx</td>
+<td>Choisissez 3 Attaques de votre <g>Deck</g>. <g>Envoûtez</g>-les avec Instinct.</td>
+</tr>
+<tr>
+<td><img alt="Boucle d'oreille susurrante" loading="lazy" src="../../bible/images/relics/whispering_earring.webp" /> <strong>Boucle d'oreille susurrante</strong></td>
+<td style="text-align: center;">Vakuu</td>
+<td>Gagnez <e>1</e> au début de chaque tour. Vakuu joue votre premier tour à votre place.</td>
+</tr>
+<tr>
+<td><img alt="Brouillard en conserve" loading="lazy" src="../../bible/images/relics/preserved_fog.webp" /> <strong>Brouillard en conserve</strong></td>
+<td style="text-align: center;">Vakuu</td>
+<td>Retirez 3 cartes de votre <g>Deck</g>. Ajoutez Hubris à votre Deck.</td>
+</tr>
+<tr>
+<td><img alt="Embarras du choix" loading="lazy" src="../../bible/images/relics/choices_paradox.webp" /> <strong>Embarras du choix</strong></td>
+<td style="text-align: center;">Vakuu</td>
+<td>Au début de chaque combat, ajoutez 1 carte parmi 5 cartes aléatoires à votre <g>Main&lt;/g...</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tier-b-22-reliques">⭐ Tier B (22 Reliques)</h3>
+<table>
+<thead>
+<tr>
+<th>Relique</th>
+<th style="text-align: center;">Ancien</th>
+<th>Effet Synthétique</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Conque retentissante" loading="lazy" src="../../bible/images/relics/booming_conch.webp" /> <strong>Conque retentissante</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Au début des combats d'<g>Élite</g>, piochez 2 cartes supplémentaires et gagnez <e>1</e>.</td>
+</tr>
+<tr>
+<td><img alt="Tourment de Neow" loading="lazy" src="../../bible/images/relics/neows_torment.webp" /> <strong>Tourment de Neow</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Ajoutez 1 <g>Fureur de Neow</g> à votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Ciseaux précis" loading="lazy" src="../../bible/images/relics/precise_scissors.webp" /> <strong>Ciseaux précis</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Retirez 1 carte de votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Pommandre" loading="lazy" src="../../bible/images/relics/pomander.webp" /> <strong>Pommandre</strong></td>
+<td style="text-align: center;">Neow</td>
+<td><g>Améliorez</g> une carte.</td>
+</tr>
+<tr>
+<td><img alt="Tablette lourde" loading="lazy" src="../../bible/images/relics/hefty_tablet.webp" /> <strong>Tablette lourde</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Choisissez 1 carte Rare parmi 3 à ajouter à votre <g>Deck</g>. Ajoutez 1 Blessure à vot...</td>
+</tr>
+<tr>
+<td><img alt="Grande capsule" loading="lazy" src="../../bible/images/relics/large_capsule.webp" /> <strong>Grande capsule</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Obtenez 2 <g>Reliques aléatoires</g>. Ajoutez une <g>Frappe</g> et une <g>Défense</g> à...</td>
+</tr>
+<tr>
+<td><img alt="Étoile noire" loading="lazy" src="../../bible/images/relics/black_star.webp" /> <strong>Étoile noire</strong></td>
+<td style="text-align: center;">Darv</td>
+<td>Les <g>Élites</g> donnent une Relique supplémentaire lorsqu'ils sont vaincus.</td>
+</tr>
+<tr>
+<td><img alt="Œil de geckobra" loading="lazy" src="../../bible/images/relics/snecko_eye.webp" /> <strong>Œil de geckobra</strong></td>
+<td style="text-align: center;">Darv</td>
+<td>Au début de votre tour, piochez 2 cartes supplémentaires. Démarrez chaque combat Désori...</td>
+</tr>
+<tr>
+<td><img alt="Ras du cou en velours" loading="lazy" src="../../bible/images/relics/velvet_choker.webp" /> <strong>Ras du cou en velours</strong></td>
+<td style="text-align: center;">Darv</td>
+<td>Gagnez <e>1</e> au début de chaque tour. Vous ne pouvez pas jouer plus de 6 cartes par ...</td>
+</tr>
+<tr>
+<td><img alt="Grimoire poussiéreux" loading="lazy" src="../../bible/images/relics/dusty_tome.webp" /> <strong>Grimoire poussiéreux</strong></td>
+<td style="text-align: center;">Darv</td>
+<td>Obtenez une <g>Carte d'Ancien</g>.</td>
+</tr>
+<tr>
+<td><img alt="Crevaite électrique" loading="lazy" src="../../bible/images/relics/electric_shrymp.webp" /> <strong>Crevaite électrique</strong></td>
+<td style="text-align: center;">Orobas</td>
+<td><g>Envoûtez</g> une Compétence avec Imprégné.</td>
+</tr>
+<tr>
+<td><img alt="Joyau prismatique" loading="lazy" src="../../bible/images/relics/prismatic_gem.webp" /> <strong>Joyau prismatique</strong></td>
+<td style="text-align: center;">Orobas</td>
+<td>Gagnez <e>1</e> au début de chaque tour. Les récompenses de carte contiennent désormais...</td>
+</tr>
+<tr>
+<td><img alt="Aile de Paël" loading="lazy" src="../../bible/images/relics/paels_wing.webp" /> <strong>Aile de Paël</strong></td>
+<td style="text-align: center;">Paël</td>
+<td>Vous pouvez offrir des récompenses de carte en sacrifice à Paël. Tous les 2 sacrifices,...</td>
+</tr>
+<tr>
+<td><img alt="Excroissance de Paël" loading="lazy" src="../../bible/images/relics/paels_growth.webp" /> <strong>Excroissance de Paël</strong></td>
+<td style="text-align: center;">Paël</td>
+<td><g>Envoûtez</g> une carte avec Clonage.</td>
+</tr>
+<tr>
+<td><img alt="Chocolat très chaud" loading="lazy" src="../../bible/images/relics/very_hot_cocoa.webp" /> <strong>Chocolat très chaud</strong></td>
+<td style="text-align: center;">Tezcatara</td>
+<td>Démarrez chaque combat avec <e>4</e> supplémentaires.</td>
+</tr>
+<tr>
+<td><img alt="Soupe nourrissante" loading="lazy" src="../../bible/images/relics/nutritious_soup.webp" /> <strong>Soupe nourrissante</strong></td>
+<td style="text-align: center;">Tezcatara</td>
+<td><g>Envoûtez</g> toutes les <g>Frappes</g> dans votre <g>Deck</g> avec Braise de Tezcatara.</td>
+</tr>
+<tr>
+<td><img alt="Bois bénis" loading="lazy" src="../../bible/images/relics/blessed_antler.webp" /> <strong>Bois bénis</strong></td>
+<td style="text-align: center;">Nonupeipée</td>
+<td>Gagnez <e>1</e> au début de chaque tour. Au début de chaque combat, ajoutez 3 <g>Hébété...</td>
+</tr>
+<tr>
+<td><img alt="Écharpe étincelante" loading="lazy" src="../../bible/images/relics/brilliant_scarf.webp" /> <strong>Écharpe étincelante</strong></td>
+<td style="text-align: center;">Nonupeipée</td>
+<td>La 5ème carte jouée depuis votre main chaque tour peut être jouée sans coût.</td>
+</tr>
+<tr>
+<td><img alt="Bracelet brillant" loading="lazy" src="../../bible/images/relics/beautiful_bracelet.webp" /> <strong>Bracelet brillant</strong></td>
+<td style="text-align: center;">Nonupeipée</td>
+<td>Choisissez 4 cartes dans votre <g>Deck</g>. <g>Envoûtez</g>-les avec Célérité 2.</td>
+</tr>
+<tr>
+<td><img alt="Griffes" loading="lazy" src="../../bible/images/relics/claws.webp" /> <strong>Griffes</strong></td>
+<td style="text-align: center;">Tanx</td>
+<td><g>Transformez</g> jusqu'à 6 cartes en <g>Mutilation</g>.</td>
+</tr>
+<tr>
+<td><img alt="Serre desséchée" loading="lazy" src="../../bible/images/relics/sere_talon.webp" /> <strong>Serre desséchée</strong></td>
+<td style="text-align: center;">Vakuu</td>
+<td>Perdez 9 PV Max. Ajoutez 3 Vœux à votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Boîte à musique" loading="lazy" src="../../bible/images/relics/music_box.webp" /> <strong>Boîte à musique</strong></td>
+<td style="text-align: center;">Vakuu</td>
+<td>Vous créez une copie <g>Éthérée</g> de la première Attaque que vous jouez chaque tour.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tier-c-15-reliques">⭐ Tier C (15 Reliques)</h3>
+<table>
+<thead>
+<tr>
+<th>Relique</th>
+<th style="text-align: center;">Ancien</th>
+<th>Effet Synthétique</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Parchemin arcanique" loading="lazy" src="../../bible/images/relics/arcane_scroll.webp" /> <strong>Parchemin arcanique</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Obtenez une <g>Carte Rare</g> aléatoire.</td>
+</tr>
+<tr>
+<td><img alt="Pierre volcanique" loading="lazy" src="../../bible/images/relics/lava_rock.webp" /> <strong>Pierre volcanique</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Le Boss de l'Acte 1 octroie 2 <g>Reliques</g> lorsqu'il est vaincu.</td>
+</tr>
+<tr>
+<td><img alt="Osselets de Neow" loading="lazy" src="../../bible/images/relics/neows_bones.webp" /> <strong>Osselets de Neow</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Gagnez 2 <g>Reliques</g> de Neow aléatoires. Ajoutez 1 Malédiction aléatoire à votre &lt;g...</td>
+</tr>
+<tr>
+<td><img alt="Forces précaires" loading="lazy" src="../../bible/images/relics/precarious_shears.webp" /> <strong>Forces précaires</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Retirez 2 cartes de votre <g>Deck</g>. Perdez 16 PV.</td>
+</tr>
+<tr>
+<td><img alt="Creuset en argent" loading="lazy" src="../../bible/images/relics/silver_crucible.webp" /> <strong>Creuset en argent</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Vos 3 premières récompenses de carte sont <g>Améliorées</g>. Le premier Coffre trésor q...</td>
+</tr>
+<tr>
+<td><img alt="Cloche d'appel" loading="lazy" src="../../bible/images/relics/calling_bell.webp" /> <strong>Cloche d'appel</strong></td>
+<td style="text-align: center;">Darv</td>
+<td>Obtenez une Malédiction spéciale et 3 <g>Reliques</g>.</td>
+</tr>
+<tr>
+<td><img alt="Œil de verre" loading="lazy" src="../../bible/images/relics/glass_eye.webp" /> <strong>Œil de verre</strong></td>
+<td style="text-align: center;">Orobas</td>
+<td>Lorsque vous obtenez cette relique, obtenez 2 cartes <g>Communes</g>, 2 cartes <g>Inhab...</td>
+</tr>
+<tr>
+<td><img alt="Toucher d'Orobas" loading="lazy" src="../../bible/images/relics/touch_of_orobas.webp" /> <strong>Toucher d'Orobas</strong></td>
+<td style="text-align: center;">Orobas</td>
+<td>Remplacez votre <g>Relique</g> de départ par une version <g>Améliorée</g>.</td>
+</tr>
+<tr>
+<td><img alt="Légion de Paël" loading="lazy" src="../../bible/images/relics/paels_legion.webp" /> <strong>Légion de Paël</strong></td>
+<td style="text-align: center;">Paël</td>
+<td>Double l'<g>Armure</g> reçue d'une carte, puis s'endort pendant 2 tours.</td>
+</tr>
+<tr>
+<td><img alt="Lanterne-citrouille" loading="lazy" src="../../bible/images/relics/pumpkin_candle.webp" /> <strong>Lanterne-citrouille</strong></td>
+<td style="text-align: center;">Tezcatara</td>
+<td>Gagnez <e>1</e> au début de chaque tour. S'éteint après 5 combats. Peut être <g>Ravivée...</td>
+</tr>
+<tr>
+<td><img alt="Sceau doré" loading="lazy" src="../../bible/images/relics/seal_of_gold.webp" /> <strong>Sceau doré</strong></td>
+<td style="text-align: center;">Tezcatara</td>
+<td>Au début de votre tour, dépensez 3 <g>Pièces d'or</g> pour gagner <e>1</e>.</td>
+</tr>
+<tr>
+<td><img alt="Paillettes" loading="lazy" src="../../bible/images/relics/glitter.webp" /> <strong>Paillettes</strong></td>
+<td style="text-align: center;">Nonupeipée</td>
+<td><g>Envoûtez</g> toutes les récompenses de carte avec Glamour.</td>
+</tr>
+<tr>
+<td><img alt="Fruits exotiques" loading="lazy" src="../../bible/images/relics/looming_fruit.webp" /> <strong>Fruits exotiques</strong></td>
+<td style="text-align: center;">Nonupeipée</td>
+<td>Augmentez vos PV Max de 31.</td>
+</tr>
+<tr>
+<td><img alt="Arbalète" loading="lazy" src="../../bible/images/relics/crossbow.webp" /> <strong>Arbalète</strong></td>
+<td style="text-align: center;">Tanx</td>
+<td>Au début de votre tour, ajoutez une <g>Attaque</g> aléatoire à votre <g>Main</g>. Elle ...</td>
+</tr>
+<tr>
+<td><img alt="Rose sanguinolente" loading="lazy" src="../../bible/images/relics/blood_soaked_rose.webp" /> <strong>Rose sanguinolente</strong></td>
+<td style="text-align: center;">Vakuu</td>
+<td>Ajoutez 1 Assuétude à votre <g>Deck</g>. Gagnez <e>1</e> au début de chaque tour.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tier-d-18-reliques">⭐ Tier D (18 Reliques)</h3>
+<table>
+<thead>
+<tr>
+<th>Relique</th>
+<th style="text-align: center;">Ancien</th>
+<th>Effet Synthétique</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Caisse de parchemins" loading="lazy" src="../../bible/images/relics/scroll_boxes.webp" /> <strong>Caisse de parchemins</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Choisissez 1 pack de cartes parmi 2 à ajouter à votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Bottes ailées" loading="lazy" src="../../bible/images/relics/winged_boots.webp" /> <strong>Bottes ailées</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Vous pouvez ignorer les trajets indiqués sur la carte lorsque vous choisissez la procha...</td>
+</tr>
+<tr>
+<td><img alt="Huître nourrissante" loading="lazy" src="../../bible/images/relics/nutritious_oyster.webp" /> <strong>Huître nourrissante</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Augmentez vos PV Max de 11.</td>
+</tr>
+<tr>
+<td><img alt="Humidificateur en pierre" loading="lazy" src="../../bible/images/relics/stone_humidifier.webp" /> <strong>Humidificateur en pierre</strong></td>
+<td style="text-align: center;">Neow</td>
+<td>Lorsque vous vous <g>Reposez</g> à un <g>Site de repos</g>, augmentez vos PV Max de 5.</td>
+</tr>
+<tr>
+<td><img alt="Ectoplasme" loading="lazy" src="../../bible/images/relics/ectoplasm.webp" /> <strong>Ectoplasme</strong></td>
+<td style="text-align: center;">Darv</td>
+<td>Vous ne pouvez plus obtenir de <g>Pièces d'or</g>. Gagnez <e>1</e> au début de chaque t...</td>
+</tr>
+<tr>
+<td><img alt="Sozu" loading="lazy" src="../../bible/images/relics/sozu.webp" /> <strong>Sozu</strong></td>
+<td style="text-align: center;">Darv</td>
+<td>Gagnez <e>1</e> au début de chaque tour. Vous ne pouvez plus obtenir de <g>Potions</g>.</td>
+</tr>
+<tr>
+<td><img alt="Pierre philosophale" loading="lazy" src="../../bible/images/relics/philosophers_stone.webp" /> <strong>Pierre philosophale</strong></td>
+<td style="text-align: center;">Darv</td>
+<td>Gagnez <e>1</e> au début de chaque tour. TOUS les ennemis démarrent le combat avec 1 de...</td>
+</tr>
+<tr>
+<td><img alt="Verre marin" loading="lazy" src="../../bible/images/relics/sea_glass.webp" /> <strong>Verre marin</strong></td>
+<td style="text-align: center;">Orobas</td>
+<td>Consultez une sélection de 15 cartes d'un autre personnage. Ajoutez-en autant que vous ...</td>
+</tr>
+<tr>
+<td><img alt="Château de sable" loading="lazy" src="../../bible/images/relics/sand_castle.webp" /> <strong>Château de sable</strong></td>
+<td style="text-align: center;">Orobas</td>
+<td>Lorsque vous obtenez cette relique, <g>Améliorez</g> 6 cartes aléatoires.</td>
+</tr>
+<tr>
+<td><img alt="Corne de Paël" loading="lazy" src="../../bible/images/relics/paels_horn.webp" /> <strong>Corne de Paël</strong></td>
+<td style="text-align: center;">Paël</td>
+<td>Ajoutez 2 <g>Relaxations</g> à votre <g>Deck</g>.</td>
+</tr>
+<tr>
+<td><img alt="Dent de Paël" loading="lazy" src="../../bible/images/relics/paels_tooth.webp" /> <strong>Dent de Paël</strong></td>
+<td style="text-align: center;">Paël</td>
+<td>Retirez 5 cartes de votre <g>Deck</g>. Après chaque combat, récupérez-en 1 aléatoiremen...</td>
+</tr>
+<tr>
+<td><img alt="Mitaines réchauffantes" loading="lazy" src="../../bible/images/relics/toasty_mittens.webp" /> <strong>Mitaines réchauffantes</strong></td>
+<td style="text-align: center;">Tezcatara</td>
+<td>Au début de votre tour, <g>Épuisez</g> 1 carte de votre <g>Main</g> et gagnez 1 de <g>F...</td>
+</tr>
+<tr>
+<td><img alt="Caisse à jouets" loading="lazy" src="../../bible/images/relics/toy_box.webp" /> <strong>Caisse à jouets</strong></td>
+<td style="text-align: center;">Tezcatara</td>
+<td>Obtenez 5 <g>Reliques de cire</g>. Tous les 3 combats, la <g>Relique de cire</g> le plu...</td>
+</tr>
+<tr>
+<td><img alt="Manteau de fourrure" loading="lazy" src="../../bible/images/relics/fur_coat.webp" /> <strong>Manteau de fourrure</strong></td>
+<td style="text-align: center;">Nonupeipée</td>
+<td>Marquez 8 combats aléatoires sur la Carte. Les ennemis dans ces salles ont 1 PV.</td>
+</tr>
+<tr>
+<td><img alt="Gantelets à pointes" loading="lazy" src="../../bible/images/relics/spiked_gauntlets.webp" /> <strong>Gantelets à pointes</strong></td>
+<td style="text-align: center;">Tanx</td>
+<td>Gagnez <e>1</e> au début de chaque tour. Les Pouvoirs coûtent 1 <e/> supplémentaire.</td>
+</tr>
+<tr>
+<td><img alt="Marteau de guerre" loading="lazy" src="../../bible/images/relics/war_hammer.webp" /> <strong>Marteau de guerre</strong></td>
+<td style="text-align: center;">Tanx</td>
+<td>Lorsque vous tuez un <g>Élite</g>, <g>Améliorez</g> 4 cartes aléatoires.</td>
+</tr>
+<tr>
+<td><img alt="Violon" loading="lazy" src="../../bible/images/relics/fiddle.webp" /> <strong>Violon</strong></td>
+<td style="text-align: center;">Vakuu</td>
+<td>Au début de chaque tour, piochez 2 cartes supplémentaires. Vous ne pouvez plus piocher ...</td>
+</tr>
+<tr>
+<td><img alt="Parasol seigneurial" loading="lazy" src="../../bible/images/relics/lords_parasol.webp" /> <strong>Parasol seigneurial</strong></td>
+<td style="text-align: center;">Vakuu</td>
+<td>Lorsque vous passez chez le <g>Marchand</g>, vous obtenez immédiatement TOUT ce qu'il p...</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-regles-de-tirage-slots-exclusions">5. 🎲 Règles de Tirage, Slots &amp; Exclusions</h2>
+<h3 id="1-gestion-des-multi-slots">1. Gestion des Multi-Slots</h3>
+<ul>
+<li><strong>Neow (Acte 1)</strong> : 2 slots distincts. Slot 1 (Bénédiction majeure, 2 choix parmi 20), Slot 2 (Malédiction / Sacrifice optionnel, 1 choix parmi 10).</li>
+<li><strong>Orobas, Paël, Tezcatara, Vakuu</strong> : 3 slots séquentiels proposant chacun 1 choix parmi 3 ou 4 reliques thématiques.</li>
+<li><strong>Nonupeipée &amp; Tanx</strong> : 1 méga-slot proposant 3 choix libres parmi 10 reliques.</li>
+<li><strong>Darv</strong> : 1 slot offrant 3 choix parmi 12 reliques de Boss classiques.</li>
+</ul>
+<h3 id="2-regles-dexclusion-stricte-neow">2. Règles d'Exclusion Stricte (Neow)</h3>
+<p>Pour garantir l'équilibre de départ, Neow interdit formellement de sélectionner simultanément :
+* <code>Perle maudite</code> (CursedPearl) &amp; <code>Perle dorée</code> (GoldenPearl)
+* <code>Tablette lourde</code> (HeftyTablet) &amp; <code>Parchemin arcanique</code> (ArcaneScroll)
+* <code>Cataplasme</code> (LeafyPoultice) &amp; <code>Nouvelle page</code> (NewLeaf)
+* <code>Forces précaires</code> (PrecariousShears) &amp; <code>Ciseaux précis</code> (PreciseScissors)
+* <code>Sacrifice de Neow</code> (NeowsSacrifice) &amp; <code>Étui à fioles</code> (PhialHolster) / <code>Coffret perdu</code> (LostCoffer)</p>
+<hr />
+<h2 id="6-specifications-ergonomie-gba-240x160">6. 🎮 Spécifications &amp; Ergonomie GBA (240x160)</h2>
+<p>L'adaptation sur Game Boy Advance est documentée en détail dans :<br />
+➡️ <strong><a href="spec_technique_gba.html">Spécifications Techniques GBA (<code>spec_technique_gba.md</code>)</a></strong></p>
+<h3 id="synthese-des-controles-gba">Synthèse des Contrôles GBA</h3>
+<table>
+<thead>
+<tr>
+<th>Bouton</th>
+<th>Action dans l'Écran de Rencontre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>D-Pad Gauche / Droite</strong></td>
+<td>Sélectionner la relique active dans le carrousel</td>
+</tr>
+<tr>
+<td><strong>D-Pad Haut / Bas</strong></td>
+<td>Changer de slot de tirage (si multi-slots actifs)</td>
+</tr>
+<tr>
+<td><strong>Bouton A</strong></td>
+<td>Valider le choix / Faire défiler la réplique suivante</td>
+</tr>
+<tr>
+<td><strong>Bouton B</strong></td>
+<td>Zoom / Inspection de la carte dérivée associée</td>
+</tr>
+<tr>
+<td><strong>SELECT</strong></td>
+<td>Consulter le Deck et l'inventaire actuel du joueur</td>
+</tr>
+<tr>
+<td><strong>START</strong></td>
+<td>Menu pause / Passer l'animation</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-fiche-technique-code-c20">7. 💻 Fiche Technique &amp; Code C++20</h2>
+<p>L'architecture C++ s'intègre harmonieusement dans <code>slay_the_gba</code> :
+* Déclarations types : <a href="spec_technique_gba.html#includeengineancient_typesh"><code>include/engine/ancient_types.h</code></a>
+* Machine à états Butano : <a href="spec_technique_gba.html#machine-à-états-de-la-rencontre-ancientstatemachine"><code>src/scene_ancient_encounter.cpp</code></a>
+* Script de conversion des 137 images WebP vers PNG 16 couleurs : <a href="spec_technique_gba.html#4--pipeline-dassets-graphiques-webp-vers-gba-grit"><code>scripts/convert_ancient_assets.py</code></a></p>
+<hr />
+<h2 id="8-encyclopedie-complete-de-slay-the-spire-2-patch-v01110-beta">8. 🌐 Encyclopédie Complète de Slay the Spire 2 (Patch v0.111.0 Beta)</h2>
+<p>Au-delà des 8 Anciens, la Bible contient <strong>l'intégralité absolue des données et assets du jeu</strong> (1 018 images locales) :</p>
+<h3 id="les-decks-de-cartes-569-cartes-au-total">🃏 Les Decks de Cartes (569 Cartes au total)</h3>
+<ul>
+<li>🔴 <a href="09_cartes_ironclad.html"><strong>09. Soldat de Fer / Ironclad</strong></a> (90 cartes : Frappe, Défense, Fracassement, Enragé, Vague de fer, etc.)</li>
+<li>🟢 <a href="10_cartes_silent.html"><strong>10. La Silencieuse / Silent</strong></a> (91 cartes : Poison, Surins, Agilité, Précision, Catalyseur)</li>
+<li>🔵 <a href="11_cartes_defect.html"><strong>11. Le Défectueux / Defect</strong></a> (91 cartes : Orbes élémentaires, Électro-dynamique, Faisceau de glace)</li>
+<li>👑 <a href="12_cartes_regent.html"><strong>12. Le Régent / Regent</strong></a> (91 cartes : Commandement royal, contrôle de foule, nouvelle classe STS2)</li>
+<li>💀 <a href="13_cartes_necrobinder.html"><strong>13. La Nécrolieuse / Necrobinder</strong></a> (91 cartes : Nécromancie, manipulation d'âmes, invocations)</li>
+<li>⚪ <a href="14_cartes_incolores_et_maledictions.html"><strong>14. Incolores, Malédictions &amp; Événements</strong></a> (115 cartes : Apothéose, Malédictions de la Tour, cartes d'Anciens)</li>
+</ul>
+<h3 id="reliques-bestiaire-alchimie">🏺 Reliques, Bestiaire &amp; Alchimie</h3>
+<ul>
+<li>🏆 <a href="15_reliques_globales.html"><strong>15. Encyclopédie des 298 Reliques</strong></a> (Départ, Communes, Rares, Boss, Boutique, Événement et Anciens)</li>
+<li>👾 <a href="16_bestiaire_monstres.html"><strong>16. Bestiaire des 112 Monstres</strong></a> (Cultiste, Mangeur de temps, Clepséon, PV normaux/Ascension, attaques et intentions)</li>
+<li>🧪 <a href="17_potions.html"><strong>17. Alchimie &amp; 63 Potions</strong></a> (Potions explosives, élixirs de force, potions fantômes)</li>
+<li>❓ <a href="18_evenements.html"><strong>18. Les 57 Événements de la Tour</strong></a> (Sanctuaires, pactes, trésors cachés)</li>
+<li>🗺️ <a href="19_boucle_de_gameplay_et_ascension.html"><strong>19. Boucle de Gameplay Roguelike, Carte &amp; Ascension 1 à 10</strong></a> (Graphe des 16 étages, types de salles, repos/forge, transition d'actes 1-3 et les 10 paliers d'Ascension)</li>
+<li>💾 <a href="20_sauvegardes_encyclopedie_et_ressources.html"><strong>20. Profils de Sauvegarde, Autosave, Encyclopédies &amp; Ressources</strong></a> (3 profils SRAM GBA, autosave à chaque étape, codex progressif masqué/dévoilé, boutique, forge '+' et ressources uniques des 5 héros)</li>
+<li>⚔️ <a href="21_interface_pokemon_et_navigation_carte.html"><strong>21. Interface Style Pokémon, Navigation de Carte &amp; Inspecteur de Deck</strong></a> (Arène de combat Pokémon Gen 3, menu d'action 4 directions, événements narratifs avec choix, défilement D-Pad sur la carte et registre du Deck avec SELECT)</li>
+<li>🎮 <a href="index.html"><strong>22. Collection Officielle des 5 Livrets de Jeu GBA (livrets_gba/)</strong></a> (Manuels d'instructions complets style Game Boy Advance Nintendo® pour les 5 cartouches : <a href="livret_ironclad.html">Soldat de Fer</a>, <a href="livret_silent.html">La Silencieuse</a>, <a href="livret_defect.html">Le Défectueux</a>, <a href="livret_regent.html">Le Régent</a> et <a href="livret_necrobinder.html">La Nécrolieuse</a>)</li>
+</ul>
+<hr />
+<p><em>Bible compilée pour Alexandre Enouf — Projet Slay The GBA — Septembre 2026</em></p></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

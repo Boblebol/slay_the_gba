@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tome 21 — Interface Style Pokémon, Navigation de Carte &amp; Inspecteur de Deck — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html" class="on">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><p class="crumb"><a href="index.html">◄ Bible</a></p><div class="md"><h1 id="tome-21-interface-style-pokemon-navigation-de-carte-inspecteur-de-deck">Tome 21 — Interface Style Pokémon, Navigation de Carte &amp; Inspecteur de Deck</h1>
+<h2 id="1-vision-architecture-uiux">1. Vision &amp; Architecture UI/UX</h2>
+<p>Ce tome spécifie l'expérience joueur immersive combinant deux philosophies emblématiques :
+1. <strong>La navigation et progression de <em>Slay the Spire</em></strong> : exploration procédurale de 16 étages, vision des embranchements futurs, gestion et consultation permanente du Deck principal via raccourci manette.
+2. <strong>L'ergonomie des combats et événements inspirée des jeux <em>Pokémon GBA (Génération 3)</em></strong> : disposition en diagonale de l'arène (héros vu de dos/trois-quarts en bas à gauche, monstre en haut à droite), boîtes de statut à jauges dynamiques, menu d'action 4 directions, et fenêtres de dialogue pour les événements mystères.</p>
+<hr />
+<h2 id="2-navigation-de-carte-classique-slay-the-spire">2. Navigation de Carte Classique (<em>Slay the Spire</em>)</h2>
+<h3 id="disposition-ecran-defilement-d-pad">Disposition Écran &amp; Défilement D-Pad</h3>
+<p>Sur l'écran GBA (240x160 pixels), la carte de l'Acte est visualisée verticalement :
+- <strong>Défilement vertical (Haut / Bas)</strong> : Permet d'inspecter les étages 1 à 16 (sommet de la Tour avec le Boss) pour planifier son cheminement (repérer les Feux de camp, Boutiques et Élites).
+- <strong>Sélection des embranchements (Gauche / Droite)</strong> : Met en surbrillance l'une des voies connectées accessibles depuis la salle actuelle (<code>MapGraph::get_next_nodes</code>).
+- <strong>Confirmation (Bouton A)</strong> : Valide le déplacement et fait entrer le joueur dans la salle choisie.
+- <strong>Consultation rapide du Deck (Bouton SELECT)</strong> : Bascule instantanément sur l'Inspecteur de Deck.</p>
+<pre><code>┌────────────────────────────────────────────────────────┐
+│  🗺️  CARTE DE LA TOUR — ACTE 1   PV:80/80   OR:99 💰   │
+├────────────────────────────────────────────────────────┤
+│  Étage 16 :               👑 [BOSS GUARDIAN]           │
+│  Étage 15 :     [Feu]            [Feu]           [Feu] │
+│  Étage 14 :    [Combat]        [Élite]         [Shop]  │
+│  ...                                                   │
+│  Étage  2 :   👉[Combat]        [Event ?]       [Shop] │
+│  Étage  1 :    *[Combat]                               │
+├────────────────────────────────────────────────────────┤
+│  &gt; Voie Gauche (Étage 2) : Combat de Monstre [Combat]  │
+│  Haut/Bas: Défiler   G/D: Choisir Route   A: Entrer    │
+│  SELECT: Registre du Deck                              │
+└────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="typologie-des-salles-et-icones-gba">Typologie des Salles et Icônes GBA</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Type de Salle</th>
+<th style="text-align: center;">Icône GBA</th>
+<th style="text-align: left;">Libellé Écran</th>
+<th style="text-align: left;">Comportement à l'entrée</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>MONSTER</code></td>
+<td style="text-align: center;"><code>[Combat]</code></td>
+<td style="text-align: left;">Combat Standard</td>
+<td style="text-align: left;">Lance le combat contre un monstre de l'acte</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ELITE</code></td>
+<td style="text-align: center;"><code>[Élite]</code></td>
+<td style="text-align: left;">Combat d'Élite</td>
+<td style="text-align: left;">Combat difficile, récompense relique majeure</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>REST_SITE</code></td>
+<td style="text-align: center;"><code>[Feu]</code></td>
+<td style="text-align: left;">Feu de Camp</td>
+<td style="text-align: left;">Choix : Se reposer (+30% PV) ou Forger (+1 carte)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>SHOP</code></td>
+<td style="text-align: center;"><code>[Shop]</code></td>
+<td style="text-align: left;">Marchand de la Tour</td>
+<td style="text-align: left;">Achats de cartes, reliques, potions et purge de carte</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TREASURE</code></td>
+<td style="text-align: center;"><code>[Coffre]</code></td>
+<td style="text-align: left;">Salle au Trésor</td>
+<td style="text-align: left;">Coffre scellé (+50 Or et 1 relique gratuite)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>EVENT</code></td>
+<td style="text-align: center;"><code>[Event ?]</code></td>
+<td style="text-align: left;">Événement Mystère</td>
+<td style="text-align: left;">Rencontre narrative avec choix style Pokémon</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>BOSS</code></td>
+<td style="text-align: center;"><code>[BOSS]</code></td>
+<td style="text-align: left;">Gardien de l'Étage</td>
+<td style="text-align: left;">Combat de boss final de l'acte</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-registre-inspecteur-de-deck-deckviewer">3. Registre &amp; Inspecteur de Deck (<code>DeckViewer</code>)</h2>
+<p>Accessible à tout moment en navigation (et via le menu en combat) par la touche <strong>SELECT</strong> ou l'option dédiée :
+- <strong>En-tête</strong> : Identité du Héros, Teinte/Couleur choisie (<em>Flamme Azur</em>, etc.), PV actuels/Max, Or possédé, Étage courant.
+- <strong>Barre de Reliques</strong> : Liste de toutes les reliques passives actives (<em>Sang Ardent</em>, <em>Vajra</em>, <em>Akabeko</em>...).
+- <strong>Inventaire du Deck</strong> : Défilement carte par carte avec affichage clair du statut d'amélioration (<code>+</code>), coût en Énergie, Type (Attaque, Compétence, Pouvoir) et description complète des effets.
+- <strong>Touche B ou SELECT</strong> : Retour immédiat à l'écran de navigation sans transition superflue.</p>
+<hr />
+<h2 id="4-arene-de-combat-style-pokemon-gba-gen-3">4. Arène de Combat Style Pokémon (GBA Gen 3)</h2>
+<h3 id="disposition-spatiale-240x160">Disposition Spatiale (240x160)</h3>
+<ul>
+<li><strong>Socles de combat (Piédestaux)</strong> :</li>
+<li>Joueur : Positionné en bas à gauche <code>(x = -65, y = 14)</code>.</li>
+<li>Ennemi : Positionné en haut à droite <code>(x = 65, y = -34)</code>.</li>
+<li><strong>Boîte de Statut Ennemi (Haut-Gauche)</strong> :</li>
+<li>Nom du monstre et Étage.</li>
+<li>Jauge de PV proportionnelle <code>[████████░░]</code> avec décompte numérique <code>34/44</code>.</li>
+<li>Bouclier d'Armure dynamique (<code>+6B</code>).</li>
+<li>Bulle d'Intention (<em>Attaque 11 dégâts</em>, <em>Buff Force +3</em>).</li>
+<li>Badges d'états et altérations (<code>[STR+3]</code>, <code>[VULN:1]</code>, <code>[POISON:7]</code>).</li>
+<li><strong>Boîte de Statut Héros (Bas-Droite / Centre-Droit)</strong> :</li>
+<li>Nom du Héros et Teinte active (<code>[Shiny]</code>).</li>
+<li>Jauge de PV proportionnelle <code>[██████████]</code> avec décompte <code>80/80</code>.</li>
+<li>Bouclier d'Armure (<code>+5B</code>).</li>
+<li>Compteur d'Énergie <code>[●][●][●] (3/3)</code>.</li>
+<li>Jauge de ressource spécifique selon l'édition de cartouche :<ul>
+<li><em>Soldat de Fer</em> : <code>FORCE: +2 | MÉTALLISATION: 3</code></li>
+<li><em>La Silencieuse</em> : <code>POISON ENNEMI: 7</code></li>
+<li><em>Le Défectueux</em> : <code>ORBES: [⚡ Foudre] [❄️ Glace] [🌑 Dark]</code> (3 emplacements)</li>
+<li><em>Le Régent</em> : <code>ÉTOILES SOUVERAINES: ⭐⭐⭐ (3/5)</code></li>
+<li><em>La Nécrolieuse</em> : <code>ÂMES: 4 | OSTY LE MINION: 12 PV [Intercepte]</code></li>
+</ul>
+</li>
+</ul>
+<pre><code>┌────────────────────────────────────────────────────────┐
+│ [ENNEMI] Cultist (Étage 1)                             │
+│ PV: [==========] 44/44                                 │
+│ Intent: Attaque 6 dégâts                               │
+│                                                        │
+│                           [HÉROS] Soldat de Fer [Shiny]│
+│                           PV: [==========] 80/80  [+5B]│
+│                           ÉNERGIE: [●][●][●] (3/3)     │
+│                           RESSOURCE: STR: +0 | METAL: 0│
+├────────────────────────────────────────────────────────┤
+│ Que doit faire Soldat de Fer ?                         │
+│  &gt; [1] CARTES (Attaques)         [2] SAC (Potions : 1) │
+│    [3] MON DECK (Select)         [4] FIN DE TOUR       │
+└────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="menu-daction-4-directions-type-pokemon">Menu d'Action 4 Directions (Type Pokémon)</h3>
+<p>Le pavé de commande inférieur adopte la structure 2x2 des jeux Pokémon :
+1. <strong><code>[1] CARTES</code></strong> : Ouvre le sous-menu des cartes en main.
+   - Présentation façon "Capacités Pokémon" : Nom de la carte, coût en Énergie (remplaçant les PP), type et description complète de l'effet.
+   - Touche A pour déclencher la carte.
+   - Touche B pour annuler et revenir au menu principal.
+2. <strong><code>[2] SAC</code></strong> : Affiche les potions portées à la ceinture (jusqu'à 3 fioles) pour utilisation instantanée.
+3. <strong><code>[3] MON DECK</code></strong> : Ouvre l'overlay de consultation des cartes et reliques sans passer son tour.
+4. <strong><code>[4] FIN DE TOUR</code></strong> : Conclut le tour du joueur, applique les statuts de fin de tour et déclenche l'animation d'offensive de l'ennemi.</p>
+<h3 id="sensations-animations-de-combat">Sensations &amp; Animations de Combat</h3>
+<ul>
+<li><strong>Respiration au repos (Idle Bobbing)</strong> : Flottement subtil de 1 pixel alterné toutes les 24 frames.</li>
+<li><strong>Fente offensive (Player Lunge)</strong> : Déplacement rapide vers l'ennemi lors du jeu d'une carte d'attaque.</li>
+<li><strong>Secousse de dégâts (Enemy Shake &amp; Flicker)</strong> : Trépidation latérale de l'ennemi et clignotement lors de la réception d'un coup.</li>
+<li><strong>Indicateur de dégâts flottant</strong> : Affichage temporaire du montant de dégâts infligés au-dessus de la cible (<code>-9 HP !</code>).</li>
+</ul>
+<hr />
+<h2 id="5-evenements-mysteres-style-pokemon">5. Événements Mystères Style Pokémon</h2>
+<p>Les salles <code>[Event ?]</code> abandonnent les pavés textuels rigides pour adopter la scénarisation des rencontres de PNJ / Pokémon légendaires :
+- <strong>Cadre de Dialogue immersif</strong> : Texte narratif avec défilement fluide et typographie rétro.
+- <strong>Boîte de Choix interactive</strong> : 2 à 3 alternatives explicites avec indication des bénéfices et sacrifices.
+- <strong>Résolution avec feedback sonore et visuel</strong> : Message d'issue confirmant l'octroi d'Or, la guérison, l'amélioration d'une carte ou l'obtention d'une relique.</p>
+<pre><code>┌────────────────────────────────────────────────────────┐
+│  ❓ MANNEQUIN D'ENTRAÎNEMENT USÉ                       │
+├────────────────────────────────────────────────────────┤
+│  « BZZZT ! SÉQUENCE D'ENTRAÎNEMENT INITIÉE !           │
+│    Réglez vos coups ou subissez l'humiliation ! »      │
+├────────────────────────────────────────────────────────┤
+│  &gt; [1] Attaque acharnée (Subissez 6 dégâts, +60 Or)    │
+│    [2] Réparer les rouages (Améliorez 1 carte du deck) │
+│    [3] Prendre la fuite (Continuer la route)           │
+└────────────────────────────────────────────────────────┘
+</code></pre>
+<hr />
+<h2 id="6-automatisation-des-builds-nettoyage-make-clean">6. Automatisation des Builds &amp; Nettoyage (<code>make clean</code>)</h2>
+<p>Afin d'éviter tout conflit de cache et d'éliminer les versions obsolètes de l'application :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Commande Makefile</th>
+<th style="text-align: left;">Action effectuée</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>make clean</code></td>
+<td style="text-align: left;">Supprime les ROMs obsolètes (ex: <code>slay_the_gba.gba</code>), les <code>.elf</code>, <code>.map</code>, fichiers temporaires, répertoires <code>bin/</code> et <code>build_*</code>. <strong>Préserve les 5 ROMs officielles</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>make clean-all</code></td>
+<td style="text-align: left;">Nettoyage complet incluant la suppression de <strong>toutes</strong> les cartouches <code>.gba</code> pour repartir d'un dépôt totalement vierge.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>make all-roms</code></td>
+<td style="text-align: left;">Compile proprement et simultanément les 5 éditions de cartouches (<code>slay_ironclad.gba</code>, <code>slay_silent.gba</code>, <code>slay_defect.gba</code>, <code>slay_regent.gba</code>, <code>slay_necrobinder.gba</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>make test</code></td>
+<td style="text-align: left;">Exécute la suite de tests unitaires C++20 déterministes (100% PASS).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>make test-e2e</code></td>
+<td style="text-align: left;">Exécute la simulation complète de bout en bout de la boucle de jeu (100% PASS).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>make play</code></td>
+<td style="text-align: left;">Lance le simulateur interactif complet dans le terminal.</td>
+</tr>
+</tbody>
+</table></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

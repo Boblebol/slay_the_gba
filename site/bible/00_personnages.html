@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les 5 Personnages Jouables — Slay the Spire 2 sur Game Boy Advance — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html" class="on">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><p class="crumb"><a href="index.html">◄ Bible</a></p><div class="md"><h1 id="les-5-personnages-jouables-slay-the-spire-2-sur-game-boy-advance">👤 Les 5 Personnages Jouables — Slay the Spire 2 sur Game Boy Advance</h1>
+<blockquote>
+<p><strong>Référence officielle de gameplay pour <code>slay_the_gba</code></strong><br />
+<strong>Patch :</strong> <code>v0.111.0 Beta</code> (Dernière version officielle)<br />
+Les 5 archétypes complets : Soldat de Fer, La Silencieuse, Le Défectueux, Le Régent et La Nécrolieuse.</p>
+</blockquote>
+<hr />
+<h2 id="matrice-comparative-des-personnages">📊 Matrice Comparative des Personnages</h2>
+<table>
+<thead>
+<tr>
+<th>Personnage</th>
+<th>Titre</th>
+<th style="text-align: center;">PV Max</th>
+<th>Relique de Départ</th>
+<th>Deck de Départ</th>
+<th>Mécanique Signature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Soldat de Fer</strong></td>
+<td>Guerrier Maudit de l'Enfer</td>
+<td style="text-align: center;"><code>80 PV</code></td>
+<td><img alt="Sang" loading="lazy" src="../../bible/images/relics/burning_blood.webp" /> Sang ardent (BURNING_BLOOD)</td>
+<td>5x Frappe, 4x Défense, 1x Heurt</td>
+<td>Spécialisé dans la force brute, les attaques massives de zon...</td>
+</tr>
+<tr>
+<td><strong>La Silencieuse</strong></td>
+<td>Chasseresse Mortelle des Brumes</td>
+<td style="text-align: center;"><code>70 PV</code></td>
+<td><img alt="Anneau" loading="lazy" src="../../bible/images/relics/ring_of_the_snake.webp" /> Anneau du serpent (RING_OF_THE_SNAKE)</td>
+<td>5x Frappe, 5x Défense, 1x Neutralisation, 1x Survivant</td>
+<td>Maîtresse des poisons à progression exponentielle (Catalyseu...</td>
+</tr>
+<tr>
+<td><strong>Le Défectueux</strong></td>
+<td>Automate de Combat Éveillé</td>
+<td style="text-align: center;"><code>75 PV</code></td>
+<td><img alt="Noyau" loading="lazy" src="../../bible/images/relics/cracked_core.webp" /> Noyau fissuré (CRACKED_CORE)</td>
+<td>4x Frappe, 4x Défense, 1x Éclair, 1x Activation</td>
+<td>Gestion stratégique des slots d'orbes (Foudre, Glace, Obscur...</td>
+</tr>
+<tr>
+<td><strong>Le Régent</strong></td>
+<td>Souverain Céleste Déchu (Nouveau dans STS2)</td>
+<td style="text-align: center;"><code>75 PV</code></td>
+<td><img alt="Droit" loading="lazy" src="../../bible/images/relics/divine_right.webp" /> Droit divin (DIVINE_RIGHT)</td>
+<td>4x Frappe, 4x Défense, 1x Chute, 1x Vénération</td>
+<td>Accumulation d'Étoiles pour libérer des frappes cosmiques, d...</td>
+</tr>
+<tr>
+<td><strong>La Nécrolieuse</strong></td>
+<td>Gardienne des Morts et des Os (Nouveau dans STS2)</td>
+<td style="text-align: center;"><code>65 PV</code></td>
+<td><img alt="Phylactère" loading="lazy" src="../../bible/images/relics/bound_phylactery.webp" /> Phylactère enchaîné (BOUND_PHYLACTERY)</td>
+<td>4x Frappe, 4x Défense, 1x Déchaînement, 1x Garde</td>
+<td>Gestion de familiers et squelettes invoqués au combat, manip...</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="soldat-de-fer-guerrier-maudit-de-lenfer">⚔️ Soldat de Fer (Guerrier Maudit de l'Enfer)</h2>
+<ul>
+<li><strong>Points de Vie de Départ :</strong> <code>80 PV</code> (PV Max initial)</li>
+<li><strong>Or de Départ :</strong> <code>99 Pièces d'or</code></li>
+<li><strong>Énergie de Base :</strong> <code>3 ⚡</code> par tour</li>
+<li><strong>Emplacements de Potions :</strong> <code>3 emplacements</code></li>
+<li><strong>Teinte Thématique GBA :</strong> Rouge Sang (<code>#C82030</code> / GBA: <code>0x001F</code>)</li>
+<li><strong>Style de Jeu &amp; Synergies :</strong> Spécialisé dans la force brute, les attaques massives de zone, l'armure infranchissable (Barricade/Heurt de bouclier) et les pactes sanglants avec les démons.</li>
+</ul>
+<h3 id="relique-de-depart-sang-ardent-burning_blood">🏺 Relique de Départ : <img alt="Sang" loading="lazy" src="../../bible/images/relics/burning_blood.webp" /> Sang ardent (BURNING_BLOOD)</h3>
+<blockquote>
+<p>À la fin du combat, récupérez 6 PV.</p>
+</blockquote>
+<h3 id="deck-de-depart-starter-deck">🃏 Deck de Départ (Starter Deck)</h3>
+<ul>
+<li><strong>5x</strong> <code>Frappe (STRIKE_IRONCLAD)</code> — <em>Attaque de base (6 dégâts pour 1 ⚡)</em></li>
+<li><strong>4x</strong> <code>Défense (DEFEND_IRONCLAD)</code> — <em>Compétence de base (5 armure pour 1 ⚡)</em></li>
+<li><strong>1x</strong> <code>Heurt (BASH)</code> — <em>Attaque lourde (8 dégâts + 2 Vulnérable pour 2 ⚡)</em></li>
+</ul>
+<h3 id="les-20-cartes-communes-specifiques-de-soldat-de-fer">📦 Les 20 Cartes Communes Spécifiques de Soldat de Fer</h3>
+<p>Les cartes communes forment le socle de construction de deck après chaque combat normal :</p>
+<table>
+<thead>
+<tr>
+<th>Carte</th>
+<th style="text-align: center;">Coût</th>
+<th style="text-align: center;">Type</th>
+<th>Effet de Base</th>
+<th>Amélioration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Colère" loading="lazy" src="../../bible/images/cards/ironclad/anger.webp" /> <strong>Colère</strong> (<code>ANGER</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 6 dégâts. Ajoutez une copie de cette carte à votre <strong>Défausse</strong>.</td>
+<td>Infligez 8 dégâts. Ajoutez une copie de cette carte à votre <strong>Défausse</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Armement" loading="lazy" src="../../bible/images/cards/ironclad/armaments.webp" /> <strong>Armement</strong> (<code>ARMAMENTS</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 5 d'<strong>Armure</strong>. <strong>Améliorez</strong> une carte dans votre <strong>Main</strong>.</td>
+<td>Gagnez 5 d'<strong>Armure</strong>. <strong>Améliorez</strong> TOUTES les cartes dans votre <strong>Main</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Mur de sang" loading="lazy" src="../../bible/images/cards/ironclad/blood_wall.webp" /> <strong>Mur de sang</strong> (<code>BLOOD_WALL</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Perdez 2 PV. Gagnez 16 d'<strong>Armure</strong>.</td>
+<td>Perdez 2 PV. Gagnez 20 d'<strong>Armure</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Plaquage" loading="lazy" src="../../bible/images/cards/ironclad/body_slam.webp" /> <strong>Plaquage</strong> (<code>BODY_SLAM</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez un montant de dégâts égal à votre <strong>Armure</strong>.</td>
+<td>Infligez un montant de dégâts égal à votre <strong>Armure</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Percée" loading="lazy" src="../../bible/images/cards/ironclad/breakthrough.webp" /> <strong>Percée</strong> (<code>BREAKTHROUGH</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Perdez 1 PV. Infligez 9 dégâts à TOUS les ennemis.</td>
+<td>Perdez 1 PV. Infligez 13 dégâts à TOUS les ennemis.</td>
+</tr>
+<tr>
+<td><img alt="Scorie" loading="lazy" src="../../bible/images/cards/ironclad/cinder.webp" /> <strong>Scorie</strong> (<code>CINDER</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 18 dégâts. <strong>Épuisez</strong> une carte aléatoire.</td>
+<td>Infligez 24 dégâts. <strong>Épuisez</strong> une carte aléatoire.</td>
+</tr>
+<tr>
+<td><img alt="Ravage" loading="lazy" src="../../bible/images/cards/ironclad/havoc.webp" /> <strong>Ravage</strong> (<code>HAVOC</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Jouez la carte du dessus de votre <strong>Pioche</strong> et <strong>Épuisez</strong>-la.</td>
+<td>Jouez la carte du dessus de votre <strong>Pioche</strong> et <strong>Épuisez</strong>-la.</td>
+</tr>
+<tr>
+<td><img alt="Coup de boule" loading="lazy" src="../../bible/images/cards/ironclad/headbutt.webp" /> <strong>Coup de boule</strong> (<code>HEADBUTT</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 9 dégâts. Placez une carte de votre <strong>Défausse</strong> sur le dessus de votre <strong>Pioche</strong>.</td>
+<td>Infligez 12 dégâts. Placez une carte de votre <strong>Défausse</strong> sur le dessus de votre <strong>Pioche</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Vague de fer" loading="lazy" src="../../bible/images/cards/ironclad/iron_wave.webp" /> <strong>Vague de fer</strong> (<code>IRON_WAVE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Gagnez 5 d'<strong>Armure</strong>. Infligez 5 dégâts.</td>
+<td>Gagnez 7 d'<strong>Armure</strong>. Infligez 7 dégâts.</td>
+</tr>
+<tr>
+<td><img alt="Poing en fusion" loading="lazy" src="../../bible/images/cards/ironclad/molten_fist.webp" /> <strong>Poing en fusion</strong> (<code>MOLTEN_FIST</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 10 dégâts. Doublez le nombre d'incidences de <strong>Vulnérable</strong> sur l'ennemi. <strong>Épuisement</strong>.</td>
+<td>Infligez 14 dégâts. Doublez le nombre d'incidences de <strong>Vulnérable</strong> sur l'ennemi. <strong>Épuisement</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Frappe perfectionnée" loading="lazy" src="../../bible/images/cards/ironclad/perfected_strike.webp" /> <strong>Frappe perfectionnée</strong> (<code>PERFECTED_STRIKE</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 6 dégâts. Inflige 2 dégâts supplémentaires pour CHACUNE de vos cartes contenant « Frappe ».</td>
+<td>Infligez 6 dégâts. Inflige 3 dégâts supplémentaires pour CHACUNE de vos cartes contenant « Frappe ».</td>
+</tr>
+<tr>
+<td><img alt="Frappe du pommeau" loading="lazy" src="../../bible/images/cards/ironclad/pommel_strike.webp" /> <strong>Frappe du pommeau</strong> (<code>POMMEL_STRIKE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 9 dégâts. Piochez 1 carte.</td>
+<td>Infligez 10 dégâts. Piochez 2 cartes.</td>
+</tr>
+<tr>
+<td><img alt="Frappe préparatoire" loading="lazy" src="../../bible/images/cards/ironclad/setup_strike.webp" /> <strong>Frappe préparatoire</strong> (<code>SETUP_STRIKE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 7 dégâts. Gagnez 3 de <strong>Force</strong> jusqu'à la fin du tour.</td>
+<td>Infligez 9 dégâts. Gagnez 4 de <strong>Force</strong> jusqu'à la fin du tour.</td>
+</tr>
+<tr>
+<td><img alt="Même pas mal" loading="lazy" src="../../bible/images/cards/ironclad/shrug_it_off.webp" /> <strong>Même pas mal</strong> (<code>SHRUG_IT_OFF</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 8 d'<strong>Armure</strong>. Piochez 1 carte.</td>
+<td>Gagnez 11 d'<strong>Armure</strong>. Piochez 1 carte.</td>
+</tr>
+<tr>
+<td><img alt="Épée boomerang" loading="lazy" src="../../bible/images/cards/ironclad/sword_boomerang.webp" /> <strong>Épée boomerang</strong> (<code>SWORD_BOOMERANG</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 3 dégâts à un ennemi aléatoire 3 fois.</td>
+<td>Infligez 3 dégâts à un ennemi aléatoire 4 fois.</td>
+</tr>
+<tr>
+<td><img alt="Provocation" loading="lazy" src="../../bible/images/cards/ironclad/taunt.webp" /> <strong>Provocation</strong> (<code>TAUNT</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 6 d'<strong>Armure</strong>. Appliquez <strong>Vulnérable</strong> (1).</td>
+<td>Gagnez 7 d'<strong>Armure</strong>. Appliquez <strong>Vulnérable</strong> (2).</td>
+</tr>
+<tr>
+<td><img alt="Coup de tonnerre" loading="lazy" src="../../bible/images/cards/ironclad/thunderclap.webp" /> <strong>Coup de tonnerre</strong> (<code>THUNDERCLAP</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 4 dégâts et appliquez <strong>Vulnérable</strong> (1) à TOUS les ennemis.</td>
+<td>Infligez 7 dégâts et appliquez <strong>Vulnérable</strong> (1) à TOUS les ennemis.</td>
+</tr>
+<tr>
+<td><img alt="Intimidation" loading="lazy" src="../../bible/images/cards/ironclad/tremble.webp" /> <strong>Intimidation</strong> (<code>TREMBLE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Appliquez <strong>Vulnérable</strong> (3). <strong>Épuisement</strong>.</td>
+<td>Appliquez <strong>Vulnérable</strong> (4). <strong>Épuisement</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Virilité" loading="lazy" src="../../bible/images/cards/ironclad/true_grit.webp" /> <strong>Virilité</strong> (<code>TRUE_GRIT</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 7 d'<strong>Armure</strong>. <strong>Épuisez</strong> 1 carte au hasard.</td>
+<td>Gagnez 9 d'<strong>Armure</strong>. <strong>Épuisez</strong> 1 carte.</td>
+</tr>
+<tr>
+<td><img alt="Frappe jumelée" loading="lazy" src="../../bible/images/cards/ironclad/twin_strike.webp" /> <strong>Frappe jumelée</strong> (<code>TWIN_STRIKE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 5 dégâts 2 fois.</td>
+<td>Infligez 7 dégâts 2 fois.</td>
+</tr>
+</tbody>
+</table>
+<p>👉 <em>Voir l'intégralité des 90+ cartes de Soldat de Fer (Peu communes, Rares, Anciennes) dans le tome dédié :</em><br />
+<a href="09_cartes_ironclad.html">Consulter le Tome des Cartes du Soldat de Fer</a></p>
+<hr />
+<h2 id="la-silencieuse-chasseresse-mortelle-des-brumes">⚔️ La Silencieuse (Chasseresse Mortelle des Brumes)</h2>
+<ul>
+<li><strong>Points de Vie de Départ :</strong> <code>70 PV</code> (PV Max initial)</li>
+<li><strong>Or de Départ :</strong> <code>99 Pièces d'or</code></li>
+<li><strong>Énergie de Base :</strong> <code>3 ⚡</code> par tour</li>
+<li><strong>Emplacements de Potions :</strong> <code>3 emplacements</code></li>
+<li><strong>Teinte Thématique GBA :</strong> Vert Émeraude (<code>#20A040</code> / GBA: <code>0x03E0</code>)</li>
+<li><strong>Style de Jeu &amp; Synergies :</strong> Maîtresse des poisons à progression exponentielle (Catalyseur), des volées infinies de surins (Shivs) et de la manipulation fluide de la pioche/défausse.</li>
+</ul>
+<h3 id="relique-de-depart-anneau-du-serpent-ring_of_the_snake">🏺 Relique de Départ : <img alt="Anneau" loading="lazy" src="../../bible/images/relics/ring_of_the_snake.webp" /> Anneau du serpent (RING_OF_THE_SNAKE)</h3>
+<blockquote>
+<p>Au début de chaque combat, piochez 2 cartes supplémentaires.</p>
+</blockquote>
+<h3 id="deck-de-depart-starter-deck_1">🃏 Deck de Départ (Starter Deck)</h3>
+<ul>
+<li><strong>5x</strong> <code>Frappe (STRIKE_SILENT)</code> — <em>Attaque de base (6 dégâts pour 1 ⚡)</em></li>
+<li><strong>5x</strong> <code>Défense (DEFEND_SILENT)</code> — <em>Compétence de base (5 armure pour 1 ⚡)</em></li>
+<li><strong>1x</strong> <code>Neutralisation (NEUTRALIZE)</code> — <em>Attaque agile (3 dégâts + 1 Faiblesse pour 0 ⚡)</em></li>
+<li><strong>1x</strong> <code>Survivant (SURVIVOR)</code> — <em>Compétence tactique (8 armure + défausse 1 carte pour 1 ⚡)</em></li>
+</ul>
+<h3 id="les-20-cartes-communes-specifiques-de-la-silencieuse">📦 Les 20 Cartes Communes Spécifiques de La Silencieuse</h3>
+<p>Les cartes communes forment le socle de construction de deck après chaque combat normal :</p>
+<table>
+<thead>
+<tr>
+<th>Carte</th>
+<th style="text-align: center;">Coût</th>
+<th style="text-align: center;">Type</th>
+<th>Effet de Base</th>
+<th>Amélioration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Anticipation" loading="lazy" src="../../bible/images/cards/silent/anticipate.webp" /> <strong>Anticipation</strong> (<code>ANTICIPATE</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 2 de <strong>Dextérité</strong> jusqu'à la fin du tour.</td>
+<td>Gagnez 4 de <strong>Dextérité</strong> jusqu'à la fin du tour.</td>
+</tr>
+<tr>
+<td><img alt="Salto arrière" loading="lazy" src="../../bible/images/cards/silent/backflip.webp" /> <strong>Salto arrière</strong> (<code>BACKFLIP</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 5 d'<strong>Armure</strong>. Piochez 2 cartes.</td>
+<td>Gagnez 8 d'<strong>Armure</strong>. Piochez 2 cartes.</td>
+</tr>
+<tr>
+<td><img alt="Danse des lames" loading="lazy" src="../../bible/images/cards/silent/blade_dance.webp" /> <strong>Danse des lames</strong> (<code>BLADE_DANCE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Ajoutez 3 <strong>Surins</strong> à votre <strong>Main</strong>. <strong>Épuisement</strong>.</td>
+<td>Ajoutez 4 <strong>Surins</strong> à votre <strong>Main</strong>. <strong>Épuisement</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Cape et épée" loading="lazy" src="../../bible/images/cards/silent/cloak_and_dagger.webp" /> <strong>Cape et épée</strong> (<code>CLOAK_AND_DAGGER</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 6 d'<strong>Armure</strong>. Ajoutez 1 <strong>Surin</strong> à votre <strong>Main</strong>.</td>
+<td>Gagnez 6 d'<strong>Armure</strong>. Ajoutez 2 <strong>Surins</strong> à votre <strong>Main</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Pluie de couteaux" loading="lazy" src="../../bible/images/cards/silent/dagger_spray.webp" /> <strong>Pluie de couteaux</strong> (<code>DAGGER_SPRAY</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 4 dégâts à TOUS les ennemis 2 fois.</td>
+<td>Infligez 6 dégâts à TOUS les ennemis 2 fois.</td>
+</tr>
+<tr>
+<td><img alt="Lancer de couteau" loading="lazy" src="../../bible/images/cards/silent/dagger_throw.webp" /> <strong>Lancer de couteau</strong> (<code>DAGGER_THROW</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 9 dégâts. Piochez 1 carte. Défaussez 1 carte.</td>
+<td>Infligez 12 dégâts. Piochez 1 carte. Défaussez 1 carte.</td>
+</tr>
+<tr>
+<td><img alt="Poison mortel" loading="lazy" src="../../bible/images/cards/silent/deadly_poison.webp" /> <strong>Poison mortel</strong> (<code>DEADLY_POISON</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Appliquez 5 de <strong>Poison</strong>.</td>
+<td>Appliquez 7 de <strong>Poison</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Déviation" loading="lazy" src="../../bible/images/cards/silent/deflect.webp" /> <strong>Déviation</strong> (<code>DEFLECT</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 4 d'<strong>Armure</strong>.</td>
+<td>Gagnez 7 d'<strong>Armure</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Dérobade" loading="lazy" src="../../bible/images/cards/silent/dodge_and_roll.webp" /> <strong>Dérobade</strong> (<code>DODGE_AND_ROLL</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 4 d'<strong>Armure</strong>. Au prochain tour, gagnez 4 d'<strong>Armure</strong>.</td>
+<td>Gagnez 6 d'<strong>Armure</strong>. Au prochain tour, gagnez 6 d'<strong>Armure</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Tic tac" loading="lazy" src="../../bible/images/cards/silent/flick_flack.webp" /> <strong>Tic tac</strong> (<code>FLICK_FLACK</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td><strong>Ruse</strong>. Infligez 7 dégâts à TOUS les ennemis.</td>
+<td><strong>Ruse</strong>. Infligez 9 dégâts à TOUS les ennemis.</td>
+</tr>
+<tr>
+<td><img alt="Frappe initiale" loading="lazy" src="../../bible/images/cards/silent/leading_strike.webp" /> <strong>Frappe initiale</strong> (<code>LEADING_STRIKE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 3 dégâts. Ajoutez 2 <strong>Surins</strong> à votre <strong>Main</strong>.</td>
+<td>Infligez 6 dégâts. Ajoutez 2 <strong>Surins</strong> à votre <strong>Main</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Hurlement perçant" loading="lazy" src="../../bible/images/cards/silent/piercing_wail.webp" /> <strong>Hurlement perçant</strong> (<code>PIERCING_WAIL</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>TOUS les ennemis perdent 6 de <strong>Force</strong> jusqu'à la fin du tour. <strong>Épuisement</strong>.</td>
+<td>TOUS les ennemis perdent 8 de <strong>Force</strong> jusqu'à la fin du tour. <strong>Épuisement</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Poignard empoisonné" loading="lazy" src="../../bible/images/cards/silent/poisoned_stab.webp" /> <strong>Poignard empoisonné</strong> (<code>POISONED_STAB</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 6 dégâts. Appliquez 3 de <strong>Poison</strong>.</td>
+<td>Infligez 8 dégâts. Appliquez 4 de <strong>Poison</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Prédateur" loading="lazy" src="../../bible/images/cards/silent/predator.webp" /> <strong>Prédateur</strong> (<code>PREDATOR</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 15 dégâts. Au prochain tour, piochez 2 cartes.</td>
+<td>Infligez 20 dégâts. Au prochain tour, piochez 2 cartes.</td>
+</tr>
+<tr>
+<td><img alt="Préparatifs" loading="lazy" src="../../bible/images/cards/silent/prepared.webp" /> <strong>Préparatifs</strong> (<code>PREPARED</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Piochez 1 carte. Défaussez 1 carte.</td>
+<td>Piochez 2 cartes. Défaussez 2 cartes.</td>
+</tr>
+<tr>
+<td><img alt="Ricochet" loading="lazy" src="../../bible/images/cards/silent/ricochet.webp" /> <strong>Ricochet</strong> (<code>RICOCHET</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td><strong>Ruse</strong>. Infligez 3 dégâts à un ennemi aléatoire 4 fois.</td>
+<td><strong>Ruse</strong>. Infligez 3 dégâts à un ennemi aléatoire 5 fois.</td>
+</tr>
+<tr>
+<td><img alt="Trancher" loading="lazy" src="../../bible/images/cards/silent/slice.webp" /> <strong>Trancher</strong> (<code>SLICE</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 6 dégâts.</td>
+<td>Infligez 9 dégâts.</td>
+</tr>
+<tr>
+<td><img alt="Morsure de serpent" loading="lazy" src="../../bible/images/cards/silent/snakebite.webp" /> <strong>Morsure de serpent</strong> (<code>SNAKEBITE</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td><strong>Retenue</strong>. Appliquez 7 de <strong>Poison</strong>.</td>
+<td><strong>Retenue</strong>. Appliquez 10 de <strong>Poison</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Coup bas" loading="lazy" src="../../bible/images/cards/silent/sucker_punch.webp" /> <strong>Coup bas</strong> (<code>SUCKER_PUNCH</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 8 dégâts. Appliquez <strong>Affaibli</strong> (1).</td>
+<td>Infligez 10 dégâts. Appliquez <strong>Affaibli</strong> (2).</td>
+</tr>
+<tr>
+<td><img alt="Intouchable" loading="lazy" src="../../bible/images/cards/silent/untouchable.webp" /> <strong>Intouchable</strong> (<code>UNTOUCHABLE</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td><strong>Ruse</strong>. Gagnez 6 d'<strong>Armure</strong>.</td>
+<td><strong>Ruse</strong>. Gagnez 9 d'<strong>Armure</strong>.</td>
+</tr>
+</tbody>
+</table>
+<p>👉 <em>Voir l'intégralité des 90+ cartes de La Silencieuse (Peu communes, Rares, Anciennes) dans le tome dédié :</em><br />
+<a href="10_cartes_silent.html">Consulter le Tome des Cartes de La Silencieuse</a></p>
+<hr />
+<h2 id="le-defectueux-automate-de-combat-eveille">⚔️ Le Défectueux (Automate de Combat Éveillé)</h2>
+<ul>
+<li><strong>Points de Vie de Départ :</strong> <code>75 PV</code> (PV Max initial)</li>
+<li><strong>Or de Départ :</strong> <code>99 Pièces d'or</code></li>
+<li><strong>Énergie de Base :</strong> <code>3 ⚡</code> par tour</li>
+<li><strong>Emplacements de Potions :</strong> <code>3 emplacements</code></li>
+<li><strong>Teinte Thématique GBA :</strong> Bleu Cobalt (<code>#2060C8</code> / GBA: <code>0x7C00</code>)</li>
+<li><strong>Style de Jeu &amp; Synergies :</strong> Gestion stratégique des slots d'orbes (Foudre, Glace, Obscurité, Plasma), optimisation du Focus et génération monumentale de mana.</li>
+</ul>
+<h3 id="relique-de-depart-noyau-fissure-cracked_core">🏺 Relique de Départ : <img alt="Noyau" loading="lazy" src="../../bible/images/relics/cracked_core.webp" /> Noyau fissuré (CRACKED_CORE)</h3>
+<blockquote>
+<p>Au début de chaque combat, canalisez 1 Foudre.</p>
+</blockquote>
+<h3 id="deck-de-depart-starter-deck_2">🃏 Deck de Départ (Starter Deck)</h3>
+<ul>
+<li><strong>4x</strong> <code>Frappe (STRIKE_DEFECT)</code> — <em>Attaque de base (6 dégâts pour 1 ⚡)</em></li>
+<li><strong>4x</strong> <code>Défense (DEFEND_DEFECT)</code> — <em>Compétence de base (5 armure pour 1 ⚡)</em></li>
+<li><strong>1x</strong> <code>Éclair (ZAP)</code> — <em>Compétence (Canalise 1 Foudre pour 1 ⚡)</em></li>
+<li><strong>1x</strong> <code>Activation double (DUALCAST)</code> — <em>Compétence (Déclenche 2 fois l'orbe le plus ancien pour 1 ⚡)</em></li>
+</ul>
+<h3 id="les-20-cartes-communes-specifiques-de-le-defectueux">📦 Les 20 Cartes Communes Spécifiques de Le Défectueux</h3>
+<p>Les cartes communes forment le socle de construction de deck après chaque combat normal :</p>
+<table>
+<thead>
+<tr>
+<th>Carte</th>
+<th style="text-align: center;">Coût</th>
+<th style="text-align: center;">Type</th>
+<th>Effet de Base</th>
+<th>Amélioration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Foudre en boule" loading="lazy" src="../../bible/images/cards/defect/ball_lightning.webp" /> <strong>Foudre en boule</strong> (<code>BALL_LIGHTNING</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 7 dégâts. <strong>Canalisez</strong> 1 <strong>Orbe kéraunique</strong>.</td>
+<td>Infligez 10 dégâts. <strong>Canalisez</strong> 1 <strong>Orbe kéraunique</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Barrage" loading="lazy" src="../../bible/images/cards/defect/barrage.webp" /> <strong>Barrage</strong> (<code>BARRAGE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 5 dégâts pour chaque Orbe <strong>Canalisé</strong>.</td>
+<td>Infligez 7 dégâts pour chaque Orbe <strong>Canalisé</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Rayon cellulaire" loading="lazy" src="../../bible/images/cards/defect/beam_cell.webp" /> <strong>Rayon cellulaire</strong> (<code>BEAM_CELL</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 3 dégâts. Appliquez <strong>Vulnérable</strong> (1).</td>
+<td>Infligez 4 dégâts. Appliquez <strong>Vulnérable</strong> (2).</td>
+</tr>
+<tr>
+<td><img alt="Boost" loading="lazy" src="../../bible/images/cards/defect/boost_away.webp" /> <strong>Boost</strong> (<code>BOOST_AWAY</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 6 d'<strong>Armure</strong>. Ajoutez <strong>Hébété</strong> à votre <strong>Défausse</strong>.</td>
+<td>Gagnez 9 d'<strong>Armure</strong>. Ajoutez <strong>Hébété</strong> à votre <strong>Défausse</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Piles de recharge" loading="lazy" src="../../bible/images/cards/defect/charge_battery.webp" /> <strong>Piles de recharge</strong> (<code>CHARGE_BATTERY</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 7 d'<strong>Armure</strong>. Au prochain tour, gagnez ⚡1⚡.</td>
+<td>Gagnez 10 d'<strong>Armure</strong>. Au prochain tour, gagnez ⚡1⚡.</td>
+</tr>
+<tr>
+<td><img alt="Griffure" loading="lazy" src="../../bible/images/cards/defect/claw.webp" /> <strong>Griffure</strong> (<code>CLAW</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 3 dégâts. Augmentez les dégâts de TOUTES les cartes Griffure de 2 jusqu'à la fin du combat.</td>
+<td>Infligez 4 dégâts. Augmentez les dégâts de TOUTES les cartes Griffure de 3 jusqu'à la fin du combat.</td>
+</tr>
+<tr>
+<td><img alt="Vague de froid" loading="lazy" src="../../bible/images/cards/defect/cold_snap.webp" /> <strong>Vague de froid</strong> (<code>COLD_SNAP</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 6 dégâts. <strong>Canalisez</strong> 1 <strong>Orbe glaciaire</strong>.</td>
+<td>Infligez 9 dégâts. <strong>Canalisez</strong> 1 <strong>Orbe glaciaire</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Compilateur de pilote" loading="lazy" src="../../bible/images/cards/defect/compile_driver.webp" /> <strong>Compilateur de pilote</strong> (<code>COMPILE_DRIVER</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 7 dégâts. Piochez 1 carte pour chaque Orbe unique.</td>
+<td>Infligez 10 dégâts. Piochez 1 carte pour chaque Orbe unique.</td>
+</tr>
+<tr>
+<td><img alt="Sang-froid" loading="lazy" src="../../bible/images/cards/defect/coolheaded.webp" /> <strong>Sang-froid</strong> (<code>COOLHEADED</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td><strong>Canalisez</strong> 1 <strong>Orbe glaciaire</strong>. Piochez 1 carte.</td>
+<td><strong>Canalisez</strong> 1 <strong>Orbe glaciaire</strong>. Piochez 2 cartes.</td>
+</tr>
+<tr>
+<td><img alt="Frappe focalisée" loading="lazy" src="../../bible/images/cards/defect/focused_strike.webp" /> <strong>Frappe focalisée</strong> (<code>FOCUSED_STRIKE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 9 dégâts. Gagnez 1 de <strong>Focalisation</strong> jusqu'à la fin du tour.</td>
+<td>Infligez 11 dégâts. Gagnez 2 de <strong>Focalisation</strong> jusqu'à la fin du tour.</td>
+</tr>
+<tr>
+<td><img alt="Viser les yeux" loading="lazy" src="../../bible/images/cards/defect/go_for_the_eyes.webp" /> <strong>Viser les yeux</strong> (<code>GO_FOR_THE_EYES</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 3 dégâts. Si l'ennemi s'apprête à attaquer, appliquez <strong>Affaibli</strong> (1).</td>
+<td>Infligez 4 dégâts. Si l'ennemi s'apprête à attaquer, appliquez <strong>Affaibli</strong> (2).</td>
+</tr>
+<tr>
+<td><img alt="Encrassage" loading="lazy" src="../../bible/images/cards/defect/gunk_up.webp" /> <strong>Encrassage</strong> (<code>GUNK_UP</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 4 dégâts 3 fois. Ajoutez <strong>Englué</strong> à votre <strong>Défausse</strong>.</td>
+<td>Infligez 5 dégâts 3 fois. Ajoutez <strong>Englué</strong> à votre <strong>Défausse</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Hologramme" loading="lazy" src="../../bible/images/cards/defect/hologram.webp" /> <strong>Hologramme</strong> (<code>HOLOGRAM</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 3 d'<strong>Armure</strong>. Placez une carte de votre <strong>Défausse</strong> à votre <strong>Main</strong>. <strong>Épuisement</strong>.</td>
+<td>Gagnez 5 d'<strong>Armure</strong>. Placez une carte de votre <strong>Défausse</strong> à votre <strong>Main</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Correctif" loading="lazy" src="../../bible/images/cards/defect/hotfix.webp" /> <strong>Correctif</strong> (<code>HOTFIX</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 2 de <strong>Focalisation</strong> ce tour. <strong>Épuisement</strong>.</td>
+<td>Gagnez 2 de <strong>Focalisation</strong> ce tour.</td>
+</tr>
+<tr>
+<td><img alt="Bond" loading="lazy" src="../../bible/images/cards/defect/leap.webp" /> <strong>Bond</strong> (<code>LEAP</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 9 d'<strong>Armure</strong>.</td>
+<td>Gagnez 12 d'<strong>Armure</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Paratonnerre" loading="lazy" src="../../bible/images/cards/defect/lightning_rod.webp" /> <strong>Paratonnerre</strong> (<code>LIGHTNING_ROD</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 4 d'<strong>Armure</strong>. Au début de vos 2 prochains tours, <strong>Canalisez</strong> 1 <strong>Orbe kéraunique</strong>.</td>
+<td>Gagnez 7 d'<strong>Armure</strong>. Au début de vos 2 prochains tours, <strong>Canalisez</strong> 1 <strong>Orbe kéraunique</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Frappe dynamique" loading="lazy" src="../../bible/images/cards/defect/momentum_strike.webp" /> <strong>Frappe dynamique</strong> (<code>MOMENTUM_STRIKE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 11 dégâts. Réduisez le coût de cette carte à 0 ⚡.</td>
+<td>Infligez 15 dégâts. Réduisez le coût de cette carte à 0 ⚡.</td>
+</tr>
+<tr>
+<td><img alt="Faisceau circulaire" loading="lazy" src="../../bible/images/cards/defect/sweeping_beam.webp" /> <strong>Faisceau circulaire</strong> (<code>SWEEPING_BEAM</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 6 dégâts à TOUS les ennemis. Piochez 1 carte.</td>
+<td>Infligez 9 dégâts à TOUS les ennemis. Piochez 1 carte.</td>
+</tr>
+<tr>
+<td><img alt="TURBO" loading="lazy" src="../../bible/images/cards/defect/turbo.webp" /> <strong>TURBO</strong> (<code>TURBO</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez ⚡2⚡. Ajoutez un <strong>Néant</strong> à votre <strong>Défausse</strong>.</td>
+<td>Gagnez ⚡3⚡. Ajoutez un <strong>Néant</strong> à votre <strong>Défausse</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Tumulte" loading="lazy" src="../../bible/images/cards/defect/uproar.webp" /> <strong>Tumulte</strong> (<code>UPROAR</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 6 dégâts 2 fois. Jouez une Attaque aléatoire depuis votre <strong>Pioche</strong>.</td>
+<td>Infligez 8 dégâts 2 fois. Jouez une Attaque aléatoire depuis votre <strong>Pioche</strong>.</td>
+</tr>
+</tbody>
+</table>
+<p>👉 <em>Voir l'intégralité des 90+ cartes de Le Défectueux (Peu communes, Rares, Anciennes) dans le tome dédié :</em><br />
+<a href="11_cartes_defect.html">Consulter le Tome des Cartes du Défectueux</a></p>
+<hr />
+<h2 id="le-regent-souverain-celeste-dechu-nouveau-dans-sts2">⚔️ Le Régent (Souverain Céleste Déchu (Nouveau dans STS2))</h2>
+<ul>
+<li><strong>Points de Vie de Départ :</strong> <code>75 PV</code> (PV Max initial)</li>
+<li><strong>Or de Départ :</strong> <code>99 Pièces d'or</code></li>
+<li><strong>Énergie de Base :</strong> <code>3 ⚡</code> par tour</li>
+<li><strong>Emplacements de Potions :</strong> <code>3 emplacements</code></li>
+<li><strong>Teinte Thématique GBA :</strong> Or Solaire / Pourpre Royal (<code>#E0B020</code> / GBA: <code>0x03FF</code>)</li>
+<li><strong>Style de Jeu &amp; Synergies :</strong> Accumulation d'Étoiles pour libérer des frappes cosmiques, décrets royaux modifiant les règles du tour et souveraineté absolue.</li>
+</ul>
+<h3 id="relique-de-depart-droit-divin-divine_right">🏺 Relique de Départ : <img alt="Droit" loading="lazy" src="../../bible/images/relics/divine_right.webp" /> Droit divin (DIVINE_RIGHT)</h3>
+<blockquote>
+<p>Au début de chaque combat, gagnez des Étoiles divines.</p>
+</blockquote>
+<h3 id="deck-de-depart-starter-deck_3">🃏 Deck de Départ (Starter Deck)</h3>
+<ul>
+<li><strong>4x</strong> <code>Frappe (STRIKE_REGENT)</code> — <em>Attaque de base (6 dégâts pour 1 ⚡)</em></li>
+<li><strong>4x</strong> <code>Défense (DEFEND_REGENT)</code> — <em>Compétence de base (5 armure pour 1 ⚡)</em></li>
+<li><strong>1x</strong> <code>Chute d'étoile (FALLING_STAR)</code> — <em>Attaque stellaire cosmique</em></li>
+<li><strong>1x</strong> <code>Vénération (VENERATE)</code> — <em>Compétence de culte et génération d'étoiles</em></li>
+</ul>
+<h3 id="les-20-cartes-communes-specifiques-de-le-regent">📦 Les 20 Cartes Communes Spécifiques de Le Régent</h3>
+<p>Les cartes communes forment le socle de construction de deck après chaque combat normal :</p>
+<table>
+<thead>
+<tr>
+<th>Carte</th>
+<th style="text-align: center;">Coût</th>
+<th style="text-align: center;">Type</th>
+<th>Effet de Base</th>
+<th>Amélioration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Pulsation astrale" loading="lazy" src="../../bible/images/cards/regent/astral_pulse.webp" /> <strong>Pulsation astrale</strong> (<code>ASTRAL_PULSE</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 6 dégâts à TOUS les ennemis deux fois.</td>
+<td>Infligez 8 dégâts à TOUS les ennemis deux fois.</td>
+</tr>
+<tr>
+<td><img alt="HORS DE MA VUE !" loading="lazy" src="../../bible/images/cards/regent/begone.webp" /> <strong>HORS DE MA VUE !</strong> (<code>BEGONE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Choisissez une carte dans votre <strong>Main</strong> à <strong>Transformer</strong> en <strong>Frappe de sbire</strong>.</td>
+<td>Choisissez une carte dans votre <strong>Main</strong> à <strong>Transformer</strong> en <strong>Frappe de sbire+</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Puissance céleste" loading="lazy" src="../../bible/images/cards/regent/celestial_might.webp" /> <strong>Puissance céleste</strong> (<code>CELESTIAL_MIGHT</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 6 dégâts 3 fois.</td>
+<td>Infligez 6 dégâts 4 fois.</td>
+</tr>
+<tr>
+<td><img alt="Manteau d'étoiles" loading="lazy" src="../../bible/images/cards/regent/cloak_of_stars.webp" /> <strong>Manteau d'étoiles</strong> (<code>CLOAK_OF_STARS</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 7 d'<strong>Armure</strong>.</td>
+<td>Gagnez 10 d'<strong>Armure</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Trajectoire de collision" loading="lazy" src="../../bible/images/cards/regent/collision_course.webp" /> <strong>Trajectoire de collision</strong> (<code>COLLISION_COURSE</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 10 dégâts. Ajoutez un <strong>Débris</strong> à votre <strong>Main</strong>.</td>
+<td>Infligez 14 dégâts. Ajoutez un <strong>Débris</strong> à votre <strong>Main</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Indifférence cosmique" loading="lazy" src="../../bible/images/cards/regent/cosmic_indifference.webp" /> <strong>Indifférence cosmique</strong> (<code>COSMIC_INDIFFERENCE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 6 d'<strong>Armure</strong>. Placez une carte de votre <strong>Défausse</strong> sur le dessus de votre <strong>Pioche</strong>.</td>
+<td>Gagnez 9 d'<strong>Armure</strong>. Placez une carte de votre <strong>Défausse</strong> sur le dessus de votre <strong>Pioche</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Croissant de lance" loading="lazy" src="../../bible/images/cards/regent/crescent_spear.webp" /> <strong>Croissant de lance</strong> (<code>CRESCENT_SPEAR</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 8 dégâts. Inflige 2 dégâts supplémentaires pour TOUTES vos cartes coûtant des <s>1</s>.</td>
+<td>Infligez 8 dégâts. Inflige 3 dégâts supplémentaires pour TOUTES vos cartes coûtant des <s>1</s>.</td>
+</tr>
+<tr>
+<td><img alt="Broyer" loading="lazy" src="../../bible/images/cards/regent/crush_under.webp" /> <strong>Broyer</strong> (<code>CRUSH_UNDER</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 8 dégâts à TOUS les ennemis. Tous les ennemis perdent 1 de <strong>Force</strong> jusqu'à la fin du tour.</td>
+<td>Infligez 9 dégâts à TOUS les ennemis. Tous les ennemis perdent 2 de <strong>Force</strong> jusqu'à la fin du tour.</td>
+</tr>
+<tr>
+<td><img alt="Lumière rassemblée" loading="lazy" src="../../bible/images/cards/regent/gather_light.webp" /> <strong>Lumière rassemblée</strong> (<code>GATHER_LIGHT</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 8 d'<strong>Armure</strong>. Gagnez <s>1</s>.</td>
+<td>Gagnez 11 d'<strong>Armure</strong>. Gagnez <s>1</s>.</td>
+</tr>
+<tr>
+<td><img alt="Courant pailleté" loading="lazy" src="../../bible/images/cards/regent/glitterstream.webp" /> <strong>Courant pailleté</strong> (<code>GLITTERSTREAM</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 11 d'<strong>Armure</strong>. Au prochain tour, gagnez 5 d'<strong>Armure</strong>.</td>
+<td>Gagnez 13 d'<strong>Armure</strong>. Au prochain tour, gagnez 7 d'<strong>Armure</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Luminosité" loading="lazy" src="../../bible/images/cards/regent/glow.webp" /> <strong>Luminosité</strong> (<code>GLOW</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez <s>1</s>. Piochez 1 carte. Au prochain tour, piochez 1 carte.</td>
+<td>Gagnez <s>2</s>. Piochez 1 carte. Au prochain tour, piochez 1 carte.</td>
+</tr>
+<tr>
+<td><img alt="Étoile directrice" loading="lazy" src="../../bible/images/cards/regent/guiding_star.webp" /> <strong>Étoile directrice</strong> (<code>GUIDING_STAR</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 12 dégâts. Piochez 2 cartes.</td>
+<td>Infligez 13 dégâts. Piochez 3 cartes.</td>
+</tr>
+<tr>
+<td><img alt="Cache secrète" loading="lazy" src="../../bible/images/cards/regent/hidden_cache.webp" /> <strong>Cache secrète</strong> (<code>HIDDEN_CACHE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez <s>1</s>. Au prochain tour, gagnez <s>3</s>.</td>
+<td>Gagnez <s>1</s>. Au prochain tour, gagnez <s>4</s>.</td>
+</tr>
+<tr>
+<td><img alt="Hiérarchie" loading="lazy" src="../../bible/images/cards/regent/know_thy_place.webp" /> <strong>Hiérarchie</strong> (<code>KNOW_THY_PLACE</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Appliquez <strong>Affaibli</strong> (1). Appliquez <strong>Vulnérable</strong> (1). <strong>Épuisement</strong>.</td>
+<td>Appliquez <strong>Affaibli</strong> (1). Appliquez <strong>Vulnérable</strong> (1).</td>
+</tr>
+<tr>
+<td><img alt="Petits pas" loading="lazy" src="../../bible/images/cards/regent/patter.webp" /> <strong>Petits pas</strong> (<code>PATTER</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 8 d'<strong>Armure</strong>. Gagnez 2 de <strong>Vigueur</strong>.</td>
+<td>Gagnez 10 d'<strong>Armure</strong>. Gagnez 3 de <strong>Vigueur</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Entaille photonique" loading="lazy" src="../../bible/images/cards/regent/photon_cut.webp" /> <strong>Entaille photonique</strong> (<code>PHOTON_CUT</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 10 dégâts. Piochez 1 carte. Choisissez 1 carte de votre <strong>Main</strong> à placer sur le dessus de votre <strong>Pioche</strong>.</td>
+<td>Infligez 13 dégâts. Piochez 2 cartes. Choisissez 1 carte de votre <strong>Main</strong> à placer sur le dessus de votre <strong>Pioche</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Lame lustrée" loading="lazy" src="../../bible/images/cards/regent/refine_blade.webp" /> <strong>Lame lustrée</strong> (<code>REFINE_BLADE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td><strong>Forgez</strong> pour 8. Au prochain tour, gagnez ⚡1⚡.</td>
+<td><strong>Forgez</strong> pour 12. Au prochain tour, gagnez ⚡1⚡.</td>
+</tr>
+<tr>
+<td><img alt="Frappe solaire" loading="lazy" src="../../bible/images/cards/regent/solar_strike.webp" /> <strong>Frappe solaire</strong> (<code>SOLAR_STRIKE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 9 dégâts. Gagnez <s>1</s>.</td>
+<td>Infligez 10 dégâts. Gagnez <s>2</s>.</td>
+</tr>
+<tr>
+<td><img alt="Butin de guerre" loading="lazy" src="../../bible/images/cards/regent/spoils_of_battle.webp" /> <strong>Butin de guerre</strong> (<code>SPOILS_OF_BATTLE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td><strong>Forgez</strong> pour 6. Piochez 2 cartes.</td>
+<td><strong>Forgez</strong> pour 9. Piochez 2 cartes.</td>
+</tr>
+<tr>
+<td><img alt="Forgé par la guerre" loading="lazy" src="../../bible/images/cards/regent/wrought_in_war.webp" /> <strong>Forgé par la guerre</strong> (<code>WROUGHT_IN_WAR</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 7 dégâts. <strong>Forgez</strong> pour 7.</td>
+<td>Infligez 9 dégâts. <strong>Forgez</strong> pour 9.</td>
+</tr>
+</tbody>
+</table>
+<p>👉 <em>Voir l'intégralité des 90+ cartes de Le Régent (Peu communes, Rares, Anciennes) dans le tome dédié :</em><br />
+<a href="12_cartes_regent.html">Consulter le Tome des Cartes du Régent</a></p>
+<hr />
+<h2 id="la-necrolieuse-gardienne-des-morts-et-des-os-nouveau-dans-sts2">⚔️ La Nécrolieuse (Gardienne des Morts et des Os (Nouveau dans STS2))</h2>
+<ul>
+<li><strong>Points de Vie de Départ :</strong> <code>65 PV</code> (PV Max initial)</li>
+<li><strong>Or de Départ :</strong> <code>99 Pièces d'or</code></li>
+<li><strong>Énergie de Base :</strong> <code>3 ⚡</code> par tour</li>
+<li><strong>Emplacements de Potions :</strong> <code>3 emplacements</code></li>
+<li><strong>Teinte Thématique GBA :</strong> Violet Spectrale (<code>#802080</code> / GBA: <code>0x4010</code>)</li>
+<li><strong>Style de Jeu &amp; Synergies :</strong> Gestion de familiers et squelettes invoqués au combat, manipulation de la réserve d'os (Bones) et pactes sacrificiels à haut risque.</li>
+</ul>
+<h3 id="relique-de-depart-phylactere-enchaine-bound_phylactery">🏺 Relique de Départ : <img alt="Phylactère" loading="lazy" src="../../bible/images/relics/bound_phylactery.webp" /> Phylactère enchaîné (BOUND_PHYLACTERY)</h3>
+<blockquote>
+<p>Au début de chaque tour, invoque une unité liée.</p>
+</blockquote>
+<h3 id="deck-de-depart-starter-deck_4">🃏 Deck de Départ (Starter Deck)</h3>
+<ul>
+<li><strong>4x</strong> <code>Frappe (STRIKE_NECROBINDER)</code> — <em>Attaque de base (6 dégâts pour 1 ⚡)</em></li>
+<li><strong>4x</strong> <code>Défense (DEFEND_NECROBINDER)</code> — <em>Compétence de base (5 armure pour 1 ⚡)</em></li>
+<li><strong>1x</strong> <code>Déchaînement (UNLEASH)</code> — <em>Attaque nécrotique dévastatrice</em></li>
+<li><strong>1x</strong> <code>Garde du corps (BODYGUARD)</code> — <em>Compétence d'invocation défensive</em></li>
+</ul>
+<h3 id="les-20-cartes-communes-specifiques-de-la-necrolieuse">📦 Les 20 Cartes Communes Spécifiques de La Nécrolieuse</h3>
+<p>Les cartes communes forment le socle de construction de deck après chaque combat normal :</p>
+<table>
+<thead>
+<tr>
+<th>Carte</th>
+<th style="text-align: center;">Coût</th>
+<th style="text-align: center;">Type</th>
+<th>Effet de Base</th>
+<th>Amélioration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="Vie après la mort" loading="lazy" src="../../bible/images/cards/necrobinder/afterlife.webp" /> <strong>Vie après la mort</strong> (<code>AFTERLIFE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td><strong>Invoquez</strong> pour 6. <strong>Épuisement</strong>.</td>
+<td><strong>Invoquez</strong> pour 9. <strong>Épuisement</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Frappe du fléau" loading="lazy" src="../../bible/images/cards/necrobinder/blight_strike.webp" /> <strong>Frappe du fléau</strong> (<code>BLIGHT_STRIKE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 8 dégâts. Appliquez un montant de <strong>Fatalité</strong> égal aux dégâts infligés.</td>
+<td>Infligez 10 dégâts. Appliquez un montant de <strong>Fatalité</strong> égal aux dégâts infligés.</td>
+</tr>
+<tr>
+<td><img alt="Profanation" loading="lazy" src="../../bible/images/cards/necrobinder/defile.webp" /> <strong>Profanation</strong> (<code>DEFILE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td><strong>Éthéré</strong>. Infligez 13 dégâts.</td>
+<td><strong>Éthéré</strong>. Infligez 17 dégâts.</td>
+</tr>
+<tr>
+<td><img alt="Défi" loading="lazy" src="../../bible/images/cards/necrobinder/defy.webp" /> <strong>Défi</strong> (<code>DEFY</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td><strong>Éthéré</strong>. Gagnez 6 d'<strong>Armure</strong>. Appliquez <strong>Affaibli</strong> (1).</td>
+<td><strong>Éthéré</strong>. Gagnez 9 d'<strong>Armure</strong>. Appliquez <strong>Affaibli</strong> (1).</td>
+</tr>
+<tr>
+<td><img alt="Drain de puissance" loading="lazy" src="../../bible/images/cards/necrobinder/drain_power.webp" /> <strong>Drain de puissance</strong> (<code>DRAIN_POWER</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 10 dégâts. <strong>Améliorez</strong> 2 cartes aléatoires de votre <strong>Défausse</strong>.</td>
+<td>Infligez 12 dégâts. <strong>Améliorez</strong> 3 cartes aléatoires de votre <strong>Défausse</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Terreur" loading="lazy" src="../../bible/images/cards/necrobinder/fear.webp" /> <strong>Terreur</strong> (<code>FEAR</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td><strong>Éthéré</strong>. Infligez 7 dégâts. Appliquez <strong>Vulnérable</strong> (1).</td>
+<td><strong>Éthéré</strong>. Infligez 8 dégâts. Appliquez <strong>Vulnérable</strong> (2).</td>
+</tr>
+<tr>
+<td><img alt="Raser" loading="lazy" src="../../bible/images/cards/necrobinder/flatten.webp" /> <strong>Raser</strong> (<code>FLATTEN</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td><strong>Titos</strong> inflige 12 dégâts. Cette carte coûte 0 ⚡ si <strong>Titos</strong> a déjà attaqué pendant ce tour.</td>
+<td><strong>Titos</strong> inflige 16 dégâts. Cette carte coûte 0 ⚡ si <strong>Titos</strong> a déjà attaqué pendant ce tour.</td>
+</tr>
+<tr>
+<td><img alt="Fossoyeur" loading="lazy" src="../../bible/images/cards/necrobinder/grave_warden.webp" /> <strong>Fossoyeur</strong> (<code>GRAVE_WARDEN</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 8 d'<strong>Armure</strong>. Ajoutez une <strong>Âme</strong> à votre <strong>Pioche</strong>.</td>
+<td>Gagnez 11 d'<strong>Armure</strong>. Ajoutez une <strong>Âme</strong> à votre <strong>Pioche</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Déflagration tombale" loading="lazy" src="../../bible/images/cards/necrobinder/graveblast.webp" /> <strong>Déflagration tombale</strong> (<code>GRAVEBLAST</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 4 dégâts. Placez une carte de votre <strong>Défausse</strong> dans votre <strong>Main</strong>. <strong>Épuisement</strong>.</td>
+<td>Infligez 6 dégâts. Placez une carte de votre <strong>Défausse</strong> dans votre <strong>Main</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Adjuration" loading="lazy" src="../../bible/images/cards/necrobinder/invoke.webp" /> <strong>Adjuration</strong> (<code>INVOKE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Au prochain tour, <strong>Invoquez</strong> pour 2 et gagnez ⚡2⚡.</td>
+<td>Au prochain tour, <strong>Invoquez</strong> pour 3 et gagnez ⚡3⚡.</td>
+</tr>
+<tr>
+<td><img alt="Anti-pulsation" loading="lazy" src="../../bible/images/cards/necrobinder/negative_pulse.webp" /> <strong>Anti-pulsation</strong> (<code>NEGATIVE_PULSE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez 5 d'<strong>Armure</strong>. Appliquez 7 de <strong>Fatalité</strong> sur TOUS les ennemis.</td>
+<td>Gagnez 6 d'<strong>Armure</strong>. Appliquez 11 de <strong>Fatalité</strong> sur TOUS les ennemis.</td>
+</tr>
+<tr>
+<td><img alt="Chiquenaude" loading="lazy" src="../../bible/images/cards/necrobinder/poke.webp" /> <strong>Chiquenaude</strong> (<code>POKE</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td><strong>Titos</strong> inflige 6 dégâts.</td>
+<td><strong>Titos</strong> inflige 9 dégâts.</td>
+</tr>
+<tr>
+<td><img alt="Râblure" loading="lazy" src="../../bible/images/cards/necrobinder/pull_aggro.webp" /> <strong>Râblure</strong> (<code>PULL_AGGRO</code>)</td>
+<td style="text-align: center;"><code>2</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td><strong>Invoquez</strong> pour 4. Gagnez 7 d'<strong>Armure</strong>.</td>
+<td><strong>Invoquez</strong> pour 5. Gagnez 9 d'<strong>Armure</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Moisson" loading="lazy" src="../../bible/images/cards/necrobinder/reap.webp" /> <strong>Moisson</strong> (<code>REAP</code>)</td>
+<td style="text-align: center;"><code>3</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td><strong>Retenue</strong>. Infligez 27 dégâts.</td>
+<td><strong>Retenue</strong>. Infligez 33 dégâts.</td>
+</tr>
+<tr>
+<td><img alt="Exaction" loading="lazy" src="../../bible/images/cards/necrobinder/reave.webp" /> <strong>Exaction</strong> (<code>REAVE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 10 dégâts. Ajoutez une <strong>Âme</strong> à votre <strong>Pioche</strong>.</td>
+<td>Infligez 13 dégâts. Ajoutez une <strong>Âme+</strong> à votre <strong>Pioche</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Pestilence" loading="lazy" src="../../bible/images/cards/necrobinder/scourge.webp" /> <strong>Pestilence</strong> (<code>SCOURGE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Appliquez 13 de <strong>Fatalité</strong>. Piochez 1 carte.</td>
+<td>Appliquez 16 de <strong>Fatalité</strong>. Piochez 2 cartes.</td>
+</tr>
+<tr>
+<td><img alt="Frappe du sculpteur" loading="lazy" src="../../bible/images/cards/necrobinder/sculpting_strike.webp" /> <strong>Frappe du sculpteur</strong> (<code>SCULPTING_STRIKE</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td>Infligez 9 dégâts. Ajoutez <strong>Éthéré</strong> à une carte dans votre <strong>Main</strong>.</td>
+<td>Infligez 12 dégâts. Ajoutez <strong>Éthéré</strong> à une carte dans votre <strong>Main</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Claquement de doigts" loading="lazy" src="../../bible/images/cards/necrobinder/snap.webp" /> <strong>Claquement de doigts</strong> (<code>SNAP</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td><strong>Titos</strong> inflige 7 dégâts. Ajoutez <strong>Retenue</strong> à une carte dans votre <strong>Main</strong>.</td>
+<td><strong>Titos</strong> inflige 10 dégâts. Ajoutez <strong>Retenue</strong> à une carte dans votre <strong>Main</strong>.</td>
+</tr>
+<tr>
+<td><img alt="Semence" loading="lazy" src="../../bible/images/cards/necrobinder/sow.webp" /> <strong>Semence</strong> (<code>SOW</code>)</td>
+<td style="text-align: center;"><code>1</code> ⚡</td>
+<td style="text-align: center;"><em>Attack</em></td>
+<td><strong>Retenue</strong>. Infligez 8 dégâts à TOUS les ennemis.</td>
+<td><strong>Retenue</strong>. Infligez 11 dégâts à TOUS les ennemis.</td>
+</tr>
+<tr>
+<td><img alt="Feu follet" loading="lazy" src="../../bible/images/cards/necrobinder/wisp.webp" /> <strong>Feu follet</strong> (<code>WISP</code>)</td>
+<td style="text-align: center;"><code>0</code> ⚡</td>
+<td style="text-align: center;"><em>Skill</em></td>
+<td>Gagnez ⚡1⚡. <strong>Épuisement</strong>.</td>
+<td><strong>Retenue</strong>. Gagnez ⚡1⚡. <strong>Épuisement</strong>.</td>
+</tr>
+</tbody>
+</table>
+<p>👉 <em>Voir l'intégralité des 90+ cartes de La Nécrolieuse (Peu communes, Rares, Anciennes) dans le tome dédié :</em><br />
+<a href="13_cartes_necrobinder.html">Consulter le Tome des Cartes de La Nécrolieuse</a></p>
+<hr /></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

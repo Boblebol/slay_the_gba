@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Régent — Slay the GBA</title>
+<meta name="description" content="Accumulation d&#x27;Étoiles souveraines pour des frappes cosmiques.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="hero-regent">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html" class="on">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html">Bible</a></nav>
+</header>
+<main>
+
+<section class="hero-banner small" style="background-image:url(../assets/bg/battle_regent.png)">
+  <div class="hero-inner split">
+    <img class="pix giant" src="../assets/sprites/hero_regent.png" alt="Le Régent">
+    <div><p class="kicker">Cartouche slay_regent.gba</p><h1>Le Régent</h1><p class="lead">Souverain céleste déchu</p>
+    <p>Accumulation d&#x27;Étoiles souveraines pour des frappes cosmiques.</p></div>
+  </div>
+</section>
+<div class="stats"><div><b>75</b><span>PV</span></div><div><b>3</b><span>énergie</span></div><div><b>91</b><span>cartes</span></div>
+<div><b>32</b><span>attaques</span></div><div><b>40</b><span>compétences</span></div><div><b>19</b><span>pouvoirs</span></div></div>
+<section class="panel "><h2>Fiche</h2><div class="sheet">
+<div class="relic big"><img src="../../bible/images/relics/divine_right.webp" alt=""><div><b>Relique de départ : Droit divin</b><p>Relique de départ du Régent : ses Étoiles alimentent ses sentences.</p></div></div>
+<div><h3>Deck de départ</h3><p>4× Frappe, 4× Défense, 1× Chute d&#x27;étoile, 1× Vénération</p><h3>Zone de la cartouche</h3><p>Palais Souverain</p></div>
+<img class="pix energy" src="../assets/sprites/energy_regent.png" alt="Orbe d'énergie">
+</div></section>
+<section class="panel"><h2>Toutes les cartes (91)</h2><div class="filters" data-target=".cards">
+  <input type="search" placeholder="Rechercher une carte…" data-search>
+  <div class="chips"><button class="on" data-filter-type="">Tous types</button><button data-filter-type="Attack">Attaque</button><button data-filter-type="Skill">Compétence</button><button data-filter-type="Power">Pouvoir</button></div>
+  <div class="chips"><button class="on" data-filter-rarity="">Toutes raretés</button><button data-filter-rarity="Basic">Base</button><button data-filter-rarity="Common">Commune</button><button data-filter-rarity="Uncommon">Peu commune</button><button data-filter-rarity="Rare">Rare</button><button data-filter-rarity="Ancient">Ancienne</button></div>
+  <p class="count"></p>
+</div><div class="cards"><article class="card t-attack p-regent" data-type="Attack" data-rarity="Basic" data-name="chute d&#x27;étoile falling_star">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/falling_star.webp" alt="Chute d&#x27;étoile"><span class="gem">0</span></div>
+  <h4>Chute d&#x27;étoile</h4>
+  <p class="meta">Attaque · Base</p>
+  <p class="desc">Infligez 8 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (1).<br>Appliquez <b class="kw">Vulnérable</b> (1).</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 12 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (1).<br>Appliquez <b class="kw">Vulnérable</b> (1).</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Basic" data-name="défense defend_regent">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/defend_regent.webp" alt="Défense"><span class="gem">1</span></div>
+  <h4>Défense</h4>
+  <p class="meta">Compétence · Base</p>
+  <p class="desc">Gagnez 5 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 8 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Basic" data-name="frappe strike_regent">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/strike_regent.webp" alt="Frappe"><span class="gem">1</span></div>
+  <h4>Frappe</h4>
+  <p class="meta">Attaque · Base</p>
+  <p class="desc">Infligez 6 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Basic" data-name="vénération venerate">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/venerate.webp" alt="Vénération"><span class="gem">1</span></div>
+  <h4>Vénération</h4>
+  <p class="meta">Compétence · Base</p>
+  <p class="desc">Gagnez 2 <span class="star">★</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 3 <span class="star">★</span>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Common" data-name="broyer crush_under">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/crush_under.webp" alt="Broyer"><span class="gem">1</span></div>
+  <h4>Broyer</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 8 dégâts à TOUS les ennemis. Tous les ennemis perdent 1 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts à TOUS les ennemis. Tous les ennemis perdent 2 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Common" data-name="butin de guerre spoils_of_battle">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/spoils_of_battle.webp" alt="Butin de guerre"><span class="gem">1</span></div>
+  <h4>Butin de guerre</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc"><b class="kw">Forgez</b> pour 6.<br>Piochez 2 cartes.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Forgez</b> pour 9.<br>Piochez 2 cartes.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Common" data-name="cache secrète hidden_cache">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/hidden_cache.webp" alt="Cache secrète"><span class="gem">1</span></div>
+  <h4>Cache secrète</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 1 <span class="star">★</span>.<br>Au prochain tour, gagnez 3 <span class="star">★</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 1 <span class="star">★</span>.<br>Au prochain tour, gagnez 4 <span class="star">★</span>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Common" data-name="courant pailleté glitterstream">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/glitterstream.webp" alt="Courant pailleté"><span class="gem">2</span></div>
+  <h4>Courant pailleté</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 11 d&#x27;<b class="kw">Armure</b>.<br>Au prochain tour, gagnez 5 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 13 d&#x27;<b class="kw">Armure</b>.<br>Au prochain tour, gagnez 7 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Common" data-name="croissant de lance crescent_spear">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/crescent_spear.webp" alt="Croissant de lance"><span class="gem">1</span></div>
+  <h4>Croissant de lance</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 8 dégâts.<br>Inflige 2 dégâts supplémentaires pour TOUTES vos cartes coûtant des 1 <span class="star">★</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 8 dégâts.<br>Inflige 3 dégâts supplémentaires pour TOUTES vos cartes coûtant des 1 <span class="star">★</span>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Common" data-name="entaille photonique photon_cut">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/photon_cut.webp" alt="Entaille photonique"><span class="gem">1</span></div>
+  <h4>Entaille photonique</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 10 dégâts.<br>Piochez 1 carte.<br>Choisissez 1 carte de votre <b class="kw">Main</b> à placer sur le dessus de votre <b class="kw">Pioche</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 13 dégâts.<br>Piochez 2 cartes.<br>Choisissez 1 carte de votre <b class="kw">Main</b> à placer sur le dessus de votre <b class="kw">Pioche</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Common" data-name="forgé par la guerre wrought_in_war">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/wrought_in_war.webp" alt="Forgé par la guerre"><span class="gem">1</span></div>
+  <h4>Forgé par la guerre</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 7 dégâts.<br><b class="kw">Forgez</b> pour 7.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts.<br><b class="kw">Forgez</b> pour 9.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Common" data-name="frappe solaire solar_strike">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/solar_strike.webp" alt="Frappe solaire"><span class="gem">1</span></div>
+  <h4>Frappe solaire</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 9 dégâts.<br>Gagnez 1 <span class="star">★</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 10 dégâts.<br>Gagnez 2 <span class="star">★</span>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Common" data-name="hors de ma vue ! begone">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/begone.webp" alt="HORS DE MA VUE !"><span class="gem">1</span></div>
+  <h4>HORS DE MA VUE !</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Choisissez une carte dans votre <b class="kw">Main</b> à <b class="kw">Transformer</b> en <b class="kw">Frappe de sbire</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Choisissez une carte dans votre <b class="kw">Main</b> à <b class="kw">Transformer</b> en <b class="kw">Frappe de sbire+</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Common" data-name="hiérarchie know_thy_place">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/know_thy_place.webp" alt="Hiérarchie"><span class="gem">0</span></div>
+  <h4>Hiérarchie</h4>
+  <p class="meta">Compétence · Commune · Exhaust</p>
+  <p class="desc">Appliquez <b class="kw">Affaibli</b> (1).<br>Appliquez <b class="kw">Vulnérable</b> (1).<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez <b class="kw">Affaibli</b> (1).<br>Appliquez <b class="kw">Vulnérable</b> (1).</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Common" data-name="indifférence cosmique cosmic_indifference">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/cosmic_indifference.webp" alt="Indifférence cosmique"><span class="gem">1</span></div>
+  <h4>Indifférence cosmique</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 6 d&#x27;<b class="kw">Armure</b>.<br>Placez une carte de votre <b class="kw">Défausse</b> sur le dessus de votre <b class="kw">Pioche</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 9 d&#x27;<b class="kw">Armure</b>.<br>Placez une carte de votre <b class="kw">Défausse</b> sur le dessus de votre <b class="kw">Pioche</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Common" data-name="lame lustrée refine_blade">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/refine_blade.webp" alt="Lame lustrée"><span class="gem">1</span></div>
+  <h4>Lame lustrée</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc"><b class="kw">Forgez</b> pour 8.<br>Au prochain tour, gagnez 1 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Forgez</b> pour 12.<br>Au prochain tour, gagnez 1 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Common" data-name="luminosité glow">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/glow.webp" alt="Luminosité"><span class="gem">1</span></div>
+  <h4>Luminosité</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 1 <span class="star">★</span>.<br>Piochez 1 carte.<br>Au prochain tour, piochez 1 carte.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 2 <span class="star">★</span>.<br>Piochez 1 carte.<br>Au prochain tour, piochez 1 carte.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Common" data-name="lumière rassemblée gather_light">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/gather_light.webp" alt="Lumière rassemblée"><span class="gem">1</span></div>
+  <h4>Lumière rassemblée</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 8 d&#x27;<b class="kw">Armure</b>.<br>Gagnez 1 <span class="star">★</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 11 d&#x27;<b class="kw">Armure</b>.<br>Gagnez 1 <span class="star">★</span>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Common" data-name="manteau d&#x27;étoiles cloak_of_stars">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/cloak_of_stars.webp" alt="Manteau d&#x27;étoiles"><span class="gem">0</span></div>
+  <h4>Manteau d&#x27;étoiles</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 7 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 10 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Common" data-name="petits pas patter">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/patter.webp" alt="Petits pas"><span class="gem">1</span></div>
+  <h4>Petits pas</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 8 d&#x27;<b class="kw">Armure</b>.<br>Gagnez 2 de <b class="kw">Vigueur</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 10 d&#x27;<b class="kw">Armure</b>.<br>Gagnez 3 de <b class="kw">Vigueur</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Common" data-name="puissance céleste celestial_might">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/celestial_might.webp" alt="Puissance céleste"><span class="gem">2</span></div>
+  <h4>Puissance céleste</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 6 dégâts 3 fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 6 dégâts 4 fois.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Common" data-name="pulsation astrale astral_pulse">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/astral_pulse.webp" alt="Pulsation astrale"><span class="gem">0</span></div>
+  <h4>Pulsation astrale</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 6 dégâts à TOUS les ennemis deux fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 8 dégâts à TOUS les ennemis deux fois.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Common" data-name="trajectoire de collision collision_course">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/collision_course.webp" alt="Trajectoire de collision"><span class="gem">0</span></div>
+  <h4>Trajectoire de collision</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 10 dégâts.<br>Ajoutez un <b class="kw">Débris</b> à votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 14 dégâts.<br>Ajoutez un <b class="kw">Débris</b> à votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Common" data-name="étoile directrice guiding_star">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/guiding_star.webp" alt="Étoile directrice"><span class="gem">1</span></div>
+  <h4>Étoile directrice</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 12 dégâts.<br>Piochez 2 cartes.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 13 dégâts.<br>Piochez 3 cartes.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="alignement alignment">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/alignment.webp" alt="Alignement"><span class="gem">0</span></div>
+  <h4>Alignement</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 2 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 3 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="autorité manifeste manifest_authority">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/manifest_authority.webp" alt="Autorité manifeste"><span class="gem">1</span></div>
+  <h4>Autorité manifeste</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 7 d&#x27;<b class="kw">Armure</b>.<br>Ajoutez 1 carte Incolore aléatoire à votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 8 d&#x27;<b class="kw">Armure</b>.<br>Ajoutez 1 carte Incolore aléatoire <b class="kw">Améliorée</b> à votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="chargez !! charge">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/charge.webp" alt="CHARGEZ !!"><span class="gem">1</span></div>
+  <h4>CHARGEZ !!</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Sélectionnez 2 cartes de votre <b class="kw">Pioche</b> à <b class="kw">Transformer</b> en <b class="kw">Sbires en piqué</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Sélectionnez 2 cartes de votre <b class="kw">Pioche</b> à <b class="kw">Transformer</b> en <b class="kw">Sbires en piqué+</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="conquérant conqueror">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/conqueror.webp" alt="Conquérant"><span class="gem">1</span></div>
+  <h4>Conquérant</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc"><b class="kw">Forgez</b> pour 3.<br><b class="kw">Lame souveraine</b> inflige le double de dégâts à l&#x27;ennemi pendant ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Forgez</b> pour 5.<br><b class="kw">Lame souveraine</b> inflige le double de dégâts à l&#x27;ennemi pendant ce tour.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="constellation constellation">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/constellation.webp" alt="Constellation"><span class="gem">0</span></div>
+  <h4>Constellation</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Un autre joueur pioche 1 carte, gagne 1 <span class="nrg">●</span>, et gagne 9 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Un autre joueur pioche 1 carte, gagne 1 <span class="nrg">●</span>, et gagne 12 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="convergence convergence">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/convergence.webp" alt="Convergence"><span class="gem">1</span></div>
+  <h4>Convergence</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Au prochain tour,<br>gagnez 1 <span class="nrg">●</span> et 1 <span class="star">★</span>.<br><b class="kw">Retenez</b> votre <b class="kw">Main</b> jusqu&#x27;au tour suivant.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au prochain tour,<br>gagnez 1 <span class="nrg">●</span> et 2 <span class="star">★</span>.<br><b class="kw">Retenez</b> votre <b class="kw">Main</b> jusqu&#x27;au tour suivant.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Uncommon" data-name="coup de pied royal kingly_kick">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/kingly_kick.webp" alt="Coup de pied royal"><span class="gem">4</span></div>
+  <h4>Coup de pied royal</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 27 dégâts.<br>Lorsque vous piochez cette carte, réduisez son coût de 1.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 35 dégâts.<br>Lorsque vous piochez cette carte, réduisez son coût de 1.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Uncommon" data-name="coup de poing royal kingly_punch">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/kingly_punch.webp" alt="Coup de poing royal"><span class="gem">1</span></div>
+  <h4>Coup de poing royal</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 8 dégâts.<br>Lorsque vous piochez cette carte, augmentez les dégâts qu&#x27;elle inflige de 4 jusqu&#x27;à la fin du combat.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 10 dégâts.<br>Lorsque vous piochez cette carte, augmentez les dégâts qu&#x27;elle inflige de 6 jusqu&#x27;à la fin du combat.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Uncommon" data-name="déflagration gamma gamma_blast">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/gamma_blast.webp" alt="Déflagration gamma"><span class="gem">0</span></div>
+  <h4>Déflagration gamma</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 13 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (2).<br>Appliquez <b class="kw">Vulnérable</b> (2).</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 18 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (2).<br>Appliquez <b class="kw">Vulnérable</b> (2).</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Uncommon" data-name="déflagration lunaire lunar_blast">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/lunar_blast.webp" alt="Déflagration lunaire"><span class="gem">0</span></div>
+  <h4>Déflagration lunaire</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 4 dégâts pour chaque Compétence déjà jouée pendant ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 5 dégâts pour chaque Compétence déjà jouée pendant ce tour.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Uncommon" data-name="dévastation devastate">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/devastate.webp" alt="Dévastation"><span class="gem">1</span></div>
+  <h4>Dévastation</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 35 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 45 dégâts.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Uncommon" data-name="enfant des étoiles child_of_the_stars">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/child_of_the_stars.webp" alt="Enfant des étoiles"><span class="gem">1</span></div>
+  <h4>Enfant des étoiles</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsque vous dépensez 1 <span class="star">★</span>, gagnez 2 d&#x27;<b class="kw">Armure</b> pour chaque 1 <span class="star">★</span> dépensée.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous dépensez 1 <span class="star">★</span>, gagnez 3 d&#x27;<b class="kw">Armure</b> pour chaque 1 <span class="star">★</span> dépensée.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="esquisse plot">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/plot.webp" alt="Esquisse"><span class="gem">1</span></div>
+  <h4>Esquisse</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Au prochain tour, TOUS les joueurs piochent 2 cartes.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au prochain tour, TOUS les joueurs piochent 3 cartes.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Uncommon" data-name="fournaise furnace">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/furnace.webp" alt="Fournaise"><span class="gem">1</span></div>
+  <h4>Fournaise</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Au début de votre tour, <b class="kw">Forgez</b> pour 5.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au début de votre tour, <b class="kw">Forgez</b> pour 7.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Uncommon" data-name="frappe rayonnante shining_strike">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/shining_strike.webp" alt="Frappe rayonnante"><span class="gem">1</span></div>
+  <h4>Frappe rayonnante</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 8 dégâts.<br>Gagnez 2 <span class="star">★</span>.<br>Placez cette carte sur le dessus de votre <b class="kw">Pioche</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 11 dégâts.<br>Gagnez 2 <span class="star">★</span>.<br>Placez cette carte sur le dessus de votre <b class="kw">Pioche</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Uncommon" data-name="hors d&#x27;état knockout_blow">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/knockout_blow.webp" alt="Hors d&#x27;état"><span class="gem">3</span></div>
+  <h4>Hors d&#x27;état</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 30 dégâts.<br>Si vous tuez un ennemi ainsi, gagnez 5 <span class="star">★</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 38 dégâts.<br>Si vous tuez un ennemi ainsi, gagnez 5 <span class="star">★</span>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Uncommon" data-name="hégémonie hegemony">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/hegemony.webp" alt="Hégémonie"><span class="gem">2</span></div>
+  <h4>Hégémonie</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 15 dégâts.<br>Au prochain tour, gagnez 2 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 18 dégâts.<br>Au prochain tour, gagnez 3 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="l&#x27;union fait la forge summon_forth">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/summon_forth.webp" alt="L&#x27;union fait la forge"><span class="gem">1</span></div>
+  <h4>L&#x27;union fait la forge</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Placez <b class="kw">Lame souveraine</b> dans votre <b class="kw">Main</b> depuis n&#x27;importe où.<br><b class="kw">Forgez</b> pour 8.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Placez <b class="kw">Lame souveraine</b> dans votre <b class="kw">Main</b> depuis n&#x27;importe où.<br><b class="kw">Forgez</b> pour 11.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="largesse largesse">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/largesse.webp" alt="Largesse"><span class="gem">0</span></div>
+  <h4>Largesse</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Un autre joueur ajoute 1 carte Incolore à sa <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Un autre joueur ajoute 1 carte Incolore <b class="kw">Améliorée</b> à sa <b class="kw">Main</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="lueur glimmer">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/glimmer.webp" alt="Lueur"><span class="gem">1</span></div>
+  <h4>Lueur</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Piochez 3 cartes.<br>Placez 1 carte de votre <b class="kw">Main</b> sur le dessus de votre <b class="kw">Pioche</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Piochez 4 cartes.<br>Placez 1 carte de votre <b class="kw">Main</b> sur le dessus de votre <b class="kw">Pioche</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="monologue monologue">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/monologue.webp" alt="Monologue"><span class="gem">0</span></div>
+  <h4>Monologue</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Chaque fois que vous jouez une carte pendant ce tour, gagnez 1 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Chaque fois que vous jouez une carte pendant ce tour, gagnez 1 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="mur de particules particle_wall">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/particle_wall.webp" alt="Mur de particules"><span class="gem">0</span></div>
+  <h4>Mur de particules</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 9 d&#x27;<b class="kw">Armure</b>.<br>Cette carte retourne dans votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 12 d&#x27;<b class="kw">Armure</b>.<br>Cette carte retourne dans votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Uncommon" data-name="orbite orbit">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/orbit.webp" alt="Orbite"><span class="gem">2</span></div>
+  <h4>Orbite</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Pour tous les <span class="nrg">●</span> que vous dépensez,<br>vous gagnez 1 <span class="nrg">●</span>.</p>
+  
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Uncommon" data-name="parade parry">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/parry.webp" alt="Parade"><span class="gem">1</span></div>
+  <h4>Parade</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc"><b class="kw">Lame souveraine</b> confère désormais 10 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Lame souveraine</b> confère désormais 14 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="pari royal royal_gamble">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/royal_gamble.webp" alt="Pari royal"><span class="gem">0</span></div>
+  <h4>Pari royal</h4>
+  <p class="meta">Compétence · Peu commune · Exhaust</p>
+  <p class="desc">Gagnez 9 1 <span class="star">★</span>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Retenue</b>.<br>Gagnez 9 1 <span class="star">★</span>.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Uncommon" data-name="pilier de la création pillar_of_creation">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/pillar_of_creation.webp" alt="Pilier de la création"><span class="gem">1</span></div>
+  <h4>Pilier de la création</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsque vous créez une carte, gagnez 2 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous créez une carte, gagnez 3 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Uncommon" data-name="point bleu pâle pale_blue_dot">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/pale_blue_dot.webp" alt="Point bleu pâle"><span class="gem">1</span></div>
+  <h4>Point bleu pâle</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Si vous jouez cartes ou plus en un tour, piochez 1 carte au début du tour suivant.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Si vous jouez cartes ou plus en un tour, piochez 2 cartes au début du tour suivant.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Uncommon" data-name="poussière d&#x27;étoiles stardust">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/stardust.webp" alt="Poussière d&#x27;étoiles"><span class="gem">0</span></div>
+  <h4>Poussière d&#x27;étoiles</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 5 dégâts à un ennemi aléatoire X fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 7 dégâts à un ennemi aléatoire X fois.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="prophétie prophesize">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/prophesize.webp" alt="Prophétie"><span class="gem">2</span></div>
+  <h4>Prophétie</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Piochez 6 cartes.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Piochez 9 cartes.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="quasar quasar">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/quasar.webp" alt="Quasar"><span class="gem">0</span></div>
+  <h4>Quasar</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Choisissez 1 carte Incolore parmi 3 aléatoires à ajouter à votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Choisissez 1 carte Incolore <b class="kw">Améliorée</b> parmi 3 aléatoires à ajouter à votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Uncommon" data-name="rayonnement radiate">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/radiate.webp" alt="Rayonnement"><span class="gem">0</span></div>
+  <h4>Rayonnement</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 3 dégâts à TOUS les ennemis pour chaque 1 <span class="star">★</span> gagnée ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 4 dégâts à TOUS les ennemis pour chaque 1 <span class="star">★</span> gagnée ce tour.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="reflet miroir reflect">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/reflect.webp" alt="Reflet miroir"><span class="gem">1</span></div>
+  <h4>Reflet miroir</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 15 d&#x27;<b class="kw">Armure</b>.<br>Les dégâts d&#x27;attaque bloqués par l&#x27;<b class="kw">Armure</b> sont renvoyés à l&#x27;attaquant pendant ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 20 d&#x27;<b class="kw">Armure</b>.<br>Les dégâts d&#x27;attaque bloqués par l&#x27;<b class="kw">Armure</b> sont renvoyés à l&#x27;attaquant pendant ce tour.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="rempart bulwark">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/bulwark.webp" alt="Rempart"><span class="gem">2</span></div>
+  <h4>Rempart</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 12 d&#x27;<b class="kw">Armure</b>.<br><b class="kw">Forgez</b> pour 10.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 15 d&#x27;<b class="kw">Armure</b>.<br><b class="kw">Forgez</b> pour 13.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="résonance resonance">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/resonance.webp" alt="Résonance"><span class="gem">1</span></div>
+  <h4>Résonance</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 1 de <b class="kw">Force</b>. TOUS les ennemis perdent 1 de <b class="kw">Force</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 2 de <b class="kw">Force</b>. TOUS les ennemis perdent 1 de <b class="kw">Force</b>.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Uncommon" data-name="spectre visible spectrum_shift">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/spectrum_shift.webp" alt="Spectre visible"><span class="gem">2</span></div>
+  <h4>Spectre visible</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Au début de votre tour, ajoutez 1 carte Incolore aléatoire à votre <b class="kw">Main</b>.</p>
+  
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Uncommon" data-name="supermassif supermassive">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/supermassive.webp" alt="Supermassif"><span class="gem">1</span></div>
+  <h4>Supermassif</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 5 dégâts.<br>Inflige 3 dégâts supplémentaires pour chaque carte que vous avez créée pendant ce combat.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 5 dégâts.<br>Inflige 4 dégâts supplémentaires pour chaque carte que vous avez créée pendant ce combat.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Uncommon" data-name="terraformation terraforming">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/terraforming.webp" alt="Terraformation"><span class="gem">1</span></div>
+  <h4>Terraformation</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 7 de <b class="kw">Vigueur</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 10 de <b class="kw">Vigueur</b>.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Uncommon" data-name="trou noir black_hole">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/black_hole.webp" alt="Trou noir"><span class="gem">1</span></div>
+  <h4>Trou noir</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsque vous gagnez ou dépensez des 1 <span class="star">★</span>, infligez 3 dégâts à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous gagnez ou dépensez des 1 <span class="star">★</span>, infligez 4 dégâts à TOUS les ennemis.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Rare" data-name="ainsi soit-il make_it_so">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/make_it_so.webp" alt="Ainsi soit-il"><span class="gem">0</span></div>
+  <h4>Ainsi soit-il</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 6 dégâts.<br>Toutes les 3 Compétences jouées par tour, placez cette carte dans votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts.<br>Toutes les 3 Compétences jouées par tour, placez cette carte dans votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Rare" data-name="arsenal arsenal">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/arsenal.webp" alt="Arsenal"><span class="gem">1</span></div>
+  <h4>Arsenal</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsque vous créez une carte, gagnez 1 de <b class="kw">Force</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Lorsque vous créez une carte, gagnez 1 de <b class="kw">Force</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Rare" data-name="atterrissage forcé crash_landing">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/crash_landing.webp" alt="Atterrissage forcé"><span class="gem">1</span></div>
+  <h4>Atterrissage forcé</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 21 dégâts à TOUS les ennemis.<br>Remplissez votre <b class="kw">Main</b> de <b class="kw">Débris</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 26 dégâts à TOUS les ennemis.<br>Remplissez votre <b class="kw">Main</b> de <b class="kw">Débris</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Rare" data-name="big bang big_bang">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/big_bang.webp" alt="Big Bang"><span class="gem">0</span></div>
+  <h4>Big Bang</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Piochez 1 carte.<br>Gagnez 1 <span class="nrg">●</span>.<br>Gagnez 1 <span class="star">★</span>.<br><b class="kw">Forgez</b> pour 5.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Piochez 1 carte.<br>Gagnez 1 <span class="nrg">●</span>.<br>Gagnez 1 <span class="star">★</span>.<br><b class="kw">Forgez</b> pour 5.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Rare" data-name="bombardement bombardment">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/bombardment.webp" alt="Bombardement"><span class="gem">3</span></div>
+  <h4>Bombardement</h4>
+  <p class="meta">Attaque · Rare · Exhaust</p>
+  <p class="desc">Infligez 18 dégâts.<br>Au début de votre tour, si cette carte est dans votre pile de cartes <b class="kw">Épuisées</b>, jouez-la.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 24 dégâts.<br>Au début de votre tour, si cette carte est dans votre pile de cartes <b class="kw">Épuisées</b>, jouez-la.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Rare" data-name="cadeau joyeux bundle_of_joy">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/bundle_of_joy.webp" alt="Cadeau joyeux"><span class="gem">1</span></div>
+  <h4>Cadeau joyeux</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Ajoutez 3 cartes Incolores aléatoires à votre <b class="kw">Main</b>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Ajoutez 4 cartes Incolores aléatoires à votre <b class="kw">Main</b>.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Rare" data-name="châtiment beat_into_shape">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/beat_into_shape.webp" alt="Châtiment"><span class="gem">1</span></div>
+  <h4>Châtiment</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 5 dégâts.<br><b class="kw">Forgez</b> pour 5.<br><b class="kw">Forgez</b> pour 5 supplémentaires pour chaque fois que vous avez touché l&#x27;ennemi pendant ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 7 dégâts.<br><b class="kw">Forgez</b> pour 7.<br><b class="kw">Forgez</b> pour 7 supplémentaires pour chaque fois que vous avez touché l&#x27;ennemi pendant ce tour.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Rare" data-name="comète comet">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/comet.webp" alt="Comète"><span class="gem">0</span></div>
+  <h4>Comète</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 33 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (3).<br>Appliquez <b class="kw">Vulnérable</b> (3).</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 44 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (3).<br>Appliquez <b class="kw">Vulnérable</b> (3).</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Rare" data-name="couru d&#x27;avance foregone_conclusion">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/foregone_conclusion.webp" alt="Couru d&#x27;avance"><span class="gem">1</span></div>
+  <h4>Couru d&#x27;avance</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Au prochain tour, placez 2 cartes de votre <b class="kw">Pioche</b> dans votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au prochain tour, placez 3 cartes de votre <b class="kw">Pioche</b> dans votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Rare" data-name="foreuse céleste heavenly_drill">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/heavenly_drill.webp" alt="Foreuse céleste"><span class="gem">X</span></div>
+  <h4>Foreuse céleste</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 8 dégâts X fois.<br>X est doublé si sa valeur est de 4 ou plus.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 10 dégâts X fois.<br>X est doublé si sa valeur est de 4 ou plus.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Rare" data-name="forme du néant void_form">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/void_form.webp" alt="Forme du néant"><span class="gem">3</span></div>
+  <h4>Forme du néant</h4>
+  <p class="meta">Pouvoir · Rare · Ethereal</p>
+  <p class="desc"><b class="kw">Éthéré</b>.<br>Terminez votre tour.<br>Les 2 premières cartes que vous jouez chaque tour coûtent 0.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Terminez votre tour.<br>Les 2 premières cartes que vous jouez chaque tour coûtent 0.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Rare" data-name="gardes !!! guards">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/guards.webp" alt="GARDES !!!"><span class="gem">2</span></div>
+  <h4>GARDES !!!</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc"><b class="kw">Transformez</b> autant de cartes de votre <b class="kw">Main</b> que vous souhaitez en <b class="kw">Sbire sacrificiel</b>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Transformez</b> autant de cartes de votre <b class="kw">Main</b> que vous souhaitez en <b class="kw">Sbire sacrificiel+</b>.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Rare" data-name="genèse genesis">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/genesis.webp" alt="Genèse"><span class="gem">2</span></div>
+  <h4>Genèse</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Au début de votre tour, gagnez 2 <span class="star">★</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au début de votre tour, gagnez 3 <span class="star">★</span>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Rare" data-name="grandes décisions decisions_decisions">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/decisions_decisions.webp" alt="Grandes décisions"><span class="gem">0</span></div>
+  <h4>Grandes décisions</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Piochez 3 cartes.<br>Sélectionnez une Compétence dans votre <b class="kw">Main</b> et jouez-la 3 fois.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Piochez 5 cartes.<br>Sélectionnez une Compétence dans votre <b class="kw">Main</b> et jouez-la 3 fois.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Rare" data-name="je suis invincible i_am_invincible">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/i_am_invincible.webp" alt="Je suis invincible"><span class="gem">1</span></div>
+  <h4>Je suis invincible</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Gagnez 10 d&#x27;<b class="kw">Armure</b>.<br>À la fin de votre tour, si cette carte est sur le dessus de votre <b class="kw">Pioche</b>, jouez-la.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 13 d&#x27;<b class="kw">Armure</b>.<br>À la fin de votre tour, si cette carte est sur le dessus de votre <b class="kw">Pioche</b>, jouez-la.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Rare" data-name="l&#x27;heure du marteau hammer_time">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/hammer_time.webp" alt="L&#x27;heure du marteau"><span class="gem">2</span></div>
+  <h4>L&#x27;heure du marteau</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsque vous <b class="kw">Forgez</b>, tous vos alliés <b class="kw">Forgent</b> également.</p>
+  
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Rare" data-name="lame chercheuse seeking_edge">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/seeking_edge.webp" alt="Lame chercheuse"><span class="gem">1</span></div>
+  <h4>Lame chercheuse</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc"><b class="kw">Forgez</b> pour 7.<br><b class="kw">Lame souveraine</b> inflige désormais ses dégâts à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Forgez</b> pour 11.<br><b class="kw">Lame souveraine</b> inflige désormais ses dégâts à TOUS les ennemis.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Rare" data-name="le forgeron the_smith">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/the_smith.webp" alt="Le forgeron"><span class="gem">1</span></div>
+  <h4>Le forgeron</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc"><b class="kw">Forgez</b> pour 30.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Forgez</b> pour 40.</p></details>
+</article><article class="card t-skill p-regent" data-type="Skill" data-rarity="Rare" data-name="leçon tutor">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/tutor.webp" alt="Leçon"><span class="gem">1</span></div>
+  <h4>Leçon</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Un autre joueurs choisit une carte dans sa <b class="kw">Pioche</b> à placer dans sa <b class="kw">Main</b>.</p>
+  
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Rare" data-name="marteau d&#x27;héritage heirloom_hammer">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/heirloom_hammer.webp" alt="Marteau d&#x27;héritage"><span class="gem">2</span></div>
+  <h4>Marteau d&#x27;héritage</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 20 dégâts.<br>Sélectionnez une carte Incolore dans votre <b class="kw">Main</b>. Ajoutez une copie de cette carte à votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 25 dégâts.<br>Sélectionnez une carte Incolore dans votre <b class="kw">Main</b>. Ajoutez une copie de cette carte à votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Rare" data-name="pléiades seven_stars">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/seven_stars.webp" alt="Pléiades"><span class="gem">2</span></div>
+  <h4>Pléiades</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 7 dégâts à TOUS les ennemis 7 fois.</p>
+  
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Rare" data-name="regard monarchique monarchs_gaze">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/monarchs_gaze.webp" alt="Regard monarchique"><span class="gem">2</span></div>
+  <h4>Regard monarchique</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsque vous attaquez un ennemi, celui-ci perd 1 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p>
+  
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Rare" data-name="royalties royalties">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/royalties.webp" alt="Royalties"><span class="gem">1</span></div>
+  <h4>Royalties</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">À la fin du combat, gagnez 30 <b class="kw">Pièces d&#x27;or</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">À la fin du combat, gagnez 40 <b class="kw">Pièces d&#x27;or</b>.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Rare" data-name="sage à l&#x27;épée sword_sage">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/sword_sage.webp" alt="Sage à l&#x27;épée"><span class="gem">2</span></div>
+  <h4>Sage à l&#x27;épée</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc"><b class="kw">Lame souveraine</b> gagne <b class="kw">Écho</b> 1.</p>
+  
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Rare" data-name="tyran tyranny">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/tyranny.webp" alt="Tyran"><span class="gem">1</span></div>
+  <h4>Tyran</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Au début de votre tour, piochez 1 carte et <b class="kw">Épuisez</b> 1 carte de votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Au début de votre tour, piochez 1 carte et <b class="kw">Épuisez</b> 1 carte de votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Rare" data-name="égide à neutrons neutron_aegis">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/neutron_aegis.webp" alt="Égide à neutrons"><span class="gem">1</span></div>
+  <h4>Égide à neutrons</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Gagnez 8 de <b class="kw">Blindage</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 11 de <b class="kw">Blindage</b>.</p></details>
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Rare" data-name="étoile mourante dying_star">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/dying_star.webp" alt="Étoile mourante"><span class="gem">1</span></div>
+  <h4>Étoile mourante</h4>
+  <p class="meta">Attaque · Rare · Ethereal</p>
+  <p class="desc"><b class="kw">Éthéré</b>.<br>Infligez 9 dégâts à TOUS les ennemis. TOUS les ennemis perdent 9 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Éthéré</b>.<br>Infligez 11 dégâts à TOUS les ennemis. TOUS les ennemis perdent 11 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p></details>
+</article><article class="card t-power p-regent" data-type="Power" data-rarity="Ancient" data-name="le trône scellé the_sealed_throne">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/the_sealed_throne.webp" alt="Le trône scellé"><span class="gem">1</span></div>
+  <h4>Le trône scellé</h4>
+  <p class="meta">Pouvoir · Ancienne</p>
+  <p class="desc">Lorsque vous jouez une carte, gagnez 1 <span class="star">★</span>.</p>
+  
+</article><article class="card t-attack p-regent" data-type="Attack" data-rarity="Ancient" data-name="pluie de météores meteor_shower">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/regent/meteor_shower.webp" alt="Pluie de météores"><span class="gem">0</span></div>
+  <h4>Pluie de météores</h4>
+  <p class="meta">Attaque · Ancienne</p>
+  <p class="desc">Infligez 14 dégâts à TOUS les ennemis.<br>Appliquez <b class="kw">Affaibli</b> (2) et <b class="kw">Vulnérable</b> à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 21 dégâts à TOUS les ennemis.<br>Appliquez <b class="kw">Affaibli</b> (2) et <b class="kw">Vulnérable</b> à TOUS les ennemis.</p></details>
+</article></div></section>
+<section class="panel "><h2>Reliques exclusives</h2><div class="relics"><div class="relic"><img loading="lazy" src="../../bible/images/relics/divine_right.webp" alt=""><div><b>Droit divin</b><p>Au début de chaque combat, gagnez 3 <span class="star">★</span>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/fencing_manual.webp" alt=""><div><b>Manuel d&#x27;escrime</b><p>Au début de chaque combat, <b class="kw">Forgez</b> 10.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/galactic_dust.webp" alt=""><div><b>Poussière galactique</b><p>Chaque fois que vous dépensez 10 1 <span class="star">★</span>, gagnez 10 d&#x27;<b class="kw">Armure</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/lunar_pastry.webp" alt=""><div><b>Pâtisserie lunaire</b><p>À la fin de votre tour, gagnez 1 <span class="star">★</span>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/mini_regent.webp" alt=""><div><b>Mini Régent</b><p>La première fois que vous dépensez des 1 <span class="star">★</span> chaque tour, gagnez 1 de <b class="kw">Force</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/orange_dough.webp" alt=""><div><b>Pâte orange</b><p>Au début de chaque combat, ajoutez 2 cartes Incolores aléatoires à votre <b class="kw">Main</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/regalite.webp" alt=""><div><b>Royalithe</b><p>La première fois que vous créez une carte chaque tour, gagnez 4 d&#x27;<b class="kw">Armure</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/vitruvian_minion.webp" alt=""><div><b>Sbire de Vitruve</b><p>Les cartes contenant « Sbire » infligent le double de dégâts et confèrent le double d&#x27;<b class="kw">Armure</b>.</p></div></div></div></section>
+<section class="panel livret"><div class="md"><h1 id="livret-dinstruction-officiel-slay-the-spire-2-edition-le-regent">🟣 Livret d'Instruction Officiel — Slay the Spire 2 : Édition Le Régent</h1>
+<pre><code>========================================================================================
+                      NINTENDO® GAME BOY ADVANCE™ INSTRUCTION BOOKLET
+                    ÉDITION LE RÉGENT — RÉFÉRENCE : AGB-P-ASGR-FRA
+========================================================================================
+</code></pre>
+<blockquote>
+<p><strong>Sceau Officiel de Qualité Nintendo® :</strong><br />
+Ce livret officiel garantit l'authenticité et la fidélité de votre cartouche Game Boy Advance <em>Slay the Spire 2 — Édition Le Régent</em>. Conservez ce manuel pour maîtriser l'accumulation des Étoiles Souveraines, les décrets royaux et les châtiments astraux.</p>
+</blockquote>
+<hr />
+<h2 id="1-histoire-contexte-du-regent">📜 1. Histoire &amp; Contexte du Régent</h2>
+<p>Souverain immortel d'une dynastie stellaire oubliée, <strong>Le Régent</strong> (<em>The Regent</em>) a vu son royaume céleste s'effondrer sous l'emprise corruptrice de la Tour.<br />
+Vêtu d'un manteau de pourpre et d'or ciselé, il manie un sceptre astral capable de canaliser les constellations. Au lieu de s'épuiser dans des assauts désordonnés, Le Régent accumule des <strong>Étoiles Souveraines</strong> qui décuplent passivement la puissance de chaque frappe et l'épaisseur de chaque barrière.</p>
+<ul>
+<li><strong>Points de Vie Initiaux :</strong> 75 PV.</li>
+<li><strong>Or de Départ :</strong> 99 Pièces d'or.</li>
+<li><strong>Relique de Départ :</strong> <strong>Sceptre Ancien</strong> (<em>Ancient Scepter</em>) — Vous débutez chaque combat avec <strong>2 Étoiles Souveraines actives</strong> (max 5 étoiles).</li>
+</ul>
+<hr />
+<h2 id="2-la-mecanique-des-etoiles-souveraines-sovereign-stars">⭐ 2. La Mécanique des Étoiles Souveraines (<em>Sovereign Stars</em>)</h2>
+<p>Chaque Étoile Souveraine (symbole ⭐) en orbite autour du Régent octroie un bonus direct :
+* <strong>Bonus Passif :</strong> Chaque étoile ajoute <strong>+1 Dégât</strong> à toutes vos cartes d'Attaque ET <strong>+1 Armure</strong> à toutes vos cartes de Compétence ! (À 5 étoiles, une simple Frappe passe de 6 à 11 dégâts, et une Défense passe de 5 à 10 Armure !).
+* <strong>Consommation d'Étoiles :</strong> Certaines cartes impériales dévastatrices dépensent 1 ou plusieurs étoiles pour déclencher des effets colossaux (dégâts doublés, étourdissement, piochage massif).</p>
+<hr />
+<h2 id="3-maniement-des-commandes-game-boy-advance">🎮 3. Maniement des Commandes Game Boy Advance</h2>
+<table>
+<thead>
+<tr>
+<th>Bouton</th>
+<th>Action sur la Carte de la Tour</th>
+<th>Action dans l'Arène Yu-Gi-Oh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Croix Directionnelle (◄ / ►)</strong></td>
+<td>Choisir la voie sur la carte</td>
+<td>Naviguer entre vos cartes en main / Pointer l'ennemi à châtier</td>
+</tr>
+<tr>
+<td><strong>Croix Directionnelle (▲ / ▼)</strong></td>
+<td>Faire défiler les étages de la Tour</td>
+<td>Examiner la description des décrets royaux</td>
+</tr>
+<tr>
+<td><strong>Bouton A</strong></td>
+<td><strong>Entrer dans la salle / Lancer le combat</strong></td>
+<td><strong>Promulguer le décret / Jouer la carte sélectionnée</strong></td>
+</tr>
+<tr>
+<td><strong>Bouton B</strong></td>
+<td>Annuler</td>
+<td>Annuler le mode de ciblage</td>
+</tr>
+<tr>
+<td><strong>Bouton START</strong></td>
+<td>Pause &amp; Sauvegarde</td>
+<td><strong>Fin de Tour immédiate</strong></td>
+</tr>
+<tr>
+<td><strong>Bouton SELECT</strong></td>
+<td><strong>Consulter le Deck</strong></td>
+<td><strong>Consulter le Registre Royal &amp; la Défausse</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-structure-des-ecrans-de-jeu-resolution-240-160">📺 4. Structure des Écrans de Jeu (Résolution 240 × 160)</h2>
+<pre><code>┌────────────────────────────────────────────────────────┐
+│  [ZONE 1]              [ZONE 2]              [ZONE 3]  │
+│  Gremlin Nob [68/82]   Morpion [18/18]       [K.O.]    │
+│  ! ATK 8               ! 6D                            │
+│                                                        │
+│  [HÉROS] Le Régent       PV 70/75 (+12B)  NRG: [●][●][●]│
+│  Étoiles Souveraines : ⭐⭐⭐⭐ (4/5)      Bonus : +4 Atk / +4 Def│
+│────────────────────────────────────────────────────────│
+│  [Étoile Filante+] (1E) | 10 (+4) dégâts + 1 Étoile    │
+│  Main : [1]  [2]  &gt;[3]&lt;  [4]  [5]                      │
+│  G/D : Carte   A : Jouer   START : Fin de Tour         │
+└────────────────────────────────────────────────────────┘
+</code></pre>
+<p>L'arène Yu-Gi-Oh met en valeur votre compteur d'Étoiles Souveraines au milieu de l'écran avec le bonus total appliqué dynamiquement à chaque carte !</p>
+<hr />
+<h2 id="5-systeme-de-teintes-style-pokemon">🎨 5. Système de Teintes (Style Pokémon)</h2>
+<ol>
+<li><strong>Classique (Pourpre Royal) :</strong> Toge pourpre impériale et couronne d'or massif du monarque.</li>
+<li><strong>Chromatique / Shiny (Or Céleste) :</strong> Robe blanche et liserés d'or solaire des rois-étoiles.</li>
+<li><strong>Ténèbres / Shadow (Régence d'Éclipse) :</strong> Pourpre ténébreux et gemmes d'obsidienne astrale.</li>
+<li><strong>Dorée / Golden (Monarque Solaire) :</strong> Auréole resplendissante débloquée après l'Ascension 10.</li>
+</ol>
+<hr />
+<h2 id="6-catalogue-officiel-des-20-cartes-communes-de-ledition">🃏 6. Catalogue Officiel des 20 Cartes Communes de l'Édition</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">N°</th>
+<th style="text-align: left;">Carte</th>
+<th style="text-align: center;">Coût</th>
+<th style="text-align: center;">Type</th>
+<th>Effet Standard</th>
+<th>Version Améliorée (<code>+</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">01</td>
+<td style="text-align: left;"><strong>Frappe</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 6 (+⭐) dégâts à un ennemi.</td>
+<td>Inflige <strong>9 (+⭐) dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">02</td>
+<td style="text-align: left;"><strong>Défense</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 5 (+⭐) points d'Armure.</td>
+<td>Confère <strong>8 (+⭐) points d'Armure</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">03</td>
+<td style="text-align: left;"><strong>Étoile Filante</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 7 (+⭐) dégâts. Confère <strong>+1 Étoile Souveraine</strong>.</td>
+<td>Inflige <strong>10 (+⭐) dégâts</strong>. Confère <strong>+1 Étoile</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">04</td>
+<td style="text-align: left;"><strong>Vénération</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 6 (+⭐) Armure et <strong>+1 Étoile Souveraine</strong>.</td>
+<td>Confère <strong>9 (+⭐) Armure</strong> et <strong>+1 Étoile</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">05</td>
+<td style="text-align: left;"><strong>Châtiment Céleste</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 14 (+⭐x2) dégâts massifs.</td>
+<td>Inflige <strong>18 (+⭐x2) dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">06</td>
+<td style="text-align: left;"><strong>Décret Royal</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Pioche 2 cartes. Si vous avez 3+ étoiles, confère +1 Énergie.</td>
+<td>Pioche <strong>3 cartes</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">07</td>
+<td style="text-align: left;"><strong>Garde Impériale</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 8 (+⭐) Armure. Au tour suivant, confère +1 Étoile.</td>
+<td>Confère <strong>11 (+⭐) Armure</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">08</td>
+<td style="text-align: left;"><strong>Éclat Cosmique</strong></td>
+<td style="text-align: center;">0E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 4 (+⭐) dégâts. Si vous avez 5 étoiles, pioche 1 carte.</td>
+<td>Inflige <strong>6 (+⭐) dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">09</td>
+<td style="text-align: left;"><strong>Pluie Météorite</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 8 (+⭐) dégâts à TOUS les ennemis.</td>
+<td>Inflige <strong>11 (+⭐) dégâts</strong> à TOUS les ennemis.</td>
+</tr>
+<tr>
+<td style="text-align: center;">10</td>
+<td style="text-align: left;"><strong>Couronnement</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>Gagnez immédiatement +2 Étoiles Souveraines.</td>
+<td>Gagnez <strong>+3 Étoiles Souveraines</strong> !</td>
+</tr>
+<tr>
+<td style="text-align: center;">11</td>
+<td style="text-align: left;"><strong>Majesté</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>À chaque fin de tour, gagnez +1 Armure par Étoile active.</td>
+<td>Gagnez <strong>+2 Armure</strong> par Étoile active.</td>
+</tr>
+<tr>
+<td style="text-align: center;">12</td>
+<td style="text-align: left;"><strong>Supernova</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Dépense toutes vos Étoiles. Inflige 8 dégâts par étoile consommée !</td>
+<td>Inflige <strong>11 dégâts</strong> par étoile consommée !</td>
+</tr>
+<tr>
+<td style="text-align: center;">13</td>
+<td style="text-align: left;"><strong>Bénédiction Céleste</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 5 Armure. Convertit 1 Malédiction en carte Étoile.</td>
+<td>Confère <strong>8 Armure</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">14</td>
+<td style="text-align: left;"><strong>Rayon Stellaire</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 6 (+⭐) dégâts et applique 2 Vulnérable.</td>
+<td>Inflige <strong>9 (+⭐) dégâts</strong> et applique <strong>3 Vulnérable</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">15</td>
+<td style="text-align: left;"><strong>Constellation</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>Chaque fois que vous atteignez 5 Étoiles, piochez 2 cartes.</td>
+<td>Piochez <strong>3 cartes</strong> !</td>
+</tr>
+<tr>
+<td style="text-align: center;">16</td>
+<td style="text-align: left;"><strong>Barrière Astrale</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 7 (+⭐) Armure. Applique 1 Faiblesse à l'attaquant.</td>
+<td>Confère <strong>10 (+⭐) Armure</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">17</td>
+<td style="text-align: left;"><strong>Jugement Dernier</strong></td>
+<td style="text-align: center;">3E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 25 dégâts. Si l'ennemi a moins de 50% de PV, coûte 1E de moins.</td>
+<td>Inflige <strong>32 dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">18</td>
+<td style="text-align: left;"><strong>Sceau Impérial</strong></td>
+<td style="text-align: center;">0E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Retient 1 carte en main pour le tour suivant.</td>
+<td>Retient <strong>2 cartes en main</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">19</td>
+<td style="text-align: left;"><strong>Éclipse</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Réduit les dégâts de la prochaine attaque ennemie de 50%.</td>
+<td>Coût réduit à <strong>0E</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">20</td>
+<td style="text-align: left;"><strong>Trône Céleste</strong></td>
+<td style="text-align: center;">3E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>Au début de chaque tour, gagnez +1 Étoile Souveraine.</td>
+<td>Gagnez <strong>+1 Étoile et +1 Énergie</strong> !</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-guide-de-survie-strategie-de-duel">⚔️ 7. Guide de Survie &amp; Stratégie de Duel</h2>
+<ol>
+<li><strong>La cadence des 5 Étoiles :</strong> Atteindre le plafond de 5 Étoiles Souveraines est votre priorité absolue dans chaque combat. Jouez <strong>Étoile Filante</strong> et <strong>Vénération</strong> dès le tour 1 pour booster toutes vos actions ultérieures de +5 !</li>
+<li><strong>La bombe Supernova :</strong> Si un boss ou un élite prépare une attaque dévastatrice, déchaînez <strong>Supernova</strong> à 5 étoiles pour infliger jusqu'à 55 points de dégâts immédiats.</li>
+<li><strong>L'armure impériale inexpugnable :</strong> Avec <strong>Majesté</strong> et 5 étoiles, vous générez automatiquement 10 points d'Armure à chaque fin de tour sans dépenser la moindre ressource.</li>
+</ol></div></section>
+
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accueil — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="index.html"><img src="assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="index.html" class="on">Accueil</a><a href="heros.html">Héros</a><a href="cartes.html">Cartes</a><a href="bestiaire.html">Bestiaire</a><a href="reliques.html">Reliques</a><a href="potions.html">Potions</a><a href="evenements.html">Évènements</a><a href="anciens.html">Anciens</a><a href="guide.html">Guide</a><a href="bible/index.html">Bible</a></nav>
+</header>
+<main>
+
+<section class="hero-banner" style="background-image:url(assets/bg/title.png)">
+  <div class="hero-inner">
+    <p class="kicker">Game Boy Advance · 5 cartouches</p>
+    <h1>SLAY THE GBA</h1>
+    <p class="lead">Slay the Spire 2 réinventé en 240×160 : deckbuilding roguelike, arène de combat façon Pokémon GBA et une cartouche par héros.</p>
+    <div class="cta"><a class="btn" href="#cartouches">Choisir un héros ►</a><a class="btn ghost" href="bible/index.html">Lire la bible</a></div>
+  </div>
+</section>
+
+<div class="stats"><div><b>569</b><span>cartes</span></div><div><b>104</b><span>monstres</span></div><div><b>298</b><span>reliques</span></div><div><b>63</b><span>potions</span></div><div><b>57</b><span>évènements</span></div><div><b>8</b><span>Anciens</span></div></div>
+
+<section class="panel "><h2 id="cartouches">Les 5 cartouches</h2><p>Un héros par cartouche, chacun avec son deck, sa relique, son décor et sa mécanique signature.</p><div class="carts"><a class="cart" href="heros/ironclad.html" style="--hc:#c82030;--ha:#f05030">
+  <div class="cart-label" style="background-image:url(assets/bg/battle_ironclad.png)">
+    <img class="pix" src="assets/sprites/hero_ironclad.png" alt="Soldat de Fer">
+  </div>
+  <div class="cart-info"><b>Soldat de Fer</b><span>Forges du Carnage</span><small>80 PV · slay_ironclad.gba</small></div>
+</a><a class="cart" href="heros/silent.html" style="--hc:#40a048;--ha:#78d060">
+  <div class="cart-label" style="background-image:url(assets/bg/battle_silent.png)">
+    <img class="pix" src="assets/sprites/hero_silent.png" alt="La Silencieuse">
+  </div>
+  <div class="cart-info"><b>La Silencieuse</b><span>Marais du Venin</span><small>70 PV · slay_silent.gba</small></div>
+</a><a class="cart" href="heros/defect.html" style="--hc:#3870d8;--ha:#58b0f0">
+  <div class="cart-label" style="background-image:url(assets/bg/battle_defect.png)">
+    <img class="pix" src="assets/sprites/hero_defect.png" alt="Le Défectueux">
+  </div>
+  <div class="cart-info"><b>Le Défectueux</b><span>Complexe Astral</span><small>75 PV · slay_defect.gba</small></div>
+</a><a class="cart" href="heros/regent.html" style="--hc:#e89828;--ha:#f0c060">
+  <div class="cart-label" style="background-image:url(assets/bg/battle_regent.png)">
+    <img class="pix" src="assets/sprites/hero_regent.png" alt="Le Régent">
+  </div>
+  <div class="cart-info"><b>Le Régent</b><span>Palais Souverain</span><small>75 PV · slay_regent.gba</small></div>
+</a><a class="cart" href="heros/necrobinder.html" style="--hc:#c860b8;--ha:#e8b0ff">
+  <div class="cart-label" style="background-image:url(assets/bg/battle_necrobinder.png)">
+    <img class="pix" src="assets/sprites/hero_necrobinder.png" alt="La Nécrolieuse">
+  </div>
+  <div class="cart-info"><b>La Nécrolieuse</b><span>Crypte d&#x27;Outre-Tombe</span><small>65 PV · slay_necrobinder.gba</small></div>
+</a></div></section>
+
+<section class="panel "><h2>Le jeu</h2>
+<div class="features">
+  <div><h3>♥ Roguelike deckbuilder</h3><p>Gravissez une Tour de 16 étages : combats, élites, évènements, feux de camp, boutiques, trésors, puis le boss de l'acte.</p></div>
+  <div><h3>⚔ Combats à la Pokémon</h3><p>Héros de dos à gauche, monstres à droite sur leurs socles, intentions visibles, barres de PV qui se vident, dégâts flottants et secousses.</p></div>
+  <div><h3>★ Vraies illustrations</h3><p>Cartes, monstres, boss et évènements convertis depuis l'art de Slay the Spire 2 en palettes 16 couleurs.</p></div>
+  <div><h3>● Fluide</h3><p>Moteur C++20 Butano, texte mis en cache, animations interpolées, fondus entre scènes : 60 images par seconde.</p></div>
+</div></section>
+
+<section class="panel"><h2>Captures</h2><p>Images réelles de la ROM, capturées dans l'émulateur.</p><div class="shots"><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/title.png" alt="Écran titre sur la key-art de Slay the Spire 2"><figcaption>Écran titre sur la key-art de Slay the Spire 2</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/palette.png" alt="Choix de la teinte du héros (Classique, Chromatique, Ombre, Or)"><figcaption>Choix de la teinte du héros (Classique, Chromatique, Ombre, Or)</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/map.png" alt="Carte de la Tour : 16 étages, embranchements et pion animé"><figcaption>Carte de la Tour : 16 étages, embranchements et pion animé</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/combat.png" alt="Arène de combat façon Pokémon avec main de cartes illustrées"><figcaption>Arène de combat façon Pokémon avec main de cartes illustrées</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/card_flight.png" alt="La carte jouée grossit au centre avant l&#x27;impact"><figcaption>La carte jouée grossit au centre avant l&#x27;impact</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/impact.png" alt="Slash, dégâts flottants et barre de PV qui se vide"><figcaption>Slash, dégâts flottants et barre de PV qui se vide</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/enemy_turn.png" alt="Tour ennemi rejoué attaque par attaque"><figcaption>Tour ennemi rejoué attaque par attaque</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/target.png" alt="Ciblage quand plusieurs ennemis sont en vie"><figcaption>Ciblage quand plusieurs ennemis sont en vie</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/death.png" alt="Mort des monstres en fondu-mosaïque"><figcaption>Mort des monstres en fondu-mosaïque</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/boss.png" alt="Boss : le Cerf Auguste"><figcaption>Boss : le Cerf Auguste</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/rewards.png" alt="Récompenses : choisissez une carte parmi trois"><figcaption>Récompenses : choisissez une carte parmi trois</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/event.png" alt="Évènements mystères avec texte machine à écrire"><figcaption>Évènements mystères avec texte machine à écrire</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/event_choice.png" alt="Choix d&#x27;évènement et conséquences"><figcaption>Choix d&#x27;évènement et conséquences</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/shop.png" alt="Boutique du marchand"><figcaption>Boutique du marchand</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/forge.png" alt="Feu de camp : forge avec aperçu amélioré"><figcaption>Feu de camp : forge avec aperçu amélioré</figcaption></figure><figure class="shot"><img class="pix" loading="lazy" src="assets/screens/deck.png" alt="Registre du deck"><figcaption>Registre du deck</figcaption></figure></div></section>
+
+<section class="panel "><h2>Bestiaire de l’acte 1</h2><div class="mini-mons"><div class="mini-mon"><img class="pix" src="assets/sprites/mon_cultist.png" alt="Cultist"><span>Cultist</span></div><div class="mini-mon"><img class="pix" src="assets/sprites/mon_jaw_worm.png" alt="Jaw Worm"><span>Jaw Worm</span></div><div class="mini-mon"><img class="pix" src="assets/sprites/mon_louse.png" alt="Morpion"><span>Morpion</span></div><div class="mini-mon"><img class="pix" src="assets/sprites/mon_gremlin_nob.png" alt="Gremlin Nob"><span>Gremlin Nob</span></div><div class="mini-mon boss"><img class="pix" src="assets/sprites/boss_ceremonial_beast.png" alt="Cerf Auguste"><span>Cerf Auguste (Boss)</span></div></div><p><a class="btn small" href="bestiaire.html">Tout le bestiaire ►</a></p></section>
+
+<section class="panel "><h2>Commandes</h2>
+<table class="keys"><tr><th>Écran</th><th>Bouton</th><th>Action</th></tr>
+<tr><td>Carte</td><td>◄ ►</td><td>Choisir la salle suivante</td></tr>
+<tr><td>Carte</td><td>▲ ▼</td><td>Faire défiler la Tour</td></tr>
+<tr><td>Carte</td><td>A</td><td>Avancer vers la salle</td></tr>
+<tr><td>Combat</td><td>◄ ►</td><td>Sélectionner une carte</td></tr>
+<tr><td>Combat</td><td>A</td><td>Jouer la carte (puis choisir la cible)</td></tr>
+<tr><td>Combat</td><td>START / R</td><td>Finir le tour</td></tr>
+<tr><td>Carte / Combat</td><td>SELECT</td><td>Registre du deck (B pour revenir)</td></tr></table></section>
+
+<section class="panel "><h2>Jouer</h2>
+<ol class="steps"><li>Compilez les cartouches : <code>make all-roms</code> (Docker devkitARM automatique).</li>
+<li>Ouvrez <code>slay_ironclad.gba</code> (ou un autre héros) dans mGBA, ou flashez-la sur une cartouche EZ-Flash / EverDrive.</li>
+<li>Régénérez l'art depuis la bible : <code>uv run scripts/build_gba_art.py</code>.</li></ol></section>
+
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

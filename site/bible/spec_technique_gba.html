@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spécifications Techniques GBA — Système des Anciens — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html" class="on">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><p class="crumb"><a href="index.html">◄ Bible</a></p><div class="md"><h1 id="specifications-techniques-gba-systeme-des-anciens">⚙️ Spécifications Techniques GBA — Système des Anciens</h1>
+<blockquote>
+<p><strong>Document de Référence Technique pour <code>slay_the_gba</code></strong><br />
+<strong>Moteur :</strong> Butano C++20 | <strong>Plateforme cible :</strong> Nintendo Game Boy Advance (ARM7TDMI @ 16.78 MHz)<br />
+<strong>Données sources :</strong> Slay the Spire 2 — Patch <code>v0.111.0 Beta</code> (Août 2026)</p>
+</blockquote>
+<hr />
+<h2 id="1-contraintes-materielles-resolution-240x160">1. 📐 Contraintes Matérielles &amp; Résolution (240x160)</h2>
+<p>La Nintendo Game Boy Advance dispose d'une résolution fixe de <strong>240 × 160 pixels</strong>. L'adaptation du système des Anciens nécessite une ergonomie sans encombrement visuel, séparant la scène en zones distinctes :</p>
+<h3 id="mockup-decran-gba-scene-de-rencontre-ancien-ancientencounterscene">🖼️ Mockup d'Écran GBA — Scène de Rencontre Ancien (<code>AncientEncounterScene</code>)</h3>
+<pre><code>0                       120                     239 px
++-----------------------------------------------+ 0 px
+| [PORTRAIT]   ANCIEN: NEOW           ACTE 1   |
+|   64x64      Mère de la Résurrection          |
+|              Choix restants : 1/2             |
+|                                               | 64 px
+| +---------+   +---------+   +---------+       |
+| | RELIC 1 |   | RELIC 2 |   | RELIC 3 |       |
+| |  32x32  |   | [FOCUS] |   |  32x32  |       |
+| | Tier S  |   | Tier A  |   | Tier B  |       |
+| +---------+   +---------+   +---------+       | 115 px
++-----------------------------------------------+ 116 px
+| Perle dorée (Tier A)                          |
+| Gagnez 150 Pièces d'or immédiatement.         |
+| [A] Sélectionner    [B] Annuler   [SEL] Deck  | 160 px
++-----------------------------------------------+
+</code></pre>
+<h3 id="decoupage-des-calques-graphiques-butano-modes-bgs-sprites">🧩 Découpage des Calques Graphiques Butano (Modes BGs &amp; Sprites)</h3>
+<table>
+<thead>
+<tr>
+<th>Calque</th>
+<th>Rôle Butano</th>
+<th>Caractéristiques techniques</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>BG 0 (Texte &amp; HUD)</strong></td>
+<td><code>btn::regular_bg_ptr</code></td>
+<td>Tilemap texte 8x8, priorité 0, affiche le dialogue et les cartouches de texte.</td>
+</tr>
+<tr>
+<td><strong>BG 1 (Illustration Ancien)</strong></td>
+<td><code>btn::regular_bg_ptr</code></td>
+<td>Image 64x64 / 80x80 pixels indexée 4bpp (16 couleurs), priorité 1, ancrée à gauche.</td>
+</tr>
+<tr>
+<td><strong>BG 2 (Fond d'ambiance)</strong></td>
+<td><code>btn::regular_bg_ptr</code></td>
+<td>Dégradé vertical ou motif texturé correspondant à la couleur thématique de l'Ancien.</td>
+</tr>
+<tr>
+<td><strong>Sprites OBJ (Reliques &amp; Curseur)</strong></td>
+<td><code>btn::sprite_ptr</code></td>
+<td>3 à 4 sprites 32x32 (ou 24x24) pour les reliques présentées, + 1 sprite curseur clignotant.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-budget-memoire-allocation">2. 💾 Budget Mémoire &amp; Allocation</h2>
+<table>
+<thead>
+<tr>
+<th>Zone Mémoire</th>
+<th>Capacité</th>
+<th>Utilisation par le Système des Anciens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ROM (Cartouche)</strong></td>
+<td>4 à 32 Mo</td>
+<td>Table constante de toutes les reliques, effets, textes de dialogue et graphismes.</td>
+</tr>
+<tr>
+<td><strong>EWRAM (RAM Externe)</strong></td>
+<td>256 Ko</td>
+<td>État du tirage en cours (<code>AncientDraftState</code>, ~256 octets), historique des choix.</td>
+</tr>
+<tr>
+<td><strong>IWRAM (RAM Interne)</strong></td>
+<td>32 Ko</td>
+<td>Boucle d'animation du curseur, gestion des entrées manette (zéro allocation dynamique).</td>
+</tr>
+<tr>
+<td><strong>VRAM (Vidéo)</strong></td>
+<td>96 Ko</td>
+<td>Tuiles d'icônes de reliques (32x32 @ 4bpp = 512 octets par icône), portrait 64x64 (2 Ko).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-architecture-logicielle-structures-c20">3. 🏗️ Architecture Logicielle &amp; Structures C++20</h2>
+<p>L'architecture est intégrée dans le répertoire <a href="../../include/engine/"><code>include/engine/</code></a> pour respecter le découpage existant de <code>slay_the_gba</code>.</p>
+<h3 id="includeengineancient_typesh"><code>include/engine/ancient_types.h</code></h3>
+<pre><code class="language-cpp">#pragma once
+#include &lt;cstdint&gt;
+#include &lt;string_view&gt;
+#include &lt;span&gt;
+
+namespace sts::engine {
+
+enum class AncientId : uint8_t {
+    NEOW = 0,
+    DARV,
+    OROBAS,
+    PAEL,
+    TEZCATARA,
+    NONUPEIPE,
+    TANX,
+    VAKUU,
+    COUNT
+};
+
+enum class RelicTier : uint8_t {
+    TIER_S = 0,
+    TIER_A,
+    TIER_B,
+    TIER_C,
+    TIER_D,
+    TIER_UNTIERED
+};
+
+enum class RelicEffectType : uint8_t {
+    PASSIVE_COMBAT,      // Modifie force, dextérité, vulnérabilité
+    END_COMBAT_HEAL,     // Soin fin de combat
+    MAX_HP_CHANGE,       // Modifie les PV Max
+    GOLD_IMMEDIATE,      // Ajoute des pièces d'or
+    CARD_DRAFT,          // Offre une sélection de cartes
+    ADD_CARD_TO_DECK,    // Ajoute directement une carte dérivée
+    ENERGY_BONUS,        // Modifie l'énergie de base (+1 avec contrainte)
+    TRANSFORM_CARD,      // Transforme des cartes (Astrolabe, Pandore)
+    POTION_ACTION        // Offre une potion ou un slot
+};
+
+struct DerivedCardDef {
+    std::string_view id;
+    std::string_view name;
+    uint8_t energy_cost;
+    bool exhausts;
+};
+
+struct AncientRelicDef {
+    std::string_view id;
+    std::string_view name;
+    RelicTier tier;
+    RelicEffectType effect_type;
+    int16_t primary_value;       // Ex: 150 pour l'or, 6 pour les PV, etc.
+    std::string_view description;
+    std::span&lt;const DerivedCardDef&gt; derived_cards;
+};
+
+struct AncientSlotDef {
+    std::string_view group_name; // &quot;blessing&quot;, &quot;curse&quot;, etc.
+    uint8_t picks_allowed;
+    std::span&lt;const AncientRelicDef* const&gt; options;
+};
+
+struct AncientDef {
+    AncientId id;
+    std::string_view slug;
+    std::string_view name;
+    std::string_view epithet;
+    uint16_t bgr555_color;       // Couleur 15-bit native GBA
+    uint8_t act_mask;            // Bitmask (1 = Acte 1, 2 = Acte 2, 4 = Acte 3)
+    std::span&lt;const AncientSlotDef&gt; slots;
+};
+
+} // namespace sts::engine
+</code></pre>
+<h3 id="machine-a-etats-de-la-rencontre-ancientstatemachine">Machine à États de la Rencontre (<code>AncientStateMachine</code>)</h3>
+<pre><code class="language-mermaid">stateDiagram-v2
+    [*] --&gt; INTRO_DIALOGUE: Arrivée dans la salle
+    INTRO_DIALOGUE --&gt; INTRO_DIALOGUE: Appui A (Ligne suivante)
+    INTRO_DIALOGUE --&gt; DRAFT_SLOT: Fin du dialogue
+
+    state DRAFT_SLOT {
+        [*] --&gt; BROWSING: Curseur sur Option 1
+        BROWSING --&gt; BROWSING: D-Pad Gauche/Droite
+        BROWSING --&gt; INSPECT_CARD: Bouton B (si carte dérivée)
+        INSPECT_CARD --&gt; BROWSING: Bouton B (retour)
+        BROWSING --&gt; SELECTION_CONFIRMED: Bouton A (Valider)
+    }
+
+    DRAFT_SLOT --&gt; DRAFT_SLOT: Si d'autres slots disponibles
+    DRAFT_SLOT --&gt; OUTRO_REACTION: Tous les choix faits
+    OUTRO_REACTION --&gt; MAP_TRANSITION: Bouton A
+    MAP_TRANSITION --&gt; [*]: Vers l'Écran de Carte
+</code></pre>
+<hr />
+<h2 id="4-pipeline-dassets-graphiques-webp-vers-gba-grit">4. 🔄 Pipeline d'Assets Graphiques (WebP vers GBA Grit)</h2>
+<p>Les images sources officielles téléchargées dans <code>bible/images/</code> sont au format <strong>WebP</strong>. Le pipeline de compilation GBA (Butano / devkitARM) utilise l'outil <code>grit</code> avec des fichiers PNG indexés 16 couleurs (4 bpp).</p>
+<h3 id="script-de-conversion-automatique-scriptsconvert_ancient_assetspy">Script de conversion automatique (<code>scripts/convert_ancient_assets.py</code>) :</h3>
+<pre><code class="language-python">#!/usr/bin/env python3
+# Convertit les images WebP de bible/images/ vers graphics/ancients/ au format PNG 16 couleurs
+import os
+from PIL import Image
+
+def convert_to_gba_sprite(src_path, dst_path, size=(32, 32)):
+    os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+    with Image.open(src_path) as img:
+        img = img.convert(&quot;RGBA&quot;)
+        # Redimensionnement avec préservation du pixel art
+        img = img.resize(size, Image.Resampling.NEAREST)
+        # Quantification en 16 couleurs (couleur 0 = transparent)
+        quantized = img.quantize(colors=16, method=Image.Quantize.MEDIANCUT)
+        quantized.save(dst_path)
+
+# Exemple d'appel pour Butano :
+# convert_to_gba_sprite(&quot;bible/images/relics/golden_pearl.webp&quot;, &quot;graphics/relics/golden_pearl.png&quot;, (32, 32))
+# convert_to_gba_sprite(&quot;bible/images/ancients/icon/neow.webp&quot;, &quot;graphics/ancients/neow_portrait.png&quot;, (64, 64))
+</code></pre>
+<hr />
+<h2 id="5-systeme-de-texte-dialogue">5. 🔤 Système de Texte &amp; Dialogue</h2>
+<p>Sur GBA, l'espace mémoire et la vitesse d'affichage des polices nécessitent des optimisations strictes :</p>
+<ol>
+<li><strong>Table de pointeurs constants en ROM :</strong><br />
+   Les dialogues complets de la version v0.111.0 Beta sont compilés directement en ROM flash sans chargement dynamique.</li>
+<li><strong>Variable Interpolation au Runtime :</strong><br />
+   Les balises comme <code>{characterGender:choose(neutral):Tu viens|Vous venez}</code> sont résolues statiquement en fonction du personnage actif (<code>IRONCLAD</code>, <code>SILENT</code>, <code>DEFECT</code>, <code>REGENT</code>, <code>NECROBINDER</code>).</li>
+<li><strong>Formatage 2 lignes max :</strong><br />
+   Chaque bulle de dialogue ne peut dépasser 30 caractères par ligne sur 2 lignes (soit 60 caractères par écran), garantissant une lisibilité parfaite sur l'écran rétro-éclairé de la Game Boy Advance SP.</li>
+</ol>
+<hr />
+<p>⬅️ <a href="livrets.html">Retour au Sommaire de la Bible</a></p></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

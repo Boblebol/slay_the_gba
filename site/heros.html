@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Héros — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="index.html"><img src="assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="index.html">Accueil</a><a href="heros.html" class="on">Héros</a><a href="cartes.html">Cartes</a><a href="bestiaire.html">Bestiaire</a><a href="reliques.html">Reliques</a><a href="potions.html">Potions</a><a href="evenements.html">Évènements</a><a href="anciens.html">Anciens</a><a href="guide.html">Guide</a><a href="bible/index.html">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><h1>Les héros</h1><p>Cinq archétypes, cinq cartouches.</p><a class="hero-row" href="heros/ironclad.html" style="--hc:#c82030;--ha:#f05030">
+  <img class="pix big" src="assets/sprites/hero_ironclad.png" alt="">
+  <div><h3>Soldat de Fer</h3><p class="meta">Guerrier maudit de l&#x27;Enfer</p><p>Force brute, attaques de zone, armure et pactes de sang.</p>
+  <p class="meta">80 PV · Relique : Sang ardent · Deck : 5× Frappe, 4× Défense, 1× Heurt</p></div>
+</a><a class="hero-row" href="heros/silent.html" style="--hc:#40a048;--ha:#78d060">
+  <img class="pix big" src="assets/sprites/hero_silent.png" alt="">
+  <div><h3>La Silencieuse</h3><p class="meta">Chasseresse mortelle des brumes</p><p>Poisons exponentiels, dagues, défausse et esquive.</p>
+  <p class="meta">70 PV · Relique : Anneau du serpent · Deck : 5× Frappe, 5× Défense, 1× Neutralisation, 1× Survivant</p></div>
+</a><a class="hero-row" href="heros/defect.html" style="--hc:#3870d8;--ha:#58b0f0">
+  <img class="pix big" src="assets/sprites/hero_defect.png" alt="">
+  <div><h3>Le Défectueux</h3><p class="meta">Automate de combat éveillé</p><p>Orbes de foudre, glace, ténèbres et plasma ; focus et évocations.</p>
+  <p class="meta">75 PV · Relique : Noyau fissuré · Deck : 4× Frappe, 4× Défense, 1× Éclair, 1× Activation double</p></div>
+</a><a class="hero-row" href="heros/regent.html" style="--hc:#e89828;--ha:#f0c060">
+  <img class="pix big" src="assets/sprites/hero_regent.png" alt="">
+  <div><h3>Le Régent</h3><p class="meta">Souverain céleste déchu</p><p>Accumulation d&#x27;Étoiles souveraines pour des frappes cosmiques.</p>
+  <p class="meta">75 PV · Relique : Droit divin · Deck : 4× Frappe, 4× Défense, 1× Chute d&#x27;étoile, 1× Vénération</p></div>
+</a><a class="hero-row" href="heros/necrobinder.html" style="--hc:#c860b8;--ha:#e8b0ff">
+  <img class="pix big" src="assets/sprites/hero_necrobinder.png" alt="">
+  <div><h3>La Nécrolieuse</h3><p class="meta">Gardienne des morts et des os</p><p>Invocation de Titos, âmes, Fatalité et manipulation de la mort.</p>
+  <p class="meta">65 PV · Relique : Phylactère enchaîné · Deck : 4× Frappe, 4× Défense, 1× Déchaînement, 1× Garde du corps</p></div>
+</a></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soldat de Fer — Slay the GBA</title>
+<meta name="description" content="Force brute, attaques de zone, armure et pactes de sang.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="hero-ironclad">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html" class="on">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html">Bible</a></nav>
+</header>
+<main>
+
+<section class="hero-banner small" style="background-image:url(../assets/bg/battle_ironclad.png)">
+  <div class="hero-inner split">
+    <img class="pix giant" src="../assets/sprites/hero_ironclad.png" alt="Soldat de Fer">
+    <div><p class="kicker">Cartouche slay_ironclad.gba</p><h1>Soldat de Fer</h1><p class="lead">Guerrier maudit de l&#x27;Enfer</p>
+    <p>Force brute, attaques de zone, armure et pactes de sang.</p></div>
+  </div>
+</section>
+<div class="stats"><div><b>80</b><span>PV</span></div><div><b>3</b><span>énergie</span></div><div><b>90</b><span>cartes</span></div>
+<div><b>39</b><span>attaques</span></div><div><b>31</b><span>compétences</span></div><div><b>20</b><span>pouvoirs</span></div></div>
+<section class="panel "><h2>Fiche</h2><div class="sheet">
+<div class="relic big"><img src="../../bible/images/relics/burning_blood.webp" alt=""><div><b>Relique de départ : Sang ardent</b><p>À la fin du combat, récupérez 6 PV.</p></div></div>
+<div><h3>Deck de départ</h3><p>5× Frappe, 4× Défense, 1× Heurt</p><h3>Zone de la cartouche</h3><p>Forges du Carnage</p></div>
+<img class="pix energy" src="../assets/sprites/energy_ironclad.png" alt="Orbe d'énergie">
+</div></section>
+<section class="panel"><h2>Toutes les cartes (90)</h2><div class="filters" data-target=".cards">
+  <input type="search" placeholder="Rechercher une carte…" data-search>
+  <div class="chips"><button class="on" data-filter-type="">Tous types</button><button data-filter-type="Attack">Attaque</button><button data-filter-type="Skill">Compétence</button><button data-filter-type="Power">Pouvoir</button></div>
+  <div class="chips"><button class="on" data-filter-rarity="">Toutes raretés</button><button data-filter-rarity="Basic">Base</button><button data-filter-rarity="Common">Commune</button><button data-filter-rarity="Uncommon">Peu commune</button><button data-filter-rarity="Rare">Rare</button><button data-filter-rarity="Ancient">Ancienne</button></div>
+  <p class="count"></p>
+</div><div class="cards"><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Basic" data-name="défense defend_ironclad">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/defend_ironclad.webp" alt="Défense"><span class="gem">1</span></div>
+  <h4>Défense</h4>
+  <p class="meta">Compétence · Base</p>
+  <p class="desc">Gagnez 5 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 8 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Basic" data-name="frappe strike_ironclad">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/strike_ironclad.webp" alt="Frappe"><span class="gem">1</span></div>
+  <h4>Frappe</h4>
+  <p class="meta">Attaque · Base</p>
+  <p class="desc">Infligez 6 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Basic" data-name="heurt bash">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/bash.webp" alt="Heurt"><span class="gem">2</span></div>
+  <h4>Heurt</h4>
+  <p class="meta">Attaque · Base</p>
+  <p class="desc">Infligez 8 dégâts.<br>Appliquez <b class="kw">Vulnérable</b> (2).</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 10 dégâts.<br>Appliquez <b class="kw">Vulnérable</b> (3).</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Common" data-name="armement armaments">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/armaments.webp" alt="Armement"><span class="gem">1</span></div>
+  <h4>Armement</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 5 d&#x27;<b class="kw">Armure</b>.<br><b class="kw">Améliorez</b> une carte dans votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 5 d&#x27;<b class="kw">Armure</b>.<br><b class="kw">Améliorez</b> TOUTES les cartes dans votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="colère anger">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/anger.webp" alt="Colère"><span class="gem">0</span></div>
+  <h4>Colère</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 6 dégâts.<br>Ajoutez une copie de cette carte à votre <b class="kw">Défausse</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 8 dégâts.<br>Ajoutez une copie de cette carte à votre <b class="kw">Défausse</b>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="coup de boule headbutt">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/headbutt.webp" alt="Coup de boule"><span class="gem">1</span></div>
+  <h4>Coup de boule</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 9 dégâts.<br>Placez une carte de votre <b class="kw">Défausse</b> sur le dessus de votre <b class="kw">Pioche</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 12 dégâts.<br>Placez une carte de votre <b class="kw">Défausse</b> sur le dessus de votre <b class="kw">Pioche</b>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="coup de tonnerre thunderclap">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/thunderclap.webp" alt="Coup de tonnerre"><span class="gem">1</span></div>
+  <h4>Coup de tonnerre</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 4 dégâts et appliquez <b class="kw">Vulnérable</b> (1) à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 7 dégâts et appliquez <b class="kw">Vulnérable</b> (1) à TOUS les ennemis.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="frappe du pommeau pommel_strike">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/pommel_strike.webp" alt="Frappe du pommeau"><span class="gem">1</span></div>
+  <h4>Frappe du pommeau</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 9 dégâts.<br>Piochez 1 carte.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 10 dégâts.<br>Piochez 2 cartes.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="frappe jumelée twin_strike">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/twin_strike.webp" alt="Frappe jumelée"><span class="gem">1</span></div>
+  <h4>Frappe jumelée</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 5 dégâts 2 fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 7 dégâts 2 fois.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="frappe perfectionnée perfected_strike">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/perfected_strike.webp" alt="Frappe perfectionnée"><span class="gem">2</span></div>
+  <h4>Frappe perfectionnée</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 6 dégâts.<br>Inflige 2 dégâts supplémentaires pour CHACUNE de vos cartes contenant « Frappe ».</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 6 dégâts.<br>Inflige 3 dégâts supplémentaires pour CHACUNE de vos cartes contenant « Frappe ».</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="frappe préparatoire setup_strike">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/setup_strike.webp" alt="Frappe préparatoire"><span class="gem">1</span></div>
+  <h4>Frappe préparatoire</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 7 dégâts.<br>Gagnez 3 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts.<br>Gagnez 4 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Common" data-name="intimidation tremble">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/tremble.webp" alt="Intimidation"><span class="gem">1</span></div>
+  <h4>Intimidation</h4>
+  <p class="meta">Compétence · Commune · Exhaust</p>
+  <p class="desc">Appliquez <b class="kw">Vulnérable</b> (3).<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez <b class="kw">Vulnérable</b> (4).<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Common" data-name="mur de sang blood_wall">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/blood_wall.webp" alt="Mur de sang"><span class="gem">2</span></div>
+  <h4>Mur de sang</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Perdez 2 PV.<br>Gagnez 16 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Perdez 2 PV.<br>Gagnez 20 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Common" data-name="même pas mal shrug_it_off">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/shrug_it_off.webp" alt="Même pas mal"><span class="gem">1</span></div>
+  <h4>Même pas mal</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 8 d&#x27;<b class="kw">Armure</b>.<br>Piochez 1 carte.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 11 d&#x27;<b class="kw">Armure</b>.<br>Piochez 1 carte.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="percée breakthrough">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/breakthrough.webp" alt="Percée"><span class="gem">1</span></div>
+  <h4>Percée</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Perdez 1 PV.<br>Infligez 9 dégâts à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Perdez 1 PV.<br>Infligez 13 dégâts à TOUS les ennemis.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="plaquage body_slam">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/body_slam.webp" alt="Plaquage"><span class="gem">1</span></div>
+  <h4>Plaquage</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez un montant de dégâts égal à votre <b class="kw">Armure</b>.</p>
+  
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="poing en fusion molten_fist">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/molten_fist.webp" alt="Poing en fusion"><span class="gem">1</span></div>
+  <h4>Poing en fusion</h4>
+  <p class="meta">Attaque · Commune · Exhaust</p>
+  <p class="desc">Infligez 10 dégâts.<br>Doublez le nombre d&#x27;incidences de <b class="kw">Vulnérable</b> sur l&#x27;ennemi.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 14 dégâts.<br>Doublez le nombre d&#x27;incidences de <b class="kw">Vulnérable</b> sur l&#x27;ennemi.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Common" data-name="provocation taunt">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/taunt.webp" alt="Provocation"><span class="gem">1</span></div>
+  <h4>Provocation</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 6 d&#x27;<b class="kw">Armure</b>.<br>Appliquez <b class="kw">Vulnérable</b> (1).</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 7 d&#x27;<b class="kw">Armure</b>.<br>Appliquez <b class="kw">Vulnérable</b> (2).</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Common" data-name="ravage havoc">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/havoc.webp" alt="Ravage"><span class="gem">1</span></div>
+  <h4>Ravage</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Jouez la carte du dessus de votre <b class="kw">Pioche</b> et <b class="kw">Épuisez</b>-la.</p>
+  
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="scorie cinder">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/cinder.webp" alt="Scorie"><span class="gem">2</span></div>
+  <h4>Scorie</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 18 dégâts.<br><b class="kw">Épuisez</b> une carte aléatoire.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 24 dégâts.<br><b class="kw">Épuisez</b> une carte aléatoire.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="vague de fer iron_wave">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/iron_wave.webp" alt="Vague de fer"><span class="gem">1</span></div>
+  <h4>Vague de fer</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Gagnez 5 d&#x27;<b class="kw">Armure</b>.<br>Infligez 5 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 7 d&#x27;<b class="kw">Armure</b>.<br>Infligez 7 dégâts.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Common" data-name="virilité true_grit">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/true_grit.webp" alt="Virilité"><span class="gem">1</span></div>
+  <h4>Virilité</h4>
+  <p class="meta">Compétence · Commune</p>
+  <p class="desc">Gagnez 7 d&#x27;<b class="kw">Armure</b>.<br><b class="kw">Épuisez</b> 1 carte au hasard.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 9 d&#x27;<b class="kw">Armure</b>.<br><b class="kw">Épuisez</b> 1 carte.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Common" data-name="épée boomerang sword_boomerang">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/sword_boomerang.webp" alt="Épée boomerang"><span class="gem">1</span></div>
+  <h4>Épée boomerang</h4>
+  <p class="meta">Attaque · Commune</p>
+  <p class="desc">Infligez 3 dégâts à un ennemi aléatoire 3 fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 3 dégâts à un ennemi aléatoire 4 fois.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="acharnement unrelenting">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/unrelenting.webp" alt="Acharnement"><span class="gem">2</span></div>
+  <h4>Acharnement</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 14 dégâts.<br>La prochaine Attaque que vous jouez coûte 0 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 20 dégâts.<br>La prochaine Attaque que vous jouez coûte 0 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Uncommon" data-name="armure de pierre stone_armor">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/stone_armor.webp" alt="Armure de pierre"><span class="gem">1</span></div>
+  <h4>Armure de pierre</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Gagnez 4 de <b class="kw">Blindage</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 6 de <b class="kw">Blindage</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="barrière de flammes flame_barrier">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/flame_barrier.webp" alt="Barrière de flammes"><span class="gem">2</span></div>
+  <h4>Barrière de flammes</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 12 d&#x27;<b class="kw">Armure</b>.<br>Lorsque vous vous faites attaquer pendant ce tour, infligez 4 dégâts en retour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 16 d&#x27;<b class="kw">Armure</b>.<br>Lorsque vous vous faites attaquer pendant ce tour, infligez 6 dégâts en retour.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="bouclier démoniaque demonic_shield">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/demonic_shield.webp" alt="Bouclier démoniaque"><span class="gem">0</span></div>
+  <h4>Bouclier démoniaque</h4>
+  <p class="meta">Compétence · Peu commune · Exhaust</p>
+  <p class="desc">Perdez 1 PV.<br>Octroyez à un autre joueur un montant d&#x27;<b class="kw">Armure</b> égal à votre <b class="kw">Armure</b>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Perdez 1 PV.<br>Octroyez à un autre joueur un montant d&#x27;<b class="kw">Armure</b> égal à votre <b class="kw">Armure</b>.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Uncommon" data-name="brasier inferno">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/inferno.webp" alt="Brasier"><span class="gem">1</span></div>
+  <h4>Brasier</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Au début de votre tour, perdez 1 PV.<br>Lorsque vous perdez des PV durant votre tour, infligez 6 dégâts à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au début de votre tour, perdez 1 PV.<br>Lorsque vous perdez des PV durant votre tour, infligez 9 dégâts à TOUS les ennemis.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="colosse colossus">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/colossus.webp" alt="Colosse"><span class="gem">1</span></div>
+  <h4>Colosse</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 4 d&#x27;<b class="kw">Armure</b>.<br>Vous subissez 50% de dégâts en moins des ennemis <b class="kw">Vulnérables</b> pendant ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 7 d&#x27;<b class="kw">Armure</b>.<br>Vous subissez 50% de dégâts en moins des ennemis <b class="kw">Vulnérables</b> pendant ce tour.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Uncommon" data-name="cruauté cruelty">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/cruelty.webp" alt="Cruauté"><span class="gem">1</span></div>
+  <h4>Cruauté</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Les ennemis <b class="kw">Vulnérables</b> subissent 25% de dégâts supplémentaires.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Les ennemis <b class="kw">Vulnérables</b> subissent 50% de dégâts supplémentaires.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="démantèlement dismantle">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/dismantle.webp" alt="Démantèlement"><span class="gem">1</span></div>
+  <h4>Démantèlement</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 8 dégâts.<br>Si l&#x27;ennemi est <b class="kw">Vulnérable</b>, infligez ces dégâts 2 fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 10 dégâts.<br>Si l&#x27;ennemi est <b class="kw">Vulnérable</b>, infligez ces dégâts 2 fois.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="embrasement blaze">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/blaze.webp" alt="Embrasement"><span class="gem">2</span></div>
+  <h4>Embrasement</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Donnez 5 de <b class="kw">Force</b> à un autre joueur.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Donnez 7 de <b class="kw">Force</b> à un autre joueur.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Uncommon" data-name="enflammer inflame">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/inflame.webp" alt="Enflammer"><span class="gem">1</span></div>
+  <h4>Enflammer</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Gagnez 2 de <b class="kw">Force</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 3 de <b class="kw">Force</b>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="frappe cendrée ashen_strike">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/ashen_strike.webp" alt="Frappe cendrée"><span class="gem">1</span></div>
+  <h4>Frappe cendrée</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 6 dégâts.<br>Inflige 3 dégâts supplémentaires pour chaque carte <b class="kw">Épuisée</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 6 dégâts.<br>Inflige 4 dégâts supplémentaires pour chaque carte <b class="kw">Épuisée</b>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="gourdin bludgeon">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/bludgeon.webp" alt="Gourdin"><span class="gem">3</span></div>
+  <h4>Gourdin</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 32 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 42 dégâts.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="harcèlement bully">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/bully.webp" alt="Harcèlement"><span class="gem">0</span></div>
+  <h4>Harcèlement</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 4 dégâts.<br>Inflige 2 dégâts supplémentaires pour chaque incidence de <b class="kw">Vulnérable</b> sur l&#x27;ennemi.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 4 dégâts.<br>Inflige 3 dégâts supplémentaires pour chaque incidence de <b class="kw">Vulnérable</b> sur l&#x27;ennemi.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="hémokinésie hemokinesis">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/hemokinesis.webp" alt="Hémokinésie"><span class="gem">1</span></div>
+  <h4>Hémokinésie</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Perdez 2 PV.<br>Infligez 15 dégâts.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Perdez 2 PV.<br>Infligez 20 dégâts.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Uncommon" data-name="ignorer la douleur feel_no_pain">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/feel_no_pain.webp" alt="Ignorer la douleur"><span class="gem">1</span></div>
+  <h4>Ignorer la douleur</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsqu&#x27;une carte est <b class="kw">Épuisée</b>, gagnez 3 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsqu&#x27;une carte est <b class="kw">Épuisée</b>, gagnez 4 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="ivresse du combat battle_trance">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/battle_trance.webp" alt="Ivresse du combat"><span class="gem">0</span></div>
+  <h4>Ivresse du combat</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Piochez 3 cartes.<br>Vous ne pouvez plus piocher de cartes jusqu&#x27;à la fin du tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Piochez 4 cartes.<br>Vous ne pouvez plus piocher de cartes jusqu&#x27;à la fin du tour.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Uncommon" data-name="jonglage juggling">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/juggling.webp" alt="Jonglage"><span class="gem">1</span></div>
+  <h4>Jonglage</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Ajoutez une copie de la troisième <b class="kw">Attaque</b> que vous jouez chaque tour à votre <b class="kw">Main</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Ajoutez une copie de la troisième <b class="kw">Attaque</b> que vous jouez chaque tour à votre <b class="kw">Main</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="lame infernale infernal_blade">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/infernal_blade.webp" alt="Lame infernale"><span class="gem">1</span></div>
+  <h4>Lame infernale</h4>
+  <p class="meta">Compétence · Peu commune · Exhaust</p>
+  <p class="desc">Ajoutez une Attaque aléatoire à votre <b class="kw">Main</b>. Elle coûte 0 ce tour.<br><b class="kw">Épuisement</b>.</p>
+  
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="mauvais œil evil_eye">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/evil_eye.webp" alt="Mauvais œil"><span class="gem">1</span></div>
+  <h4>Mauvais œil</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gagnez 8 d&#x27;<b class="kw">Armure</b>.<br>Gagnez 8 d&#x27;<b class="kw">Armure</b> de nouveau si vous avez <b class="kw">Épuisé</b> une carte pendant ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 11 d&#x27;<b class="kw">Armure</b>.<br>Gagnez 11 d&#x27;<b class="kw">Armure</b> de nouveau si vous avez <b class="kw">Épuisé</b> une carte pendant ce tour.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="pacte brûlant burning_pact">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/burning_pact.webp" alt="Pacte brûlant"><span class="gem">1</span></div>
+  <h4>Pacte brûlant</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc"><b class="kw">Épuisez</b> 1 carte.<br>Piochez 2 cartes.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Épuisez</b> 1 carte.<br>Piochez 3 cartes.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="paré au combat expect_a_fight">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/expect_a_fight.webp" alt="Paré au combat"><span class="gem">3</span></div>
+  <h4>Paré au combat</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Gain 15 <b class="kw">Block</b>.<br>Gains 5 additional <b class="kw">Block</b> for each <b class="kw">Strength</b> you have.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gain 16 <b class="kw">Block</b>.<br>Gains 8 additional <b class="kw">Block</b> for each <b class="kw">Strength</b> you have.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="pillage pillage">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/pillage.webp" alt="Pillage"><span class="gem">1</span></div>
+  <h4>Pillage</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 6 dégâts.<br>Piochez des cartes jusqu&#x27;à piocher une carte qui n&#x27;est pas une Attaque.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 9 dégâts.<br>Piochez des cartes jusqu&#x27;à piocher une carte qui n&#x27;est pas une Attaque.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="piétinement stomp">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/stomp.webp" alt="Piétinement"><span class="gem">3</span></div>
+  <h4>Piétinement</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 12 dégâts à TOUS les ennemis.<br>Coûte 1 <span class="nrg">●</span> en moins pour chaque Attaque déjà jouée pendant ce tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 15 dégâts à TOUS les ennemis.<br>Coûte 1 <span class="nrg">●</span> en moins pour chaque Attaque déjà jouée pendant ce tour.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="rage rage">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/rage.webp" alt="Rage"><span class="gem">0</span></div>
+  <h4>Rage</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Lorsque vous jouez une Attaque pendant ce tour, gagnez 3 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous jouez une Attaque pendant ce tour, gagnez 5 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="rancune spite">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/spite.webp" alt="Rancune"><span class="gem">0</span></div>
+  <h4>Rancune</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 5 dégâts.<br>Si vous avez perdu des PV pendant ce tour, cette attaque touche l&#x27;ennemi 2 fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 5 dégâts.<br>Si vous avez perdu des PV pendant ce tour, cette attaque touche l&#x27;ennemi 3 fois.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="rituel oublié forgotten_ritual">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/forgotten_ritual.webp" alt="Rituel oublié"><span class="gem">1</span></div>
+  <h4>Rituel oublié</h4>
+  <p class="meta">Compétence · Peu commune · Exhaust</p>
+  <p class="desc">Si vous avez <b class="kw">Épuisé</b> une carte ce tour, gagnez 3 <span class="nrg">●</span>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Si vous avez <b class="kw">Épuisé</b> une carte ce tour, gagnez 4 <span class="nrg">●</span>.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="rugissement de l&#x27;au-delà howl_from_beyond">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/howl_from_beyond.webp" alt="Rugissement de l&#x27;au-delà"><span class="gem">3</span></div>
+  <h4>Rugissement de l&#x27;au-delà</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 18 dégâts à TOUS les ennemis.<br>À la fin de votre tour, si cette carte est dans votre pile de cartes <b class="kw">Épuisées</b>, jouez-la.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 24 dégâts à TOUS les ennemis.<br>À la fin de votre tour, si cette carte est dans votre pile de cartes <b class="kw">Épuisées</b>, jouez-la.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Uncommon" data-name="rupture rupture">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/rupture.webp" alt="Rupture"><span class="gem">1</span></div>
+  <h4>Rupture</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsque vous perdez des PV pendant votre tour, gagnez 1 de <b class="kw">Force</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous perdez des PV pendant votre tour, gagnez 2 de <b class="kw">Force</b>.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Uncommon" data-name="ruée stampede">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/stampede.webp" alt="Ruée"><span class="gem">2</span></div>
+  <h4>Ruée</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">À la fin de votre tour, 1 Attaque aléatoire de votre <b class="kw">Main</b> est jouée sur un ennemi aléatoire.</p>
+  
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="saccage rampage">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/rampage.webp" alt="Saccage"><span class="gem">1</span></div>
+  <h4>Saccage</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 10 dégâts.<br>Augmentez les dégâts de cette carte de 5 jusqu&#x27;à la fin du combat.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 10 dégâts.<br>Augmentez les dégâts de cette carte de 10 jusqu&#x27;à la fin du combat.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="saignée bloodletting">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/bloodletting.webp" alt="Saignée"><span class="gem">0</span></div>
+  <h4>Saignée</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Perdez 3 PV.<br>Gagnez 2 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Perdez 3 PV.<br>Gagnez 3 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="scandale outrage">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/outrage.webp" alt="Scandale"><span class="gem">0</span></div>
+  <h4>Scandale</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Inflige z9 dégâts.<br>Ajoutez une copie de cette carte dans la <b class="kw">Défausse</b> de TOUS LES JOUEURS.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Inflige z13 dégâts.<br>Ajoutez une copie de cette carte dans la <b class="kw">Défausse</b> de TOUS LES JOUEURS.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="second souffle second_wind">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/second_wind.webp" alt="Second souffle"><span class="gem">1</span></div>
+  <h4>Second souffle</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc"><b class="kw">Épuisez</b> toutes les cartes de votre <b class="kw">Main</b> qui ne sont pas des Attaques. Gagnez 5 d&#x27;<b class="kw">Armure</b> pour chaque carte <b class="kw">Épuisée</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Épuisez</b> toutes les cartes de votre <b class="kw">Main</b> qui ne sont pas des Attaques. Gagnez 7 d&#x27;<b class="kw">Armure</b> pour chaque carte <b class="kw">Épuisée</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Uncommon" data-name="tambour de guerre drum_of_battle">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/drum_of_battle.webp" alt="Tambour de guerre"><span class="gem">1</span></div>
+  <h4>Tambour de guerre</h4>
+  <p class="meta">Compétence · Peu commune</p>
+  <p class="desc">Piochez 2 cartes.<br>Lorsque cette carte est <b class="kw">Épuisée</b>, gagnez 2 <span class="nrg">●</span>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Piochez 2 cartes.<br>Lorsque cette carte est <b class="kw">Épuisée</b>, gagnez 3 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="tourbillon whirlwind">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/whirlwind.webp" alt="Tourbillon"><span class="gem">X</span></div>
+  <h4>Tourbillon</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 5 dégâts à TOUS les ennemis X fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 8 dégâts à TOUS les ennemis X fois.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="uppercut uppercut">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/uppercut.webp" alt="Uppercut"><span class="gem">2</span></div>
+  <h4>Uppercut</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 13 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (1).<br>Appliquez <b class="kw">Vulnérable</b> (1).</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 13 dégâts.<br>Appliquez <b class="kw">Affaibli</b> (2).<br>Appliquez <b class="kw">Vulnérable</b> (2).</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Uncommon" data-name="vicieux vicious">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/vicious.webp" alt="Vicieux"><span class="gem">1</span></div>
+  <h4>Vicieux</h4>
+  <p class="meta">Pouvoir · Peu commune</p>
+  <p class="desc">Lorsque vous appliquez <b class="kw">Vulnérable</b>, piochez 1 carte.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous appliquez <b class="kw">Vulnérable</b>, piochez 2 cartes.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Uncommon" data-name="viens te battre  ! fight_me">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/fight_me.webp" alt="Viens te battre  !"><span class="gem">2</span></div>
+  <h4>Viens te battre  !</h4>
+  <p class="meta">Attaque · Peu commune</p>
+  <p class="desc">Infligez 5 dégâts 2 fois.<br>Gagnez 3 de <b class="kw">Force</b>.<br>L&#x27;ennemi gagne 1 de <b class="kw">Force</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 6 dégâts 2 fois.<br>Gagnez 4 de <b class="kw">Force</b>.<br>L&#x27;ennemi gagne 1 de <b class="kw">Force</b>.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Rare" data-name="agression aggression">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/aggression.webp" alt="Agression"><span class="gem">1</span></div>
+  <h4>Agression</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Au début de votre tour, placez une Attaque aléatoire de votre <b class="kw">Défausse</b> dans votre <b class="kw">Main</b> et <b class="kw">Améliorez</b>-la.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Inné</b>.<br>Au début de votre tour, placez une Attaque aléatoire de votre <b class="kw">Défausse</b> dans votre <b class="kw">Main</b> et <b class="kw">Améliorez</b>-la.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Rare" data-name="appétit feed">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/feed.webp" alt="Appétit"><span class="gem">1</span></div>
+  <h4>Appétit</h4>
+  <p class="meta">Attaque · Rare · Exhaust</p>
+  <p class="desc">Infligez 10 dégâts.<br><b class="kw">Coup de grâce</b> : augmentez vos PV Max de 3.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 12 dégâts.<br><b class="kw">Coup de grâce</b> : augmentez vos PV Max de 4.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Rare" data-name="attiser les flammes stoke">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/stoke.webp" alt="Attiser les flammes"><span class="gem">1</span></div>
+  <h4>Attiser les flammes</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc"><b class="kw">Épuisez</b> votre <b class="kw">Main</b>.<br>Ajoutez une carte aléatoire à votre <b class="kw">Main</b> pour chaque carte <b class="kw">Épuisée</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Épuisez</b> votre <b class="kw">Main</b>.<br>Ajoutez une carte aléatoire <b class="kw">Améliorée</b> à votre <b class="kw">Main</b> pour chaque carte <b class="kw">Épuisée</b>.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Rare" data-name="barricade barricade">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/barricade.webp" alt="Barricade"><span class="gem">3</span></div>
+  <h4>Barricade</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Vous ne perdez plus votre <b class="kw">Armure</b> au début de votre tour.</p>
+  
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Rare" data-name="bûcher pyre">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/pyre.webp" alt="Bûcher"><span class="gem">2</span></div>
+  <h4>Bûcher</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Gagnez 1 <span class="nrg">●</span> au début de chaque tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 2 <span class="nrg">●</span> au début de chaque tour.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Rare" data-name="cascade cascade">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/cascade.webp" alt="Cascade"><span class="gem">X</span></div>
+  <h4>Cascade</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Jouez les X cartes du dessus de votre <b class="kw">Pioche</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Jouez les X+1 cartes du dessus de votre <b class="kw">Pioche</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Rare" data-name="domination dominate">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/dominate.webp" alt="Domination"><span class="gem">1</span></div>
+  <h4>Domination</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Appliquez <b class="kw">Vulnérable</b> (1).<br>Gagnez 1 de <b class="kw">Force</b> pour chaque incidence de <b class="kw">Vulnérable</b> sur l&#x27;ennemi.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Appliquez <b class="kw">Vulnérable</b> (2).<br>Gagnez 1 de <b class="kw">Force</b> pour chaque incidence de <b class="kw">Vulnérable</b> sur l&#x27;ennemi.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Rare" data-name="droite-gauche one_two_punch">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/one_two_punch.webp" alt="Droite-gauche"><span class="gem">1</span></div>
+  <h4>Droite-gauche</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">La prochaine Attaque que vous jouez ce tour sera jouée une fois supplémentaire.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Les 2 prochaines Attaques que vous jouez ce tour seront jouées une fois supplémentaire.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Rare" data-name="en miettes tear_asunder">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/tear_asunder.webp" alt="En miettes"><span class="gem">2</span></div>
+  <h4>En miettes</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 5 dégâts.<br>Se déclenche autant de fois supplémentaires que de fois où vous avez perdu des PV pendant ce combat.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 7 dégâts.<br>Se déclenche autant de fois supplémentaires que de fois où vous avez perdu des PV pendant ce combat.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Rare" data-name="estropier mangle">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/mangle.webp" alt="Estropier"><span class="gem">3</span></div>
+  <h4>Estropier</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 20 dégâts.<br>L&#x27;ennemi perd 10 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 26 dégâts.<br>L&#x27;ennemi perd 15 de <b class="kw">Force</b> jusqu&#x27;à la fin du tour.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Rare" data-name="feu démoniaque fiend_fire">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/fiend_fire.webp" alt="Feu démoniaque"><span class="gem">2</span></div>
+  <h4>Feu démoniaque</h4>
+  <p class="meta">Attaque · Rare · Exhaust</p>
+  <p class="desc"><b class="kw">Épuisez</b> votre <b class="kw">Main</b>.<br>Infligez 7 dégâts pour chaque carte <b class="kw">Épuisée</b> ainsi.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up"><b class="kw">Épuisez</b> votre <b class="kw">Main</b>.<br>Infligez 10 dégâts pour chaque carte <b class="kw">Épuisée</b> ainsi.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Rare" data-name="force primitive primal_force">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/primal_force.webp" alt="Force primitive"><span class="gem">0</span></div>
+  <h4>Force primitive</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Transformez toutes les Attaques de votre <b class="kw">Main</b> en <b class="kw">Rocher gigantesque</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Transformez toutes les Attaques de votre <b class="kw">Main</b> en <b class="kw">Rocher gigantesque+</b>.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Rare" data-name="forme démoniaque demon_form">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/demon_form.webp" alt="Forme démoniaque"><span class="gem">3</span></div>
+  <h4>Forme démoniaque</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Au début de votre tour, gagnez 3 de <b class="kw">Force</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au début de votre tour, gagnez 4 de <b class="kw">Force</b>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Rare" data-name="furie thrash">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/thrash.webp" alt="Furie"><span class="gem">1</span></div>
+  <h4>Furie</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 4 dégâts 2 fois.<br><b class="kw">Épuisez</b> une Attaque aléatoire de votre <b class="kw">Main</b> et ajoutez ses dégâts à ceux de cette carte.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 6 dégâts 2 fois.<br><b class="kw">Épuisez</b> une Attaque aléatoire de votre <b class="kw">Main</b> et ajoutez ses dégâts à ceux de cette carte.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Rare" data-name="incendie conflagration">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/conflagration.webp" alt="Incendie"><span class="gem">1</span></div>
+  <h4>Incendie</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 2 dégâts à TOUS les ennemis 4 fois.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 2 dégâts à TOUS les ennemis 5 fois.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Rare" data-name="inflexible unmovable">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/unmovable.webp" alt="Inflexible"><span class="gem">2</span></div>
+  <h4>Inflexible</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">La première fois de chaque tour qu&#x27;une carte vous confère de l&#x27;<b class="kw">Armure</b>, doublez-en la quantité gagnée.</p>
+  
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Rare" data-name="insensible impervious">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/impervious.webp" alt="Insensible"><span class="gem">2</span></div>
+  <h4>Insensible</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Gagnez 30 d&#x27;<b class="kw">Armure</b>.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Gagnez 40 d&#x27;<b class="kw">Armure</b>.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Rare" data-name="juggernaut juggernaut">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/juggernaut.webp" alt="Juggernaut"><span class="gem">2</span></div>
+  <h4>Juggernaut</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsque vous gagnez de l&#x27;<b class="kw">Armure</b>, infligez 6 dégâts à un ennemi aléatoire.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Lorsque vous gagnez de l&#x27;<b class="kw">Armure</b>, infligez 8 dégâts à un ennemi aléatoire.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Rare" data-name="manteau pourpre crimson_mantle">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/crimson_mantle.webp" alt="Manteau pourpre"><span class="gem">1</span></div>
+  <h4>Manteau pourpre</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Au début de votre tour, perdez 1 PV et gagnez 7 d&#x27;<b class="kw">Armure</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Au début de votre tour, perdez 1 PV et gagnez 10 d&#x27;<b class="kw">Armure</b>.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Rare" data-name="marqué au fer rouge brand">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/brand.webp" alt="Marqué au fer rouge"><span class="gem">0</span></div>
+  <h4>Marqué au fer rouge</h4>
+  <p class="meta">Compétence · Rare</p>
+  <p class="desc">Perdez 1 PV.<br><b class="kw">Épuisez</b> 1 carte.<br>Gagnez 1 de <b class="kw">Force</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Perdez 1 PV.<br><b class="kw">Épuisez</b> 1 carte.<br>Gagnez 2 de <b class="kw">Force</b>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Rare" data-name="minuit midnight">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/midnight.webp" alt="Minuit"><span class="gem">12</span></div>
+  <h4>Minuit</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Infligez 60 dégâts.<br>Coûte <span class="nrg">●</span> en moins par carte <b class="kw">Épuisée</b> par N&#x27;IMPORTE QUI pendant ce combat.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 72 dégâts.<br>Coûte <span class="nrg">●</span> en moins par carte <b class="kw">Épuisée</b> par N&#x27;IMPORTE QUI pendant ce combat.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Rare" data-name="offrande offering">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/offering.webp" alt="Offrande"><span class="gem">0</span></div>
+  <h4>Offrande</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Perdez 6 PV.<br>Gagnez 2 <span class="nrg">●</span>.<br>Piochez 3 cartes.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Perdez 6 PV.<br>Gagnez 2 <span class="nrg">●</span>.<br>Piochez 5 cartes.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Rare" data-name="pacte conclu pacts_end">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/pacts_end.webp" alt="Pacte conclu"><span class="gem">0</span></div>
+  <h4>Pacte conclu</h4>
+  <p class="meta">Attaque · Rare</p>
+  <p class="desc">Si votre pile de cartes <b class="kw">Épuisées</b> contient 3 cartes ou plus, infligez 18 dégâts à TOUS les ennemis.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Si votre pile de cartes <b class="kw">Épuisées</b> contient 3 cartes ou plus, infligez 24 dégâts à TOUS les ennemis.</p></details>
+</article><article class="card t-skill p-ironclad" data-type="Skill" data-rarity="Rare" data-name="pas encore not_yet">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/not_yet.webp" alt="Pas encore"><span class="gem">2</span></div>
+  <h4>Pas encore</h4>
+  <p class="meta">Compétence · Rare · Exhaust</p>
+  <p class="desc">Récupérez 10 PV.<br><b class="kw">Épuisement</b>.</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Récupérez 13 PV.<br><b class="kw">Épuisement</b>.</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Rare" data-name="sombre étreinte dark_embrace">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/dark_embrace.webp" alt="Sombre étreinte"><span class="gem">2</span></div>
+  <h4>Sombre étreinte</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsqu&#x27;une carte est <b class="kw">Épuisée</b>,<br>piochez 1 carte.</p>
+  
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Rare" data-name="soulèvement infernal hellraiser">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/hellraiser.webp" alt="Soulèvement infernal"><span class="gem">2</span></div>
+  <h4>Soulèvement infernal</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Lorsque vous piochez une carte contenant « Frappe », elle est immédiatement jouée sur un ennemi aléatoire.</p>
+  
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Rare" data-name="tank tank">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/tank.webp" alt="Tank"><span class="gem">1</span></div>
+  <h4>Tank</h4>
+  <p class="meta">Pouvoir · Rare</p>
+  <p class="desc">Subissez % de dégâts en plus de la part des ennemis.<br>Vos alliés subissent % de dégâts en moins de la part des ennemis.</p>
+  
+</article><article class="card t-attack p-ironclad" data-type="Attack" data-rarity="Ancient" data-name="briser break">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/break.webp" alt="Briser"><span class="gem">1</span></div>
+  <h4>Briser</h4>
+  <p class="meta">Attaque · Ancienne</p>
+  <p class="desc">Infligez 20 dégâts.<br>Appliquez <b class="kw">Vulnérable</b> (5).</p>
+  <details><summary>Amélioré +</summary><p class="desc up">Infligez 30 dégâts.<br>Appliquez <b class="kw">Vulnérable</b> (7).</p></details>
+</article><article class="card t-power p-ironclad" data-type="Power" data-rarity="Ancient" data-name="corruption corruption">
+  <div class="art"><img loading="lazy" src="../../bible/images/cards/ironclad/corruption.webp" alt="Corruption"><span class="gem">3</span></div>
+  <h4>Corruption</h4>
+  <p class="meta">Pouvoir · Ancienne</p>
+  <p class="desc">Vos Compétences coûtent 0 <span class="nrg">●</span>.<br>Lorsque vous jouez une Compétence, <b class="kw">Épuisez</b>-la.</p>
+  
+</article></div></section>
+<section class="panel "><h2>Reliques exclusives</h2><div class="relics"><div class="relic"><img loading="lazy" src="../../bible/images/relics/brimstone.webp" alt=""><div><b>Soufre</b><p>Au début de votre tour, vous gagnez 2 de <b class="kw">Force</b> et TOUS les ennemis gagnent 1 de <b class="kw">Force</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/burning_blood.webp" alt=""><div><b>Sang ardent</b><p>À la fin de chaque combat, récupérez 6 PV.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/charons_ashes.webp" alt=""><div><b>Cendres de Charon</b><p>Chaque fois que vous <b class="kw">Épuisez</b> une carte, infligez 3 dégâts à TOUS les ennemis.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/demon_tongue.webp" alt=""><div><b>Langue du Démon</b><p>La première fois que vous perdez des PV pendant votre tour, vous récupérez autant de PV.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/paper_phrog.webp" alt=""><div><b>Krapo en papier</b><p>Les ennemis <b class="kw">Vulnérables</b> reçoivent 75% de dégâts supplémentaires plutôt que 50%.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/red_skull.webp" alt=""><div><b>Crâne rouge</b><p>Si vous êtes à 50% de PV ou moins, vous avez 3 de <b class="kw">Force</b> supplémentaire.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/ruined_helmet.webp" alt=""><div><b>Casque délabré</b><p>La première fois que vous gagnez de la <b class="kw">Force</b> chaque combat, doublez-en la quantité.</p></div></div><div class="relic"><img loading="lazy" src="../../bible/images/relics/self_forming_clay.webp" alt=""><div><b>Argile autoformante</b><p>Chaque fois que vous perdez des PV en combat, gagnez 3 d&#x27;<b class="kw">Armure</b> au tour suivant.</p></div></div></div></section>
+<section class="panel livret"><div class="md"><h1 id="livret-dinstruction-officiel-slay-the-spire-2-edition-soldat-de-fer">🔴 Livret d'Instruction Officiel — Slay the Spire 2 : Édition Soldat de Fer</h1>
+<pre><code>========================================================================================
+                      NINTENDO® GAME BOY ADVANCE™ INSTRUCTION BOOKLET
+                  ÉDITION SOLDAT DE FER — RÉFÉRENCE : AGB-P-ASGI-FRA
+========================================================================================
+</code></pre>
+<blockquote>
+<p><strong>Sceau Officiel de Qualité Nintendo® :</strong><br />
+Ce livret officiel garantit l'authenticité et la fidélité de votre cartouche Game Boy Advance <em>Slay the Spire 2 — Édition Soldat de Fer</em>. Conservez ce manuel pour toute consultation relative aux règles de duel, aux synergies de cartes et aux ascensions de la Tour.</p>
+</blockquote>
+<hr />
+<h2 id="1-histoire-contexte-du-soldat-de-fer">📜 1. Histoire &amp; Contexte du Soldat de Fer</h2>
+<p>Dernier survivant de son ordre guerrier décimé, le <strong>Soldat de Fer</strong> (<em>The Ironclad</em>) a scellé un pacte avec les puissances démoniaques pour venger ses frères d'armes tombés au combat.<br />
+Armé d'une lame colossale forgée dans le sang et le fer noirci, il gravit la Tour afin d'atteindre le Cœur Ancien. Son style de combat repose sur la puissance brute, la montée exponentielle de sa Force, la solidité inébranlable de son armure et la régénération sanguinaire de ses blessures.</p>
+<ul>
+<li><strong>Points de Vie Initiaux :</strong> 80 PV (90 PV maximum potentiel).</li>
+<li><strong>Or de Départ :</strong> 99 Pièces d'or.</li>
+<li><strong>Relique de Départ :</strong> <strong>Sang Ardent</strong> (<em>Burning Blood</em>) — Restaure automatiquement <strong>+6 PV</strong> à la fin de chaque combat victorieux.</li>
+</ul>
+<hr />
+<h2 id="2-maniement-des-commandes-game-boy-advance">🎮 2. Maniement des Commandes Game Boy Advance</h2>
+<pre><code>                              [L]                        [R]
+                               │                          │
+                         ┌─────┴──────────────────────────┴─────┐
+                         │                                      │
+                         │    ▲             ÉCRAN               │
+                         │  ◄   ►          240x160         (B)  │
+                         │    ▼                           (A)   │
+                         │               [SEL]  [START]         │
+                         └──────────────────────────────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Bouton</th>
+<th>Action sur la Carte de la Tour</th>
+<th>Action dans l'Arène Yu-Gi-Oh</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Croix Directionnelle (◄ / ►)</strong></td>
+<td>Choisir la voie (Gauche, Centre, Droite)</td>
+<td>Sélectionner la carte en main / Choisir le monstre cible</td>
+</tr>
+<tr>
+<td><strong>Croix Directionnelle (▲ / ▼)</strong></td>
+<td>Faire défiler les étages de la Tour (1 à 16)</td>
+<td>Faire défiler le texte / Examiner les détails de la carte</td>
+</tr>
+<tr>
+<td><strong>Bouton A</strong></td>
+<td><strong>Entrer dans la salle / Lancer le combat</strong></td>
+<td><strong>Jouer la carte sélectionnée / Valider l'attaque</strong></td>
+</tr>
+<tr>
+<td><strong>Bouton B</strong></td>
+<td>Annuler / Retour</td>
+<td>Annuler le mode de ciblage de monstre</td>
+</tr>
+<tr>
+<td><strong>Bouton START</strong></td>
+<td>Menu Pause / Options</td>
+<td><strong>Fin de Tour immédiate</strong></td>
+</tr>
+<tr>
+<td><strong>Bouton R</strong></td>
+<td>Accès rapide inventaire</td>
+<td>Fin de Tour alternative</td>
+</tr>
+<tr>
+<td><strong>Bouton L</strong></td>
+<td>Raccourci carte</td>
+<td>Boire une Potion du sac</td>
+</tr>
+<tr>
+<td><strong>Bouton SELECT</strong></td>
+<td><strong>Consulter le Deck &amp; les Reliques</strong></td>
+<td><strong>Consulter la Pioche &amp; le Cimetière</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-structure-des-ecrans-de-jeu-resolution-240-160">📺 3. Structure des Écrans de Jeu (Résolution 240 × 160)</h2>
+<h3 id="ecran-a-la-carte-de-la-tour-slay-the-spire-original">Écran A : La Carte de la Tour (Slay the Spire Original)</h3>
+<p>L'écran supérieur affiche le bandeau officiel :</p>
+<pre><code>ETG 1/16 | PV 80/80 (+0B) | 99 G | 10 CARTES
+</code></pre>
+<p>Au centre, les trois voies d'ascension sont dessinées verticalement avec leurs embranchements :
+* <code>[M]</code> : Salle de Monstre Normal.
+* <code>[?]</code> : Événement Aléatoire &amp; Mystères de la Tour.
+* <code>[R]</code> : Feu de Camp / Repos &amp; Forge de cartes.
+* <code>[$]</code> : Boutique du Marchand (Achat de cartes, reliques et épuration du deck).
+* <code>[E]</code> : Monstre Élite (Gremlin Nob, Lagavulin).
+* <code>[T]</code> : Trésor de mi-parcours (Relique garantie).
+* <code>[B]</code> : Boss Gardien de l'Acte.</p>
+<p>Le curseur actif <code>&gt;&gt;&gt; [M] Salle de Monstre (Centre) &lt;&lt;&lt;</code> indique clairement votre destination. <strong>Appuyez sur A pour engager le combat immédiatement sans temps mort !</strong></p>
+<h3 id="ecran-b-larene-de-duel-yu-gi-oh-1-a-3-monstres-ennemis">Écran B : L'Arène de Duel Yu-Gi-Oh (1 à 3 Monstres Ennemis)</h3>
+<p>Inspirée des plus grands jeux de cartes sur Game Boy Advance, l'arène de combat organise l'espace de manière claire et percutante :</p>
+<pre><code>┌────────────────────────────────────────────────────────┐
+│  [ZONE 1]              [ZONE 2]              [ZONE 3]  │
+│  Cultiste [44/50]      Morpion [18/18]       [K.O.]    │
+│  ! ATK 6               ! 5D+5B                         │
+│                                                        │
+│  [HÉROS] Soldat de Fer   PV 74/80 (+6B)   NRG: [●][●][●]│
+│  Ressource : Force +3    Relique : Sang Ardent         │
+│────────────────────────────────────────────────────────│
+│  [Fracas+] (2E) Attaque | 10 dégâts + 2 Vulnérable     │
+│  Main : [1]  [2]  &gt;[3]&lt;  [4]  [5]                      │
+│  G/D : Carte   A : Jouer   START : Fin de Tour         │
+└────────────────────────────────────────────────────────┘
+</code></pre>
+<ul>
+<li><strong>Zone Haute :</strong> 1 à 3 monstres ennemis placés côte à côte avec leurs jauges de PV, leur Bouclier et leur intention offensive/défensive.</li>
+<li><strong>Zone Milieu :</strong> Votre héros avec son sprite personnalisé, ses points de vie, son armure et ses cristaux d'Énergie <code>[●][●][●]</code>.</li>
+<li><strong>Zone Basse :</strong> Le plateau de cartes Yu-Gi-Oh où votre main est étalée horizontalement. Le curseur <code>&gt;[3]&lt;</code> permet de sélectionner instantanément votre sort. Si vous jouez une attaque ciblée sur un groupe de monstres, un pointeur <code>[V]</code> apparaît au-dessus de la cible choisie !</li>
+</ul>
+<hr />
+<h2 id="4-systeme-de-teintes-style-pokemon">🎨 4. Système de Teintes (Style Pokémon)</h2>
+<p>Lors du démarrage d'une nouvelle tentative, personnalisez votre Soldat de Fer parmi 4 teintes de collection :
+1. <strong>Classique (Rouge Sang) :</strong> L'armure écarlate originelle du guerrier démoniaque.
+2. <strong>Chromatique / Shiny (Flamme Azur) :</strong> Une armure d'acier froid parcourue de braises bleutées spectrales.
+3. <strong>Ténèbres / Shadow (Ombre Démoniaque) :</strong> Une silhouette sombre imprégnée du néant abyssal.
+4. <strong>Dorée / Golden (Or des Enfers) :</strong> Une parure étincelante réservée aux champions ayant vaincu l'Ascension 10.</p>
+<hr />
+<h2 id="5-catalogue-officiel-des-20-cartes-communes-de-ledition">🃏 5. Catalogue Officiel des 20 Cartes Communes de l'Édition</h2>
+<p>Chaque carte peut être améliorée au Feu de Camp (<code>+</code>) pour accroître ses dégâts ou réduire son coût.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">N°</th>
+<th style="text-align: left;">Carte</th>
+<th style="text-align: center;">Coût</th>
+<th style="text-align: center;">Type</th>
+<th>Effet Standard</th>
+<th>Version Améliorée (<code>+</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">01</td>
+<td style="text-align: left;"><strong>Frappe</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 6 dégâts à un ennemi.</td>
+<td>Inflige <strong>9 dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">02</td>
+<td style="text-align: left;"><strong>Défense</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 5 points d'Armure.</td>
+<td>Confère <strong>8 points d'Armure</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">03</td>
+<td style="text-align: left;"><strong>Fracas</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 8 dégâts. Applique 2 Vulnérable.</td>
+<td>Inflige <strong>10 dégâts</strong>. Applique <strong>3 Vulnérable</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">04</td>
+<td style="text-align: left;"><strong>Onde de Fer</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Confère 5 Armure et inflige 5 dégâts.</td>
+<td>Confère <strong>7 Armure</strong> et inflige <strong>7 dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">05</td>
+<td style="text-align: left;"><strong>Balayage</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 8 dégâts à <strong>TOUS</strong> les ennemis vivants.</td>
+<td>Inflige <strong>11 dégâts</strong> à <strong>TOUS</strong> les ennemis.</td>
+</tr>
+<tr>
+<td style="text-align: center;">06</td>
+<td style="text-align: left;"><strong>Colère</strong></td>
+<td style="text-align: center;">0E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 6 dégâts. Ajoute une copie de Colère dans la défausse.</td>
+<td>Inflige <strong>8 dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">07</td>
+<td style="text-align: left;"><strong>Armement</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 5 Armure. Améliore 1 carte en main pour ce combat.</td>
+<td>Confère 5 Armure. Améliore <strong>TOUTES les cartes en main</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">08</td>
+<td style="text-align: left;"><strong>Manchette</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 12 dégâts. Applique 2 Faiblesse.</td>
+<td>Inflige <strong>14 dégâts</strong>. Applique <strong>3 Faiblesse</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">09</td>
+<td style="text-align: left;"><strong>Enflammer</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>Confère +2 Force permanente pour le combat.</td>
+<td>Confère <strong>+3 Force permanente</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">10</td>
+<td style="text-align: left;"><strong>Frénésie</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 4 dégâts 3 fois de suite (synergie Force x3).</td>
+<td>Inflige 4 dégâts <strong>4 fois de suite</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">11</td>
+<td style="text-align: left;"><strong>Hémokinésie</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Vous perdez 2 PV. Inflige 15 dégâts colossaux.</td>
+<td>Vous perdez 2 PV. Inflige <strong>20 dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">12</td>
+<td style="text-align: left;"><strong>Métallisation</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>À la fin de chaque tour, gagnez automatiquement 3 Armure.</td>
+<td>Gagnez <strong>4 Armure</strong> à chaque fin de tour.</td>
+</tr>
+<tr>
+<td style="text-align: center;">13</td>
+<td style="text-align: left;"><strong>Placage</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige des dégâts égaux à votre Armure actuelle.</td>
+<td>Coût réduit à <strong>0E</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">14</td>
+<td style="text-align: left;"><strong>Carnage</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Éthéré. Inflige 20 dégâts massifs.</td>
+<td>Inflige <strong>28 dégâts massifs</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">15</td>
+<td style="text-align: left;"><strong>Barricade</strong></td>
+<td style="text-align: center;">3E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>Votre Armure ne se réinitialise plus au début de votre tour.</td>
+<td>Coût réduit à <strong>2E</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">16</td>
+<td style="text-align: left;"><strong>Démonisation</strong></td>
+<td style="text-align: center;">3E</td>
+<td style="text-align: center;">Pouvoir</td>
+<td>Au début de chaque tour, gagnez +2 Force.</td>
+<td>Gagnez <strong>+3 Force</strong> à chaque tour.</td>
+</tr>
+<tr>
+<td style="text-align: center;">17</td>
+<td style="text-align: left;"><strong>Coup de Tête</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 9 dégâts. Place une carte de votre défausse au sommet de votre pioche.</td>
+<td>Inflige <strong>12 dégâts</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">18</td>
+<td style="text-align: left;"><strong>Entaille Double</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 5 dégâts 2 fois.</td>
+<td>Inflige <strong>7 dégâts</strong> 2 fois.</td>
+</tr>
+<tr>
+<td style="text-align: center;">19</td>
+<td style="text-align: left;"><strong>Plaie Ouverte</strong></td>
+<td style="text-align: center;">1E</td>
+<td style="text-align: center;">Attaque</td>
+<td>Inflige 7 dégâts et applique 1 Vulnérable.</td>
+<td>Inflige <strong>10 dégâts</strong> et applique <strong>2 Vulnérable</strong>.</td>
+</tr>
+<tr>
+<td style="text-align: center;">20</td>
+<td style="text-align: left;"><strong>Mur de Fer</strong></td>
+<td style="text-align: center;">2E</td>
+<td style="text-align: center;">Compétence</td>
+<td>Confère 15 Armure. Épuisement.</td>
+<td>Confère <strong>20 Armure</strong>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-guide-de-survie-strategie-de-duel">⚔️ 6. Guide de Survie &amp; Stratégie de Duel</h2>
+<ol>
+<li><strong>La Puissance de Vulnérable :</strong> Fracas inflige Vulnérable (+50% de dégâts reçus). Jouez toujours Fracas en premier avant d'enchaîner avec vos Frappes pour maximiser vos dégâts !</li>
+<li><strong>L'Armement précoce :</strong> Améliorer rapidement vos cartes au Feu de camp transforme votre deck. Priorisez l'amélioration de <strong>Fracas</strong> ou <strong>Balayage</strong>.</li>
+<li><strong>Affronter les groupes d'ennemis :</strong> Lorsque deux ou trois monstres apparaissent, utilisez Balayage pour les affaiblir ensemble ou concentrez vos frappes sur le plus menaçant à l'aide du curseur <code>[V]</code>.</li>
+<li><strong>La règle d'or du Sang Ardent :</strong> Vous regagnez 6 PV après chaque victoire. N'hésitez pas à subir quelques points de dégâts mineurs si cela vous permet d'éliminer l'ennemi un tour plus tôt !</li>
+</ol></div></section>
+
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

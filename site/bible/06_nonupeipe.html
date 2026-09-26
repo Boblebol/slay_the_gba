@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nonupeipée — Incarnation de la Fortune — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html" class="on">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><p class="crumb"><a href="index.html">◄ Bible</a></p><div class="md"><h1 id="nonupeipee-incarnation-de-la-fortune">Nonupeipée — Incarnation de la Fortune</h1>
+<blockquote>
+<p><strong>Patch de Référence :</strong> <code>v0.111.0 Beta</code> (Dernier patch officiel)
+<strong>Acte d'apparition :</strong> Acte 3
+<strong>Déblocage (Epoch) :</strong> <code>None</code>
+<strong>Thème Visuel / Couleur :</strong> <code>#0A494D</code></p>
+</blockquote>
+<h2 id="portraits-illustrations">🎨 Portraits &amp; Illustrations</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Icône Ancien</th>
+<th style="text-align: center;">Illustration Principale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img alt="Nonupeipée" loading="lazy" src="../../bible/images/ancients/icon/nonupeipe.webp" /></td>
+<td style="text-align: center;"><img alt="Nonupeipée Art" loading="lazy" src="../../bible/images/ancients/art/nonupeipe.webp" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="integration-visuelle-gba-butano">🎮 Intégration Visuelle GBA (Butano)</h3>
+<ul>
+<li><strong>Palette suggérée pour la GBA :</strong> Teinte dominante <code>#0A494D</code>. À mapper sur une palette 16 couleurs (15 couleurs + transparent) pour le BG de portrait.</li>
+<li><strong>Dimensions portrait GBA :</strong> 64x64 pixels (mode 4 bpp tilemap) positionné à <code>(X: 16, Y: 24)</code> sur l'écran 240x160.</li>
+<li><strong>Couleur des boutons / encadrements UI :</strong> <code>rgba(0, 26, 41, 0.75)</code> converti en code couleur GBA 15-bit BGR555.</li>
+</ul>
+<h2 id="role-lore-dans-lascension">📜 Rôle &amp; Lore dans l'Ascension</h2>
+<h2 id="regles-des-slots-choix">🎲 Règles des Slots &amp; Choix</h2>
+<ul>
+<li><strong>Nombre total d'options :</strong> 10 reliques disponibles.</li>
+<li><strong>Structure des tirages :</strong> 1 slot(s).</li>
+<li><strong>Slot #1</strong> : <strong>3</strong> choix parmi <strong>10</strong> reliques présentées.</li>
+</ul>
+<h2 id="catalogue-complet-des-reliques-classees-par-tier">🏆 Catalogue Complet des Reliques (Classées par Tier)</h2>
+<h3 id="tier-s-1-relique">⭐ Tier S (1 relique)</h3>
+<h4 id="diademe-de-diamant-diamond_diadem"><img alt="Diadème de diamant" loading="lazy" src="../../bible/images/relics/diamond_diadem.webp" /> Diadème de diamant (<code>DIAMOND_DIADEM</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Démarrez chaque combat avec 20 d'<strong>Armure</strong>. Vous ne perdez pas votre <strong>Armure</strong> au début de votre 2ème tour.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Économie Run :</strong> Incrémente <code>RunState::gold</code>. Impact direct sur les boutiques du marchand.</li>
+</ul>
+<h3 id="tier-a-3-reliques">⭐ Tier A (3 reliques)</h3>
+<h4 id="fougere-delicate-delicate_frond"><img alt="Fougère délicate" loading="lazy" src="../../bible/images/relics/delicate_frond.webp" /> Fougère délicate (<code>DELICATE_FROND</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Au début de chaque combat, remplissez vos emplacements de potion vides avec des <strong>Potions</strong> aléatoires.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="coffre-a-bijoux-jewelry_box"><img alt="Coffre à bijoux" loading="lazy" src="../../bible/images/relics/jewelry_box.webp" /> Coffre à bijoux (<code>JEWELRY_BOX</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Ajoutez 1 <strong>Apothéose</strong> à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Apothéose</code> (APOTHEOSIS) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Apothéose" loading="lazy" src="../../bible/images/cards/event/apotheosis.webp" /> <strong>Apothéose</strong> (<code>APOTHEOSIS</code>) — <em>Compétence</em> (Coût : <code>2</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> <strong>Inné</strong>.
+<strong>Améliorez</strong> TOUTES vos cartes.
+<strong>Épuisement</strong>.</li>
+<li><strong>Effet amélioré :</strong> <strong>Inné</strong>.
+<strong>Améliorez</strong> TOUTES vos cartes.
+<strong>Épuisement</strong>.</li>
+<li><strong>Amélioration :</strong> <code>energy: -1</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="anneau-a-signet-signet_ring"><img alt="Anneau à signet" loading="lazy" src="../../bible/images/relics/signet_ring.webp" /> Anneau à signet (<code>SIGNET_RING</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Lorsque vous obtenez cette relique, obtenez 888 <strong>Pièces d'or</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-b-3-reliques">⭐ Tier B (3 reliques)</h3>
+<h4 id="bois-benis-blessed_antler"><img alt="Bois bénis" loading="lazy" src="../../bible/images/relics/blessed_antler.webp" /> Bois bénis (<code>BLESSED_ANTLER</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Gagnez ⚡1⚡ au début de chaque tour. Au début de chaque combat, ajoutez 3 <strong>Hébété</strong> à votre <strong>Pioche</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Hébété</code> (DAZED) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Hébété" loading="lazy" src="../../bible/images/cards/status/dazed.webp" /> <strong>Hébété</strong> (<code>DAZED</code>) — <em>Statut</em> (Coût : <code>0</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> <strong>Injouable</strong>.
+<strong>Éthéré</strong>.</li>
+<li><strong>Effet amélioré :</strong> <strong>Injouable</strong>.
+<strong>Éthéré</strong>.</li>
+</ul>
+</li>
+</ul>
+<h4 id="echarpe-etincelante-brilliant_scarf"><img alt="Écharpe étincelante" loading="lazy" src="../../bible/images/relics/brilliant_scarf.webp" /> Écharpe étincelante (<code>BRILLIANT_SCARF</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> La 5ème carte jouée depuis votre main chaque tour peut être jouée sans coût.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="bracelet-brillant-beautiful_bracelet"><img alt="Bracelet brillant" loading="lazy" src="../../bible/images/relics/beautiful_bracelet.webp" /> Bracelet brillant (<code>BEAUTIFUL_BRACELET</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Choisissez 4 cartes dans votre <strong>Deck</strong>. <strong>Envoûtez</strong>-les avec Célérité 2.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-c-2-reliques">⭐ Tier C (2 reliques)</h3>
+<h4 id="paillettes-glitter"><img alt="Paillettes" loading="lazy" src="../../bible/images/relics/glitter.webp" /> Paillettes (<code>GLITTER</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> <strong>Envoûtez</strong> toutes les récompenses de carte avec Glamour.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="fruits-exotiques-looming_fruit"><img alt="Fruits exotiques" loading="lazy" src="../../bible/images/relics/looming_fruit.webp" /> Fruits exotiques (<code>LOOMING_FRUIT</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Augmentez vos PV Max de 31.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-d-1-relique">⭐ Tier D (1 relique)</h3>
+<h4 id="manteau-de-fourrure-fur_coat"><img alt="Manteau de fourrure" loading="lazy" src="../../bible/images/relics/fur_coat.webp" /> Manteau de fourrure (<code>FUR_COAT</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Marquez 8 combats aléatoires sur la Carte. Les ennemis dans ces salles ont 1 PV.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h2 id="dialogues-repliques">💬 Dialogues &amp; Répliques</h2>
+<p>Les dialogues s'affichent dans la boîte de dialogue inférieure (240x40 px) sur la GBA avec défilement fluide au bouton <code>A</code> :</p>
+<h3 id="premiere-rencontre-toutes-runs-confondues">🗣️ Première Rencontre (Toutes runs confondues)</h3>
+<ul>
+<li>👑 <strong>Ancien</strong> :<blockquote>
+<p>Cela fait un millénaire que je n'ai pas eu de visite !<br />
+Vous m'avez l'air bien terne, venez, trouvons-vous quelque chose d'élégant à porter.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="soldat-de-fer-ironclad">🗣️ Soldat de Fer (Ironclad)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Ah, le Soldat de Fer se présente enfin à moi.<br />
+Approchez, et je vous octroierai mon pouvoir.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Soldat de Fer... la faveur dont je vous ai béni n'a-t-elle pas suffi ?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Vous êtes de retour, mon champion ? Combien de fois encore ?<br />
+N'étiez-vous pourtant pas suffisamment puissant pour anéantir des clans entiers, autrefois ?</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-silencieuse-silent">🗣️ La Silencieuse (Silent)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Une petite larronnesse s'est glissée dans mon domaine ?<br />
+Ne croyez pas que je ne vous ai pas vue. Sortez donc !</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>SILENT</strong> :</p>
+<blockquote>
+<p><em>La Silencieuse sort de l'obscurité...</em></p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Une chasseresse... Qu'est-ce qui vous pousse à revenir dans la Tour ?<br />
+Approchez, enfilez donc ma bénédiction.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Je vous ai préparé des cadeaux, petite assassine, ne soyez pas timide.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>De toutes ses marionnettes, c'est vous qui m'intriguez le plus.</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>SILENT</strong> :</p>
+<blockquote>
+<p>...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Qu'est-ce qui a mis fin à votre première vie ? C'est Neow qui vous a trouvée ?<br />
+Bien dommage que vous ne parliez pas.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-defectueux-defect">🗣️ Le Défectueux (Defect)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Un simple assemblage peut-il réellement être digne de ma bénédiction ?<br />
+Avance, Défectueux. De tous les automates, tu seras le plus ravissant.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Pauvre machine, tout usée. Laisse-moi te requinquer.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>D'habitude, je n'aime pas les affaires de l'Architecte. Mais j'avoue que tu commences à me plaire.</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>DEFECT</strong> :</p>
+<blockquote>
+<p><em><bip d'embarras></em></p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-regent-regent">🗣️ Le Régent (Regent)</h3>
+<ul>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Je demande une audience avec Nonupeipée !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Que de beaux accoutrements de contrées si lointaines !<br />
+Laissez approcher vos sbires, et je vous donnerai ma bénédiction.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Une bénédiction royale pour un visiteur royal.<br />
+Serviteurs ! Apportez-nous le thé.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>L'Architecte a perdu la tête ! Si seulement un noble champion pouvait venir à notre secours...</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>N'ayez crainte ! Moi, le Régent, je mettrai fin à cette tyrannie !<br />
+Mais d'abord, le thé !</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-necrolieuse-necrobinder">🗣️ La Nécrolieuse (Necrobinder)</h3>
+<ul>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p>Je suis venue à bout de vos gardiens. Les rumeurs disent que vous octroyez des bénédictions à ceux qui veulent la mort de l'Architecte.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Je suis sensible à vos capacités, et vous offre une partie de mon pouvoir.<br />
+La prochaine fois, laissez mes gardiens tranquilles.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Une magicienne a besoin d'accoutrements de qualité pour combattre. Approchez, Tisse-Mage.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>L'Architecte sera bien contrarié de voir ce petit à vos côtés.</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p>Titos ? C'est lui qui livrera le coup de grâce.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="generique-tout-personnage">🗣️ Générique (Tout Personnage)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>La fureur t' / vous attend au sommet. Vêts-toi / Vêtissez-vous de ma puissance et sors-en / sortez-en victorieuse / x.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Tu as / Vous avez fait tant de chemin pour venir me voir !<br />
+Approche / Approchez donc, et reçois / recevez ma bénédiction.</p>
+</blockquote>
+</li>
+</ul>
+<hr />
+<p>⬅️ <a href="livrets.html">Retour au Sommaire de la Bible</a> | ⚙️ <a href="spec_technique_gba.html">Spécifications Techniques GBA</a></p></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

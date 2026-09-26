@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tanx — Roi Chimère — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html" class="on">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><p class="crumb"><a href="index.html">◄ Bible</a></p><div class="md"><h1 id="tanx-roi-chimere">Tanx — Roi Chimère</h1>
+<blockquote>
+<p><strong>Patch de Référence :</strong> <code>v0.111.0 Beta</code> (Dernier patch officiel)
+<strong>Acte d'apparition :</strong> Acte 3
+<strong>Déblocage (Epoch) :</strong> <code>None</code>
+<strong>Thème Visuel / Couleur :</strong> <code>#731717</code></p>
+</blockquote>
+<h2 id="portraits-illustrations">🎨 Portraits &amp; Illustrations</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Icône Ancien</th>
+<th style="text-align: center;">Illustration Principale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img alt="Tanx" loading="lazy" src="../../bible/images/ancients/icon/tanx.webp" /></td>
+<td style="text-align: center;"><img alt="Tanx Art" loading="lazy" src="../../bible/images/ancients/art/tanx.webp" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="integration-visuelle-gba-butano">🎮 Intégration Visuelle GBA (Butano)</h3>
+<ul>
+<li><strong>Palette suggérée pour la GBA :</strong> Teinte dominante <code>#731717</code>. À mapper sur une palette 16 couleurs (15 couleurs + transparent) pour le BG de portrait.</li>
+<li><strong>Dimensions portrait GBA :</strong> 64x64 pixels (mode 4 bpp tilemap) positionné à <code>(X: 16, Y: 24)</code> sur l'écran 240x160.</li>
+<li><strong>Couleur des boutons / encadrements UI :</strong> <code>rgba(13, 5, 0, 0.5)</code> converti en code couleur GBA 15-bit BGR555.</li>
+</ul>
+<h2 id="role-lore-dans-lascension">📜 Rôle &amp; Lore dans l'Ascension</h2>
+<h2 id="regles-des-slots-choix">🎲 Règles des Slots &amp; Choix</h2>
+<ul>
+<li><strong>Nombre total d'options :</strong> 10 reliques disponibles.</li>
+<li><strong>Structure des tirages :</strong> 1 slot(s).</li>
+<li><strong>Slot #1</strong> : <strong>3</strong> choix parmi <strong>10</strong> reliques présentées.</li>
+</ul>
+<h2 id="catalogue-complet-des-reliques-classees-par-tier">🏆 Catalogue Complet des Reliques (Classées par Tier)</h2>
+<h3 id="tier-s-2-reliques">⭐ Tier S (2 reliques)</h3>
+<h4 id="couperet-a-viande-meat_cleaver"><img alt="Couperet à viande" loading="lazy" src="../../bible/images/relics/meat_cleaver.webp" /> Couperet à viande (<code>MEAT_CLEAVER</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Vous pouvez <strong>Cuisiner</strong> aux Sites de Repos.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Majeur Prioritaire :</strong> À implémenter en priorité dans le prototype MVP en raison de son fort impact stratégique.</li>
+</ul>
+<h4 id="sai-sai"><img alt="Saï" loading="lazy" src="../../bible/images/relics/sai.webp" /> Saï (<code>SAI</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Au début de votre tour, gagnez 7 d'<strong>Armure</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Majeur Prioritaire :</strong> À implémenter en priorité dans le prototype MVP en raison de son fort impact stratégique.</li>
+</ul>
+<h3 id="tier-a-4-reliques">⭐ Tier A (4 reliques)</h3>
+<h4 id="gourdin-de-fer-iron_club"><img alt="Gourdin de fer" loading="lazy" src="../../bible/images/relics/iron_club.webp" /> Gourdin de fer (<code>IRON_CLUB</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Toutes les 4 cartes jouées, vous piochez 1 carte.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="sifflet-de-tanx-tanxs_whistle"><img alt="Sifflet de Tanx" loading="lazy" src="../../bible/images/relics/tanxs_whistle.webp" /> Sifflet de Tanx (<code>TANXS_WHISTLE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Ajoutez 1 <strong>Sifflet</strong> à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Sifflet</code> (WHISTLE) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Sifflet" loading="lazy" src="../../bible/images/cards/event/whistle.webp" /> <strong>Sifflet</strong> (<code>WHISTLE</code>) — <em>Attaque</em> (Coût : <code>2</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> Infligez 33 dégâts.
+<strong>Étourdissez</strong> l'ennemi.
+<strong>Épuisement</strong>.</li>
+<li><strong>Effet amélioré :</strong> Infligez 44 dégâts.
+<strong>Étourdissez</strong> l'ennemi.
+<strong>Épuisement</strong>.</li>
+<li><strong>Amélioration :</strong> <code>damage: +11</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="hache-de-lancer-throwing_axe"><img alt="Hache de lancer" loading="lazy" src="../../bible/images/relics/throwing_axe.webp" /> Hache de lancer (<code>THROWING_AXE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> La première carte que vous jouez chaque combat est jouée une fois de plus.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="tri-boomerang-tri_boomerang"><img alt="Tri-boomerang" loading="lazy" src="../../bible/images/relics/tri_boomerang.webp" /> Tri-boomerang (<code>TRI_BOOMERANG</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Choisissez 3 Attaques de votre <strong>Deck</strong>. <strong>Envoûtez</strong>-les avec Instinct.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-b-1-relique">⭐ Tier B (1 relique)</h3>
+<h4 id="griffes-claws"><img alt="Griffes" loading="lazy" src="../../bible/images/relics/claws.webp" /> Griffes (<code>CLAWS</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> <strong>Transformez</strong> jusqu'à 6 cartes en <strong>Mutilation</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Mutilation</code> (MAUL) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Mutilation" loading="lazy" src="../../bible/images/cards/event/maul.webp" /> <strong>Mutilation</strong> (<code>MAUL</code>) — <em>Attaque</em> (Coût : <code>1</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> Infligez 5 dégâts 2 fois.
+Augmentez les dégâts de TOUTES les cartes Mutilation de 2 jusqu'à la fin du combat.</li>
+<li><strong>Effet amélioré :</strong> Infligez 6 dégâts 2 fois.
+Augmentez les dégâts de TOUTES les cartes Mutilation de 3 jusqu'à la fin du combat.</li>
+<li><strong>Amélioration :</strong> <code>damage: +1, increase: +1</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="tier-c-1-relique">⭐ Tier C (1 relique)</h3>
+<h4 id="arbalete-crossbow"><img alt="Arbalète" loading="lazy" src="../../bible/images/relics/crossbow.webp" /> Arbalète (<code>CROSSBOW</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Au début de votre tour, ajoutez une <strong>Attaque</strong> aléatoire à votre <strong>Main</strong>. Elle coûte 0 ce tour.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-d-2-reliques">⭐ Tier D (2 reliques)</h3>
+<h4 id="gantelets-a-pointes-spiked_gauntlets"><img alt="Gantelets à pointes" loading="lazy" src="../../bible/images/relics/spiked_gauntlets.webp" /> Gantelets à pointes (<code>SPIKED_GAUNTLETS</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Gagnez ⚡1⚡ au début de chaque tour. Les Pouvoirs coûtent 1 ⚡ supplémentaire.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="marteau-de-guerre-war_hammer"><img alt="Marteau de guerre" loading="lazy" src="../../bible/images/relics/war_hammer.webp" /> Marteau de guerre (<code>WAR_HAMMER</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Lorsque vous tuez un <strong>Élite</strong>, <strong>Améliorez</strong> 4 cartes aléatoires.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h2 id="dialogues-repliques">💬 Dialogues &amp; Répliques</h2>
+<p>Les dialogues s'affichent dans la boîte de dialogue inférieure (240x40 px) sur la GBA avec défilement fluide au bouton <code>A</code> :</p>
+<h3 id="premiere-rencontre-toutes-runs-confondues">🗣️ Première Rencontre (Toutes runs confondues)</h3>
+<ul>
+<li>👑 <strong>Ancien</strong> :<blockquote>
+<p>SI FAIBLE ! MAIS TANT DE POTENTIEL !<br />
+PRENDS CETTE ARME !!</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="soldat-de-fer-ironclad">🗣️ Soldat de Fer (Ironclad)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>QUELLE IMPRESSIONNANTE ÉPÉE, GUERRIER ! TU FERAIS BON USAGE DE PLUS D'ARMES ENCORE !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>DES ARMES POUR LE GUERRIER ! CHOISIS TON ARME ! ET AU COMBAT !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>AU COMBAT, SOLDAT DE FER !!</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>IRONCLAD</strong> :</p>
+<blockquote>
+<p><em>Le Soldat de Fer affronte Tanx.</em></p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>OUIII !! UN GLORIEUX COMBAT, EMPORTE DONC UNE ARME AVEC TOI !</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-silencieuse-silent">🗣️ La Silencieuse (Silent)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>UNE CHASSERESSE ! JE VAIS AIGUISER TES GRIFFES !!</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>POURQUOI DES COUTEAUX !! SI PEU PUISSANT !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>TU ES SI PETITE ! JE VAIS TE MUSCLER !</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>SILENT</strong> :</p>
+<blockquote>
+<p><em>La Silencieuse s'échappe furtivement, emportant avec elle une arme.</em></p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>OÙ ES-TU PASSÉE !!!</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-defectueux-defect">🗣️ Le Défectueux (Defect)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>PUISSANT ASSEMBLAGE ! JE VAIS TE RENDRE ENCORE PLUS PUISSANT !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>TES ORBES NE SONT PAS DE VRAIES ARMES !!</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>AU COMBAT, DÉFECTUEUX !!</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>DEFECT</strong> :</p>
+<blockquote>
+<p><em>Le Défectueux combat avec vaillance.</em></p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>TES ORBES SONT DES ARMES !?</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-regent-regent">🗣️ Le Régent (Regent)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>ORANGE !? COMMENT UN ÊTRE VIVANT PEUT-IL ÊTRE ORANGE !??</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Tout le monde sait que l'orange est la couleur royale par excellence !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>INCROYABLE ! SI PUISSANT !!</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>ÊTRE ORANGE !! CHOISIS TON ARME !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>AU COMBAT, RÉGENT!!</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Non ! Nous avons combattu la dernière fois que j'étais ici !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>ENCORE UN COMBAT !!</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-necrolieuse-necrobinder">🗣️ La Nécrolieuse (Necrobinder)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>QUELLE FAUX IMPRESSIONNANTE !</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p>Oui, spécialement fabriquée dans un but de vengeance.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>LA MAIN DÉSIRE-T-ELLE UNE ARME !?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>AU COMBAT, TITOS !!</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>AU COMBAT, TISSE-MORT !!</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p><em>La Tisse-Mort et Titos se bagarrent avec Tanx.</em></p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>QUEL FORMIDABLE TRAVAIL D'ÉQUIPE !! EMPORTEZ DONC UNE ARME !</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="generique-tout-personnage">🗣️ Générique (Tout Personnage)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>ENTRAÎNE-TOI POUR QU'ON PUISSE SE BATTRE !!!</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>ENTRAÎNE-TOI POUR QUE NOUS PUISSIONS NOUS BATTRE !!!</p>
+</blockquote>
+</li>
+</ul>
+<hr />
+<p>⬅️ <a href="livrets.html">Retour au Sommaire de la Bible</a> | ⚙️ <a href="spec_technique_gba.html">Spécifications Techniques GBA</a></p></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

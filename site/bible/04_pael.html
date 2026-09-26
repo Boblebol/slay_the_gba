@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paël — Dragon de Cire — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html" class="on">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><p class="crumb"><a href="index.html">◄ Bible</a></p><div class="md"><h1 id="pael-dragon-de-cire">Paël — Dragon de Cire</h1>
+<blockquote>
+<p><strong>Patch de Référence :</strong> <code>v0.111.0 Beta</code> (Dernier patch officiel)
+<strong>Acte d'apparition :</strong> Acte 2
+<strong>Déblocage (Epoch) :</strong> <code>None</code>
+<strong>Thème Visuel / Couleur :</strong> <code>#332C29</code></p>
+</blockquote>
+<h2 id="portraits-illustrations">🎨 Portraits &amp; Illustrations</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Icône Ancien</th>
+<th style="text-align: center;">Illustration Principale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img alt="Paël" loading="lazy" src="../../bible/images/ancients/icon/pael.webp" /></td>
+<td style="text-align: center;"><img alt="Paël Art" loading="lazy" src="../../bible/images/ancients/art/pael.webp" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="integration-visuelle-gba-butano">🎮 Intégration Visuelle GBA (Butano)</h3>
+<ul>
+<li><strong>Palette suggérée pour la GBA :</strong> Teinte dominante <code>#332C29</code>. À mapper sur une palette 16 couleurs (15 couleurs + transparent) pour le BG de portrait.</li>
+<li><strong>Dimensions portrait GBA :</strong> 64x64 pixels (mode 4 bpp tilemap) positionné à <code>(X: 16, Y: 24)</code> sur l'écran 240x160.</li>
+<li><strong>Couleur des boutons / encadrements UI :</strong> <code>rgba(8, 20, 0, 0.75)</code> converti en code couleur GBA 15-bit BGR555.</li>
+</ul>
+<h2 id="role-lore-dans-lascension">📜 Rôle &amp; Lore dans l'Ascension</h2>
+<h2 id="regles-des-slots-choix">🎲 Règles des Slots &amp; Choix</h2>
+<ul>
+<li><strong>Nombre total d'options :</strong> 10 reliques disponibles.</li>
+<li><strong>Structure des tirages :</strong> 3 slot(s).</li>
+<li><strong>Slot #1</strong> : <strong>1</strong> choix parmi <strong>3</strong> reliques présentées.</li>
+<li><strong>Slot #2</strong> : <strong>1</strong> choix parmi <strong>4</strong> reliques présentées.</li>
+<li><strong>Slot #3</strong> : <strong>1</strong> choix parmi <strong>3</strong> reliques présentées.</li>
+</ul>
+<h2 id="catalogue-complet-des-reliques-classees-par-tier">🏆 Catalogue Complet des Reliques (Classées par Tier)</h2>
+<h3 id="tier-s-3-reliques">⭐ Tier S (3 reliques)</h3>
+<h4 id="larmes-de-pael-paels_tears"><img alt="Larmes de Paël" loading="lazy" src="../../bible/images/relics/paels_tears.webp" /> Larmes de Paël (<code>PAELS_TEARS</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Si vous terminez votre tour sans avoir dépensé toute votre ⚡, gagnez ⚡2⚡ supplémentaires au prochain tour.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Majeur Prioritaire :</strong> À implémenter en priorité dans le prototype MVP en raison de son fort impact stratégique.</li>
+</ul>
+<h4 id="il-de-pael-paels_eye"><img alt="Œil de Paël" loading="lazy" src="../../bible/images/relics/paels_eye.webp" /> Œil de Paël (<code>PAELS_EYE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Lorsque vous terminez votre tour sans avoir joué de cartes pour la première fois dans un combat, <strong>Épuisez</strong> votre <strong>Main</strong>, et jouez un tour supplémentaire.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Majeur Prioritaire :</strong> À implémenter en priorité dans le prototype MVP en raison de son fort impact stratégique.</li>
+</ul>
+<h4 id="sang-de-pael-paels_blood"><img alt="Sang de Paël" loading="lazy" src="../../bible/images/relics/paels_blood.webp" /> Sang de Paël (<code>PAELS_BLOOD</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Au début de votre tour, piochez 1 carte supplémentaire.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Majeur Prioritaire :</strong> À implémenter en priorité dans le prototype MVP en raison de son fort impact stratégique.</li>
+</ul>
+<h3 id="tier-a-2-reliques">⭐ Tier A (2 reliques)</h3>
+<h4 id="chair-de-pael-paels_flesh"><img alt="Chair de Paël" loading="lazy" src="../../bible/images/relics/paels_flesh.webp" /> Chair de Paël (<code>PAELS_FLESH</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Gagnez ⚡1⚡ supplémentaire au début de votre 3ème tour et au début de chaque tour suivant.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="griffe-de-pael-paels_claw"><img alt="Griffe de Paël" loading="lazy" src="../../bible/images/relics/paels_claw.webp" /> Griffe de Paël (<code>PAELS_CLAW</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> <strong>Envoûtez</strong> toutes vos <strong>Défenses</strong> avec Viscosité.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-b-2-reliques">⭐ Tier B (2 reliques)</h3>
+<h4 id="aile-de-pael-paels_wing"><img alt="Aile de Paël" loading="lazy" src="../../bible/images/relics/paels_wing.webp" /> Aile de Paël (<code>PAELS_WING</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Vous pouvez offrir des récompenses de carte en sacrifice à Paël. Tous les 2 sacrifices, vous obtenez une <strong>Relique</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="excroissance-de-pael-paels_growth"><img alt="Excroissance de Paël" loading="lazy" src="../../bible/images/relics/paels_growth.webp" /> Excroissance de Paël (<code>PAELS_GROWTH</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> <strong>Envoûtez</strong> une carte avec Clonage.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-c-1-relique">⭐ Tier C (1 relique)</h3>
+<h4 id="legion-de-pael-paels_legion"><img alt="Légion de Paël" loading="lazy" src="../../bible/images/relics/paels_legion.webp" /> Légion de Paël (<code>PAELS_LEGION</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Double l'<strong>Armure</strong> reçue d'une carte, puis s'endort pendant 2 tours.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-d-2-reliques">⭐ Tier D (2 reliques)</h3>
+<h4 id="corne-de-pael-paels_horn"><img alt="Corne de Paël" loading="lazy" src="../../bible/images/relics/paels_horn.webp" /> Corne de Paël (<code>PAELS_HORN</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Ajoutez 2 <strong>Relaxations</strong> à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Relaxation</code> (RELAX) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Relaxation" loading="lazy" src="../../bible/images/cards/event/relax.webp" /> <strong>Relaxation</strong> (<code>RELAX</code>) — <em>Compétence</em> (Coût : <code>3</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> Gagnez 16 d'<strong>Armure</strong>.
+Au prochain tour, piochez 2 cartes et gagnez ⚡2⚡.
+<strong>Épuisement</strong>.</li>
+<li><strong>Effet amélioré :</strong> Gagnez 18 d'<strong>Armure</strong>.
+Au prochain tour, piochez 3 cartes et gagnez ⚡3⚡.
+<strong>Épuisement</strong>.</li>
+<li><strong>Amélioration :</strong> <code>block: +2, cards: +1, energygain: +1</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="dent-de-pael-paels_tooth"><img alt="Dent de Paël" loading="lazy" src="../../bible/images/relics/paels_tooth.webp" /> Dent de Paël (<code>PAELS_TOOTH</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Retirez 5 cartes de votre <strong>Deck</strong>. Après chaque combat, récupérez-en 1 aléatoirement ; elle est <strong>Améliorée</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h2 id="dialogues-repliques">💬 Dialogues &amp; Répliques</h2>
+<p>Les dialogues s'affichent dans la boîte de dialogue inférieure (240x40 px) sur la GBA avec défilement fluide au bouton <code>A</code> :</p>
+<h3 id="premiere-rencontre-toutes-runs-confondues">🗣️ Première Rencontre (Toutes runs confondues)</h3>
+<ul>
+<li>👑 <strong>Ancien</strong> :<blockquote>
+<p>Une marionnette est arrivée ?<br />
+Pouvez-vous aller voir si Père va bien ? Je suis trop fatigué...</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="soldat-de-fer-ironclad">🗣️ Soldat de Fer (Ironclad)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Tant de rage... Croyez-moi, rechercher la paix vous fera grand bien.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Vous souvenez-vous ce que cela fait de rêver ?<br />
+Il est bon de dormir...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Vous devez apaiser votre feu intérieur.<br />
+Père peut vous libérer...</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-silencieuse-silent">🗣️ La Silencieuse (Silent)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Créature de meurtre, nul besoin de votre violence ici.<br />
+Prenez une partie de mon corps et trouvez la paix...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>En quête de trophées ? Bien sûr, prenez donc une partie de mon corps...<br />
+Si cela peut vous réconforter...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Vous m'avez empoisonné... ?<br />
+Qu'est-ce que... ? zZZzz...</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-defectueux-defect">🗣️ Le Défectueux (Defect)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Petit automate, toujours à la recherche de votre ami...<br />
+Laissez-moi vous aider.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Les automates rêvent-ils ?<br />
+Observez-moi et essayez de m'imiter...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>J'ai rêvé de vous, mon ami...<br />
+Père peut rétablir l'Erroné...</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-regent-regent">🗣️ Le Régent (Regent)</h3>
+<ul>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Salutations ! Je suis le Régent.<br />
+Bonjour ?? ALLÔ !?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Cessez ce vacarme.<br />
+Prenez une partie de mon corps et poursuivez votre chemin...</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Je suis de retour ! Ah, évidemment, vous êtes en train de dormir.<br />
+Voyons voir...</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Pourquoi donnez-vous des morceaux de votre chair ?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Pourquoi ne pas partager ce dont j'abonde ?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Lorsque vous reviendrez, je serai entièrement renouvelé.<br />
+C'est l'aubaine du sommeil...</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-necrolieuse-necrobinder">🗣️ La Nécrolieuse (Necrobinder)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Votre cœur est noyé par tant de malveillance.</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p>Le vôtre le serait aussi si vous connaissiez ma peine.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Il n'y a aucune paix sur votre chemin.<br />
+Prenez une partie de mon corps avec vous. Il rendra votre fardeau plus supportable...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Vous et la Main êtes de retour ?<br />
+Que de souvenirs douloureux. Prenez ma force et partez...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Tuer Père ne vous apportera pas la paix.</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p>Cette chose est votre père !?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Personne ne choisit sa famille..</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="generique-tout-personnage">🗣️ Générique (Tout Personnage)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Heureux de vous revoir, mon ami. Prenez un peu de ma chair pour vous aider...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p><em>Paël est endormi. Ses ronflements font trembler la pièce.</em></p>
+</blockquote>
+</li>
+</ul>
+<hr />
+<p>⬅️ <a href="livrets.html">Retour au Sommaire de la Bible</a> | ⚙️ <a href="spec_technique_gba.html">Spécifications Techniques GBA</a></p></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

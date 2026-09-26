@@ -104,3 +104,12 @@ slay_the_gba/
 * [Tonc: GBA Programming Guide](https://www.coranac.com/tonc/text/) by J Vijn
 * [Butano C++ Engine](https://github.com/GValiente/butano) by Gustavo Valiente
 * Original game design & mechanics by Mega Crit Games (*Slay the Spire*)
+
+## 🌐 Website
+
+A static fan site (landing page, one page per cartridge with every card, bestiary, relics, potions,
+events, ancients and the full design bible) is generated into `site/`:
+
+```bash
+uv run scripts/build_site.py   # then open site/index.html
+```

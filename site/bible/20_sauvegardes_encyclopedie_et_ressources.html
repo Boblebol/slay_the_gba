@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tome 20 — Profils de Sauvegarde, Autosave, Encyclopédies &amp; Ressources des Personnages — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html" class="on">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><p class="crumb"><a href="index.html">◄ Bible</a></p><div class="md"><h1 id="tome-20-profils-de-sauvegarde-autosave-encyclopedies-ressources-des-personnages">💾 Tome 20 — Profils de Sauvegarde, Autosave, Encyclopédies &amp; Ressources des Personnages</h1>
+<blockquote>
+<p><strong>Référence de conception et d'implémentation pour le moteur <code>slay_the_gba</code></strong><br />
+<strong>Composants C++ associés :</strong> <a href="../../include/engine/save_system.h"><code>include/engine/save_system.h</code></a>, <a href="../../src/engine/save_system.cpp"><code>src/engine/save_system.cpp</code></a>, <a href="../../include/engine/shop.h"><code>include/engine/shop.h</code></a>, <a href="../../src/engine/shop.cpp"><code>src/engine/shop.cpp</code></a>, <a href="../../include/engine/title_menu.h"><code>include/engine/title_menu.h</code></a>, <a href="../../src/engine/title_menu.cpp"><code>src/engine/title_menu.cpp</code></a></p>
+</blockquote>
+<hr />
+<h2 id="1-les-3-profils-de-sauvegarde-sauvegarde-automatique-autosave">1. 💾 Les 3 Profils de Sauvegarde &amp; Sauvegarde Automatique (<em>Autosave</em>)</h2>
+<p>Sur Game Boy Advance, la mémoire SRAM (statique) de 32 Ko est allouée pour gérer <strong>3 profils de joueurs indépendants</strong> avec sauvegarde automatique transparente.</p>
+<pre><code class="language-mermaid">flowchart TD
+    Boot([&quot;Allumage GBA / Reset&quot;]) --&gt; HeaderCheck{&quot;Vérification SRAM\nHeader 'STSGBA1'&quot;}
+    HeaderCheck --&gt;|Invalide / Nouveau| InitDefault[&quot;Initialisation des 3 Profils par défaut&quot;]
+    HeaderCheck --&gt;|Valide| LoadSRAM[&quot;Chargement des 3 Profils depuis la SRAM&quot;]
+
+    InitDefault --&gt; TitleScreen[&quot;Écran Titre : Appuyez sur START ou A&quot;]
+    LoadSRAM --&gt; TitleScreen
+
+    TitleScreen --&gt; ProfileSelect[&quot;Choix du Profil (1, 2 ou 3)\nAffichage : Nom, Temps de jeu, Victoires, Ascension max&quot;]
+    ProfileSelect --&gt; MainMenu[&quot;Menu Principal : Continuer / Nouvelle Tentative / Encyclopédie / Stats&quot;]
+
+    subgraph RunAutosave [&quot;Système d'Autosave en cours de partie&quot;]
+        RoomEnter[&quot;Entrée de Salle&quot;] --&gt; AutosaveCheck[&quot;Checkpoint Autosave SRAM&quot;]
+        CombatWin[&quot;Fin de Combat&quot;] --&gt; AutosaveCheck
+        ShopPurchase[&quot;Achat Boutique / Retrait&quot;] --&gt; AutosaveCheck
+        CampfireAction[&quot;Repos ou Forge '+'&quot;] --&gt; AutosaveCheck
+        ActTransition[&quot;Transition d'Acte&quot;] --&gt; AutosaveCheck
+    end
+</code></pre>
+<h3 id="donnees-sauvegardees-par-profil-saveprofile">Données Sauvegardées par Profil (<code>SaveProfile</code>)</h3>
+<ul>
+<li><strong>Nom &amp; Métadonnées</strong> : Nom du profil (16 caractères), temps de jeu en secondes, total de tentatives et total de victoires.</li>
+<li><strong>Ascension Maximale Débloquée</strong> : Paliers 0 à 10 enregistrés séparément pour les 5 personnages (<em>Ironclad, Silent, Defect, Regent, Necrobinder</em>).</li>
+<li><strong>Brouillard de l'Encyclopédie (Bitsets compacts)</strong> :</li>
+<li><code>discovered_cards</code> : 569 cartes (72 octets)</li>
+<li><code>discovered_relics</code> : 298 reliques (38 octets)</li>
+<li><code>discovered_monsters</code> : 112 monstres (14 octets)</li>
+<li><code>discovered_potions</code> : 63 potions (8 octets)</li>
+<li><code>discovered_ancients</code> : 8 anciens (1 octet)</li>
+<li><strong>Tentative Active (<em>InRunSaveData</em>)</strong> :</li>
+<li>Enregistre l'état exact : PV actuels, PV max, Or, Niveau d'Ascension, Acte (1-3), Étage (1-16), Nœud de carte actuel, Graine procédurale (Seed), Phase de jeu (<code>RunPhase</code>).</li>
+<li>Composition exhaustive du Master Deck (avec flag d'amélioration <code>+</code> pour chaque carte).</li>
+<li>Liste des reliques possédées, potions en poche et nombre de retraits de cartes effectués au marchand.</li>
+</ul>
+<hr />
+<h2 id="2-lencyclopedie-evolutive-compendium-codex">2. 📖 L'Encyclopédie Évolutive (Compendium &amp; Codex)</h2>
+<p>L'Encyclopédie de la Tour se dévoile au fur et à mesure des découvertes du joueur dans ses tentatives :</p>
+<pre><code class="language-mermaid">flowchart LR
+    Item[&quot;Élément du jeu\n(Carte, Relique, Monstre, Potion, Ancien)&quot;] --&gt; CheckDiscovered{&quot;Déjà découvert dans le profil ?&quot;}
+    CheckDiscovered --&gt;|Non| Locked[&quot;Affichage Masqué :\n'??? (Non découvert)'\nIcône Cadenas 🔒&quot;]
+    CheckDiscovered --&gt;|Oui| Unlocked[&quot;Fiche Débloquée :\nNom réel, Rareté, Illustration,\nStatistiques &amp; Effets complets 📖&quot;]
+</code></pre>
+<h3 id="statistiques-de-decouverte-suivies">Statistiques de Découverte Suivies</h3>
+<ol>
+<li><strong>Codex des Cartes</strong> : Suivi des 569 cartes du jeu (Communes, Peu communes, Rares, Incolores, Malédictions).</li>
+<li><strong>Codex des Reliques</strong> : Suivi des 298 reliques (Départ, Boss, Boutique, Événement, Anciens).</li>
+<li><strong>Bestiaire des Monstres</strong> : Suivi des 112 monstres et boss de la Tour.</li>
+<li><strong>Alchimie des Potions</strong> : Suivi des 63 potions.</li>
+<li><strong>Tome des Anciens</strong> : Suivi des 8 Anciens rencontrés (Neow, Darv, Orobas, Paël, Tezcatara, Nonupeipée, Tanx, Vakuu).</li>
+</ol>
+<hr />
+<h2 id="3-le-marchand-de-la-tour-leconomie-des-pieces-dor-shopinventory">3. 💰 Le Marchand de la Tour &amp; L'Économie des Pièces d'Or (<code>ShopInventory</code>)</h2>
+<p>Dans les salles de type <code>SHOP</code>, le joueur peut dépenser l'or accumulé lors des combats et des coffres :</p>
+<table>
+<thead>
+<tr>
+<th>Rayon de la Boutique</th>
+<th>Contenu &amp; Rareté</th>
+<th style="text-align: center;">Prix Indicatif</th>
+<th>Action Possible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cartes en Vente</strong></td>
+<td>3 cartes exclusives au personnage (dont des versions déjà améliorées <code>+</code>).</td>
+<td style="text-align: center;"><strong>50 à 150 Or</strong></td>
+<td>Ajout direct au Master Deck du joueur.</td>
+</tr>
+<tr>
+<td><strong>Reliques Précieuses</strong></td>
+<td>2 reliques (Communes à Rares, ex: Vajra, Ancre).</td>
+<td style="text-align: center;"><strong>150 à 250 Or</strong></td>
+<td>Attribution instantanée au profil de reliques actives.</td>
+</tr>
+<tr>
+<td><strong>Fioles d'Alchimie</strong></td>
+<td>2 potions consommables (ex: Fiole de feu, Potion de blocage).</td>
+<td style="text-align: center;"><strong>50 Or</strong></td>
+<td>Remplissage d'un emplacement de potion libre.</td>
+</tr>
+<tr>
+<td><strong>Service de Retrait</strong> (<em>Card Removal</em>)</td>
+<td>Suppression définitive d'une carte choisie dans le Master Deck.</td>
+<td style="text-align: center;"><strong>75 Or de base</strong> (+25 Or par utilisation ultérieure)</td>
+<td>Épure le deck en éliminant les cartes de base (<em>Frappe</em>, <em>Défense</em> ou Malédictions).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-les-feux-de-camp-lamelioration-de-cartes">4. 🔥 Les Feux de Camp &amp; L'Amélioration de Cartes (<code>+</code>)</h2>
+<p>Dans les salles <code>REST_SITE</code> (dont l'Étage 14 avant le Boss), le joueur dispose d'un dilemme tactique fondamental :</p>
+<pre><code class="language-mermaid">flowchart TD
+    Campfire[&quot;🔥 Écran du Feu de Camp&quot;] --&gt; Choice{&quot;Choix d'Action&quot;}
+    Choice --&gt;|💤 Se Reposer| RestAction[&quot;Guérison : Récupère 30% des PV Max\n(Verrouillé si PV == PV Max)&quot;]
+    Choice --&gt;|🔨 Forger / Améliorer| SmithAction[&quot;Choix d'une carte non améliorée du Master Deck\nTransformation irréversible en version '+'&quot;]
+    RestAction --&gt; ResumeMap[&quot;Retour à la Carte &amp; Autosave&quot;]
+    SmithAction --&gt; ResumeMap
+</code></pre>
+<h3 id="exemples-dameliorations-de-cartes">Exemples d'Améliorations de Cartes (<code>+</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Carte de Base</th>
+<th>Effet Standard (1E)</th>
+<th>Version Améliorée (<code>+</code>)</th>
+<th>Gain Tactique</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Frappe</strong> (<em>Strike</em>)</td>
+<td>Inflige 6 dégâts.</td>
+<td><strong>Frappe+</strong> : Inflige <strong>9 dégâts</strong>.</td>
+<td>+50% de puissance offensive brute.</td>
+</tr>
+<tr>
+<td><strong>Défense</strong> (<em>Defend</em>)</td>
+<td>Confère 5 d'armure.</td>
+<td><strong>Défense+</strong> : Confère <strong>8 d'armure</strong>.</td>
+<td>+60% de capacité d'absorption.</td>
+</tr>
+<tr>
+<td><strong>Fracassement</strong> (<em>Bash</em>) (2E)</td>
+<td>8 dégâts, 2 Vulnérable.</td>
+<td><strong>Fracassement+</strong> : <strong>10 dégâts, 3 Vulnérable</strong>.</td>
+<td>Prolonge le debuff d'un tour critique.</td>
+</tr>
+<tr>
+<td><strong>Vague de fer</strong> (<em>Iron Wave</em>)</td>
+<td>5 dégâts, 5 armure.</td>
+<td><strong>Vague de fer+</strong> : <strong>7 dégâts, 7 armure</strong>.</td>
+<td>Ratio coût/efficacité excellent.</td>
+</tr>
+<tr>
+<td><strong>Éclair</strong> (<em>Zap</em>)</td>
+<td>Coût 1E. Canalise 1 Foudre.</td>
+<td><strong>Éclair+</strong> : <strong>Coût 0E</strong>. Canalise 1 Foudre.</td>
+<td>Canalisation gratuite chaque cycle.</td>
+</tr>
+<tr>
+<td><strong>Double distribution</strong> (<em>Dualcast</em>)</td>
+<td>Coût 1E. Évoque l'orbe 2 fois.</td>
+<td><strong>Double distribution+</strong> : <strong>Coût 0E</strong>.</td>
+<td>Évocation dévastatrice sans coût d'énergie.</td>
+</tr>
+<tr>
+<td><strong>Neutralisation</strong> (<em>Neutralize</em>)</td>
+<td>3 dégâts, 1 Affaibli (0E).</td>
+<td><strong>Neutralisation+</strong> : <strong>4 dégâts, 2 Affaibli (0E)</strong>.</td>
+<td>Neutralise les attaques ennemies 2 tours durant.</td>
+</tr>
+<tr>
+<td><strong>Armure métallique</strong> (<em>Metallicize</em>)</td>
+<td>Pouvoir (1E) : +3 armure/tour.</td>
+<td><strong>Armure métallique+</strong> : <strong>+4 armure/tour</strong>.</td>
+<td>Rempart défensif passif cumulable.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-ressources-specifiques-des-5-personnages-modificateurs-de-combat">5. ⚡ Ressources Spécifiques des 5 Personnages &amp; Modificateurs de Combat</h2>
+<p>Chaque personnage possède des mécaniques exclusives fidèlement reproduites dans le moteur :</p>
+<pre><code class="language-mermaid">flowchart TD
+    subgraph P1 [&quot;🔴 Soldat de Fer / Ironclad&quot;]
+        IC_R[&quot;Force brute &amp; Armure Métallique&quot;]
+        IC_E[&quot;Épuisement de cartes &amp; Auto-sacrifice de PV&quot;]
+    end
+    subgraph P2 [&quot;🟢 La Silencieuse / Silent&quot;]
+        SI_P[&quot;Poison : Dégâts directs ignorant l'Armure&quot;]
+        SI_S[&quot;Surins (Shivs) : Attaques à 0E éphémères&quot;]
+    end
+    subgraph P3 [&quot;🔵 Le Défectueux / Defect&quot;]
+        DE_O[&quot;3 Emplacements d'Orbes (Foudre, Glace, Obscurité, Plasma)&quot;]
+        DE_E[&quot;Passifs de fin de tour &amp; Évocation (Evoke / Dualcast)&quot;]
+    end
+    subgraph P4 [&quot;👑 Le Régent / Regent&quot;]
+        RE_S[&quot;Étoiles Souveraines (0 à 5)&quot;]
+        RE_B[&quot;Bonus cumulatif d'attaque et de défense royale&quot;]
+    end
+    subgraph P5 [&quot;💀 La Nécrolieuse / Necrobinder&quot;]
+        NE_S[&quot;Âmes (0 à 99)&quot;]
+        NE_M[&quot;Invocation d'Osty (Minion protecteur qui intercepte les dégâts)&quot;]
+    end
+</code></pre>
+<h3 id="1-soldat-de-fer-ironclad">1. 🔴 Soldat de Fer (<em>Ironclad</em>)</h3>
+<ul>
+<li><strong>Force</strong> (<em>Strength</em>) : Ajoute <code>+X</code> dégâts fixes à chaque frappe d'attaque.</li>
+<li><strong>Armure Métallique</strong> (<em>Metallicize</em>) : Déclenche automatiquement <code>+X</code> d'armure au début ou à la fin de chaque tour.</li>
+<li><strong>Sang ardent</strong> (<em>Burning Blood</em>) : Récupère <strong>+6 PV</strong> à la conclusion victorieuse de chaque combat.</li>
+</ul>
+<h3 id="2-la-silencieuse-silent">2. 🟢 La Silencieuse (<em>Silent</em>)</h3>
+<ul>
+<li><strong>Poison</strong> : Statut infligeant des dégâts directs aux Points de Vie (ignore le block). À chaque fin de tour ennemi, l'ennemi subit <code>X</code> dégâts et le compteur de poison diminue de 1.</li>
+<li><strong>Affaibli</strong> (<em>Weak</em>) : Réduit les attaques ennemies de 25%.</li>
+<li><strong>Surins</strong> (<em>Shivs</em>) : Cartes d'attaque à 0 Énergie infligeant 4 dégâts puis s'épuisant.</li>
+</ul>
+<h3 id="3-le-defectueux-defect">3. 🔵 Le Défectueux (<em>Defect</em>)</h3>
+<ul>
+<li><strong>3 Emplacements d'Orbes</strong> :</li>
+<li>⚡ <strong>Foudre</strong> (<em>Lightning</em>) : Passif = 3 dégâts aléatoires / Évocation = 8 dégâts ciblés.</li>
+<li>❄️ <strong>Glace</strong> (<em>Frost</em>) : Passif = 2 armure / Évocation = 5 armure instantanée.</li>
+<li>🌑 <strong>Obscurité</strong> (<em>Dark</em>) : Passif = accumule +6 dégâts par tour / Évocation = décharge la totalité des dégâts accumulés.</li>
+<li>🔮 <strong>Plasma</strong> : Passif = +1 Énergie par tour / Évocation = +2 Énergie immédiate.</li>
+<li><strong>Canalisation &amp; Évocation automatique</strong> : Lorsque les 3 slots sont pleins, canaliser un nouvel orbe évoque immédiatement l'orbe le plus ancien (<em>First In, First Out</em>).</li>
+</ul>
+<h3 id="4-le-regent-regent">4. 👑 Le Régent (<em>Regent</em>)</h3>
+<ul>
+<li><strong>Étoiles Souveraines</strong> (<em>Sovereign Stars</em>, 0 à 5 étoiles) :</li>
+<li>Générées par des compétences royales (<em>Étoile filante</em>, <em>Vénération</em>).</li>
+<li>Chaque étoile active ajoute <code>+1</code> dégât à toutes les attaques et <code>+1</code> armure aux compétences.</li>
+</ul>
+<h3 id="5-la-necrolieuse-necrobinder">5. 💀 La Nécrolieuse (<em>Necrobinder</em>)</h3>
+<ul>
+<li><strong>Âmes</strong> (<em>Souls</em>, 0 à 99) : Jauge récoltée lors des blessures infligées aux ennemis.</li>
+<li><strong>Familier Minion (Osty)</strong> :</li>
+<li>Possède ses propres PV et son propre blocage (<code>minion_hp</code>, <code>minion_block</code>).</li>
+<li><strong>Interception des dégâts</strong> : Lorsque l'héroïne subit une attaque, Osty encaisse les coups en premier, protégeant les PV de la Nécrolieuse.</li>
+<li><strong>Riposte automatique</strong> : Osty inflige 3 dégâts à l'ennemi à chaque fin de tour du joueur.</li>
+</ul>
+<hr />
+<h2 id="6-arborescence-de-lecran-titre-menus-gba-titlemenumanager">6. 🎮 Arborescence de l'Écran Titre &amp; Menus GBA (<code>TitleMenuManager</code>)</h2>
+<pre><code class="language-mermaid">stateDiagram-v2
+    [*] --&gt; TITLE_SCREEN: Démarrage
+    TITLE_SCREEN --&gt; PROFILE_SELECT: START ou A
+
+    state PROFILE_SELECT {
+        [*] --&gt; Slot1
+        Slot1 --&gt; Slot2: D-Pad Bas
+        Slot2 --&gt; Slot3: D-Pad Bas
+    }
+
+    PROFILE_SELECT --&gt; MAIN_MENU: Sélection du Profil
+
+    state MAIN_MENU {
+        Continuer --&gt; IN_RUN: Si run active
+        Nouvelle_Tentative --&gt; CHARACTER_SELECT
+        Encyclopedie --&gt; COMPENDIUM_MENU
+        Statistiques --&gt; STATS_VIEW
+        Changer_Profil --&gt; PROFILE_SELECT
+    }
+
+    state CHARACTER_SELECT {
+        Ironclad --&gt; ASCENSION_SELECT
+        Silent --&gt; ASCENSION_SELECT
+        Defect --&gt; ASCENSION_SELECT
+        Regent --&gt; ASCENSION_SELECT
+        Necrobinder --&gt; ASCENSION_SELECT
+    }
+
+    ASCENSION_SELECT --&gt; IN_RUN: Choix Niveau (0 à Max débloqué)
+
+    state COMPENDIUM_MENU {
+        Cartes --&gt; CODEX_CARDS
+        Reliques --&gt; CODEX_RELICS
+        Monstres --&gt; CODEX_MONSTERS
+        Potions --&gt; CODEX_POTIONS
+        Anciens --&gt; CODEX_ANCIENTS
+    }
+
+    IN_RUN --&gt; MAIN_MENU: Victoire ou Défaite (Autosave purgée)
+</code></pre>
+<hr />
+<p><em>Tome 20 rédigé pour le projet Slay The GBA — Version patch v0.111.0 Beta.</em></p></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orobas — Arc-en-ciel Vivant — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html" class="on">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><p class="crumb"><a href="index.html">◄ Bible</a></p><div class="md"><h1 id="orobas-arc-en-ciel-vivant">Orobas — Arc-en-ciel Vivant</h1>
+<blockquote>
+<p><strong>Patch de Référence :</strong> <code>v0.111.0 Beta</code> (Dernier patch officiel)
+<strong>Acte d'apparition :</strong> Acte 2
+<strong>Déblocage (Epoch) :</strong> <code>OrobasEpoch</code>
+<strong>Thème Visuel / Couleur :</strong> <code>#5C5F7A</code></p>
+</blockquote>
+<h2 id="portraits-illustrations">🎨 Portraits &amp; Illustrations</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Icône Ancien</th>
+<th style="text-align: center;">Illustration Principale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img alt="Orobas" loading="lazy" src="../../bible/images/ancients/icon/orobas.webp" /></td>
+<td style="text-align: center;"><img alt="Orobas Art" loading="lazy" src="../../bible/images/ancients/art/orobas.webp" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="integration-visuelle-gba-butano">🎮 Intégration Visuelle GBA (Butano)</h3>
+<ul>
+<li><strong>Palette suggérée pour la GBA :</strong> Teinte dominante <code>#5C5F7A</code>. À mapper sur une palette 16 couleurs (15 couleurs + transparent) pour le BG de portrait.</li>
+<li><strong>Dimensions portrait GBA :</strong> 64x64 pixels (mode 4 bpp tilemap) positionné à <code>(X: 16, Y: 24)</code> sur l'écran 240x160.</li>
+<li><strong>Couleur des boutons / encadrements UI :</strong> <code>rgba(13, 0, 26, 0.35)</code> converti en code couleur GBA 15-bit BGR555.</li>
+</ul>
+<h2 id="role-lore-dans-lascension">📜 Rôle &amp; Lore dans l'Ascension</h2>
+<h2 id="regles-des-slots-choix">🎲 Règles des Slots &amp; Choix</h2>
+<ul>
+<li><strong>Nombre total d'options :</strong> 10 reliques disponibles.</li>
+<li><strong>Structure des tirages :</strong> 3 slot(s).</li>
+<li><strong>Slot #1</strong> : <strong>1</strong> choix parmi <strong>4</strong> reliques présentées.</li>
+<li><strong>Slot #2</strong> : <strong>1</strong> choix parmi <strong>4</strong> reliques présentées.</li>
+<li><strong>Slot #3</strong> : <strong>1</strong> choix parmi <strong>2</strong> reliques présentées.</li>
+</ul>
+<h2 id="catalogue-complet-des-reliques-classees-par-tier">🏆 Catalogue Complet des Reliques (Classées par Tier)</h2>
+<h3 id="tier-s-2-reliques">⭐ Tier S (2 reliques)</h3>
+<h4 id="caisse-dalchimie-alchemical_coffer"><img alt="Caisse d'alchimie" loading="lazy" src="../../bible/images/relics/alchemical_coffer.webp" /> Caisse d'alchimie (<code>ALCHEMICAL_COFFER</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Gagnez 4 emplacements de potion avec des <strong>Potions</strong> aléatoires.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Gestion Potion :</strong> Ajoute une potion à l'inventaire <code>PotionInventory</code> ou modifie le nombre d'emplacements.</li>
+</ul>
+<h4 id="perle-radieuse-radiant_pearl"><img alt="Perle radieuse" loading="lazy" src="../../bible/images/relics/radiant_pearl.webp" /> Perle radieuse (<code>RADIANT_PEARL</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Au début de chaque combat, ajoutez 1 <strong>Luminescence</strong> à votre <strong>Main</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Éclat</code> (LUMINESCE) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Éclat" loading="lazy" src="../../bible/images/cards/token/luminesce.webp" /> <strong>Éclat</strong> (<code>LUMINESCE</code>) — <em>Compétence</em> (Coût : <code>0</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> <strong>Retenue</strong>.
+Gagnez ⚡2⚡.
+<strong>Épuisement</strong>.</li>
+<li><strong>Effet amélioré :</strong> <strong>Retenue</strong>.
+Gagnez ⚡3⚡.
+<strong>Épuisement</strong>.</li>
+<li><strong>Amélioration :</strong> <code>energygain: +1</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="tier-a-2-reliques">⭐ Tier A (2 reliques)</h3>
+<h4 id="bois-flotte-driftwood"><img alt="Bois flotté" loading="lazy" src="../../bible/images/relics/driftwood.webp" /> Bois flotté (<code>DRIFTWOOD</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Vous disposez d'une relance gratuite pour chaque récompense de carte.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="dent-archaique-archaic_tooth"><img alt="Dent archaïque" loading="lazy" src="../../bible/images/relics/archaic_tooth.webp" /> Dent archaïque (<code>ARCHAIC_TOOTH</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> <strong>Transformez</strong> une carte de base en sa version d'Ancien.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Briser</code> (BREAK), <code>Répression</code> (SUPPRESS), <code>Protecteur</code> (PROTECTOR), <code>Pluie de météores</code> (METEOR_SHOWER), <code>Activation quadruple</code> (QUADCAST) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Briser" loading="lazy" src="../../bible/images/cards/ironclad/break.webp" /> <strong>Briser</strong> (<code>BREAK</code>) — <em>Attaque</em> (Coût : <code>1</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> Infligez 20 dégâts.
+Appliquez <strong>Vulnérable</strong> (5).</li>
+<li><strong>Effet amélioré :</strong> Infligez 30 dégâts.
+Appliquez <strong>Vulnérable</strong> (7).</li>
+<li><strong>Amélioration :</strong> <code>damage: +10, vulnerable: +2</code></li>
+</ul>
+</li>
+<li><img alt="Répression" loading="lazy" src="../../bible/images/cards/silent/suppress.webp" /> <strong>Répression</strong> (<code>SUPPRESS</code>) — <em>Attaque</em> (Coût : <code>0</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> <strong>Inné</strong>.
+Infligez 11 dégâts.
+Appliquez <strong>Affaibli</strong> (3).</li>
+<li><strong>Effet amélioré :</strong> <strong>Inné</strong>.
+Infligez 17 dégâts.
+Appliquez <strong>Affaibli</strong> (5).</li>
+<li><strong>Amélioration :</strong> <code>damage: +6, weak: +2</code></li>
+</ul>
+</li>
+<li><img alt="Protecteur" loading="lazy" src="../../bible/images/cards/necrobinder/protector.webp" /> <strong>Protecteur</strong> (<code>PROTECTOR</code>) — <em>Attaque</em> (Coût : <code>1</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> <strong>Titos</strong> inflige 10 dégâts.
+Inflige un montant de dégâts supplémentaires égal aux <strong>PV Max</strong> <strong>de Titos</strong>.</li>
+<li><strong>Effet amélioré :</strong> <strong>Titos</strong> inflige 15 dégâts.
+Inflige un montant de dégâts supplémentaires égal aux <strong>PV Max</strong> <strong>de Titos</strong>.</li>
+<li><strong>Amélioration :</strong> <code>calculationbase: +5, energy: -1</code></li>
+</ul>
+</li>
+<li><img alt="Pluie de météores" loading="lazy" src="../../bible/images/cards/regent/meteor_shower.webp" /> <strong>Pluie de météores</strong> (<code>METEOR_SHOWER</code>) — <em>Attaque</em> (Coût : <code>0</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> Infligez 14 dégâts à TOUS les ennemis.
+Appliquez <strong>Affaibli</strong> (2) et <strong>Vulnérable</strong> à TOUS les ennemis.</li>
+<li><strong>Effet amélioré :</strong> Infligez 21 dégâts à TOUS les ennemis.
+Appliquez <strong>Affaibli</strong> (2) et <strong>Vulnérable</strong> à TOUS les ennemis.</li>
+<li><strong>Amélioration :</strong> <code>damage: +7</code></li>
+</ul>
+</li>
+<li><img alt="Activation quadruple" loading="lazy" src="../../bible/images/cards/defect/quadcast.webp" /> <strong>Activation quadruple</strong> (<code>QUADCAST</code>) — <em>Compétence</em> (Coût : <code>1</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> <strong>Activez</strong> votre Orbe le plus à droite 4 fois.</li>
+<li><strong>Effet amélioré :</strong> <strong>Activez</strong> votre Orbe le plus à droite 4 fois.</li>
+<li><strong>Amélioration :</strong> <code>energy: -1</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="tier-b-2-reliques">⭐ Tier B (2 reliques)</h3>
+<h4 id="crevaite-electrique-electric_shrymp"><img alt="Crevaite électrique" loading="lazy" src="../../bible/images/relics/electric_shrymp.webp" /> Crevaite électrique (<code>ELECTRIC_SHRYMP</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> <strong>Envoûtez</strong> une Compétence avec Imprégné.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="joyau-prismatique-prismatic_gem"><img alt="Joyau prismatique" loading="lazy" src="../../bible/images/relics/prismatic_gem.webp" /> Joyau prismatique (<code>PRISMATIC_GEM</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Gagnez ⚡1⚡ au début de chaque tour. Les récompenses de carte contiennent désormais des cartes d'autres couleurs.</li>
+<li><strong>Choix Alternatif (Either/Or) :</strong> <code>Verre marin</code></li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-c-2-reliques">⭐ Tier C (2 reliques)</h3>
+<h4 id="il-de-verre-glass_eye"><img alt="Œil de verre" loading="lazy" src="../../bible/images/relics/glass_eye.webp" /> Œil de verre (<code>GLASS_EYE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Lorsque vous obtenez cette relique, obtenez 2 cartes <strong>Communes</strong>, 2 cartes <strong>Inhabituelles</strong>, et 1 carte <strong>Rare</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="toucher-dorobas-touch_of_orobas"><img alt="Toucher d'Orobas" loading="lazy" src="../../bible/images/relics/touch_of_orobas.webp" /> Toucher d'Orobas (<code>TOUCH_OF_OROBAS</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Remplacez votre <strong>Relique</strong> de départ par une version <strong>Améliorée</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-d-2-reliques">⭐ Tier D (2 reliques)</h3>
+<h4 id="verre-marin-sea_glass"><img alt="Verre marin" loading="lazy" src="../../bible/images/relics/sea_glass.webp" /> Verre marin (<code>SEA_GLASS</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Consultez une sélection de 15 cartes d'un autre personnage. Ajoutez-en autant que vous souhaitez à votre <strong>Deck</strong>.</li>
+<li><strong>Choix Alternatif (Either/Or) :</strong> <code>Joyau prismatique</code></li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="chateau-de-sable-sand_castle"><img alt="Château de sable" loading="lazy" src="../../bible/images/relics/sand_castle.webp" /> Château de sable (<code>SAND_CASTLE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Lorsque vous obtenez cette relique, <strong>Améliorez</strong> 6 cartes aléatoires.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h2 id="dialogues-repliques">💬 Dialogues &amp; Répliques</h2>
+<p>Les dialogues s'affichent dans la boîte de dialogue inférieure (240x40 px) sur la GBA avec défilement fluide au bouton <code>A</code> :</p>
+<h3 id="premiere-rencontre-toutes-runs-confondues">🗣️ Première Rencontre (Toutes runs confondues)</h3>
+<ul>
+<li>👑 <strong>Ancien</strong> :<blockquote>
+<p>Petite marionnette !! Ici ?! Prends ça, prends ça !</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="soldat-de-fer-ironclad">🗣️ Soldat de Fer (Ironclad)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Un Soldat de Fer !? Comment possible ?? Peur. Très peur !!</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Contrat signé ? Pourquoi ?! Mauvais choix ? Oui. Grosse erreur !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Te souhaite liberté !! Souhaite fort !<br />
+Vakuu méchant. Très méchant ! Architecte te libère ?</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-silencieuse-silent">🗣️ La Silencieuse (Silent)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Infection... ? FLÉAU !? Prends et va-t-en !!</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>SILENT</strong> :</p>
+<blockquote>
+<p>...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Pas contagieuse ? Très mourante ? Architecte va t'aider ?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Où tes sœurs ? Sœurs méchantes !!<br />
+Sois bonne personne ! Pas comme sœurs !!</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-defectueux-defect">🗣️ Le Défectueux (Defect)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Quoi ! Serviteur assemblage ?! Encore en service !!<br />
+Pourquoi ici ? Pourquoi pas à l'usine ??</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Orbes brillants ! Marchent comment ?<br />
+Aïe !!</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Cœur abîmé ? Neow utiliser assemblage cassé ?<br />
+Manipulée ?</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>DEFECT</strong> :</p>
+<blockquote>
+<p><em><bips sourds></em></p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Architecte réparer toi ?</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-regent-regent">🗣️ Le Régent (Regent)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Voyageur ! De l'espace !? Où dans l'espace ?<br />
+Comment depuis l'espace ? Tête pointue ! Petits copains !!</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p><em>Le Régent se lance dans un monologue qui dure plusieurs heures.</em></p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Super ! Impressionnant !! Encore ! Encore !!!</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Encore des histoires ! Trouvé ça pour toi !<br />
+Maintenant encore des histoires !!</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Mon plus grand fan ! Orobas, cher ami !<br />
+Heureux de te voir encore en vie !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Histoires ?!</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Bien sûr bien sûr... mais as-tu trouvé quelques breloques pour moi ?</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-necrolieuse-necrobinder">🗣️ La Nécrolieuse (Necrobinder)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Morte ?! Pas morte ! Pourquoi marionnette ? Grosse main !!</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p>Je ne suis pas une marionnette. J'ai un homme à tuer.<br />
+Que pouvez-vous faire pour moi ?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Tuer pas bien !! Prends ça à la place !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Pas morte ! Jolis cadeaux pour toi !! Violence pas bien.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Pas violence ! Collecter trucs brillants à la place... Brillants !!</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p>Ma quête ne prendra fin que lorsque l'Architecte ne sera plus.<br />
+La violence est inévitable.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Architecte pas méchant ! Discuter ensemble ? Discuter bien !! Très bien !</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="generique-tout-personnage">🗣️ Générique (Tout Personnage)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Essaie ça !!!</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Essaie ça !!!</p>
+</blockquote>
+</li>
+</ul>
+<hr />
+<p>⬅️ <a href="livrets.html">Retour au Sommaire de la Bible</a> | ⚙️ <a href="spec_technique_gba.html">Spécifications Techniques GBA</a></p></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

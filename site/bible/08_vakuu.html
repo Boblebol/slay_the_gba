@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vakuu — Le Premier Démon — Slay the GBA</title>
+<meta name="description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Accueil</a><a href="../heros.html">Héros</a><a href="../cartes.html">Cartes</a><a href="../bestiaire.html">Bestiaire</a><a href="../reliques.html">Reliques</a><a href="../potions.html">Potions</a><a href="../evenements.html">Évènements</a><a href="../anciens.html">Anciens</a><a href="../guide.html">Guide</a><a href="../bible/index.html" class="on">Bible</a></nav>
+</header>
+<main>
+<section class="panel "><p class="crumb"><a href="index.html">◄ Bible</a></p><div class="md"><h1 id="vakuu-le-premier-demon">Vakuu — Le Premier Démon</h1>
+<blockquote>
+<p><strong>Patch de Référence :</strong> <code>v0.111.0 Beta</code> (Dernier patch officiel)
+<strong>Acte d'apparition :</strong> Acte 3
+<strong>Déblocage (Epoch) :</strong> <code>None</code>
+<strong>Thème Visuel / Couleur :</strong> <code>#3C1931</code></p>
+</blockquote>
+<h2 id="portraits-illustrations">🎨 Portraits &amp; Illustrations</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Icône Ancien</th>
+<th style="text-align: center;">Illustration Principale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><img alt="Vakuu" loading="lazy" src="../../bible/images/ancients/icon/vakuu.webp" /></td>
+<td style="text-align: center;"><img alt="Vakuu Art" loading="lazy" src="../../bible/images/ancients/art/vakuu.webp" /></td>
+</tr>
+</tbody>
+</table>
+<h3 id="integration-visuelle-gba-butano">🎮 Intégration Visuelle GBA (Butano)</h3>
+<ul>
+<li><strong>Palette suggérée pour la GBA :</strong> Teinte dominante <code>#3C1931</code>. À mapper sur une palette 16 couleurs (15 couleurs + transparent) pour le BG de portrait.</li>
+<li><strong>Dimensions portrait GBA :</strong> 64x64 pixels (mode 4 bpp tilemap) positionné à <code>(X: 16, Y: 24)</code> sur l'écran 240x160.</li>
+<li><strong>Couleur des boutons / encadrements UI :</strong> <code>rgba(13, 15, 31, 0.8)</code> converti en code couleur GBA 15-bit BGR555.</li>
+</ul>
+<h2 id="role-lore-dans-lascension">📜 Rôle &amp; Lore dans l'Ascension</h2>
+<h2 id="regles-des-slots-choix">🎲 Règles des Slots &amp; Choix</h2>
+<ul>
+<li><strong>Nombre total d'options :</strong> 10 reliques disponibles.</li>
+<li><strong>Structure des tirages :</strong> 3 slot(s).</li>
+<li><strong>Slot #1</strong> : <strong>1</strong> choix parmi <strong>3</strong> reliques présentées.</li>
+<li><strong>Slot #2</strong> : <strong>1</strong> choix parmi <strong>3</strong> reliques présentées.</li>
+<li><strong>Slot #3</strong> : <strong>1</strong> choix parmi <strong>4</strong> reliques présentées.</li>
+</ul>
+<h2 id="catalogue-complet-des-reliques-classees-par-tier">🏆 Catalogue Complet des Reliques (Classées par Tier)</h2>
+<h3 id="tier-s-2-reliques">⭐ Tier S (2 reliques)</h3>
+<h4 id="cape-distinguee-distinguished_cape"><img alt="Cape distinguée" loading="lazy" src="../../bible/images/relics/distinguished_cape.webp" /> Cape distinguée (<code>DISTINGUISHED_CAPE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Ajoutez 2 Malédictions aléatoires et 3 <strong>Apparitions</strong> à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Apparition</code> (APPARITION) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Apparition" loading="lazy" src="../../bible/images/cards/event/apparition.webp" /> <strong>Apparition</strong> (<code>APPARITION</code>) — <em>Compétence</em> (Coût : <code>1</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> <strong>Éthéré</strong>.
+Gagnez <strong>Intangible</strong> (1).
+<strong>Épuisement</strong>.</li>
+<li><strong>Effet amélioré :</strong> Gagnez <strong>Intangible</strong> (1).
+<strong>Épuisement</strong>.</li>
+<li><strong>Amélioration :</strong> <code>keywordsRemoved: ['Ethereal']</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="masque-serti-jeweled_mask"><img alt="Masque serti" loading="lazy" src="../../bible/images/relics/jeweled_mask.webp" /> Masque serti (<code>JEWELED_MASK</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>S</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Au début de chaque combat, placez un Pouvoir aléatoire de votre <strong>Pioche</strong> dans votre <strong>Main</strong>. Il coûte 0 ce combat.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Majeur Prioritaire :</strong> À implémenter en priorité dans le prototype MVP en raison de son fort impact stratégique.</li>
+</ul>
+<h3 id="tier-a-3-reliques">⭐ Tier A (3 reliques)</h3>
+<h4 id="boucle-doreille-susurrante-whispering_earring"><img alt="Boucle d'oreille susurrante" loading="lazy" src="../../bible/images/relics/whispering_earring.webp" /> Boucle d'oreille susurrante (<code>WHISPERING_EARRING</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Gagnez ⚡1⚡ au début de chaque tour. Vakuu joue votre premier tour à votre place.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="brouillard-en-conserve-preserved_fog"><img alt="Brouillard en conserve" loading="lazy" src="../../bible/images/relics/preserved_fog.webp" /> Brouillard en conserve (<code>PRESERVED_FOG</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Retirez 3 cartes de votre <strong>Deck</strong>. Ajoutez Hubris à votre Deck.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="embarras-du-choix-choices_paradox"><img alt="Embarras du choix" loading="lazy" src="../../bible/images/relics/choices_paradox.webp" /> Embarras du choix (<code>CHOICES_PARADOX</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>A</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Au début de chaque combat, ajoutez 1 carte parmi 5 cartes aléatoires à votre <strong>Main</strong>. Ajoutez <strong>Retenue</strong> à la carte choisie.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-b-2-reliques">⭐ Tier B (2 reliques)</h3>
+<h4 id="serre-dessechee-sere_talon"><img alt="Serre desséchée" loading="lazy" src="../../bible/images/relics/sere_talon.webp" /> Serre desséchée (<code>SERE_TALON</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Perdez 9 PV Max. Ajoutez 3 Vœux à votre <strong>Deck</strong>.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Mécanique de Deck :</strong> Ajoute <code>Vœu</code> (WISH) au deck du joueur lors de la sélection. Nécessite l'enregistrement de l'ID de carte dans <code>CardPool</code>.</li>
+</ul>
+<p><strong>Cartes Dérivées / Associées :</strong></p>
+<ul>
+<li><img alt="Vœu" loading="lazy" src="../../bible/images/cards/event/wish.webp" /> <strong>Vœu</strong> (<code>WISH</code>) — <em>Compétence</em> (Coût : <code>0</code> ⚡)<ul>
+<li><strong>Effet de base :</strong> Placez une carte de votre <strong>Pioche</strong> dans votre <strong>Main</strong>.
+<strong>Épuisement</strong>.</li>
+<li><strong>Effet amélioré :</strong> <strong>Retenue</strong>.
+Placez une carte de votre <strong>Pioche</strong> dans votre <strong>Main</strong>.
+<strong>Épuisement</strong>.</li>
+<li><strong>Amélioration :</strong> <code>keywords: ['Retain']</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="boite-a-musique-music_box"><img alt="Boîte à musique" loading="lazy" src="../../bible/images/relics/music_box.webp" /> Boîte à musique (<code>MUSIC_BOX</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>B</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Vous créez une copie <strong>Éthérée</strong> de la première Attaque que vous jouez chaque tour.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-c-1-relique">⭐ Tier C (1 relique)</h3>
+<h4 id="rose-sanguinolente-blood_soaked_rose"><img alt="Rose sanguinolente" loading="lazy" src="../../bible/images/relics/blood_soaked_rose.webp" /> Rose sanguinolente (<code>BLOOD_SOAKED_ROSE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>C</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Ajoutez 1 Assuétude à votre <strong>Deck</strong>. Gagnez ⚡1⚡ au début de chaque tour.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h3 id="tier-d-2-reliques">⭐ Tier D (2 reliques)</h3>
+<h4 id="violon-fiddle"><img alt="Violon" loading="lazy" src="../../bible/images/relics/fiddle.webp" /> Violon (<code>FIDDLE</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Au début de chaque tour, piochez 2 cartes supplémentaires. Vous ne pouvez plus piocher de cartes pendant votre tour.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h4 id="parasol-seigneurial-lords_parasol"><img alt="Parasol seigneurial" loading="lazy" src="../../bible/images/relics/lords_parasol.webp" /> Parasol seigneurial (<code>LORDS_PARASOL</code>)</h4>
+<ul>
+<li><strong>Tier :</strong> <code>D</code> | <strong>Rareté :</strong> <code>Ancient</code></li>
+<li><strong>Description :</strong> Lorsque vous passez chez le <strong>Marchand</strong>, vous obtenez immédiatement TOUT ce qu'il propose.</li>
+<li><strong>Implémentation GBA C++ :</strong> <strong>Effet Passif :</strong> Hook standard dans <code>RelicManager</code> avec écouteur d'événement (<code>ON_COMBAT_START</code>, <code>ON_TURN_START</code>, etc.).</li>
+</ul>
+<h2 id="dialogues-repliques">💬 Dialogues &amp; Répliques</h2>
+<p>Les dialogues s'affichent dans la boîte de dialogue inférieure (240x40 px) sur la GBA avec défilement fluide au bouton <code>A</code> :</p>
+<h3 id="premiere-rencontre-toutes-runs-confondues">🗣️ Première Rencontre (Toutes runs confondues)</h3>
+<ul>
+<li>👑 <strong>Ancien</strong> :<blockquote>
+<p>Offre-moi ton âme, et tous te craindront comme ils me craignent...</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="soldat-de-fer-ironclad">🗣️ Soldat de Fer (Ironclad)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Après si longtemps, nous nous retrouvons...</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>IRONCLAD</strong> :</p>
+<blockquote>
+<p>DÉMON SACRÉ !<br />
+Que m'as-tu fait !?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Ni plus ni moins que le marché que nous avons conclu.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Les clans que tu as anéantis pèsent-ils sur ton âme...?<br />
+<em>Vakuu rit aux éclats.</em></p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Ma plus grande marionnette... pourquoi n'as-tu pas encore tué l'Architecte ?</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>IRONCLAD</strong> :</p>
+<blockquote>
+<p>Après avoir tué l'Architecte, c'est TOI que je tuerai !</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p><em>Baîllement</em><br />
+J'ai hâte de te regarder échouer.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-silencieuse-silent">🗣️ La Silencieuse (Silent)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Meurtrière.</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>SILENT</strong> :</p>
+<blockquote>
+<p>...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Ça finira mal pour toi.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p><em>Vakuu montre à la Silencieuse son étalage de contrats.</em></p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>L'Architecte ne suffira pas, tu dois tuer tes sœurs également !</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>SILENT</strong> :</p>
+<blockquote>
+<p>...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Pas besoin des mots. Nous sommes pareils, toi et moi.</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-defectueux-defect">🗣️ Le Défectueux (Defect)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Petit être brisé, laisse-moi te parfaire.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Ne trouves-tu pas étrange que tes camarades les assemblages veuillent ta perte ?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Apporte-moi le cœur de l'Architecte, et je rétablirai ton compagnon.</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>DEFECT</strong> :</p>
+<blockquote>
+<p><em><bips craintifs></em></p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Qui est plus important ? Ton créateur, ou ton ami ?</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="le-regent-regent">🗣️ Le Régent (Regent)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Un habitant des étoiles ? À l'intérieur de ces murs maudits ?</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Vous avez entendu parler de moi ?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Oui, je crois que nous pouvons nous aider mutuellement.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Je peux t'octroyer encore plus de pouvoir, en échange de quelque prix.</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>REGENT</strong> :</p>
+<blockquote>
+<p>Je ne sais pas si c'était une bonne affaire. Je ne me sens pas très bien...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Tu as bien lu les contrats, pourtant ?<br />
+Tu les as bien signés, volontairement, et en toute connaissance de cause ?</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Ne tiendras-tu alors pas ta part de notre accord ?<br />
+Un autre contrat sinon ? Oui, ça va mieux maintenant, n'est-ce pas ?</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="la-necrolieuse-necrobinder">🗣️ La Nécrolieuse (Necrobinder)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Nous sommes tous deux en quête de vengeance. Mais il faudra en payer le prix.</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p>J'en paierai le prix. N'importe quel prix pour sa mort.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Je sais où vous avez eu cette Main.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>L'Architecte nous a grièvement lésés, tous deux.</p>
+</blockquote>
+</li>
+<li>
+<p>👤 <strong>NECROBINDER</strong> :</p>
+<blockquote>
+<p>Allons-y, démon. Montrez-moi les contrats que nous pouvons conclure.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Tu ne perds pas de temps. Très bien...</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="generique-tout-personnage">🗣️ Générique (Tout Personnage)</h3>
+<ul>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Comme ça, tu cherches à atteindre la gloire ? J'ai quelques propositions pour toi...</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>{Visits}. {Visits} fois que tu passes ici.</p>
+</blockquote>
+</li>
+<li>
+<p>👑 <strong>Ancien</strong> :</p>
+<blockquote>
+<p>Tu as bien compris que ça ne finira jamais ?</p>
+</blockquote>
+</li>
+</ul>
+<hr />
+<p>⬅️ <a href="livrets.html">Retour au Sommaire de la Bible</a> | ⚙️ <a href="spec_technique_gba.html">Spécifications Techniques GBA</a></p></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

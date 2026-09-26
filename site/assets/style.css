@@ -1,0 +1,270 @@
+/* Slay the GBA — styled after the game's Pokemon-like panels: dark navy boxes, light double border. */
+:root {
+  --bg: #0d0b16;
+  --bg2: #16132a;
+  --panel: #0e1020;
+  --panel2: #1a1d36;
+  --line: #f0a060;
+  --line-hi: #ffd8b0;
+  --ink: #eceaf4;
+  --muted: #9a98b0;
+  --gold: #f8d048;
+  --red: #f85848;
+  --green: #68e868;
+  --blue: #78b8f8;
+  --purple: #d898f8;
+  --accent: #e85830;
+  --pix: "Pixelify Sans", "Silkscreen", monospace;
+}
+.hero-ironclad { --line: #d84838; --line-hi: #ffb0a0; --accent: #f05030; }
+.hero-silent { --line: #50b058; --line-hi: #c8f0b0; --accent: #78d060; }
+.hero-defect { --line: #4880e0; --line-hi: #b8d8ff; --accent: #58b0f0; }
+.hero-regent { --line: #e8a030; --line-hi: #ffe0a0; --accent: #f0c060; }
+.hero-necrobinder { --line: #c868c0; --line-hi: #f0c8f8; --accent: #e8b0ff; }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  background-image:
+    linear-gradient(rgba(13, 11, 22, .92), rgba(13, 11, 22, .97)),
+    url(bg/map.png);
+  background-size: auto, 480px;
+  image-rendering: auto;
+  overflow-x: hidden;
+  color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+a { color: var(--gold); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font-family: ui-monospace, monospace; background: #0006; padding: 1px 5px; border-radius: 3px; }
+h1, h2, h3, h4 { font-family: var(--pix); font-weight: 400; line-height: 1.2; margin: .4em 0 .5em; letter-spacing: .5px; }
+h1 { font-size: clamp(28px, 5vw, 44px); color: var(--gold); text-shadow: 3px 3px 0 #000; }
+h2 { font-size: 26px; color: var(--gold); text-shadow: 2px 2px 0 #000; }
+h3 { font-size: 19px; }
+h2 small, h1 small { color: var(--muted); font-size: 60%; }
+img.pix, .pix { image-rendering: pixelated; }
+.meta { color: var(--muted); font-size: 13px; margin: 0; }
+
+/* Header */
+.top {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: 16px;
+  padding: 8px 16px;
+  background: rgba(8, 8, 14, .88);
+  backdrop-filter: blur(6px);
+  border-bottom: 3px solid var(--line);
+}
+.brand { font-family: var(--pix); font-weight: 400; font-size: 20px; color: var(--ink); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.brand img { width: 32px; height: 32px; image-rendering: pixelated; }
+.top nav { display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto; }
+.top nav a { font-family: "Silkscreen", monospace; font-size: 13px; color: var(--ink); padding: 4px 8px; border: 2px solid transparent; border-radius: 4px; }
+.top nav a:hover, .top nav a.on { border-color: var(--line); color: var(--gold); text-decoration: none; }
+.burger { display: none; margin-left: auto; background: none; border: 2px solid var(--line); color: var(--ink); font-size: 20px; border-radius: 4px; cursor: pointer; }
+
+main { max-width: 1180px; margin: 0 auto; padding: 18px 16px 40px; }
+
+/* The signature panel: dark box, light line, coloured line, dark core (like the in-game text box). */
+.panel {
+  position: relative;
+  margin: 22px 0;
+  padding: 18px 20px;
+  background: linear-gradient(180deg, var(--panel2), var(--panel) 40%);
+  border: 3px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px #08080e, 0 0 0 3px var(--line-hi) inset, 0 6px 0 #0008;
+}
+
+/* Hero banners */
+.hero-banner {
+  position: relative;
+  margin: 0 -16px;
+  min-height: 460px;
+  display: flex; align-items: flex-end;
+  background-size: cover; background-position: center;
+  image-rendering: pixelated;
+  border-bottom: 4px solid var(--line);
+}
+.hero-banner::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #0000 30%, #0d0b16f0 92%); }
+.hero-banner.small { min-height: 340px; }
+.hero-inner { position: relative; z-index: 1; padding: 28px 32px; max-width: 760px; }
+.hero-inner h1 { font-size: clamp(40px, 8vw, 76px); margin: 0; }
+.hero-inner.split { display: flex; gap: 24px; align-items: flex-end; max-width: none; }
+.kicker { font-family: "Silkscreen", monospace; color: var(--line-hi); margin: 0; }
+.lead { font-size: 19px; color: var(--ink); text-shadow: 1px 1px 0 #000; }
+.giant { width: 192px; height: 192px; flex: none; filter: drop-shadow(4px 4px 0 #000a); }
+.cta { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn {
+  display: inline-block; font-family: var(--pix); font-size: 18px;
+  padding: 10px 18px; background: var(--accent); color: #fff; border: 3px solid #0008;
+  border-radius: 6px; box-shadow: 0 4px 0 #0009; text-shadow: 1px 1px 0 #0008;
+}
+.btn:hover { text-decoration: none; transform: translateY(-2px); box-shadow: 0 6px 0 #0009; }
+.btn.ghost { background: #0008; border-color: var(--line); }
+.btn.small { font-size: 15px; padding: 6px 12px; }
+
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 18px 0; }
+.stats div { background: var(--panel); border: 2px solid var(--line); border-radius: 6px; padding: 10px; text-align: center; }
+.stats b { display: block; font-family: var(--pix); font-size: 30px; color: var(--gold); }
+.stats span { color: var(--muted); font-family: "Silkscreen", monospace; font-size: 12px; }
+
+/* Cartridges */
+.carts { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; }
+.cart {
+  display: block; color: var(--ink);
+  background: #2a2a34; border-radius: 10px 10px 4px 4px; padding: 10px 10px 12px;
+  border: 3px solid #111; box-shadow: 0 6px 0 #000a, inset 0 0 0 2px #444;
+  transition: transform .15s;
+}
+.cart:hover { transform: translateY(-6px) rotate(-1deg); text-decoration: none; }
+.cart-label {
+  height: 150px; border-radius: 4px; border: 3px solid var(--hc);
+  background-size: cover; background-position: center; image-rendering: pixelated;
+  display: flex; justify-content: center; align-items: flex-end;
+}
+.cart-label img { width: 128px; height: 128px; }
+.cart-info { display: flex; flex-direction: column; padding-top: 8px; }
+.cart-info b { font-family: var(--pix); font-size: 19px; color: var(--ha); }
+.cart-info span { font-family: "Silkscreen", monospace; font-size: 12px; }
+.cart-info small { color: var(--muted); }
+
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+.features h3 { color: var(--gold); }
+.shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.shot { margin: 0; background: #000; border: 3px solid #333; border-radius: 6px; overflow: hidden; }
+.shot img { width: 100%; display: block; aspect-ratio: 3 / 2; }
+.shot figcaption { padding: 6px 10px; font-size: 13px; color: var(--muted); background: var(--panel); }
+.mini-mons { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+.mini-mon { text-align: center; font-family: "Silkscreen", monospace; font-size: 12px; }
+.mini-mon img { width: 128px; height: 128px; display: block; }
+.mini-mon.boss img { width: 192px; height: 192px; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { border: 1px solid #ffffff22; padding: 6px 10px; text-align: left; vertical-align: top; }
+th { background: #ffffff10; font-family: var(--pix); color: var(--gold); }
+.steps li { margin: 6px 0; }
+
+/* Heroes */
+.hero-row { display: flex; gap: 18px; align-items: center; color: var(--ink); padding: 12px; border-radius: 6px; border: 2px solid transparent; }
+.hero-row:hover { border-color: var(--hc); background: #ffffff08; text-decoration: none; }
+.hero-row h3 { color: var(--ha); margin: 0; }
+.hero-row img.big { width: 128px; height: 128px; flex: none; }
+.sheet { display: grid; grid-template-columns: 1.3fr 1fr auto; gap: 18px; align-items: center; }
+.energy { width: 96px; height: 96px; }
+
+/* Cards */
+.filters { display: grid; gap: 8px; margin: 10px 0 16px; }
+.filters input, .solo-search {
+  width: 100%; padding: 10px 12px; font-size: 16px; color: var(--ink);
+  background: #0008; border: 2px solid var(--line); border-radius: 6px; margin-bottom: 8px;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button {
+  font-family: "Silkscreen", monospace; font-size: 12px; cursor: pointer;
+  background: #0008; color: var(--ink); border: 2px solid #ffffff30; border-radius: 4px; padding: 5px 10px;
+}
+.chips button.on { border-color: var(--gold); color: var(--gold); }
+.count { color: var(--muted); margin: 0; font-size: 13px; }
+.jump { display: flex; flex-wrap: wrap; gap: 10px; font-family: "Silkscreen", monospace; font-size: 13px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+.card {
+  --frame: #8a4a30;
+  background: linear-gradient(180deg, #43392f, #2a221d);
+  border: 4px solid var(--frame); border-radius: 10px; padding: 8px;
+  box-shadow: 0 0 0 2px #0a0708, 0 5px 0 #000a;
+  transition: transform .15s;
+}
+.card:hover { transform: translateY(-4px) scale(1.02); }
+.card.p-ironclad { --frame: #b03828; }
+.card.p-silent { --frame: #3c9048; }
+.card.p-defect { --frame: #3868c8; }
+.card.p-regent { --frame: #d08828; }
+.card.p-necrobinder { --frame: #b058a8; }
+.card.p-colorless { --frame: #8a8a9a; }
+.card.p-curse, .card.t-curse { --frame: #502858; }
+.card.p-event { --frame: #4a8a8a; }
+.card .art { position: relative; border: 2px solid #0008; border-radius: 4px; overflow: hidden; aspect-ratio: 700 / 532; background: #111; }
+.card.t-attack .art { clip-path: polygon(0 0, 100% 0, 100% 86%, 50% 100%, 0 86%); }
+.card.t-power .art { border-radius: 40% 40% 6px 6px / 22% 22% 6px 6px; }
+.card .art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gem {
+  position: absolute; top: 4px; left: 4px; width: 30px; height: 30px; border-radius: 50%;
+  display: grid; place-items: center; font-family: var(--pix); font-size: 18px; color: #fff;
+  background: radial-gradient(circle at 35% 35%, var(--line-hi), var(--frame) 70%);
+  border: 2px solid #000a; text-shadow: 1px 1px 0 #000;
+}
+.card h4 { margin: 8px 0 2px; text-align: center; font-size: 17px; color: var(--gold); }
+.card .meta { text-align: center; font-size: 12px; }
+.card .desc { font-size: 14px; margin: 6px 0 0; text-align: center; }
+.card .desc.up { color: var(--green); }
+.card details summary { cursor: pointer; font-size: 12px; color: var(--green); text-align: center; margin-top: 6px; }
+.kw { color: var(--gold); font-weight: 600; }
+.nrg { color: var(--red); }
+.star { color: var(--gold); }
+.hidden { display: none !important; }
+.pool-title { margin-top: 32px; }
+
+/* Relics, potions */
+.relics { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 10px; }
+.relic { display: flex; gap: 10px; align-items: flex-start; background: #ffffff08; border: 2px solid #ffffff14; border-radius: 6px; padding: 8px; }
+.relic img { width: 48px; height: 48px; flex: none; object-fit: contain; }
+.relic p { margin: 2px 0 0; font-size: 14px; }
+.relic.big img { width: 72px; height: 72px; }
+.tier { font-family: "Silkscreen", monospace; font-size: 11px; background: var(--accent); color: #000; padding: 1px 5px; border-radius: 3px; }
+
+/* Monsters */
+.monsters { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+.monster { display: flex; gap: 12px; background: #ffffff08; border: 2px solid #ffffff14; border-radius: 8px; padding: 10px; }
+.monster.e-boss { border-color: var(--red); }
+.monster.e-elite { border-color: var(--gold); }
+.mon-art { width: 110px; height: 110px; flex: none; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 85%, #ffffff18 30%, #0000 31%); }
+.mon-art img { max-width: 110px; max-height: 110px; }
+.monster h3 { margin: 0; }
+.moves { padding-left: 18px; margin: 6px 0 0; font-size: 14px; }
+
+/* Events & ancients */
+.events { display: grid; gap: 14px; }
+.event { display: grid; grid-template-columns: 320px 1fr; gap: 14px; background: #ffffff08; border-radius: 8px; overflow: hidden; border: 2px solid #ffffff14; }
+.event img { width: 100%; height: 100%; object-fit: cover; filter: brightness(1.8) contrast(1.05); }
+.noimg { display: grid; place-items: center; font: 700 60px var(--pix); color: var(--muted); background: #0006; min-height: 160px; }
+.event > div { padding: 10px 14px 12px 0; }
+.event summary, .ancient summary { cursor: pointer; color: var(--gold); font-family: var(--pix); }
+.ancient { margin: 18px 0; border: 3px solid var(--ac); border-radius: 8px; overflow: hidden; background: #0006; }
+.ancient-art { min-height: 220px; background-size: cover; background-position: center; display: flex; align-items: flex-end; gap: 14px; padding: 14px; }
+.ancient-art img { width: 72px; height: 72px; }
+.ancient-art div { background: #000a; padding: 6px 12px; border-radius: 6px; }
+.ancient-art h2 { margin: 0; }
+.ancient-art p { margin: 0; }
+.ancient details, .ancient > p { padding: 0 14px 12px; }
+
+/* Rendered bible markdown */
+.md { overflow-x: auto; }
+.md img { max-width: 100%; vertical-align: middle; }
+.md td img { max-height: 48px; }
+.md blockquote { border-left: 4px solid var(--line); margin: 10px 0; padding: 4px 14px; background: #ffffff08; color: var(--ink); }
+.md pre { background: #000a; padding: 12px; border-radius: 6px; overflow-x: auto; border: 1px solid #ffffff20; }
+.md pre code { background: none; }
+.md h1 { font-size: 32px; }
+.md h2 { font-size: 24px; border-bottom: 2px solid var(--line); padding-bottom: 4px; margin-top: 1.4em; }
+.md hr { border: none; border-top: 2px dashed #ffffff22; margin: 20px 0; }
+.toc li { margin: 4px 0; }
+.crumb { font-family: "Silkscreen", monospace; }
+
+.foot { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 16px; border-top: 3px solid var(--line); background: #0008; }
+
+@media (max-width: 760px) {
+  .hero-inner { padding: 20px 16px; }
+  .kicker { font-size: 11px; }
+  .stats { grid-template-columns: repeat(3, 1fr); }
+  .burger { display: block; }
+  .top nav { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; background: #08080ef0; padding: 10px; border-bottom: 3px solid var(--line); }
+  body.menu .top nav { display: flex; }
+  .hero-inner.split { flex-direction: column; align-items: flex-start; }
+  .giant { width: 128px; height: 128px; }
+  .sheet { grid-template-columns: 1fr; }
+  .event { grid-template-columns: 1fr; }
+  .noimg { display: grid; place-items: center; font: 700 60px var(--pix); color: var(--muted); background: #0006; min-height: 160px; }
+.event > div { padding: 0 12px 12px; }
+  .monsters, .relics { grid-template-columns: 1fr; }
+  .hero-banner { min-height: 360px; }
+}
