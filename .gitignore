@@ -16,3 +16,6 @@ Thumbs.db
 # Native test binaries
 bin/
 cli_game
+
+# Per-hero Butano build folders
+build_*/
