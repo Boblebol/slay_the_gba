@@ -265,7 +265,7 @@ endif
 # -------------------------------------------------------------------------------------------------
 # 🌐 SITE WEB (généré depuis la bible)
 # -------------------------------------------------------------------------------------------------
-.PHONY: site site-build
+.PHONY: site site-build site-dist deploy deploy-preview
 
 site-build:
 	@printf "$(CYAN)==> Génération du site web dans site/...$(RESET)\n"
@@ -274,6 +274,21 @@ site-build:
 site: site-build
 	@open site/index.html 2>/dev/null || xdg-open site/index.html 2>/dev/null || true
 	@printf "$(GREEN)✓ Site ouvert : site/index.html$(RESET)\n"
+
+# Self-contained folder for hosting: pages at the root, bible images and ROMs alongside.
+site-dist: site-build
+	@rm -rf dist
+	@mkdir -p dist/bible
+	@cp -R site/. dist/
+	@cp -R bible/images dist/bible/images
+	@printf "$(GREEN)✓ Site prêt à déployer dans dist/ ($$(du -sh dist | cut -f1))$(RESET)\n"
+
+# Netlify (CLI via npx). First time: npx netlify-cli login && npx netlify-cli link (or init).
+deploy-preview: site-dist
+	@npx --yes netlify-cli deploy --dir=dist
+
+deploy: site-dist
+	@npx --yes netlify-cli deploy --dir=dist --prod
 
 help:
 	@printf "\n"
@@ -310,4 +325,6 @@ help:
 	@printf "\n"
 	@printf "  $(MAGENTA)make site$(RESET)           Génère le site web et l'ouvre dans le navigateur\n"
 	@printf "  $(MAGENTA)make site-build$(RESET)     Génère le site web sans l'ouvrir\n"
+	@printf "  $(MAGENTA)make site-dist$(RESET)      Prépare dist/ (site + images + ROMs) pour l'hébergement\n"
+	@printf "  $(MAGENTA)make deploy$(RESET)         Déploie dist/ en production sur Netlify (deploy-preview : brouillon)\n"
 	@printf "  $(MAGENTA)=================================================================================$(RESET)\n\n"

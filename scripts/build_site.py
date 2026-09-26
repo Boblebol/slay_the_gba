@@ -106,6 +106,28 @@ def rich(text: str) -> str:
     return text.replace("\n", "<br>")
 
 
+ROMS = SITE / "roms"
+
+
+def copy_roms() -> None:
+    """Copy the built cartridges next to the pages so download links work locally and once deployed."""
+    ROMS.mkdir(exist_ok=True)
+    for hero in HEROES:
+        src = ROOT / hero.rom
+        if src.exists():
+            (ROMS / hero.rom).write_bytes(src.read_bytes())
+
+
+def rom_size(hero: "Hero") -> str:
+    path = ROOT / hero.rom
+    return f"{path.stat().st_size / 1024:.0f} Ko" if path.exists() else "à compiler"
+
+
+def download_button(hero: "Hero", depth: int, cls: str = "btn") -> str:
+    return (f'<a class="{cls}" href="{"../" * depth}roms/{hero.rom}" download>'
+            f'▼ Télécharger {esc(hero.rom)} <small>({rom_size(hero)})</small></a>')
+
+
 def img_path(image_path: str, depth: int) -> str:
     return "../" * (depth + 1) + "bible" + image_path
 
@@ -286,6 +308,10 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
 </a>"""
         for h in HEROES
     )
+    downloads = "".join(
+        f'<div class="download" style="--hc:{h.color}"><img class="pix" src="assets/sprites/hero_{h.slug}.png" alt=""><div><b>{esc(h.name)}</b><span class="meta">{esc(h.zone)}</span>{download_button(h, 0, "btn small")}</div></div>'
+        for h in HEROES
+    )
     shots = "".join(
         f'<figure class="shot"><img class="pix" loading="lazy" src="assets/screens/{n}.png" alt="{esc(c)}"><figcaption>{esc(c)}</figcaption></figure>'
         for n, c in SCREENS
@@ -304,7 +330,7 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
     <p class="kicker">Game Boy Advance · 5 cartouches</p>
     <h1>SLAY THE GBA</h1>
     <p class="lead">Slay the Spire 2 réinventé en 240×160 : deckbuilding roguelike, arène de combat façon Pokémon GBA et une cartouche par héros.</p>
-    <div class="cta"><a class="btn" href="#cartouches">Choisir un héros ►</a><a class="btn ghost" href="bible/index.html">Lire la bible</a></div>
+    <div class="cta"><a class="btn" href="#cartouches">Choisir un héros ►</a><a class="btn ghost" href="#telecharger">▼ Télécharger les ROMs</a><a class="btn ghost" href="bible/index.html">Lire la bible</a></div>
   </div>
 </section>
 
@@ -333,6 +359,8 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
 <tr><td>Combat</td><td>A</td><td>Jouer la carte (puis choisir la cible)</td></tr>
 <tr><td>Combat</td><td>START / R</td><td>Finir le tour</td></tr>
 <tr><td>Carte / Combat</td><td>SELECT</td><td>Registre du deck (B pour revenir)</td></tr></table>''')}
+
+{panel('<h2 id="telecharger">Télécharger les cartouches</h2><p>Une ROM <code>.gba</code> par héros, à ouvrir dans un émulateur (mGBA, Delta sur iPhone, RetroArch…) ou à flasher sur une cartouche EZ-Flash / EverDrive.</p><div class="downloads">' + downloads + '</div>')}
 
 {panel('''<h2>Jouer</h2>
 <ol class="steps"><li>Compilez les cartouches : <code>make all-roms</code> (Docker devkitARM automatique).</li>
@@ -366,7 +394,8 @@ def md_to_html(text: str, depth: int, image_base: str) -> str:
     # Absolute file:// links and source links written for the repository layout.
     html_text = re.sub(r'href="file:///[^"]*?/bible/(?:livrets_gba/)?([\w.-]+)\.md"', r'href="\1.html"', html_text)
     html_text = re.sub(r'href="file:///[^"]*?/slay_the_gba/', f'href="{up}../', html_text)
-    html_text = re.sub(r'href="\.\./(include|src|tests|scripts)/', rf'href="{up}../\1/', html_text)
+    # Source files are not part of the website: show those links as plain code references.
+    html_text = re.sub(r'<a href="(?:\.\./)+(?:include|src|tests|scripts)/[^"]*">(.*?)</a>', r'<code>\1</code>', html_text)
     return html_text
 
 
@@ -389,7 +418,7 @@ def build_hero_pages(cards: list[dict], relics: list[dict]) -> None:
   <div class="hero-inner split">
     <img class="pix giant" src="../assets/sprites/hero_{h.slug}.png" alt="{esc(h.name)}">
     <div><p class="kicker">Cartouche {esc(h.rom)}</p><h1>{esc(h.name)}</h1><p class="lead">{esc(h.title)}</p>
-    <p>{esc(h.mechanic)}</p></div>
+    <p>{esc(h.mechanic)}</p>{download_button(h, 1)}</div>
   </div>
 </section>
 <div class="stats"><div><b>{h.hp}</b><span>PV</span></div><div><b>3</b><span>énergie</span></div><div><b>{len(pool)}</b><span>cartes</span></div>
@@ -550,6 +579,7 @@ def main() -> None:
     ancients = load("ancient", "ancients")
     monsters = json.loads((DATA / "monster_v0.111.0.json").read_text())
     build_assets()
+    copy_roms()
     build_index(cards, monsters["monsters"], relics, potions, events)
     build_heroes_index()
     build_hero_pages(cards, relics)

@@ -19,3 +19,7 @@ cli_game
 
 # Per-hero Butano build folders
 build_*/
+
+# Website hosting bundle (make site-dist)
+dist/
+.netlify/

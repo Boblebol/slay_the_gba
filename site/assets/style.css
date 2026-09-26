@@ -142,6 +142,12 @@ main { max-width: 1180px; margin: 0 auto; padding: 18px 16px 40px; }
 table { border-collapse: collapse; width: 100%; font-size: 15px; }
 th, td { border: 1px solid #ffffff22; padding: 6px 10px; text-align: left; vertical-align: top; }
 th { background: #ffffff10; font-family: var(--pix); color: var(--gold); }
+.downloads { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+.download { display: flex; gap: 12px; align-items: center; background: #ffffff08; border: 2px solid var(--hc); border-radius: 8px; padding: 8px 12px; }
+.download img { width: 72px; height: 72px; flex: none; }
+.download b { display: block; font-family: var(--pix); font-weight: 400; font-size: 18px; }
+.download .btn { margin-top: 6px; }
+.btn small { font-size: 12px; opacity: .8; }
 .steps li { margin: 6px 0; }
 
 /* Heroes */

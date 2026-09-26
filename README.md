@@ -113,3 +113,15 @@ events, ancients and the full design bible) is generated into `site/`:
 ```bash
 make site          # build and open in the browser (make site-build: build only)
 ```
+
+Deploy to Netlify (the ROMs are built locally, so the site is deployed from your machine):
+
+```bash
+make roms                                   # build the 5 cartridges (download links)
+npx netlify-cli login && npx netlify-cli init   # first time only: link a Netlify site
+make deploy-preview                         # draft URL to check
+make deploy                                 # production
+```
+
+`make site-dist` assembles `dist/` (pages + bible images + ROMs); `netlify.toml` publishes it and
+serves `/roms/*.gba` as downloads.

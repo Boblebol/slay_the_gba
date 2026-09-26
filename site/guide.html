@@ -22,7 +22,7 @@
 <blockquote>
 <p><strong>Référence de conception et d'implémentation pour le moteur <code>slay_the_gba</code></strong><br />
 <strong>Source :</strong> Règles fondamentales de <em>Slay the Spire</em> &amp; <em>Slay the Spire 2</em> (<code>v0.111.0 Beta</code>)<br />
-<strong>Composants C++ associés :</strong> <a href="../include/engine/map.h"><code>include/engine/map.h</code></a>, <a href="../src/engine/map.cpp"><code>src/engine/map.cpp</code></a>, <a href="../include/engine/run.h"><code>include/engine/run.h</code></a>, <a href="../src/engine/run.cpp"><code>src/engine/run.cpp</code></a></p>
+<strong>Composants C++ associés :</strong> <code><code>include/engine/map.h</code></code>, <code><code>src/engine/map.cpp</code></code>, <code><code>include/engine/run.h</code></code>, <code><code>src/engine/run.cpp</code></code></p>
 </blockquote>
 <hr />
 <h2 id="1-vue-densemble-de-la-boucle-de-gameplay-the-roguelike-run-loop">1. 🔄 Vue d'Ensemble de la Boucle de Gameplay (The Roguelike Run Loop)</h2>
@@ -270,7 +270,7 @@
 <p>Pour respecter les contraintes strictes de la Game Boy Advance (32 Ko de Fast WRAM, 256 Ko de WRAM, processeur ARM7TDMI 16.78 MHz), toute la boucle est implémentée <strong>sans aucune allocation dynamique sur le tas</strong> (<code>malloc</code>/<code>new</code>).</p>
 <h3 id="1-le-graphe-de-carte-mapgraph">1. Le Graphe de Carte (<code>MapGraph</code>)</h3>
 <ul>
-<li>Déclaré dans <a href="../include/engine/map.h"><code>include/engine/map.h</code></a>.</li>
+<li>Déclaré dans <code><code>include/engine/map.h</code></code>.</li>
 <li>Stocké dans un <code>FixedVector&lt;MapNode, 50&gt;</code> (45 nœuds de couloir + 1 nœud de Boss = 46 nœuds au total).</li>
 <li>Chaque nœud connaît son numéro d'étage (<code>0</code> à <code>15</code>), son couloir (<code>0</code> à <code>2</code>), son type de salle (<code>RoomType</code>), et jusqu'à 3 liens enfants (<code>children</code>).</li>
 </ul>
@@ -294,7 +294,7 @@ struct MapNode {
 </code></pre>
 <h3 id="2-le-gestionnaire-de-tentative-runmanager">2. Le Gestionnaire de Tentative (<code>RunManager</code>)</h3>
 <ul>
-<li>Déclaré dans <a href="../include/engine/run.h"><code>include/engine/run.h</code></a>.</li>
+<li>Déclaré dans <code><code>include/engine/run.h</code></code>.</li>
 <li>Coordonne les transitions d'écrans via l'énumération <code>RunPhase</code> :</li>
 <li><code>MAP_NAVIGATION</code> : Sélection de la prochaine salle au D-Pad.</li>
 <li><code>IN_COMBAT</code> : Moteur de combat Butano 60 FPS.</li>

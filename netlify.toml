@@ -1,0 +1,15 @@
+# Slay the GBA website. Deployed from a local build (make deploy) because the ROMs need devkitARM.
+[build]
+  publish = "dist"
+
+[[headers]]
+  for = "/roms/*"
+  [headers.values]
+    Content-Type = "application/octet-stream"
+    Content-Disposition = "attachment"
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
