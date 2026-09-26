@@ -111,5 +111,5 @@ A static fan site (landing page, one page per cartridge with every card, bestiar
 events, ancients and the full design bible) is generated into `site/`:
 
 ```bash
-uv run scripts/build_site.py   # then open site/index.html
+make site          # build and open in the browser (make site-build: build only)
 ```

@@ -262,6 +262,19 @@ endif
 # -------------------------------------------------------------------------------------------------
 # 📖 MENU D'AIDE PRINCIPAL
 # -------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+# 🌐 SITE WEB (généré depuis la bible)
+# -------------------------------------------------------------------------------------------------
+.PHONY: site site-build
+
+site-build:
+	@printf "$(CYAN)==> Génération du site web dans site/...$(RESET)\n"
+	@uv run scripts/build_site.py
+
+site: site-build
+	@open site/index.html 2>/dev/null || xdg-open site/index.html 2>/dev/null || true
+	@printf "$(GREEN)✓ Site ouvert : site/index.html$(RESET)\n"
+
 help:
 	@printf "\n"
 	@printf "$(CYAN)$(BOLD)  ███████╗██╗      █████╗ ██╗   ██╗    ████████╗██╗  ██╗███████╗    ██████╗ ██████╗  █████╗ $(RESET)\n"
@@ -294,4 +307,7 @@ help:
 	@printf "\n"
 	@printf "  $(BLUE)make run$(RESET)            Lance la ROM par défaut dans votre émulateur GBA\n"
 	@printf "  $(BLUE)make run-silent$(RESET)     Lance l'édition La Silencieuse dans l'émulateur GBA\n"
+	@printf "\n"
+	@printf "  $(MAGENTA)make site$(RESET)           Génère le site web et l'ouvre dans le navigateur\n"
+	@printf "  $(MAGENTA)make site-build$(RESET)     Génère le site web sans l'ouvrir\n"
 	@printf "  $(MAGENTA)=================================================================================$(RESET)\n\n"
