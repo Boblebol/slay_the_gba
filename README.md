@@ -30,12 +30,31 @@ A faithful **Slay the Spire** demake for the **Nintendo Game Boy Advance**, buil
 
 ## 🕹️ Controls (GBA)
 
-| Button | Action |
-|---|---|
-| **D-Pad Left / Right** | Select card in hand |
-| **A** | Play selected card |
-| **START** or **R** | End player turn |
-| **SELECT** | Restart / New combat |
+| Screen | Button | Action |
+|---|---|---|
+| Map | **D-Pad Left / Right** | Choose the next room |
+| Map | **D-Pad Up / Down** | Scroll the tower |
+| Map | **A** | Walk to the selected room |
+| Combat | **D-Pad Left / Right** | Select a card in hand |
+| Combat | **A** | Play the card (then pick a target when several enemies are alive) |
+| Combat | **START** or **R** | End the turn |
+| Map / Combat | **SELECT** | Open the deck viewer (**B** to go back) |
+| Menus | **A / B** | Confirm / cancel |
+
+---
+
+## 🎨 Art Pipeline
+
+Sprites, backgrounds and the French-capable font are generated from the `bible/images/` dump
+(card art, monster & boss art, event paintings, card frames):
+
+```bash
+uv run scripts/build_gba_art.py
+```
+
+Everything lands in `graphics/` (plus `include/gba/slay_font.h`). The GBA presentation layer lives in
+`src/gba/` (one class per scene, cached text labels, tweened animations and fades); the game rules stay in
+the hardware-agnostic `src/engine/`.
 
 ---
 
