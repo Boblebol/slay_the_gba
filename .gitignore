@@ -23,3 +23,6 @@ build_*/
 # Website hosting bundle (make site-dist)
 dist/
 .netlify/
+
+# Downloadable cartridges served by the website (rebuilt with make roms && make site-build)
+!site/roms/*.gba

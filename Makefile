@@ -265,7 +265,7 @@ endif
 # -------------------------------------------------------------------------------------------------
 # 🌐 SITE WEB (généré depuis la bible)
 # -------------------------------------------------------------------------------------------------
-.PHONY: site site-build site-dist deploy deploy-preview
+.PHONY: site site-build site-package site-dist deploy deploy-preview
 
 site-build:
 	@printf "$(CYAN)==> Génération du site web dans site/...$(RESET)\n"
@@ -276,7 +276,10 @@ site: site-build
 	@printf "$(GREEN)✓ Site ouvert : site/index.html$(RESET)\n"
 
 # Self-contained folder for hosting: pages at the root, bible images and ROMs alongside.
-site-dist: site-build
+site-dist: site-build site-package
+
+# Assemble dist/ from committed files only (no uv, no Docker): this is Netlify's build command.
+site-package:
 	@rm -rf dist
 	@mkdir -p dist/bible
 	@cp -R site/. dist/

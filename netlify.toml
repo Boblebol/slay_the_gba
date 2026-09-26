@@ -1,5 +1,7 @@
-# Slay the GBA website. Deployed from a local build (make deploy) because the ROMs need devkitARM.
+# Slay the GBA website. Netlify only assembles committed files: pages and ROMs are regenerated
+# locally (make roms && make site-build) and committed, since the ROMs need devkitARM.
 [build]
+  command = "make site-package"
   publish = "dist"
 
 [[headers]]

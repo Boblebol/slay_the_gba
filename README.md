@@ -114,14 +114,13 @@ events, ancients and the full design bible) is generated into `site/`:
 make site          # build and open in the browser (make site-build: build only)
 ```
 
-Deploy to Netlify (the ROMs are built locally, so the site is deployed from your machine):
+Deploy to Netlify: connect the repository in Netlify; `netlify.toml` runs `make site-package`, which
+only assembles committed files (pages, bible images, ROMs) into `dist/`. After changing the game or the
+bible, rebuild and commit the generated files:
 
 ```bash
-make roms                                   # build the 5 cartridges (download links)
-npx netlify-cli login && npx netlify-cli init   # first time only: link a Netlify site
-make deploy-preview                         # draft URL to check
-make deploy                                 # production
+make roms && make site-build   # refresh ROMs (site/roms/) and pages
+git add site && git commit -m "build(site): refresh website" && git push
 ```
 
-`make site-dist` assembles `dist/` (pages + bible images + ROMs); `netlify.toml` publishes it and
-serves `/roms/*.gba` as downloads.
+`make deploy` / `make deploy-preview` still deploy straight from your machine with the Netlify CLI.
