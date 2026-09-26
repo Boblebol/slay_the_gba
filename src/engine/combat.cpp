@@ -368,9 +368,23 @@ void CombatEngine::end_player_turn() {
 }
 
 void CombatEngine::execute_enemy_turn() {
+    last_enemy_actions.clear();
     for (size_t i = 0; i < enemies.size(); ++i) {
         if (enemies[i].is_alive()) {
+            EnemyActionRecord record;
+            record.enemy_index = static_cast<int8_t>(i);
+            record.intent_type = enemies[i].current_intent.type;
+            const int16_t hp_before = player.hp;
+            const int16_t shield_before = player.block + player.minion_hp + player.minion_block;
+
             enemies[i].execute_turn(player);
+
+            record.damage_to_player = hp_before - player.hp;
+            record.damage_blocked = shield_before - (player.block + player.minion_hp + player.minion_block);
+            record.block_gained = enemies[i].block; // execute_turn() clears block before gaining it
+            record.player_hp_after = player.hp;
+            last_enemy_actions.push_back(record);
+
             if (!player.is_alive()) {
                 state = CombatState::DEFEAT;
                 set_log("You were defeated!");

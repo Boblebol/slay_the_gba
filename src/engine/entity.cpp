@@ -23,6 +23,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Gremlin Nob";
         max_hp = 82;
         hp = 82;
+    } else if (type == EnemyType::CEREMONIAL_BEAST) {
+        name = "Cerf Auguste";
+        max_hp = 150;
+        hp = 150;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -98,6 +102,28 @@ void Enemy::plan_turn(int turn_number) {
             current_intent.base_damage = 14;
             current_intent.block = 0;
             current_intent.description = "Rush (14 dmg)";
+        }
+    } else if (type == EnemyType::CEREMONIAL_BEAST) {
+        // Opens with a roar, then alternates a heavy trample with an antler guard.
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.base_damage = 0;
+            current_intent.block = 0;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.description = "Brame (+2 Force)";
+        } else if (turn_number % 2 == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 12;
+            current_intent.block = 0;
+            current_intent.description = "Pietinement (12 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = 7;
+            current_intent.block = 12;
+            current_intent.description = "Ramure (7 dmg, 12 blk)";
         }
     }
 }

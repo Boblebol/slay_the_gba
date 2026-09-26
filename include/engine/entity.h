@@ -200,7 +200,8 @@ enum class EnemyType : uint8_t {
     CULTIST,
     JAW_WORM,
     LOUSE,
-    GREMLIN_NOB
+    GREMLIN_NOB,
+    CEREMONIAL_BEAST // Act 1 boss
 };
 
 class Enemy : public CombatEntity {

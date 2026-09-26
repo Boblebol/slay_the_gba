@@ -16,6 +16,16 @@ enum class CombatState : uint8_t {
     DEFEAT
 };
 
+// What one enemy did during the last enemy turn, so the presentation layer can replay it step by step.
+struct EnemyActionRecord {
+    int8_t enemy_index = -1;
+    EnemyIntentType intent_type = EnemyIntentType::ATTACK;
+    int16_t damage_to_player = 0; // HP actually lost by the player
+    int16_t damage_blocked = 0;   // Absorbed by the player's block or minion
+    int16_t block_gained = 0;
+    int16_t player_hp_after = 0;
+};
+
 class CombatEngine {
 public:
     Player player;
@@ -28,6 +38,8 @@ public:
     FixedVector<DeckCard, 10> hand;
     FixedVector<DeckCard, 50> discard_pile;
     FixedVector<DeckCard, 50> exhaust_pile;
+
+    FixedVector<EnemyActionRecord, 3> last_enemy_actions;
 
     CombatState state = CombatState::PLAYER_TURN;
     int turn_number = 1;

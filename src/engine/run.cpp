@@ -97,17 +97,25 @@ void RunManager::enter_room(int node_index) {
             phase = RunPhase::IN_COMBAT;
             FixedVector<EnemyType, 3> etypes;
             if (node.type == RoomType::BOSS) {
-                etypes.push_back(EnemyType::CULTIST);
+                etypes.push_back(EnemyType::CEREMONIAL_BEAST);
             } else if (node.type == RoomType::ELITE) {
-                etypes.push_back(EnemyType::JAW_WORM);
-                etypes.push_back(EnemyType::LOUSE);
-            } else {
-                if (current_floor > 3 && (next_random() % 2 == 0)) {
-                    etypes.push_back(EnemyType::CULTIST);
-                    etypes.push_back(EnemyType::LOUSE);
-                } else {
-                    etypes.push_back(EnemyType::CULTIST);
+                etypes.push_back(EnemyType::GREMLIN_NOB);
+            } else if (current_floor > 3) {
+                switch (next_random() % 3) {
+                    case 0:
+                        etypes.push_back(EnemyType::CULTIST);
+                        etypes.push_back(EnemyType::LOUSE);
+                        break;
+                    case 1:
+                        etypes.push_back(EnemyType::JAW_WORM);
+                        break;
+                    default:
+                        etypes.push_back(EnemyType::LOUSE);
+                        etypes.push_back(EnemyType::LOUSE);
+                        break;
                 }
+            } else {
+                etypes.push_back(EnemyType::CULTIST);
             }
 
             // Start combat with current HP and master deck
