@@ -3,13 +3,28 @@
 namespace engine {
 
 static const CardDef CARDS[] = {
-    { CardId::NONE, "None", 0, CardType::SKILL, TargetType::SELF, 0, 0, "" },
-    { CardId::STRIKE, "Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 0, "Deal 6 dmg." },
-    { CardId::DEFEND, "Defend", 1, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 block." },
-    { CardId::BASH, "Bash", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 2, "Deal 8 dmg. Apply 2 Vuln." },
-    { CardId::IRON_WAVE, "Iron Wave", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 5, "Gain 5 blk. Deal 5 dmg." },
-    { CardId::CLEAVE, "Cleave", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 8, 0, "Deal 8 dmg to all." },
-    { CardId::ANGER, "Anger", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 0, "Deal 6 dmg. Copy to discard." }
+    { CardId::NONE, "None", 0, CardType::SKILL, TargetType::SELF, 0, 0, "", "None+", 0, 0, 0, "" },
+    { CardId::STRIKE, "Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 0, "Deal 6 dmg.", "Strike+", 1, 9, 0, "Deal 9 dmg." },
+    { CardId::DEFEND, "Defend", 1, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 block.", "Defend+", 1, 8, 0, "Gain 8 block." },
+    { CardId::BASH, "Bash", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 2, "Deal 8 dmg. Apply 2 Vuln.", "Bash+", 2, 10, 3, "Deal 10 dmg. Apply 3 Vuln." },
+    { CardId::IRON_WAVE, "Iron Wave", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 5, "Gain 5 blk. Deal 5 dmg.", "Iron Wave+", 1, 7, 7, "Gain 7 blk. Deal 7 dmg." },
+    { CardId::CLEAVE, "Cleave", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 8, 0, "Deal 8 dmg to all.", "Cleave+", 1, 11, 0, "Deal 11 dmg to all." },
+    { CardId::ANGER, "Anger", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 0, "Deal 6 dmg. Copy to discard.", "Anger+", 0, 8, 0, "Deal 8 dmg. Copy to discard." },
+    { CardId::METALLICIZE, "Metallicize", 1, CardType::POWER, TargetType::SELF, 3, 0, "Gain 3 block at end of turn.", "Metallicize+", 1, 4, 0, "Gain 4 block at end of turn." },
+    // Silent
+    { CardId::NEUTRALIZE, "Neutralize", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 3, 1, "Deal 3 dmg. Apply 1 Weak.", "Neutralize+", 0, 4, 2, "Deal 4 dmg. Apply 2 Weak." },
+    { CardId::SURVIVOR, "Survivor", 1, CardType::SKILL, TargetType::SELF, 8, 1, "Gain 8 block. Discard 1 card.", "Survivor+", 1, 11, 1, "Gain 11 block. Discard 1 card." },
+    { CardId::POISON_STAB, "Poison Stab", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 3, "Deal 6 dmg. Apply 3 Poison.", "Poison Stab+", 1, 8, 4, "Deal 8 dmg. Apply 4 Poison." },
+    { CardId::DEADLY_POISON, "Deadly Poison", 1, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 5, "Apply 5 Poison.", "Deadly Poison+", 1, 0, 7, "Apply 7 Poison." },
+    // Defect
+    { CardId::ZAP, "Zap", 1, CardType::SKILL, TargetType::SELF, 0, 1, "Channel 1 Lightning.", "Zap+", 0, 0, 1, "Channel 1 Lightning." },
+    { CardId::DUALCAST, "Dualcast", 1, CardType::SKILL, TargetType::SELF, 0, 2, "Trigger oldest Orb twice.", "Dualcast+", 0, 0, 2, "Trigger oldest Orb twice." },
+    // Regent
+    { CardId::FALLING_STAR, "Falling Star", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 7, 1, "Deal 7 dmg. Gain 1 Star.", "Falling Star+", 1, 10, 2, "Deal 10 dmg. Gain 2 Stars." },
+    { CardId::VENERATE, "Venerate", 1, CardType::SKILL, TargetType::SELF, 6, 2, "Gain 6 block. Gain 2 Stars.", "Venerate+", 1, 9, 3, "Gain 9 block. Gain 3 Stars." },
+    // Necrobinder
+    { CardId::UNLEASH, "Unleash", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 0, "Deal 8 necrotic dmg.", "Unleash+", 1, 12, 0, "Deal 12 necrotic dmg." },
+    { CardId::BODYGUARD, "Bodyguard", 1, CardType::SKILL, TargetType::SELF, 7, 1, "Gain 7 block. Summon 1 minion.", "Bodyguard+", 1, 10, 1, "Gain 10 block. Summon 1 minion." }
 };
 
 const CardDef& CardDef::get(CardId id) {

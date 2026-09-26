@@ -57,7 +57,29 @@ public:
 
     void gain_block(int16_t amount) {
         if (amount > 0) {
-            block += amount;
+            int16_t dex = get_status(StatusType::DEXTERITY);
+            int16_t total = amount + dex;
+            if (total > 0) {
+                block += total;
+            }
+        }
+    }
+
+    int16_t apply_poison_tick() {
+        int16_t p = get_status(StatusType::POISON);
+        if (p > 0) {
+            hp -= p;
+            if (hp < 0) hp = 0;
+            add_status(StatusType::POISON, -1);
+            return p;
+        }
+        return 0;
+    }
+
+    void apply_metallicize_tick() {
+        int16_t m = get_status(StatusType::METALLICIZE);
+        if (m > 0) {
+            block += m;
         }
     }
 
@@ -82,12 +104,30 @@ public:
         }
         return unblocked;
     }
+
+    void heal(int16_t amount) {
+        if (amount > 0) {
+            hp = std::min<int16_t>(max_hp, hp + amount);
+        }
+    }
 };
 
 class Player : public CombatEntity {
 public:
     int8_t energy = 3;
     int8_t max_energy = 3;
+
+    // Defect Orbs (Max 3 slots)
+    FixedVector<OrbType, 3> orbs;
+    int16_t dark_orb_charge = 0;
+
+    // Regent Sovereign Stars (0 to 5)
+    uint8_t sovereign_stars = 0;
+
+    // Necrobinder Souls & Minion (Osty)
+    uint8_t souls = 0;
+    int16_t minion_hp = 0;
+    int16_t minion_block = 0;
 
     void init() {
         max_hp = 80;
@@ -96,12 +136,48 @@ public:
         energy = 3;
         max_energy = 3;
         statuses.clear();
+        orbs.clear();
+        dark_orb_charge = 0;
+        sovereign_stars = 0;
+        souls = 0;
+        minion_hp = 0;
+        minion_block = 0;
     }
 
     void reset_turn() {
         block = 0;
         energy = max_energy;
+        apply_metallicize_tick();
     }
+
+    int16_t take_damage_with_minion(int16_t amount) {
+        if (minion_hp > 0) {
+            if (minion_block > 0) {
+                if (minion_block >= amount) {
+                    minion_block -= amount;
+                    return 0;
+                } else {
+                    amount -= minion_block;
+                    minion_block = 0;
+                }
+            }
+            if (minion_hp >= amount) {
+                minion_hp -= amount;
+                return 0;
+            } else {
+                amount -= minion_hp;
+                minion_hp = 0;
+            }
+        }
+        return take_damage(amount);
+    }
+
+    void channel_orb(OrbType type, CombatEntity* enemy = nullptr);
+    void evoke_oldest_orb(CombatEntity* enemy = nullptr);
+    void trigger_passive_orbs(CombatEntity* enemy = nullptr);
+    void add_stars(uint8_t count);
+    void add_souls(uint8_t count);
+    void summon_minion(int16_t m_hp, int16_t m_block = 0);
 };
 
 enum class EnemyIntentType : uint8_t {
@@ -122,7 +198,9 @@ struct EnemyIntent {
 
 enum class EnemyType : uint8_t {
     CULTIST,
-    JAW_WORM
+    JAW_WORM,
+    LOUSE,
+    GREMLIN_NOB
 };
 
 class Enemy : public CombatEntity {

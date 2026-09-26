@@ -11,10 +11,22 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Cultist";
         max_hp = 50;
         hp = 50;
-    } else {
+    } else if (type == EnemyType::JAW_WORM) {
         name = "Jaw Worm";
         max_hp = 42;
         hp = 42;
+    } else if (type == EnemyType::LOUSE) {
+        name = "Morpion";
+        max_hp = 18;
+        hp = 18;
+    } else if (type == EnemyType::GREMLIN_NOB) {
+        name = "Gremlin Nob";
+        max_hp = 82;
+        hp = 82;
+    } else {
+        name = "Monstre";
+        max_hp = 30;
+        hp = 30;
     }
 
     plan_turn(1);
@@ -37,8 +49,7 @@ void Enemy::plan_turn(int turn_number) {
             current_intent.status_amount = 0;
             current_intent.description = "Dark Strike";
         }
-    } else {
-        // Jaw worm
+    } else if (type == EnemyType::JAW_WORM) {
         if (turn_number == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = 11;
@@ -56,6 +67,37 @@ void Enemy::plan_turn(int turn_number) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 3;
             current_intent.description = "Bellow (+3 Str, 6 blk)";
+        }
+    } else if (type == EnemyType::LOUSE) {
+        if (turn_number % 2 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 6;
+            current_intent.block = 0;
+            current_intent.description = "Bite (6 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = 5;
+            current_intent.block = 5;
+            current_intent.description = "Spite (5 dmg, 5 blk)";
+        }
+    } else if (type == EnemyType::GREMLIN_NOB) {
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.base_damage = 0;
+            current_intent.block = 0;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.description = "Bellow (+2 Str)";
+        } else if (turn_number == 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 8;
+            current_intent.block = 0;
+            current_intent.description = "Skull Bash (8 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 14;
+            current_intent.block = 0;
+            current_intent.description = "Rush (14 dmg)";
         }
     }
 }
@@ -91,7 +133,7 @@ void Enemy::execute_turn(Player& player) {
         }
 
         if (dmg < 0) dmg = 0;
-        player.take_damage(dmg);
+        player.take_damage_with_minion(dmg);
     }
 
     // End of turn status triggers (Ritual -> Strength)
@@ -100,8 +142,80 @@ void Enemy::execute_turn(Player& player) {
         add_status(StatusType::STRENGTH, ritual);
     }
 
+    // Apply poison tick at turn end
+    apply_poison_tick();
+
     // Tick end-of-turn status counters (Vulnerable, Weak)
     tick_end_of_turn_statuses();
+}
+
+void Player::channel_orb(OrbType type, CombatEntity* enemy) {
+    if (type == OrbType::NONE) return;
+    if (orbs.size() >= 3) {
+        evoke_oldest_orb(enemy);
+    }
+    orbs.push_back(type);
+    if (type == OrbType::DARK && dark_orb_charge == 0) {
+        dark_orb_charge = 6;
+    }
+}
+
+void Player::evoke_oldest_orb(CombatEntity* enemy) {
+    if (orbs.empty()) return;
+    OrbType oldest = orbs[0];
+    orbs.erase(0);
+
+    switch (oldest) {
+        case OrbType::LIGHTNING:
+            if (enemy) enemy->take_damage(8);
+            break;
+        case OrbType::FROST:
+            gain_block(5);
+            break;
+        case OrbType::DARK:
+            if (enemy) enemy->take_damage(dark_orb_charge > 0 ? dark_orb_charge : 6);
+            dark_orb_charge = 0;
+            break;
+        case OrbType::PLASMA:
+            energy += 2;
+            break;
+        default:
+            break;
+    }
+}
+
+void Player::trigger_passive_orbs(CombatEntity* enemy) {
+    for (size_t i = 0; i < orbs.size(); ++i) {
+        switch (orbs[i]) {
+            case OrbType::LIGHTNING:
+                if (enemy) enemy->take_damage(3);
+                break;
+            case OrbType::FROST:
+                gain_block(2);
+                break;
+            case OrbType::DARK:
+                dark_orb_charge += 6;
+                break;
+            case OrbType::PLASMA:
+                energy += 1;
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+void Player::add_stars(uint8_t count) {
+    sovereign_stars = (sovereign_stars + count > 5) ? 5 : (sovereign_stars + count);
+}
+
+void Player::add_souls(uint8_t count) {
+    souls = (souls + count > 99) ? 99 : (souls + count);
+}
+
+void Player::summon_minion(int16_t m_hp, int16_t m_block) {
+    minion_hp += m_hp;
+    minion_block += m_block;
 }
 
 } // namespace engine
