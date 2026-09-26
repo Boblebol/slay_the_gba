@@ -28,7 +28,7 @@ SITE = ROOT / "site"
 ASSETS = SITE / "assets"
 GRAPHICS = ROOT / "graphics"
 # Public URL used for canonical links, Open Graph and the sitemap (override with SITE_URL=...).
-SITE_URL = os.environ.get("SITE_URL", "https://slay-the-gba.netlify.app").rstrip("/")
+SITE_URL = os.environ.get("SITE_URL", "https://slay-the-gba.alexandre-enouf.fr").rstrip("/")
 ARTICLE_URL = "https://alexandre-enouf.fr/blog/slay-the-gba-vibe-coding-game-boy-advance/"
 PAGES: list[str] = []  # indexable pages, collected for sitemap.xml
 
