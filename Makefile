@@ -41,7 +41,7 @@ endif
 BUILD           := build_$(TARGET)
 LIBBUTANO       := butano/butano
 PYTHON          := python3
-SOURCES         := src src/engine butano/common/src
+SOURCES         := src src/engine src/gba butano/common/src
 INCLUDES        := include butano/common/include
 DATA            := 
 GRAPHICS        := graphics butano/common/graphics
