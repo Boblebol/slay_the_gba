@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import html
 import json
+import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -26,6 +27,9 @@ DATA = BIBLE / "data"
 SITE = ROOT / "site"
 ASSETS = SITE / "assets"
 GRAPHICS = ROOT / "graphics"
+# Public URL used for canonical links, Open Graph and the sitemap (override with SITE_URL=...).
+SITE_URL = os.environ.get("SITE_URL", "https://slay-the-gba.netlify.app").rstrip("/")
+PAGES: list[str] = []  # indexable pages, collected for sitemap.xml
 
 # ---------------------------------------------------------------------------------------------
 # Data
@@ -150,8 +154,32 @@ NAV = [
 ]
 
 
-def page(title: str, body: str, *, depth: int = 0, active: str = "", theme: str = "", description: str = "") -> str:
-    up = "../" * depth
+def page(title: str, body: str, *, depth: int = 0, active: str = "", theme: str = "", description: str = "",
+         path: str = "", noindex: bool = False, absolute: bool = False) -> str:
+    """Wrap a page body in the site shell. `path` is the page's URL path, used for SEO tags and the sitemap."""
+    up = "/" if absolute else "../" * depth
+    desc = description or "Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance, une cartouche par héros."
+    canonical = f"{SITE_URL}/{path}" if path else SITE_URL + "/"
+    if path and not noindex:
+        PAGES.append(path)
+    seo = f"""<link rel="canonical" href="{esc(canonical)}">
+<meta name="theme-color" content="#0d0b16">
+<meta name="robots" content="{'noindex, follow' if noindex else 'index, follow'}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Slay the GBA">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="{esc(title)} — Slay the GBA">
+<meta property="og:description" content="{esc(desc)}">
+<meta property="og:url" content="{esc(canonical)}">
+<meta property="og:image" content="{SITE_URL}/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Slay the GBA — écran titre sur Game Boy Advance">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{esc(title)} — Slay the GBA">
+<meta name="twitter:description" content="{esc(desc)}">
+<meta name="twitter:image" content="{SITE_URL}/assets/og.png">
+<link rel="apple-touch-icon" href="{up}assets/sprites/icon.png">"""
     links = "".join(
         f'<a href="{up}{href}"{" class=\"on\"" if href == active else ""}>{esc(label)}</a>' for href, label in NAV
     )
@@ -161,7 +189,8 @@ def page(title: str, body: str, *, depth: int = 0, active: str = "", theme: str 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)} — Slay the GBA</title>
-<meta name="description" content="{esc(description or 'Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance.')}">
+<meta name="description" content="{esc(desc)}">
+{seo}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
@@ -179,7 +208,18 @@ def page(title: str, body: str, *, depth: int = 0, active: str = "", theme: str 
 </main>
 <footer class="foot">
   <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
-  <p>Données : bible du projet (patch v0.111.0 Beta). Site généré par <code>scripts/build_site.py</code>.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). <a href="{up}mentions.html">Mentions légales &amp; confidentialité</a></p>
+  <div class="ae-footer">
+    <a class="ae-logo" href="https://alexandre-enouf.fr/" target="_blank" rel="noopener">Alexandre <em>Enouf</em></a>
+    <span class="ae-tag">Développeur produit &amp; Builder IA · Paris, France</span>
+    <nav class="ae-links" aria-label="Liens de l'auteur">
+      <a href="https://alexandre-enouf.fr/#lab" target="_blank" rel="noopener">⚡ Lab &amp; Projets</a>
+      <a href="https://alexandre-enouf.fr/blog/" target="_blank" rel="noopener">📖 Blog</a>
+      <a href="https://github.com/Boblebol" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/alexandreenouf-47834990" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:alexandre.enouf@gmail.com">Contact</a>
+    </nav>
+  </div>
 </footer>
 <script src="{up}assets/site.js"></script>
 </body>
@@ -367,7 +407,7 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
 <li>Ouvrez <code>slay_ironclad.gba</code> (ou un autre héros) dans mGBA, ou flashez-la sur une cartouche EZ-Flash / EverDrive.</li>
 <li>Régénérez l'art depuis la bible : <code>uv run scripts/build_gba_art.py</code>.</li></ol>''')}
 """
-    (SITE / "index.html").write_text(page("Accueil", body, active="index.html"))
+    (SITE / "index.html").write_text(page("Accueil", body, active="index.html", path=""))
 
 
 def build_heroes_index() -> None:
@@ -380,7 +420,8 @@ def build_heroes_index() -> None:
         for h in HEROES
     )
     body = panel("<h1>Les héros</h1><p>Cinq archétypes, cinq cartouches.</p>" + rows)
-    (SITE / "heros.html").write_text(page("Héros", body, active="heros.html"))
+    (SITE / "heros.html").write_text(page("Héros", body, active="heros.html", path="heros.html",
+                                          description="Les 5 héros de Slay the GBA et leurs cartouches."))
 
 
 def md_to_html(text: str, depth: int, image_base: str) -> str:
@@ -433,7 +474,9 @@ def build_hero_pages(cards: list[dict], relics: list[dict]) -> None:
 {panel('<div class="md">' + livret_html + '</div>', 'livret')}
 """
         (SITE / "heros" / f"{h.slug}.html").write_text(
-            page(h.name, body, depth=1, active="heros.html", theme=f"hero-{h.slug}", description=h.mechanic))
+            page(h.name, body, depth=1, active="heros.html", theme=f"hero-{h.slug}",
+                 description=f"{h.name}, {h.title} : {h.mechanic} Toutes ses cartes et la ROM {h.rom}.",
+                 path=f"heros/{h.slug}.html"))
 
 
 def build_cards_page(cards: list[dict]) -> None:
@@ -444,7 +487,7 @@ def build_cards_page(cards: list[dict]) -> None:
     jump = " ".join(f'<a href="#{p.lower()}">{esc(l)}</a>' for p, l in [(h.pool, h.name) for h in HEROES] + [(p, POOL_FR[p]) for p in ["Colorless", "Event", "Curse", "Quest"]])
     filters = card_filters().replace('data-target=".cards"', 'data-target=".cards"')
     body = panel(f"<h1>Toutes les cartes</h1><p class='jump'>{jump}</p>{filters}{sections}")
-    (SITE / "cartes.html").write_text(page("Cartes", body, active="cartes.html", description=f"{len(cards)} cartes de Slay the Spire 2."))
+    (SITE / "cartes.html").write_text(page("Cartes", body, active="cartes.html", description=f"Les {len(cards)} cartes de Slay the Spire 2 : filtres par héros, type et rareté.", path="cartes.html"))
 
 
 def build_bestiary(monsters: dict) -> None:
@@ -481,7 +524,8 @@ def build_bestiary(monsters: dict) -> None:
         out += f'<h2 id="{key}">{esc(ENCOUNTER_FR[key])}s <small>({len(items)})</small></h2><div class="monsters">{cards_html}</div>'
     jump = " ".join(f'<a href="#{k}">{ENCOUNTER_FR[k]}s</a>' for k in ["boss", "elite", "normal", "weak", "summon"])
     body = panel(f"<h1>Bestiaire</h1><p class='jump'>{jump}</p><input type='search' class='solo-search' placeholder='Rechercher un monstre…' data-solo='.monster'>{out}")
-    (SITE / "bestiaire.html").write_text(page("Bestiaire", body, active="bestiaire.html"))
+    (SITE / "bestiaire.html").write_text(page("Bestiaire", body, active="bestiaire.html", path="bestiaire.html",
+                                                  description="Bestiaire de Slay the Spire 2 : monstres, élites et boss avec PV et attaques."))
 
 
 def build_list_page(filename: str, title: str, items: list[dict], group_key: str, labels: dict, text_key: str,
@@ -497,7 +541,8 @@ def build_list_page(filename: str, title: str, items: list[dict], group_key: str
         )
         out += f'<h2>{esc(labels.get(key, key))} <small>({len(groups[key])})</small></h2><div class="relics">{rows}</div>'
     body = panel(f"<h1>{esc(title)}</h1><input type='search' class='solo-search' placeholder='Rechercher…' data-solo='.relic'>{out}")
-    (SITE / filename).write_text(page(title, body, active=active))
+    (SITE / filename).write_text(page(title, body, active=active, path=filename,
+                                      description=f"{title} de Slay the Spire 2 : {len(items)} entrées avec illustrations et effets."))
 
 
 def build_events(events: list[dict]) -> None:
@@ -508,7 +553,8 @@ def build_events(events: list[dict]) -> None:
         for e in sorted(events, key=lambda e: e["name"])
     )
     body = panel(f"<h1>Évènements mystères</h1><input type='search' class='solo-search' placeholder='Rechercher un évènement…' data-solo='.event'><div class='events'>{out}</div>")
-    (SITE / "evenements.html").write_text(page("Évènements", body, active="evenements.html"))
+    (SITE / "evenements.html").write_text(page("Évènements", body, active="evenements.html", path="evenements.html",
+                                                    description="Tous les évènements mystères de Slay the Spire 2, avec leurs récits."))
 
 
 def build_ancients(ancients: list[dict]) -> None:
@@ -526,7 +572,8 @@ def build_ancients(ancients: list[dict]) -> None:
 <div class="ancient-art" style="background-image:url(../bible{a['artPath']})"><img src="../bible{a['iconPath']}" alt=""><div><h2>{esc(a['name'])}</h2><p>{esc(a.get('epithet', ''))} · {esc(acts)}</p></div></div>
 <details><summary>Bénédictions et reliques</summary>{slots}</details><p><a href="bible/{ancient_tome(a['slug'])}">Tome détaillé ►</a></p></article>"""
     body = panel(f"<h1>Les Anciens</h1><p>Divinités rencontrées entre les actes, qui façonnent votre run par des reliques uniques.</p>{out}")
-    (SITE / "anciens.html").write_text(page("Anciens", body, active="anciens.html"))
+    (SITE / "anciens.html").write_text(page("Anciens", body, active="anciens.html", path="anciens.html",
+                                                 description="Les 8 Anciens de Slay the Spire 2, leurs bénédictions et reliques."))
 
 
 def ancient_tome(slug: str) -> str:
@@ -543,7 +590,8 @@ def build_guide() -> None:
     body = "".join(panel(p) for p in parts)
     body = body.replace('src="bible_raw/', 'src="../bible/').replace('href="bible_raw/', 'href="../bible/')
     body = re.sub(r'href="([\w.-]+)\.html', r'href="bible/\1.html', body)
-    (SITE / "guide.html").write_text(page("Guide", body, active="guide.html"))
+    (SITE / "guide.html").write_text(page("Guide", body, active="guide.html", path="guide.html",
+                                               description="Boucle de gameplay, ascension et interface de Slay the GBA."))
 
 
 def build_bible() -> None:
@@ -561,13 +609,54 @@ def build_bible() -> None:
         html_body = md_to_html(text, 1, base)
         html_body = html_body.replace('href="README.html', 'href="livrets.html')
         (out_dir / f"{stem}.html").write_text(page(title, panel(f'<p class="crumb"><a href="index.html">◄ Bible</a></p><div class="md">{html_body}</div>'),
-                                                   depth=1, active="bible/index.html"))
+                                                   depth=1, active="bible/index.html", path=f"bible/{stem}.html",
+                                                   description=f"Bible de Slay the GBA : {title}."))
         toc.append((stem, title, base))
     readme = md_to_html((BIBLE / "README.md").read_text(), 1, "")
     readme = readme.replace('href="README.html', 'href="index.html')
     listing = "".join(f'<li><a href="{s}.html">{esc(t)}</a>{" <span class=meta>livret</span>" if b else ""}</li>' for s, t, b in toc)
     body = panel(f"<h1>La bible complète</h1><p>Tous les tomes de conception du projet, rendus depuis <code>bible/</code>.</p><ol class='toc'>{listing}</ol>") + panel(f'<div class="md">{readme}</div>')
-    (out_dir / "index.html").write_text(page("Bible", body, depth=1, active="bible/index.html"))
+    (out_dir / "index.html").write_text(page("Bible", body, depth=1, active="bible/index.html", path="bible/index.html",
+                                             description="La bible de conception complète de Slay the GBA."))
+
+
+def build_static_pages() -> None:
+    """404 (served by Netlify for unknown URLs, so it uses absolute paths) and the legal notice."""
+    body = f"""<section class="hero-banner small" style="background-image:url(/assets/bg/gameover.png)">
+  <div class="hero-inner"><p class="kicker">Erreur 404</p><h1>DÉFAITE…</h1>
+  <p class="lead">Cette salle n'existe pas dans la Tour. Votre ascension s'arrête ici… à moins de rebrousser chemin.</p>
+  <div class="cta"><a class="btn" href="/index.html">◄ Retour à l'accueil</a><a class="btn ghost" href="/heros.html">Choisir un héros</a></div></div>
+</section>"""
+    (SITE / "404.html").write_text(page("Page introuvable", body, noindex=True, absolute=True, path="404.html"))
+
+    body = panel("""<h1>Mentions légales &amp; confidentialité</h1>
+<h2>Éditeur</h2>
+<p>Site personnel et non commercial édité par Alexandre Enouf, Paris, France — <a href="mailto:alexandre.enouf@gmail.com">alexandre.enouf@gmail.com</a>.</p>
+<h2>Hébergement</h2>
+<p>Netlify, Inc., 512 2nd Street, Suite 200, San Francisco, CA 94107, États-Unis — <a href="https://www.netlify.com" rel="noopener">netlify.com</a>.</p>
+<h2>Propriété intellectuelle</h2>
+<p>Slay the GBA est un fan-game non officiel, sans lien avec Mega Crit. <i>Slay the Spire</i>, ses personnages, cartes, illustrations et textes sont la propriété de Mega Crit Games. Les données et illustrations proviennent de la bible du projet (patch v0.111.0 Beta). Le moteur Butano est distribué sous licence zlib par Gustavo Valiente. Pour toute demande de retrait, écrivez à l'adresse ci-dessus.</p>
+<h2>Données personnelles &amp; cookies</h2>
+<p>Ce site ne dépose aucun cookie, n'utilise aucun outil de mesure d'audience et ne collecte aucune donnée personnelle. Les polices sont chargées depuis Google Fonts, qui peut recevoir votre adresse IP lors du chargement. L'hébergeur conserve des journaux techniques de connexion pour la sécurité du service.</p>
+<h2>ROMs</h2>
+<p>Les fichiers <code>.gba</code> proposés sont des créations homebrew compilées depuis le code du projet ; aucune ROM commerciale n'est distribuée.</p>""")
+    (SITE / "mentions.html").write_text(page("Mentions légales", body, path="mentions.html",
+                                             description="Mentions légales et politique de confidentialité de Slay the GBA."))
+
+
+def build_seo_files() -> None:
+    """robots.txt, sitemap.xml and the 1200x630 social preview image."""
+    (SITE / "robots.txt").write_text(f"User-agent: *\nAllow: /\nDisallow: /roms/\n\nSitemap: {SITE_URL}/sitemap.xml\n")
+    urls = "".join(
+        f"  <url><loc>{esc(SITE_URL + '/' + p)}</loc><priority>{'1.0' if p == '' else '0.8' if p.startswith('heros') else '0.6'}</priority></url>\n"
+        for p in dict.fromkeys(PAGES)
+    )
+    (SITE / "sitemap.xml").write_text(
+        f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
+    # Real title screen capture (logo included), pixel-doubled to the social card size.
+    title = Image.open(ASSETS / "screens" / "title.png").convert("RGB")
+    og = title.resize((1200, 800), Image.NEAREST).crop((0, 0, 1200, 630))
+    og.save(ASSETS / "og.png", optimize=True)
 
 
 def main() -> None:
@@ -593,7 +682,9 @@ def main() -> None:
     build_ancients(ancients)
     build_guide()
     build_bible()
-    print("Site generated in", SITE)
+    build_static_pages()
+    build_seo_files()
+    print("Site generated in", SITE, "for", SITE_URL)
 
 
 if __name__ == "__main__":

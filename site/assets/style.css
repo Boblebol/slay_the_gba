@@ -258,6 +258,14 @@ th { background: #ffffff10; font-family: var(--pix); color: var(--gold); }
 
 .foot { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 16px; border-top: 3px solid var(--line); background: #0008; }
 
+.ae-footer { max-width: 1080px; margin: 16px auto 0; padding-top: 14px; border-top: 1px dashed #ffffff22;
+  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: center; }
+.ae-logo { font-family: var(--pix); font-size: 16px; color: var(--ink); }
+.ae-logo em { color: var(--gold); }
+.ae-tag { color: var(--muted); }
+.ae-links { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+.ae-links a { color: var(--line-hi); }
+
 @media (max-width: 760px) {
   .hero-inner { padding: 20px 16px; }
   .kicker { font-size: 11px; }

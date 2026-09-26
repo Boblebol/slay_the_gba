@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /roms/
+
+Sitemap: https://slay-the-gba.netlify.app/sitemap.xml
