@@ -371,7 +371,7 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
     <p class="kicker">Game Boy Advance · 5 cartouches</p>
     <h1>SLAY THE GBA</h1>
     <p class="lead">Slay the Spire 2 réinventé en 240×160 : deckbuilding roguelike, arène de combat façon Pokémon GBA et une cartouche par héros.</p>
-    <div class="cta"><a class="btn" href="#cartouches">Choisir un héros ►</a><a class="btn ghost" href="#telecharger">▼ Télécharger les ROMs</a><a class="btn ghost" href="bible/index.html">Lire la bible</a><a class="btn ghost" href="{ARTICLE_URL}" target="_blank" rel="noopener">📖 L'histoire du projet</a></div>
+    <div class="cta"><a class="btn" href="#jouer">Comment jouer ►</a><a class="btn ghost" href="#cartouches">Choisir un héros</a><a class="btn ghost" href="#telecharger">▼ Télécharger les ROMs</a><a class="btn ghost" href="bible/index.html">Lire la bible</a><a class="btn ghost" href="{ARTICLE_URL}" target="_blank" rel="noopener">📖 L'histoire du projet</a></div>
   </div>
 </section>
 
@@ -403,10 +403,19 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
 
 {panel('<h2 id="telecharger">Télécharger les cartouches</h2><p>Une ROM <code>.gba</code> par héros, à ouvrir dans un émulateur (mGBA, Delta sur iPhone, RetroArch…) ou à flasher sur une cartouche EZ-Flash / EverDrive.</p><div class="downloads">' + downloads + '</div>')}
 
-{panel('''<h2>Jouer</h2>
-<ol class="steps"><li>Compilez les cartouches : <code>make all-roms</code> (Docker devkitARM automatique).</li>
-<li>Ouvrez <code>slay_ironclad.gba</code> (ou un autre héros) dans mGBA, ou flashez-la sur une cartouche EZ-Flash / EverDrive.</li>
-<li>Régénérez l'art depuis la bible : <code>uv run scripts/build_gba_art.py</code>.</li></ol>''')}
+{panel('''<h2 id="jouer">Jouer</h2>
+<ol class="steps">
+<li><b>Téléchargez la cartouche</b> de votre héros (fichier <code>.gba</code>) dans la <a href="#telecharger">section Télécharger</a> ou sur la page du héros.</li>
+<li><b>Installez un émulateur Game Boy Advance</b> gratuit :
+  <ul>
+    <li>Ordinateur (Windows, macOS, Linux) : <a href="https://mgba.io/downloads.html" target="_blank" rel="noopener">mGBA</a> (recommandé).</li>
+    <li>iPhone / iPad : <a href="https://apps.apple.com/app/delta-game-emulator/id1048524688" target="_blank" rel="noopener">Delta</a>.</li>
+    <li>Android : <a href="https://play.google.com/store/apps/details?id=com.fastemulator.gba" target="_blank" rel="noopener">My Boy!</a> ou <a href="https://www.retroarch.com/" target="_blank" rel="noopener">RetroArch</a>.</li>
+  </ul></li>
+<li><b>Ouvrez le fichier <code>.gba</code></b> dans l'émulateur (Fichier → Charger une ROM, ou importez-le dans l'app), puis appuyez sur START.</li>
+<li>Vous avez une vraie console ? Copiez la ROM sur une cartouche flash (EZ-Flash, EverDrive) et jouez sur GBA, GBA SP ou DS.</li>
+</ol>
+<p class="meta">Les ROMs sont des créations homebrew du projet : aucune ROM commerciale n'est distribuée.</p>''')}
 """
     (SITE / "index.html").write_text(page("Accueil", body, active="index.html", path=""))
 

@@ -148,6 +148,7 @@ th { background: #ffffff10; font-family: var(--pix); color: var(--gold); }
 .download b { display: block; font-family: var(--pix); font-weight: 400; font-size: 18px; }
 .download .btn { margin-top: 6px; }
 .btn small { font-size: 12px; opacity: .8; }
+.steps ul { margin: 6px 0; }
 .steps li { margin: 6px 0; }
 
 /* Heroes */
