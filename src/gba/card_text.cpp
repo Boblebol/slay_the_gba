@@ -70,6 +70,12 @@ bn::string_view base_name(engine::CardId id)
         return "Vague de froid";
     case engine::CardId::LEAP:
         return "Bond";
+    case engine::CardId::SOLAR_STRIKE:
+        return "Frappe solaire";
+    case engine::CardId::GATHER_LIGHT:
+        return "Lumière rassemblée";
+    case engine::CardId::CELESTIAL_MIGHT:
+        return "Puissance céleste";
     default:
         return "???";
     }
@@ -181,6 +187,15 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::LEAP:
         stream << "Gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::SOLAR_STRIKE:
+        stream << "Inflige " << value << " dégâts. Gagne " << secondary << " Étoile(s).";
+        break;
+    case engine::CardId::GATHER_LIGHT:
+        stream << "Gagne " << value << " d'Armure et " << secondary << " Étoile(s).";
+        break;
+    case engine::CardId::CELESTIAL_MIGHT:
+        stream << "Inflige " << value << " dégâts " << secondary << " fois.";
         break;
     default:
         break;

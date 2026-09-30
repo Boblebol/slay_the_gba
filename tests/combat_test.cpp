@@ -417,6 +417,37 @@ void test_regent() {
     std::cout << "[PASS] Regent: Falling Star + Vulnerable, Venerate, Stars cap 5, Stars on Strike/Defend" << std::endl;
 }
 
+void test_regent_commons() {
+    // Solar Strike hits and gains Stars (capped at 5 like the other Star cards).
+    CombatEngine solar = make_combat(CharacterId::REGENT);
+    play(solar, DeckCard(CardId::SOLAR_STRIKE, true));
+    assert(solar.enemies[0].hp == 42 - 10);
+    assert(solar.player.sovereign_stars == 2);
+
+    // Gather Light blocks and gains a Star.
+    CombatEngine gather = make_combat(CharacterId::REGENT);
+    gather.player.block = 0;
+    play(gather, CardId::GATHER_LIGHT);
+    assert(gather.player.block == 8 && gather.player.sovereign_stars == 1);
+
+    // Celestial Might: 3 hits (4 once upgraded), each with Strength, for 2 energy.
+    CombatEngine might = make_combat(CharacterId::REGENT);
+    might.player.add_status(StatusType::STRENGTH, 1);
+    play(might, CardId::CELESTIAL_MIGHT);
+    assert(might.enemies[0].hp == 42 - 3 * 7);
+    assert(might.player.energy == might.player.max_energy - 2);
+    might.enemies[0].hp = 42;
+    play(might, DeckCard(CardId::CELESTIAL_MIGHT, true));
+    assert(might.enemies[0].hp == 42 - 4 * 7);
+
+    std::span<const CardId> pool = RunManager::card_reward_pool(CharacterId::REGENT);
+    for (CardId id : { CardId::SOLAR_STRIKE, CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT }) {
+        assert(std::find(pool.begin(), pool.end(), id) != pool.end());
+    }
+    assert(std::find(pool.begin(), pool.end(), CardId::DEFEND) == pool.end());
+    std::cout << "[PASS] Regent commons: Solar Strike, Gather Light, Celestial Might" << std::endl;
+}
+
 void test_necrobinder() {
     CombatEngine combat = make_combat(CharacterId::NECROBINDER);
     combat.enemies[0].add_status(StatusType::VULNERABLE, 1);
@@ -502,6 +533,7 @@ int main() {
     test_defect();
     test_defect_commons();
     test_regent();
+    test_regent_commons();
     test_necrobinder();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;

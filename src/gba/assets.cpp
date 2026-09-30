@@ -22,6 +22,7 @@
 #include "bn_sprite_items_card_bash.h"
 #include "bn_sprite_items_card_beam_cell.h"
 #include "bn_sprite_items_card_bodyguard.h"
+#include "bn_sprite_items_card_celestial_might.h"
 #include "bn_sprite_items_card_cleave.h"
 #include "bn_sprite_items_card_cold_snap.h"
 #include "bn_sprite_items_card_dagger_spray.h"
@@ -33,6 +34,7 @@
 #include "bn_sprite_items_card_defend_silent.h"
 #include "bn_sprite_items_card_dualcast.h"
 #include "bn_sprite_items_card_falling_star.h"
+#include "bn_sprite_items_card_gather_light.h"
 #include "bn_sprite_items_card_iron_wave.h"
 #include "bn_sprite_items_card_leap.h"
 #include "bn_sprite_items_card_metallicize.h"
@@ -41,6 +43,7 @@
 #include "bn_sprite_items_card_pommel_strike.h"
 #include "bn_sprite_items_card_shrug_it_off.h"
 #include "bn_sprite_items_card_slice.h"
+#include "bn_sprite_items_card_solar_strike.h"
 #include "bn_sprite_items_card_strike_defect.h"
 #include "bn_sprite_items_card_strike_ironclad.h"
 #include "bn_sprite_items_card_strike_necrobinder.h"
@@ -262,6 +265,12 @@ const bn::sprite_item& big_card_item(engine::CardId id)
         return bn::sprite_items::card_cold_snap;
     case engine::CardId::LEAP:
         return bn::sprite_items::card_leap;
+    case engine::CardId::SOLAR_STRIKE:
+        return bn::sprite_items::card_solar_strike;
+    case engine::CardId::GATHER_LIGHT:
+        return bn::sprite_items::card_gather_light;
+    case engine::CardId::CELESTIAL_MIGHT:
+        return bn::sprite_items::card_celestial_might;
     default:
         return bn::sprite_items::HERO_ITEM(card_strike_);
     }

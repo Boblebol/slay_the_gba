@@ -384,6 +384,25 @@ bool CombatEngine::play_card(int index, int target_index) {
             set_log(upgraded ? "Played Leap+!" : "Played Leap!");
             break;
         }
+        case CardId::SOLAR_STRIKE: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            player.add_stars(secondary_value);
+            set_log(upgraded ? "Played Solar Strike+!" : "Played Solar Strike!");
+            break;
+        }
+        case CardId::GATHER_LIGHT: {
+            player.gain_block(base_value);
+            player.add_stars(secondary_value);
+            set_log(upgraded ? "Played Gather Light+!" : "Played Gather Light!");
+            break;
+        }
+        case CardId::CELESTIAL_MIGHT: {
+            for (uint8_t hit = 0; hit < secondary_value; ++hit) {
+                current_target.take_damage(attack_damage(base_value, player, current_target));
+            }
+            set_log(upgraded ? "Played Celestial Might+!" : "Played Celestial Might!");
+            break;
+        }
         default:
             set_log("Played card!");
             break;

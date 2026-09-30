@@ -232,6 +232,9 @@ CARDS: list[CardArt] = [
     CardArt("ball_lightning", "defect", "ball_lightning", "attack", (1, 1)),
     CardArt("cold_snap", "defect", "cold_snap", "attack", (1, 1)),
     CardArt("leap", "defect", "leap", "skill", (1, 1)),
+    CardArt("solar_strike", "regent", "solar_strike", "attack", (1, 1)),
+    CardArt("gather_light", "regent", "gather_light", "skill", (1, 1)),
+    CardArt("celestial_might", "regent", "celestial_might", "attack", (2, 2)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}
