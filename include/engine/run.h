@@ -94,8 +94,10 @@ public:
 
     // Ascension rules
     static std::span<const AscensionModifier> get_ascension_modifiers();
-    int16_t get_enemy_damage_multiplier() const;
-    int16_t get_enemy_hp_multiplier() const;
+    // Percentages applied to the enemies of a room: normal monsters from A2 (damage) / A7 (HP), elites from
+    // A3 / A8, bosses from A4 / A9.
+    int16_t get_enemy_damage_multiplier(RoomType room = RoomType::MONSTER) const;
+    int16_t get_enemy_hp_multiplier(RoomType room = RoomType::MONSTER) const;
 
     // Random generator state, saved and restored with the run.
     [[nodiscard]] uint32_t rng_state() const { return rng_state_; }

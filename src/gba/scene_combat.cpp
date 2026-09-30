@@ -698,17 +698,7 @@ void CombatScene::_refresh_enemy_hud(int index)
     Icon icon = Icon::UNKNOWN;
     TextLine value;
     bn::ostringstream stream(value);
-    int damage = intent.base_damage + enemy.get_status(engine::StatusType::STRENGTH);
-
-    if(enemy.get_status(engine::StatusType::WEAK) > 0)
-    {
-        damage = damage * 3 / 4;
-    }
-
-    if(_combat.player.get_status(engine::StatusType::VULNERABLE) > 0)
-    {
-        damage = damage * 3 / 2;
-    }
+    int damage = enemy.intent_damage(_combat.player);
 
     switch(intent.type)
     {

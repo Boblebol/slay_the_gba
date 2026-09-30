@@ -2,6 +2,7 @@
 #include <cassert>
 #include <iostream>
 #include "engine/combat.h"
+#include "engine/run.h"
 
 using namespace engine;
 
@@ -303,6 +304,61 @@ void test_necrobinder() {
     std::cout << "[PASS] Necrobinder: Unleash + Vulnerable, Bodyguard block and Osty absorbing damage" << std::endl;
 }
 
+// Enters the first map room after forcing its type, like a player walking into it.
+void enter_room_of_type(RunManager& run, RoomType type) {
+    int index = type == RoomType::BOSS ? run.map.boss_node_index : 0;
+    run.map.nodes[index].type = type;
+    run.enter_room(index);
+}
+
+void test_ascension() {
+    // A0: enemies as designed.
+    RunManager normal;
+    normal.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(normal, RoomType::ELITE);
+    assert(normal.combat.enemies[0].max_hp == 82 && normal.combat.enemies[0].damage_percent == 100);
+
+    // A3: elites hit 20 % harder but keep their HP until A8.
+    RunManager a3;
+    a3.start_run(CharacterId::IRONCLAD, 3, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(a3, RoomType::ELITE);
+    assert(a3.combat.enemies[0].max_hp == 82 && a3.combat.enemies[0].damage_percent == 120);
+
+    // A10: every room is tougher; the intent shown is the damage really dealt (Chomp 11 x 1.2 = 13).
+    RunManager a10;
+    a10.start_run(CharacterId::IRONCLAD, 10, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(a10, RoomType::MONSTER);
+    const Enemy& cultist = a10.combat.enemies[0];
+    assert(cultist.max_hp == 50 * 115 / 100 && cultist.hp == cultist.max_hp && cultist.damage_percent == 120);
+
+    CombatEngine fight = make_combat(CharacterId::IRONCLAD);
+    fight.enemies[0].damage_percent = 120;
+    assert(fight.enemies[0].intent_damage(fight.player) == 13);
+    fight.end_player_turn();
+    assert(fight.player.hp == 80 - 13);
+
+    RunManager boss_a9;
+    boss_a9.start_run(CharacterId::IRONCLAD, 9, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(boss_a9, RoomType::BOSS);
+    assert(boss_a9.combat.enemies[0].max_hp == 150 * 115 / 100);
+
+    // After an act boss: full heal, only 75 % of the missing HP from A5.
+    RunManager rested;
+    rested.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(rested, RoomType::BOSS);
+    rested.combat.player.hp = 30;
+    rested.proceed_after_combat();
+    assert(rested.current_act == 2 && rested.hp == 80);
+
+    RunManager tired;
+    tired.start_run(CharacterId::IRONCLAD, 5, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(tired, RoomType::BOSS);
+    tired.combat.player.hp = 30;
+    tired.proceed_after_combat();
+    assert(tired.hp == 36 + (80 - 36) * 3 / 4); // Burning Blood heals 6 first
+    std::cout << "[PASS] Ascension: elite/monster/boss damage (A2-A4) and HP (A7-A9) bonuses, intent damage, post-boss heal (A5)" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -315,6 +371,7 @@ int main() {
     test_defect();
     test_regent();
     test_necrobinder();
+    test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;
 }

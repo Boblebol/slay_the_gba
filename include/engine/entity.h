@@ -224,8 +224,11 @@ public:
     EnemyType type = EnemyType::CULTIST;
     std::string_view name = "Cultist";
     EnemyIntent current_intent;
+    int16_t damage_percent = 100; // Ascension bonus on attack damage
 
     void init(EnemyType enemy_type);
+    // Damage the current intent would deal to `target` right now (0 when it does not attack).
+    int16_t intent_damage(const CombatEntity& target) const;
     void plan_turn(int turn_number);
     void execute_turn(Player& player);
 };

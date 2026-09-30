@@ -124,6 +124,15 @@ void RunManager::enter_room(int node_index) {
             combat.player.hp = hp;
             combat.player.max_hp = max_hp;
 
+            // Ascension: tougher and harder-hitting enemies depending on the room.
+            int16_t hp_percent = get_enemy_hp_multiplier(node.type);
+            for (Enemy& foe : combat.enemies) {
+                foe.max_hp = static_cast<int16_t>(foe.max_hp * hp_percent / 100);
+                foe.hp = foe.max_hp;
+                foe.damage_percent = get_enemy_damage_multiplier(node.type);
+            }
+            combat.enemy = combat.enemies[0];
+
             // Replace combat piles with current master deck
             combat.draw_pile.clear();
             combat.hand.clear();
@@ -305,6 +314,9 @@ void RunManager::proceed_after_combat() {
 
     if (map.nodes[current_node_index].type == RoomType::BOSS) {
         if (current_act < 3) {
+            // Between acts the hero recovers every lost HP, only 75 % of them from Ascension 5.
+            int16_t missing = max_hp - hp;
+            hp += ascension_level >= 5 ? static_cast<int16_t>(missing * 3 / 4) : missing;
             advance_act();
         } else {
             phase = RunPhase::VICTORY_ACT;
@@ -331,12 +343,14 @@ std::span<const AscensionModifier> RunManager::get_ascension_modifiers() {
     return std::span<const AscensionModifier>(ASCENSION_MODIFIERS);
 }
 
-int16_t RunManager::get_enemy_damage_multiplier() const {
-    return (ascension_level >= 2) ? 120 : 100;
+int16_t RunManager::get_enemy_damage_multiplier(RoomType room) const {
+    uint8_t from = room == RoomType::BOSS ? 4 : (room == RoomType::ELITE ? 3 : 2);
+    return ascension_level >= from ? 120 : 100;
 }
 
-int16_t RunManager::get_enemy_hp_multiplier() const {
-    return (ascension_level >= 7) ? 115 : 100;
+int16_t RunManager::get_enemy_hp_multiplier(RoomType room) const {
+    uint8_t from = room == RoomType::BOSS ? 9 : (room == RoomType::ELITE ? 8 : 7);
+    return ascension_level >= from ? 115 : 100;
 }
 
 } // namespace engine
