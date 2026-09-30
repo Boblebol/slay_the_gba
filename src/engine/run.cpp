@@ -315,6 +315,10 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("CRACKED_CORE")) {
         combat.player.channel_orb(OrbType::LIGHTNING);
     }
+    // Anchor: start each combat with 10 Block, added after the turn reset and unaffected by Dexterity.
+    if (has_relic("ANCHOR")) {
+        combat.player.block += 10;
+    }
 }
 
 void RunManager::proceed_after_combat() {

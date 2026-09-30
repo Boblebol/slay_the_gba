@@ -331,6 +331,20 @@ int main() {
     assert(defect_run.combat.hand.size() == 5);
     std::cout << "[PASS] Starter relics: Ring of the Snake (+2 cards) & Cracked Core (Lightning orb)" << std::endl;
 
+    // Anchor (bought at the shop): every combat starts with 10 Block.
+    assert(plain_run.combat.player.block == 0);
+    RunManager anchor_run;
+    anchor_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    anchor_run.gold = 150;
+    ShopInventory anchor_shop;
+    anchor_shop.generate(CharacterId::IRONCLAD, 1);
+    assert(anchor_shop.relics[1].relic_id == "ANCHOR");
+    assert(anchor_shop.buy_relic(anchor_run, 1));
+    assert(anchor_run.has_relic("ANCHOR"));
+    anchor_run.enter_room(anchor_run.get_available_rooms()[0]);
+    assert(anchor_run.combat.player.block == 10);
+    std::cout << "[PASS] Anchor: 10 Block at the start of each combat" << std::endl;
+
     // Test Campfire Rest
     assert(run.can_rest());
     int hp_before_rest = run.hp;
