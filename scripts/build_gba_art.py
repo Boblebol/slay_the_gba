@@ -237,6 +237,10 @@ CARDS: list[CardArt] = [
     CardArt("celestial_might", "regent", "celestial_might", "attack", (2, 2)),
     CardArt("pull_aggro", "necrobinder", "pull_aggro", "skill", (2, 2)),
     CardArt("drain_power", "necrobinder", "drain_power", "attack", (1, 1)),
+    CardArt("body_slam", "ironclad", "body_slam", "attack", (1, 0)),
+    CardArt("deflect", "silent", "deflect", "skill", (0, 0)),
+    CardArt("coolheaded", "defect", "coolheaded", "skill", (1, 1)),
+    CardArt("sweeping_beam", "defect", "sweeping_beam", "attack", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}

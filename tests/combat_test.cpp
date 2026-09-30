@@ -511,6 +511,51 @@ void test_necrobinder_commons() {
     std::cout << "[PASS] Necrobinder commons: Pull Aggro, Drain Power" << std::endl;
 }
 
+void test_more_commons() {
+    // Body Slam deals damage equal to the block (Strength applies), and costs 0 once upgraded.
+    CombatEngine slam = make_combat(CharacterId::IRONCLAD);
+    slam.player.block = 12;
+    slam.player.add_status(StatusType::STRENGTH, 2);
+    play(slam, CardId::BODY_SLAM);
+    assert(slam.enemies[0].hp == 42 - 14);
+    assert(CardDef::get_cost(CardId::BODY_SLAM, true) == 0);
+
+    // Deflect: free block.
+    CombatEngine deflect = make_combat(CharacterId::SILENT);
+    deflect.player.block = 0;
+    deflect.hand.clear();
+    deflect.hand.push_back(DeckCard(CardId::DEFLECT, true));
+    deflect.player.energy = 0;
+    assert(deflect.play_card(0));
+    assert(deflect.player.block == 7);
+
+    // Coolheaded channels Frost and draws.
+    CombatEngine cool = make_combat(CharacterId::DEFECT);
+    play(cool, DeckCard(CardId::COOLHEADED, true));
+    assert(cool.player.orbs.size() == 1 && cool.player.orbs[0] == OrbType::FROST);
+    assert(cool.hand.size() == 2);
+
+    // Sweeping Beam hits every enemy and draws.
+    CombatEngine beam;
+    FixedVector<EnemyType, 3> pack;
+    pack.push_back(EnemyType::LOUSE);
+    pack.push_back(EnemyType::JAW_WORM);
+    beam.start_combat_multi(pack, CharacterId::DEFECT);
+    int16_t louse_hp = beam.enemies[0].hp;
+    play(beam, CardId::SWEEPING_BEAM);
+    assert(beam.enemies[0].hp == (louse_hp > 6 ? louse_hp - 6 : 0) && beam.enemies[1].hp == 42 - 6);
+    assert(beam.hand.size() == 1);
+
+    for (auto [hero, id] : { std::pair{ CharacterId::IRONCLAD, CardId::BODY_SLAM },
+                             std::pair{ CharacterId::SILENT, CardId::DEFLECT },
+                             std::pair{ CharacterId::DEFECT, CardId::COOLHEADED },
+                             std::pair{ CharacterId::DEFECT, CardId::SWEEPING_BEAM } }) {
+        std::span<const CardId> pool = RunManager::card_reward_pool(hero);
+        assert(std::find(pool.begin(), pool.end(), id) != pool.end());
+    }
+    std::cout << "[PASS] More commons: Body Slam, Deflect, Coolheaded, Sweeping Beam" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -576,6 +621,7 @@ int main() {
     test_regent_commons();
     test_necrobinder();
     test_necrobinder_commons();
+    test_more_commons();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;

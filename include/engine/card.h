@@ -50,6 +50,13 @@ enum class CardId : uint8_t {
     // Necrobinder commons (appended: saves store the numeric id)
     PULL_AGGRO,
     DRAIN_POWER,
+    // More Ironclad commons (appended: saves store the numeric id)
+    BODY_SLAM,
+    // More Silent commons (appended: saves store the numeric id)
+    DEFLECT,
+    // More Defect commons (appended: saves store the numeric id)
+    COOLHEADED,
+    SWEEPING_BEAM,
     COUNT
 };
 
