@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cassert>
+#include <cstring>
+#include <vector>
 #include "engine/combat.h"
 #include "engine/ancient.h"
 #include "engine/relic.h"
@@ -18,6 +20,92 @@
 #include "engine/pokemon_battle_ui.h"
 
 using namespace engine;
+
+namespace {
+
+// Stand-in for the GBA's battery SRAM (erased flash/SRAM reads as 0xFF).
+class MemoryStorage final : public SaveStorage {
+public:
+    std::vector<uint8_t> bytes = std::vector<uint8_t>(32 * 1024, 0xFF);
+
+    void read(void* destination, size_t size, size_t offset) override {
+        std::memcpy(destination, bytes.data() + offset, size);
+    }
+
+    void write(const void* source, size_t size, size_t offset) override {
+        std::memcpy(bytes.data() + offset, source, size);
+    }
+};
+
+void test_cartridge_save() {
+    MemoryStorage storage;
+    SaveManager& store = SaveManager::instance();
+    store.set_storage(&storage);
+
+    // A blank cartridge has no valid bank: defaults are kept.
+    assert(!store.load_from_storage());
+    assert(!store.has_active_run());
+
+    RunManager saved;
+    saved.start_run(CharacterId::SILENT, 2, PaletteVariant::SHADOW, 999);
+    saved.current_node_index = saved.get_available_rooms()[0];
+    saved.hp = 40;
+    saved.gold = 321;
+    saved.add_relic("VAJRA");
+    saved.potions.push_back(get_all_potions()[0].id);
+    saved.master_deck.push_back(DeckCard(CardId::POISON_STAB, true));
+    store.settings().music_volume = 3;
+    store.autosave_run(saved);
+
+    // Power cycle: memory is wiped, the cartridge is read back.
+    store.reset_to_defaults();
+    assert(!store.has_active_run());
+    assert(store.load_from_storage());
+    assert(store.has_active_run());
+    assert(store.settings().music_volume == 3);
+
+    RunManager loaded;
+    assert(store.restore_run(loaded));
+    assert(loaded.character == CharacterId::SILENT);
+    assert(loaded.ascension_level == 2);
+    assert(loaded.palette == PaletteVariant::SHADOW);
+    assert(loaded.hp == 40 && loaded.gold == 321);
+    assert(loaded.master_deck.size() == saved.master_deck.size());
+    assert(loaded.master_deck.back() == DeckCard(CardId::POISON_STAB, true));
+    assert(loaded.relics.size() == saved.relics.size());
+    assert(loaded.relics.back() == "VAJRA");
+    assert(loaded.potions.size() == 1 && loaded.potions[0] == saved.potions[0]);
+    assert(loaded.current_node_index == saved.current_node_index);
+    assert(loaded.rng_state() == saved.rng_state());
+    assert(loaded.map.nodes.size() == saved.map.nodes.size());
+    for (size_t i = 0; i < saved.map.nodes.size(); ++i) {
+        assert(loaded.map.nodes[i].type == saved.map.nodes[i].type);
+    }
+    assert(loaded.phase == RunPhase::MAP_NAVIGATION);
+
+    // A corrupted newest bank falls back to the previous save instead of loading garbage.
+    saved.gold = 500;
+    store.autosave_run(saved);
+    storage.bytes[SAVE_BANK_SIZE + 64] ^= 0xFF;
+    store.reset_to_defaults();
+    assert(store.load_from_storage());
+    RunManager fallback;
+    assert(store.restore_run(fallback));
+    assert(fallback.gold == 321);
+
+    // Game over clears the run from the cartridge too.
+    store.record_defeat();
+    store.reset_to_defaults();
+    assert(store.load_from_storage());
+    assert(!store.has_active_run());
+    assert(store.get_active_profile().total_runs == 1);
+
+    store.set_storage(nullptr);
+    store.reset_to_defaults();
+    std::cout << "[PASS] Cartridge Save: SRAM banks, checksum fallback, full run restore and settings verified" << std::endl;
+}
+
+} // namespace
 
 int main() {
     std::cout << "=== Slay The GBA Engine Test ===" << std::endl;
@@ -527,6 +615,8 @@ int main() {
     assert(trample.player_hp_after == boss_combat.player.hp);
     assert(boss_combat.player.hp == boss_hp_before - trample.damage_to_player);
     std::cout << "[PASS] Ceremonial Beast boss & per-enemy action records verified" << std::endl;
+
+    test_cartridge_save();
 
     std::cout << "=== All Engine Tests Passed Successfully! ===" << std::endl;
     return 0;

@@ -6,10 +6,13 @@
 #include "bn_regular_bg_ptr.h"
 #include "bn_sprite_palette_ptr.h"
 #include "bn_sprite_text_generator.h"
+#include "bn_sstream.h"
 #include "bn_vector.h"
 
 #include "bn_regular_bg_items_bg_title.h"
 #include "common_variable_16x16_sprite_font.h"
+
+#include "engine/save_system.h"
 
 #include "gba/assets.h"
 #include "gba/fx.h"
@@ -23,6 +26,15 @@ namespace
 {
 
 constexpr int LOGO_Y = -62;
+constexpr int MENU_Y = 44;
+constexpr int MENU_SPACING = 12;
+
+enum class TitleStage : uint8_t
+{
+    PRESS_START,
+    MENU,       // "Continuer" / "Nouvelle partie", only when a run is saved
+    PALETTE
+};
 
 class TitleScene final : public Scene
 {
@@ -61,26 +73,95 @@ public:
         ++_timer;
         _animate_logo();
 
-        if(! _choosing)
+        switch(_stage)
         {
-            if(_timer > 30)
-            {
-                _hero_name.set_visible(true);
-                _zone.set_visible(true);
-                _press.set_visible((_timer / 24) % 2 == 0);
-            }
+        case TitleStage::PRESS_START:
+            return _update_press_start();
+        case TitleStage::MENU:
+            return _update_menu();
+        default:
+            return _update_palette();
+        }
+    }
 
-            if(_timer > 20 && (bn::keypad::start_pressed() || bn::keypad::a_pressed()))
-            {
-                _choosing = true;
-                _choice_timer = 0;
-                _press.clear();
-                _refresh_choice();
-            }
+private:
+    GameContext& _ctx;
+    bn::regular_bg_ptr _bg;
+    bn::sprite_ptr _hero;
+    bn::vector<bn::sprite_ptr, 12> _logo;
+    bn::vector<int, 12> _logo_x;
+    Label _hero_name;
+    Label _zone;
+    Label _press;
+    Label _credits;
+    Label _variant;
+    Label _description;
+    Label _hint;
+    std::span<const engine::PaletteDef> _palettes;
+    int _timer = 0;
+    int _choice_timer = 0;
+    int _selected = 0;
+    int _menu_index = 0;
+    TitleStage _stage = TitleStage::PRESS_START;
+    Label _menu[2];
 
-            return bn::nullopt;
+    [[nodiscard]] bn::optional<SceneId> _update_press_start()
+    {
+        if(_timer > 30)
+        {
+            _hero_name.set_visible(true);
+            _zone.set_visible(true);
+            _press.set_visible((_timer / 24) % 2 == 0);
         }
 
+        if(_timer > 20 && (bn::keypad::start_pressed() || bn::keypad::a_pressed()))
+        {
+            _press.clear();
+
+            if(engine::SaveManager::instance().has_active_run())
+            {
+                _stage = TitleStage::MENU;
+                _menu_index = 0;
+                _refresh_menu();
+            }
+            else
+            {
+                _open_palette();
+            }
+        }
+
+        return bn::nullopt;
+    }
+
+    [[nodiscard]] bn::optional<SceneId> _update_menu()
+    {
+        if(bn::keypad::up_pressed() || bn::keypad::down_pressed())
+        {
+            _menu_index = 1 - _menu_index;
+            _refresh_menu();
+        }
+        else if(bn::keypad::b_pressed())
+        {
+            _close_menu();
+            _stage = TitleStage::PRESS_START;
+        }
+        else if(bn::keypad::a_pressed() || bn::keypad::start_pressed())
+        {
+            _close_menu();
+
+            if(_menu_index == 0)
+            {
+                return _continue_run();
+            }
+
+            _open_palette();
+        }
+
+        return bn::nullopt;
+    }
+
+    [[nodiscard]] bn::optional<SceneId> _update_palette()
+    {
         ++_choice_timer;
 
         // Hero rises from the bottom of the screen, then idles.
@@ -101,7 +182,7 @@ public:
         }
         else if(bn::keypad::b_pressed())
         {
-            _choosing = false;
+            _stage = TitleStage::PRESS_START;
             _hero.set_y(200);
             _variant.clear();
             _description.clear();
@@ -121,24 +202,45 @@ public:
         return bn::nullopt;
     }
 
-private:
-    GameContext& _ctx;
-    bn::regular_bg_ptr _bg;
-    bn::sprite_ptr _hero;
-    bn::vector<bn::sprite_ptr, 12> _logo;
-    bn::vector<int, 12> _logo_x;
-    Label _hero_name;
-    Label _zone;
-    Label _press;
-    Label _credits;
-    Label _variant;
-    Label _description;
-    Label _hint;
-    std::span<const engine::PaletteDef> _palettes;
-    int _timer = 0;
-    int _choice_timer = 0;
-    int _selected = 0;
-    bool _choosing = false;
+    void _open_palette()
+    {
+        _stage = TitleStage::PALETTE;
+        _choice_timer = 0;
+        _refresh_choice();
+    }
+
+    [[nodiscard]] SceneId _continue_run()
+    {
+        engine::RunManager& run = _ctx.run;
+        engine::SaveManager::instance().restore_run(run);
+        _ctx.palette = run.palette;
+        _ctx.nav.reset_to_player_floor();
+        _ctx.map_toast.clear();
+        bn::ostringstream stream(_ctx.map_toast);
+        stream << "Reprise : Acte " << int(run.current_act) << " - Étage " << int(run.current_floor);
+        return SceneId::MAP;
+    }
+
+    void _refresh_menu()
+    {
+        constexpr bn::string_view entries[] = { "Continuer", "Nouvelle partie" };
+
+        for(int index = 0; index < 2; ++index)
+        {
+            bool selected = index == _menu_index;
+            TextLine line;
+            line.append(selected ? "► " : "  ");
+            line.append(entries[index]);
+            _menu[index].set(0, MENU_Y + index * MENU_SPACING, line, Align::CENTER,
+                             selected ? TextColor::GOLD : TextColor::WHITE);
+        }
+    }
+
+    void _close_menu()
+    {
+        _menu[0].clear();
+        _menu[1].clear();
+    }
 
     void _animate_logo()
     {

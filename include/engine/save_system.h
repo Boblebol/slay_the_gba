@@ -30,6 +30,7 @@ struct InRunSaveData {
     int16_t max_hp = 80;
     int16_t gold = 99;
     uint32_t map_seed = 0;
+    uint32_t rng_state = 0;
     int8_t current_node_index = -1;
     uint8_t phase = 0;
     uint8_t card_removals_count = 0;
@@ -83,14 +84,46 @@ struct SaveProfile {
     uint8_t count_discovered_ancients() const;
 };
 
+// Player preferences, stored next to the profiles.
+struct GameSettings {
+    uint8_t music_volume = 8;   // 0 (off) to 10
+    uint8_t sfx_volume = 8;     // 0 (off) to 10
+    uint8_t control_preset = 0; // 0: classic, 1: quick
+    uint8_t reserved = 0;
+};
+
+// Everything written to the cartridge.
+struct SaveData {
+    SaveProfile profiles[PROFILE_COUNT];
+    GameSettings settings;
+    uint8_t active_slot = 0;
+};
+
+// Raw byte storage backing the save: battery SRAM on GBA, a memory buffer or a file on host.
+class SaveStorage {
+public:
+    virtual ~SaveStorage() = default;
+    virtual void read(void* destination, size_t size, size_t offset) = 0;
+    virtual void write(const void* source, size_t size, size_t offset) = 0;
+};
+
+// The save is written alternately into two banks so a power loss during a write never destroys the
+// previous good copy. Each bank starts with a header holding a checksum of its payload.
+constexpr size_t SAVE_BANK_SIZE = 16 * 1024;
+constexpr uint16_t SAVE_FORMAT_VERSION = 2;
+
 class SaveManager {
 public:
     static SaveManager& instance();
 
     void init();
+    // Resets every profile and setting to its default value (in memory only).
+    void reset_to_defaults();
     void select_profile(uint8_t slot_index); // 0, 1, 2
-    uint8_t get_active_profile_index() const { return active_slot_; }
+    uint8_t get_active_profile_index() const { return data_.active_slot; }
     SaveProfile& get_active_profile();
+    GameSettings& settings() { return data_.settings; }
+    [[nodiscard]] bool has_active_run() const;
     const SaveProfile& get_profile(uint8_t slot_index) const;
 
     void create_profile(uint8_t slot_index, std::string_view name);
@@ -112,14 +145,17 @@ public:
     void discover_potion_by_id(std::string_view potion_id);
     void discover_ancient_by_id(uint8_t ancient_index);
 
-    // Persistence (SRAM / Storage)
+    // Persistence (SRAM / Storage). Without a storage backend both calls only touch memory.
+    void set_storage(SaveStorage* storage);
     void commit_to_storage();
-    void load_from_storage();
+    // Loads the newest valid bank. Returns false (and keeps defaults) when no valid save exists.
+    bool load_from_storage();
 
 private:
     SaveManager() = default;
-    uint8_t active_slot_ = 0;
-    SaveProfile profiles_[PROFILE_COUNT];
+    SaveData data_;
+    SaveStorage* storage_ = nullptr;
+    uint32_t sequence_ = 0; // incremented on every commit, picks the newest bank on load
     bool initialized_ = false;
 };
 

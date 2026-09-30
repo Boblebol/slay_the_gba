@@ -74,7 +74,8 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     relics.push_back(cdef.starting_relic_id);
 
     // Generate Act 1 Map
-    map.generate(current_act, next_random());
+    map_seed = next_random();
+    map.generate(current_act, map_seed);
     phase = RunPhase::MAP_NAVIGATION;
 }
 
@@ -317,7 +318,8 @@ void RunManager::advance_act() {
     current_act++;
     current_floor = 1;
     current_node_index = -1;
-    map.generate(current_act, next_random());
+    map_seed = next_random();
+    map.generate(current_act, map_seed);
     phase = RunPhase::ANCIENT_BLESSING; // Transition with Ancient encounter!
 }
 

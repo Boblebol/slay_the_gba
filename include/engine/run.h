@@ -45,6 +45,7 @@ public:
     FixedVector<std::string_view, 3> potions;
 
     MapGraph map;
+    uint32_t map_seed = 0; // seed of the current act's map, saved so a resumed run gets the same map
     int current_node_index = -1;
     RunPhase phase = RunPhase::MAP_NAVIGATION;
 
@@ -95,6 +96,10 @@ public:
     static std::span<const AscensionModifier> get_ascension_modifiers();
     int16_t get_enemy_damage_multiplier() const;
     int16_t get_enemy_hp_multiplier() const;
+
+    // Random generator state, saved and restored with the run.
+    [[nodiscard]] uint32_t rng_state() const { return rng_state_; }
+    void set_rng_state(uint32_t state) { rng_state_ = state ? state : 12345; }
 
 private:
     uint32_t rng_state_ = 12345;

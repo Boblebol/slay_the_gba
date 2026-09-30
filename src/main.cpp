@@ -3,6 +3,7 @@
 
 #include "gba/assets.h"
 #include "gba/fx.h"
+#include "gba/save.h"
 #include "gba/scene.h"
 #include "gba/text.h"
 
@@ -53,6 +54,7 @@ int main()
     bn::core::init();
     bn::bg_palettes::set_transparent_color(gba::hero_backdrop_color());
     gba::init_text();
+    gba::init_save();
 
     auto* context = new gba::GameContext();
     gba::SceneId next = gba::SceneId::TITLE;

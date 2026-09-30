@@ -25,6 +25,56 @@ inline bool get_bit(const uint8_t* bitset, size_t max_bytes, uint16_t index) {
     return false;
 }
 
+// Header written at the start of each save bank.
+struct SaveHeader {
+    char magic[8];
+    uint16_t version;
+    uint16_t reserved;
+    uint32_t payload_size;
+    uint32_t sequence;
+    uint32_t checksum;
+};
+
+constexpr char SAVE_MAGIC[8] = { 'S', 'L', 'A', 'Y', 'G', 'B', 'A', '\0' };
+
+static_assert(sizeof(SaveHeader) + sizeof(SaveData) <= SAVE_BANK_SIZE, "Save data does not fit in a bank");
+
+// FNV-1a: cheap and good enough to detect a torn write or an uninitialised cartridge.
+uint32_t checksum(const void* data, size_t size) {
+    const auto* bytes = static_cast<const uint8_t*>(data);
+    uint32_t hash = 2166136261u;
+    for (size_t i = 0; i < size; ++i) {
+        hash ^= bytes[i];
+        hash *= 16777619u;
+    }
+    return hash;
+}
+
+bool is_valid_header(const SaveHeader& header) {
+    return std::memcmp(header.magic, SAVE_MAGIC, sizeof(SAVE_MAGIC)) == 0 &&
+           header.version == SAVE_FORMAT_VERSION && header.payload_size == sizeof(SaveData);
+}
+
+// Id stored in a fixed char buffer. Bounded by hand: the GBA build links without libc's strlen.
+template<size_t Size>
+std::string_view stored_id(const char (&buffer)[Size]) {
+    size_t length = 0;
+    while (length < Size && buffer[length] != '\0') ++length;
+    return std::string_view(buffer, length);
+}
+
+// Restored relic and potion ids must point to static strings: look them up in the databases.
+std::string_view find_static_relic_id(std::string_view id, CharacterId character) {
+    if (const RelicData* relic = find_relic(id)) return relic->id;
+    std::string_view starter = get_character(character).starting_relic_id;
+    return starter == id ? starter : std::string_view();
+}
+
+std::string_view find_static_potion_id(std::string_view id) {
+    const PotionData* potion = find_potion(id);
+    return potion ? potion->id : std::string_view();
+}
+
 inline uint16_t count_bits(const uint8_t* bitset, size_t max_bytes) {
     uint16_t count = 0;
     for (size_t i = 0; i < max_bytes; ++i) {
@@ -100,69 +150,73 @@ uint8_t SaveProfile::count_discovered_ancients() const {
 }
 
 SaveManager& SaveManager::instance() {
-    static SaveManager mgr;
-    if (!mgr.initialized_) {
-        mgr.init();
+    // Heap allocated: the save data is a few KB, too big for the GBA's fast IWRAM .bss.
+    static SaveManager* mgr = new SaveManager();
+    if (!mgr->initialized_) {
+        mgr->init();
     }
-    return mgr;
+    return *mgr;
 }
 
 void SaveManager::init() {
     if (initialized_) return;
     initialized_ = true;
+    reset_to_defaults();
+}
+
+void SaveManager::reset_to_defaults() {
+    data_ = SaveData();
 
     // Initialize 3 default profiles
     for (size_t i = 0; i < PROFILE_COUNT; ++i) {
-        profiles_[i].is_created = (i == 0); // Profile 1 active by default
+        data_.profiles[i].is_created = (i == 0); // Profile 1 active by default
         char def_name[16] = { 'P', 'r', 'o', 'f', 'i', 'l', ' ', static_cast<char>('1' + i), '\0' };
-        std::memcpy(profiles_[i].name, def_name, 16);
-        profiles_[i].total_runs = 0;
-        profiles_[i].total_victories = 0;
-        for (int c = 0; c < 5; ++c) {
-            profiles_[i].max_ascension[c] = 0;
-        }
-        profiles_[i].active_run.has_active_run = false;
+        std::memcpy(data_.profiles[i].name, def_name, 16);
     }
 
-    active_slot_ = 0;
+    data_.active_slot = 0;
 }
 
 void SaveManager::select_profile(uint8_t slot_index) {
     if (slot_index < PROFILE_COUNT) {
-        active_slot_ = slot_index;
-        profiles_[active_slot_].is_created = true;
+        data_.active_slot = slot_index;
+        data_.profiles[data_.active_slot].is_created = true;
     }
 }
 
 SaveProfile& SaveManager::get_active_profile() {
-    return profiles_[active_slot_];
+    return data_.profiles[data_.active_slot];
+}
+
+bool SaveManager::has_active_run() const {
+    return data_.profiles[data_.active_slot].active_run.has_active_run;
 }
 
 const SaveProfile& SaveManager::get_profile(uint8_t slot_index) const {
-    if (slot_index >= PROFILE_COUNT) return profiles_[0];
-    return profiles_[slot_index];
+    if (slot_index >= PROFILE_COUNT) return data_.profiles[0];
+    return data_.profiles[slot_index];
 }
 
 void SaveManager::create_profile(uint8_t slot_index, std::string_view name) {
     if (slot_index >= PROFILE_COUNT) return;
-    profiles_[slot_index].is_created = true;
+    data_.profiles[slot_index].is_created = true;
     size_t len = std::min<size_t>(name.size(), 15);
-    std::memcpy(profiles_[slot_index].name, name.data(), len);
-    profiles_[slot_index].name[len] = '\0';
-    profiles_[slot_index].total_runs = 0;
-    profiles_[slot_index].total_victories = 0;
+    std::memcpy(data_.profiles[slot_index].name, name.data(), len);
+    data_.profiles[slot_index].name[len] = '\0';
+    data_.profiles[slot_index].total_runs = 0;
+    data_.profiles[slot_index].total_victories = 0;
     for (int c = 0; c < 5; ++c) {
-        profiles_[slot_index].max_ascension[c] = 0;
+        data_.profiles[slot_index].max_ascension[c] = 0;
     }
-    profiles_[slot_index].active_run.has_active_run = false;
+    data_.profiles[slot_index].active_run.has_active_run = false;
 }
 
 void SaveManager::delete_profile(uint8_t slot_index) {
     if (slot_index >= PROFILE_COUNT) return;
-    profiles_[slot_index] = SaveProfile();
+    data_.profiles[slot_index] = SaveProfile();
     char def_name[16] = { 'P', 'r', 'o', 'f', 'i', 'l', ' ', static_cast<char>('1' + slot_index), '\0' };
-    std::memcpy(profiles_[slot_index].name, def_name, 16);
-    profiles_[slot_index].is_created = false;
+    std::memcpy(data_.profiles[slot_index].name, def_name, 16);
+    data_.profiles[slot_index].is_created = false;
 }
 
 void SaveManager::autosave_run(const RunManager& run) {
@@ -178,6 +232,8 @@ void SaveManager::autosave_run(const RunManager& run) {
     r.hp = run.hp;
     r.max_hp = run.max_hp;
     r.gold = run.gold;
+    r.map_seed = run.map_seed;
+    r.rng_state = run.rng_state();
     r.current_node_index = static_cast<int8_t>(run.current_node_index);
     r.phase = static_cast<uint8_t>(run.phase);
     r.card_removals_count = run.card_removals_count;
@@ -222,20 +278,39 @@ bool SaveManager::restore_run(RunManager& run) {
 
     if (!r.has_active_run) return false;
 
-    run.start_run(static_cast<CharacterId>(r.character), r.ascension, static_cast<PaletteVariant>(r.palette), 12345);
+    CharacterId character = static_cast<CharacterId>(r.character);
+    run.start_run(character, r.ascension, static_cast<PaletteVariant>(r.palette), 12345);
     run.current_act = r.act;
     run.current_floor = r.floor;
     run.hp = r.hp;
     run.max_hp = r.max_hp;
     run.gold = r.gold;
+    run.map_seed = r.map_seed;
+    run.map.generate(r.act, r.map_seed);
+    run.set_rng_state(r.rng_state);
     run.current_node_index = r.current_node_index;
-    run.phase = static_cast<RunPhase>(r.phase);
+    // Runs are only saved between rooms: the interrupted room state is not stored.
+    run.phase = RunPhase::MAP_NAVIGATION;
     run.card_removals_count = r.card_removals_count;
 
     // Restore Deck
     run.master_deck.clear();
-    for (uint8_t i = 0; i < r.deck_count; ++i) {
+    for (uint8_t i = 0; i < r.deck_count && i < 50; ++i) {
         run.master_deck.push_back(DeckCard(static_cast<CardId>(r.deck[i].card_id), r.deck[i].upgraded));
+    }
+
+    // Restore Relics
+    run.relics.clear();
+    for (uint8_t i = 0; i < r.relic_count && i < 25; ++i) {
+        std::string_view id = find_static_relic_id(stored_id(r.relics[i]), character);
+        if (!id.empty()) run.relics.push_back(id);
+    }
+
+    // Restore Potions
+    run.potions.clear();
+    for (uint8_t i = 0; i < r.potion_count && i < 3; ++i) {
+        std::string_view id = find_static_potion_id(stored_id(r.potions[i]));
+        if (!id.empty()) run.potions.push_back(id);
     }
 
     return true;
@@ -315,13 +390,63 @@ void SaveManager::discover_ancient_by_id(uint8_t ancient_index) {
     }
 }
 
-void SaveManager::commit_to_storage() {
-    // On GBA, can serialize into SRAM (0x0E000000)
-    // On host / CLI runs, in-memory profiles are updated.
+void SaveManager::set_storage(SaveStorage* storage) {
+    storage_ = storage;
 }
 
-void SaveManager::load_from_storage() {
-    // On GBA, read from SRAM if valid magic header exists
+void SaveManager::commit_to_storage() {
+    if (!storage_) return;
+
+    ++sequence_;
+    SaveHeader header = {};
+    std::memcpy(header.magic, SAVE_MAGIC, sizeof(SAVE_MAGIC));
+    header.version = SAVE_FORMAT_VERSION;
+    header.payload_size = sizeof(SaveData);
+    header.sequence = sequence_;
+    header.checksum = checksum(&data_, sizeof(SaveData));
+
+    // Odd sequences go to bank 0, even ones to bank 1: the previous save always survives.
+    size_t offset = (sequence_ % 2) ? 0 : SAVE_BANK_SIZE;
+    // Payload first, header last: a torn write leaves an invalid header, never a valid one on bad data.
+    SaveHeader invalid = {};
+    storage_->write(&invalid, sizeof(SaveHeader), offset);
+    storage_->write(&data_, sizeof(SaveData), offset + sizeof(SaveHeader));
+    storage_->write(&header, sizeof(SaveHeader), offset);
+}
+
+bool SaveManager::load_from_storage() {
+    if (!storage_) return false;
+
+    // Pick the newest bank whose header and checksum are valid.
+    SaveHeader best = {};
+    bool found = false;
+    size_t best_offset = 0;
+
+    for (size_t bank = 0; bank < 2; ++bank) {
+        size_t offset = bank * SAVE_BANK_SIZE;
+        SaveHeader header;
+        storage_->read(&header, sizeof(SaveHeader), offset);
+        if (!is_valid_header(header)) continue;
+        if (found && header.sequence <= best.sequence) continue;
+
+        storage_->read(&data_, sizeof(SaveData), offset + sizeof(SaveHeader));
+        if (checksum(&data_, sizeof(SaveData)) != header.checksum) continue;
+
+        best = header;
+        best_offset = offset;
+        found = true;
+    }
+
+    if (!found) {
+        reset_to_defaults();
+        sequence_ = 0;
+        return false;
+    }
+
+    storage_->read(&data_, sizeof(SaveData), best_offset + sizeof(SaveHeader));
+    sequence_ = best.sequence;
+    if (data_.active_slot >= PROFILE_COUNT) data_.active_slot = 0;
+    return true;
 }
 
 } // namespace engine
