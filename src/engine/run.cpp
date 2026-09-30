@@ -270,12 +270,14 @@ bool RunManager::choose_event_choice(int choice_index, char* out_msg, size_t max
 
 std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
     static constexpr CardId IRONCLAD_POOL[] = { CardId::IRON_WAVE, CardId::CLEAVE, CardId::ANGER, CardId::TWIN_STRIKE,
-                                                CardId::POMMEL_STRIKE, CardId::SHRUG_IT_OFF, CardId::TAUNT };
+                                                CardId::POMMEL_STRIKE, CardId::SHRUG_IT_OFF, CardId::TAUNT,
+                                                CardId::BODY_SLAM };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
-                                              CardId::DAGGER_SPRAY };
+                                              CardId::DAGGER_SPRAY, CardId::DEFLECT };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL, CardId::BALL_LIGHTNING,
-                                              CardId::COLD_SNAP, CardId::LEAP };
+                                              CardId::COLD_SNAP, CardId::LEAP, CardId::COOLHEADED,
+                                              CardId::SWEEPING_BEAM };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,

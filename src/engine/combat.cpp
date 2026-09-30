@@ -423,6 +423,32 @@ bool CombatEngine::play_card(int index, int target_index) {
             set_log(upgraded ? "Played Drain Power+!" : "Played Drain Power!");
             break;
         }
+        case CardId::BODY_SLAM: {
+            current_target.take_damage(attack_damage(player.block, player, current_target));
+            set_log(upgraded ? "Played Body Slam+!" : "Played Body Slam!");
+            break;
+        }
+        case CardId::DEFLECT: {
+            player.gain_block(base_value);
+            set_log(upgraded ? "Played Deflect+!" : "Played Deflect!");
+            break;
+        }
+        case CardId::COOLHEADED: {
+            player.channel_orb(OrbType::FROST, &current_target);
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Coolheaded+!" : "Played Coolheaded!");
+            break;
+        }
+        case CardId::SWEEPING_BEAM: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    enemies[i].take_damage(attack_damage(base_value, player, enemies[i]));
+                }
+            }
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Sweeping Beam+!" : "Played Sweeping Beam!");
+            break;
+        }
         default:
             set_log("Played card!");
             break;

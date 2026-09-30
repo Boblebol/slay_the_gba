@@ -46,7 +46,14 @@ static const CardDef CARDS[] = {
     { CardId::CELESTIAL_MIGHT, "Celestial Might", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 3, "Deal 6 dmg 3 times.", "Celestial Might+", 2, 6, 4, "Deal 6 dmg 4 times." },
     // Necrobinder commons
     { CardId::PULL_AGGRO, "Pull Aggro", 2, CardType::SKILL, TargetType::SELF, 7, 4, "Summon 4. Gain 7 block.", "Pull Aggro+", 2, 9, 5, "Summon 5. Gain 9 block." },
-    { CardId::DRAIN_POWER, "Drain Power", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 2, "Deal 10 dmg. Upgrade 2 discarded cards.", "Drain Power+", 1, 12, 3, "Deal 12 dmg. Upgrade 3 discarded cards." }
+    { CardId::DRAIN_POWER, "Drain Power", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 2, "Deal 10 dmg. Upgrade 2 discarded cards.", "Drain Power+", 1, 12, 3, "Deal 12 dmg. Upgrade 3 discarded cards." },
+    // More Ironclad commons
+    { CardId::BODY_SLAM, "Body Slam", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 0, 0, "Deal dmg equal to your block.", "Body Slam+", 0, 0, 0, "Deal dmg equal to your block." },
+    // More Silent commons
+    { CardId::DEFLECT, "Deflect", 0, CardType::SKILL, TargetType::SELF, 4, 0, "Gain 4 block.", "Deflect+", 0, 7, 0, "Gain 7 block." },
+    // More Defect commons
+    { CardId::COOLHEADED, "Coolheaded", 1, CardType::SKILL, TargetType::SELF, 0, 1, "Channel 1 Frost. Draw 1 card.", "Coolheaded+", 1, 0, 2, "Channel 1 Frost. Draw 2 cards." },
+    { CardId::SWEEPING_BEAM, "Sweeping Beam", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 6, 1, "Deal 6 dmg to all. Draw 1 card.", "Sweeping Beam+", 1, 9, 1, "Deal 9 dmg to all. Draw 1 card." }
 };
 
 const CardDef& CardDef::get(CardId id) {

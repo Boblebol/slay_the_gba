@@ -80,6 +80,14 @@ bn::string_view base_name(engine::CardId id)
         return "Râblure";
     case engine::CardId::DRAIN_POWER:
         return "Drain de puissance";
+    case engine::CardId::BODY_SLAM:
+        return "Plaquage";
+    case engine::CardId::DEFLECT:
+        return "Déviation";
+    case engine::CardId::COOLHEADED:
+        return "Sang-froid";
+    case engine::CardId::SWEEPING_BEAM:
+        return "Faisceau circulaire";
     default:
         return "???";
     }
@@ -206,6 +214,18 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::DRAIN_POWER:
         stream << "Inflige " << value << " dégâts. Améliore " << secondary << " cartes.";
+        break;
+    case engine::CardId::BODY_SLAM:
+        stream << "Inflige autant de dégâts que d'Armure.";
+        break;
+    case engine::CardId::DEFLECT:
+        stream << "Gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::COOLHEADED:
+        stream << "Canalise 1 Givre. Pioche " << secondary << (secondary > 1 ? " cartes." : " carte.");
+        break;
+    case engine::CardId::SWEEPING_BEAM:
+        stream << "Inflige " << value << " dégâts à TOUS. Pioche " << secondary << (secondary > 1 ? " cartes." : " carte.");
         break;
     default:
         break;
