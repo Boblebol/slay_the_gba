@@ -235,6 +235,8 @@ CARDS: list[CardArt] = [
     CardArt("solar_strike", "regent", "solar_strike", "attack", (1, 1)),
     CardArt("gather_light", "regent", "gather_light", "skill", (1, 1)),
     CardArt("celestial_might", "regent", "celestial_might", "attack", (2, 2)),
+    CardArt("pull_aggro", "necrobinder", "pull_aggro", "skill", (2, 2)),
+    CardArt("drain_power", "necrobinder", "drain_power", "attack", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}

@@ -403,6 +403,26 @@ bool CombatEngine::play_card(int index, int target_index) {
             set_log(upgraded ? "Played Celestial Might+!" : "Played Celestial Might!");
             break;
         }
+        case CardId::PULL_AGGRO: {
+            player.summon_minion(secondary_value, 0);
+            player.gain_block(base_value);
+            set_log(upgraded ? "Played Pull Aggro+!" : "Played Pull Aggro!");
+            break;
+        }
+        case CardId::DRAIN_POWER: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            // Upgrades random cards of the discard pile for the rest of the combat.
+            for (uint8_t n = 0; n < secondary_value; ++n) {
+                FixedVector<uint8_t, 50> upgradable;
+                for (size_t i = 0; i < discard_pile.size(); ++i) {
+                    if (!discard_pile[i].upgraded) upgradable.push_back(static_cast<uint8_t>(i));
+                }
+                if (upgradable.empty()) break;
+                discard_pile[upgradable[next_random() % upgradable.size()]].upgraded = true;
+            }
+            set_log(upgraded ? "Played Drain Power+!" : "Played Drain Power!");
+            break;
+        }
         default:
             set_log("Played card!");
             break;

@@ -76,6 +76,10 @@ bn::string_view base_name(engine::CardId id)
         return "Lumière rassemblée";
     case engine::CardId::CELESTIAL_MIGHT:
         return "Puissance céleste";
+    case engine::CardId::PULL_AGGRO:
+        return "Râblure";
+    case engine::CardId::DRAIN_POWER:
+        return "Drain de puissance";
     default:
         return "???";
     }
@@ -196,6 +200,12 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::CELESTIAL_MIGHT:
         stream << "Inflige " << value << " dégâts " << secondary << " fois.";
+        break;
+    case engine::CardId::PULL_AGGRO:
+        stream << "Invoque Titos (" << secondary << " PV). Gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::DRAIN_POWER:
+        stream << "Inflige " << value << " dégâts. Améliore " << secondary << " cartes.";
         break;
     default:
         break;

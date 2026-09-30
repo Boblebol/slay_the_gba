@@ -47,6 +47,9 @@ enum class CardId : uint8_t {
     SOLAR_STRIKE,
     GATHER_LIGHT,
     CELESTIAL_MIGHT,
+    // Necrobinder commons (appended: saves store the numeric id)
+    PULL_AGGRO,
+    DRAIN_POWER,
     COUNT
 };
 

@@ -471,6 +471,46 @@ void enter_room_of_type(RunManager& run, RoomType type) {
     run.enter_room(index);
 }
 
+void test_necrobinder_commons() {
+    // Pull Aggro (Râblure) summons Osty's HP and blocks, for 2 energy.
+    CombatEngine aggro = make_combat(CharacterId::NECROBINDER);
+    aggro.player.block = 0;
+    int16_t osty_hp = aggro.player.minion_hp;
+    play(aggro, CardId::PULL_AGGRO);
+    assert(aggro.player.minion_hp == osty_hp + 4);
+    assert(aggro.player.block == 7);
+    assert(aggro.player.energy == aggro.player.max_energy - 2);
+
+    // Drain Power hits and upgrades random non-upgraded cards of the discard pile (never itself).
+    CombatEngine drain = make_combat(CharacterId::NECROBINDER);
+    drain.discard_pile.clear();
+    drain.discard_pile.push_back(CardId::STRIKE);
+    drain.discard_pile.push_back(DeckCard(CardId::DEFEND, true));
+    drain.discard_pile.push_back(CardId::UNLEASH);
+    drain.discard_pile.push_back(CardId::BODYGUARD);
+    play(drain, CardId::DRAIN_POWER);
+    assert(drain.enemies[0].hp == 42 - 10);
+    int upgraded = 0;
+    for (const DeckCard& card : drain.discard_pile) upgraded += card.upgraded;
+    assert(upgraded == 1 + 2);
+    assert(drain.discard_pile.back() == DeckCard(CardId::DRAIN_POWER, false));
+
+    // With fewer upgradable cards than asked, it upgrades what it can.
+    CombatEngine short_drain = make_combat(CharacterId::NECROBINDER);
+    short_drain.discard_pile.clear();
+    short_drain.discard_pile.push_back(CardId::STRIKE);
+    play(short_drain, DeckCard(CardId::DRAIN_POWER, true));
+    assert(short_drain.enemies[0].hp == 42 - 12);
+    assert(short_drain.discard_pile[0].upgraded);
+
+    std::span<const CardId> pool = RunManager::card_reward_pool(CharacterId::NECROBINDER);
+    for (CardId id : { CardId::PULL_AGGRO, CardId::DRAIN_POWER }) {
+        assert(std::find(pool.begin(), pool.end(), id) != pool.end());
+    }
+    assert(std::find(pool.begin(), pool.end(), CardId::STRIKE) == pool.end());
+    std::cout << "[PASS] Necrobinder commons: Pull Aggro, Drain Power" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -535,6 +575,7 @@ int main() {
     test_regent();
     test_regent_commons();
     test_necrobinder();
+    test_necrobinder_commons();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;
