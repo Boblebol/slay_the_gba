@@ -52,7 +52,8 @@ uint32_t checksum(const void* data, size_t size) {
 
 bool is_valid_header(const SaveHeader& header) {
     return std::memcmp(header.magic, SAVE_MAGIC, sizeof(SAVE_MAGIC)) == 0 &&
-           header.version == SAVE_FORMAT_VERSION && header.payload_size == sizeof(SaveData);
+           header.version >= SAVE_MIN_FORMAT_VERSION && header.version <= SAVE_FORMAT_VERSION &&
+           header.payload_size == sizeof(SaveData);
 }
 
 // Id stored in a fixed char buffer. Bounded by hand: the GBA build links without libc's strlen.
@@ -446,6 +447,10 @@ bool SaveManager::load_from_storage() {
     storage_->read(&data_, sizeof(SaveData), best_offset + sizeof(SaveHeader));
     sequence_ = best.sequence;
     if (data_.active_slot >= PROFILE_COUNT) data_.active_slot = 0;
+    // Runs saved before the map generator changed would resume on another map: drop them.
+    if (best.version < 3) {
+        for (SaveProfile& profile : data_.profiles) profile.active_run.has_active_run = false;
+    }
     return true;
 }
 
