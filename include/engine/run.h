@@ -76,6 +76,8 @@ public:
     bool buy_shop_card(int index);
     bool buy_shop_relic(int index);
     bool buy_shop_potion(int index);
+    // Drinks the potion at `index` of the belt in the current combat and removes it from the belt.
+    bool use_potion(int index, int target_index = -1);
     bool remove_card_at_shop(int deck_index);
     void leave_shop();
 

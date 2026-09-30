@@ -345,6 +345,40 @@ int main() {
     assert(anchor_run.combat.player.block == 10);
     std::cout << "[PASS] Anchor: 10 Block at the start of each combat" << std::endl;
 
+    // Potions are drunk through the engine: effect applied, potion removed from the belt.
+    RunManager potion_run;
+    potion_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    potion_run.potions.push_back("FIRE_POTION");
+    potion_run.potions.push_back("BLOCK_POTION");
+    potion_run.potions.push_back("AMBERGRIS");
+    assert(!potion_run.use_potion(0)); // not in combat yet
+    potion_run.enter_room(potion_run.get_available_rooms()[0]);
+    CombatEngine& potion_combat = potion_run.combat;
+    int16_t foe_hp = potion_combat.enemies[0].hp;
+    assert(potion_run.use_potion(0, 0));
+    assert(potion_combat.enemies[0].hp == foe_hp - 20);
+    assert(potion_combat.enemy.hp == potion_combat.enemies[0].hp);
+    assert(potion_run.potions.size() == 2 && potion_run.potions[0] == "BLOCK_POTION");
+    assert(potion_run.use_potion(0));
+    assert(potion_combat.player.block == 12);
+    assert(!potion_run.use_potion(0)); // no engine effect yet: kept in the belt
+    assert(potion_run.potions.size() == 1);
+    assert(!potion_run.use_potion(5));
+
+    int8_t energy_before = potion_combat.player.energy;
+    assert(potion_combat.use_potion("ENERGY_POTION"));
+    assert(potion_combat.player.energy == energy_before + 2);
+    potion_combat.player.hp = 40;
+    assert(potion_combat.use_potion("BLOOD_POTION"));
+    assert(potion_combat.player.hp == 40 + 80 / 5);
+
+    // A Fire Potion that kills the last enemy wins the fight; nothing can be drunk once it is over.
+    for (size_t i = 0; i < potion_combat.enemies.size(); ++i) potion_combat.enemies[i].hp = 5;
+    for (size_t i = 0; i < potion_combat.enemies.size(); ++i) assert(potion_combat.use_potion("FIRE_POTION"));
+    assert(potion_combat.state == CombatState::VICTORY);
+    assert(!potion_combat.use_potion("BLOCK_POTION"));
+    std::cout << "[PASS] Potions: Fire, Block, Energy & Blood drunk in combat through the engine" << std::endl;
+
     // Test Campfire Rest
     assert(run.can_rest());
     int hp_before_rest = run.hp;
