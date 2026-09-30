@@ -132,14 +132,9 @@ void RunManager::enter_room(int node_index) {
             for (size_t i = 0; i < master_deck.size(); ++i) {
                 combat.draw_pile.push_back(master_deck[i]);
             }
-
-            // Vajra: start each combat with 1 Strength.
-            if (has_relic("VAJRA")) {
-                combat.player.add_status(StatusType::STRENGTH, 1);
-            }
-
             combat.shuffle_draw_pile();
             combat.start_player_turn();
+            apply_combat_start_relics();
             break;
         }
         case RoomType::REST_SITE:
@@ -305,6 +300,21 @@ bool RunManager::has_relic(std::string_view relic_id) const {
         if (relics[i] == relic_id) return true;
     }
     return false;
+}
+
+void RunManager::apply_combat_start_relics() {
+    // Vajra: start each combat with 1 Strength.
+    if (has_relic("VAJRA")) {
+        combat.player.add_status(StatusType::STRENGTH, 1);
+    }
+    // Ring of the Snake (Silent): draw 2 additional cards on the first turn.
+    if (has_relic("RING_OF_THE_SNAKE")) {
+        combat.draw_cards(2);
+    }
+    // Cracked Core (Defect): channel 1 Lightning.
+    if (has_relic("CRACKED_CORE")) {
+        combat.player.channel_orb(OrbType::LIGHTNING);
+    }
 }
 
 void RunManager::proceed_after_combat() {

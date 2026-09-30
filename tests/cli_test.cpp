@@ -312,6 +312,25 @@ int main() {
     assert(vajra_run.combat.player.get_status(StatusType::STRENGTH) == 1);
     std::cout << "[PASS] Vajra: +1 Strength at the start of each combat" << std::endl;
 
+    // Starter relics: Ring of the Snake draws 2 more cards, Cracked Core channels a Lightning orb.
+    assert(plain_run.combat.hand.size() == 5);
+    assert(plain_run.combat.player.orbs.empty());
+
+    RunManager silent_run;
+    silent_run.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 777);
+    assert(silent_run.has_relic("RING_OF_THE_SNAKE"));
+    silent_run.enter_room(silent_run.get_available_rooms()[0]);
+    assert(silent_run.combat.hand.size() == 7);
+
+    RunManager defect_run;
+    defect_run.start_run(CharacterId::DEFECT, 0, PaletteVariant::CLASSIC, 777);
+    assert(defect_run.has_relic("CRACKED_CORE"));
+    defect_run.enter_room(defect_run.get_available_rooms()[0]);
+    assert(defect_run.combat.player.orbs.size() == 1);
+    assert(defect_run.combat.player.orbs[0] == OrbType::LIGHTNING);
+    assert(defect_run.combat.hand.size() == 5);
+    std::cout << "[PASS] Starter relics: Ring of the Snake (+2 cards) & Cracked Core (Lightning orb)" << std::endl;
+
     // Test Campfire Rest
     assert(run.can_rest());
     int hp_before_rest = run.hp;
