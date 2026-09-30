@@ -32,6 +32,7 @@
 #include "bn_sprite_items_card_defend_necrobinder.h"
 #include "bn_sprite_items_card_defend_regent.h"
 #include "bn_sprite_items_card_defend_silent.h"
+#include "bn_sprite_items_card_drain_power.h"
 #include "bn_sprite_items_card_dualcast.h"
 #include "bn_sprite_items_card_falling_star.h"
 #include "bn_sprite_items_card_gather_light.h"
@@ -41,6 +42,7 @@
 #include "bn_sprite_items_card_neutralize.h"
 #include "bn_sprite_items_card_poison_stab.h"
 #include "bn_sprite_items_card_pommel_strike.h"
+#include "bn_sprite_items_card_pull_aggro.h"
 #include "bn_sprite_items_card_shrug_it_off.h"
 #include "bn_sprite_items_card_slice.h"
 #include "bn_sprite_items_card_solar_strike.h"
@@ -271,6 +273,10 @@ const bn::sprite_item& big_card_item(engine::CardId id)
         return bn::sprite_items::card_gather_light;
     case engine::CardId::CELESTIAL_MIGHT:
         return bn::sprite_items::card_celestial_might;
+    case engine::CardId::PULL_AGGRO:
+        return bn::sprite_items::card_pull_aggro;
+    case engine::CardId::DRAIN_POWER:
+        return bn::sprite_items::card_drain_power;
     default:
         return bn::sprite_items::HERO_ITEM(card_strike_);
     }

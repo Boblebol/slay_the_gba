@@ -43,7 +43,10 @@ static const CardDef CARDS[] = {
     // Regent commons
     { CardId::SOLAR_STRIKE, "Solar Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 1, "Deal 9 dmg. Gain 1 Star.", "Solar Strike+", 1, 10, 2, "Deal 10 dmg. Gain 2 Stars." },
     { CardId::GATHER_LIGHT, "Gather Light", 1, CardType::SKILL, TargetType::SELF, 8, 1, "Gain 8 block. Gain 1 Star.", "Gather Light+", 1, 11, 1, "Gain 11 block. Gain 1 Star." },
-    { CardId::CELESTIAL_MIGHT, "Celestial Might", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 3, "Deal 6 dmg 3 times.", "Celestial Might+", 2, 6, 4, "Deal 6 dmg 4 times." }
+    { CardId::CELESTIAL_MIGHT, "Celestial Might", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 3, "Deal 6 dmg 3 times.", "Celestial Might+", 2, 6, 4, "Deal 6 dmg 4 times." },
+    // Necrobinder commons
+    { CardId::PULL_AGGRO, "Pull Aggro", 2, CardType::SKILL, TargetType::SELF, 7, 4, "Summon 4. Gain 7 block.", "Pull Aggro+", 2, 9, 5, "Summon 5. Gain 9 block." },
+    { CardId::DRAIN_POWER, "Drain Power", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 2, "Deal 10 dmg. Upgrade 2 discarded cards.", "Drain Power+", 1, 12, 3, "Deal 12 dmg. Upgrade 3 discarded cards." }
 };
 
 const CardDef& CardDef::get(CardId id) {
