@@ -54,6 +54,14 @@ bn::string_view base_name(engine::CardId id)
         return "Même pas mal";
     case engine::CardId::TAUNT:
         return "Provocation";
+    case engine::CardId::SLICE:
+        return "Trancher";
+    case engine::CardId::BACKFLIP:
+        return "Salto arrière";
+    case engine::CardId::SUCKER_PUNCH:
+        return "Coup bas";
+    case engine::CardId::DAGGER_SPRAY:
+        return "Pluie de couteaux";
     default:
         return "???";
     }
@@ -141,6 +149,18 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::TAUNT:
         stream << "Gagne " << value << " d'Armure. Vulnérable " << secondary << ".";
+        break;
+    case engine::CardId::SLICE:
+        stream << "Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::BACKFLIP:
+        stream << "Gagne " << value << " d'Armure. Pioche " << secondary << (secondary > 1 ? " cartes." : " carte.");
+        break;
+    case engine::CardId::SUCKER_PUNCH:
+        stream << "Inflige " << value << " dégâts. Affaibli " << secondary << ".";
+        break;
+    case engine::CardId::DAGGER_SPRAY:
+        stream << "Inflige " << value << " dégâts à TOUS les ennemis " << secondary << " fois.";
         break;
     default:
         break;

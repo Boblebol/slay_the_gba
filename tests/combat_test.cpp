@@ -258,6 +258,48 @@ void test_silent() {
     std::cout << "[PASS] Silent: Neutralize Weak, Poison Stab tick, lethal poison before the attack, Survivor + Dexterity" << std::endl;
 }
 
+void test_silent_commons() {
+    // Slice costs nothing.
+    CombatEngine slice = make_combat(CharacterId::SILENT);
+    slice.hand.clear();
+    slice.hand.push_back(DeckCard(CardId::SLICE, true));
+    slice.player.energy = 0;
+    assert(slice.play_card(0));
+    assert(slice.enemies[0].hp == 42 - 9);
+
+    // Backflip blocks (with Dexterity) and draws 2.
+    CombatEngine flip = make_combat(CharacterId::SILENT);
+    flip.player.block = 0;
+    flip.player.add_status(StatusType::DEXTERITY, 1);
+    play(flip, CardId::BACKFLIP);
+    assert(flip.player.block == 6);
+    assert(flip.hand.size() == 2);
+
+    // Sucker Punch hits and weakens.
+    CombatEngine punch = make_combat(CharacterId::SILENT);
+    play(punch, DeckCard(CardId::SUCKER_PUNCH, true));
+    assert(punch.enemies[0].hp == 42 - 10);
+    assert(punch.enemies[0].get_status(StatusType::WEAK) == 2);
+
+    // Dagger Spray hits every enemy twice, and skips the ones killed by the first volley.
+    CombatEngine spray;
+    FixedVector<EnemyType, 3> pack;
+    pack.push_back(EnemyType::LOUSE);
+    pack.push_back(EnemyType::JAW_WORM);
+    spray.start_combat_multi(pack, CharacterId::SILENT);
+    spray.enemies[0].hp = 3;
+    int16_t worm_hp = spray.enemies[1].hp;
+    play(spray, CardId::DAGGER_SPRAY);
+    assert(!spray.enemies[0].is_alive());
+    assert(spray.enemies[1].hp == worm_hp - 2 * 4);
+
+    std::span<const CardId> pool = RunManager::card_reward_pool(CharacterId::SILENT);
+    for (CardId id : { CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH, CardId::DAGGER_SPRAY }) {
+        assert(std::find(pool.begin(), pool.end(), id) != pool.end());
+    }
+    std::cout << "[PASS] Silent commons: Slice, Backflip, Sucker Punch, Dagger Spray" << std::endl;
+}
+
 void test_defect() {
     // Zap channels Lightning; its passive hits at the end of the turn.
     CombatEngine combat = make_combat(CharacterId::DEFECT);
@@ -416,6 +458,7 @@ int main() {
     test_ironclad();
     test_ironclad_commons();
     test_silent();
+    test_silent_commons();
     test_defect();
     test_regent();
     test_necrobinder();

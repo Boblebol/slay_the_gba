@@ -29,7 +29,12 @@ static const CardDef CARDS[] = {
     { CardId::TWIN_STRIKE, "Twin Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 2, "Deal 5 dmg twice.", "Twin Strike+", 1, 7, 2, "Deal 7 dmg twice." },
     { CardId::POMMEL_STRIKE, "Pommel Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 1, "Deal 9 dmg. Draw 1 card.", "Pommel Strike+", 1, 10, 2, "Deal 10 dmg. Draw 2 cards." },
     { CardId::SHRUG_IT_OFF, "Shrug It Off", 1, CardType::SKILL, TargetType::SELF, 8, 1, "Gain 8 block. Draw 1 card.", "Shrug It Off+", 1, 11, 1, "Gain 11 block. Draw 1 card." },
-    { CardId::TAUNT, "Taunt", 1, CardType::SKILL, TargetType::SINGLE_ENEMY, 6, 1, "Gain 6 block. Apply 1 Vuln.", "Taunt+", 1, 7, 2, "Gain 7 block. Apply 2 Vuln." }
+    { CardId::TAUNT, "Taunt", 1, CardType::SKILL, TargetType::SINGLE_ENEMY, 6, 1, "Gain 6 block. Apply 1 Vuln.", "Taunt+", 1, 7, 2, "Gain 7 block. Apply 2 Vuln." },
+    // Silent commons
+    { CardId::SLICE, "Slice", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 0, "Deal 6 dmg.", "Slice+", 0, 9, 0, "Deal 9 dmg." },
+    { CardId::BACKFLIP, "Backflip", 1, CardType::SKILL, TargetType::SELF, 5, 2, "Gain 5 block. Draw 2 cards.", "Backflip+", 1, 8, 2, "Gain 8 block. Draw 2 cards." },
+    { CardId::SUCKER_PUNCH, "Sucker Punch", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 1, "Deal 8 dmg. Apply 1 Weak.", "Sucker Punch+", 1, 10, 2, "Deal 10 dmg. Apply 2 Weak." },
+    { CardId::DAGGER_SPRAY, "Dagger Spray", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 4, 2, "Deal 4 dmg to all twice.", "Dagger Spray+", 1, 6, 2, "Deal 6 dmg to all twice." }
 };
 
 const CardDef& CardDef::get(CardId id) {

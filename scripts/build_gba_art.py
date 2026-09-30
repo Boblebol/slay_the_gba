@@ -224,6 +224,10 @@ CARDS: list[CardArt] = [
     CardArt("pommel_strike", "ironclad", "pommel_strike", "attack", (1, 1)),
     CardArt("shrug_it_off", "ironclad", "shrug_it_off", "skill", (1, 1)),
     CardArt("taunt", "ironclad", "taunt", "skill", (1, 1)),
+    CardArt("slice", "silent", "slice", "attack", (0, 0)),
+    CardArt("backflip", "silent", "backflip", "skill", (1, 1)),
+    CardArt("sucker_punch", "silent", "sucker_punch", "attack", (1, 1)),
+    CardArt("dagger_spray", "silent", "dagger_spray", "attack", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}

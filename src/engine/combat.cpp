@@ -333,6 +333,34 @@ bool CombatEngine::play_card(int index, int target_index) {
             set_log(upgraded ? "Played Taunt+!" : "Played Taunt!");
             break;
         }
+        case CardId::SLICE: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            set_log(upgraded ? "Played Slice+!" : "Played Slice!");
+            break;
+        }
+        case CardId::BACKFLIP: {
+            player.gain_block(base_value);
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Backflip+!" : "Played Backflip!");
+            break;
+        }
+        case CardId::SUCKER_PUNCH: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            current_target.add_status(StatusType::WEAK, secondary_value);
+            set_log(upgraded ? "Played Sucker Punch+!" : "Played Sucker Punch!");
+            break;
+        }
+        case CardId::DAGGER_SPRAY: {
+            for (uint8_t hit = 0; hit < secondary_value; ++hit) {
+                for (size_t i = 0; i < enemies.size(); ++i) {
+                    if (enemies[i].is_alive()) {
+                        enemies[i].take_damage(attack_damage(base_value, player, enemies[i]));
+                    }
+                }
+            }
+            set_log(upgraded ? "Played Dagger Spray+!" : "Played Dagger Spray!");
+            break;
+        }
         default:
             set_log("Played card!");
             break;
