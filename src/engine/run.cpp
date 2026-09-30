@@ -268,34 +268,33 @@ bool RunManager::choose_event_choice(int choice_index, char* out_msg, size_t max
     return false;
 }
 
+std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
+    static constexpr CardId IRONCLAD_POOL[] = { CardId::IRON_WAVE, CardId::CLEAVE, CardId::ANGER };
+    static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR };
+    static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::STRIKE };
+    static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::DEFEND };
+    static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::STRIKE };
+
+    switch (char_id) {
+        case CharacterId::SILENT: return SILENT_POOL;
+        case CharacterId::DEFECT: return DEFECT_POOL;
+        case CharacterId::REGENT: return REGENT_POOL;
+        case CharacterId::NECROBINDER: return NECROBINDER_POOL;
+        default: return IRONCLAD_POOL;
+    }
+}
+
 void RunManager::generate_rewards() {
+    // Offer distinct cards drawn at random from the hero's pool.
     current_card_rewards.clear();
-    switch (character) {
-        case CharacterId::SILENT:
-            current_card_rewards.push_back(DeckCard(CardId::POISON_STAB, false));
-            current_card_rewards.push_back(DeckCard(CardId::DEADLY_POISON, false));
-            current_card_rewards.push_back(DeckCard(CardId::SURVIVOR, false));
-            break;
-        case CharacterId::DEFECT:
-            current_card_rewards.push_back(DeckCard(CardId::ZAP, false));
-            current_card_rewards.push_back(DeckCard(CardId::DUALCAST, false));
-            current_card_rewards.push_back(DeckCard(CardId::STRIKE, false));
-            break;
-        case CharacterId::REGENT:
-            current_card_rewards.push_back(DeckCard(CardId::FALLING_STAR, false));
-            current_card_rewards.push_back(DeckCard(CardId::VENERATE, false));
-            current_card_rewards.push_back(DeckCard(CardId::DEFEND, false));
-            break;
-        case CharacterId::NECROBINDER:
-            current_card_rewards.push_back(DeckCard(CardId::UNLEASH, false));
-            current_card_rewards.push_back(DeckCard(CardId::BODYGUARD, false));
-            current_card_rewards.push_back(DeckCard(CardId::STRIKE, false));
-            break;
-        default: // IRONCLAD
-            current_card_rewards.push_back(DeckCard(CardId::IRON_WAVE, false));
-            current_card_rewards.push_back(DeckCard(CardId::CLEAVE, false));
-            current_card_rewards.push_back(DeckCard(CardId::ANGER, false));
-            break;
+    FixedVector<CardId, 32> candidates;
+    for (CardId id : card_reward_pool(character)) {
+        candidates.push_back(id);
+    }
+    while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
+        size_t pick = next_random() % candidates.size();
+        current_card_rewards.push_back(DeckCard(candidates[pick], false));
+        candidates.erase(pick);
     }
 
     gold_reward = 15 + static_cast<int16_t>(next_random() % 15);
