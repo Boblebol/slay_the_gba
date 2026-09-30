@@ -100,9 +100,106 @@ void test_cartridge_save() {
     assert(!store.has_active_run());
     assert(store.get_active_profile().total_runs == 1);
 
+    // A version 2 cartridge keeps its profiles and settings, but its run was saved on an older map layout.
+    store.autosave_run(saved);
+    for (size_t bank = 0; bank < 2; ++bank) {
+        uint16_t old_version = 2;
+        std::memcpy(storage.bytes.data() + bank * SAVE_BANK_SIZE + 8, &old_version, sizeof(old_version));
+    }
+    store.reset_to_defaults();
+    assert(store.load_from_storage());
+    assert(!store.has_active_run());
+    assert(store.settings().music_volume == 3);
+    assert(store.get_active_profile().total_runs == 1);
+
     store.set_storage(nullptr);
     store.reset_to_defaults();
     std::cout << "[PASS] Cartridge Save: SRAM banks, checksum fallback, full run restore and settings verified" << std::endl;
+}
+
+// Map layouts are random walks: check the structural rules on many seeds rather than one snapshot.
+void test_map_generation() {
+    int width_seen[4] = {};
+    int right_branches = 0;
+    int left_branches = 0;
+
+    for (uint32_t seed = 1; seed <= 500; ++seed) {
+        uint8_t act = static_cast<uint8_t>(1 + seed % 3);
+        MapGraph map;
+        map.generate(act, seed * 2654435761u);
+
+        // Same act and seed: same map (saves regenerate it from the seed).
+        MapGraph again;
+        again.generate(act, seed * 2654435761u);
+        assert(again.nodes.size() == map.nodes.size());
+        for (size_t i = 0; i < map.nodes.size(); ++i) {
+            assert(again.nodes[i].type == map.nodes[i].type && again.nodes[i].lane == map.nodes[i].lane);
+        }
+
+        assert(map.boss_node_index == static_cast<int>(map.nodes.size()) - 1);
+        const MapNode& boss = map.nodes[map.boss_node_index];
+        assert(boss.type == RoomType::BOSS && boss.floor == 15 && boss.children_count == 0);
+
+        auto starts = map.get_starting_nodes();
+        assert(starts.size() >= 2);
+
+        int width[15] = {};
+        int parents[MAX_MAP_NODES] = {};
+        int events = 0;
+        for (size_t i = 0; i < map.nodes.size(); ++i) {
+            const MapNode& node = map.nodes[i];
+            if (node.type == RoomType::EVENT) ++events;
+            if (node.floor == 15) continue;
+            ++width[node.floor];
+            assert(node.lane < 3);
+            assert(node.children_count >= 1);
+
+            if (node.floor == 0) assert(node.type == RoomType::MONSTER);
+            if (node.floor == 7) assert(node.type == RoomType::TREASURE);
+            if (node.floor == 14) assert(node.type == RoomType::REST_SITE);
+            if (node.type == RoomType::ELITE || node.type == RoomType::REST_SITE) assert(node.floor >= 5);
+            if (node.type == RoomType::REST_SITE) assert(node.floor != 13);
+
+            for (uint8_t c = 0; c < node.children_count; ++c) {
+                const MapNode& child = map.nodes[node.children[c]];
+                ++parents[node.children[c]];
+                assert(child.floor == node.floor + 1);
+                if (child.floor == 15) continue;
+                // One lane at most, left or right, listed in screen order.
+                assert(child.lane + 1 >= node.lane && child.lane <= node.lane + 1);
+                if (c > 0) assert(map.nodes[node.children[c - 1]].lane < child.lane);
+                if (child.lane > node.lane) ++right_branches;
+                if (child.lane < node.lane) ++left_branches;
+                // No two elites, campfires or shops in a row.
+                if (node.type == RoomType::ELITE || node.type == RoomType::REST_SITE || node.type == RoomType::SHOP) {
+                    assert(child.type != node.type);
+                }
+                // Paths never cross: no edge from this node swaps sides with an edge from a node to its right.
+                for (size_t j = 0; j < map.nodes.size(); ++j) {
+                    const MapNode& other = map.nodes[j];
+                    if (other.floor != node.floor || other.lane <= node.lane) continue;
+                    for (uint8_t oc = 0; oc < other.children_count; ++oc) {
+                        assert(map.nodes[other.children[oc]].lane >= child.lane);
+                    }
+                }
+            }
+        }
+        // Every room above the first floor can be reached.
+        for (size_t i = 0; i < map.nodes.size(); ++i) {
+            if (map.nodes[i].floor > 0) assert(parents[i] >= 1);
+        }
+        assert(width[14] == 1);
+        assert(events >= 3);
+        for (int floor = 1; floor < 14; ++floor) {
+            assert(width[floor] >= 1 && width[floor] <= 3);
+            ++width_seen[width[floor]];
+        }
+    }
+
+    // Floors of 1, 2 and 3 rooms all occur, and paths branch both ways.
+    assert(width_seen[1] > 0 && width_seen[2] > 0 && width_seen[3] > 0);
+    assert(right_branches > 0 && left_branches > 0);
+    std::cout << "[PASS] Procedural Map: 500 maps with 1-3 rooms per floor, left/right branches, no crossing, no orphan room" << std::endl;
 }
 
 } // namespace
@@ -247,23 +344,7 @@ int main() {
     assert(count_cards_by_pool_and_rarity("Necrobinder", "Common") == 20);
     std::cout << "[PASS] Common cards validated: exactly 20 common cards for each of the 5 characters!" << std::endl;
 
-    // Test Roguelike Map Graph Generation (15 Floors + Boss)
-    MapGraph map;
-    map.generate(1, 42);
-    assert(map.nodes.size() == 46);
-    assert(map.boss_node_index == 45);
-    assert(map.nodes[map.boss_node_index].type == RoomType::BOSS);
-    assert(map.nodes[map.boss_node_index].floor == 15);
-
-    auto start_nodes = map.get_starting_nodes();
-    assert(start_nodes.size() == 3);
-    for (int idx : start_nodes) {
-        assert(map.nodes[idx].floor == 0);
-        assert(map.nodes[idx].type == RoomType::MONSTER);
-    }
-    auto next_nodes = map.get_next_nodes(start_nodes[0]);
-    assert(!next_nodes.empty());
-    std::cout << "[PASS] Procedural Map Graph: 16 floors generated (3 start branches, 1 Boss summit)" << std::endl;
+    test_map_generation();
 
     // Test Full Roguelike Run Loop (RunManager)
     RunManager run;
@@ -278,7 +359,7 @@ int main() {
 
     // Test Room Entry & Combat initialization
     auto available = run.get_available_rooms();
-    assert(available.size() == 3);
+    assert(available.size() >= 2);
     run.enter_room(available[0]);
     assert(run.phase == RunPhase::IN_COMBAT);
     assert(run.combat.player.hp == 80);
@@ -604,7 +685,7 @@ int main() {
 
     // Starting routes
     auto routes = nav.get_available_routes();
-    assert(routes.size() == 3); // 3 lanes on floor 0
+    assert(routes.size() >= 2); // the first floor always offers a choice
     assert(nav.get_selected_target_node() == routes[0]);
     nav.next_route();
     assert(nav.get_selected_target_node() == routes[1]);
