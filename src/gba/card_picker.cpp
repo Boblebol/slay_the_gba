@@ -4,6 +4,7 @@
 #include "bn_sstream.h"
 
 #include "gba/assets.h"
+#include "gba/audio.h"
 #include "gba/card_text.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
@@ -82,11 +83,13 @@ bool CardPicker::update(int frame)
         {
             _selected = (_selected + count - 1) % count;
             changed = true;
+            play_sfx(Sfx::UI_CURSOR);
         }
         else if(bn::keypad::right_pressed())
         {
             _selected = (_selected + 1) % count;
             changed = true;
+            play_sfx(Sfx::UI_CURSOR);
         }
     }
 

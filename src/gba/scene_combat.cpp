@@ -12,6 +12,7 @@
 #include "bn_sprite_items_fx_slash.h"
 
 #include "gba/assets.h"
+#include "gba/audio.h"
 #include "gba/card_text.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
@@ -833,6 +834,8 @@ void CombatScene::_snapshot()
 void CombatScene::_resolve_diffs(bool attack_card)
 {
     bn::string<16> text;
+    int max_lost_hp = -1;   // -1: nobody hit, 0: only block was hit
+    bool killed = false;
 
     for(int index = 0; index < int(_combat.enemies.size()); ++index)
     {
@@ -860,6 +863,7 @@ void CombatScene::_resolve_diffs(bool attack_card)
             }
 
             _shake.start(8, lost_hp >= 10 ? 4 : 2);
+            max_lost_hp = bn::max(max_lost_hp, lost_hp);
         }
 
         view.bar.set(enemy.hp, enemy.max_hp);
@@ -867,6 +871,7 @@ void CombatScene::_resolve_diffs(bool attack_card)
         if(! enemy.is_alive() && ! view.gone && view.death == 0)
         {
             view.death = DEATH_FRAMES;
+            killed = true;
 
             for(bn::sprite_ptr& part : view.parts)
             {
@@ -876,11 +881,35 @@ void CombatScene::_resolve_diffs(bool attack_card)
         }
     }
 
+    // One impact sound per card, the strongest one wins.
+    if(killed)
+    {
+        play_sfx(Sfx::ENEMY_DEATH);
+    }
+    else if(max_lost_hp >= 10)
+    {
+        play_sfx(Sfx::HIT_HEAVY);
+    }
+    else if(max_lost_hp > 0)
+    {
+        play_sfx(Sfx::HIT_SLASH);
+    }
+    else if(max_lost_hp == 0)
+    {
+        play_sfx(Sfx::HIT_BLUNT);
+    }
+
     int gained_block = _combat.player.block - _snap_player_block;
 
     if(gained_block > 0)
     {
         _player_guard = 14;
+
+        if(max_lost_hp < 0)
+        {
+            play_sfx(Sfx::BLOCK);
+        }
+
         _fx.spawn(bn::sprite_items::fx_burst, PLAYER_X, PLAYER_Y, FX_BLOCK, 4, 3);
         text.clear();
         bn::ostringstream stream(text);
@@ -890,6 +919,7 @@ void CombatScene::_resolve_diffs(bool attack_card)
     else if(! attack_card)
     {
         _fx.spawn(bn::sprite_items::fx_burst, PLAYER_X, PLAYER_Y - 6, FX_BUFF, 4, 4);
+        play_sfx(Sfx::BUFF);
     }
 
     _player_bar.set(_combat.player.hp, _combat.player.max_hp);
@@ -946,15 +976,18 @@ void CombatScene::_update_player_input()
         if(bn::keypad::left_pressed())
         {
             _selected = (_selected + count - 1) % count;
+            play_sfx(Sfx::UI_CURSOR);
         }
         else if(bn::keypad::right_pressed())
         {
             _selected = (_selected + 1) % count;
+            play_sfx(Sfx::UI_CURSOR);
         }
     }
 
     if(bn::keypad::select_pressed())
     {
+        play_sfx(Sfx::UI_OPEN);
         _ctx.deck_return = SceneId::COMBAT;
         _ctx.combat_resume = true;
         _ctx.transition = Transition::QUICK;
@@ -963,6 +996,7 @@ void CombatScene::_update_player_input()
 
     if(bn::keypad::start_pressed() || bn::keypad::r_pressed())
     {
+        play_sfx(Sfx::DISCARD);
         _start_enemy_turn();
         return;
     }
@@ -971,6 +1005,7 @@ void CombatScene::_update_player_input()
     {
         if(! _combat.can_play_card(_selected))
         {
+            play_sfx(Sfx::ERROR);
             _popups.spawn(_hand[_selected].x.round_integer(), HAND_FOCUS_Y - 24, "Pas assez d'énergie",
                           TextColor::RED);
             _hand[_selected].x += 6;
@@ -981,6 +1016,7 @@ void CombatScene::_update_player_input()
 
         if(def.target == engine::TargetType::SINGLE_ENEMY && _combat.count_alive_enemies() > 1)
         {
+            play_sfx(Sfx::UI_CONFIRM);
             _phase = Phase::TARGET;
 
             if(_target < 0 || ! _combat.enemies[_target].is_alive())
@@ -1000,14 +1036,17 @@ void CombatScene::_update_target_input()
     if(bn::keypad::left_pressed() || bn::keypad::up_pressed())
     {
         _target = _next_alive(_target, -1);
+        play_sfx(Sfx::UI_CURSOR);
     }
     else if(bn::keypad::right_pressed() || bn::keypad::down_pressed())
     {
         _target = _next_alive(_target, 1);
+        play_sfx(Sfx::UI_CURSOR);
     }
 
     if(bn::keypad::b_pressed())
     {
+        play_sfx(Sfx::UI_CANCEL);
         _phase = Phase::PLAYER;
     }
     else if(bn::keypad::a_pressed())
@@ -1035,6 +1074,7 @@ void CombatScene::_start_card(int target)
     _phase = Phase::CARD_FLIGHT;
     _timer = 0;
     _selected_shown = -1;
+    play_sfx(Sfx::CARD_PLAY);
 }
 
 void CombatScene::_update_card_flight()
@@ -1212,6 +1252,7 @@ void CombatScene::_update_enemy_turn()
                 stream << '-' << record.damage_to_player;
                 _popups.spawn(PLAYER_X + 8, PLAYER_Y - 10, text, TextColor::RED);
                 _player_hurt = 20;
+                play_sfx(record.damage_to_player >= 10 ? Sfx::HIT_HEAVY : Sfx::HIT_SLASH);
                 _shake.start(12, record.damage_to_player >= 10 ? 5 : 3);
                 _fx.spawn(bn::sprite_items::fx_slash, PLAYER_X, PLAYER_Y, 0, 4, 2, true);
                 _fx.spawn(bn::sprite_items::fx_burst, PLAYER_X - 4, PLAYER_Y, FX_HIT, 4, 3);
@@ -1221,6 +1262,7 @@ void CombatScene::_update_enemy_turn()
                 _popups.spawn(PLAYER_X + 8, PLAYER_Y - 10, "Bloqué", TextColor::BLUE);
                 _fx.spawn(bn::sprite_items::fx_burst, PLAYER_X, PLAYER_Y, FX_BLOCK, 4, 3);
                 _shake.start(4, 1);
+                play_sfx(Sfx::HIT_BLUNT);
             }
 
             if(record.block_gained > 0)
@@ -1229,12 +1271,18 @@ void CombatScene::_update_enemy_turn()
                 stream << '+' << record.block_gained << " Armure";
                 _popups.spawn(view.x, _body_y(view) - 6, text, TextColor::BLUE, attacked ? 8 : 0);
                 _fx.spawn(bn::sprite_items::fx_burst, view.x, _body_y(view), FX_BLOCK, 4, 3);
+
+                if(! attacked)
+                {
+                    play_sfx(Sfx::BLOCK);
+                }
             }
 
             if(record.intent_type == engine::EnemyIntentType::BUFF)
             {
                 _popups.spawn(view.x, _body_y(view) - 6, "Force ▲", TextColor::GOLD);
                 _fx.spawn(bn::sprite_items::fx_burst, view.x, _body_y(view), FX_BUFF, 4, 4);
+                play_sfx(Sfx::BUFF);
             }
 
             _player_bar.set(record.player_hp_after, _combat.player.max_hp);
@@ -1267,6 +1315,7 @@ void CombatScene::_update_enemy_turn()
             if(! enemy.is_alive() && ! _enemies[index].gone && _enemies[index].death == 0)
             {
                 _enemies[index].death = DEATH_FRAMES;
+                play_sfx(Sfx::ENEMY_DEATH);
 
                 for(bn::sprite_ptr& part : _enemies[index].parts)
                 {
@@ -1298,6 +1347,7 @@ void CombatScene::_update_enemy_turn()
         bn::ostringstream stream(text);
         stream << "Tour " << _combat.turn_number;
         _set_banner(text, TextColor::GOLD);
+        play_sfx(Sfx::TURN_START);
         _banner_timer = 40;
 
         for(int index = 0; index < _enemies.size(); ++index)

@@ -8,6 +8,7 @@
 #include "bn_regular_bg_items_bg_rewards.h"
 
 #include "gba/assets.h"
+#include "gba/audio.h"
 #include "gba/card_text.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
@@ -59,11 +60,13 @@ public:
         {
             if(bn::keypad::left_pressed())
             {
+                play_sfx(Sfx::UI_CURSOR);
                 _selected = (_selected + count - 1) % count;
                 _refresh_text();
             }
             else if(bn::keypad::right_pressed())
             {
+                play_sfx(Sfx::UI_CURSOR);
                 _selected = (_selected + 1) % count;
                 _refresh_text();
             }
@@ -72,10 +75,12 @@ public:
                 _chosen = _selected;
                 _exit_timer = 0;
                 _ctx.run.pick_card_reward(_chosen);
+                play_sfx(Sfx::UI_CONFIRM);
             }
             else if(bn::keypad::start_pressed())
             {
                 _ctx.run.skip_card_rewards();
+                play_sfx(Sfx::GOLD);
                 return SceneId::MAP;
             }
         }
@@ -126,6 +131,7 @@ public:
             if(_exit_timer == 1)
             {
                 _popups.spawn(0, 20, "Ajoutée au deck !", TextColor::GREEN);
+                play_sfx(Sfx::GOLD);
             }
 
             _popups.update();

@@ -2,6 +2,7 @@
 
 #include "bn_sstream.h"
 
+#include "gba/audio.h"
 #include "gba/scene_factories.h"
 
 namespace gba
@@ -53,6 +54,7 @@ SceneId scene_for_run_phase(GameContext& context)
     {
         // The chest is resolved by the engine on entry; announce it on the map.
         run.phase = engine::RunPhase::MAP_NAVIGATION;
+        play_sfx(Sfx::RELIC);
         context.map_toast.clear();
         bn::ostringstream stream(context.map_toast);
         stream << "Coffre : +50 Or et une relique !";

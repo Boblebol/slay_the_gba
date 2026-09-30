@@ -18,6 +18,7 @@
 #include "engine/save_system.h"
 
 #include "gba/assets.h"
+#include "gba/audio.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
 #include "gba/text.h"
@@ -380,27 +381,32 @@ private:
         if(bn::keypad::up_pressed())
         {
             _ctx.nav.scroll_up();
+            play_sfx(Sfx::UI_CURSOR);
         }
         else if(bn::keypad::down_pressed())
         {
             _ctx.nav.scroll_down();
+            play_sfx(Sfx::UI_CURSOR);
         }
 
         if(bn::keypad::left_pressed())
         {
             _ctx.nav.prev_route();
+            play_sfx(Sfx::UI_CURSOR);
             _ctx.nav.scroll_floor = bn::max(0, _current_floor());
             _refresh_route_text();
         }
         else if(bn::keypad::right_pressed())
         {
             _ctx.nav.next_route();
+            play_sfx(Sfx::UI_CURSOR);
             _ctx.nav.scroll_floor = bn::max(0, _current_floor());
             _refresh_route_text();
         }
 
         if(bn::keypad::select_pressed())
         {
+            play_sfx(Sfx::UI_OPEN);
             _ctx.deck_return = SceneId::MAP;
             _ctx.transition = Transition::QUICK;
             return SceneId::DECK;
@@ -412,6 +418,7 @@ private:
 
             if(target >= 0)
             {
+                play_sfx(Sfx::UI_CONFIRM);
                 _walk_target = target;
                 _walk = WALK_FRAMES;
                 _walk_x0 = _pawn.x();
