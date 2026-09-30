@@ -219,6 +219,14 @@ bool RunManager::buy_shop_potion(int index) {
     return current_shop.buy_potion(*this, index);
 }
 
+bool RunManager::use_potion(int index, int target_index) {
+    if (phase != RunPhase::IN_COMBAT) return false;
+    if (index < 0 || static_cast<size_t>(index) >= potions.size()) return false;
+    if (!combat.use_potion(potions[index], target_index)) return false;
+    potions.erase(index);
+    return true;
+}
+
 bool RunManager::remove_card_at_shop(int deck_index) {
     return current_shop.remove_card(*this, deck_index);
 }
