@@ -379,6 +379,35 @@ int main() {
     assert(!potion_combat.use_potion("BLOCK_POTION"));
     std::cout << "[PASS] Potions: Fire, Block, Energy & Blood drunk in combat through the engine" << std::endl;
 
+    // Treasure chests never give a relic twice: active relics first, then any common one.
+    RunManager chest_run;
+    chest_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    int chest_room = chest_run.get_available_rooms()[0];
+    chest_run.map.nodes[chest_room].type = RoomType::TREASURE;
+    int chest_gold = chest_run.gold;
+    chest_run.enter_room(chest_room);
+    assert(chest_run.phase == RunPhase::TREASURE);
+    assert(chest_run.gold == chest_gold + 50);
+    assert(chest_run.relics.size() == 2);
+    std::string_view first_chest = chest_run.relics[1];
+    assert(first_chest == "VAJRA" || first_chest == "ANCHOR");
+    std::string_view second_chest = chest_run.draw_treasure_relic();
+    assert((second_chest == "VAJRA" || second_chest == "ANCHOR") && second_chest != first_chest);
+    chest_run.add_relic(second_chest);
+    for (int draw = 0; draw < 5; ++draw) {
+        std::string_view relic_id = chest_run.draw_treasure_relic();
+        const RelicData* relic = find_relic(relic_id);
+        assert(relic && relic->rarity == RelicRarity::COMMON && !chest_run.has_relic(relic_id));
+        chest_run.add_relic(relic_id);
+    }
+
+    // The merchant shows relics the hero already owns as sold out.
+    chest_run.open_shop();
+    assert(chest_run.current_shop.relics[0].purchased && chest_run.current_shop.relics[1].purchased);
+    potion_run.open_shop();
+    assert(!potion_run.current_shop.relics[0].purchased && !potion_run.current_shop.relics[1].purchased);
+    std::cout << "[PASS] Relics: chests and the shop never give a relic twice" << std::endl;
+
     // Test Campfire Rest
     assert(run.can_rest());
     int hp_before_rest = run.hp;

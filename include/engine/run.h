@@ -87,6 +87,7 @@ public:
     void skip_card_rewards();
     void add_relic(std::string_view relic_id);
     bool has_relic(std::string_view relic_id) const;
+    std::string_view draw_treasure_relic();
     bool remove_card_from_deck(int deck_index);
     bool upgrade_card_in_deck(int deck_index);
 
