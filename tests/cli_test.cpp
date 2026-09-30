@@ -248,9 +248,12 @@ int main() {
     assert(combat.turn_number == 2);
     assert(combat.player.energy == 3);
     assert(combat.hand.size() == 5);
-    // Cultist had Ritual +3 in turn 1, so after turn 1 ends, Cultist should have 3 Strength!
+    // Cultist cast Ritual +3 on turn 1: it only starts granting Strength at the end of turn 2.
+    assert(combat.enemy.get_status(StatusType::RITUAL) == 3);
+    assert(combat.enemy.get_status(StatusType::STRENGTH) == 0);
+    combat.end_player_turn();
     assert(combat.enemy.get_status(StatusType::STRENGTH) == 3);
-    std::cout << "[PASS] Turn ended, Cultist executed Ritual! Strength is now: " 
+    std::cout << "[PASS] Turn ended, Cultist executed Ritual! Strength is now: "
               << combat.enemy.get_status(StatusType::STRENGTH) << std::endl;
 
     // Test Ancients System (Patch v0.111.0 Beta)
@@ -387,6 +390,118 @@ int main() {
     assert(run.gold > prev_gold);
     assert(run.phase == RunPhase::MAP_NAVIGATION);
     std::cout << "[PASS] Run Loop: Deck, Combat, Burning Blood (+6 HP), Card Reward & Gold picked" << std::endl;
+
+    // Vajra: every combat starts with 1 Strength, and only with the relic.
+    RunManager plain_run;
+    plain_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain_run.enter_room(plain_run.get_available_rooms()[0]);
+    assert(!plain_run.has_relic("VAJRA"));
+    assert(plain_run.combat.player.get_status(StatusType::STRENGTH) == 0);
+
+    RunManager vajra_run;
+    vajra_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    vajra_run.add_relic("VAJRA");
+    assert(vajra_run.has_relic("VAJRA"));
+    vajra_run.enter_room(vajra_run.get_available_rooms()[0]);
+    assert(vajra_run.phase == RunPhase::IN_COMBAT);
+    assert(vajra_run.combat.player.get_status(StatusType::STRENGTH) == 1);
+    std::cout << "[PASS] Vajra: +1 Strength at the start of each combat" << std::endl;
+
+    // Starter relics: Ring of the Snake draws 2 more cards, Cracked Core channels a Lightning orb.
+    assert(plain_run.combat.hand.size() == 5);
+    assert(plain_run.combat.player.orbs.empty());
+
+    RunManager silent_run;
+    silent_run.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 777);
+    assert(silent_run.has_relic("RING_OF_THE_SNAKE"));
+    silent_run.enter_room(silent_run.get_available_rooms()[0]);
+    assert(silent_run.combat.hand.size() == 7);
+
+    RunManager defect_run;
+    defect_run.start_run(CharacterId::DEFECT, 0, PaletteVariant::CLASSIC, 777);
+    assert(defect_run.has_relic("CRACKED_CORE"));
+    defect_run.enter_room(defect_run.get_available_rooms()[0]);
+    assert(defect_run.combat.player.orbs.size() == 1);
+    assert(defect_run.combat.player.orbs[0] == OrbType::LIGHTNING);
+    assert(defect_run.combat.hand.size() == 5);
+    std::cout << "[PASS] Starter relics: Ring of the Snake (+2 cards) & Cracked Core (Lightning orb)" << std::endl;
+
+    // Anchor (bought at the shop): every combat starts with 10 Block.
+    assert(plain_run.combat.player.block == 0);
+    RunManager anchor_run;
+    anchor_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    anchor_run.gold = 150;
+    ShopInventory anchor_shop;
+    anchor_shop.generate(CharacterId::IRONCLAD, 1);
+    assert(anchor_shop.relics[1].relic_id == "ANCHOR");
+    assert(anchor_shop.buy_relic(anchor_run, 1));
+    assert(anchor_run.has_relic("ANCHOR"));
+    anchor_run.enter_room(anchor_run.get_available_rooms()[0]);
+    assert(anchor_run.combat.player.block == 10);
+    std::cout << "[PASS] Anchor: 10 Block at the start of each combat" << std::endl;
+
+    // Potions are drunk through the engine: effect applied, potion removed from the belt.
+    RunManager potion_run;
+    potion_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    potion_run.potions.push_back("FIRE_POTION");
+    potion_run.potions.push_back("BLOCK_POTION");
+    potion_run.potions.push_back("AMBERGRIS");
+    assert(!potion_run.use_potion(0)); // not in combat yet
+    potion_run.enter_room(potion_run.get_available_rooms()[0]);
+    CombatEngine& potion_combat = potion_run.combat;
+    int16_t foe_hp = potion_combat.enemies[0].hp;
+    assert(potion_run.use_potion(0, 0));
+    assert(potion_combat.enemies[0].hp == foe_hp - 20);
+    assert(potion_combat.enemy.hp == potion_combat.enemies[0].hp);
+    assert(potion_run.potions.size() == 2 && potion_run.potions[0] == "BLOCK_POTION");
+    assert(potion_run.use_potion(0));
+    assert(potion_combat.player.block == 12);
+    assert(!potion_run.use_potion(0)); // no engine effect yet: kept in the belt
+    assert(potion_run.potions.size() == 1);
+    assert(!potion_run.use_potion(5));
+
+    int8_t energy_before = potion_combat.player.energy;
+    assert(potion_combat.use_potion("ENERGY_POTION"));
+    assert(potion_combat.player.energy == energy_before + 2);
+    potion_combat.player.hp = 40;
+    assert(potion_combat.use_potion("BLOOD_POTION"));
+    assert(potion_combat.player.hp == 40 + 80 / 5);
+
+    // A Fire Potion that kills the last enemy wins the fight; nothing can be drunk once it is over.
+    for (size_t i = 0; i < potion_combat.enemies.size(); ++i) potion_combat.enemies[i].hp = 5;
+    for (size_t i = 0; i < potion_combat.enemies.size(); ++i) assert(potion_combat.use_potion("FIRE_POTION"));
+    assert(potion_combat.state == CombatState::VICTORY);
+    assert(!potion_combat.use_potion("BLOCK_POTION"));
+    std::cout << "[PASS] Potions: Fire, Block, Energy & Blood drunk in combat through the engine" << std::endl;
+
+    // Treasure chests never give a relic twice: active relics first, then any common one.
+    RunManager chest_run;
+    chest_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    int chest_room = chest_run.get_available_rooms()[0];
+    chest_run.map.nodes[chest_room].type = RoomType::TREASURE;
+    int chest_gold = chest_run.gold;
+    chest_run.enter_room(chest_room);
+    assert(chest_run.phase == RunPhase::TREASURE);
+    assert(chest_run.gold == chest_gold + 50);
+    assert(chest_run.relics.size() == 2);
+    std::string_view first_chest = chest_run.relics[1];
+    assert(first_chest == "VAJRA" || first_chest == "ANCHOR");
+    std::string_view second_chest = chest_run.draw_treasure_relic();
+    assert((second_chest == "VAJRA" || second_chest == "ANCHOR") && second_chest != first_chest);
+    chest_run.add_relic(second_chest);
+    for (int draw = 0; draw < 5; ++draw) {
+        std::string_view relic_id = chest_run.draw_treasure_relic();
+        const RelicData* relic = find_relic(relic_id);
+        assert(relic && relic->rarity == RelicRarity::COMMON && !chest_run.has_relic(relic_id));
+        chest_run.add_relic(relic_id);
+    }
+
+    // The merchant shows relics the hero already owns as sold out.
+    chest_run.open_shop();
+    assert(chest_run.current_shop.relics[0].purchased && chest_run.current_shop.relics[1].purchased);
+    potion_run.open_shop();
+    assert(!potion_run.current_shop.relics[0].purchased && !potion_run.current_shop.relics[1].purchased);
+    std::cout << "[PASS] Relics: chests and the shop never give a relic twice" << std::endl;
 
     // Test Campfire Rest
     assert(run.can_rest());
@@ -550,7 +665,7 @@ int main() {
     CombatEngine iron_c;
     iron_c.start_combat(EnemyType::CULTIST, CharacterId::IRONCLAD);
     iron_c.player.add_status(StatusType::METALLICIZE, 4);
-    iron_c.player.reset_turn();
+    iron_c.player.apply_metallicize_tick();
     assert(iron_c.player.block == 4);
     std::cout << "[PASS] Character Resources: Silent Poison, Defect Orbs, Regent Stars, Necro Minion & Ironclad Metallicize verified" << std::endl;
 

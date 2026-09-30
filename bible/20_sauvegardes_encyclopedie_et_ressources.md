@@ -131,7 +131,7 @@ flowchart TD
     end
     subgraph P5 ["💀 La Nécrolieuse / Necrobinder"]
         NE_S["Âmes (0 à 99)"]
-        NE_M["Invocation d'Osty (Minion protecteur qui intercepte les dégâts)"]
+        NE_M["Invocation de Titos (Minion protecteur qui intercepte les dégâts)"]
     end
 ```
 
@@ -160,10 +160,10 @@ flowchart TD
 
 ### 5. 💀 La Nécrolieuse (*Necrobinder*)
 * **Âmes** (*Souls*, 0 à 99) : Jauge récoltée lors des blessures infligées aux ennemis.
-* **Familier Minion (Osty)** :
+* **Familier Minion (Titos, *Osty* en VO)** :
   - Possède ses propres PV et son propre blocage (`minion_hp`, `minion_block`).
-  - **Interception des dégâts** : Lorsque l'héroïne subit une attaque, Osty encaisse les coups en premier, protégeant les PV de la Nécrolieuse.
-  - **Riposte automatique** : Osty inflige 3 dégâts à l'ennemi à chaque fin de tour du joueur.
+  - **Interception des dégâts** : Lorsque l'héroïne subit une attaque, Titos encaisse les coups en premier, protégeant les PV de la Nécrolieuse.
+  - **Riposte automatique** : Titos inflige 3 dégâts à l'ennemi à chaque fin de tour du joueur.
 
 ---
 

@@ -2,7 +2,8 @@
 
 > **Référence officielle de gameplay pour `slay_the_gba`**  
 > **Patch :** `v0.111.0 Beta` (Dernière version officielle)  
-> Les 5 archétypes complets : Soldat de Fer, La Silencieuse, Le Défectueux, Le Régent et La Nécrolieuse.
+> Les 5 archétypes complets : Soldat de Fer, La Silencieuse, Le Défectueux, Le Régent et La Nécrolieuse — une cartouche par héros.  
+> Charte commune des éditions (couleurs, zones, références) : [Collection des livrets](livrets_gba/README.md).
 
 ---
 
@@ -12,9 +13,9 @@
 |---|---|:---:|---|---|---|
 | **Soldat de Fer** | Guerrier Maudit de l'Enfer | `80 PV` | ![Sang](images/relics/burning_blood.webp) Sang ardent (BURNING_BLOOD) | 5x Frappe, 4x Défense, 1x Heurt | Spécialisé dans la force brute, les attaques massives de zon... |
 | **La Silencieuse** | Chasseresse Mortelle des Brumes | `70 PV` | ![Anneau](images/relics/ring_of_the_snake.webp) Anneau du serpent (RING_OF_THE_SNAKE) | 5x Frappe, 5x Défense, 1x Neutralisation, 1x Survivant | Maîtresse des poisons à progression exponentielle (Catalyseu... |
-| **Le Défectueux** | Automate de Combat Éveillé | `75 PV` | ![Noyau](images/relics/cracked_core.webp) Noyau fissuré (CRACKED_CORE) | 4x Frappe, 4x Défense, 1x Éclair, 1x Activation | Gestion stratégique des slots d'orbes (Foudre, Glace, Obscur... |
-| **Le Régent** | Souverain Céleste Déchu (Nouveau dans STS2) | `75 PV` | ![Droit](images/relics/divine_right.webp) Droit divin (DIVINE_RIGHT) | 4x Frappe, 4x Défense, 1x Chute, 1x Vénération | Accumulation d'Étoiles pour libérer des frappes cosmiques, d... |
-| **La Nécrolieuse** | Gardienne des Morts et des Os (Nouveau dans STS2) | `65 PV` | ![Phylactère](images/relics/bound_phylactery.webp) Phylactère enchaîné (BOUND_PHYLACTERY) | 4x Frappe, 4x Défense, 1x Déchaînement, 1x Garde | Gestion de familiers et squelettes invoqués au combat, manip... |
+| **Le Défectueux** | Automate de Combat Éveillé | `75 PV` | ![Noyau](images/relics/cracked_core.webp) Noyau fissuré (CRACKED_CORE) | 4x Frappe, 4x Défense, 1x Éclair, 1x Activation double | Gestion stratégique des slots d'orbes (Foudre, Glace, Obscur... |
+| **Le Régent** | Souverain Céleste Déchu (Nouveau dans STS2) | `75 PV` | ![Droit](images/relics/divine_right.webp) Droit divin (DIVINE_RIGHT) | 4x Frappe, 4x Défense, 1x Chute d'étoile, 1x Vénération | Accumulation d'Étoiles pour libérer des frappes cosmiques, d... |
+| **La Nécrolieuse** | Gardienne des Morts et des Os (Nouveau dans STS2) | `65 PV` | ![Phylactère](images/relics/bound_phylactery.webp) Phylactère enchaîné (BOUND_PHYLACTERY) | 4x Frappe, 4x Défense, 1x Déchaînement, 1x Garde du corps | Gestion de familiers et squelettes invoqués au combat, manip... |
 
 ---
 
@@ -24,11 +25,11 @@
 * **Or de Départ :** `99 Pièces d'or`
 * **Énergie de Base :** `3 ⚡` par tour
 * **Emplacements de Potions :** `3 emplacements`
-* **Teinte Thématique GBA :** Rouge Sang (`#C82030` / GBA: `0x001F`)
+* **Teinte Thématique GBA :** Rouge Sang (`#C82030` / GBA: `0x001F`) — cartouche `slay_ironclad.gba`, zone : Forges du Carnage
 * **Style de Jeu & Synergies :** Spécialisé dans la force brute, les attaques massives de zone, l'armure infranchissable (Barricade/Heurt de bouclier) et les pactes sanglants avec les démons.
 
 ### 🏺 Relique de Départ : ![Sang](images/relics/burning_blood.webp) Sang ardent (BURNING_BLOOD)
-> À la fin du combat, récupérez 6 PV.
+> À la fin de chaque combat, récupérez 6 PV.
 
 ### 🃏 Deck de Départ (Starter Deck)
 * **5x** `Frappe (STRIKE_IRONCLAD)` — *Attaque de base (6 dégâts pour 1 ⚡)*
@@ -72,7 +73,7 @@ Les cartes communes forment le socle de construction de deck après chaque comba
 * **Or de Départ :** `99 Pièces d'or`
 * **Énergie de Base :** `3 ⚡` par tour
 * **Emplacements de Potions :** `3 emplacements`
-* **Teinte Thématique GBA :** Vert Émeraude (`#20A040` / GBA: `0x03E0`)
+* **Teinte Thématique GBA :** Vert Venin (`#40A048` / GBA: `0x03E0`) — cartouche `slay_silent.gba`, zone : Marais du Venin
 * **Style de Jeu & Synergies :** Maîtresse des poisons à progression exponentielle (Catalyseur), des volées infinies de surins (Shivs) et de la manipulation fluide de la pioche/défausse.
 
 ### 🏺 Relique de Départ : ![Anneau](images/relics/ring_of_the_snake.webp) Anneau du serpent (RING_OF_THE_SNAKE)
@@ -121,11 +122,11 @@ Les cartes communes forment le socle de construction de deck après chaque comba
 * **Or de Départ :** `99 Pièces d'or`
 * **Énergie de Base :** `3 ⚡` par tour
 * **Emplacements de Potions :** `3 emplacements`
-* **Teinte Thématique GBA :** Bleu Cobalt (`#2060C8` / GBA: `0x7C00`)
+* **Teinte Thématique GBA :** Bleu Saphir (`#3870D8` / GBA: `0x7C00`) — cartouche `slay_defect.gba`, zone : Complexe Astral
 * **Style de Jeu & Synergies :** Gestion stratégique des slots d'orbes (Foudre, Glace, Obscurité, Plasma), optimisation du Focus et génération monumentale de mana.
 
 ### 🏺 Relique de Départ : ![Noyau](images/relics/cracked_core.webp) Noyau fissuré (CRACKED_CORE)
-> Au début de chaque combat, canalisez 1 Foudre.
+> Au début de chaque combat, **Canalisez** 1 **Orbe kéraunique**.
 
 ### 🃏 Deck de Départ (Starter Deck)
 * **4x** `Frappe (STRIKE_DEFECT)` — *Attaque de base (6 dégâts pour 1 ⚡)*
@@ -164,17 +165,17 @@ Les cartes communes forment le socle de construction de deck après chaque comba
 
 ---
 
-## ⚔️ Le Régent (Souverain Céleste Déchu (Nouveau dans STS2))
+## ⚔️ Le Régent (Souverain Céleste Déchu — nouveau dans STS2)
 
 * **Points de Vie de Départ :** `75 PV` (PV Max initial)
 * **Or de Départ :** `99 Pièces d'or`
 * **Énergie de Base :** `3 ⚡` par tour
 * **Emplacements de Potions :** `3 emplacements`
-* **Teinte Thématique GBA :** Or Solaire / Pourpre Royal (`#E0B020` / GBA: `0x03FF`)
+* **Teinte Thématique GBA :** Or Solaire (`#E89828` / GBA: `0x03FF`) — cartouche `slay_regent.gba`, zone : Palais Souverain (teinte classique du héros : Pourpre Royal)
 * **Style de Jeu & Synergies :** Accumulation d'Étoiles pour libérer des frappes cosmiques, décrets royaux modifiant les règles du tour et souveraineté absolue.
 
 ### 🏺 Relique de Départ : ![Droit](images/relics/divine_right.webp) Droit divin (DIVINE_RIGHT)
-> Au début de chaque combat, gagnez des Étoiles divines.
+> Au début de chaque combat, gagnez 3 ★.
 
 ### 🃏 Deck de Départ (Starter Deck)
 * **4x** `Frappe (STRIKE_REGENT)` — *Attaque de base (6 dégâts pour 1 ⚡)*
@@ -213,17 +214,17 @@ Les cartes communes forment le socle de construction de deck après chaque comba
 
 ---
 
-## ⚔️ La Nécrolieuse (Gardienne des Morts et des Os (Nouveau dans STS2))
+## ⚔️ La Nécrolieuse (Gardienne des Morts et des Os — nouveau dans STS2)
 
 * **Points de Vie de Départ :** `65 PV` (PV Max initial)
 * **Or de Départ :** `99 Pièces d'or`
 * **Énergie de Base :** `3 ⚡` par tour
 * **Emplacements de Potions :** `3 emplacements`
-* **Teinte Thématique GBA :** Violet Spectrale (`#802080` / GBA: `0x4010`)
+* **Teinte Thématique GBA :** Violet Spectral (`#C860B8` / GBA: `0x4010`) — cartouche `slay_necrobinder.gba`, zone : Crypte d'Outre-Tombe
 * **Style de Jeu & Synergies :** Gestion de familiers et squelettes invoqués au combat, manipulation de la réserve d'os (Bones) et pactes sacrificiels à haut risque.
 
 ### 🏺 Relique de Départ : ![Phylactère](images/relics/bound_phylactery.webp) Phylactère enchaîné (BOUND_PHYLACTERY)
-> Au début de chaque tour, invoque une unité liée.
+> Au début de votre tour, **Invoquez** pour 1 (renforce Titos, le familier squelette).
 
 ### 🃏 Deck de Départ (Starter Deck)
 * **4x** `Frappe (STRIKE_NECROBINDER)` — *Attaque de base (6 dégâts pour 1 ⚡)*

@@ -1,4 +1,5 @@
 #include "engine/run.h"
+#include "engine/relic.h"
 #include <algorithm>
 
 namespace engine {
@@ -124,6 +125,15 @@ void RunManager::enter_room(int node_index) {
             combat.player.hp = hp;
             combat.player.max_hp = max_hp;
 
+            // Ascension: tougher and harder-hitting enemies depending on the room.
+            int16_t hp_percent = get_enemy_hp_multiplier(node.type);
+            for (Enemy& foe : combat.enemies) {
+                foe.max_hp = static_cast<int16_t>(foe.max_hp * hp_percent / 100);
+                foe.hp = foe.max_hp;
+                foe.damage_percent = get_enemy_damage_multiplier(node.type);
+            }
+            combat.enemy = combat.enemies[0];
+
             // Replace combat piles with current master deck
             combat.draw_pile.clear();
             combat.hand.clear();
@@ -134,16 +144,21 @@ void RunManager::enter_room(int node_index) {
             }
             combat.shuffle_draw_pile();
             combat.start_player_turn();
+            apply_combat_start_relics();
             break;
         }
         case RoomType::REST_SITE:
             phase = RunPhase::CAMPFIRE;
             break;
-        case RoomType::TREASURE:
+        case RoomType::TREASURE: {
             gold += 50;
-            add_relic("VAJRA"); // Gain powerful relic in chest
+            std::string_view relic = draw_treasure_relic();
+            if (!relic.empty()) {
+                add_relic(relic);
+            }
             phase = RunPhase::TREASURE;
             break;
+        }
         case RoomType::SHOP:
             open_shop();
             break;
@@ -203,6 +218,12 @@ bool RunManager::remove_card_from_deck(int deck_index) {
 
 void RunManager::open_shop() {
     current_shop.generate(character, next_random(), card_removals_count);
+    // Relics already owned are shown as sold out: a relic is never bought twice.
+    for (size_t i = 0; i < current_shop.relics.size(); ++i) {
+        if (has_relic(current_shop.relics[i].relic_id)) {
+            current_shop.relics[i].purchased = true;
+        }
+    }
     phase = RunPhase::SHOP;
 }
 
@@ -216,6 +237,14 @@ bool RunManager::buy_shop_relic(int index) {
 
 bool RunManager::buy_shop_potion(int index) {
     return current_shop.buy_potion(*this, index);
+}
+
+bool RunManager::use_potion(int index, int target_index) {
+    if (phase != RunPhase::IN_COMBAT) return false;
+    if (index < 0 || static_cast<size_t>(index) >= potions.size()) return false;
+    if (!combat.use_potion(potions[index], target_index)) return false;
+    potions.erase(index);
+    return true;
 }
 
 bool RunManager::remove_card_at_shop(int deck_index) {
@@ -294,6 +323,60 @@ void RunManager::add_relic(std::string_view relic_id) {
     }
 }
 
+bool RunManager::has_relic(std::string_view relic_id) const {
+    for (size_t i = 0; i < relics.size(); ++i) {
+        if (relics[i] == relic_id) return true;
+    }
+    return false;
+}
+
+std::string_view RunManager::draw_treasure_relic() {
+    // Relics with an implemented effect come first, then any other common relic; never one already owned.
+    constexpr std::string_view ACTIVE_RELICS[] = { "VAJRA", "ANCHOR" };
+    FixedVector<std::string_view, 2> active;
+    for (std::string_view id : ACTIVE_RELICS) {
+        if (!has_relic(id)) active.push_back(id);
+    }
+    if (!active.empty()) {
+        return active[next_random() % active.size()];
+    }
+
+    auto is_candidate = [this](const RelicData& relic) {
+        return relic.rarity == RelicRarity::COMMON && relic.pool == "Shared" && !has_relic(relic.id);
+    };
+    std::span<const RelicData> all = get_all_relics();
+    uint32_t count = 0;
+    for (const RelicData& relic : all) {
+        if (is_candidate(relic)) ++count;
+    }
+    if (count == 0) return {};
+
+    uint32_t pick = next_random() % count;
+    for (const RelicData& relic : all) {
+        if (is_candidate(relic) && pick-- == 0) return relic.id;
+    }
+    return {};
+}
+
+void RunManager::apply_combat_start_relics() {
+    // Vajra: start each combat with 1 Strength.
+    if (has_relic("VAJRA")) {
+        combat.player.add_status(StatusType::STRENGTH, 1);
+    }
+    // Ring of the Snake (Silent): draw 2 additional cards on the first turn.
+    if (has_relic("RING_OF_THE_SNAKE")) {
+        combat.draw_cards(2);
+    }
+    // Cracked Core (Defect): channel 1 Lightning.
+    if (has_relic("CRACKED_CORE")) {
+        combat.player.channel_orb(OrbType::LIGHTNING);
+    }
+    // Anchor: start each combat with 10 Block, added after the turn reset and unaffected by Dexterity.
+    if (has_relic("ANCHOR")) {
+        combat.player.block += 10;
+    }
+}
+
 void RunManager::proceed_after_combat() {
     hp = combat.player.hp;
     // Check Ironclad Burning blood passive
@@ -305,6 +388,9 @@ void RunManager::proceed_after_combat() {
 
     if (map.nodes[current_node_index].type == RoomType::BOSS) {
         if (current_act < 3) {
+            // Between acts the hero recovers every lost HP, only 75 % of them from Ascension 5.
+            int16_t missing = max_hp - hp;
+            hp += ascension_level >= 5 ? static_cast<int16_t>(missing * 3 / 4) : missing;
             advance_act();
         } else {
             phase = RunPhase::VICTORY_ACT;
@@ -331,12 +417,14 @@ std::span<const AscensionModifier> RunManager::get_ascension_modifiers() {
     return std::span<const AscensionModifier>(ASCENSION_MODIFIERS);
 }
 
-int16_t RunManager::get_enemy_damage_multiplier() const {
-    return (ascension_level >= 2) ? 120 : 100;
+int16_t RunManager::get_enemy_damage_multiplier(RoomType room) const {
+    uint8_t from = room == RoomType::BOSS ? 4 : (room == RoomType::ELITE ? 3 : 2);
+    return ascension_level >= from ? 120 : 100;
 }
 
-int16_t RunManager::get_enemy_hp_multiplier() const {
-    return (ascension_level >= 7) ? 115 : 100;
+int16_t RunManager::get_enemy_hp_multiplier(RoomType room) const {
+    uint8_t from = room == RoomType::BOSS ? 9 : (room == RoomType::ELITE ? 8 : 7);
+    return ascension_level >= from ? 115 : 100;
 }
 
 } // namespace engine

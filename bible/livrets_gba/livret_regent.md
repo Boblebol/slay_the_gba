@@ -1,107 +1,152 @@
-# 🟣 Livret d'Instruction Officiel — Slay the Spire 2 : Édition Le Régent
+# Livret d'instructions — Slay the GBA : Édition Le Régent
 
 ```
-========================================================================================
-                      NINTENDO® GAME BOY ADVANCE™ INSTRUCTION BOOKLET
-                    ÉDITION LE RÉGENT — RÉFÉRENCE : AGB-P-ASGR-FRA
-========================================================================================
+====================================================================================
+   SLAY THE GBA — LIVRET D'INSTRUCTIONS
+   ÉDITION LE RÉGENT · CARTOUCHE slay_regent.gba · RÉF. SLAYREGENT
+====================================================================================
 ```
 
-> **Sceau Officiel de Qualité Nintendo® :**  
-> Ce livret officiel garantit l'authenticité et la fidélité de votre cartouche Game Boy Advance *Slay the Spire 2 — Édition Le Régent*. Conservez ce manuel pour maîtriser l'accumulation des Étoiles Souveraines, les décrets royaux et les châtiments astraux.
+> **Une couronne, des étoiles, et la Tour à genoux.**
+> Nouveau venu de Slay the Spire 2, le Régent joue avec deux ressources : l'énergie et les Étoiles. Le Droit divin lui en offre dès le début du combat. Préparez vos décrets, forgez votre lame, frappez en roi.
+
+| Cartouche | Couleur | Zone | Difficulté |
+|---|---|---|---|
+| `slay_regent.gba` (réf. `SLAYREGENT`) | Or Solaire (`#e89828`) | Palais Souverain | ★★★ Expert |
 
 ---
 
-## 📜 1. Histoire & Contexte du Régent
+## 1. Histoire : Le Régent, souverain céleste déchu
 
-Souverain immortel d'une dynastie stellaire oubliée, **Le Régent** (*The Regent*) a vu son royaume céleste s'effondrer sous l'emprise corruptrice de la Tour.  
-Vêtu d'un manteau de pourpre et d'or ciselé, il manie un sceptre astral capable de canaliser les constellations. Au lieu de s'épuiser dans des assauts désordonnés, Le Régent accumule des **Étoiles Souveraines** qui décuplent passivement la puissance de chaque frappe et l'épaisseur de chaque barrière.
+Souverain d'une dynastie stellaire oubliée, le Régent a vu son royaume céleste s'effondrer sous l'emprise de la Tour. Vêtu de pourpre et d'or, il manie un sceptre capable de canaliser les constellations et entend bien reprendre son trône.
 
-* **Points de Vie Initiaux :** 75 PV.
-* **Or de Départ :** 99 Pièces d'or.
-* **Relique de Départ :** **Sceptre Ancien** (*Ancient Scepter*) — Vous débutez chaque combat avec **2 Étoiles Souveraines actives** (max 5 étoiles).
+*Idéal pour les joueurs qui aiment gérer une ressource de plus et préparer un tour décisif.*
 
 ---
 
-## ⭐ 2. La Mécanique des Étoiles Souveraines (*Sovereign Stars*)
+## 2. Fiche du héros
 
-Chaque Étoile Souveraine (symbole ⭐) en orbite autour du Régent octroie un bonus direct :
-* **Bonus Passif :** Chaque étoile ajoute **+1 Dégât** à toutes vos cartes d'Attaque ET **+1 Armure** à toutes vos cartes de Compétence ! (À 5 étoiles, une simple Frappe passe de 6 à 11 dégâts, et une Défense passe de 5 à 10 Armure !).
-* **Consommation d'Étoiles :** Certaines cartes impériales dévastatrices dépensent 1 ou plusieurs étoiles pour déclencher des effets colossaux (dégâts doublés, étourdissement, piochage massif).
+* **Nom :** Le Régent (*The Regent*)
+* **Points de vie :** 75 PV
+* **Or de départ :** 99 pièces d'or
+* **Énergie :** 3 ⚡ par tour
+* **Emplacements de potion :** 3
+
+### Relique de départ : ![Droit divin](../images/relics/divine_right.webp) Droit divin
+
+> Au début de chaque combat, gagnez 3 ★.
+
+### Deck de départ (10 cartes)
+
+* **4×** Frappe — Infligez 6 dégâts.
+* **4×** Défense — Gagnez 5 d'**Armure**.
+* **1×** Chute d'étoile — Infligez 8 dégâts. Appliquez **Affaibli** (1). Appliquez **Vulnérable** (1).
+* **1×** Vénération — Gagnez 2 ★.
 
 ---
 
-## 🎮 3. Maniement des Commandes Game Boy Advance
+## 3. Mécanique signature : Étoiles & Lame souveraine
 
-| Bouton | Action sur la Carte de la Tour | Action dans l'Arène Yu-Gi-Oh |
+Le Régent amasse des Étoiles (★), une seconde ressource qui s'ajoute à l'énergie et alimente ses cartes les plus puissantes. Il Forge aussi la Lame souveraine : chaque carte « Forgez » la rend plus tranchante, jusqu'à la frappe royale qui renverse le combat.
+
+---
+
+## 4. Commandes
+
+Les commandes sont identiques sur les cinq cartouches.
+
+| Écran | Bouton | Action |
 |---|---|---|
-| **Croix Directionnelle (◄ / ►)** | Choisir la voie sur la carte | Naviguer entre vos cartes en main / Pointer l'ennemi à châtier |
-| **Croix Directionnelle (▲ / ▼)** | Faire défiler les étages de la Tour | Examiner la description des décrets royaux |
-| **Bouton A** | **Entrer dans la salle / Lancer le combat** | **Promulguer le décret / Jouer la carte sélectionnée** |
-| **Bouton B** | Annuler | Annuler le mode de ciblage |
-| **Bouton START** | Pause & Sauvegarde | **Fin de Tour immédiate** |
-| **Bouton SELECT** | **Consulter le Deck** | **Consulter le Registre Royal & la Défausse** |
+| Carte | **◄ ►** | Choisir la salle suivante |
+| Carte | **▲ ▼** | Faire défiler la Tour |
+| Carte | **A** | Avancer vers la salle |
+| Combat | **◄ ►** | Sélectionner une carte |
+| Combat | **A** | Jouer la carte (puis choisir la cible si plusieurs ennemis) |
+| Combat | **B** | Annuler le ciblage |
+| Combat | **START / R** | Finir le tour |
+| Carte / Combat | **SELECT** | Registre du deck (B pour revenir) |
+| Menus | **A / B** | Valider / annuler |
 
 ---
 
-## 📺 4. Structure des Écrans de Jeu (Résolution 240 × 160)
+## 5. La Tour et l'arène de combat
 
-```
-┌────────────────────────────────────────────────────────┐
-│  [ZONE 1]              [ZONE 2]              [ZONE 3]  │
-│  Gremlin Nob [68/82]   Morpion [18/18]       [K.O.]    │
-│  ! ATK 8               ! 6D                            │
-│                                                        │
-│  [HÉROS] Le Régent       PV 70/75 (+12B)  NRG: [●][●][●]│
-│  Étoiles Souveraines : ⭐⭐⭐⭐ (4/5)      Bonus : +4 Atk / +4 Def│
-│────────────────────────────────────────────────────────│
-│  [Étoile Filante+] (1E) | 10 (+4) dégâts + 1 Étoile    │
-│  Main : [1]  [2]  >[3]<  [4]  [5]                      │
-│  G/D : Carte   A : Jouer   START : Fin de Tour         │
-└────────────────────────────────────────────────────────┘
-```
-L'arène Yu-Gi-Oh met en valeur votre compteur d'Étoiles Souveraines au milieu de l'écran avec le bonus total appliqué dynamiquement à chaque carte !
+* **La carte de la Tour :** chaque acte compte 16 étages. Choisissez votre chemin parmi les embranchements : combats, élites, évènements mystères `?`, feux de camp, boutiques, trésors, puis le boss de l'acte. Entre les actes, un **Ancien** vous offre ses bénédictions.
+* **L'arène façon Pokémon :** Le Régent apparaît de dos à gauche, les monstres (jusqu'à trois) à droite sur leurs socles, avec leur **intention** au-dessus de la tête. Barres de PV, dégâts flottants et secousses rythment chaque coup.
+* **La main de cartes** s'étale en bas de l'écran : la carte sélectionnée grossit et affiche son effet ; si plusieurs ennemis sont en vie, un curseur de ciblage apparaît.
+* **Récompenses :** après chaque combat, choisissez une carte parmi trois pour enrichir votre deck, et récupérez or et potions.
+* **Feu de camp :** reposez-vous pour soigner vos PV ou **forgez** une carte (amélioration `+`), avec aperçu de la version améliorée.
 
 ---
 
-## 🎨 5. Système de Teintes (Style Pokémon)
+## 6. Les teintes du héros
 
-1. **Classique (Pourpre Royal) :** Toge pourpre impériale et couronne d'or massif du monarque.
-2. **Chromatique / Shiny (Or Céleste) :** Robe blanche et liserés d'or solaire des rois-étoiles.
-3. **Ténèbres / Shadow (Régence d'Éclipse) :** Pourpre ténébreux et gemmes d'obsidienne astrale.
-4. **Dorée / Golden (Monarque Solaire) :** Auréole resplendissante débloquée après l'Ascension 10.
+Au lancement d'une partie, choisissez la teinte de Le Régent :
 
----
-
-## 🃏 6. Catalogue Officiel des 20 Cartes Communes de l'Édition
-
-| N° | Carte | Coût | Type | Effet Standard | Version Améliorée (`+`) |
-|:---:|:---|:---:|:---:|---|---|
-| 01 | **Frappe** | 1E | Attaque | Inflige 6 (+⭐) dégâts à un ennemi. | Inflige **9 (+⭐) dégâts**. |
-| 02 | **Défense** | 1E | Compétence | Confère 5 (+⭐) points d'Armure. | Confère **8 (+⭐) points d'Armure**. |
-| 03 | **Étoile Filante** | 1E | Attaque | Inflige 7 (+⭐) dégâts. Confère **+1 Étoile Souveraine**. | Inflige **10 (+⭐) dégâts**. Confère **+1 Étoile**. |
-| 04 | **Vénération** | 1E | Compétence | Confère 6 (+⭐) Armure et **+1 Étoile Souveraine**. | Confère **9 (+⭐) Armure** et **+1 Étoile**. |
-| 05 | **Châtiment Céleste**| 2E | Attaque | Inflige 14 (+⭐x2) dégâts massifs. | Inflige **18 (+⭐x2) dégâts**. |
-| 06 | **Décret Royal** | 1E | Compétence | Pioche 2 cartes. Si vous avez 3+ étoiles, confère +1 Énergie. | Pioche **3 cartes**. |
-| 07 | **Garde Impériale** | 1E | Compétence | Confère 8 (+⭐) Armure. Au tour suivant, confère +1 Étoile. | Confère **11 (+⭐) Armure**. |
-| 08 | **Éclat Cosmique** | 0E | Attaque | Inflige 4 (+⭐) dégâts. Si vous avez 5 étoiles, pioche 1 carte. | Inflige **6 (+⭐) dégâts**. |
-| 09 | **Pluie Météorite** | 2E | Attaque | Inflige 8 (+⭐) dégâts à TOUS les ennemis. | Inflige **11 (+⭐) dégâts** à TOUS les ennemis. |
-| 10 | **Couronnement** | 2E | Pouvoir | Gagnez immédiatement +2 Étoiles Souveraines. | Gagnez **+3 Étoiles Souveraines** ! |
-| 11 | **Majesté** | 1E | Pouvoir | À chaque fin de tour, gagnez +1 Armure par Étoile active. | Gagnez **+2 Armure** par Étoile active. |
-| 12 | **Supernova** | 2E | Attaque | Dépense toutes vos Étoiles. Inflige 8 dégâts par étoile consommée ! | Inflige **11 dégâts** par étoile consommée ! |
-| 13 | **Bénédiction Céleste**| 1E | Compétence | Confère 5 Armure. Convertit 1 Malédiction en carte Étoile. | Confère **8 Armure**. |
-| 14 | **Rayon Stellaire** | 1E | Attaque | Inflige 6 (+⭐) dégâts et applique 2 Vulnérable. | Inflige **9 (+⭐) dégâts** et applique **3 Vulnérable**. |
-| 15 | **Constellation** | 1E | Pouvoir | Chaque fois que vous atteignez 5 Étoiles, piochez 2 cartes. | Piochez **3 cartes** ! |
-| 16 | **Barrière Astrale**| 1E | Compétence | Confère 7 (+⭐) Armure. Applique 1 Faiblesse à l'attaquant. | Confère **10 (+⭐) Armure**. |
-| 17 | **Jugement Dernier** | 3E | Attaque | Inflige 25 dégâts. Si l'ennemi a moins de 50% de PV, coûte 1E de moins. | Inflige **32 dégâts**. |
-| 18 | **Sceau Impérial** | 0E | Compétence | Retient 1 carte en main pour le tour suivant. | Retient **2 cartes en main**. |
-| 19 | **Éclipse** | 1E | Compétence | Réduit les dégâts de la prochaine attaque ennemie de 50%. | Coût réduit à **0E**. |
-| 20 | **Trône Céleste** | 3E | Pouvoir | Au début de chaque tour, gagnez +1 Étoile Souveraine. | Gagnez **+1 Étoile et +1 Énergie** ! |
+1. **Pourpre Royal (Classique)** (`#6840a0`) — La pourpre souveraine réservée à la lignée des rois.
+2. **Rubis Écarlate (Chromatique)** (`#d80000`) — Une robe cramoisie éclatante symbole de bravoure.
+3. **Éclipse Astrale (Ombre)** (`#181018`) — Une cape d'ombre tissée de poussière d'étoiles éteintes.
+4. **Couronne Céleste (Or)** (`#f8f800`) — Une splendeur dorée rayonnant de dignité céleste.
 
 ---
 
-## ⚔️ 7. Guide de Survie & Stratégie de Duel
+## 7. Cartes phares
 
-1. **La cadence des 5 Étoiles :** Atteindre le plafond de 5 Étoiles Souveraines est votre priorité absolue dans chaque combat. Jouez **Étoile Filante** et **Vénération** dès le tour 1 pour booster toutes vos actions ultérieures de +5 !
-2. **La bombe Supernova :** Si un boss ou un élite prépare une attaque dévastatrice, déchaînez **Supernova** à 5 étoiles pour infliger jusqu'à 55 points de dégâts immédiats.
-3. **L'armure impériale inexpugnable :** Avec **Majesté** et 5 étoiles, vous générez automatiquement 10 points d'Armure à chaque fin de tour sans dépenser la moindre ressource.
+| Carte | Coût | Type | Effet | Amélioré (`+`) |
+|---|:---:|:---:|---|---|
+| ![Chute d'étoile](../images/cards/regent/falling_star.webp) **Chute d'étoile** | 0 ⚡ | Attaque | Infligez 8 dégâts. Appliquez **Affaibli** (1). Appliquez **Vulnérable** (1). | Infligez 12 dégâts. Appliquez **Affaibli** (1). Appliquez **Vulnérable** (1). |
+| ![Vénération](../images/cards/regent/venerate.webp) **Vénération** | 1 ⚡ | Compétence | Gagnez 2 ★. | Gagnez 3 ★. |
+| ![Conquérant](../images/cards/regent/conqueror.webp) **Conquérant** | 1 ⚡ | Compétence | **Forgez** pour 3. **Lame souveraine** inflige le double de dégâts à l'ennemi pendant ce tour. | **Forgez** pour 5. **Lame souveraine** inflige le double de dégâts à l'ennemi pendant ce tour. |
+| ![Comète](../images/cards/regent/comet.webp) **Comète** | 0 ⚡ | Attaque | Infligez 33 dégâts. Appliquez **Affaibli** (3). Appliquez **Vulnérable** (3). | Infligez 44 dégâts. Appliquez **Affaibli** (3). Appliquez **Vulnérable** (3). |
+
+---
+
+## 8. Catalogue des 20 cartes communes
+
+Les cartes communes forment le socle de votre deck : ce sont celles que vous verrez le plus souvent en récompense.
+
+| Carte | Coût | Type | Effet | Amélioré (`+`) |
+|---|:---:|:---:|---|---|
+| ![Broyer](../images/cards/regent/crush_under.webp) **Broyer** | 1 ⚡ | Attaque | Infligez 8 dégâts à TOUS les ennemis. Tous les ennemis perdent 1 de **Force** jusqu'à la fin du tour. | Infligez 9 dégâts à TOUS les ennemis. Tous les ennemis perdent 2 de **Force** jusqu'à la fin du tour. |
+| ![Butin de guerre](../images/cards/regent/spoils_of_battle.webp) **Butin de guerre** | 1 ⚡ | Compétence | **Forgez** pour 6. Piochez 2 cartes. | **Forgez** pour 9. Piochez 2 cartes. |
+| ![Cache secrète](../images/cards/regent/hidden_cache.webp) **Cache secrète** | 1 ⚡ | Compétence | Gagnez 1 ★. Au prochain tour, gagnez 3 ★. | Gagnez 1 ★. Au prochain tour, gagnez 4 ★. |
+| ![Courant pailleté](../images/cards/regent/glitterstream.webp) **Courant pailleté** | 2 ⚡ | Compétence | Gagnez 11 d'**Armure**. Au prochain tour, gagnez 5 d'**Armure**. | Gagnez 13 d'**Armure**. Au prochain tour, gagnez 7 d'**Armure**. |
+| ![Croissant de lance](../images/cards/regent/crescent_spear.webp) **Croissant de lance** | 1 ⚡ | Attaque | Infligez 8 dégâts. Inflige 2 dégâts supplémentaires pour TOUTES vos cartes coûtant des 1 ★. | Infligez 8 dégâts. Inflige 3 dégâts supplémentaires pour TOUTES vos cartes coûtant des 1 ★. |
+| ![Entaille photonique](../images/cards/regent/photon_cut.webp) **Entaille photonique** | 1 ⚡ | Attaque | Infligez 10 dégâts. Piochez 1 carte. Choisissez 1 carte de votre **Main** à placer sur le dessus de votre **Pioche**. | Infligez 13 dégâts. Piochez 2 cartes. Choisissez 1 carte de votre **Main** à placer sur le dessus de votre **Pioche**. |
+| ![Étoile directrice](../images/cards/regent/guiding_star.webp) **Étoile directrice** | 1 ⚡ | Attaque | Infligez 12 dégâts. Piochez 2 cartes. | Infligez 13 dégâts. Piochez 3 cartes. |
+| ![Forgé par la guerre](../images/cards/regent/wrought_in_war.webp) **Forgé par la guerre** | 1 ⚡ | Attaque | Infligez 7 dégâts. **Forgez** pour 7. | Infligez 9 dégâts. **Forgez** pour 9. |
+| ![Frappe solaire](../images/cards/regent/solar_strike.webp) **Frappe solaire** | 1 ⚡ | Attaque | Infligez 9 dégâts. Gagnez 1 ★. | Infligez 10 dégâts. Gagnez 2 ★. |
+| ![Hiérarchie](../images/cards/regent/know_thy_place.webp) **Hiérarchie** | 0 ⚡ | Compétence | Appliquez **Affaibli** (1). Appliquez **Vulnérable** (1). **Épuisement**. | Appliquez **Affaibli** (1). Appliquez **Vulnérable** (1). |
+| ![HORS DE MA VUE !](../images/cards/regent/begone.webp) **HORS DE MA VUE !** | 1 ⚡ | Compétence | Choisissez une carte dans votre **Main** à **Transformer** en **Frappe de sbire**. | Choisissez une carte dans votre **Main** à **Transformer** en **Frappe de sbire+**. |
+| ![Indifférence cosmique](../images/cards/regent/cosmic_indifference.webp) **Indifférence cosmique** | 1 ⚡ | Compétence | Gagnez 6 d'**Armure**. Placez une carte de votre **Défausse** sur le dessus de votre **Pioche**. | Gagnez 9 d'**Armure**. Placez une carte de votre **Défausse** sur le dessus de votre **Pioche**. |
+| ![Lame lustrée](../images/cards/regent/refine_blade.webp) **Lame lustrée** | 1 ⚡ | Compétence | **Forgez** pour 8. Au prochain tour, gagnez 1 ⚡. | **Forgez** pour 12. Au prochain tour, gagnez 1 ⚡. |
+| ![Lumière rassemblée](../images/cards/regent/gather_light.webp) **Lumière rassemblée** | 1 ⚡ | Compétence | Gagnez 8 d'**Armure**. Gagnez 1 ★. | Gagnez 11 d'**Armure**. Gagnez 1 ★. |
+| ![Luminosité](../images/cards/regent/glow.webp) **Luminosité** | 1 ⚡ | Compétence | Gagnez 1 ★. Piochez 1 carte. Au prochain tour, piochez 1 carte. | Gagnez 2 ★. Piochez 1 carte. Au prochain tour, piochez 1 carte. |
+| ![Manteau d'étoiles](../images/cards/regent/cloak_of_stars.webp) **Manteau d'étoiles** | 0 ⚡ | Compétence | Gagnez 7 d'**Armure**. | Gagnez 10 d'**Armure**. |
+| ![Petits pas](../images/cards/regent/patter.webp) **Petits pas** | 1 ⚡ | Compétence | Gagnez 8 d'**Armure**. Gagnez 2 de **Vigueur**. | Gagnez 10 d'**Armure**. Gagnez 3 de **Vigueur**. |
+| ![Puissance céleste](../images/cards/regent/celestial_might.webp) **Puissance céleste** | 2 ⚡ | Attaque | Infligez 6 dégâts 3 fois. | Infligez 6 dégâts 4 fois. |
+| ![Pulsation astrale](../images/cards/regent/astral_pulse.webp) **Pulsation astrale** | 0 ⚡ | Attaque | Infligez 6 dégâts à TOUS les ennemis deux fois. | Infligez 8 dégâts à TOUS les ennemis deux fois. |
+| ![Trajectoire de collision](../images/cards/regent/collision_course.webp) **Trajectoire de collision** | 0 ⚡ | Attaque | Infligez 10 dégâts. Ajoutez un **Débris** à votre **Main**. | Infligez 14 dégâts. Ajoutez un **Débris** à votre **Main**. |
+
+L'édition compte **91 cartes** au total : 4 de base, 20 communes, 38 peu communes, 27 rares et 2 anciennes. Retrouvez-les toutes dans le [tome des cartes](12_cartes_regent.md).
+
+---
+
+## 9. Conseils de survie
+
+1. Le **Droit divin** donne 3 ★ au début de chaque combat : dépensez-les tôt, ne les laissez pas dormir.
+2. **Chute d'étoile** coûte 0 et applique Affaibli et Vulnérable : la meilleure ouverture du Régent.
+3. Les cartes « Forgez » s'additionnent : **Conquérant** double ensuite les dégâts de la Lame souveraine.
+4. Gardez un œil sur l'énergie ET les Étoiles : un tour sans l'une ou l'autre est un tour perdu.
+
+---
+
+## 10. Sauvegarde, Ascension et encyclopédie
+
+* **Sauvegarde sur la cartouche :** la partie est enregistrée automatiquement en SRAM à chaque salle ; choisissez **Continuer** à l'écran titre pour reprendre là où vous vous étiez arrêté. Les réglages (volume de la musique et des effets) sont conservés.
+* **Ascension 0 à 10 :** chaque victoire débloque un niveau de difficulté supplémentaire (élites plus fréquents, monstres plus robustes, soins réduits…).
+* **Encyclopédie :** cartes, reliques, monstres, potions et Anciens rencontrés sont consignés au fil de vos parties.
+
+---
+
+*Slay the GBA existe en cinq éditions. Les quatre autres : Soldat de Fer, La Silencieuse, Le Défectueux et La Nécrolieuse. [Voir la collection des livrets](README.md).*

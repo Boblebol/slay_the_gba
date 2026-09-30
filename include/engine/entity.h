@@ -22,10 +22,12 @@ public:
         for (size_t i = 0; i < statuses.size(); ++i) {
             if (statuses[i].type == type) {
                 statuses[i].amount += amount;
+                // A spent status frees its slot (only MAX_STATUSES fit).
+                if (statuses[i].amount == 0) statuses.erase(i);
                 return;
             }
         }
-        statuses.push_back({ type, amount });
+        if (amount != 0) statuses.push_back({ type, amount });
     }
 
     int16_t get_status(StatusType type) const {
@@ -147,7 +149,6 @@ public:
     void reset_turn() {
         block = 0;
         energy = max_energy;
-        apply_metallicize_tick();
     }
 
     int16_t take_damage_with_minion(int16_t amount) {
@@ -173,12 +174,26 @@ public:
     }
 
     void channel_orb(OrbType type, CombatEntity* enemy = nullptr);
-    void evoke_oldest_orb(CombatEntity* enemy = nullptr);
+    // Triggers the oldest orb's evoke effect `times` times (Dualcast: 2), then removes it.
+    void evoke_oldest_orb(CombatEntity* enemy = nullptr, int times = 1);
+    // End of turn passives: Lightning hits, Frost blocks, Dark charges.
     void trigger_passive_orbs(CombatEntity* enemy = nullptr);
+    // Start of turn passive: each Plasma orb gives 1 energy.
+    void trigger_start_of_turn_orbs();
     void add_stars(uint8_t count);
     void add_souls(uint8_t count);
     void summon_minion(int16_t m_hp, int16_t m_block = 0);
 };
+
+// Attack damage as in Slay the Spire: (base + Strength), x0.75 when the attacker is Weak, x1.5 when the target
+// is Vulnerable, rounded down once at the end.
+inline int16_t attack_damage(int16_t base, const CombatEntity& attacker, const CombatEntity& target) {
+    int32_t damage = base + attacker.get_status(StatusType::STRENGTH);
+    if (damage <= 0) return 0;
+    damage *= attacker.get_status(StatusType::WEAK) > 0 ? 3 : 4;
+    damage *= target.get_status(StatusType::VULNERABLE) > 0 ? 3 : 2;
+    return static_cast<int16_t>(damage / 8);
+}
 
 enum class EnemyIntentType : uint8_t {
     ATTACK,
@@ -209,8 +224,11 @@ public:
     EnemyType type = EnemyType::CULTIST;
     std::string_view name = "Cultist";
     EnemyIntent current_intent;
+    int16_t damage_percent = 100; // Ascension bonus on attack damage
 
     void init(EnemyType enemy_type);
+    // Damage the current intent would deal to `target` right now (0 when it does not attack).
+    int16_t intent_damage(const CombatEntity& target) const;
     void plan_turn(int turn_number);
     void execute_turn(Player& player);
 };

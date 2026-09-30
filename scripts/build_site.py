@@ -1,5 +1,5 @@
 # /// script
-# requires-python = ">=3.11"
+# requires-python = ">=3.12"
 # dependencies = ["markdown>=3.6", "pillow>=10"]
 # ///
 """Generate the static Slay the GBA website (site/) from the design bible and the game art.
@@ -15,11 +15,12 @@ import html
 import json
 import os
 import re
-from dataclasses import dataclass
 from pathlib import Path
 
 import markdown
 from PIL import Image
+
+from editions import CONTROLS, DIFFICULTY, ENERGY, GOLD, HEROES, POTION_SLOTS, Hero
 
 ROOT = Path(__file__).resolve().parent.parent
 BIBLE = ROOT / "bible"
@@ -36,50 +37,6 @@ PAGES: list[str] = []  # indexable pages, collected for sitemap.xml
 # Data
 # ---------------------------------------------------------------------------------------------
 
-
-@dataclass(frozen=True)
-class Hero:
-    slug: str
-    pool: str
-    name: str
-    title: str
-    hp: int
-    relic: str
-    relic_image: str
-    relic_text: str
-    deck: str
-    mechanic: str
-    zone: str
-    color: str
-    accent: str
-    rom: str
-
-
-HEROES = [
-    Hero("ironclad", "Ironclad", "Soldat de Fer", "Guerrier maudit de l'Enfer", 80, "Sang ardent", "burning_blood",
-         "À la fin du combat, récupérez 6 PV.", "5× Frappe, 4× Défense, 1× Heurt",
-         "Force brute, attaques de zone, armure et pactes de sang.", "Forges du Carnage", "#c82030", "#f05030",
-         "slay_ironclad.gba"),
-    Hero("silent", "Silent", "La Silencieuse", "Chasseresse mortelle des brumes", 70, "Anneau du serpent",
-         "ring_of_the_snake", "Au début de chaque combat, piochez 2 cartes supplémentaires.",
-         "5× Frappe, 5× Défense, 1× Neutralisation, 1× Survivant",
-         "Poisons exponentiels, dagues, défausse et esquive.", "Marais du Venin", "#40a048", "#78d060",
-         "slay_silent.gba"),
-    Hero("defect", "Defect", "Le Défectueux", "Automate de combat éveillé", 75, "Noyau fissuré", "cracked_core",
-         "Au début de chaque combat, canalisez 1 Orbe de foudre.", "4× Frappe, 4× Défense, 1× Éclair, 1× Activation double",
-         "Orbes de foudre, glace, ténèbres et plasma ; focus et évocations.", "Complexe Astral", "#3870d8",
-         "#58b0f0", "slay_defect.gba"),
-    Hero("regent", "Regent", "Le Régent", "Souverain céleste déchu", 75, "Droit divin", "divine_right",
-         "Relique de départ du Régent : ses Étoiles alimentent ses sentences.",
-         "4× Frappe, 4× Défense, 1× Chute d'étoile, 1× Vénération",
-         "Accumulation d'Étoiles souveraines pour des frappes cosmiques.", "Palais Souverain", "#e89828",
-         "#f0c060", "slay_regent.gba"),
-    Hero("necrobinder", "Necrobinder", "La Nécrolieuse", "Gardienne des morts et des os", 65,
-         "Phylactère enchaîné", "bound_phylactery", "Relique de départ : invoque et lie Titos, son familier squelette.",
-         "4× Frappe, 4× Défense, 1× Déchaînement, 1× Garde du corps",
-         "Invocation de Titos, âmes, Fatalité et manipulation de la mort.", "Crypte d'Outre-Tombe", "#c860b8",
-         "#e8b0ff", "slay_necrobinder.gba"),
-]
 
 TYPE_FR = {"Attack": "Attaque", "Skill": "Compétence", "Power": "Pouvoir", "Curse": "Malédiction", "Quest": "Quête"}
 RARITY_FR = {"Basic": "Base", "Common": "Commune", "Uncommon": "Peu commune", "Rare": "Rare", "Ancient": "Ancienne",
@@ -124,8 +81,10 @@ def copy_roms() -> None:
 
 
 def rom_size(hero: "Hero") -> str:
-    path = ROOT / hero.rom
-    return f"{path.stat().st_size / 1024:.0f} Ko" if path.exists() else "à compiler"
+    for path in (ROOT / hero.rom, ROMS / hero.rom):
+        if path.exists():
+            return f"{path.stat().st_size / 1024:.0f} Ko"
+    return "à compiler"
 
 
 def download_button(hero: "Hero", depth: int, cls: str = "btn") -> str:
@@ -338,72 +297,157 @@ SCREENS = [
     ("deck", "Registre du deck"),
 ]
 
+# The loop of a run, illustrated with real screenshots.
+RUN_LOOP = [
+    ("map", "La Tour", "Tracez votre route sur 16 étages : chaque embranchement est un choix de risque."),
+    ("combat", "Le combat", "Jouez vos cartes, lisez les intentions ennemies, et choisissez 1 carte parmi 3 à la victoire."),
+    ("event", "Les mystères", "Évènements `?` : un marché avec le destin, entre trésor et piège."),
+    ("forge", "Le feu de camp", "Reposez-vous ou forgez une carte pour la rendre plus puissante."),
+    ("shop", "La boutique", "Achetez cartes, reliques et potions, ou retirez une carte de votre deck."),
+    ("boss", "Le boss, puis les Anciens", "Terrassez le boss de l'acte : un Ancien vous attend avec ses bénédictions."),
+]
+
+FAQ = [
+    ("Quelle édition choisir pour commencer ?",
+     "Le <b>Soldat de Fer</b> : 80 PV, une relique qui soigne après chaque combat et un deck direct. La Silencieuse et "
+     "le Défectueux demandent un peu plus de planification ; le Régent et la Nécrolieuse, nouveaux dans Slay the Spire 2, "
+     "sont pensés pour les joueurs confirmés."),
+    ("Qu'est-ce qui change d'une cartouche à l'autre ?",
+     "Le héros, ses cartes, sa relique de départ, sa mécanique signature, sa couleur, sa zone et ses teintes. La Tour, "
+     "les monstres, les reliques partagées, les potions, les évènements et les Anciens sont communs aux cinq éditions."),
+    ("C'est gratuit ?",
+     "Oui. Les cinq ROMs sont des créations homebrew téléchargeables gratuitement. Aucune ROM commerciale n'est distribuée."),
+    ("Ma partie est-elle sauvegardée ?",
+     "Oui, automatiquement sur la cartouche (SRAM) à chaque salle, avec vos réglages de volume. Choisissez "
+     "<i>Continuer</i> à l'écran titre pour reprendre."),
+    ("Puis-je jouer sur une vraie Game Boy Advance ?",
+     "Oui : copiez la ROM sur une cartouche flash (EZ-Flash, EverDrive) et jouez sur GBA, GBA SP, Game Boy Micro ou DS."),
+    ("Est-ce un jeu officiel ?",
+     "Non. Slay the GBA est un fan-game non officiel et non commercial, sans lien avec Mega Crit ni Nintendo."),
+]
+
+
+def stars(level: int) -> str:
+    return f'<span class="diff" title="{DIFFICULTY[level]}">{"★" * level}{"☆" * (3 - level)}</span>'
+
+
+def cards_by_id(cards: list[dict]) -> dict[str, dict]:
+    return {c["id"]: c for c in cards}
+
+
+def starter_html(hero: Hero, by_id: dict[str, dict]) -> str:
+    return ", ".join(f"{n}× {esc(by_id[cid]['name'])}" for cid, n in hero.starter)
+
+
+def relic_html(relic: dict, depth: int, cls: str = "relic") -> str:
+    return (f'<div class="{cls}"><img loading="lazy" src="{img_path(relic["imagePath"], depth)}" alt="">'
+            f'<div><b>{esc(relic["name"])}</b><p>{rich(relic.get("descI18n") or relic.get("descriptionClean", ""))}</p></div></div>')
+
+
+def edition_card(h: Hero, up: str = "") -> str:
+    return f"""<a class="cart" href="{up}heros/{h.slug}.html" style="--hc:{h.color};--ha:{h.accent}">
+  <div class="cart-label" style="background-image:url({up}assets/bg/battle_{h.slug}.png)">
+    <span class="cart-ref">{esc(h.ref)}</span>
+    <img class="pix" src="{up}assets/sprites/hero_{h.slug}.png" alt="{esc(h.name)}">
+  </div>
+  <div class="cart-info"><b>{esc(h.name)}</b><span>{esc(h.edition)}</span>
+  <em>« {esc(h.tagline)} »</em>
+  <small>{h.hp} PV · {esc(h.mechanic_name)} · {stars(h.difficulty)}</small></div>
+</a>"""
+
+
+def comparison_table(by_id: dict[str, dict], relics: dict[str, dict], up: str = "") -> str:
+    head = "".join(f'<th style="--hc:{h.color}"><a href="{up}heros/{h.slug}.html"><img class="pix" src="{up}assets/sprites/hero_{h.slug}.png" alt=""><br>{esc(h.name)}</a></th>' for h in HEROES)
+    rows = [
+        ("Cartouche", lambda h: f"<code>{esc(h.rom)}</code>"),
+        ("Couleur", lambda h: f'<span class="swatch" style="background:{h.color}"></span> {esc(h.color_name)}'),
+        ("Zone", lambda h: esc(h.zone)),
+        ("Points de vie", lambda h: f"<b>{h.hp}</b> PV"),
+        ("Relique de départ", lambda h: esc(relics[h.relic_id]["name"])),
+        ("Deck de départ", lambda h: starter_html(h, by_id)),
+        ("Mécanique", lambda h: esc(h.mechanic_name)),
+        ("Difficulté", lambda h: f"{stars(h.difficulty)} {DIFFICULTY[h.difficulty]}"),
+    ]
+    body = "".join(f"<tr><th>{label}</th>{''.join(f'<td>{fn(h)}</td>' for h in HEROES)}</tr>" for label, fn in rows)
+    return f'<div class="table-scroll"><table class="compare"><tr><th></th>{head}</tr>{body}</table></div>'
+
+
+def controls_table() -> str:
+    rows = "".join(f"<tr><td>{esc(s)}</td><td><b>{esc(b)}</b></td><td>{esc(a)}</td></tr>" for s, b, a in CONTROLS)
+    return f'<table class="keys"><tr><th>Écran</th><th>Bouton</th><th>Action</th></tr>{rows}</table>'
+
 
 def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], potions: list[dict], events: list[dict]) -> None:
-    carts = "".join(
-        f"""<a class="cart" href="heros/{h.slug}.html" style="--hc:{h.color};--ha:{h.accent}">
-  <div class="cart-label" style="background-image:url(assets/bg/battle_{h.slug}.png)">
-    <img class="pix" src="assets/sprites/hero_{h.slug}.png" alt="{esc(h.name)}">
-  </div>
-  <div class="cart-info"><b>{esc(h.name)}</b><span>{esc(h.zone)}</span><small>{h.hp} PV · {esc(h.rom)}</small></div>
-</a>"""
+    by_id = cards_by_id(cards)
+    relic_by_id = {r["id"]: r for r in relics}
+    carts = "".join(edition_card(h) for h in HEROES)
+    lineup = "".join(f'<a href="heros/{h.slug}.html" title="{esc(h.name)}"><img class="pix" src="assets/sprites/hero_{h.slug}.png" alt="{esc(h.name)}"></a>' for h in HEROES)
+    downloads = "".join(
+        f'<div class="download" style="--hc:{h.color}"><img class="pix" src="assets/sprites/hero_{h.slug}.png" alt=""><div><b>{esc(h.name)}</b><span class="meta">{esc(h.edition)} · {esc(h.color_name)}</span>{download_button(h, 0, "btn small")}</div></div>'
         for h in HEROES
     )
-    downloads = "".join(
-        f'<div class="download" style="--hc:{h.color}"><img class="pix" src="assets/sprites/hero_{h.slug}.png" alt=""><div><b>{esc(h.name)}</b><span class="meta">{esc(h.zone)}</span>{download_button(h, 0, "btn small")}</div></div>'
+    arenas = "".join(
+        f'<figure class="shot" style="--hc:{h.color}"><a href="heros/{h.slug}.html"><img class="pix" loading="lazy" src="assets/screens/{h.screenshot}.png" alt="Combat de {esc(h.name)}"></a><figcaption><b>{esc(h.name)}</b> — {esc(h.zone)}</figcaption></figure>'
         for h in HEROES
     )
     shots = "".join(
         f'<figure class="shot"><img class="pix" loading="lazy" src="assets/screens/{n}.png" alt="{esc(c)}"><figcaption>{esc(c)}</figcaption></figure>'
         for n, c in SCREENS
     )
-    stats = [(len(cards), "cartes"), (len([m for m in monsters if m.get('acts')]), "monstres"), (len(relics), "reliques"),
-             (len(potions), "potions"), (len(events), "évènements"), (8, "Anciens")]
+    loop = "".join(
+        f'<div class="step"><img class="pix" loading="lazy" src="assets/screens/{bg}.png" alt=""><h3>{i}. {esc(t)}</h3><p>{esc(d).replace("`?`", "<code>?</code>")}</p></div>'
+        for i, (bg, t, d) in enumerate(RUN_LOOP, 1)
+    )
+    pool_size = len([c for c in cards if c["pool"] == "Ironclad"])
+    stats = [(5, "éditions"), (len(cards), "cartes"), (len([m for m in monsters if m.get('acts')]), "monstres"),
+             (len(relics), "reliques"), (len(potions), "potions"), (len(events), "évènements"), (8, "Anciens")]
     stat_html = "".join(f"<div><b>{n}</b><span>{esc(l)}</span></div>" for n, l in stats)
     bestiary = "".join(
         f'<div class="mini-mon"><img class="pix" src="assets/sprites/{s}.png" alt="{esc(n)}"><span>{esc(n)}</span></div>'
         for s, n in [("mon_cultist", "Cultist"), ("mon_jaw_worm", "Jaw Worm"), ("mon_louse", "Morpion"),
                      ("mon_gremlin_nob", "Gremlin Nob")]
     )
+    faq = "".join(f"<details class='faq'><summary>{esc(q)}</summary><p>{a}</p></details>" for q, a in FAQ)
     body = f"""
 <section class="hero-banner" style="background-image:url(assets/bg/title.png)">
   <div class="hero-inner">
-    <p class="kicker">Game Boy Advance · 5 cartouches</p>
+    <p class="kicker">Game Boy Advance · Deckbuilder roguelike · 5 éditions</p>
     <h1>SLAY THE GBA</h1>
-    <p class="lead">Slay the Spire 2 réinventé en 240×160 : deckbuilding roguelike, arène de combat façon Pokémon GBA et une cartouche par héros.</p>
-    <div class="cta"><a class="btn" href="#jouer">Comment jouer ►</a><a class="btn ghost" href="#cartouches">Choisir un héros</a><a class="btn ghost" href="#telecharger">▼ Télécharger les ROMs</a><a class="btn ghost" href="bible/index.html">Lire la bible</a><a class="btn ghost" href="{ARTICLE_URL}" target="_blank" rel="noopener">📖 L'histoire du projet</a></div>
+    <p class="lead"><b>Slay the Spire 2 dans votre poche.</b> Cinq héros, cinq cartouches, une seule Tour à gravir — en 240×160, avec des combats façon Pokémon et les vraies illustrations du jeu.</p>
+    <div class="lineup">{lineup}</div>
+    <div class="cta"><a class="btn" href="#telecharger">▼ Télécharger gratuitement</a><a class="btn ghost" href="#editions">Choisir mon édition</a><a class="btn ghost" href="bible/index.html">Lire la bible</a></div>
   </div>
 </section>
 
 <div class="stats">{stat_html}</div>
 
-{panel('<h2 id="cartouches">Les 5 cartouches</h2><p>Un héros par cartouche, chacun avec son deck, sa relique, son décor et sa mécanique signature.</p><div class="carts">' + carts + '</div>')}
+{panel(f'<h2 id="editions">Choisissez votre édition</h2><p class="intro">Comme les grandes séries portables vendues en plusieurs versions, Slay the GBA existe en <b>cinq cartouches</b>. Chacune a son héros, son deck de {pool_size}+ cartes, sa relique, sa couleur, sa zone et sa mécanique signature.</p><div class="carts">' + carts + '</div>')}
 
-{panel('''<h2>Le jeu</h2>
+{panel('''<h2>Pourquoi vous allez y passer vos nuits</h2>
 <div class="features">
-  <div><h3>♥ Roguelike deckbuilder</h3><p>Gravissez une Tour de 16 étages : combats, élites, évènements, feux de camp, boutiques, trésors, puis le boss de l'acte.</p></div>
-  <div><h3>⚔ Combats à la Pokémon</h3><p>Héros de dos à gauche, monstres à droite sur leurs socles, intentions visibles, barres de PV qui se vident, dégâts flottants et secousses.</p></div>
-  <div><h3>★ Vraies illustrations</h3><p>Cartes, monstres, boss et évènements convertis depuis l'art de Slay the Spire 2 en palettes 16 couleurs.</p></div>
-  <div><h3>● Fluide</h3><p>Moteur C++20 Butano, texte mis en cache, animations interpolées, fondus entre scènes : 60 images par seconde.</p></div>
+  <div><h3>♥ Un vrai roguelike deckbuilder</h3><p>Chaque partie est unique : construisez votre deck carte après carte, collectionnez les reliques et gravissez les trois actes de la Tour. La mort est définitive, la revanche immédiate.</p></div>
+  <div><h3>⚔ Des combats façon Pokémon</h3><p>Héros de dos, monstres sur leurs socles, intentions visibles, barres de PV qui se vident, dégâts flottants et secousses : la lisibilité d'un RPG GBA au service du deckbuilding.</p></div>
+  <div><h3>★ Les vraies illustrations</h3><p>Cartes, monstres, boss et évènements convertis depuis l'art de Slay the Spire 2 en palettes 16 couleurs, fidèles jusque dans le cadre des cartes.</p></div>
+  <div><h3>◆ Une cartouche par héros</h3><p>Cinq éditions à collectionner, chacune avec sa couleur, son décor et ses quatre teintes (Classique, Chromatique, Ombre, Or).</p></div>
+  <div><h3>♪ Chiptune original</h3><p>Sept thèmes 4 canaux (titre, carte, combat, élite, boss, victoire, défaite) et des effets sonores rétro synthétisés pour le projet.</p></div>
+  <div><h3>● Sauvegarde & Ascension</h3><p>Sauvegarde automatique sur cartouche, reprise en un bouton, et dix niveaux d'Ascension pour les joueurs qui en veulent toujours plus.</p></div>
 </div>''')}
+
+<section class="panel"><h2>Cinq héros, cinq arènes</h2><p>Chaque édition a son décor de combat. Captures réelles des ROMs.</p><div class="shots arenas">{arenas}</div></section>
+
+{panel('<h2>Comparer les éditions</h2>' + comparison_table(by_id, relic_by_id) + '<p class="meta">Toutes les éditions : ' + f'{GOLD} pièces d’or au départ, {ENERGY} énergie par tour, {POTION_SLOTS} emplacements de potion, 4 teintes, Ascension 0 à 10.</p>')}
+
+<section class="panel"><h2>Une ascension en trois actes</h2><div class="loop">{loop}</div></section>
 
 <section class="panel"><h2>Captures</h2><p>Images réelles de la ROM, capturées dans l'émulateur.</p><div class="shots">{shots}</div></section>
 
 {panel('<h2>Bestiaire de l’acte 1</h2><div class="mini-mons">' + bestiary + '<div class="mini-mon boss"><img class="pix" src="assets/sprites/boss_ceremonial_beast.png" alt="Cerf Auguste"><span>Cerf Auguste (Boss)</span></div></div><p><a class="btn small" href="bestiaire.html">Tout le bestiaire ►</a></p>')}
 
-{panel('''<h2>Commandes</h2>
-<table class="keys"><tr><th>Écran</th><th>Bouton</th><th>Action</th></tr>
-<tr><td>Carte</td><td>◄ ►</td><td>Choisir la salle suivante</td></tr>
-<tr><td>Carte</td><td>▲ ▼</td><td>Faire défiler la Tour</td></tr>
-<tr><td>Carte</td><td>A</td><td>Avancer vers la salle</td></tr>
-<tr><td>Combat</td><td>◄ ►</td><td>Sélectionner une carte</td></tr>
-<tr><td>Combat</td><td>A</td><td>Jouer la carte (puis choisir la cible)</td></tr>
-<tr><td>Combat</td><td>START / R</td><td>Finir le tour</td></tr>
-<tr><td>Carte / Combat</td><td>SELECT</td><td>Registre du deck (B pour revenir)</td></tr></table>''')}
+{panel('<h2>Commandes</h2><p>Identiques sur les cinq cartouches.</p>' + controls_table())}
 
-{panel('<h2 id="telecharger">Télécharger les cartouches</h2><p>Une ROM <code>.gba</code> par héros, à ouvrir dans un émulateur (mGBA, Delta sur iPhone, RetroArch…) ou à flasher sur une cartouche EZ-Flash / EverDrive.</p><div class="downloads">' + downloads + '</div>')}
+{panel('<h2 id="telecharger">Télécharger les cartouches</h2><p>Une ROM <code>.gba</code> par héros, gratuite, à ouvrir dans un émulateur (mGBA, Delta sur iPhone, RetroArch…) ou à flasher sur une cartouche EZ-Flash / EverDrive.</p><div class="downloads">' + downloads + '</div>')}
 
-{panel('''<h2 id="jouer">Jouer</h2>
+{panel('''<h2 id="jouer">Jouer en 3 minutes</h2>
 <ol class="steps">
 <li><b>Téléchargez la cartouche</b> de votre héros (fichier <code>.gba</code>) dans la <a href="#telecharger">section Télécharger</a> ou sur la page du héros.</li>
 <li><b>Installez un émulateur Game Boy Advance</b> gratuit :
@@ -414,24 +458,30 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
   </ul></li>
 <li><b>Ouvrez le fichier <code>.gba</code></b> dans l'émulateur (Fichier → Charger une ROM, ou importez-le dans l'app), puis appuyez sur START.</li>
 <li>Vous avez une vraie console ? Copiez la ROM sur une cartouche flash (EZ-Flash, EverDrive) et jouez sur GBA, GBA SP ou DS.</li>
-</ol>
-<p class="meta">Les ROMs sont des créations homebrew du projet : aucune ROM commerciale n'est distribuée.</p>''')}
+</ol>''')}
+
+{panel('<h2>Questions fréquentes</h2>' + faq + f'<p><a class="btn small ghost" href="{ARTICLE_URL}" target="_blank" rel="noopener">📖 L’histoire du projet</a></p>')}
 """
-    (SITE / "index.html").write_text(page("Accueil", body, active="index.html", path=""))
+    (SITE / "index.html").write_text(page("Accueil", body, active="index.html", path="",
+                                          description="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance. Cinq héros, cinq cartouches gratuites, combats façon Pokémon."))
 
 
-def build_heroes_index() -> None:
+def build_heroes_index(cards: list[dict], relics: list[dict]) -> None:
+    by_id = cards_by_id(cards)
+    relic_by_id = {r["id"]: r for r in relics}
     rows = "".join(
         f"""<a class="hero-row" href="heros/{h.slug}.html" style="--hc:{h.color};--ha:{h.accent}">
   <img class="pix big" src="assets/sprites/hero_{h.slug}.png" alt="">
-  <div><h3>{esc(h.name)}</h3><p class="meta">{esc(h.title)}</p><p>{esc(h.mechanic)}</p>
-  <p class="meta">{h.hp} PV · Relique : {esc(h.relic)} · Deck : {esc(h.deck)}</p></div>
+  <div><p class="meta">{esc(h.edition)} · {esc(h.color_name)} · {esc(h.zone)}</p><h3>{esc(h.name)} <small>— {esc(h.title)}</small></h3>
+  <p class="tagline">« {esc(h.tagline)} »</p><p>{esc(h.pitch)}</p>
+  <p class="meta">{h.hp} PV · Relique : {esc(relic_by_id[h.relic_id]['name'])} · {esc(h.mechanic_name)} · {stars(h.difficulty)} {DIFFICULTY[h.difficulty]}</p></div>
 </a>"""
         for h in HEROES
     )
-    body = panel("<h1>Les héros</h1><p>Cinq archétypes, cinq cartouches.</p>" + rows)
+    body = (panel("<h1>Les 5 éditions</h1><p class='intro'>Un héros par cartouche. Même Tour, cinq façons de la gravir.</p>" + rows)
+            + panel("<h2>Comparer les éditions</h2>" + comparison_table(by_id, relic_by_id)))
     (SITE / "heros.html").write_text(page("Héros", body, active="heros.html", path="heros.html",
-                                          description="Les 5 héros de Slay the GBA et leurs cartouches."))
+                                          description="Les 5 éditions de Slay the GBA : Soldat de Fer, La Silencieuse, Le Défectueux, Le Régent et La Nécrolieuse."))
 
 
 def md_to_html(text: str, depth: int, image_base: str) -> str:
@@ -452,40 +502,52 @@ def md_to_html(text: str, depth: int, image_base: str) -> str:
 
 def build_hero_pages(cards: list[dict], relics: list[dict]) -> None:
     (SITE / "heros").mkdir(exist_ok=True)
-    for h in HEROES:
-        pool = [c for c in cards if c["pool"] == h.pool]
-        order = {"Basic": 0, "Common": 1, "Uncommon": 2, "Rare": 3, "Ancient": 4}
-        pool.sort(key=lambda c: (order.get(c["rarity"], 9), c["name"]))
+    by_id = cards_by_id(cards)
+    relic_by_id = {r["id"]: r for r in relics}
+    order = {"Basic": 0, "Common": 1, "Uncommon": 2, "Rare": 3, "Ancient": 4}
+    for i, h in enumerate(HEROES):
+        pool = sorted((c for c in cards if c["pool"] == h.pool), key=lambda c: (order.get(c["rarity"], 9), c["name"]))
         hero_relics = [r for r in relics if r["pool"] == h.pool]
-        relic_html = "".join(
-            f'<div class="relic"><img loading="lazy" src="{img_path(r["imagePath"], 1)}" alt=""><div><b>{esc(r["name"])}</b><p>{rich(r.get("descI18n") or r.get("descriptionClean", ""))}</p></div></div>'
-            for r in hero_relics
-        )
-        livret = (BIBLE / "livrets_gba" / f"livret_{h.slug}.md").read_text()
-        livret_html = md_to_html(livret, 1, "livrets_gba/../")
         counts = {t: sum(1 for c in pool if c["type"] == t) for t in ["Attack", "Skill", "Power"]}
+        key_cards = "".join(card_html(by_id[cid], 1) for cid in h.key_cards)
+        starter = "".join(
+            f'<li><b>{n}×</b> {esc(by_id[cid]["name"])} <span class="meta">— {rich(by_id[cid].get("descBase", ""))}</span></li>'
+            for cid, n in h.starter)
+        palettes = "".join(
+            f'<div class="palette"><span class="swatch big" style="background:{p.hex}"></span><div><b>{esc(p.name)}</b><p>{esc(p.description)}</p></div></div>'
+            for p in h.palettes)
+        tips = "".join(f"<li>{re.sub(r'[*][*](.*?)[*][*]', r'<b>\1</b>', esc(t))}</li>" for t in h.tips)
+        prev_h, next_h = HEROES[i - 1], HEROES[(i + 1) % len(HEROES)]
+        others = "".join(edition_card(o, "../") for o in HEROES if o is not h)
         body = f"""
 <section class="hero-banner small" style="background-image:url(../assets/bg/battle_{h.slug}.png)">
   <div class="hero-inner split">
     <img class="pix giant" src="../assets/sprites/hero_{h.slug}.png" alt="{esc(h.name)}">
-    <div><p class="kicker">Cartouche {esc(h.rom)}</p><h1>{esc(h.name)}</h1><p class="lead">{esc(h.title)}</p>
-    <p>{esc(h.mechanic)}</p>{download_button(h, 1)}</div>
+    <div><p class="kicker">{esc(h.edition)} · Cartouche {esc(h.rom)}</p><h1>{esc(h.name)}</h1><p class="lead">« {esc(h.tagline)} »</p>
+    <p>{esc(h.pitch)}</p><div class="cta">{download_button(h, 1)}<a class="btn ghost" href="../bible/livret_{h.slug}.html">Lire le livret</a></div></div>
   </div>
 </section>
-<div class="stats"><div><b>{h.hp}</b><span>PV</span></div><div><b>3</b><span>énergie</span></div><div><b>{len(pool)}</b><span>cartes</span></div>
-<div><b>{counts['Attack']}</b><span>attaques</span></div><div><b>{counts['Skill']}</b><span>compétences</span></div><div><b>{counts['Power']}</b><span>pouvoirs</span></div></div>
-{panel(f'''<h2>Fiche</h2><div class="sheet">
-<div class="relic big"><img src="../../bible/images/relics/{h.relic_image}.webp" alt=""><div><b>Relique de départ : {esc(h.relic)}</b><p>{esc(h.relic_text)}</p></div></div>
-<div><h3>Deck de départ</h3><p>{esc(h.deck)}</p><h3>Zone de la cartouche</h3><p>{esc(h.zone)}</p></div>
+<div class="stats"><div><b>{h.hp}</b><span>PV</span></div><div><b>{ENERGY}</b><span>énergie</span></div><div><b>{GOLD}</b><span>or</span></div><div><b>{len(pool)}</b><span>cartes</span></div>
+<div><b>{counts['Attack']}</b><span>attaques</span></div><div><b>{counts['Skill']}</b><span>compétences</span></div><div><b>{counts['Power']}</b><span>pouvoirs</span></div><div><b>{"★" * h.difficulty}</b><span>{DIFFICULTY[h.difficulty].lower()}</span></div></div>
+{panel(f'''<div class="story"><div><h2>{esc(h.title)}</h2><p>{esc(h.lore)}</p><p><b>Idéal pour</b> {esc(h.ideal)}</p>
+<p class="meta">Zone : {esc(h.zone)} · Couleur de cartouche : <span class="swatch" style="background:{h.color}"></span> {esc(h.color_name)}</p></div>
+<figure class="shot"><img class="pix" src="../assets/screens/{h.screenshot}.png" alt="Combat de {esc(h.name)}"><figcaption>{esc(h.name)} dans l'arène — capture réelle de la ROM</figcaption></figure></div>''')}
+{panel(f'<h2>Mécanique signature : {esc(h.mechanic_name)}</h2><p>{esc(h.mechanic_text)}</p><h3>Cartes phares</h3><div class="cards">{key_cards}</div>')}
+{panel(f'''<h2>Fiche de départ</h2><div class="sheet">
+{relic_html(relic_by_id[h.relic_id], 1, "relic big")}
+<div><h3>Deck de départ ({sum(n for _, n in h.starter)} cartes)</h3><ul class="starter">{starter}</ul>
+<p class="meta">{GOLD} pièces d'or · {ENERGY} énergie par tour · {POTION_SLOTS} emplacements de potion</p></div>
 <img class="pix energy" src="../assets/sprites/energy_{h.slug}.png" alt="Orbe d'énergie">
 </div>''')}
+{panel(f'<h2>Les 4 teintes</h2><p>Choisissez l’apparence de {esc(h.name)} au lancement de chaque partie.</p><div class="palettes">{palettes}</div>')}
+{panel(f'<h2>Conseils de survie</h2><ol class="tips">{tips}</ol><p><a class="btn small" href="../bible/livret_{h.slug}.html">Livret complet de l’édition ►</a> <a class="btn small ghost" href="../bible/{h.tome}.html">Tome des cartes ►</a></p>')}
 <section class="panel"><h2>Toutes les cartes ({len(pool)})</h2>{card_filters()}<div class="cards">{''.join(card_html(c, 1) for c in pool)}</div></section>
-{panel('<h2>Reliques exclusives</h2><div class="relics">' + relic_html + '</div>')}
-{panel('<div class="md">' + livret_html + '</div>', 'livret')}
+{panel('<h2>Reliques exclusives</h2><div class="relics">' + ''.join(relic_html(r, 1) for r in hero_relics) + '</div>')}
+{panel(f'<h2>Les autres éditions</h2><p class="pager"><a href="{prev_h.slug}.html">◄ {esc(prev_h.name)}</a><a href="{next_h.slug}.html">{esc(next_h.name)} ►</a></p><div class="carts">{others}</div>')}
 """
         (SITE / "heros" / f"{h.slug}.html").write_text(
             page(h.name, body, depth=1, active="heros.html", theme=f"hero-{h.slug}",
-                 description=f"{h.name}, {h.title} : {h.mechanic} Toutes ses cartes et la ROM {h.rom}.",
+                 description=f"{h.edition} de Slay the GBA — {h.tagline} {h.mechanic} Toutes ses cartes et la ROM {h.rom}.",
                  path=f"heros/{h.slug}.html"))
 
 
@@ -680,7 +742,7 @@ def main() -> None:
     build_assets()
     copy_roms()
     build_index(cards, monsters["monsters"], relics, potions, events)
-    build_heroes_index()
+    build_heroes_index(cards, relics)
     build_hero_pages(cards, relics)
     build_cards_page(cards)
     build_bestiary(monsters)

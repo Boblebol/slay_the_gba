@@ -161,7 +161,13 @@ void CombatEngine::start_combat_multi(FixedVector<EnemyType, 3> enemy_types, Cha
 void CombatEngine::start_player_turn() {
     state = CombatState::PLAYER_TURN;
     player.apply_poison_tick();
+    if (!player.is_alive()) {
+        state = CombatState::DEFEAT;
+        set_log("You were defeated!");
+        return;
+    }
     player.reset_turn();
+    player.trigger_start_of_turn_orbs();
     draw_cards(5);
     selected_card_index = 0;
     selected_target_index = get_first_alive_enemy_index();
@@ -204,10 +210,7 @@ bool CombatEngine::play_card(int index, int target_index) {
     // Apply effects
     switch (card_id) {
         case CardId::STRIKE: {
-            int16_t dmg = base_value + player.get_status(StatusType::STRENGTH) + player.sovereign_stars;
-            if (player.get_status(StatusType::WEAK) > 0) dmg = (dmg * 3) / 4;
-            if (current_target.get_status(StatusType::VULNERABLE) > 0) dmg = (dmg * 3) / 2;
-            current_target.take_damage(dmg);
+            current_target.take_damage(attack_damage(base_value + player.sovereign_stars, player, current_target));
             set_log(upgraded ? "Played Strike+!" : "Played Strike!");
             break;
         }
@@ -217,42 +220,29 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::BASH: {
-            int16_t dmg = base_value + player.get_status(StatusType::STRENGTH);
-            if (player.get_status(StatusType::WEAK) > 0) dmg = (dmg * 3) / 4;
-            if (current_target.get_status(StatusType::VULNERABLE) > 0) dmg = (dmg * 3) / 2;
-            current_target.take_damage(dmg);
+            current_target.take_damage(attack_damage(base_value, player, current_target));
             current_target.add_status(StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Bash+!" : "Played Bash!");
             break;
         }
         case CardId::IRON_WAVE: {
             player.gain_block(base_value);
-            int16_t dmg = secondary_value + player.get_status(StatusType::STRENGTH);
-            if (player.get_status(StatusType::WEAK) > 0) dmg = (dmg * 3) / 4;
-            if (current_target.get_status(StatusType::VULNERABLE) > 0) dmg = (dmg * 3) / 2;
-            current_target.take_damage(dmg);
+            current_target.take_damage(attack_damage(secondary_value, player, current_target));
             set_log(upgraded ? "Played Iron Wave+!" : "Played Iron Wave!");
             break;
         }
         case CardId::CLEAVE: {
             // AoE: attacks ALL alive enemies!
-            int16_t dmg = base_value + player.get_status(StatusType::STRENGTH);
-            if (player.get_status(StatusType::WEAK) > 0) dmg = (dmg * 3) / 4;
             for (size_t i = 0; i < enemies.size(); ++i) {
                 if (enemies[i].is_alive()) {
-                    int16_t final_dmg = dmg;
-                    if (enemies[i].get_status(StatusType::VULNERABLE) > 0) final_dmg = (final_dmg * 3) / 2;
-                    enemies[i].take_damage(final_dmg);
+                    enemies[i].take_damage(attack_damage(base_value, player, enemies[i]));
                 }
             }
             set_log(upgraded ? "Played Cleave+!" : "Played Cleave!");
             break;
         }
         case CardId::ANGER: {
-            int16_t dmg = base_value + player.get_status(StatusType::STRENGTH);
-            if (player.get_status(StatusType::WEAK) > 0) dmg = (dmg * 3) / 4;
-            if (current_target.get_status(StatusType::VULNERABLE) > 0) dmg = (dmg * 3) / 2;
-            current_target.take_damage(dmg);
+            current_target.take_damage(attack_damage(base_value, player, current_target));
             discard_pile.push_back(DeckCard(CardId::ANGER, upgraded)); // Extra copy!
             set_log(upgraded ? "Played Anger+!" : "Played Anger!");
             break;
@@ -263,10 +253,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::NEUTRALIZE: {
-            int16_t dmg = base_value + player.get_status(StatusType::STRENGTH);
-            if (player.get_status(StatusType::WEAK) > 0) dmg = (dmg * 3) / 4;
-            if (current_target.get_status(StatusType::VULNERABLE) > 0) dmg = (dmg * 3) / 2;
-            current_target.take_damage(dmg);
+            current_target.take_damage(attack_damage(base_value, player, current_target));
             current_target.add_status(StatusType::WEAK, secondary_value);
             set_log(upgraded ? "Played Neutralize+!" : "Played Neutralize!");
             break;
@@ -277,10 +264,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::POISON_STAB: {
-            int16_t dmg = base_value + player.get_status(StatusType::STRENGTH);
-            if (player.get_status(StatusType::WEAK) > 0) dmg = (dmg * 3) / 4;
-            if (current_target.get_status(StatusType::VULNERABLE) > 0) dmg = (dmg * 3) / 2;
-            current_target.take_damage(dmg);
+            current_target.take_damage(attack_damage(base_value, player, current_target));
             current_target.add_status(StatusType::POISON, secondary_value);
             set_log(upgraded ? "Played Poison Stab+!" : "Played Poison Stab!");
             break;
@@ -296,14 +280,12 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::DUALCAST: {
-            player.evoke_oldest_orb(&current_target);
-            player.evoke_oldest_orb(&current_target);
+            player.evoke_oldest_orb(&current_target, 2);
             set_log(upgraded ? "Triggered Dualcast+!" : "Triggered Dualcast!");
             break;
         }
         case CardId::FALLING_STAR: {
-            int16_t dmg = base_value + player.get_status(StatusType::STRENGTH);
-            current_target.take_damage(dmg);
+            current_target.take_damage(attack_damage(base_value, player, current_target));
             player.add_stars(secondary_value);
             set_log(upgraded ? "Cast Falling Star+!" : "Cast Falling Star!");
             break;
@@ -315,8 +297,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::UNLEASH: {
-            int16_t dmg = base_value + player.get_status(StatusType::STRENGTH);
-            current_target.take_damage(dmg);
+            current_target.take_damage(attack_damage(base_value, player, current_target));
             player.souls += secondary_value;
             set_log(upgraded ? "Cast Unleash+!" : "Cast Unleash!");
             break;
@@ -337,8 +318,10 @@ bool CombatEngine::play_card(int index, int target_index) {
         enemy = enemies[0];
     }
 
-    // Add to discard pile unless exhaust
-    discard_pile.push_back(played_card);
+    // Powers stay in play for the rest of the combat: they never return to the piles.
+    if (CardDef::get(card_id).type != CardType::POWER) {
+        discard_pile.push_back(played_card);
+    }
 
     // Check victory
     if (!has_alive_enemies()) {
@@ -360,7 +343,20 @@ void CombatEngine::end_player_turn() {
         hand.pop_back();
     }
 
-    player.tick_end_of_turn_statuses();
+    // End of turn effects: Metallicize block, then orb passives on the first living enemy.
+    player.apply_metallicize_tick();
+    if (has_alive_enemies()) {
+        player.trigger_passive_orbs(&enemies[get_first_alive_enemy_index()]);
+    }
+    if (!enemies.empty()) {
+        enemy = enemies[0];
+    }
+    if (!has_alive_enemies()) {
+        state = CombatState::VICTORY;
+        set_log("Victory!");
+        return;
+    }
+
     state = CombatState::ENEMY_TURN;
     set_log("Enemy Turn...");
 
@@ -370,6 +366,10 @@ void CombatEngine::end_player_turn() {
 void CombatEngine::execute_enemy_turn() {
     last_enemy_actions.clear();
     for (size_t i = 0; i < enemies.size(); ++i) {
+        // Poison hits at the start of the poisoned enemy's turn and can kill it before it acts.
+        if (enemies[i].is_alive()) {
+            enemies[i].apply_poison_tick();
+        }
         if (enemies[i].is_alive()) {
             EnemyActionRecord record;
             record.enemy_index = static_cast<int8_t>(i);
@@ -404,6 +404,9 @@ void CombatEngine::execute_enemy_turn() {
         return;
     }
 
+    // Player debuffs (Weak, Vulnerable) wear off at the end of the round, after the enemies acted.
+    player.tick_end_of_turn_statuses();
+
     // Plan next intents for all alive enemies
     turn_number++;
     for (size_t i = 0; i < enemies.size(); ++i) {
@@ -415,6 +418,44 @@ void CombatEngine::execute_enemy_turn() {
     // Start player turn again
     start_player_turn();
     set_log("Your Turn!");
+}
+
+bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
+    if (state != CombatState::PLAYER_TURN) return false;
+
+    if (potion_id == "FIRE_POTION") {
+        if (target_index < 0 || target_index >= static_cast<int>(enemies.size()) || !enemies[target_index].is_alive()) {
+            target_index = get_first_alive_enemy_index();
+        }
+        enemies[target_index].take_damage(20);
+        set_log("Fire Potion!");
+    } else if (potion_id == "BLOCK_POTION") {
+        player.block += 12; // Potion Block is not modified by Dexterity
+        set_log("Block Potion!");
+    } else if (potion_id == "ENERGY_POTION") {
+        player.energy = static_cast<int8_t>(player.energy + 2);
+        set_log("Energy Potion!");
+    } else if (potion_id == "BLOOD_POTION") {
+        player.heal(player.max_hp / 5);
+        set_log("Blood Potion!");
+    } else {
+        return false;
+    }
+
+    // Keep primary enemy in sync
+    if (!enemies.empty()) {
+        enemy = enemies[0];
+    }
+
+    if (!has_alive_enemies()) {
+        state = CombatState::VICTORY;
+        set_log("Victory!");
+    } else if (selected_target_index < 0 || selected_target_index >= static_cast<int>(enemies.size()) ||
+               !enemies[selected_target_index].is_alive()) {
+        selected_target_index = get_first_alive_enemy_index();
+    }
+
+    return true;
 }
 
 } // namespace engine
