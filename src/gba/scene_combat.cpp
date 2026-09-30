@@ -255,6 +255,16 @@ CombatScene::CombatScene(GameContext& context) :
     _player.set_z_order(Z_ACTOR);
     _energy_orb.set_z_order(Z_HUD);
     _target_cursor.set_visible(false);
+
+    engine::RoomType room = engine::RoomType::MONSTER;
+
+    if(_ctx.run.current_node_index >= 0)
+    {
+        room = _ctx.run.map.nodes[_ctx.run.current_node_index].type;
+    }
+
+    play_music(room == engine::RoomType::BOSS ? Music::BOSS
+               : room == engine::RoomType::ELITE ? Music::ELITE : Music::COMBAT);
     _apply_player_tint();
 
     _player_bar.set(_combat.player.hp, _combat.player.max_hp);

@@ -50,6 +50,7 @@ public:
                       Align::CENTER, TextColor::WHITE);
 
         const engine::RunManager& run = context.run;
+        play_music(victory ? Music::VICTORY : Music::GAME_OVER);
         engine::SaveManager& save = engine::SaveManager::instance();
 
         // The run is over: remove it from the cartridge and update the profile statistics.

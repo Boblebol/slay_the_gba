@@ -54,13 +54,16 @@ uv run scripts/build_gba_art.py
 
 Everything lands in `graphics/` (plus `include/gba/slay_font.h`).
 
-Sound effects are synthesised from chiptune oscillators (no third-party audio) into `audio/`:
+Sound effects (8-bit WAV) and the seven looping background themes (4-channel ProTracker modules:
+title, map, combat, elite, boss, victory, game over) are synthesised from chiptune oscillators and
+hand-written note sequences (no third-party audio) into `audio/`:
 
 ```bash
 uv run scripts/build_gba_audio.py
 ```
 
-The presentation layer plays them through `gba::play_sfx()`, at the volume stored in the cartridge save. The GBA presentation layer lives in
+The presentation layer plays them through `gba::play_sfx()` and `gba::play_music()` (cross-fades between
+themes), at the volumes stored in the cartridge save. The GBA presentation layer lives in
 `src/gba/` (one class per scene, cached text labels, tweened animations and fades); the game rules stay in
 the hardware-agnostic `src/engine/`.
 

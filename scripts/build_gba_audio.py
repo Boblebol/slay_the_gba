@@ -6,16 +6,19 @@
 
 Run from the repository root:  uv run scripts/build_gba_audio.py
 
-Sound effects are rendered as 8-bit mono WAV files (Butano plays them through maxmod).
-Everything is generated from simple oscillators so the sounds stay faithful to the GBA's
-chiptune palette and the repository never ships third-party audio.
+Sound effects are rendered as 8-bit mono WAV files and background music as 4-channel ProTracker
+modules (.mod), both played by Butano through maxmod. Everything is generated from simple
+oscillators and hand-written note sequences, so the audio stays faithful to the GBA's chiptune
+palette and the repository never ships third-party audio.
 Outputs land in audio/ (Butano does not scan sub-folders).
 """
 
 from __future__ import annotations
 
+import struct
 import wave
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -258,9 +261,282 @@ def build_sound_effects() -> None:
     print(f"{len(SOUND_EFFECTS)} sound effects written to {AUDIO_DIR.relative_to(ROOT)}/")
 
 
+# ------------------------------------------------------------------------------------------------
+# Background music: ProTracker modules
+# ------------------------------------------------------------------------------------------------
+#
+# A row is a sixteenth note, a bar is 16 rows and a pattern holds 4 bars. Four channels:
+#   1. lead melody   2. chord arpeggio   3. bass   4. drums
+# Tonal samples are single looped waveform cycles: 32 bytes for lead/arpeggio, 64 bytes for the
+# bass (one octave lower). With ProTracker periods, C-2 (period 428) plays a 32-byte cycle at
+# about 259 Hz, i.e. musical C4, so musical octaves 3..5 map to periods octaves 1..3.
+
+PAL_CLOCK = 7093789.2
+DRUM_RATE = int(PAL_CLOCK / (2 * 428))  # drums are triggered at C-2
+ROWS_PER_BAR = 16
+BARS_PER_PATTERN = 4
+
+PERIODS = [
+    856, 808, 762, 720, 678, 640, 604, 570, 538, 508, 480, 453,
+    428, 404, 381, 360, 339, 320, 302, 285, 269, 254, 240, 226,
+    214, 202, 190, 180, 170, 160, 151, 143, 135, 127, 120, 113,
+]
+
+NOTE_INDEX = {"C": 0, "C#": 1, "Db": 1, "D": 2, "D#": 3, "Eb": 3, "E": 4, "F": 5, "F#": 6, "Gb": 6,
+              "G": 7, "G#": 8, "Ab": 8, "A": 9, "A#": 10, "Bb": 10, "B": 11}
+
+CHORD_INTERVALS = {"": (0, 4, 7), "m": (0, 3, 7), "7": (0, 4, 7, 10), "m7": (0, 3, 7, 10),
+                   "dim": (0, 3, 6), "sus": (0, 5, 7)}
+
+# Sample slots (1-based in the module).
+LEAD, ARP, BASS, KICK, SNARE, HAT, PAD = 1, 2, 3, 4, 5, 6, 7
+
+
+def pitch(name: str) -> int:
+    """Semitone number of a note name such as 'F#4' (C0 = 0)."""
+    return 12 * int(name[-1]) + NOTE_INDEX[name[:-1]]
+
+
+def period_for(semitone: int, cycle_octave_shift: int) -> int:
+    """Period playing `semitone` on a sample whose C-2 sounds as C(4 - cycle_octave_shift)."""
+    index = semitone - 12 * (4 - cycle_octave_shift) + 12  # musical C4 -> index 12 (C-2)
+    if not 0 <= index < len(PERIODS):
+        raise ValueError(f"note out of ProTracker range: {semitone}")
+    return PERIODS[index]
+
+
+def parse_chord(name: str) -> tuple[int, tuple[int, ...]]:
+    root = name[:2] if len(name) > 1 and name[1] in "#b" else name[:1]
+    return NOTE_INDEX[root], CHORD_INTERVALS[name[len(root):]]
+
+
+def parse_melody(text: str) -> list[tuple[int | None, int]]:
+    """'E5:4 -:2 G5:2' -> [(semitone, rows), (None, rows), ...]."""
+    events = []
+    for token in text.split():
+        name, rows = token.split(":")
+        events.append((None if name == "-" else pitch(name), int(rows)))
+    return events
+
+
+@dataclass
+class Song:
+    name: str
+    speed: int          # ticks per row (6 = standard)
+    tempo: int          # BPM for 4 rows per beat at speed 6 (Fxx >= 32)
+    chords: list[str]   # one chord per bar
+    melody: str
+    arp: str            # "eighths", "sixteenths" or "pad"
+    bass: str           # "whole", "quarters", "eighths" or "octaves"
+    drums: str | None   # 16 characters per bar: k kick, s snare, h hat, x kick+hat, . rest
+    arp_octave: int = 4
+    bass_octave: int = 2
+
+
+@dataclass
+class Cell:
+    sample: int = 0
+    period: int = 0
+    effect: int = 0
+    param: int = 0
+
+    def pack(self) -> bytes:
+        return bytes([(self.sample & 0xF0) | (self.period >> 8), self.period & 0xFF,
+                      ((self.sample & 0x0F) << 4) | self.effect, self.param])
+
+
+def render_song(song: Song) -> list[list[list[Cell]]]:
+    rows = len(song.chords) * ROWS_PER_BAR
+    grid = [[Cell() for _ in range(4)] for _ in range(rows)]
+
+    # Lead melody
+    row = 0
+    for semitone, length in parse_melody(song.melody):
+        if semitone is not None and row < rows:
+            grid[row][0] = Cell(LEAD, period_for(semitone, 0))
+            if length >= 4:  # long notes fade a little so phrases breathe
+                for tail in range(row + 2, min(row + min(length, 6), rows)):
+                    grid[tail][0].effect, grid[tail][0].param = 0xA, 0x01
+        elif semitone is None and row < rows:
+            grid[row][0] = Cell(0, 0, 0xC, 0)  # rest: silence the previous note
+        row += length
+    if row != rows:
+        raise ValueError(f"{song.name}: melody lasts {row} rows, expected {rows}")
+
+    for bar, chord in enumerate(song.chords):
+        root, intervals = parse_chord(chord)
+        base = bar * ROWS_PER_BAR
+        tones = [12 * song.arp_octave + root + i for i in intervals]
+        tones.append(tones[0] + 12)
+
+        # Arpeggio
+        if song.arp == "pad":
+            for step, offset in enumerate((0, 8)):
+                grid[base + offset][1] = Cell(PAD, period_for(tones[step % len(tones)], 0))
+        else:
+            step_rows = 2 if song.arp == "eighths" else 1
+            for index, offset in enumerate(range(0, ROWS_PER_BAR, step_rows)):
+                tone = tones[index % len(tones)]
+                grid[base + offset][1] = Cell(ARP, period_for(tone, 0), 0xE, 0xC0 | (song.speed // 2 + 1))
+
+        # Bass
+        bass_root = 12 * song.bass_octave + root
+        fifth = bass_root + intervals[2]
+        pattern = {
+            "whole": [(0, bass_root)],
+            "quarters": [(0, bass_root), (4, fifth), (8, bass_root), (12, fifth)],
+            "eighths": [(o, bass_root) for o in range(0, 16, 2)],
+            "octaves": [(o, bass_root + (12 if (o // 2) % 2 else 0)) for o in range(0, 16, 2)],
+        }[song.bass]
+        for offset, tone in pattern:
+            grid[base + offset][2] = Cell(BASS, period_for(tone, 1))
+
+        # Drums
+        if song.drums:
+            for offset, hit in enumerate(song.drums):
+                sample = {"k": KICK, "x": KICK, "s": SNARE, "h": HAT}.get(hit)
+                if sample:
+                    grid[base + offset][3] = Cell(sample, 428)
+
+    # Speed and tempo at the start (drum and bass effect columns are otherwise unused on row 0).
+    grid[0][3].effect, grid[0][3].param = 0xF, song.speed
+    grid[0][2].effect, grid[0][2].param = 0xF, song.tempo
+
+    patterns = []
+    rows_per_pattern = ROWS_PER_BAR * BARS_PER_PATTERN
+    for start in range(0, rows, rows_per_pattern):
+        chunk = grid[start:start + rows_per_pattern]
+        if len(chunk) < rows_per_pattern:
+            chunk[-1][3].effect, chunk[-1][3].param = 0xD, 0  # pattern break: loop straight away
+            chunk += [[Cell() for _ in range(4)] for _ in range(rows_per_pattern - len(chunk))]
+        patterns.append(chunk)
+    return patterns
+
+
+def cycle(kind: str, length: int) -> np.ndarray:
+    t = np.arange(length) / length
+    if kind == "square25":
+        wave_ = np.where(t < 0.25, 1.0, -1.0)
+    elif kind == "square50":
+        wave_ = np.where(t < 0.5, 1.0, -1.0)
+    elif kind == "triangle":
+        wave_ = 4.0 * np.abs(t - 0.5) - 1.0
+    else:  # "bass": triangle with a touch of square bite
+        wave_ = 0.75 * (4.0 * np.abs(t - 0.5) - 1.0) + 0.25 * np.where(t < 0.5, 1.0, -1.0)
+    return wave_
+
+
+def drum(kind: str) -> np.ndarray:
+    n = int(0.18 * DRUM_RATE)
+    idx = np.arange(n)
+    if kind == "kick":
+        freq = 150 * (45 / 150) ** (idx / n)
+        body = np.sin(2 * np.pi * np.cumsum(freq) / DRUM_RATE)
+        return body * np.exp(-idx / (0.06 * DRUM_RATE))
+    if kind == "snare":
+        tone = np.sin(2 * np.pi * 190 * idx / DRUM_RATE) * np.exp(-idx / (0.03 * DRUM_RATE))
+        return 0.5 * tone + 0.8 * RNG.uniform(-1, 1, n) * np.exp(-idx / (0.05 * DRUM_RATE))
+    n = int(0.05 * DRUM_RATE)
+    return RNG.uniform(-1, 1, n) * np.exp(-np.arange(n) / (0.012 * DRUM_RATE))
+
+
+def to_signed_bytes(signal: np.ndarray) -> bytes:
+    data = np.round(np.clip(signal, -1, 1) * 127).astype(np.int8).tobytes()
+    return data + (b"\0" if len(data) % 2 else b"")  # sample lengths are counted in words
+
+
+def module_samples() -> list[tuple[str, bytes, int, bool]]:
+    """(name, signed 8-bit data, default volume 0-64, looped) for each module sample slot."""
+    return [
+        ("lead", to_signed_bytes(cycle("square25", 32)), 34, True),
+        ("arp", to_signed_bytes(cycle("square50", 32)), 18, True),
+        ("bass", to_signed_bytes(cycle("bass", 64)), 48, True),
+        ("kick", to_signed_bytes(drum("kick")), 56, False),
+        ("snare", to_signed_bytes(drum("snare")), 36, False),
+        ("hat", to_signed_bytes(drum("hat")), 18, False),
+        ("pad", to_signed_bytes(cycle("triangle", 32)), 30, True),
+    ]
+
+
+def write_mod(path: Path, song: Song) -> None:
+    patterns = render_song(song)
+    samples = module_samples()
+    header = song.name.encode("ascii")[:20].ljust(20, b"\0")
+    for index in range(31):
+        if index < len(samples):
+            name, data, volume, looped = samples[index]
+            words = len(data) // 2
+            header += name.encode("ascii").ljust(22, b"\0")
+            header += struct.pack(">HBBHH", words, 0, volume, 0, words if looped else 1)
+        else:
+            header += b"\0" * 22 + struct.pack(">HBBHH", 0, 0, 0, 0, 1)
+    header += bytes([len(patterns), 127])
+    header += bytes(range(len(patterns))).ljust(128, b"\0")
+    header += b"M.K."
+    body = b"".join(cell.pack() for pattern in patterns for row in pattern for cell in row)
+    path.write_bytes(header + body + b"".join(data for _, data, _, _ in samples))
+
+
+SONGS = [
+    Song(
+        "bgm_title", speed=8, tempo=125,
+        chords=["Am", "Am", "F", "F", "Dm", "Dm", "E", "E"],
+        melody="E5:8 D5:4 C5:4 B4:8 A4:8 C5:8 D5:4 E5:4 F5:12 E5:4 "
+               "D5:8 C5:4 A4:4 F5:8 E5:4 D5:4 E5:8 G#4:8 B4:16",
+        arp="eighths", bass="whole", drums=None),
+    Song(
+        "bgm_map", speed=6, tempo=118,
+        chords=["Dm", "C", "Bb", "C", "Dm", "C", "Bb", "A"],
+        melody="D5:4 F5:4 A5:6 G5:2 E5:4 C5:4 G5:8 F5:4 D5:4 Bb4:4 D5:4 E5:8 C5:8 "
+               "D5:4 F5:4 A5:4 G5:4 E5:4 G5:4 C5:8 D5:4 F5:4 Bb4:4 D5:4 C#5:8 A4:8",
+        arp="eighths", bass="quarters", drums="k.......s......."),
+    Song(
+        "bgm_combat", speed=5, tempo=140,
+        chords=["Em", "Em", "C", "D", "Em", "Em", "C", "B"],
+        melody="E5:2 -:2 E5:2 G5:2 B5:4 A5:2 G5:2 F#5:4 E5:4 D5:4 B4:4 "
+               "C5:2 -:2 C5:2 E5:2 G5:4 F#5:2 E5:2 D5:4 F#5:4 A5:8 "
+               "B5:4 A5:2 G5:2 F#5:4 E5:4 G5:4 F#5:2 E5:2 D5:4 B4:4 "
+               "C5:4 E5:4 G5:4 E5:4 D#5:8 F#5:8",
+        arp="sixteenths", bass="octaves", drums="k.h.s.h.k.k.s.h."),
+    Song(
+        "bgm_elite", speed=5, tempo=150,
+        chords=["Em", "G", "Am", "B", "Em", "G", "Am", "B7"],
+        melody="B4:2 E5:2 G5:2 B5:2 A5:4 G5:4 F#5:2 G5:2 A5:4 D5:8 "
+               "C5:2 E5:2 A5:4 G5:2 F#5:2 E5:4 D#5:4 F#5:4 B5:8 "
+               "B5:2 A5:2 G5:4 E5:4 G5:4 A5:4 G5:4 D5:8 E5:4 C5:4 A4:4 C5:4 B4:16",
+        arp="sixteenths", bass="eighths", drums="k.hks.h.k.hks.hs"),
+    Song(
+        "bgm_boss", speed=4, tempo=140,
+        chords=["Cm", "Cm", "Ab", "Bb", "Cm", "Cm", "Ab", "G"],
+        melody="C5:2 D#5:2 G5:2 C5:2 D#5:2 G5:2 A#5:2 G5:2 C5:4 -:2 C5:2 D5:2 D#5:2 F5:2 G5:2 "
+               "G#5:4 G5:4 D#5:4 C5:4 A#4:2 D5:2 F5:2 A#5:2 G#5:4 G5:4 "
+               "C5:2 D#5:2 G5:2 C5:2 D#5:2 G5:2 A#5:2 G5:2 G5:4 A#5:4 G5:4 D#5:4 "
+               "G#5:2 G5:2 F5:2 D#5:2 D5:4 C5:4 B4:8 D5:4 G5:4",
+        arp="sixteenths", bass="octaves", drums="k.k.s.k.k.k.s.ks"),
+    Song(
+        "bgm_victory", speed=6, tempo=125,
+        chords=["C", "F", "G", "C", "Am", "F", "G", "C"],
+        melody="G4:2 C5:2 E5:2 G5:6 E5:2 G5:2 A5:8 F5:8 G5:4 F5:2 E5:2 D5:8 E5:4 C5:4 G4:8 "
+               "A4:2 C5:2 E5:4 A5:8 F5:4 A5:4 C5:8 D5:4 G5:4 B4:4 D5:4 C5:16",
+        arp="eighths", bass="quarters", drums="k...s...k...s..."),
+    Song(
+        "bgm_game_over", speed=9, tempo=110,
+        chords=["Am", "Em", "F", "E", "Am", "Dm", "E", "Am"],
+        melody="A4:8 C5:8 B4:8 G4:8 A4:4 C5:4 F5:8 E5:16 E5:8 C5:8 D5:4 F5:4 A4:8 G#4:8 B4:8 A4:16",
+        arp="pad", bass="whole", drums=None),
+]
+
+
+def build_music() -> None:
+    for song in SONGS:
+        write_mod(AUDIO_DIR / f"{song.name}.mod", song)
+    print(f"{len(SONGS)} music modules written to {AUDIO_DIR.relative_to(ROOT)}/")
+
+
 def main() -> None:
     AUDIO_DIR.mkdir(exist_ok=True)
     build_sound_effects()
+    build_music()
 
 
 if __name__ == "__main__":

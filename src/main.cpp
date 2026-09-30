@@ -2,6 +2,7 @@
 #include "bn_core.h"
 
 #include "gba/assets.h"
+#include "gba/audio.h"
 #include "gba/fx.h"
 #include "gba/save.h"
 #include "gba/scene.h"
@@ -25,6 +26,7 @@ void play_exit_transition(gba::Transition transition)
             {
                 bn::fixed t = frame < 5 ? bn::fixed(frame) / 5 : bn::fixed(10 - frame) / 5;
                 gba::set_screen_fade(bn::color(31, 31, 31), t * bn::fixed(0.85));
+                gba::update_audio();
                 bn::core::update();
             }
         }
@@ -32,6 +34,7 @@ void play_exit_transition(gba::Transition transition)
         for(int frame = 1; frame <= 10; ++frame)
         {
             gba::set_screen_fade(bn::fixed(frame) / 10);
+            gba::update_audio();
             bn::core::update();
         }
 
@@ -43,6 +46,7 @@ void play_exit_transition(gba::Transition transition)
     for(int frame = 1; frame <= frames; ++frame)
     {
         gba::set_screen_fade(gba::ease_in_out(bn::fixed(frame) / frames));
+        gba::update_audio();
         bn::core::update();
     }
 }
@@ -80,6 +84,7 @@ int main()
             }
 
             result = scene->update();
+            gba::update_audio();
             bn::core::update();
         }
 
