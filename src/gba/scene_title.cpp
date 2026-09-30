@@ -15,6 +15,7 @@
 #include "engine/save_system.h"
 
 #include "gba/assets.h"
+#include "gba/audio.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
 #include "gba/text.h"
@@ -116,6 +117,7 @@ private:
 
         if(_timer > 20 && (bn::keypad::start_pressed() || bn::keypad::a_pressed()))
         {
+            play_sfx(Sfx::UI_CONFIRM);
             _press.clear();
 
             if(engine::SaveManager::instance().has_active_run())
@@ -137,16 +139,19 @@ private:
     {
         if(bn::keypad::up_pressed() || bn::keypad::down_pressed())
         {
+            play_sfx(Sfx::UI_CURSOR);
             _menu_index = 1 - _menu_index;
             _refresh_menu();
         }
         else if(bn::keypad::b_pressed())
         {
+            play_sfx(Sfx::UI_CANCEL);
             _close_menu();
             _stage = TitleStage::PRESS_START;
         }
         else if(bn::keypad::a_pressed() || bn::keypad::start_pressed())
         {
+            play_sfx(Sfx::UI_CONFIRM);
             _close_menu();
 
             if(_menu_index == 0)
@@ -172,16 +177,19 @@ private:
 
         if(bn::keypad::left_pressed())
         {
+            play_sfx(Sfx::UI_CURSOR);
             _selected = (_selected + count - 1) % count;
             _refresh_choice();
         }
         else if(bn::keypad::right_pressed())
         {
+            play_sfx(Sfx::UI_CURSOR);
             _selected = (_selected + 1) % count;
             _refresh_choice();
         }
         else if(bn::keypad::b_pressed())
         {
+            play_sfx(Sfx::UI_CANCEL);
             _stage = TitleStage::PRESS_START;
             _hero.set_y(200);
             _variant.clear();
@@ -190,6 +198,7 @@ private:
         }
         else if(bn::keypad::a_pressed() || bn::keypad::start_pressed())
         {
+            play_sfx(Sfx::UI_CONFIRM);
             engine::PaletteVariant variant = _palettes[_selected].variant;
             _ctx.palette = variant;
             _ctx.run.start_run(current_hero(), 0, variant, 12345u + unsigned(_ctx.frame) * 2654435761u);

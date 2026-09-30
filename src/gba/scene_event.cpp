@@ -6,6 +6,7 @@
 #include "bn_vector.h"
 
 #include "gba/assets.h"
+#include "gba/audio.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
 #include "gba/text.h"
@@ -135,6 +136,7 @@ public:
                 }
                 else
                 {
+                    play_sfx(Sfx::UI_CONFIRM);
                     _stage = Stage::CHOICE;
                     _writer.clear();
                     _refresh_choices();
@@ -151,11 +153,13 @@ public:
 
             if(bn::keypad::up_pressed())
             {
+                play_sfx(Sfx::UI_CURSOR);
                 _cursor = (_cursor + count - 1) % count;
                 _refresh_choices();
             }
             else if(bn::keypad::down_pressed())
             {
+                play_sfx(Sfx::UI_CURSOR);
                 _cursor = (_cursor + 1) % count;
                 _refresh_choices();
             }
@@ -259,6 +263,7 @@ private:
         {
             stream << (hp_delta > 0 ? "+" : "") << hp_delta << " PV";
             _popups.spawn(-40, -10, text, hp_delta > 0 ? TextColor::GREEN : TextColor::RED);
+            play_sfx(hp_delta > 0 ? Sfx::HEAL : Sfx::HIT_SLASH);
         }
 
         if(gold_delta != 0)
@@ -266,6 +271,11 @@ private:
             text.clear();
             stream << (gold_delta > 0 ? "+" : "") << gold_delta << " Or";
             _popups.spawn(40, -10, text, TextColor::GOLD, 8);
+
+            if(hp_delta == 0)
+            {
+                play_sfx(Sfx::GOLD);
+            }
         }
     }
 };

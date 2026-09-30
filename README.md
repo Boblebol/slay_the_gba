@@ -52,7 +52,15 @@ Sprites, backgrounds and the French-capable font are generated from the `bible/i
 uv run scripts/build_gba_art.py
 ```
 
-Everything lands in `graphics/` (plus `include/gba/slay_font.h`). The GBA presentation layer lives in
+Everything lands in `graphics/` (plus `include/gba/slay_font.h`).
+
+Sound effects are synthesised from chiptune oscillators (no third-party audio) into `audio/`:
+
+```bash
+uv run scripts/build_gba_audio.py
+```
+
+The presentation layer plays them through `gba::play_sfx()`, at the volume stored in the cartridge save. The GBA presentation layer lives in
 `src/gba/` (one class per scene, cached text labels, tweened animations and fades); the game rules stay in
 the hardware-agnostic `src/engine/`.
 

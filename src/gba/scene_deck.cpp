@@ -7,6 +7,7 @@
 #include "bn_regular_bg_items_bg_map.h"
 
 #include "gba/assets.h"
+#include "gba/audio.h"
 #include "gba/card_picker.h"
 #include "gba/layers.h"
 #include "gba/text.h"
@@ -46,6 +47,7 @@ public:
 
         if(bn::keypad::b_pressed() || bn::keypad::select_pressed())
         {
+            play_sfx(Sfx::UI_CANCEL);
             _ctx.transition = Transition::QUICK;
             return _ctx.deck_return;
         }

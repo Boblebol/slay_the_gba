@@ -11,6 +11,7 @@
 #include "engine/save_system.h"
 
 #include "gba/assets.h"
+#include "gba/audio.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
 #include "gba/text.h"
@@ -88,6 +89,7 @@ public:
 
         if(_timer > 40 && bn::keypad::start_pressed())
         {
+            play_sfx(Sfx::UI_CONFIRM);
             return SceneId::TITLE;
         }
 

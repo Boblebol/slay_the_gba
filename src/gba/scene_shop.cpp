@@ -8,6 +8,7 @@
 #include "bn_regular_bg_items_bg_shop.h"
 
 #include "gba/assets.h"
+#include "gba/audio.h"
 #include "gba/card_picker.h"
 #include "gba/card_text.h"
 #include "gba/fx.h"
@@ -61,6 +62,7 @@ public:
 
             if(bn::keypad::b_pressed())
             {
+                play_sfx(Sfx::UI_CANCEL);
                 _close_picker();
             }
             else if(bn::keypad::a_pressed() && _picker.size() > 0)
@@ -68,6 +70,7 @@ public:
                 if(_ctx.run.remove_card_at_shop(_picker.selected_tag()))
                 {
                     _popups.spawn(0, 10, "Carte retirée", TextColor::GREEN);
+                    play_sfx(Sfx::GOLD);
                 }
 
                 _close_picker();
@@ -82,33 +85,39 @@ public:
         {
             if(bn::keypad::left_pressed())
             {
+                play_sfx(Sfx::UI_CURSOR);
                 _cursor = (_cursor + card_count - 1) % card_count;
                 _refresh_all();
             }
             else if(bn::keypad::right_pressed())
             {
+                play_sfx(Sfx::UI_CURSOR);
                 _cursor = (_cursor + 1) % card_count;
                 _refresh_all();
             }
             else if(bn::keypad::down_pressed())
             {
+                play_sfx(Sfx::UI_CURSOR);
                 _cursor = REMOVE_ITEM;
                 _refresh_all();
             }
         }
         else if(bn::keypad::up_pressed())
         {
+            play_sfx(Sfx::UI_CURSOR);
             _cursor = _cursor == LEAVE_ITEM ? REMOVE_ITEM : 1;
             _refresh_all();
         }
         else if(bn::keypad::down_pressed() && _cursor == REMOVE_ITEM)
         {
+            play_sfx(Sfx::UI_CURSOR);
             _cursor = LEAVE_ITEM;
             _refresh_all();
         }
 
         if(bn::keypad::b_pressed())
         {
+            play_sfx(Sfx::UI_CANCEL);
             _ctx.run.leave_shop();
             return SceneId::MAP;
         }
@@ -163,11 +172,13 @@ private:
                 bn::ostringstream stream(text);
                 stream << '-' << item.cost << " Or";
                 _popups.spawn(CARD_X[_cursor], PRICE_Y - 10, text, TextColor::GOLD);
+                play_sfx(Sfx::GOLD);
                 _sold_timer[_cursor] = 1;
             }
             else
             {
                 _popups.spawn(CARD_X[_cursor], PRICE_Y - 10, "Pas assez d'or", TextColor::RED);
+                play_sfx(Sfx::ERROR);
             }
 
             _refresh_all();
@@ -179,13 +190,16 @@ private:
             if(_shop.card_removal_used)
             {
                 _popups.spawn(0, 20, "Déjà utilisé", TextColor::GRAY);
+                play_sfx(Sfx::ERROR);
             }
             else if(_ctx.run.gold < _shop.card_removal_cost)
             {
                 _popups.spawn(0, 20, "Pas assez d'or", TextColor::RED);
+                play_sfx(Sfx::ERROR);
             }
             else
             {
+                play_sfx(Sfx::UI_OPEN);
                 _open_picker();
             }
 

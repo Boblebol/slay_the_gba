@@ -10,6 +10,7 @@
 #include "bn_regular_bg_items_bg_campfire.h"
 
 #include "gba/assets.h"
+#include "gba/audio.h"
 #include "gba/card_picker.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
@@ -54,6 +55,7 @@ public:
         case Stage::MENU:
             if(bn::keypad::up_pressed() || bn::keypad::down_pressed())
             {
+                play_sfx(Sfx::UI_CURSOR);
                 _cursor = 1 - _cursor;
                 _refresh_options();
             }
@@ -67,6 +69,7 @@ public:
                     bn::ostringstream stream(text);
                     stream << '+' << (_ctx.run.hp - before) << " PV";
                     _popups.spawn(0, -20, text, TextColor::GREEN);
+                    play_sfx(Sfx::HEAL);
                     _refresh_hp();
                     _stage = Stage::DONE;
                     _done_timer = 0;
@@ -74,11 +77,13 @@ public:
                 }
                 else if(_ctx.run.can_smith())
                 {
+                    play_sfx(Sfx::UI_OPEN);
                     _open_forge();
                 }
                 else
                 {
                     _popups.spawn(0, 10, "Tout est déjà amélioré", TextColor::GRAY);
+                    play_sfx(Sfx::ERROR);
                 }
             }
             break;
@@ -88,6 +93,7 @@ public:
 
             if(bn::keypad::b_pressed())
             {
+                play_sfx(Sfx::UI_CANCEL);
                 _picker.clear();
                 _stage = Stage::MENU;
                 _refresh_options();
@@ -96,6 +102,7 @@ public:
             {
                 _ctx.run.smith_at_campfire(_picker.selected_tag());
                 _popups.spawn(-74, -60, "Amélioré !", TextColor::GREEN);
+                play_sfx(Sfx::BUFF);
                 _stage = Stage::DONE;
                 _done_timer = 0;
                 _hint.clear();
