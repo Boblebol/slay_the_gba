@@ -525,6 +525,20 @@ int main() {
     }
     std::cout << "[PASS] Card rewards: 3 distinct cards drawn from each hero's pool" << std::endl;
 
+    // Basic Strike and Defend are never offered: neither as a combat reward nor at the merchant.
+    for (CharacterId hero : { CharacterId::IRONCLAD, CharacterId::SILENT, CharacterId::DEFECT, CharacterId::REGENT,
+                              CharacterId::NECROBINDER }) {
+        for (CardId id : RunManager::card_reward_pool(hero)) {
+            assert(id != CardId::STRIKE && id != CardId::DEFEND);
+        }
+        ShopInventory shop;
+        shop.generate(hero, 1);
+        for (const auto& item : shop.cards) {
+            assert(item.card.id != CardId::STRIKE && item.card.id != CardId::DEFEND);
+        }
+    }
+    std::cout << "[PASS] Rewards & shop: no basic Strike or Defend offered to any hero" << std::endl;
+
     // Test Campfire Rest
     assert(run.can_rest());
     int hp_before_rest = run.hp;

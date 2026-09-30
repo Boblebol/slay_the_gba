@@ -21,17 +21,17 @@ void ShopInventory::generate(CharacterId char_id, uint32_t seed, uint8_t previou
         case CharacterId::DEFECT:
             cards.push_back({ DeckCard(CardId::ZAP, true), 80, false });
             cards.push_back({ DeckCard(CardId::DUALCAST, true), 80, false });
-            cards.push_back({ DeckCard(CardId::STRIKE, true), 50, false });
+            cards.push_back({ DeckCard(CardId::BALL_LIGHTNING, false), 50, false });
             break;
         case CharacterId::REGENT:
             cards.push_back({ DeckCard(CardId::FALLING_STAR, false), 60, false });
             cards.push_back({ DeckCard(CardId::VENERATE, true), 110, false });
-            cards.push_back({ DeckCard(CardId::DEFEND, true), 50, false });
+            cards.push_back({ DeckCard(CardId::GATHER_LIGHT, false), 50, false });
             break;
         case CharacterId::NECROBINDER:
             cards.push_back({ DeckCard(CardId::UNLEASH, false), 65, false });
             cards.push_back({ DeckCard(CardId::BODYGUARD, true), 115, false });
-            cards.push_back({ DeckCard(CardId::STRIKE, true), 50, false });
+            cards.push_back({ DeckCard(CardId::DRAIN_POWER, false), 50, false });
             break;
         default: // IRONCLAD
             cards.push_back({ DeckCard(CardId::IRON_WAVE, false), 50, false });
