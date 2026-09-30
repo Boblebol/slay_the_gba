@@ -296,6 +296,22 @@ int main() {
     assert(run.phase == RunPhase::MAP_NAVIGATION);
     std::cout << "[PASS] Run Loop: Deck, Combat, Burning Blood (+6 HP), Card Reward & Gold picked" << std::endl;
 
+    // Vajra: every combat starts with 1 Strength, and only with the relic.
+    RunManager plain_run;
+    plain_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain_run.enter_room(plain_run.get_available_rooms()[0]);
+    assert(!plain_run.has_relic("VAJRA"));
+    assert(plain_run.combat.player.get_status(StatusType::STRENGTH) == 0);
+
+    RunManager vajra_run;
+    vajra_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    vajra_run.add_relic("VAJRA");
+    assert(vajra_run.has_relic("VAJRA"));
+    vajra_run.enter_room(vajra_run.get_available_rooms()[0]);
+    assert(vajra_run.phase == RunPhase::IN_COMBAT);
+    assert(vajra_run.combat.player.get_status(StatusType::STRENGTH) == 1);
+    std::cout << "[PASS] Vajra: +1 Strength at the start of each combat" << std::endl;
+
     // Test Campfire Rest
     assert(run.can_rest());
     int hp_before_rest = run.hp;

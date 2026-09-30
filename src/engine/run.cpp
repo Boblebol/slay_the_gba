@@ -132,6 +132,12 @@ void RunManager::enter_room(int node_index) {
             for (size_t i = 0; i < master_deck.size(); ++i) {
                 combat.draw_pile.push_back(master_deck[i]);
             }
+
+            // Vajra: start each combat with 1 Strength.
+            if (has_relic("VAJRA")) {
+                combat.player.add_status(StatusType::STRENGTH, 1);
+            }
+
             combat.shuffle_draw_pile();
             combat.start_player_turn();
             break;
@@ -292,6 +298,13 @@ void RunManager::add_relic(std::string_view relic_id) {
     if (relics.size() < relics.capacity()) {
         relics.push_back(relic_id);
     }
+}
+
+bool RunManager::has_relic(std::string_view relic_id) const {
+    for (size_t i = 0; i < relics.size(); ++i) {
+        if (relics[i] == relic_id) return true;
+    }
+    return false;
 }
 
 void RunManager::proceed_after_combat() {
