@@ -131,6 +131,9 @@ void Enemy::plan_turn(int turn_number) {
 void Enemy::execute_turn(Player& player) {
     clear_block();
 
+    // Ritual gained this turn only starts granting Strength at the end of the next one.
+    int16_t ritual = get_status(StatusType::RITUAL);
+
     // Gain block from intent if any
     if (current_intent.block > 0) {
         gain_block(current_intent.block);
@@ -143,33 +146,13 @@ void Enemy::execute_turn(Player& player) {
 
     // Execute attack if any
     if (current_intent.base_damage > 0) {
-        int16_t dmg = current_intent.base_damage;
-        
-        // Add Strength
-        dmg += get_status(StatusType::STRENGTH);
-
-        // Check Weak on enemy (-25%)
-        if (get_status(StatusType::WEAK) > 0) {
-            dmg = (dmg * 3) / 4;
-        }
-
-        // Check Vulnerable on player (+50%)
-        if (player.get_status(StatusType::VULNERABLE) > 0) {
-            dmg = (dmg * 3) / 2;
-        }
-
-        if (dmg < 0) dmg = 0;
-        player.take_damage_with_minion(dmg);
+        player.take_damage_with_minion(attack_damage(current_intent.base_damage, *this, player));
     }
 
     // End of turn status triggers (Ritual -> Strength)
-    int16_t ritual = get_status(StatusType::RITUAL);
     if (ritual > 0) {
         add_status(StatusType::STRENGTH, ritual);
     }
-
-    // Apply poison tick at turn end
-    apply_poison_tick();
 
     // Tick end-of-turn status counters (Vulnerable, Weak)
     tick_end_of_turn_statuses();
@@ -186,28 +169,30 @@ void Player::channel_orb(OrbType type, CombatEntity* enemy) {
     }
 }
 
-void Player::evoke_oldest_orb(CombatEntity* enemy) {
+void Player::evoke_oldest_orb(CombatEntity* enemy, int times) {
     if (orbs.empty()) return;
     OrbType oldest = orbs[0];
     orbs.erase(0);
 
-    switch (oldest) {
-        case OrbType::LIGHTNING:
-            if (enemy) enemy->take_damage(8);
-            break;
-        case OrbType::FROST:
-            gain_block(5);
-            break;
-        case OrbType::DARK:
-            if (enemy) enemy->take_damage(dark_orb_charge > 0 ? dark_orb_charge : 6);
-            dark_orb_charge = 0;
-            break;
-        case OrbType::PLASMA:
-            energy += 2;
-            break;
-        default:
-            break;
+    for (int i = 0; i < times; ++i) {
+        switch (oldest) {
+            case OrbType::LIGHTNING:
+                if (enemy) enemy->take_damage(8);
+                break;
+            case OrbType::FROST:
+                block += 5; // Orb block ignores Dexterity
+                break;
+            case OrbType::DARK:
+                if (enemy) enemy->take_damage(dark_orb_charge > 0 ? dark_orb_charge : 6);
+                break;
+            case OrbType::PLASMA:
+                energy += 2;
+                break;
+            default:
+                break;
+        }
     }
+    if (oldest == OrbType::DARK) dark_orb_charge = 0;
 }
 
 void Player::trigger_passive_orbs(CombatEntity* enemy) {
@@ -217,17 +202,20 @@ void Player::trigger_passive_orbs(CombatEntity* enemy) {
                 if (enemy) enemy->take_damage(3);
                 break;
             case OrbType::FROST:
-                gain_block(2);
+                block += 2;
                 break;
             case OrbType::DARK:
                 dark_orb_charge += 6;
                 break;
-            case OrbType::PLASMA:
-                energy += 1;
-                break;
             default:
                 break;
         }
+    }
+}
+
+void Player::trigger_start_of_turn_orbs() {
+    for (size_t i = 0; i < orbs.size(); ++i) {
+        if (orbs[i] == OrbType::PLASMA) energy += 1;
     }
 }
 
