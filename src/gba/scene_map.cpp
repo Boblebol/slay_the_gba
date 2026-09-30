@@ -74,6 +74,7 @@ public:
         _cursor.set_z_order(Z_HUD);
         _ctx.nav.reset_to_player_floor();
         _cam = _focus_world_y();
+        play_music(Music::MAP);
 
         // Checkpoint between rooms: "Continuer" on the title screen resumes from here.
         if(_run.phase == engine::RunPhase::MAP_NAVIGATION)

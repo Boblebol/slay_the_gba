@@ -67,6 +67,7 @@ public:
         _hero.set_z_order(Z_ACTOR);
 
         _palettes = engine::get_character_palettes(current_hero());
+        play_music(Music::TITLE);
     }
 
     [[nodiscard]] bn::optional<SceneId> update() final

@@ -33,6 +33,7 @@ public:
         _gold_icon(create_icon(Icon::GOLD, -30, -56))
     {
         const engine::RunManager& run = context.run;
+        play_music(Music::MAP);
 
         for(int index = 0; index < int(run.current_card_rewards.size()); ++index)
         {
