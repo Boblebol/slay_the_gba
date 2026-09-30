@@ -39,7 +39,11 @@ static const CardDef CARDS[] = {
     { CardId::BEAM_CELL, "Beam Cell", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 3, 1, "Deal 3 dmg. Apply 1 Vuln.", "Beam Cell+", 0, 4, 2, "Deal 4 dmg. Apply 2 Vuln." },
     { CardId::BALL_LIGHTNING, "Ball Lightning", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 7, 1, "Deal 7 dmg. Channel 1 Lightning.", "Ball Lightning+", 1, 10, 1, "Deal 10 dmg. Channel 1 Lightning." },
     { CardId::COLD_SNAP, "Cold Snap", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 1, "Deal 6 dmg. Channel 1 Frost.", "Cold Snap+", 1, 9, 1, "Deal 9 dmg. Channel 1 Frost." },
-    { CardId::LEAP, "Leap", 1, CardType::SKILL, TargetType::SELF, 9, 0, "Gain 9 block.", "Leap+", 1, 12, 0, "Gain 12 block." }
+    { CardId::LEAP, "Leap", 1, CardType::SKILL, TargetType::SELF, 9, 0, "Gain 9 block.", "Leap+", 1, 12, 0, "Gain 12 block." },
+    // Regent commons
+    { CardId::SOLAR_STRIKE, "Solar Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 1, "Deal 9 dmg. Gain 1 Star.", "Solar Strike+", 1, 10, 2, "Deal 10 dmg. Gain 2 Stars." },
+    { CardId::GATHER_LIGHT, "Gather Light", 1, CardType::SKILL, TargetType::SELF, 8, 1, "Gain 8 block. Gain 1 Star.", "Gather Light+", 1, 11, 1, "Gain 11 block. Gain 1 Star." },
+    { CardId::CELESTIAL_MIGHT, "Celestial Might", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 3, "Deal 6 dmg 3 times.", "Celestial Might+", 2, 6, 4, "Deal 6 dmg 4 times." }
 };
 
 const CardDef& CardDef::get(CardId id) {

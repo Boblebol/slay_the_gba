@@ -43,6 +43,10 @@ enum class CardId : uint8_t {
     BALL_LIGHTNING,
     COLD_SNAP,
     LEAP,
+    // Regent commons (appended: saves store the numeric id)
+    SOLAR_STRIKE,
+    GATHER_LIGHT,
+    CELESTIAL_MIGHT,
     COUNT
 };
 
