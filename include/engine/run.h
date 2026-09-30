@@ -76,6 +76,8 @@ public:
     bool buy_shop_card(int index);
     bool buy_shop_relic(int index);
     bool buy_shop_potion(int index);
+    // Drinks the potion at `index` of the belt in the current combat and removes it from the belt.
+    bool use_potion(int index, int target_index = -1);
     bool remove_card_at_shop(int deck_index);
     void leave_shop();
 
@@ -84,10 +86,13 @@ public:
     void pick_card_reward(int reward_index);
     void skip_card_rewards();
     void add_relic(std::string_view relic_id);
+    bool has_relic(std::string_view relic_id) const;
+    std::string_view draw_treasure_relic();
     bool remove_card_from_deck(int deck_index);
     bool upgrade_card_in_deck(int deck_index);
 
     // Act Progression
+    void apply_combat_start_relics();
     void proceed_after_combat();
     void advance_act();
     bool is_run_completed() const;

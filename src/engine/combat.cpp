@@ -420,4 +420,42 @@ void CombatEngine::execute_enemy_turn() {
     set_log("Your Turn!");
 }
 
+bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
+    if (state != CombatState::PLAYER_TURN) return false;
+
+    if (potion_id == "FIRE_POTION") {
+        if (target_index < 0 || target_index >= static_cast<int>(enemies.size()) || !enemies[target_index].is_alive()) {
+            target_index = get_first_alive_enemy_index();
+        }
+        enemies[target_index].take_damage(20);
+        set_log("Fire Potion!");
+    } else if (potion_id == "BLOCK_POTION") {
+        player.block += 12; // Potion Block is not modified by Dexterity
+        set_log("Block Potion!");
+    } else if (potion_id == "ENERGY_POTION") {
+        player.energy = static_cast<int8_t>(player.energy + 2);
+        set_log("Energy Potion!");
+    } else if (potion_id == "BLOOD_POTION") {
+        player.heal(player.max_hp / 5);
+        set_log("Blood Potion!");
+    } else {
+        return false;
+    }
+
+    // Keep primary enemy in sync
+    if (!enemies.empty()) {
+        enemy = enemies[0];
+    }
+
+    if (!has_alive_enemies()) {
+        state = CombatState::VICTORY;
+        set_log("Victory!");
+    } else if (selected_target_index < 0 || selected_target_index >= static_cast<int>(enemies.size()) ||
+               !enemies[selected_target_index].is_alive()) {
+        selected_target_index = get_first_alive_enemy_index();
+    }
+
+    return true;
+}
+
 } // namespace engine

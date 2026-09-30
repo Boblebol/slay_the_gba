@@ -273,6 +273,7 @@ endif
 
 site-build:
 	@printf "$(CYAN)==> Génération du site web dans site/...$(RESET)\n"
+	@uv run scripts/build_livrets.py
 	@uv run scripts/build_site.py
 
 site: site-build

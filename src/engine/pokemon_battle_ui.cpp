@@ -198,24 +198,20 @@ bool PokemonBattleUI::button_a_pressed(CombatEngine& combat, RunManager* run_ctx
     } else if (current_tab == BattleMenuTab::BAG_MENU) {
         if (run_ctx && !run_ctx->potions.empty() && selected_potion_index < static_cast<int>(run_ctx->potions.size())) {
             std::string_view pid = run_ctx->potions[selected_potion_index];
+            if (!combat.use_potion(pid, combat.selected_target_index)) {
+                set_dialogue("Cette potion ne peut pas etre utilisee.");
+                return false;
+            }
             if (pid == "FIRE_POTION") {
-                combat.enemy.take_damage(20);
                 anim.enemy_hurt_timer = 18;
                 anim.last_damage_dealt = 20;
                 set_dialogue("Potion incendiaire ! 20 degats infliges !");
             } else if (pid == "BLOCK_POTION") {
-                combat.player.gain_block(12);
                 set_dialogue("Potion d'armure ! +12 Armure recue !");
             } else if (pid == "ENERGY_POTION") {
-                combat.player.energy = std::min<uint8_t>(combat.player.max_energy + 2, combat.player.energy + 2);
                 set_dialogue("Potion d'energie ! +2 Energie recuperee !");
-            } else if (pid == "BLOOD_POTION") {
-                int heal = combat.player.max_hp * 2 / 10;
-                combat.player.heal(heal);
-                set_dialogue("Potion sanguine ! +20% PV restaures !");
             } else {
-                combat.player.gain_block(8);
-                set_dialogue("Potion consommee avec succes !");
+                set_dialogue("Potion sanguine ! +20% PV restaures !");
             }
             run_ctx->potions.erase(selected_potion_index);
             current_tab = BattleMenuTab::MAIN_MENU;

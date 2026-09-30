@@ -26,3 +26,6 @@ dist/
 
 # Downloadable cartridges served by the website (rebuilt with make roms && make site-build)
 !site/roms/*.gba
+
+# Python
+__pycache__/

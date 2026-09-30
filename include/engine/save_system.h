@@ -110,7 +110,10 @@ public:
 // The save is written alternately into two banks so a power loss during a write never destroys the
 // previous good copy. Each bank starts with a header holding a checksum of its payload.
 constexpr size_t SAVE_BANK_SIZE = 16 * 1024;
-constexpr uint16_t SAVE_FORMAT_VERSION = 2;
+constexpr uint16_t SAVE_FORMAT_VERSION = 3;
+// Oldest layout still readable. Version 2 generated a different map from the same seed: its profiles and
+// settings are kept but its in-progress runs are dropped.
+constexpr uint16_t SAVE_MIN_FORMAT_VERSION = 2;
 
 class SaveManager {
 public:

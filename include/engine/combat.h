@@ -61,6 +61,9 @@ public:
     void end_player_turn();
     void execute_enemy_turn();
 
+    // Applies a potion's effect during the player's turn. False when it can't be drunk (unknown potion, enemy turn).
+    bool use_potion(std::string_view potion_id, int target_index = -1);
+
     bool has_alive_enemies() const;
     int count_alive_enemies() const;
     int get_first_alive_enemy_index() const;

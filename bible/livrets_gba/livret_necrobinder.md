@@ -1,113 +1,152 @@
-# ⚫ Livret d'Instruction Officiel — Slay the Spire 2 : Édition La Nécrolieuse
+# Livret d'instructions — Slay the GBA : Édition La Nécrolieuse
 
 ```
-========================================================================================
-                      NINTENDO® GAME BOY ADVANCE™ INSTRUCTION BOOKLET
-                 ÉDITION LA NÉCROLIEUSE — RÉFÉRENCE : AGB-P-ASGN-FRA
-========================================================================================
+====================================================================================
+   SLAY THE GBA — LIVRET D'INSTRUCTIONS
+   ÉDITION LA NÉCROLIEUSE · CARTOUCHE slay_necrobinder.gba · RÉF. SLAYNECRO
+====================================================================================
 ```
 
-> **Sceau Officiel de Qualité Nintendo® :**  
-> Ce livret officiel garantit l'authenticité et la fidélité de votre cartouche Game Boy Advance *Slay the Spire 2 — Édition La Nécrolieuse*. Conservez ce manuel pour maîtriser la gestion des Âmes, le bouclier protecteur de votre familier Osty et les sortilèges nécrotiques.
+> **Elle ne combat jamais seule.**
+> Les PV les plus bas de la Tour, mais un garde du corps squelette qui grandit à chaque tour grâce au Phylactère enchaîné. Protégez Titos, marquez vos proies de Fatalité, et laissez la mort faire son œuvre.
+
+| Cartouche | Couleur | Zone | Difficulté |
+|---|---|---|---|
+| `slay_necrobinder.gba` (réf. `SLAYNECRO`) | Violet Spectral (`#c860b8`) | Crypte d'Outre-Tombe | ★★★ Expert |
 
 ---
 
-## 📜 1. Histoire & Contexte de La Nécrolieuse
+## 1. Histoire : La Nécrolieuse, gardienne des morts et des os
 
-Sorcier d'outre-tombe liée à jamais aux âmes errantes de la Tour, **La Nécrolieuse** (*The Necrobinder*) chemine escortée par son familier squelettique géant, **Osty**.  
-Bien que sa constitution physique soit plus fragile (65 PV initiaux), La Nécrolieuse compense cette faiblesse par une présence au combat dédoublée : Osty s'interpose physiquement devant chaque assaut ennemi, encaissant les coups à sa place pendant qu'elle moissonne les âmes pour lancer des malédictions nécrotiques.
+Liée à jamais aux âmes errantes de la Tour, la Nécrolieuse chemine escortée de Titos, un familier squelettique qu'elle relève encore et encore. Fragile de corps, elle compense par une présence dédoublée sur le champ de bataille.
 
-* **Points de Vie Initiaux :** 65 PV.
-* **Or de Départ :** 99 Pièces d'or.
-* **Relique de Départ :** **Lien d'Outre-Tombe** (*Gravebinding*) — Au début de chaque combat, **invoque immédiatement le familier Osty avec 12 PV et 4 Armure** !
+*Idéal pour les joueurs qui aiment les invocations, les effets à retardement et les parties à haut risque.*
 
 ---
 
-## 💀 2. Le Familier Osty & La Moisson d'Âmes
+## 2. Fiche du héros
 
-### Osty le Protecteur
-Osty possède sa propre barre de points de vie et d'armure distincte de La Nécrolieuse :
-* **Interposition Totale :** Tous les dégâts subis par votre camp sont **d'abord infligés à l'armure d'Osty, puis aux PV d'Osty**. La Nécrolieuse ne perd aucun point de vie tant qu'Osty est debout !
-* **Mort & Réanimation d'Osty :** Si les PV d'Osty tombent à 0, il s'effondre. Vous pouvez le réinvoquer au cours du combat en jouant des cartes de réanimation comme **Garde du Corps** ou **Retour d'Outre-Tombe** !
+* **Nom :** La Nécrolieuse (*The Necrobinder*)
+* **Points de vie :** 65 PV
+* **Or de départ :** 99 pièces d'or
+* **Énergie :** 3 ⚡ par tour
+* **Emplacements de potion :** 3
 
-### La Ressource des Âmes (*Souls*)
-Chaque attaque nécrotique victorieuse ou élimination d'ennemi récolte des **Âmes (💀)** :
-* Les Âmes sont stockées dans votre jauge (jusqu'à 10 âmes).
-* Elles servent de carburant mystique pour réanimer Osty, déchaîner des vagues spectrales ou régénérer votre essence vitale.
+### Relique de départ : ![Phylactère enchaîné](../images/relics/bound_phylactery.webp) Phylactère enchaîné
+
+> Au début de votre tour, **Invoquez** pour 1.
+
+### Deck de départ (10 cartes)
+
+* **4×** Frappe — Infligez 6 dégâts.
+* **4×** Défense — Gagnez 5 d'**Armure**.
+* **1×** Déchaînement — **Titos** inflige 6 dégâts. Inflige un montant de dégâts supplémentaires égal aux PV actuels de **Titos**.
+* **1×** Garde du corps — **Invoquez** pour 5.
 
 ---
 
-## 🎮 3. Maniement des Commandes Game Boy Advance
+## 3. Mécanique signature : Titos & Fatalité
 
-| Bouton | Action sur la Carte de la Tour | Action dans l'Arène Yu-Gi-Oh |
+La Nécrolieuse combat avec Titos, son familier squelette : « Invoquez » lui donne des PV, il encaisse les coups à sa place et frappe avec Déchaînement. La Fatalité marque les ennemis pour une mort certaine, et les Âmes ajoutées à la pioche nourrissent ses sortilèges.
+
+---
+
+## 4. Commandes
+
+Les commandes sont identiques sur les cinq cartouches.
+
+| Écran | Bouton | Action |
 |---|---|---|
-| **Croix Directionnelle (◄ / ►)** | Choisir la voie sur la carte | Parcourir vos cartes en main / Pointer le monstre à faucher |
-| **Croix Directionnelle (▲ / ▼)** | Faire défiler les étages de la Tour | Examiner la description des incantations |
-| **Bouton A** | **Entrer dans la salle / Lancer le combat** | **Invoquer / Faucher / Jouer la carte sélectionnée** |
-| **Bouton B** | Annuler | Annuler le mode de ciblage |
-| **Bouton START** | Menu Pause & Sauvegarde | **Fin de Tour immédiate** |
-| **Bouton SELECT** | **Consulter le Deck** | **Consulter la Défausse & les Âmes** |
+| Carte | **◄ ►** | Choisir la salle suivante |
+| Carte | **▲ ▼** | Faire défiler la Tour |
+| Carte | **A** | Avancer vers la salle |
+| Combat | **◄ ►** | Sélectionner une carte |
+| Combat | **A** | Jouer la carte (puis choisir la cible si plusieurs ennemis) |
+| Combat | **B** | Annuler le ciblage |
+| Combat | **START / R** | Finir le tour |
+| Carte / Combat | **SELECT** | Registre du deck (B pour revenir) |
+| Menus | **A / B** | Valider / annuler |
 
 ---
 
-## 📺 4. Structure des Écrans de Jeu (Résolution 240 × 160)
+## 5. La Tour et l'arène de combat
 
-```
-┌────────────────────────────────────────────────────────┐
-│  [ZONE 1]              [ZONE 2]              [ZONE 3]  │
-│  Cultiste [30/50]      Ver Mâchoire [35/42]  [K.O.]    │
-│  ! ATK 6               ! 7D                            │
-│                                                        │
-│  [HÉROS] La Nécrolieuse  PV 65/65 (+0B)   NRG: [●][●][●]│
-│  Familier Osty : 10/12 PV (+4B) | Âmes récoltées : 💀4 │
-│────────────────────────────────────────────────────────│
-│  [Déchaînement+] (1E) | 11 dégâts + 2 Âmes récoltées   │
-│  Main : [1]  [2]  >[3]<  [4]  [5]                      │
-│  G/D : Carte   A : Jouer   START : Fin de Tour         │
-└────────────────────────────────────────────────────────┘
-```
-L'arène Yu-Gi-Oh affiche l'état de santé exact d'Osty juste sous votre jauge de vie, garantissant une vision claire de votre bouclier biologique !
+* **La carte de la Tour :** chaque acte compte 16 étages. Choisissez votre chemin parmi les embranchements : combats, élites, évènements mystères `?`, feux de camp, boutiques, trésors, puis le boss de l'acte. Entre les actes, un **Ancien** vous offre ses bénédictions.
+* **L'arène façon Pokémon :** La Nécrolieuse apparaît de dos à gauche, les monstres (jusqu'à trois) à droite sur leurs socles, avec leur **intention** au-dessus de la tête. Barres de PV, dégâts flottants et secousses rythment chaque coup.
+* **La main de cartes** s'étale en bas de l'écran : la carte sélectionnée grossit et affiche son effet ; si plusieurs ennemis sont en vie, un curseur de ciblage apparaît.
+* **Récompenses :** après chaque combat, choisissez une carte parmi trois pour enrichir votre deck, et récupérez or et potions.
+* **Feu de camp :** reposez-vous pour soigner vos PV ou **forgez** une carte (amélioration `+`), avec aperçu de la version améliorée.
 
 ---
 
-## 🎨 5. Système de Teintes (Style Pokémon)
+## 6. Les teintes du héros
 
-1. **Classique (Noir Osseux) :** Robe de deuil noire et ossements blanchis d'Osty.
-2. **Chromatique / Shiny (Brumes Spectrales) :** Tissu indigo et feux follets vert émeraude.
-3. **Ténèbres / Shadow (Nécropole d'Ébène) :** Ténèbres absolues et crâne d'onyx scintillant.
-4. **Dorée / Golden (Reine Squelette d'Or) :** Squelette d'Osty doré et diadème réservé aux champions de l'Ascension 10.
+Au lancement d'une partie, choisissez la teinte de La Nécrolieuse :
 
----
-
-## 🃏 6. Catalogue Officiel des 20 Cartes Communes de l'Édition
-
-| N° | Carte | Coût | Type | Effet Standard | Version Améliorée (`+`) |
-|:---:|:---|:---:|:---:|---|---|
-| 01 | **Frappe** | 1E | Attaque | Inflige 6 dégâts à un ennemi. | Inflige **9 dégâts**. |
-| 02 | **Défense** | 1E | Compétence | Confère 5 points d'Armure. | Confère **8 points d'Armure**. |
-| 03 | **Déchaînement** | 1E | Attaque | Inflige 8 dégâts. Récolte **+1 Âme**. | Inflige **11 dégâts**. Récolte **+2 Âmes**. |
-| 04 | **Garde du Corps**| 1E | Compétence | Confère 6 Armure. Si Osty est à 0 PV, le réanime avec 8 PV ! | Confère **9 Armure**. Réanime Osty avec **12 PV** ! |
-| 05 | **Moisson d'Âmes** | 1E | Compétence | Récolte +2 Âmes immédiatement. | Récolte **+3 Âmes**. |
-| 06 | **Fauche Spectral**| 2E | Attaque | Inflige 10 dégâts à TOUS les ennemis. Récolte +1 Âme par monstre touché. | Inflige **14 dégâts** à TOUS les ennemis. |
-| 07 | **Suture d'Osty** | 1E | Compétence | Restaure 8 PV à Osty. | Restaure **12 PV** à Osty. |
-| 08 | **Pacte Macabre** | 0E | Compétence | Consomme 2 Âmes. Gagnez +1 Énergie et piochez 2 cartes. | Piochez **3 cartes**. |
-| 09 | **Frappe Sépulcrale**| 1E | Attaque | Inflige 7 dégâts. Si Osty a plus de 10 PV, inflige 7 dégâts de plus. | Inflige **10 dégâts (+10)**. |
-| 10 | **Mur d'Os** | 2E | Compétence | Confère 14 Armure à Osty. | Confère **18 Armure** à Osty. |
-| 11 | **Malédiction Foudroyante**| 1E | Attaque | Inflige 5 dégâts et applique 2 Vulnérable. Récolte 1 Âme. | Inflige **8 dégâts** et applique **3 Vulnérable**. |
-| 12 | **Horde Rampante**| 2E | Pouvoir | À chaque tour, Osty attaque automatiquement pour 4 dégâts. | Osty attaque pour **7 dégâts** par tour ! |
-| 13 | **Transfusion** | 1E | Compétence | Transfère 4 PV d'Osty vers La Nécrolieuse pour vous soigner ! | Transfère **6 PV**. |
-| 14 | **Toucher Mortel**| 1E | Attaque | Inflige 8 dégâts. Si cette carte tue le monstre, récolte 4 Âmes. | Inflige **11 dégâts**. |
-| 15 | **Armure d'Épines**| 1E | Pouvoir | Chaque fois qu'Osty subit des dégâts, l'attaquant subit 3 dégâts d'épines. | Inflige **5 dégâts d'épines** ! |
-| 16 | **Cri des Trépassés**| 1E | Compétence | Applique 2 Faiblesse à TOUS les monstres ennemis. | Applique **3 Faiblesse** à TOUS les monstres. |
-| 17 | **Os Renforcés** | 1E | Pouvoir | Augmente les PV max d'Osty de +8 pour tout le combat. | Augmente les PV max d'Osty de **+12 PV** ! |
-| 18 | **Résurrection** | 2E | Compétence | Consomme 4 Âmes. Réanime Osty à son maximum de PV ! | Coût réduit à **1E**. |
-| 19 | **Festin Funèbre**| 0E | Attaque | Inflige des dégâts égaux au nombre d'Âmes récoltées x 2. | Inflige des dégâts égaux aux **Âmes x 3** ! |
-| 20 | **Danse Macabre** | 3E | Attaque | Inflige 18 dégâts. Osty gagne 10 Armure et vous récoltez 3 Âmes. | Inflige **24 dégâts** et récolte **4 Âmes**. |
+1. **Teinte Spectrale (Classique)** (`#204080`) — La bure sombre bordée d'un halo spectral vert d'eau.
+2. **Âme Pourpre (Chromatique)** (`#f00000`) — Une aura violacée incandescente de magie interdite.
+3. **Abysse Mortuaire (Ombre)** (`#080810`) — Le noir absolu des tombeaux millénaires de la Tour.
+4. **Pharaonique (Or)** (`#c8e800`) — Les bandelettes tressées de fils d'or pur des défunts rois.
 
 ---
 
-## ⚔️ 7. Guide de Survie & Stratégie de Duel
+## 7. Cartes phares
 
-1. **La Préservation d'Osty :** Osty est votre seconde barre de vie. Surveillez en permanence ses PV au milieu de l'écran. Utilisez **Garde du Corps** dès qu'il faiblit.
-2. **Moissonner pour Survivre :** Conservez toujours au moins 2 ou 3 Âmes en réserve pour être en mesure de réanimer Osty immédiatement s'il venait à périr face à une grosse attaque d'un Élite.
-3. **Le combo Festin Funèbre :** À 6 ou 8 Âmes accumulées, **Festin Funèbre (0E)** devient l'attaque la plus rentable de toute la Tour, infligeant entre 18 et 24 dégâts pour zéro énergie !
+| Carte | Coût | Type | Effet | Amélioré (`+`) |
+|---|:---:|:---:|---|---|
+| ![Garde du corps](../images/cards/necrobinder/bodyguard.webp) **Garde du corps** | 1 ⚡ | Compétence | **Invoquez** pour 5. | **Invoquez** pour 7. |
+| ![Déchaînement](../images/cards/necrobinder/unleash.webp) **Déchaînement** | 1 ⚡ | Attaque | **Titos** inflige 6 dégâts. Inflige un montant de dégâts supplémentaires égal aux PV actuels de **Titos**. | **Titos** inflige 9 dégâts. Inflige un montant de dégâts supplémentaires égal aux PV actuels de **Titos**. |
+| ![Détonation osseuse](../images/cards/necrobinder/bone_shards.webp) **Détonation osseuse** | 1 ⚡ | Attaque | Si **Titos** est en vie, il inflige 9 dégâts à TOUS les ennemis, et vous gagnez 9 d'**Armure**. **Titos** périt. | Si **Titos** est en vie, il inflige 12 dégâts à TOUS les ennemis, et vous gagnez 12 d'**Armure**. **Titos** périt. |
+| ![Porte-mort](../images/cards/necrobinder/deathbringer.webp) **Porte-mort** | 2 ⚡ | Compétence | Appliquez 21 de **Fatalité** et **Affaibli** (1) à TOUS les ennemis. | Appliquez 26 de **Fatalité** et **Affaibli** (1) à TOUS les ennemis. |
+
+---
+
+## 8. Catalogue des 20 cartes communes
+
+Les cartes communes forment le socle de votre deck : ce sont celles que vous verrez le plus souvent en récompense.
+
+| Carte | Coût | Type | Effet | Amélioré (`+`) |
+|---|:---:|:---:|---|---|
+| ![Adjuration](../images/cards/necrobinder/invoke.webp) **Adjuration** | 1 ⚡ | Compétence | Au prochain tour, **Invoquez** pour 2 et gagnez 2 ⚡. | Au prochain tour, **Invoquez** pour 3 et gagnez 3 ⚡. |
+| ![Anti-pulsation](../images/cards/necrobinder/negative_pulse.webp) **Anti-pulsation** | 1 ⚡ | Compétence | Gagnez 5 d'**Armure**. Appliquez 7 de **Fatalité** sur TOUS les ennemis. | Gagnez 6 d'**Armure**. Appliquez 11 de **Fatalité** sur TOUS les ennemis. |
+| ![Chiquenaude](../images/cards/necrobinder/poke.webp) **Chiquenaude** | 0 ⚡ | Attaque | **Titos** inflige 6 dégâts. | **Titos** inflige 9 dégâts. |
+| ![Claquement de doigts](../images/cards/necrobinder/snap.webp) **Claquement de doigts** | 1 ⚡ | Attaque | **Titos** inflige 7 dégâts. Ajoutez **Retenue** à une carte dans votre **Main**. | **Titos** inflige 10 dégâts. Ajoutez **Retenue** à une carte dans votre **Main**. |
+| ![Défi](../images/cards/necrobinder/defy.webp) **Défi** | 1 ⚡ | Compétence | **Éthéré**. Gagnez 6 d'**Armure**. Appliquez **Affaibli** (1). | **Éthéré**. Gagnez 9 d'**Armure**. Appliquez **Affaibli** (1). |
+| ![Déflagration tombale](../images/cards/necrobinder/graveblast.webp) **Déflagration tombale** | 1 ⚡ | Attaque | Infligez 4 dégâts. Placez une carte de votre **Défausse** dans votre **Main**. **Épuisement**. | Infligez 6 dégâts. Placez une carte de votre **Défausse** dans votre **Main**. |
+| ![Drain de puissance](../images/cards/necrobinder/drain_power.webp) **Drain de puissance** | 1 ⚡ | Attaque | Infligez 10 dégâts. **Améliorez** 2 cartes aléatoires de votre **Défausse**. | Infligez 12 dégâts. **Améliorez** 3 cartes aléatoires de votre **Défausse**. |
+| ![Exaction](../images/cards/necrobinder/reave.webp) **Exaction** | 1 ⚡ | Attaque | Infligez 10 dégâts. Ajoutez une **Âme** à votre **Pioche**. | Infligez 13 dégâts. Ajoutez une **Âme+** à votre **Pioche**. |
+| ![Feu follet](../images/cards/necrobinder/wisp.webp) **Feu follet** | 0 ⚡ | Compétence | Gagnez 1 ⚡. **Épuisement**. | **Retenue**. Gagnez 1 ⚡. **Épuisement**. |
+| ![Fossoyeur](../images/cards/necrobinder/grave_warden.webp) **Fossoyeur** | 1 ⚡ | Compétence | Gagnez 8 d'**Armure**. Ajoutez une **Âme** à votre **Pioche**. | Gagnez 11 d'**Armure**. Ajoutez une **Âme** à votre **Pioche**. |
+| ![Frappe du fléau](../images/cards/necrobinder/blight_strike.webp) **Frappe du fléau** | 1 ⚡ | Attaque | Infligez 8 dégâts. Appliquez un montant de **Fatalité** égal aux dégâts infligés. | Infligez 10 dégâts. Appliquez un montant de **Fatalité** égal aux dégâts infligés. |
+| ![Frappe du sculpteur](../images/cards/necrobinder/sculpting_strike.webp) **Frappe du sculpteur** | 1 ⚡ | Attaque | Infligez 9 dégâts. Ajoutez **Éthéré** à une carte dans votre **Main**. | Infligez 12 dégâts. Ajoutez **Éthéré** à une carte dans votre **Main**. |
+| ![Moisson](../images/cards/necrobinder/reap.webp) **Moisson** | 3 ⚡ | Attaque | **Retenue**. Infligez 27 dégâts. | **Retenue**. Infligez 33 dégâts. |
+| ![Pestilence](../images/cards/necrobinder/scourge.webp) **Pestilence** | 1 ⚡ | Compétence | Appliquez 13 de **Fatalité**. Piochez 1 carte. | Appliquez 16 de **Fatalité**. Piochez 2 cartes. |
+| ![Profanation](../images/cards/necrobinder/defile.webp) **Profanation** | 1 ⚡ | Attaque | **Éthéré**. Infligez 13 dégâts. | **Éthéré**. Infligez 17 dégâts. |
+| ![Râblure](../images/cards/necrobinder/pull_aggro.webp) **Râblure** | 2 ⚡ | Compétence | **Invoquez** pour 4. Gagnez 7 d'**Armure**. | **Invoquez** pour 5. Gagnez 9 d'**Armure**. |
+| ![Raser](../images/cards/necrobinder/flatten.webp) **Raser** | 2 ⚡ | Attaque | **Titos** inflige 12 dégâts. Cette carte coûte 0 ⚡ si **Titos** a déjà attaqué pendant ce tour. | **Titos** inflige 16 dégâts. Cette carte coûte 0 ⚡ si **Titos** a déjà attaqué pendant ce tour. |
+| ![Semence](../images/cards/necrobinder/sow.webp) **Semence** | 1 ⚡ | Attaque | **Retenue**. Infligez 8 dégâts à TOUS les ennemis. | **Retenue**. Infligez 11 dégâts à TOUS les ennemis. |
+| ![Terreur](../images/cards/necrobinder/fear.webp) **Terreur** | 1 ⚡ | Attaque | **Éthéré**. Infligez 7 dégâts. Appliquez **Vulnérable** (1). | **Éthéré**. Infligez 8 dégâts. Appliquez **Vulnérable** (2). |
+| ![Vie après la mort](../images/cards/necrobinder/afterlife.webp) **Vie après la mort** | 1 ⚡ | Compétence | **Invoquez** pour 6. **Épuisement**. | **Invoquez** pour 9. **Épuisement**. |
+
+L'édition compte **91 cartes** au total : 4 de base, 20 communes, 38 peu communes, 27 rares et 2 anciennes. Retrouvez-les toutes dans le [tome des cartes](13_cartes_necrobinder.md).
+
+---
+
+## 9. Conseils de survie
+
+1. Le **Phylactère enchaîné** invoque au début de chaque tour : plus le combat dure, plus Titos est solide.
+2. **Déchaînement** ajoute les PV actuels de Titos à ses dégâts : faites-le grossir avant de le lâcher.
+3. Avec 65 PV, chaque point compte : laissez Titos encaisser les grosses attaques d'élites.
+4. La Fatalité (Porte-mort, Décompte) achève les ennemis dont les PV passent sous son seuil.
+
+---
+
+## 10. Sauvegarde, Ascension et encyclopédie
+
+* **Sauvegarde sur la cartouche :** la partie est enregistrée automatiquement en SRAM à chaque salle ; choisissez **Continuer** à l'écran titre pour reprendre là où vous vous étiez arrêté. Les réglages (volume de la musique et des effets) sont conservés.
+* **Ascension 0 à 10 :** chaque victoire débloque un niveau de difficulté supplémentaire (élites plus fréquents, monstres plus robustes, soins réduits…).
+* **Encyclopédie :** cartes, reliques, monstres, potions et Anciens rencontrés sont consignés au fil de vos parties.
+
+---
+
+*Slay the GBA existe en cinq éditions. Les quatre autres : Soldat de Fer, La Silencieuse, Le Défectueux et Le Régent. [Voir la collection des livrets](README.md).*
