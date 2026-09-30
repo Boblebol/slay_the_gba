@@ -174,16 +174,16 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Inflige " << value << " dégâts. Affaibli " << secondary << ".";
         break;
     case engine::CardId::DAGGER_SPRAY:
-        stream << "Inflige " << value << " dégâts à TOUS les ennemis " << secondary << " fois.";
+        stream << "Inflige " << value << " dégâts à TOUS, " << secondary << " fois.";
         break;
     case engine::CardId::BEAM_CELL:
         stream << "Inflige " << value << " dégâts. Vulnérable " << secondary << ".";
         break;
     case engine::CardId::BALL_LIGHTNING:
-        stream << "Inflige " << value << " dégâts. Canalise 1 Orbe de foudre.";
+        stream << "Inflige " << value << " dégâts. Canalise 1 Foudre.";
         break;
     case engine::CardId::COLD_SNAP:
-        stream << "Inflige " << value << " dégâts. Canalise 1 Orbe de givre.";
+        stream << "Inflige " << value << " dégâts. Canalise 1 Givre.";
         break;
     case engine::CardId::LEAP:
         stream << "Gagne " << value << " d'Armure.";
