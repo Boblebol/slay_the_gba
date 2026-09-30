@@ -83,6 +83,8 @@ public:
 
     // Rewards & Deck modification
     void generate_rewards();
+    // Engine-supported cards a hero can be offered after a combat.
+    static std::span<const CardId> card_reward_pool(CharacterId char_id);
     void pick_card_reward(int reward_index);
     void skip_card_rewards();
     void add_relic(std::string_view relic_id);

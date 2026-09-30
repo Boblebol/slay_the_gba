@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cassert>
+#include <algorithm>
 #include <cstring>
 #include <vector>
 #include "engine/combat.h"
@@ -502,6 +503,27 @@ int main() {
     potion_run.open_shop();
     assert(!potion_run.current_shop.relics[0].purchased && !potion_run.current_shop.relics[1].purchased);
     std::cout << "[PASS] Relics: chests and the shop never give a relic twice" << std::endl;
+
+    // Card rewards: distinct cards drawn at random from the hero's pool.
+    for (CharacterId hero : { CharacterId::IRONCLAD, CharacterId::SILENT, CharacterId::DEFECT, CharacterId::REGENT,
+                              CharacterId::NECROBINDER }) {
+        std::span<const CardId> pool = RunManager::card_reward_pool(hero);
+        assert(pool.size() >= 3);
+        RunManager reward_run;
+        reward_run.start_run(hero, 0, PaletteVariant::CLASSIC, 4242);
+        for (int round = 0; round < 20; ++round) {
+            reward_run.generate_rewards();
+            assert(reward_run.phase == RunPhase::REWARD_SCREEN);
+            assert(reward_run.current_card_rewards.size() == 3);
+            for (size_t i = 0; i < 3; ++i) {
+                const DeckCard& card = reward_run.current_card_rewards[i];
+                assert(!card.upgraded);
+                assert(std::find(pool.begin(), pool.end(), card.id) != pool.end());
+                for (size_t j = 0; j < i; ++j) assert(reward_run.current_card_rewards[j].id != card.id);
+            }
+        }
+    }
+    std::cout << "[PASS] Card rewards: 3 distinct cards drawn from each hero's pool" << std::endl;
 
     // Test Campfire Rest
     assert(run.can_rest());
