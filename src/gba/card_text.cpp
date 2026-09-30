@@ -62,6 +62,14 @@ bn::string_view base_name(engine::CardId id)
         return "Coup bas";
     case engine::CardId::DAGGER_SPRAY:
         return "Pluie de couteaux";
+    case engine::CardId::BEAM_CELL:
+        return "Rayon cellulaire";
+    case engine::CardId::BALL_LIGHTNING:
+        return "Foudre en boule";
+    case engine::CardId::COLD_SNAP:
+        return "Vague de froid";
+    case engine::CardId::LEAP:
+        return "Bond";
     default:
         return "???";
     }
@@ -161,6 +169,18 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::DAGGER_SPRAY:
         stream << "Inflige " << value << " dégâts à TOUS les ennemis " << secondary << " fois.";
+        break;
+    case engine::CardId::BEAM_CELL:
+        stream << "Inflige " << value << " dégâts. Vulnérable " << secondary << ".";
+        break;
+    case engine::CardId::BALL_LIGHTNING:
+        stream << "Inflige " << value << " dégâts. Canalise 1 Orbe de foudre.";
+        break;
+    case engine::CardId::COLD_SNAP:
+        stream << "Inflige " << value << " dégâts. Canalise 1 Orbe de givre.";
+        break;
+    case engine::CardId::LEAP:
+        stream << "Gagne " << value << " d'Armure.";
         break;
     default:
         break;

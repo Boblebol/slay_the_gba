@@ -18,9 +18,12 @@
 
 #include "bn_sprite_items_card_anger.h"
 #include "bn_sprite_items_card_backflip.h"
+#include "bn_sprite_items_card_ball_lightning.h"
 #include "bn_sprite_items_card_bash.h"
+#include "bn_sprite_items_card_beam_cell.h"
 #include "bn_sprite_items_card_bodyguard.h"
 #include "bn_sprite_items_card_cleave.h"
+#include "bn_sprite_items_card_cold_snap.h"
 #include "bn_sprite_items_card_dagger_spray.h"
 #include "bn_sprite_items_card_deadly_poison.h"
 #include "bn_sprite_items_card_defend_defect.h"
@@ -31,6 +34,7 @@
 #include "bn_sprite_items_card_dualcast.h"
 #include "bn_sprite_items_card_falling_star.h"
 #include "bn_sprite_items_card_iron_wave.h"
+#include "bn_sprite_items_card_leap.h"
 #include "bn_sprite_items_card_metallicize.h"
 #include "bn_sprite_items_card_neutralize.h"
 #include "bn_sprite_items_card_poison_stab.h"
@@ -250,6 +254,14 @@ const bn::sprite_item& big_card_item(engine::CardId id)
         return bn::sprite_items::card_sucker_punch;
     case engine::CardId::DAGGER_SPRAY:
         return bn::sprite_items::card_dagger_spray;
+    case engine::CardId::BEAM_CELL:
+        return bn::sprite_items::card_beam_cell;
+    case engine::CardId::BALL_LIGHTNING:
+        return bn::sprite_items::card_ball_lightning;
+    case engine::CardId::COLD_SNAP:
+        return bn::sprite_items::card_cold_snap;
+    case engine::CardId::LEAP:
+        return bn::sprite_items::card_leap;
     default:
         return bn::sprite_items::HERO_ITEM(card_strike_);
     }

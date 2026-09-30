@@ -353,6 +353,46 @@ void test_defect() {
     std::cout << "[PASS] Defect: Zap + Lightning passive, Frost block, Dualcast twice, Dark charge, full slots, Plasma energy" << std::endl;
 }
 
+void test_defect_commons() {
+    // Beam Cell: free chip damage and Vulnerable.
+    CombatEngine beam = make_combat(CharacterId::DEFECT);
+    beam.hand.clear();
+    beam.hand.push_back(CardId::BEAM_CELL);
+    beam.player.energy = 0;
+    assert(beam.play_card(0));
+    assert(beam.enemies[0].hp == 42 - 3);
+    assert(beam.enemies[0].get_status(StatusType::VULNERABLE) == 1);
+
+    // Ball Lightning and Cold Snap hit, then channel their orb.
+    CombatEngine orbs = make_combat(CharacterId::DEFECT);
+    play(orbs, CardId::BALL_LIGHTNING);
+    assert(orbs.enemies[0].hp == 42 - 7);
+    play(orbs, DeckCard(CardId::COLD_SNAP, true));
+    assert(orbs.enemies[0].hp == 35 - 9);
+    assert(orbs.player.orbs.size() == 2);
+    assert(orbs.player.orbs[0] == OrbType::LIGHTNING && orbs.player.orbs[1] == OrbType::FROST);
+
+    // With every slot taken, channeling evokes the oldest orb on the target (Lightning: 8).
+    play(orbs, CardId::BALL_LIGHTNING);
+    int16_t before = orbs.enemies[0].hp;
+    play(orbs, CardId::BALL_LIGHTNING);
+    assert(orbs.player.orbs.size() == 3 && orbs.player.orbs[0] == OrbType::FROST);
+    assert(orbs.enemies[0].hp == before - 7 - 8);
+
+    // Leap is plain block.
+    CombatEngine leap = make_combat(CharacterId::DEFECT);
+    leap.player.block = 0;
+    play(leap, DeckCard(CardId::LEAP, true));
+    assert(leap.player.block == 12);
+
+    std::span<const CardId> pool = RunManager::card_reward_pool(CharacterId::DEFECT);
+    for (CardId id : { CardId::BEAM_CELL, CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP }) {
+        assert(std::find(pool.begin(), pool.end(), id) != pool.end());
+    }
+    assert(std::find(pool.begin(), pool.end(), CardId::STRIKE) == pool.end());
+    std::cout << "[PASS] Defect commons: Beam Cell, Ball Lightning, Cold Snap, Leap" << std::endl;
+}
+
 void test_regent() {
     CombatEngine combat = make_combat(CharacterId::REGENT);
     Enemy& worm = combat.enemies[0];
@@ -460,6 +500,7 @@ int main() {
     test_silent();
     test_silent_commons();
     test_defect();
+    test_defect_commons();
     test_regent();
     test_necrobinder();
     test_ascension();

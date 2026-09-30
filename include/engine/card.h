@@ -38,6 +38,11 @@ enum class CardId : uint8_t {
     BACKFLIP,
     SUCKER_PUNCH,
     DAGGER_SPRAY,
+    // Defect commons (appended: saves store the numeric id)
+    BEAM_CELL,
+    BALL_LIGHTNING,
+    COLD_SNAP,
+    LEAP,
     COUNT
 };
 

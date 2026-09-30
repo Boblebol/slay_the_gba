@@ -274,7 +274,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY };
-    static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::STRIKE };
+    static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL, CardId::BALL_LIGHTNING,
+                                              CardId::COLD_SNAP, CardId::LEAP };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::DEFEND };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::STRIKE };
 
