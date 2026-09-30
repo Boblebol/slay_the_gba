@@ -1,138 +1,151 @@
-# 🔴 Livret d'Instruction Officiel — Slay the Spire 2 : Édition Soldat de Fer
+# Livret d'instructions — Slay the GBA : Édition Soldat de Fer
 
 ```
-========================================================================================
-                      NINTENDO® GAME BOY ADVANCE™ INSTRUCTION BOOKLET
-                  ÉDITION SOLDAT DE FER — RÉFÉRENCE : AGB-P-ASGI-FRA
-========================================================================================
+====================================================================================
+   SLAY THE GBA — LIVRET D'INSTRUCTIONS
+   ÉDITION SOLDAT DE FER · CARTOUCHE slay_ironclad.gba · RÉF. SLAYIRON
+====================================================================================
 ```
 
-> **Sceau Officiel de Qualité Nintendo® :**  
-> Ce livret officiel garantit l'authenticité et la fidélité de votre cartouche Game Boy Advance *Slay the Spire 2 — Édition Soldat de Fer*. Conservez ce manuel pour toute consultation relative aux règles de duel, aux synergies de cartes et aux ascensions de la Tour.
+> **La force brute, forgée dans le sang.**
+> Le héros idéal pour découvrir la Tour : beaucoup de PV, une relique qui soigne après chaque combat et des attaques qui cognent fort. Empilez la Force, encaissez sous l'Armure, puis écrasez tout.
+
+| Cartouche | Couleur | Zone | Difficulté |
+|---|---|---|---|
+| `slay_ironclad.gba` (réf. `SLAYIRON`) | Rouge Sang (`#c82030`) | Forges du Carnage | ★☆☆ Accessible |
 
 ---
 
-## 📜 1. Histoire & Contexte du Soldat de Fer
+## 1. Histoire : Soldat de Fer, guerrier maudit de l'Enfer
 
-Dernier survivant de son ordre guerrier décimé, le **Soldat de Fer** (*The Ironclad*) a scellé un pacte avec les puissances démoniaques pour venger ses frères d'armes tombés au combat.  
-Armé d'une lame colossale forgée dans le sang et le fer noirci, il gravit la Tour afin d'atteindre le Cœur Ancien. Son style de combat repose sur la puissance brute, la montée exponentielle de sa Force, la solidité inébranlable de son armure et la régénération sanguinaire de ses blessures.
+Dernier survivant d'un ordre guerrier décimé, le Soldat de Fer a scellé un pacte avec des puissances démoniaques pour venger ses frères d'armes. Armé d'une lame colossale forgée dans le sang et le fer noirci, il gravit la Tour pour atteindre son cœur.
 
-* **Points de Vie Initiaux :** 80 PV (90 PV maximum potentiel).
-* **Or de Départ :** 99 Pièces d'or.
-* **Relique de Départ :** **Sang Ardent** (*Burning Blood*) — Restaure automatiquement **+6 PV** à la fin de chaque combat victorieux.
+*Idéal pour les joueurs qui aiment frapper fort, encaisser et pardonner leurs erreurs grâce au soin.*
 
 ---
 
-## 🎮 2. Maniement des Commandes Game Boy Advance
+## 2. Fiche du héros
 
-```
-                              [L]                        [R]
-                               │                          │
-                         ┌─────┴──────────────────────────┴─────┐
-                         │                                      │
-                         │    ▲             ÉCRAN               │
-                         │  ◄   ►          240x160         (B)  │
-                         │    ▼                           (A)   │
-                         │               [SEL]  [START]         │
-                         └──────────────────────────────────────┘
-```
+* **Nom :** Soldat de Fer (*The Ironclad*)
+* **Points de vie :** 80 PV
+* **Or de départ :** 99 pièces d'or
+* **Énergie :** 3 ⚡ par tour
+* **Emplacements de potion :** 3
 
-| Bouton | Action sur la Carte de la Tour | Action dans l'Arène Yu-Gi-Oh |
+### Relique de départ : ![Sang ardent](../images/relics/burning_blood.webp) Sang ardent
+
+> À la fin de chaque combat, récupérez 6 PV.
+
+### Deck de départ (10 cartes)
+
+* **5×** Frappe — Infligez 6 dégâts.
+* **4×** Défense — Gagnez 5 d'**Armure**.
+* **1×** Heurt — Infligez 8 dégâts. Appliquez **Vulnérable** (2).
+
+---
+
+## 3. Mécanique signature : Force & sacrifices
+
+La Force augmente les dégâts de chaque attaque, pour tout le combat. Le Soldat de Fer l'accumule (Enflammer, Forme démoniaque), sacrifie ses PV contre de la puissance et Épuise ses cartes faibles pour affûter son deck. Le Sang ardent referme ses plaies après chaque victoire.
+
+---
+
+## 4. Commandes
+
+Les commandes sont identiques sur les cinq cartouches.
+
+| Écran | Bouton | Action |
 |---|---|---|
-| **Croix Directionnelle (◄ / ►)** | Choisir la voie (Gauche, Centre, Droite) | Sélectionner la carte en main / Choisir le monstre cible |
-| **Croix Directionnelle (▲ / ▼)** | Faire défiler les étages de la Tour (1 à 16) | Faire défiler le texte / Examiner les détails de la carte |
-| **Bouton A** | **Entrer dans la salle / Lancer le combat** | **Jouer la carte sélectionnée / Valider l'attaque** |
-| **Bouton B** | Annuler / Retour | Annuler le mode de ciblage de monstre |
-| **Bouton START** | Menu Pause / Options | **Fin de Tour immédiate** |
-| **Bouton R** | Accès rapide inventaire | Fin de Tour alternative |
-| **Bouton L** | Raccourci carte | Boire une Potion du sac |
-| **Bouton SELECT** | **Consulter le Deck & les Reliques** | **Consulter la Pioche & le Cimetière** |
+| Carte | **◄ ►** | Choisir la salle suivante |
+| Carte | **▲ ▼** | Faire défiler la Tour |
+| Carte | **A** | Avancer vers la salle |
+| Combat | **◄ ►** | Sélectionner une carte |
+| Combat | **A** | Jouer la carte (puis choisir la cible si plusieurs ennemis) |
+| Combat | **B** | Annuler le ciblage |
+| Combat | **START / R** | Finir le tour |
+| Carte / Combat | **SELECT** | Registre du deck (B pour revenir) |
+| Menus | **A / B** | Valider / annuler |
 
 ---
 
-## 📺 3. Structure des Écrans de Jeu (Résolution 240 × 160)
+## 5. La Tour et l'arène de combat
 
-### Écran A : La Carte de la Tour (Slay the Spire Original)
-L'écran supérieur affiche le bandeau officiel :
-```
-ETG 1/16 | PV 80/80 (+0B) | 99 G | 10 CARTES
-```
-Au centre, les trois voies d'ascension sont dessinées verticalement avec leurs embranchements :
-* `[M]` : Salle de Monstre Normal.
-* `[?]` : Événement Aléatoire & Mystères de la Tour.
-* `[R]` : Feu de Camp / Repos & Forge de cartes.
-* `[$]` : Boutique du Marchand (Achat de cartes, reliques et épuration du deck).
-* `[E]` : Monstre Élite (Gremlin Nob, Lagavulin).
-* `[T]` : Trésor de mi-parcours (Relique garantie).
-* `[B]` : Boss Gardien de l'Acte.
-
-Le curseur actif `>>> [M] Salle de Monstre (Centre) <<<` indique clairement votre destination. **Appuyez sur A pour engager le combat immédiatement sans temps mort !**
-
-### Écran B : L'Arène de Duel Yu-Gi-Oh (1 à 3 Monstres Ennemis)
-Inspirée des plus grands jeux de cartes sur Game Boy Advance, l'arène de combat organise l'espace de manière claire et percutante :
-
-```
-┌────────────────────────────────────────────────────────┐
-│  [ZONE 1]              [ZONE 2]              [ZONE 3]  │
-│  Cultiste [44/50]      Morpion [18/18]       [K.O.]    │
-│  ! ATK 6               ! 5D+5B                         │
-│                                                        │
-│  [HÉROS] Soldat de Fer   PV 74/80 (+6B)   NRG: [●][●][●]│
-│  Ressource : Force +3    Relique : Sang Ardent         │
-│────────────────────────────────────────────────────────│
-│  [Fracas+] (2E) Attaque | 10 dégâts + 2 Vulnérable     │
-│  Main : [1]  [2]  >[3]<  [4]  [5]                      │
-│  G/D : Carte   A : Jouer   START : Fin de Tour         │
-└────────────────────────────────────────────────────────┘
-```
-* **Zone Haute :** 1 à 3 monstres ennemis placés côte à côte avec leurs jauges de PV, leur Bouclier et leur intention offensive/défensive.
-* **Zone Milieu :** Votre héros avec son sprite personnalisé, ses points de vie, son armure et ses cristaux d'Énergie `[●][●][●]`.
-* **Zone Basse :** Le plateau de cartes Yu-Gi-Oh où votre main est étalée horizontalement. Le curseur `>[3]<` permet de sélectionner instantanément votre sort. Si vous jouez une attaque ciblée sur un groupe de monstres, un pointeur `[V]` apparaît au-dessus de la cible choisie !
+* **La carte de la Tour :** chaque acte compte 16 étages. Choisissez votre chemin parmi les embranchements : combats, élites, évènements mystères `?`, feux de camp, boutiques, trésors, puis le boss de l'acte. Entre les actes, un **Ancien** vous offre ses bénédictions.
+* **L'arène façon Pokémon :** Soldat de Fer apparaît de dos à gauche, les monstres (jusqu'à trois) à droite sur leurs socles, avec leur **intention** au-dessus de la tête. Barres de PV, dégâts flottants et secousses rythment chaque coup.
+* **La main de cartes** s'étale en bas de l'écran : la carte sélectionnée grossit et affiche son effet ; si plusieurs ennemis sont en vie, un curseur de ciblage apparaît.
+* **Récompenses :** après chaque combat, choisissez une carte parmi trois pour enrichir votre deck, et récupérez or et potions.
+* **Feu de camp :** reposez-vous pour soigner vos PV ou **forgez** une carte (amélioration `+`), avec aperçu de la version améliorée.
 
 ---
 
-## 🎨 4. Système de Teintes (Style Pokémon)
+## 6. Les teintes du héros
 
-Lors du démarrage d'une nouvelle tentative, personnalisez votre Soldat de Fer parmi 4 teintes de collection :
-1. **Classique (Rouge Sang) :** L'armure écarlate originelle du guerrier démoniaque.
-2. **Chromatique / Shiny (Flamme Azur) :** Une armure d'acier froid parcourue de braises bleutées spectrales.
-3. **Ténèbres / Shadow (Ombre Démoniaque) :** Une silhouette sombre imprégnée du néant abyssal.
-4. **Dorée / Golden (Or des Enfers) :** Une parure étincelante réservée aux champions ayant vaincu l'Ascension 10.
+Au lancement d'une partie, choisissez la teinte de Soldat de Fer :
 
----
-
-## 🃏 5. Catalogue Officiel des 20 Cartes Communes de l'Édition
-
-Chaque carte peut être améliorée au Feu de Camp (`+`) pour accroître ses dégâts ou réduire son coût.
-
-| N° | Carte | Coût | Type | Effet Standard | Version Améliorée (`+`) |
-|:---:|:---|:---:|:---:|---|---|
-| 01 | **Frappe** | 1E | Attaque | Inflige 6 dégâts à un ennemi. | Inflige **9 dégâts**. |
-| 02 | **Défense** | 1E | Compétence | Confère 5 points d'Armure. | Confère **8 points d'Armure**. |
-| 03 | **Fracas** | 2E | Attaque | Inflige 8 dégâts. Applique 2 Vulnérable. | Inflige **10 dégâts**. Applique **3 Vulnérable**. |
-| 04 | **Onde de Fer** | 1E | Attaque | Confère 5 Armure et inflige 5 dégâts. | Confère **7 Armure** et inflige **7 dégâts**. |
-| 05 | **Balayage** | 1E | Attaque | Inflige 8 dégâts à **TOUS** les ennemis vivants. | Inflige **11 dégâts** à **TOUS** les ennemis. |
-| 06 | **Colère** | 0E | Attaque | Inflige 6 dégâts. Ajoute une copie de Colère dans la défausse. | Inflige **8 dégâts**. |
-| 07 | **Armement** | 1E | Compétence | Confère 5 Armure. Améliore 1 carte en main pour ce combat. | Confère 5 Armure. Améliore **TOUTES les cartes en main**. |
-| 08 | **Manchette** | 2E | Attaque | Inflige 12 dégâts. Applique 2 Faiblesse. | Inflige **14 dégâts**. Applique **3 Faiblesse**. |
-| 09 | **Enflammer** | 1E | Pouvoir | Confère +2 Force permanente pour le combat. | Confère **+3 Force permanente**. |
-| 10 | **Frénésie** | 1E | Attaque | Inflige 4 dégâts 3 fois de suite (synergie Force x3). | Inflige 4 dégâts **4 fois de suite**. |
-| 11 | **Hémokinésie** | 1E | Attaque | Vous perdez 2 PV. Inflige 15 dégâts colossaux. | Vous perdez 2 PV. Inflige **20 dégâts**. |
-| 12 | **Métallisation** | 1E | Pouvoir | À la fin de chaque tour, gagnez automatiquement 3 Armure. | Gagnez **4 Armure** à chaque fin de tour. |
-| 13 | **Placage** | 1E | Attaque | Inflige des dégâts égaux à votre Armure actuelle. | Coût réduit à **0E**. |
-| 14 | **Carnage** | 2E | Attaque | Éthéré. Inflige 20 dégâts massifs. | Inflige **28 dégâts massifs**. |
-| 15 | **Barricade** | 3E | Pouvoir | Votre Armure ne se réinitialise plus au début de votre tour. | Coût réduit à **2E**. |
-| 16 | **Démonisation** | 3E | Pouvoir | Au début de chaque tour, gagnez +2 Force. | Gagnez **+3 Force** à chaque tour. |
-| 17 | **Coup de Tête** | 1E | Attaque | Inflige 9 dégâts. Place une carte de votre défausse au sommet de votre pioche. | Inflige **12 dégâts**. |
-| 18 | **Entaille Double** | 1E | Attaque | Inflige 5 dégâts 2 fois. | Inflige **7 dégâts** 2 fois. |
-| 19 | **Plaie Ouverte** | 1E | Attaque | Inflige 7 dégâts et applique 1 Vulnérable. | Inflige **10 dégâts** et applique **2 Vulnérable**. |
-| 20 | **Mur de Fer** | 2E | Compétence | Confère 15 Armure. Épuisement. | Confère **20 Armure**. |
+1. **Rouge Carmin (Classique)** (`#f80000`) — L'armure rouge sang traditionnelle du Soldat de Fer.
+2. **Flamme Azur (Chromatique)** (`#0000f8`) — Une teinte cyan étincelante née du feu mystique.
+3. **Obsidienne (Ombre)** (`#202020`) — Une armure noir charbon forgée dans les abysses.
+4. **Soleil Radieux (Or)** (`#f8f800`) — Une parure dorée impériale ornée d'éclats solaires.
 
 ---
 
-## ⚔️ 6. Guide de Survie & Stratégie de Duel
+## 7. Cartes phares
 
-1. **La Puissance de Vulnérable :** Fracas inflige Vulnérable (+50% de dégâts reçus). Jouez toujours Fracas en premier avant d'enchaîner avec vos Frappes pour maximiser vos dégâts !
-2. **L'Armement précoce :** Améliorer rapidement vos cartes au Feu de camp transforme votre deck. Priorisez l'amélioration de **Fracas** ou **Balayage**.
-3. **Affronter les groupes d'ennemis :** Lorsque deux ou trois monstres apparaissent, utilisez Balayage pour les affaiblir ensemble ou concentrez vos frappes sur le plus menaçant à l'aide du curseur `[V]`.
-4. **La règle d'or du Sang Ardent :** Vous regagnez 6 PV après chaque victoire. N'hésitez pas à subir quelques points de dégâts mineurs si cela vous permet d'éliminer l'ennemi un tour plus tôt !
+| Carte | Coût | Type | Effet | Amélioré (`+`) |
+|---|:---:|:---:|---|---|
+| ![Heurt](../images/cards/ironclad/bash.webp) **Heurt** | 2 ⚡ | Attaque | Infligez 8 dégâts. Appliquez **Vulnérable** (2). | Infligez 10 dégâts. Appliquez **Vulnérable** (3). |
+| ![Enflammer](../images/cards/ironclad/inflame.webp) **Enflammer** | 1 ⚡ | Pouvoir | Gagnez 2 de **Force**. | Gagnez 3 de **Force**. |
+| ![Forme démoniaque](../images/cards/ironclad/demon_form.webp) **Forme démoniaque** | 3 ⚡ | Pouvoir | Au début de votre tour, gagnez 3 de **Force**. | Au début de votre tour, gagnez 4 de **Force**. |
+| ![Barricade](../images/cards/ironclad/barricade.webp) **Barricade** | 3 ⚡ | Pouvoir | Vous ne perdez plus votre **Armure** au début de votre tour. | Vous ne perdez plus votre **Armure** au début de votre tour. |
+
+---
+
+## 8. Catalogue des 20 cartes communes
+
+Les cartes communes forment le socle de votre deck : ce sont celles que vous verrez le plus souvent en récompense.
+
+| Carte | Coût | Type | Effet | Amélioré (`+`) |
+|---|:---:|:---:|---|---|
+| ![Armement](../images/cards/ironclad/armaments.webp) **Armement** | 1 ⚡ | Compétence | Gagnez 5 d'**Armure**. **Améliorez** une carte dans votre **Main**. | Gagnez 5 d'**Armure**. **Améliorez** TOUTES les cartes dans votre **Main**. |
+| ![Colère](../images/cards/ironclad/anger.webp) **Colère** | 0 ⚡ | Attaque | Infligez 6 dégâts. Ajoutez une copie de cette carte à votre **Défausse**. | Infligez 8 dégâts. Ajoutez une copie de cette carte à votre **Défausse**. |
+| ![Coup de boule](../images/cards/ironclad/headbutt.webp) **Coup de boule** | 1 ⚡ | Attaque | Infligez 9 dégâts. Placez une carte de votre **Défausse** sur le dessus de votre **Pioche**. | Infligez 12 dégâts. Placez une carte de votre **Défausse** sur le dessus de votre **Pioche**. |
+| ![Coup de tonnerre](../images/cards/ironclad/thunderclap.webp) **Coup de tonnerre** | 1 ⚡ | Attaque | Infligez 4 dégâts et appliquez **Vulnérable** (1) à TOUS les ennemis. | Infligez 7 dégâts et appliquez **Vulnérable** (1) à TOUS les ennemis. |
+| ![Épée boomerang](../images/cards/ironclad/sword_boomerang.webp) **Épée boomerang** | 1 ⚡ | Attaque | Infligez 3 dégâts à un ennemi aléatoire 3 fois. | Infligez 3 dégâts à un ennemi aléatoire 4 fois. |
+| ![Frappe du pommeau](../images/cards/ironclad/pommel_strike.webp) **Frappe du pommeau** | 1 ⚡ | Attaque | Infligez 9 dégâts. Piochez 1 carte. | Infligez 10 dégâts. Piochez 2 cartes. |
+| ![Frappe jumelée](../images/cards/ironclad/twin_strike.webp) **Frappe jumelée** | 1 ⚡ | Attaque | Infligez 5 dégâts 2 fois. | Infligez 7 dégâts 2 fois. |
+| ![Frappe perfectionnée](../images/cards/ironclad/perfected_strike.webp) **Frappe perfectionnée** | 2 ⚡ | Attaque | Infligez 6 dégâts. Inflige 2 dégâts supplémentaires pour CHACUNE de vos cartes contenant « Frappe ». | Infligez 6 dégâts. Inflige 3 dégâts supplémentaires pour CHACUNE de vos cartes contenant « Frappe ». |
+| ![Frappe préparatoire](../images/cards/ironclad/setup_strike.webp) **Frappe préparatoire** | 1 ⚡ | Attaque | Infligez 7 dégâts. Gagnez 3 de **Force** jusqu'à la fin du tour. | Infligez 9 dégâts. Gagnez 4 de **Force** jusqu'à la fin du tour. |
+| ![Intimidation](../images/cards/ironclad/tremble.webp) **Intimidation** | 1 ⚡ | Compétence | Appliquez **Vulnérable** (3). **Épuisement**. | Appliquez **Vulnérable** (4). **Épuisement**. |
+| ![Même pas mal](../images/cards/ironclad/shrug_it_off.webp) **Même pas mal** | 1 ⚡ | Compétence | Gagnez 8 d'**Armure**. Piochez 1 carte. | Gagnez 11 d'**Armure**. Piochez 1 carte. |
+| ![Mur de sang](../images/cards/ironclad/blood_wall.webp) **Mur de sang** | 2 ⚡ | Compétence | Perdez 2 PV. Gagnez 16 d'**Armure**. | Perdez 2 PV. Gagnez 20 d'**Armure**. |
+| ![Percée](../images/cards/ironclad/breakthrough.webp) **Percée** | 1 ⚡ | Attaque | Perdez 1 PV. Infligez 9 dégâts à TOUS les ennemis. | Perdez 1 PV. Infligez 13 dégâts à TOUS les ennemis. |
+| ![Plaquage](../images/cards/ironclad/body_slam.webp) **Plaquage** | 1 ⚡ | Attaque | Infligez un montant de dégâts égal à votre **Armure**. | Infligez un montant de dégâts égal à votre **Armure**. |
+| ![Poing en fusion](../images/cards/ironclad/molten_fist.webp) **Poing en fusion** | 1 ⚡ | Attaque | Infligez 10 dégâts. Doublez le nombre d'incidences de **Vulnérable** sur l'ennemi. **Épuisement**. | Infligez 14 dégâts. Doublez le nombre d'incidences de **Vulnérable** sur l'ennemi. **Épuisement**. |
+| ![Provocation](../images/cards/ironclad/taunt.webp) **Provocation** | 1 ⚡ | Compétence | Gagnez 6 d'**Armure**. Appliquez **Vulnérable** (1). | Gagnez 7 d'**Armure**. Appliquez **Vulnérable** (2). |
+| ![Ravage](../images/cards/ironclad/havoc.webp) **Ravage** | 1 ⚡ | Compétence | Jouez la carte du dessus de votre **Pioche** et **Épuisez**-la. | Jouez la carte du dessus de votre **Pioche** et **Épuisez**-la. |
+| ![Scorie](../images/cards/ironclad/cinder.webp) **Scorie** | 2 ⚡ | Attaque | Infligez 18 dégâts. **Épuisez** une carte aléatoire. | Infligez 24 dégâts. **Épuisez** une carte aléatoire. |
+| ![Vague de fer](../images/cards/ironclad/iron_wave.webp) **Vague de fer** | 1 ⚡ | Attaque | Gagnez 5 d'**Armure**. Infligez 5 dégâts. | Gagnez 7 d'**Armure**. Infligez 7 dégâts. |
+| ![Virilité](../images/cards/ironclad/true_grit.webp) **Virilité** | 1 ⚡ | Compétence | Gagnez 7 d'**Armure**. **Épuisez** 1 carte au hasard. | Gagnez 9 d'**Armure**. **Épuisez** 1 carte. |
+
+L'édition compte **90 cartes** au total : 3 de base, 20 communes, 38 peu communes, 27 rares et 2 anciennes. Retrouvez-les toutes dans le [tome des cartes](09_cartes_ironclad.md).
+
+---
+
+## 9. Conseils de survie
+
+1. Ouvrez avec **Heurt** : Vulnérable augmente de 50 % les dégâts reçus par l'ennemi, enchaînez ensuite vos Frappes.
+2. Le **Sang ardent** rend 6 PV après chaque combat : un peu de dégâts pour finir un combat un tour plus tôt est souvent rentable.
+3. Au feu de camp, améliorez d'abord **Heurt** et vos cartes de Force : elles profitent à toutes vos attaques.
+4. Contre les groupes, privilégiez les attaques qui touchent TOUS les ennemis (Percée, Coup de tonnerre).
+
+---
+
+## 10. Sauvegarde, Ascension et encyclopédie
+
+* **Sauvegarde sur la cartouche :** la partie est enregistrée automatiquement en SRAM à chaque salle ; choisissez **Continuer** à l'écran titre pour reprendre là où vous vous étiez arrêté. Les réglages (volume de la musique et des effets) sont conservés.
+* **Ascension 0 à 10 :** chaque victoire débloque un niveau de difficulté supplémentaire (élites plus fréquents, monstres plus robustes, soins réduits…).
+* **Encyclopédie :** cartes, reliques, monstres, potions et Anciens rencontrés sont consignés au fil de vos parties.
+
+---
+
+*Slay the GBA existe en cinq éditions. Les quatre autres : La Silencieuse, Le Défectueux, Le Régent et La Nécrolieuse. [Voir la collection des livrets](README.md).*

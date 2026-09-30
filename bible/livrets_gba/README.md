@@ -1,69 +1,50 @@
-# 🎮 Collection des Livrets Officiels de Jeu Game Boy Advance — Slay the Spire 2
+# Collection des livrets — Slay the GBA, 5 éditions
 
 ```
-========================================================================================
-                      NINTENDO® GAME BOY ADVANCE™ INSTRUCTION BOOKLET
-                       COLLECTION OFFICIELLE SLAY THE GBA — 5 ÉDITIONS
-========================================================================================
+====================================================================================
+   SLAY THE GBA — COLLECTION DES LIVRETS D'INSTRUCTIONS · 5 ÉDITIONS
+====================================================================================
 ```
 
-> **Sceau Officiel de Qualité Nintendo® :**  
-> Ce sceau atteste que le logiciel a satisfait aux critères stricts d'excellence, de compatibilité matérielle et d'ergonomie définis pour la console portable Game Boy Advance™.
+Slay the GBA réinvente **Slay the Spire 2** sur Game Boy Advance, à la manière des grandes séries portables
+vendues en plusieurs versions : **une cartouche par héros**. Chaque édition a son héros, son deck, sa relique
+de départ, sa couleur, sa zone et sa mécanique signature. La Tour, les monstres, les reliques partagées, les
+potions, les évènements et les Anciens sont communs aux cinq.
 
-Bienvenue dans la collection officielle des manuels d'instruction pour **Slay the Spire 2 sur Game Boy Advance** (`slay_the_gba`).  
-Fidèle à la tradition des grandes séries portables (telles que Pokémon, Fire Emblem ou Yu-Gi-Oh!), chaque cartouche de jeu correspond à un héros unique avec son gameplay, son moteur de duel Yu-Gi-Oh dédié, sa palette de couleurs personnalisée et son catalogue exclusif de 20 cartes communes.
+* **Soldat de Fer** — *La force brute, forgée dans le sang.*
+* **La Silencieuse** — *Frappez sans bruit. Laissez le venin finir le travail.*
+* **Le Défectueux** — *Un automate, trois emplacements, une infinité de circuits.*
+* **Le Régent** — *Une couronne, des étoiles, et la Tour à genoux.*
+* **La Nécrolieuse** — *Elle ne combat jamais seule.*
+
+## Charte des 5 éditions
+
+| Réf. | Édition | Couleur | Zone | PV | Relique de départ | Mécanique | Difficulté | Livret |
+|---|---|---|---|:---:|---|---|:---:|:---:|
+| `SLAYIRON` | **Édition Soldat de Fer** (*The Ironclad*) | Rouge Sang (`#c82030`) | Forges du Carnage | 80 PV | Sang ardent | Force & sacrifices | ★☆☆ | [Livret](livret_ironclad.md) |
+| `SLAYSILENT` | **Édition La Silencieuse** (*The Silent*) | Vert Venin (`#40a048`) | Marais du Venin | 70 PV | Anneau du serpent | Poison & surins | ★★☆ | [Livret](livret_silent.md) |
+| `SLAYDEFECT` | **Édition Le Défectueux** (*The Defect*) | Bleu Saphir (`#3870d8`) | Complexe Astral | 75 PV | Noyau fissuré | Orbes & Focalisation | ★★☆ | [Livret](livret_defect.md) |
+| `SLAYREGENT` | **Édition Le Régent** (*The Regent*) | Or Solaire (`#e89828`) | Palais Souverain | 75 PV | Droit divin | Étoiles & Lame souveraine | ★★★ | [Livret](livret_regent.md) |
+| `SLAYNECRO` | **Édition La Nécrolieuse** (*The Necrobinder*) | Violet Spectral (`#c860b8`) | Crypte d'Outre-Tombe | 65 PV | Phylactère enchaîné | Titos & Fatalité | ★★★ | [Livret](livret_necrobinder.md) |
+
+Toutes les éditions partagent : 99 pièces d'or au départ, 3 ⚡ par tour, 3 emplacements de
+potion, 4 teintes de héros, l'Ascension 0 à 10 et la sauvegarde sur cartouche.
+
+## Commandes communes
+
+| Écran | Bouton | Action |
+|---|---|---|
+| Carte | **◄ ►** | Choisir la salle suivante |
+| Carte | **▲ ▼** | Faire défiler la Tour |
+| Carte | **A** | Avancer vers la salle |
+| Combat | **◄ ►** | Sélectionner une carte |
+| Combat | **A** | Jouer la carte (puis choisir la cible si plusieurs ennemis) |
+| Combat | **B** | Annuler le ciblage |
+| Combat | **START / R** | Finir le tour |
+| Carte / Combat | **SELECT** | Registre du deck (B pour revenir) |
+| Menus | **A / B** | Valider / annuler |
 
 ---
 
-## 📚 Index des 5 Livrets de Jeu GBA
-
-| Réf. Cartouche | Édition & Héros | Couleur Cartouche | Livret Officiel | Ressource Clé |
-|:---:|:---|:---:|:---:|:---|
-| `AGB-P-ASGI-FRA` | **Soldat de Fer** *(Ironclad)* | 🔴 Rouge Sang | [Consulter le Livret](file:///Users/alexandre/Projets/perso/slay_the_gba/bible/livrets_gba/livret_ironclad.md) | Sang Ardent & Force Brute |
-| `AGB-P-ASGS-FRA` | **La Silencieuse** *(Silent)* | 🟢 Vert Venin | [Consulter le Livret](file:///Users/alexandre/Projets/perso/slay_the_gba/bible/livrets_gba/livret_silent.md) | Venin Léthal & Poignards |
-| `AGB-P-ASGD-FRA` | **Le Défectueux** *(Defect)* | 🔵 Bleu Saphir | [Consulter le Livret](file:///Users/alexandre/Projets/perso/slay_the_gba/bible/livrets_gba/livret_defect.md) | Orbes Élémentaires & Évocation |
-| `AGB-P-ASGR-FRA` | **Le Régent** *(Regent)* | 🟣 Pourpre Royal | [Consulter le Livret](file:///Users/alexandre/Projets/perso/slay_the_gba/bible/livrets_gba/livret_regent.md) | Étoiles Souveraines & Gloire |
-| `AGB-P-ASGN-FRA` | **La Nécrolieuse** *(Necrobinder)* | ⚫ Noir Osseux | [Consulter le Livret](file:///Users/alexandre/Projets/perso/slay_the_gba/bible/livrets_gba/livret_necrobinder.md) | Âmes & Familier Osty |
-
----
-
-## 🕹️ Prise en Main Universelle Game Boy Advance (240 × 160 pixels)
-
-```
-        ┌─────────────────────────────────────────────────────────┐
-        │  [L] Bouton Gachette Gauche     [R] Bouton Gachette D.  │
-        │                                                         │
-        │       ┌──┐                                              │
-        │    ┌──┘  └──┐                 ÉCRAN TFT COULEUR         │
-        │    │   ▲    │                   (240 x 160 px)   (B)    │
-        │    │ ◄   ►  │                                      (A)  │
-        │    │   ▼    │              [SELECT]     [START]         │
-        │    └──┐  ┌──┘                                           │
-        │       └──┘                                              │
-        └─────────────────────────────────────────────────────────┘
-```
-
-### 1. Sur la Carte de la Tour (Style Slay the Spire Original)
-* **Croix Directionnelle Haut / Bas :** Faire défiler la vue verticale de la Tour (16 étages).
-* **Croix Directionnelle Gauche / Droite :** Sélectionner votre prochain itinéraire parmi les embranchements disponibles (Voie Gauche, Centre, Droite).
-* **Bouton A :** **Entrer immédiatement dans la salle sélectionnée** (lancement instantané des combats et des événements !).
-* **Bouton SELECT :** Consulter le registre complet de votre Deck et de vos Reliques.
-* **Bouton START :** Pause & Options de sauvegarde.
-
-### 2. Dans l'Arène de Duel Yu-Gi-Oh (1 à 3 Monstres Ennemis)
-* **Croix Directionnelle Gauche / Droite :** Naviguer à travers votre main de cartes posée horizontalement au bas de l'écran.
-* **Bouton A :** 
-  * Si la carte cible un monstre unique et que plusieurs ennemis sont vivants : **active le mode de ciblage** (curseur `[▼]`). Choisissez l'ennemi avec Gauche/Droite, puis validez avec A.
-  * Si la carte est de zone (AoE), défensive ou qu'il ne reste qu'un ennemi : **joue la carte instantanément** !
-* **Bouton B :** Annuler la sélection de cible et revenir au choix des cartes.
-* **Bouton START ou Bouton R :** **Fin de Tour immédiate** (les monstres ennemis exécutent leurs intentions).
-* **Bouton SELECT :** Consulter votre Cimetière / Défausse et votre Deck restant.
-
----
-
-## 💾 Système de Sauvegarde SRAM & 3 Profils
-Chaque cartouche intègre une puce de mémoire statique non-volatile (SRAM 32 Ko) gérant :
-1. **Trois fichiers d'aventuriers indépendants** (Profils A, B, C).
-2. **Sauvegarde automatique par point de contrôle (Autosave)** à chaque salle franchie.
-3. **Encyclopédie vivante (Codex & Compendium)** débloquée au fil des découvertes (cartes jouées, reliques obtenues, monstres vaincus, potions consommées).
-4. **Ascension 0 à 10** conservée et débloquée pour chaque palier triomphé.
+*Ces livrets sont générés par `scripts/build_livrets.py` à partir de `scripts/editions.py` et des données de la
+bible : modifiez ces sources plutôt que les fichiers Markdown.*
