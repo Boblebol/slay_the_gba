@@ -1,4 +1,5 @@
 #include "engine/run.h"
+#include "engine/relic.h"
 #include <algorithm>
 
 namespace engine {
@@ -140,11 +141,15 @@ void RunManager::enter_room(int node_index) {
         case RoomType::REST_SITE:
             phase = RunPhase::CAMPFIRE;
             break;
-        case RoomType::TREASURE:
+        case RoomType::TREASURE: {
             gold += 50;
-            add_relic("VAJRA"); // Gain powerful relic in chest
+            std::string_view relic = draw_treasure_relic();
+            if (!relic.empty()) {
+                add_relic(relic);
+            }
             phase = RunPhase::TREASURE;
             break;
+        }
         case RoomType::SHOP:
             open_shop();
             break;
@@ -204,6 +209,12 @@ bool RunManager::remove_card_from_deck(int deck_index) {
 
 void RunManager::open_shop() {
     current_shop.generate(character, next_random(), card_removals_count);
+    // Relics already owned are shown as sold out: a relic is never bought twice.
+    for (size_t i = 0; i < current_shop.relics.size(); ++i) {
+        if (has_relic(current_shop.relics[i].relic_id)) {
+            current_shop.relics[i].purchased = true;
+        }
+    }
     phase = RunPhase::SHOP;
 }
 
@@ -308,6 +319,34 @@ bool RunManager::has_relic(std::string_view relic_id) const {
         if (relics[i] == relic_id) return true;
     }
     return false;
+}
+
+std::string_view RunManager::draw_treasure_relic() {
+    // Relics with an implemented effect come first, then any other common relic; never one already owned.
+    constexpr std::string_view ACTIVE_RELICS[] = { "VAJRA", "ANCHOR" };
+    FixedVector<std::string_view, 2> active;
+    for (std::string_view id : ACTIVE_RELICS) {
+        if (!has_relic(id)) active.push_back(id);
+    }
+    if (!active.empty()) {
+        return active[next_random() % active.size()];
+    }
+
+    auto is_candidate = [this](const RelicData& relic) {
+        return relic.rarity == RelicRarity::COMMON && relic.pool == "Shared" && !has_relic(relic.id);
+    };
+    std::span<const RelicData> all = get_all_relics();
+    uint32_t count = 0;
+    for (const RelicData& relic : all) {
+        if (is_candidate(relic)) ++count;
+    }
+    if (count == 0) return {};
+
+    uint32_t pick = next_random() % count;
+    for (const RelicData& relic : all) {
+        if (is_candidate(relic) && pick-- == 0) return relic.id;
+    }
+    return {};
 }
 
 void RunManager::apply_combat_start_relics() {
