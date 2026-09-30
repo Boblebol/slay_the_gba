@@ -8,6 +8,8 @@
 #include "bn_regular_bg_items_bg_gameover.h"
 #include "bn_regular_bg_items_bg_victory.h"
 
+#include "engine/save_system.h"
+
 #include "gba/assets.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
@@ -47,6 +49,18 @@ public:
                       Align::CENTER, TextColor::WHITE);
 
         const engine::RunManager& run = context.run;
+        engine::SaveManager& save = engine::SaveManager::instance();
+
+        // The run is over: remove it from the cartridge and update the profile statistics.
+        if(victory)
+        {
+            save.record_victory(run.character, run.ascension_level);
+        }
+        else
+        {
+            save.record_defeat();
+        }
+
         TextLine stats;
         bn::ostringstream stream(stats);
         stream << "Acte " << int(run.current_act) << "  Étage " << int(run.current_floor) << "  "

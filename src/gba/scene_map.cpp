@@ -15,6 +15,8 @@
 #include "bn_sprite_items_map_node_treasure.h"
 #include "bn_sprite_items_map_path_dot.h"
 
+#include "engine/save_system.h"
+
 #include "gba/assets.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
@@ -71,6 +73,12 @@ public:
         _cursor.set_z_order(Z_HUD);
         _ctx.nav.reset_to_player_floor();
         _cam = _focus_world_y();
+
+        // Checkpoint between rooms: "Continuer" on the title screen resumes from here.
+        if(_run.phase == engine::RunPhase::MAP_NAVIGATION)
+        {
+            engine::SaveManager::instance().autosave_run(_run);
+        }
         _hints.set(0, 72, "A Entrer  ◄► Route  ▲▼ Carte  SEL Deck", Align::CENTER, TextColor::GRAY);
 
         if(! _ctx.map_toast.empty())
