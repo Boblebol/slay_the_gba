@@ -55,7 +55,7 @@ La Nintendo Game Boy Advance dispose d'une résolution fixe de **240 × 160 pixe
 
 ## 3. 🏗️ Architecture Logicielle & Structures C++20
 
-L'architecture est intégrée dans le répertoire [`include/engine/`](file:///Users/alexandre/Projets/perso/slay_the_gba/include/engine/) pour respecter le découpage existant de `slay_the_gba`.
+L'architecture est intégrée dans le répertoire [`include/engine/`](../include/engine/) pour respecter le découpage existant de `slay_the_gba`.
 
 ### `include/engine/ancient_types.h`
 

@@ -1,114 +1,152 @@
-# 🔵 Livret d'Instruction Officiel — Slay the Spire 2 : Édition Le Défectueux
+# Livret d'instructions — Slay the GBA : Édition Le Défectueux
 
 ```
-========================================================================================
-                      NINTENDO® GAME BOY ADVANCE™ INSTRUCTION BOOKLET
-                  ÉDITION LE DÉFECTUEUX — RÉFÉRENCE : AGB-P-ASGD-FRA
-========================================================================================
+====================================================================================
+   SLAY THE GBA — LIVRET D'INSTRUCTIONS
+   ÉDITION LE DÉFECTUEUX · CARTOUCHE slay_defect.gba · RÉF. SLAYDEFECT
+====================================================================================
 ```
 
-> **Sceau Officiel de Qualité Nintendo® :**  
-> Ce livret officiel garantit l'authenticité et la fidélité de votre cartouche Game Boy Advance *Slay the Spire 2 — Édition Le Défectueux*. Conservez ce manuel pour comprendre la canalisation des orbes, les déclenchements passifs et la libération foudroyante par évocation.
+> **Un automate, trois emplacements, une infinité de circuits.**
+> Le héros des ingénieurs : chaque orbe canalisé travaille pour vous, tour après tour. Montez votre Focalisation, alignez foudre et glace, et regardez la machine s'emballer.
+
+| Cartouche | Couleur | Zone | Difficulté |
+|---|---|---|---|
+| `slay_defect.gba` (réf. `SLAYDEFECT`) | Bleu Saphir (`#3870d8`) | Complexe Astral | ★★☆ Intermédiaire |
 
 ---
 
-## 📜 1. Histoire & Contexte du Défectueux
+## 1. Histoire : Le Défectueux, automate de combat éveillé
 
-Automate de combat conçu pour purger la Tour, **Le Défectueux** (*The Defect*) a développé une conscience propre à la suite d'une défaillance dans ses sous-systèmes de ciblage.  
-Alimenté par un cœur d'énergie instable, il combat en lévitation en canalisant jusqu'à 3 orbes élémentaires qui orbitent autour de son châssis en titane. Ses armes combinent la foudre statique, le givre protecteur, le plasma survolté et les ondes ténébreuses.
+Automate conçu pour purger la Tour, le Défectueux a développé une conscience propre après une défaillance de ses sous-systèmes de ciblage. Alimenté par un noyau fissuré, il fait graviter autour de son châssis des orbes de foudre, de givre, de ténèbres et de plasma.
 
-* **Points de Vie Initiaux :** 75 PV.
-* **Or de Départ :** 99 Pièces d'or.
-* **Relique de Départ :** **Noyau Fracturé** (*Cracked Core*) — Au début de chaque combat, **canalise immédiatement 1 Orbe de Foudre** !
+*Idéal pour les joueurs qui aiment planifier, optimiser et voir un moteur tourner tout seul.*
 
 ---
 
-## ⚡ 2. La Mécanique des 4 Orbes Élémentaires
+## 2. Fiche du héros
 
-Le Défectueux possède 3 emplacements d'orbes au-dessus de sa tête. Les orbes fonctionnent selon deux modes :
-1. **Effet Passif :** Se déclenche automatiquement à chaque fin de tour tant que l'orbe est en orbite.
-2. **Effet d'Évocation (*Evoke*) :** Lorsque vos 3 emplacements sont pleins et que vous canalisez un nouvel orbe, l'orbe le plus ancien est expulsé et libère sa puissance maximale ! (La carte **Double Évocation** permet également de déclencher l'évocation immédiatement).
+* **Nom :** Le Défectueux (*The Defect*)
+* **Points de vie :** 75 PV
+* **Or de départ :** 99 pièces d'or
+* **Énergie :** 3 ⚡ par tour
+* **Emplacements de potion :** 3
 
-| Type d'Orbe | Symbole | Effet Passif (Fin de Tour) | Effet d'Évocation (Expulsion) |
-|---|:---:|---|---|
-| **Foudre** *(Lightning)* | ⚡ | Inflige **3 dégâts** à un ennemi aléatoire. | Inflige **8 dégâts** massifs à un ennemi ! |
-| **Glace** *(Frost)* | ❄️ | Confère **2 points d'Armure**. | Confère **5 points d'Armure** immédiate. |
-| **Plasma** | 🔮 | Confère **+1 Énergie** au début de votre tour. | Confère **+2 Énergie** instantanément ! |
-| **Ténèbres** *(Dark)* | 🌑 | Amasse **+6 points de charge ténébreuse**. | Décharge la totalité des dégâts accumulés ! |
+### Relique de départ : ![Noyau fissuré](../images/relics/cracked_core.webp) Noyau fissuré
+
+> Au début de chaque combat, **Canalisez** 1 **Orbe kéraunique**.
+
+### Deck de départ (10 cartes)
+
+* **4×** Frappe — Infligez 6 dégâts.
+* **4×** Défense — Gagnez 5 d'**Armure**.
+* **1×** Éclair — **Canalisez** 1 **Orbe kéraunique**.
+* **1×** Activation double — **Activez** votre Orbe le plus à droite 2 fois.
 
 ---
 
-## 🎮 3. Maniement des Commandes Game Boy Advance
+## 3. Mécanique signature : Orbes & Focalisation
 
-| Bouton | Action sur la Carte de la Tour | Action dans l'Arène Yu-Gi-Oh |
+Le Défectueux Canalise des Orbes dans ses emplacements. Chaque orbe agit seul à la fin du tour (kéraunique : dégâts, glaciaire : Armure, ténébreux : charge, plasma : énergie) et libère un effet plus fort quand il est Activé ou expulsé par un nouvel orbe. La Focalisation renforce tous les orbes à la fois.
+
+---
+
+## 4. Commandes
+
+Les commandes sont identiques sur les cinq cartouches.
+
+| Écran | Bouton | Action |
 |---|---|---|
-| **Croix Directionnelle (◄ / ►)** | Choisir la voie sur la carte | Naviguer entre vos cartes en main / Pointer le monstre à foudroyer |
-| **Croix Directionnelle (▲ / ▼)** | Parcourir verticalement la Tour | Examiner la description des cartes |
-| **Bouton A** | **Entrer dans la salle sélectionnée** | **Canaliser / Jouer la carte sélectionnée** |
-| **Bouton B** | Retour | Annuler le mode de ciblage |
-| **Bouton START** | Pause & Sauvegarde | **Fin de Tour immédiate** |
-| **Bouton SELECT** | **Consulter le Deck** | **Consulter les Orbes & la Défausse** |
+| Carte | **◄ ►** | Choisir la salle suivante |
+| Carte | **▲ ▼** | Faire défiler la Tour |
+| Carte | **A** | Avancer vers la salle |
+| Combat | **◄ ►** | Sélectionner une carte |
+| Combat | **A** | Jouer la carte (puis choisir la cible si plusieurs ennemis) |
+| Combat | **B** | Annuler le ciblage |
+| Combat | **START / R** | Finir le tour |
+| Carte / Combat | **SELECT** | Registre du deck (B pour revenir) |
+| Menus | **A / B** | Valider / annuler |
 
 ---
 
-## 📺 4. Structure des Écrans de Jeu (Résolution 240 × 160)
+## 5. La Tour et l'arène de combat
 
-```
-┌────────────────────────────────────────────────────────┐
-│  [ZONE 1]              [ZONE 2]              [ZONE 3]  │
-│  Cultiste [36/50]      Ver Mâchoire [28/42]  [K.O.]    │
-│  ! ATK 6               ! 7D+5B                         │
-│                                                        │
-│  [HÉROS] Le Défectueux   PV 72/75 (+8B)   NRG: [●][●][●]│
-│  Orbes Actifs : [⚡FOUDRE] [❄️GLACE] [⚡FOUDRE]          │
-│────────────────────────────────────────────────────────│
-│  [Double Évocation+] (0E) | Évoque l'orbe frontal 2x   │
-│  Main : [1]  [2]  >[3]<  [4]  [5]                      │
-│  G/D : Carte   A : Jouer   START : Fin de Tour         │
-└────────────────────────────────────────────────────────┘
-```
-L'arène Yu-Gi-Oh affiche en direct l'alignement de vos 3 orbes élémentaires au milieu de l'écran, vous permettant d'anticiper la prochaine évocation !
+* **La carte de la Tour :** chaque acte compte 16 étages. Choisissez votre chemin parmi les embranchements : combats, élites, évènements mystères `?`, feux de camp, boutiques, trésors, puis le boss de l'acte. Entre les actes, un **Ancien** vous offre ses bénédictions.
+* **L'arène façon Pokémon :** Le Défectueux apparaît de dos à gauche, les monstres (jusqu'à trois) à droite sur leurs socles, avec leur **intention** au-dessus de la tête. Barres de PV, dégâts flottants et secousses rythment chaque coup.
+* **La main de cartes** s'étale en bas de l'écran : la carte sélectionnée grossit et affiche son effet ; si plusieurs ennemis sont en vie, un curseur de ciblage apparaît.
+* **Récompenses :** après chaque combat, choisissez une carte parmi trois pour enrichir votre deck, et récupérez or et potions.
+* **Feu de camp :** reposez-vous pour soigner vos PV ou **forgez** une carte (amélioration `+`), avec aperçu de la version améliorée.
 
 ---
 
-## 🎨 5. Système de Teintes (Style Pokémon)
+## 6. Les teintes du héros
 
-1. **Classique (Bleu Saphir) :** Le châssis bleu cobalt et l'œil optique doré original.
-2. **Chromatique / Shiny (Néon Améthyste) :** Une finition pourpre luminescente aux circuits ultraviolets.
-3. **Ténèbres / Shadow (Cobalt Défaillant) :** Métal noirci et étincelles pourpres trahissant un dysfonctionnement critique.
-4. **Dorée / Golden (Orbe d'Or Ancien) :** Châssis plaqué d'or solaire réservé aux vainqueurs de l'Ascension 10.
+Au lancement d'une partie, choisissez la teinte de Le Défectueux :
 
----
-
-## 🃏 6. Catalogue Officiel des 20 Cartes Communes de l'Édition
-
-| N° | Carte | Coût | Type | Effet Standard | Version Améliorée (`+`) |
-|:---:|:---|:---:|:---:|---|---|
-| 01 | **Frappe** | 1E | Attaque | Inflige 6 dégâts à un ennemi. | Inflige **9 dégâts**. |
-| 02 | **Défense** | 1E | Compétence | Confère 5 points d'Armure. | Confère **8 points d'Armure**. |
-| 03 | **Étincelle** (*Zap*) | 1E | Compétence | Canalise 1 Orbe de Foudre. | Coût réduit à **0E** ! |
-| 04 | **Double Évocation**| 1E | Compétence | Déclenche l'effet d'évocation de votre premier orbe **2 fois**. | Coût réduit à **0E** ! |
-| 05 | **Rayon Froid** | 1E | Attaque | Inflige 6 dégâts. Canalise 1 Orbe de Glace. | Inflige **9 dégâts**. Canalise 1 Orbe de Glace. |
-| 06 | **Faisceau Énergétique**| 0E | Attaque | Inflige 4 dégâts. | Inflige **6 dégâts**. |
-| 07 | **Surcharge Statique** | 1E | Attaque | Inflige 7 dégâts. Si vous avez un orbe de foudre, inflige 7 dégâts de plus. | Inflige **10 dégâts (+10)**. |
-| 08 | **Compilation Driver** | 1E | Attaque | Inflige 7 dégâts. Pioche 1 carte par type d'orbe différent actif. | Inflige **10 dégâts**. |
-| 09 | **Glaçon** (*Cold Snap*)| 1E | Attaque | Inflige 6 dégâts. Canalise 1 Orbe de Glace. | Inflige **9 dégâts**. |
-| 10 | **Batterie** | 1E | Attaque | Inflige 7 dégâts. Confère +1 Énergie au tour suivant. | Inflige **10 dégâts**. |
-| 11 | **Chaos Électrique** | 1E | Compétence | Canalise 1 orbe aléatoire (Foudre, Glace ou Plasma). | Canalise **2 orbes aléatoires** ! |
-| 12 | **Barrière de Bouclier**| 1E | Compétence | Confère 7 Armure. Canalise 1 Orbe de Glace. | Confère **10 Armure**. |
-| 13 | **Orbe Noir** | 1E | Compétence | Canalise 1 Orbe de Ténèbres. | Canalise 1 Orbe de Ténèbres (+6 charge initiale). |
-| 14 | **Tempête** | 1E | Pouvoir | Chaque fois que vous jouez un Pouvoir, canalise 1 Orbe de Foudre. | Canalise immédiatement 1 Foudre en arrivant en jeu. |
-| 15 | **Défragmentation** | 1E | Pouvoir | Confère +1 Focalisation permanente (augmente passifs et évocations de tous les orbes). | Confère **+2 Focalisation permanente**. |
-| 16 | **Condensateur** | 1E | Pouvoir | Débloque 2 emplacements d'orbes supplémentaires (passe de 3 à 5 orbes !). | Débloque **3 emplacements supplémentaires** (6 orbes !). |
-| 17 | **Boucle Temporelle** | 1E | Pouvoir | Au début de chaque tour, déclenche l'effet passif de votre premier orbe. | Déclenche le passif **2 fois** ! |
-| 18 | **Balayage Électrique**| 2E | Attaque | Inflige 10 dégâts à TOUS les ennemis et canalise 1 Foudre. | Inflige **14 dégâts** à TOUS les ennemis. |
-| 19 | **Surchauffe** | 0E | Compétence | Gagnez +2 Énergie immédiatement. Place 1 carte Brûlure dans la défausse. | Gagnez **+3 Énergie**. |
-| 20 | **Champ de Force** | 4E | Compétence | Confère 12 Armure. Coûte 1E de moins pour chaque Pouvoir actif. | Confère **16 Armure**. |
+1. **Bleu Électrique (Classique)** (`#00f8f8`) — Le châssis automatique en cobalt forgé.
+2. **Néon Cyberpunk (Chromatique)** (`#f88000`) — Une finition orange vif surchargée d'énergie.
+3. **Néant Sidéral (Ombre)** (`#101030`) — Un alliage noir mat dénué de tout reflet lumineux.
+4. **Cuivre Antique (Or)** (`#f8b000`) — Une structure en laiton doré restaurée d'un âge perdu.
 
 ---
 
-## ⚔️ 7. Guide de Survie & Stratégie de Duel
+## 7. Cartes phares
 
-1. **La Puissance de la Focalisation :** La carte **Défragmentation** augmente de +1 ou +2 l'efficacité de TOUS vos orbes. Un orbe de Foudre passe de 3 à 5 dégâts passifs par tour, et de 8 à 10 en évocation !
-2. **Glace pour la Défense Inviolable :** En canalisant 2 ou 3 orbes de Glace avec une bonne Focalisation, vous générez entre 10 et 15 points d'Armure automatiques à chaque tour sans dépenser la moindre énergie.
-3. **Le combo Double Évocation :** Réservez votre carte **Double Évocation (0E)** pour votre orbe de Foudre ou de Ténèbres frontal pour abattre un monstre menaçant en un seul tour !
+| Carte | Coût | Type | Effet | Amélioré (`+`) |
+|---|:---:|:---:|---|---|
+| ![Éclair](../images/cards/defect/zap.webp) **Éclair** | 1 ⚡ | Compétence | **Canalisez** 1 **Orbe kéraunique**. | **Canalisez** 1 **Orbe kéraunique**. |
+| ![Foudre en boule](../images/cards/defect/ball_lightning.webp) **Foudre en boule** | 1 ⚡ | Attaque | Infligez 7 dégâts. **Canalisez** 1 **Orbe kéraunique**. | Infligez 10 dégâts. **Canalisez** 1 **Orbe kéraunique**. |
+| ![Glacier](../images/cards/defect/glacier.webp) **Glacier** | 2 ⚡ | Compétence | Gagnez 6 d'**Armure**. **Canalisez** 2 **Orbes glaciaires**. | Gagnez 9 d'**Armure**. **Canalisez** 2 **Orbes glaciaires**. |
+| ![Forme résonnante](../images/cards/defect/echo_form.webp) **Forme résonnante** | 3 ⚡ | Pouvoir | **Éthéré**. La première carte que vous jouez chaque tour est jouée une fois supplémentaire. | La première carte que vous jouez chaque tour est jouée une fois supplémentaire. |
+
+---
+
+## 8. Catalogue des 20 cartes communes
+
+Les cartes communes forment le socle de votre deck : ce sont celles que vous verrez le plus souvent en récompense.
+
+| Carte | Coût | Type | Effet | Amélioré (`+`) |
+|---|:---:|:---:|---|---|
+| ![Barrage](../images/cards/defect/barrage.webp) **Barrage** | 1 ⚡ | Attaque | Infligez 5 dégâts pour chaque Orbe **Canalisé**. | Infligez 7 dégâts pour chaque Orbe **Canalisé**. |
+| ![Bond](../images/cards/defect/leap.webp) **Bond** | 1 ⚡ | Compétence | Gagnez 9 d'**Armure**. | Gagnez 12 d'**Armure**. |
+| ![Boost](../images/cards/defect/boost_away.webp) **Boost** | 0 ⚡ | Compétence | Gagnez 6 d'**Armure**. Ajoutez **Hébété** à votre **Défausse**. | Gagnez 9 d'**Armure**. Ajoutez **Hébété** à votre **Défausse**. |
+| ![Compilateur de pilote](../images/cards/defect/compile_driver.webp) **Compilateur de pilote** | 1 ⚡ | Attaque | Infligez 7 dégâts. Piochez 1 carte pour chaque Orbe unique. | Infligez 10 dégâts. Piochez 1 carte pour chaque Orbe unique. |
+| ![Correctif](../images/cards/defect/hotfix.webp) **Correctif** | 0 ⚡ | Compétence | Gagnez 2 de **Focalisation** ce tour. **Épuisement**. | Gagnez 2 de **Focalisation** ce tour. |
+| ![Encrassage](../images/cards/defect/gunk_up.webp) **Encrassage** | 1 ⚡ | Attaque | Infligez 4 dégâts 3 fois. Ajoutez **Englué** à votre **Défausse**. | Infligez 5 dégâts 3 fois. Ajoutez **Englué** à votre **Défausse**. |
+| ![Faisceau circulaire](../images/cards/defect/sweeping_beam.webp) **Faisceau circulaire** | 1 ⚡ | Attaque | Infligez 6 dégâts à TOUS les ennemis. Piochez 1 carte. | Infligez 9 dégâts à TOUS les ennemis. Piochez 1 carte. |
+| ![Foudre en boule](../images/cards/defect/ball_lightning.webp) **Foudre en boule** | 1 ⚡ | Attaque | Infligez 7 dégâts. **Canalisez** 1 **Orbe kéraunique**. | Infligez 10 dégâts. **Canalisez** 1 **Orbe kéraunique**. |
+| ![Frappe dynamique](../images/cards/defect/momentum_strike.webp) **Frappe dynamique** | 1 ⚡ | Attaque | Infligez 11 dégâts. Réduisez le coût de cette carte à 0 ⚡. | Infligez 15 dégâts. Réduisez le coût de cette carte à 0 ⚡. |
+| ![Frappe focalisée](../images/cards/defect/focused_strike.webp) **Frappe focalisée** | 1 ⚡ | Attaque | Infligez 9 dégâts. Gagnez 1 de **Focalisation** jusqu'à la fin du tour. | Infligez 11 dégâts. Gagnez 2 de **Focalisation** jusqu'à la fin du tour. |
+| ![Griffure](../images/cards/defect/claw.webp) **Griffure** | 0 ⚡ | Attaque | Infligez 3 dégâts. Augmentez les dégâts de TOUTES les cartes Griffure de 2 jusqu'à la fin du combat. | Infligez 4 dégâts. Augmentez les dégâts de TOUTES les cartes Griffure de 3 jusqu'à la fin du combat. |
+| ![Hologramme](../images/cards/defect/hologram.webp) **Hologramme** | 1 ⚡ | Compétence | Gagnez 3 d'**Armure**. Placez une carte de votre **Défausse** à votre **Main**. **Épuisement**. | Gagnez 5 d'**Armure**. Placez une carte de votre **Défausse** à votre **Main**. |
+| ![Paratonnerre](../images/cards/defect/lightning_rod.webp) **Paratonnerre** | 1 ⚡ | Compétence | Gagnez 4 d'**Armure**. Au début de vos 2 prochains tours, **Canalisez** 1 **Orbe kéraunique**. | Gagnez 7 d'**Armure**. Au début de vos 2 prochains tours, **Canalisez** 1 **Orbe kéraunique**. |
+| ![Piles de recharge](../images/cards/defect/charge_battery.webp) **Piles de recharge** | 1 ⚡ | Compétence | Gagnez 7 d'**Armure**. Au prochain tour, gagnez 1 ⚡. | Gagnez 10 d'**Armure**. Au prochain tour, gagnez 1 ⚡. |
+| ![Rayon cellulaire](../images/cards/defect/beam_cell.webp) **Rayon cellulaire** | 0 ⚡ | Attaque | Infligez 3 dégâts. Appliquez **Vulnérable** (1). | Infligez 4 dégâts. Appliquez **Vulnérable** (2). |
+| ![Sang-froid](../images/cards/defect/coolheaded.webp) **Sang-froid** | 1 ⚡ | Compétence | **Canalisez** 1 **Orbe glaciaire**. Piochez 1 carte. | **Canalisez** 1 **Orbe glaciaire**. Piochez 2 cartes. |
+| ![Tumulte](../images/cards/defect/uproar.webp) **Tumulte** | 2 ⚡ | Attaque | Infligez 6 dégâts 2 fois. Jouez une Attaque aléatoire depuis votre **Pioche**. | Infligez 8 dégâts 2 fois. Jouez une Attaque aléatoire depuis votre **Pioche**. |
+| ![TURBO](../images/cards/defect/turbo.webp) **TURBO** | 0 ⚡ | Compétence | Gagnez 2 ⚡. Ajoutez un **Néant** à votre **Défausse**. | Gagnez 3 ⚡. Ajoutez un **Néant** à votre **Défausse**. |
+| ![Vague de froid](../images/cards/defect/cold_snap.webp) **Vague de froid** | 1 ⚡ | Attaque | Infligez 6 dégâts. **Canalisez** 1 **Orbe glaciaire**. | Infligez 9 dégâts. **Canalisez** 1 **Orbe glaciaire**. |
+| ![Viser les yeux](../images/cards/defect/go_for_the_eyes.webp) **Viser les yeux** | 0 ⚡ | Attaque | Infligez 3 dégâts. Si l'ennemi s'apprête à attaquer, appliquez **Affaibli** (1). | Infligez 4 dégâts. Si l'ennemi s'apprête à attaquer, appliquez **Affaibli** (2). |
+
+L'édition compte **91 cartes** au total : 4 de base, 20 communes, 38 peu communes, 27 rares et 2 anciennes. Retrouvez-les toutes dans le [tome des cartes](11_cartes_defect.md).
+
+---
+
+## 9. Conseils de survie
+
+1. Le **Noyau fissuré** canalise un orbe kéraunique dès le début : jouez **Activation double** tôt pour un gros burst.
+2. Les orbes glaciaires génèrent de l'Armure gratuite chaque tour : deux ou trois suffisent à stabiliser un combat.
+3. La Focalisation (Défragmentation, Biais cognitif) est la statistique qui fait passer le deck de bon à injouable pour l'ennemi.
+4. Condensateur ajoute des emplacements : plus d'orbes, plus d'effets passifs.
+
+---
+
+## 10. Sauvegarde, Ascension et encyclopédie
+
+* **Sauvegarde sur la cartouche :** la partie est enregistrée automatiquement en SRAM à chaque salle ; choisissez **Continuer** à l'écran titre pour reprendre là où vous vous étiez arrêté. Les réglages (volume de la musique et des effets) sont conservés.
+* **Ascension 0 à 10 :** chaque victoire débloque un niveau de difficulté supplémentaire (élites plus fréquents, monstres plus robustes, soins réduits…).
+* **Encyclopédie :** cartes, reliques, monstres, potions et Anciens rencontrés sont consignés au fil de vos parties.
+
+---
+
+*Slay the GBA existe en cinq éditions. Les quatre autres : Soldat de Fer, La Silencieuse, Le Régent et La Nécrolieuse. [Voir la collection des livrets](README.md).*

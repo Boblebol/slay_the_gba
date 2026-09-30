@@ -125,6 +125,11 @@ events, ancients and the full design bible) is generated into `site/`:
 make site          # build and open in the browser (make site-build: build only)
 ```
 
+The five cartridges ("éditions") are defined once in `scripts/editions.py` (name, colour, zone, tagline,
+signature mechanic, palettes, showcase cards). `make site-build` first regenerates the five instruction booklets
+(`bible/livrets_gba/`, via `scripts/build_livrets.py`, from that file and the card/relic data), then the website,
+so the booklets, the bible and the site always describe the same five editions.
+
 Deploy to Netlify: connect the repository in Netlify; `netlify.toml` runs `make site-package`, which
 only assembles committed files (pages, bible images, ROMs) into `dist/`. After changing the game or the
 bible, rebuild and commit the generated files:
