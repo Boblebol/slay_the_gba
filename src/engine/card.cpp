@@ -34,7 +34,12 @@ static const CardDef CARDS[] = {
     { CardId::SLICE, "Slice", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 0, "Deal 6 dmg.", "Slice+", 0, 9, 0, "Deal 9 dmg." },
     { CardId::BACKFLIP, "Backflip", 1, CardType::SKILL, TargetType::SELF, 5, 2, "Gain 5 block. Draw 2 cards.", "Backflip+", 1, 8, 2, "Gain 8 block. Draw 2 cards." },
     { CardId::SUCKER_PUNCH, "Sucker Punch", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 1, "Deal 8 dmg. Apply 1 Weak.", "Sucker Punch+", 1, 10, 2, "Deal 10 dmg. Apply 2 Weak." },
-    { CardId::DAGGER_SPRAY, "Dagger Spray", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 4, 2, "Deal 4 dmg to all twice.", "Dagger Spray+", 1, 6, 2, "Deal 6 dmg to all twice." }
+    { CardId::DAGGER_SPRAY, "Dagger Spray", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 4, 2, "Deal 4 dmg to all twice.", "Dagger Spray+", 1, 6, 2, "Deal 6 dmg to all twice." },
+    // Defect commons
+    { CardId::BEAM_CELL, "Beam Cell", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 3, 1, "Deal 3 dmg. Apply 1 Vuln.", "Beam Cell+", 0, 4, 2, "Deal 4 dmg. Apply 2 Vuln." },
+    { CardId::BALL_LIGHTNING, "Ball Lightning", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 7, 1, "Deal 7 dmg. Channel 1 Lightning.", "Ball Lightning+", 1, 10, 1, "Deal 10 dmg. Channel 1 Lightning." },
+    { CardId::COLD_SNAP, "Cold Snap", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 1, "Deal 6 dmg. Channel 1 Frost.", "Cold Snap+", 1, 9, 1, "Deal 9 dmg. Channel 1 Frost." },
+    { CardId::LEAP, "Leap", 1, CardType::SKILL, TargetType::SELF, 9, 0, "Gain 9 block.", "Leap+", 1, 12, 0, "Gain 12 block." }
 };
 
 const CardDef& CardDef::get(CardId id) {

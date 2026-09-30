@@ -228,6 +228,10 @@ CARDS: list[CardArt] = [
     CardArt("backflip", "silent", "backflip", "skill", (1, 1)),
     CardArt("sucker_punch", "silent", "sucker_punch", "attack", (1, 1)),
     CardArt("dagger_spray", "silent", "dagger_spray", "attack", (1, 1)),
+    CardArt("beam_cell", "defect", "beam_cell", "attack", (0, 0)),
+    CardArt("ball_lightning", "defect", "ball_lightning", "attack", (1, 1)),
+    CardArt("cold_snap", "defect", "cold_snap", "attack", (1, 1)),
+    CardArt("leap", "defect", "leap", "skill", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}

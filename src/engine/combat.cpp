@@ -361,6 +361,29 @@ bool CombatEngine::play_card(int index, int target_index) {
             set_log(upgraded ? "Played Dagger Spray+!" : "Played Dagger Spray!");
             break;
         }
+        case CardId::BEAM_CELL: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            set_log(upgraded ? "Played Beam Cell+!" : "Played Beam Cell!");
+            break;
+        }
+        case CardId::BALL_LIGHTNING: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            player.channel_orb(OrbType::LIGHTNING, &current_target);
+            set_log(upgraded ? "Played Ball Lightning+!" : "Played Ball Lightning!");
+            break;
+        }
+        case CardId::COLD_SNAP: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            player.channel_orb(OrbType::FROST, &current_target);
+            set_log(upgraded ? "Played Cold Snap+!" : "Played Cold Snap!");
+            break;
+        }
+        case CardId::LEAP: {
+            player.gain_block(base_value);
+            set_log(upgraded ? "Played Leap+!" : "Played Leap!");
+            break;
+        }
         default:
             set_log("Played card!");
             break;
