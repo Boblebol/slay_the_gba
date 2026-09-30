@@ -243,15 +243,8 @@ void PokemonBattleUI::trigger_end_turn(CombatEngine& combat) {
     current_tab = BattleMenuTab::ENEMY_TURN_ANIM;
     set_dialogue("Fin de votre tour. L'ennemi s'apprete a attaquer...");
 
-    // Discard hand
-    while (!combat.hand.empty()) {
-        combat.discard_pile.push_back(combat.hand.back());
-        combat.hand.pop_back();
-    }
-    combat.player.tick_end_of_turn_statuses();
-
-    // Trigger enemy action
-    combat.execute_enemy_turn();
+    // Discard the hand, resolve end of turn effects and play the enemy turn
+    combat.end_player_turn();
     anim.enemy_attack_timer = 20;
     anim.player_hurt_timer = 16;
 

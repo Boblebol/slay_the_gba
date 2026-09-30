@@ -140,9 +140,12 @@ int main() {
     assert(combat.turn_number == 2);
     assert(combat.player.energy == 3);
     assert(combat.hand.size() == 5);
-    // Cultist had Ritual +3 in turn 1, so after turn 1 ends, Cultist should have 3 Strength!
+    // Cultist cast Ritual +3 on turn 1: it only starts granting Strength at the end of turn 2.
+    assert(combat.enemy.get_status(StatusType::RITUAL) == 3);
+    assert(combat.enemy.get_status(StatusType::STRENGTH) == 0);
+    combat.end_player_turn();
     assert(combat.enemy.get_status(StatusType::STRENGTH) == 3);
-    std::cout << "[PASS] Turn ended, Cultist executed Ritual! Strength is now: " 
+    std::cout << "[PASS] Turn ended, Cultist executed Ritual! Strength is now: "
               << combat.enemy.get_status(StatusType::STRENGTH) << std::endl;
 
     // Test Ancients System (Patch v0.111.0 Beta)
@@ -570,7 +573,7 @@ int main() {
     CombatEngine iron_c;
     iron_c.start_combat(EnemyType::CULTIST, CharacterId::IRONCLAD);
     iron_c.player.add_status(StatusType::METALLICIZE, 4);
-    iron_c.player.reset_turn();
+    iron_c.player.apply_metallicize_tick();
     assert(iron_c.player.block == 4);
     std::cout << "[PASS] Character Resources: Silent Poison, Defect Orbs, Regent Stars, Necro Minion & Ironclad Metallicize verified" << std::endl;
 

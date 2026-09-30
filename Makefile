@@ -161,6 +161,8 @@ test:
 	@printf "$(CYAN)==> Compilation et exécution des tests unitaires déterministes...$(RESET)\n"
 	@clang++ -std=c++20 -Iinclude $(ENGINE_SOURCES) tests/cli_test.cpp -o bin/cli_test
 	@./bin/cli_test
+	@clang++ -std=c++20 -Iinclude $(ENGINE_SOURCES) tests/combat_test.cpp -o bin/combat_test
+	@./bin/combat_test
 	@printf "$(GREEN)✓ Tous les tests unitaires ont réussi !$(RESET)\n"
 
 test-e2e:
@@ -244,6 +246,8 @@ test:
 	@mkdir -p bin
 	@clang++ -std=c++20 -Iinclude $(ENGINE_SOURCES) tests/cli_test.cpp -o bin/cli_test
 	@./bin/cli_test
+	@clang++ -std=c++20 -Iinclude $(ENGINE_SOURCES) tests/combat_test.cpp -o bin/combat_test
+	@./bin/combat_test
 
 test-e2e:
 	@mkdir -p bin
