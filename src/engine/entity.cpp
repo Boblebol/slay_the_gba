@@ -6,6 +6,7 @@ void Enemy::init(EnemyType enemy_type) {
     type = enemy_type;
     statuses.clear();
     block = 0;
+    damage_percent = 100;
 
     if (type == EnemyType::CULTIST) {
         name = "Cultist";
@@ -146,7 +147,7 @@ void Enemy::execute_turn(Player& player) {
 
     // Execute attack if any
     if (current_intent.base_damage > 0) {
-        player.take_damage_with_minion(attack_damage(current_intent.base_damage, *this, player));
+        player.take_damage_with_minion(intent_damage(player));
     }
 
     // End of turn status triggers (Ritual -> Strength)
@@ -156,6 +157,11 @@ void Enemy::execute_turn(Player& player) {
 
     // Tick end-of-turn status counters (Vulnerable, Weak)
     tick_end_of_turn_statuses();
+}
+
+int16_t Enemy::intent_damage(const CombatEntity& target) const {
+    if (current_intent.base_damage <= 0) return 0;
+    return attack_damage(static_cast<int16_t>(current_intent.base_damage * damage_percent / 100), *this, target);
 }
 
 void Player::channel_orb(OrbType type, CombatEntity* enemy) {
