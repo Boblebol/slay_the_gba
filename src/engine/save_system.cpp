@@ -287,7 +287,7 @@ bool SaveManager::restore_run(RunManager& run) {
     run.max_hp = r.max_hp;
     run.gold = r.gold;
     run.map_seed = r.map_seed;
-    run.map.generate(r.act, r.map_seed);
+    run.map.generate(r.act, r.map_seed, run.ascension_level);
     run.set_rng_state(r.rng_state);
     run.current_node_index = r.current_node_index;
     // Runs are only saved between rooms: the interrupted room state is not stored.

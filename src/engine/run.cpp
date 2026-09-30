@@ -75,7 +75,7 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
 
     // Generate Act 1 Map
     map_seed = next_random();
-    map.generate(current_act, map_seed);
+    map.generate(current_act, map_seed, ascension_level);
     phase = RunPhase::MAP_NAVIGATION;
 }
 
@@ -319,7 +319,7 @@ void RunManager::advance_act() {
     current_floor = 1;
     current_node_index = -1;
     map_seed = next_random();
-    map.generate(current_act, map_seed);
+    map.generate(current_act, map_seed, ascension_level);
     phase = RunPhase::ANCIENT_BLESSING; // Transition with Ancient encounter!
 }
 

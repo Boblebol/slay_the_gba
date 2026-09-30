@@ -90,7 +90,7 @@ struct Layout {
         return true;
     }
 
-    void assign_types(Xorshift& rng, uint8_t act) {
+    void assign_types(Xorshift& rng, uint8_t act, uint8_t ascension) {
         uint8_t assignable = 0;
         for (uint8_t floor = 0; floor < FLOOR_COUNT; ++floor) {
             for (uint8_t lane = 0; lane < LANE_COUNT; ++lane) {
@@ -116,7 +116,9 @@ struct Layout {
         };
         add(RoomType::EVENT, share(22));
         add(RoomType::REST_SITE, share(12));
-        add(RoomType::ELITE, share(8 + 2 * (act > 0 ? act - 1 : 0)));
+        // Ascension 1: elites are 1.6 times more frequent.
+        int elite_percent = 8 + 2 * (act > 0 ? act - 1 : 0);
+        add(RoomType::ELITE, share(ascension >= 1 ? elite_percent * 8 / 5 : elite_percent));
         add(RoomType::SHOP, share(8));
         while (pool.size() < assignable) pool.push_back(RoomType::MONSTER);
 
@@ -146,7 +148,7 @@ struct Layout {
 
 } // namespace
 
-void MapGraph::generate(uint8_t act, uint32_t seed) {
+void MapGraph::generate(uint8_t act, uint32_t seed, uint8_t ascension) {
     nodes.clear();
     Xorshift rng{ (seed ? seed : 777u) ^ (act * 0x9E3779B9u) };
     if (rng.state == 0) rng.state = 777;
@@ -160,7 +162,7 @@ void MapGraph::generate(uint8_t act, uint32_t seed) {
     for (uint8_t p = 2; p < PATH_COUNT; ++p) {
         layout.trace_path(rng, static_cast<uint8_t>(rng.below(LANE_COUNT)));
     }
-    layout.assign_types(rng, act);
+    layout.assign_types(rng, act, ascension);
 
     // Flatten the grid floor by floor, left to right: children indices then follow the screen order.
     uint8_t index_of[FLOOR_COUNT][LANE_COUNT] = {};

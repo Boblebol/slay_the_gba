@@ -196,6 +196,17 @@ void test_map_generation() {
         }
     }
 
+    // Ascension 1: more elites on the same seeds.
+    int elites[2] = {};
+    for (uint32_t seed = 1; seed <= 200; ++seed) {
+        for (uint8_t ascension = 0; ascension < 2; ++ascension) {
+            MapGraph map;
+            map.generate(1, seed * 2654435761u, ascension);
+            for (const MapNode& node : map.nodes) elites[ascension] += node.type == RoomType::ELITE;
+        }
+    }
+    assert(elites[1] > elites[0] * 5 / 4);
+
     // Floors of 1, 2 and 3 rooms all occur, and paths branch both ways.
     assert(width_seen[1] > 0 && width_seen[2] > 0 && width_seen[3] > 0);
     assert(right_branches > 0 && left_branches > 0);
