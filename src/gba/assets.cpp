@@ -32,12 +32,16 @@
 #include "bn_sprite_items_card_metallicize.h"
 #include "bn_sprite_items_card_neutralize.h"
 #include "bn_sprite_items_card_poison_stab.h"
+#include "bn_sprite_items_card_pommel_strike.h"
+#include "bn_sprite_items_card_shrug_it_off.h"
 #include "bn_sprite_items_card_strike_defect.h"
 #include "bn_sprite_items_card_strike_ironclad.h"
 #include "bn_sprite_items_card_strike_necrobinder.h"
 #include "bn_sprite_items_card_strike_regent.h"
 #include "bn_sprite_items_card_strike_silent.h"
 #include "bn_sprite_items_card_survivor.h"
+#include "bn_sprite_items_card_taunt.h"
+#include "bn_sprite_items_card_twin_strike.h"
 #include "bn_sprite_items_card_unleash.h"
 #include "bn_sprite_items_card_venerate.h"
 #include "bn_sprite_items_card_zap.h"
@@ -226,6 +230,14 @@ const bn::sprite_item& big_card_item(engine::CardId id)
         return bn::sprite_items::card_unleash;
     case engine::CardId::BODYGUARD:
         return bn::sprite_items::card_bodyguard;
+    case engine::CardId::TWIN_STRIKE:
+        return bn::sprite_items::card_twin_strike;
+    case engine::CardId::POMMEL_STRIKE:
+        return bn::sprite_items::card_pommel_strike;
+    case engine::CardId::SHRUG_IT_OFF:
+        return bn::sprite_items::card_shrug_it_off;
+    case engine::CardId::TAUNT:
+        return bn::sprite_items::card_taunt;
     default:
         return bn::sprite_items::HERO_ITEM(card_strike_);
     }

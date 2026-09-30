@@ -24,7 +24,12 @@ static const CardDef CARDS[] = {
     { CardId::VENERATE, "Venerate", 1, CardType::SKILL, TargetType::SELF, 6, 2, "Gain 6 block. Gain 2 Stars.", "Venerate+", 1, 9, 3, "Gain 9 block. Gain 3 Stars." },
     // Necrobinder
     { CardId::UNLEASH, "Unleash", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 0, "Deal 8 necrotic dmg.", "Unleash+", 1, 12, 0, "Deal 12 necrotic dmg." },
-    { CardId::BODYGUARD, "Bodyguard", 1, CardType::SKILL, TargetType::SELF, 7, 1, "Gain 7 block. Summon 1 minion.", "Bodyguard+", 1, 10, 1, "Gain 10 block. Summon 1 minion." }
+    { CardId::BODYGUARD, "Bodyguard", 1, CardType::SKILL, TargetType::SELF, 7, 1, "Gain 7 block. Summon 1 minion.", "Bodyguard+", 1, 10, 1, "Gain 10 block. Summon 1 minion." },
+    // Ironclad commons
+    { CardId::TWIN_STRIKE, "Twin Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 2, "Deal 5 dmg twice.", "Twin Strike+", 1, 7, 2, "Deal 7 dmg twice." },
+    { CardId::POMMEL_STRIKE, "Pommel Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 1, "Deal 9 dmg. Draw 1 card.", "Pommel Strike+", 1, 10, 2, "Deal 10 dmg. Draw 2 cards." },
+    { CardId::SHRUG_IT_OFF, "Shrug It Off", 1, CardType::SKILL, TargetType::SELF, 8, 1, "Gain 8 block. Draw 1 card.", "Shrug It Off+", 1, 11, 1, "Gain 11 block. Draw 1 card." },
+    { CardId::TAUNT, "Taunt", 1, CardType::SKILL, TargetType::SINGLE_ENEMY, 6, 1, "Gain 6 block. Apply 1 Vuln.", "Taunt+", 1, 7, 2, "Gain 7 block. Apply 2 Vuln." }
 };
 
 const CardDef& CardDef::get(CardId id) {

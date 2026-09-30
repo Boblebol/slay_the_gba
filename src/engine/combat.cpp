@@ -308,6 +308,31 @@ bool CombatEngine::play_card(int index, int target_index) {
             set_log(upgraded ? "Summoned Osty (Bodyguard+)!" : "Summoned Osty (Bodyguard)!");
             break;
         }
+        case CardId::TWIN_STRIKE: {
+            for (uint8_t hit = 0; hit < secondary_value; ++hit) {
+                current_target.take_damage(attack_damage(base_value, player, current_target));
+            }
+            set_log(upgraded ? "Played Twin Strike+!" : "Played Twin Strike!");
+            break;
+        }
+        case CardId::POMMEL_STRIKE: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Pommel Strike+!" : "Played Pommel Strike!");
+            break;
+        }
+        case CardId::SHRUG_IT_OFF: {
+            player.gain_block(base_value);
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Shrug It Off+!" : "Played Shrug It Off!");
+            break;
+        }
+        case CardId::TAUNT: {
+            player.gain_block(base_value);
+            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            set_log(upgraded ? "Played Taunt+!" : "Played Taunt!");
+            break;
+        }
         default:
             set_log("Played card!");
             break;

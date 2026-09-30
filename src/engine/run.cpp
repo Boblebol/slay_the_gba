@@ -269,7 +269,8 @@ bool RunManager::choose_event_choice(int choice_index, char* out_msg, size_t max
 }
 
 std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
-    static constexpr CardId IRONCLAD_POOL[] = { CardId::IRON_WAVE, CardId::CLEAVE, CardId::ANGER };
+    static constexpr CardId IRONCLAD_POOL[] = { CardId::IRON_WAVE, CardId::CLEAVE, CardId::ANGER, CardId::TWIN_STRIKE,
+                                                CardId::POMMEL_STRIKE, CardId::SHRUG_IT_OFF, CardId::TAUNT };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::STRIKE };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::DEFEND };

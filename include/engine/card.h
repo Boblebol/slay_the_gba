@@ -28,6 +28,11 @@ enum class CardId : uint8_t {
     // Necrobinder
     UNLEASH,
     BODYGUARD,
+    // Ironclad commons (appended: saves store the numeric id)
+    TWIN_STRIKE,
+    POMMEL_STRIKE,
+    SHRUG_IT_OFF,
+    TAUNT,
     COUNT
 };
 
