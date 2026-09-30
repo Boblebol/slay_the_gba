@@ -46,6 +46,14 @@ bn::string_view base_name(engine::CardId id)
         return "Déchaînement";
     case engine::CardId::BODYGUARD:
         return "Garde du corps";
+    case engine::CardId::TWIN_STRIKE:
+        return "Frappe jumelée";
+    case engine::CardId::POMMEL_STRIKE:
+        return "Frappe du pommeau";
+    case engine::CardId::SHRUG_IT_OFF:
+        return "Même pas mal";
+    case engine::CardId::TAUNT:
+        return "Provocation";
     default:
         return "???";
     }
@@ -121,6 +129,18 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::BODYGUARD:
         stream << "Gagne " << value << " d'Armure. Invoque Titos.";
+        break;
+    case engine::CardId::TWIN_STRIKE:
+        stream << "Inflige " << value << " dégâts " << secondary << " fois.";
+        break;
+    case engine::CardId::POMMEL_STRIKE:
+        stream << "Inflige " << value << " dégâts. Pioche " << secondary << (secondary > 1 ? " cartes." : " carte.");
+        break;
+    case engine::CardId::SHRUG_IT_OFF:
+        stream << "Gagne " << value << " d'Armure. Pioche " << secondary << (secondary > 1 ? " cartes." : " carte.");
+        break;
+    case engine::CardId::TAUNT:
+        stream << "Gagne " << value << " d'Armure. Vulnérable " << secondary << ".";
         break;
     default:
         break;

@@ -1,4 +1,5 @@
 // Combat rules audit: one test per mechanic, grouped by hero, on hand-built situations.
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include "engine/combat.h"
@@ -166,6 +167,52 @@ void test_ironclad() {
     metal.end_player_turn();
     assert(metal.player.hp == 80 - (11 - 3));
     std::cout << "[PASS] Ironclad: Bash + Vulnerable duration, Iron Wave, Cleave, Anger copy, Metallicize power" << std::endl;
+}
+
+void test_ironclad_commons() {
+    // Twin Strike hits twice, each hit gets Strength.
+    CombatEngine twin = make_combat(CharacterId::IRONCLAD);
+    twin.player.add_status(StatusType::STRENGTH, 1);
+    play(twin, CardId::TWIN_STRIKE);
+    assert(twin.enemies[0].hp == 42 - 2 * 6);
+    play(twin, DeckCard(CardId::TWIN_STRIKE, true));
+    assert(twin.enemies[0].hp == 30 - 2 * 8);
+
+    // Pommel Strike deals damage and draws (2 cards once upgraded).
+    CombatEngine pommel = make_combat(CharacterId::IRONCLAD);
+    play(pommel, CardId::POMMEL_STRIKE);
+    assert(pommel.enemies[0].hp == 42 - 9);
+    assert(pommel.hand.size() == 1);
+    play(pommel, DeckCard(CardId::POMMEL_STRIKE, true));
+    assert(pommel.enemies[0].hp == 33 - 10);
+    assert(pommel.hand.size() == 2);
+
+    // Shrug It Off blocks and draws.
+    CombatEngine shrug = make_combat(CharacterId::IRONCLAD);
+    shrug.player.block = 0;
+    play(shrug, CardId::SHRUG_IT_OFF);
+    assert(shrug.player.block == 8);
+    assert(shrug.hand.size() == 1);
+    assert(count_in_piles(shrug, CardId::SHRUG_IT_OFF) == 1); // back in the discard pile
+
+    // Taunt blocks and makes its target Vulnerable (the other enemies are untouched).
+    CombatEngine taunt;
+    FixedVector<EnemyType, 3> duo;
+    duo.push_back(EnemyType::LOUSE);
+    duo.push_back(EnemyType::JAW_WORM);
+    taunt.start_combat_multi(duo, CharacterId::IRONCLAD);
+    taunt.player.block = 0;
+    play(taunt, DeckCard(CardId::TAUNT, true), 1);
+    assert(taunt.player.block == 7);
+    assert(taunt.enemies[1].get_status(StatusType::VULNERABLE) == 2);
+    assert(taunt.enemies[0].get_status(StatusType::VULNERABLE) == 0);
+
+    // All four are offered after Ironclad combats.
+    std::span<const CardId> pool = RunManager::card_reward_pool(CharacterId::IRONCLAD);
+    for (CardId id : { CardId::TWIN_STRIKE, CardId::POMMEL_STRIKE, CardId::SHRUG_IT_OFF, CardId::TAUNT }) {
+        assert(std::find(pool.begin(), pool.end(), id) != pool.end());
+    }
+    std::cout << "[PASS] Ironclad commons: Twin Strike, Pommel Strike, Shrug It Off, Taunt" << std::endl;
 }
 
 void test_silent() {
@@ -367,6 +414,7 @@ int main() {
     test_turn_flow();
     test_cultist_ritual();
     test_ironclad();
+    test_ironclad_commons();
     test_silent();
     test_defect();
     test_regent();
