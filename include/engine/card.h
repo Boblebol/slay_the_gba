@@ -33,6 +33,11 @@ enum class CardId : uint8_t {
     POMMEL_STRIKE,
     SHRUG_IT_OFF,
     TAUNT,
+    // Silent commons (appended: saves store the numeric id)
+    SLICE,
+    BACKFLIP,
+    SUCKER_PUNCH,
+    DAGGER_SPRAY,
     COUNT
 };
 

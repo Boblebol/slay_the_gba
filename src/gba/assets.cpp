@@ -17,9 +17,11 @@
 #include "bn_sprite_items_mon_louse.h"
 
 #include "bn_sprite_items_card_anger.h"
+#include "bn_sprite_items_card_backflip.h"
 #include "bn_sprite_items_card_bash.h"
 #include "bn_sprite_items_card_bodyguard.h"
 #include "bn_sprite_items_card_cleave.h"
+#include "bn_sprite_items_card_dagger_spray.h"
 #include "bn_sprite_items_card_deadly_poison.h"
 #include "bn_sprite_items_card_defend_defect.h"
 #include "bn_sprite_items_card_defend_ironclad.h"
@@ -34,11 +36,13 @@
 #include "bn_sprite_items_card_poison_stab.h"
 #include "bn_sprite_items_card_pommel_strike.h"
 #include "bn_sprite_items_card_shrug_it_off.h"
+#include "bn_sprite_items_card_slice.h"
 #include "bn_sprite_items_card_strike_defect.h"
 #include "bn_sprite_items_card_strike_ironclad.h"
 #include "bn_sprite_items_card_strike_necrobinder.h"
 #include "bn_sprite_items_card_strike_regent.h"
 #include "bn_sprite_items_card_strike_silent.h"
+#include "bn_sprite_items_card_sucker_punch.h"
 #include "bn_sprite_items_card_survivor.h"
 #include "bn_sprite_items_card_taunt.h"
 #include "bn_sprite_items_card_twin_strike.h"
@@ -238,6 +242,14 @@ const bn::sprite_item& big_card_item(engine::CardId id)
         return bn::sprite_items::card_shrug_it_off;
     case engine::CardId::TAUNT:
         return bn::sprite_items::card_taunt;
+    case engine::CardId::SLICE:
+        return bn::sprite_items::card_slice;
+    case engine::CardId::BACKFLIP:
+        return bn::sprite_items::card_backflip;
+    case engine::CardId::SUCKER_PUNCH:
+        return bn::sprite_items::card_sucker_punch;
+    case engine::CardId::DAGGER_SPRAY:
+        return bn::sprite_items::card_dagger_spray;
     default:
         return bn::sprite_items::HERO_ITEM(card_strike_);
     }
