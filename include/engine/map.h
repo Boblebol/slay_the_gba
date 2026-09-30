@@ -30,7 +30,8 @@ public:
     FixedVector<MapNode, MAX_MAP_NODES> nodes;
     int boss_node_index = -1;
 
-    void generate(uint8_t act, uint32_t seed);
+    // Deterministic for a given (act, seed, ascension): saves regenerate the map from them.
+    void generate(uint8_t act, uint32_t seed, uint8_t ascension = 0);
     FixedVector<int, 3> get_starting_nodes() const;
     FixedVector<int, 3> get_next_nodes(int current_node_index) const;
     std::string_view get_room_icon(RoomType type) const;
