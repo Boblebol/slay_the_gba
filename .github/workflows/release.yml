@@ -1,0 +1,106 @@
+# On every push to main: test, then refresh the website and the tracker. When the game itself changed since
+# the last tag, build the five ROMs and publish a GitHub release.
+#
+# The version follows the tracker (scripts/progress.py --next-version): 0.<whole percentage>.<patch> while
+# something is left to implement, 1.0.<patch> once everything is done.
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "include/**"
+      - "graphics/**"
+      - "audio/**"
+      - "bible/**"
+      - "scripts/**"
+      - "site/assets/**"
+      - "avancement.toml"
+      - "Makefile"
+      - ".github/workflows/release.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0  # tags and history, for the version number and the release notes
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Tests
+        run: |
+          make test test-e2e
+          uv run --with pytest pytest scripts/progress_test.py
+
+      - name: Plan the release
+        id: plan
+        run: |
+          last=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)
+          if [ -z "$last" ] || ! git diff --quiet "$last" HEAD -- src include graphics audio butano Makefile; then
+            echo "game_changed=true" >> "$GITHUB_OUTPUT"
+            echo "version=$(uv run scripts/progress.py --next-version)" >> "$GITHUB_OUTPUT"
+          else
+            echo "game_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "last=$last" >> "$GITHUB_OUTPUT"
+
+      - name: Build the five ROMs
+        if: steps.plan.outputs.game_changed == 'true'
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: |
+          make roms
+          echo "$VERSION" > VERSION
+
+      # Publishes the fresh ROMs in site/roms, regenerates the pages and AVANCEMENT.md.
+      - name: Refresh the website and the tracker
+        run: make site-build
+
+      # Netlify deploys main: this commit is what puts the new pages and ROMs online.
+      - name: Commit the generated files
+        env:
+          VERSION: ${{ steps.plan.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A site AVANCEMENT.md VERSION bible/livrets_gba
+          if git diff --cached --quiet; then
+            echo "Generated files already up to date."
+          else
+            git commit -m "build(site): refresh website${VERSION:+ for v$VERSION}"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Publish the GitHub release
+        if: steps.plan.outputs.game_changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.plan.outputs.version }}
+          LAST: ${{ steps.plan.outputs.last }}
+        run: |
+          {
+            uv run scripts/progress.py --release-notes
+            echo
+            echo "## Changements"
+            if [ -n "$LAST" ]; then
+              git log --no-merges --pretty='- %s' "$LAST"..HEAD -- . ':!site' ':!AVANCEMENT.md' ':!VERSION'
+            else
+              echo "- Première version publiée."
+            fi
+          } > release_notes.md
+          prerelease=""
+          if [ "${VERSION%%.*}" = "0" ]; then prerelease="--prerelease"; fi
+          gh release create "v$VERSION" slay_*.gba --title "Slay the GBA v$VERSION" --notes-file release_notes.md \
+            --target "$(git rev-parse HEAD)" $prerelease

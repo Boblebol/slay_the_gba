@@ -1,0 +1,22 @@
+# Checks run on every pull request: engine rules, tracker script.
+name: CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Engine tests
+        run: make test test-e2e
+      - name: Tracker tests
+        run: uv run --with pytest pytest scripts/progress_test.py
+      # Fails when avancement.toml is invalid or the detection no longer matches the engine sources.
+      - name: Tracker runs
+        run: uv run scripts/progress.py
