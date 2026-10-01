@@ -3,6 +3,10 @@
 
 namespace engine {
 
+// Log messages are picked at run time between two literals: the "sv" suffix keeps their length a compile-time
+// constant, where a plain literal would call strlen, which the GBA build does not link.
+using namespace std::string_view_literals;
+
 namespace {
 
 // Cards whose French name contains "Frappe" (Perfected Strike counts them).
@@ -27,9 +31,8 @@ int count_strikes(const FixedVector<DeckCard, Capacity>& pile) {
     return count;
 }
 
-// Retain: the card stays in hand at the end of the turn. Misery+ is the only card with the keyword so far.
 bool retains(const DeckCard& card) {
-    return card.id == CardId::MISERY && card.upgraded;
+    return CardDef::has_keyword(card.id, card.upgraded, KEYWORD_RETAIN);
 }
 
 } // namespace
@@ -158,6 +161,20 @@ bool CombatEngine::draw_card() {
     return true;
 }
 
+void CombatEngine::exhaust_card(DeckCard card) {
+    if (exhaust_pile.size() < exhaust_pile.capacity()) {
+        exhaust_pile.push_back(card);
+    }
+    if (exhausted_this_turn < UINT8_MAX) ++exhausted_this_turn;
+}
+
+DeckCard CombatEngine::exhaust_from_hand(size_t index) {
+    DeckCard card = hand[index];
+    hand.erase(index);
+    exhaust_card(card);
+    return card;
+}
+
 void CombatEngine::draw_cards(int count) {
     for (int i = 0; i < count; ++i) {
         draw_card();
@@ -209,6 +226,7 @@ void CombatEngine::start_player_turn() {
         return;
     }
     player.reset_turn();
+    exhausted_this_turn = 0;
     player.trigger_start_of_turn_orbs();
     draw_cards(5);
     selected_card_index = 0;
@@ -253,24 +271,24 @@ bool CombatEngine::play_card(int index, int target_index) {
     switch (card_id) {
         case CardId::STRIKE: {
             current_target.take_damage(attack_damage(base_value + player.sovereign_stars, player, current_target));
-            set_log(upgraded ? "Played Strike+!" : "Played Strike!");
+            set_log(upgraded ? "Played Strike+!"sv : "Played Strike!"sv);
             break;
         }
         case CardId::DEFEND: {
             player.gain_block(base_value + player.sovereign_stars);
-            set_log(upgraded ? "Played Defend+!" : "Played Defend!");
+            set_log(upgraded ? "Played Defend+!"sv : "Played Defend!"sv);
             break;
         }
         case CardId::BASH: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             current_target.add_status(StatusType::VULNERABLE, secondary_value);
-            set_log(upgraded ? "Played Bash+!" : "Played Bash!");
+            set_log(upgraded ? "Played Bash+!"sv : "Played Bash!"sv);
             break;
         }
         case CardId::IRON_WAVE: {
             player.gain_block(base_value);
             current_target.take_damage(attack_damage(secondary_value, player, current_target));
-            set_log(upgraded ? "Played Iron Wave+!" : "Played Iron Wave!");
+            set_log(upgraded ? "Played Iron Wave+!"sv : "Played Iron Wave!"sv);
             break;
         }
         case CardId::CLEAVE: {
@@ -280,116 +298,116 @@ bool CombatEngine::play_card(int index, int target_index) {
                     enemies[i].take_damage(attack_damage(base_value, player, enemies[i]));
                 }
             }
-            set_log(upgraded ? "Played Cleave+!" : "Played Cleave!");
+            set_log(upgraded ? "Played Cleave+!"sv : "Played Cleave!"sv);
             break;
         }
         case CardId::ANGER: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             discard_pile.push_back(DeckCard(CardId::ANGER, upgraded)); // Extra copy!
-            set_log(upgraded ? "Played Anger+!" : "Played Anger!");
+            set_log(upgraded ? "Played Anger+!"sv : "Played Anger!"sv);
             break;
         }
         case CardId::METALLICIZE: {
             player.add_status(StatusType::METALLICIZE, base_value);
-            set_log(upgraded ? "Played Metallicize+!" : "Played Metallicize!");
+            set_log(upgraded ? "Played Metallicize+!"sv : "Played Metallicize!"sv);
             break;
         }
         case CardId::NEUTRALIZE: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             current_target.add_status(StatusType::WEAK, secondary_value);
-            set_log(upgraded ? "Played Neutralize+!" : "Played Neutralize!");
+            set_log(upgraded ? "Played Neutralize+!"sv : "Played Neutralize!"sv);
             break;
         }
         case CardId::SURVIVOR: {
             player.gain_block(base_value);
-            set_log(upgraded ? "Played Survivor+!" : "Played Survivor!");
+            set_log(upgraded ? "Played Survivor+!"sv : "Played Survivor!"sv);
             break;
         }
         case CardId::POISON_STAB: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             current_target.add_status(StatusType::POISON, secondary_value);
-            set_log(upgraded ? "Played Poison Stab+!" : "Played Poison Stab!");
+            set_log(upgraded ? "Played Poison Stab+!"sv : "Played Poison Stab!"sv);
             break;
         }
         case CardId::DEADLY_POISON: {
             current_target.add_status(StatusType::POISON, secondary_value);
-            set_log(upgraded ? "Played Deadly Poison+!" : "Played Deadly Poison!");
+            set_log(upgraded ? "Played Deadly Poison+!"sv : "Played Deadly Poison!"sv);
             break;
         }
         case CardId::ZAP: {
             player.channel_orb(OrbType::LIGHTNING, &current_target);
-            set_log(upgraded ? "Channeled Lightning (Zap+)!" : "Channeled Lightning (Zap)!");
+            set_log(upgraded ? "Channeled Lightning (Zap+)!"sv : "Channeled Lightning (Zap)!"sv);
             break;
         }
         case CardId::DUALCAST: {
             player.evoke_oldest_orb(&current_target, 2);
-            set_log(upgraded ? "Triggered Dualcast+!" : "Triggered Dualcast!");
+            set_log(upgraded ? "Triggered Dualcast+!"sv : "Triggered Dualcast!"sv);
             break;
         }
         case CardId::FALLING_STAR: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             player.add_stars(secondary_value);
-            set_log(upgraded ? "Cast Falling Star+!" : "Cast Falling Star!");
+            set_log(upgraded ? "Cast Falling Star+!"sv : "Cast Falling Star!"sv);
             break;
         }
         case CardId::VENERATE: {
             player.gain_block(base_value);
             player.add_stars(secondary_value);
-            set_log(upgraded ? "Cast Venerate+!" : "Cast Venerate!");
+            set_log(upgraded ? "Cast Venerate+!"sv : "Cast Venerate!"sv);
             break;
         }
         case CardId::UNLEASH: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             player.souls += secondary_value;
-            set_log(upgraded ? "Cast Unleash+!" : "Cast Unleash!");
+            set_log(upgraded ? "Cast Unleash+!"sv : "Cast Unleash!"sv);
             break;
         }
         case CardId::BODYGUARD: {
             player.gain_block(base_value);
             player.summon_minion(secondary_value, 0);
-            set_log(upgraded ? "Summoned Osty (Bodyguard+)!" : "Summoned Osty (Bodyguard)!");
+            set_log(upgraded ? "Summoned Osty (Bodyguard+)!"sv : "Summoned Osty (Bodyguard)!"sv);
             break;
         }
         case CardId::TWIN_STRIKE: {
             for (uint8_t hit = 0; hit < secondary_value; ++hit) {
                 current_target.take_damage(attack_damage(base_value, player, current_target));
             }
-            set_log(upgraded ? "Played Twin Strike+!" : "Played Twin Strike!");
+            set_log(upgraded ? "Played Twin Strike+!"sv : "Played Twin Strike!"sv);
             break;
         }
         case CardId::POMMEL_STRIKE: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             draw_cards(secondary_value);
-            set_log(upgraded ? "Played Pommel Strike+!" : "Played Pommel Strike!");
+            set_log(upgraded ? "Played Pommel Strike+!"sv : "Played Pommel Strike!"sv);
             break;
         }
         case CardId::SHRUG_IT_OFF: {
             player.gain_block(base_value);
             draw_cards(secondary_value);
-            set_log(upgraded ? "Played Shrug It Off+!" : "Played Shrug It Off!");
+            set_log(upgraded ? "Played Shrug It Off+!"sv : "Played Shrug It Off!"sv);
             break;
         }
         case CardId::TAUNT: {
             player.gain_block(base_value);
             current_target.add_status(StatusType::VULNERABLE, secondary_value);
-            set_log(upgraded ? "Played Taunt+!" : "Played Taunt!");
+            set_log(upgraded ? "Played Taunt+!"sv : "Played Taunt!"sv);
             break;
         }
         case CardId::SLICE: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
-            set_log(upgraded ? "Played Slice+!" : "Played Slice!");
+            set_log(upgraded ? "Played Slice+!"sv : "Played Slice!"sv);
             break;
         }
         case CardId::BACKFLIP: {
             player.gain_block(base_value);
             draw_cards(secondary_value);
-            set_log(upgraded ? "Played Backflip+!" : "Played Backflip!");
+            set_log(upgraded ? "Played Backflip+!"sv : "Played Backflip!"sv);
             break;
         }
         case CardId::SUCKER_PUNCH: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             current_target.add_status(StatusType::WEAK, secondary_value);
-            set_log(upgraded ? "Played Sucker Punch+!" : "Played Sucker Punch!");
+            set_log(upgraded ? "Played Sucker Punch+!"sv : "Played Sucker Punch!"sv);
             break;
         }
         case CardId::DAGGER_SPRAY: {
@@ -400,55 +418,55 @@ bool CombatEngine::play_card(int index, int target_index) {
                     }
                 }
             }
-            set_log(upgraded ? "Played Dagger Spray+!" : "Played Dagger Spray!");
+            set_log(upgraded ? "Played Dagger Spray+!"sv : "Played Dagger Spray!"sv);
             break;
         }
         case CardId::BEAM_CELL: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             current_target.add_status(StatusType::VULNERABLE, secondary_value);
-            set_log(upgraded ? "Played Beam Cell+!" : "Played Beam Cell!");
+            set_log(upgraded ? "Played Beam Cell+!"sv : "Played Beam Cell!"sv);
             break;
         }
         case CardId::BALL_LIGHTNING: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             player.channel_orb(OrbType::LIGHTNING, &current_target);
-            set_log(upgraded ? "Played Ball Lightning+!" : "Played Ball Lightning!");
+            set_log(upgraded ? "Played Ball Lightning+!"sv : "Played Ball Lightning!"sv);
             break;
         }
         case CardId::COLD_SNAP: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             player.channel_orb(OrbType::FROST, &current_target);
-            set_log(upgraded ? "Played Cold Snap+!" : "Played Cold Snap!");
+            set_log(upgraded ? "Played Cold Snap+!"sv : "Played Cold Snap!"sv);
             break;
         }
         case CardId::LEAP: {
             player.gain_block(base_value);
-            set_log(upgraded ? "Played Leap+!" : "Played Leap!");
+            set_log(upgraded ? "Played Leap+!"sv : "Played Leap!"sv);
             break;
         }
         case CardId::SOLAR_STRIKE: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             player.add_stars(secondary_value);
-            set_log(upgraded ? "Played Solar Strike+!" : "Played Solar Strike!");
+            set_log(upgraded ? "Played Solar Strike+!"sv : "Played Solar Strike!"sv);
             break;
         }
         case CardId::GATHER_LIGHT: {
             player.gain_block(base_value);
             player.add_stars(secondary_value);
-            set_log(upgraded ? "Played Gather Light+!" : "Played Gather Light!");
+            set_log(upgraded ? "Played Gather Light+!"sv : "Played Gather Light!"sv);
             break;
         }
         case CardId::CELESTIAL_MIGHT: {
             for (uint8_t hit = 0; hit < secondary_value; ++hit) {
                 current_target.take_damage(attack_damage(base_value, player, current_target));
             }
-            set_log(upgraded ? "Played Celestial Might+!" : "Played Celestial Might!");
+            set_log(upgraded ? "Played Celestial Might+!"sv : "Played Celestial Might!"sv);
             break;
         }
         case CardId::PULL_AGGRO: {
             player.summon_minion(secondary_value, 0);
             player.gain_block(base_value);
-            set_log(upgraded ? "Played Pull Aggro+!" : "Played Pull Aggro!");
+            set_log(upgraded ? "Played Pull Aggro+!"sv : "Played Pull Aggro!"sv);
             break;
         }
         case CardId::DRAIN_POWER: {
@@ -462,23 +480,23 @@ bool CombatEngine::play_card(int index, int target_index) {
                 if (upgradable.empty()) break;
                 discard_pile[upgradable[next_random() % upgradable.size()]].upgraded = true;
             }
-            set_log(upgraded ? "Played Drain Power+!" : "Played Drain Power!");
+            set_log(upgraded ? "Played Drain Power+!"sv : "Played Drain Power!"sv);
             break;
         }
         case CardId::BODY_SLAM: {
             current_target.take_damage(attack_damage(player.block, player, current_target));
-            set_log(upgraded ? "Played Body Slam+!" : "Played Body Slam!");
+            set_log(upgraded ? "Played Body Slam+!"sv : "Played Body Slam!"sv);
             break;
         }
         case CardId::DEFLECT: {
             player.gain_block(base_value);
-            set_log(upgraded ? "Played Deflect+!" : "Played Deflect!");
+            set_log(upgraded ? "Played Deflect+!"sv : "Played Deflect!"sv);
             break;
         }
         case CardId::COOLHEADED: {
             player.channel_orb(OrbType::FROST, &current_target);
             draw_cards(secondary_value);
-            set_log(upgraded ? "Played Coolheaded+!" : "Played Coolheaded!");
+            set_log(upgraded ? "Played Coolheaded+!"sv : "Played Coolheaded!"sv);
             break;
         }
         case CardId::SWEEPING_BEAM: {
@@ -488,7 +506,7 @@ bool CombatEngine::play_card(int index, int target_index) {
                 }
             }
             draw_cards(secondary_value);
-            set_log(upgraded ? "Played Sweeping Beam+!" : "Played Sweeping Beam!");
+            set_log(upgraded ? "Played Sweeping Beam+!"sv : "Played Sweeping Beam!"sv);
             break;
         }
         case CardId::THUNDERCLAP: {
@@ -498,7 +516,7 @@ bool CombatEngine::play_card(int index, int target_index) {
                     enemies[i].add_status(StatusType::VULNERABLE, secondary_value);
                 }
             }
-            set_log(upgraded ? "Played Thunderclap+!" : "Played Thunderclap!");
+            set_log(upgraded ? "Played Thunderclap+!"sv : "Played Thunderclap!"sv);
             break;
         }
         case CardId::DISMANTLE: {
@@ -507,29 +525,29 @@ bool CombatEngine::play_card(int index, int target_index) {
             for (int hit = 0; hit < hits; ++hit) {
                 current_target.take_damage(attack_damage(base_value, player, current_target));
             }
-            set_log(upgraded ? "Played Dismantle+!" : "Played Dismantle!");
+            set_log(upgraded ? "Played Dismantle+!"sv : "Played Dismantle!"sv);
             break;
         }
         case CardId::INFLAME: {
             player.add_status(StatusType::STRENGTH, base_value);
-            set_log(upgraded ? "Played Inflame+!" : "Played Inflame!");
+            set_log(upgraded ? "Played Inflame+!"sv : "Played Inflame!"sv);
             break;
         }
         case CardId::PERFECTED_STRIKE: {
             // Counts every card named "Frappe" in the deck, this one included (it already left the hand).
             int strikes = 1 + count_strikes(hand) + count_strikes(draw_pile) + count_strikes(discard_pile);
             current_target.take_damage(attack_damage(base_value + secondary_value * strikes, player, current_target));
-            set_log(upgraded ? "Played Perfected Strike+!" : "Played Perfected Strike!");
+            set_log(upgraded ? "Played Perfected Strike+!"sv : "Played Perfected Strike!"sv);
             break;
         }
         case CardId::BLUDGEON: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
-            set_log(upgraded ? "Played Bludgeon+!" : "Played Bludgeon!");
+            set_log(upgraded ? "Played Bludgeon+!"sv : "Played Bludgeon!"sv);
             break;
         }
         case CardId::BULLY: {
             current_target.take_damage(attack_damage(base_value + secondary_value * current_target.get_status(StatusType::VULNERABLE), player, current_target));
-            set_log(upgraded ? "Played Bully+!" : "Played Bully!");
+            set_log(upgraded ? "Played Bully+!"sv : "Played Bully!"sv);
             break;
         }
         case CardId::SWORD_BOOMERANG: {
@@ -537,13 +555,13 @@ bool CombatEngine::play_card(int index, int target_index) {
                 Enemy& victim = enemies[random_alive_enemy_index()];
                 victim.take_damage(attack_damage(base_value, player, victim));
             }
-            set_log(upgraded ? "Played Sword Boomerang+!" : "Played Sword Boomerang!");
+            set_log(upgraded ? "Played Sword Boomerang+!"sv : "Played Sword Boomerang!"sv);
             break;
         }
         case CardId::BREAK: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             current_target.add_status(StatusType::VULNERABLE, secondary_value);
-            set_log(upgraded ? "Played Break+!" : "Played Break!");
+            set_log(upgraded ? "Played Break+!"sv : "Played Break!"sv);
             break;
         }
         case CardId::CONFLAGRATION: {
@@ -554,13 +572,13 @@ bool CombatEngine::play_card(int index, int target_index) {
                     }
                 }
             }
-            set_log(upgraded ? "Played Conflagration+!" : "Played Conflagration!");
+            set_log(upgraded ? "Played Conflagration+!"sv : "Played Conflagration!"sv);
             break;
         }
         case CardId::EXPECT_A_FIGHT: {
             int16_t strength = std::max<int16_t>(0, player.get_status(StatusType::STRENGTH));
             player.gain_block(static_cast<int16_t>(base_value + secondary_value * strength));
-            set_log(upgraded ? "Played Expect a Fight+!" : "Played Expect a Fight!");
+            set_log(upgraded ? "Played Expect a Fight+!"sv : "Played Expect a Fight!"sv);
             break;
         }
         case CardId::PILLAGE: {
@@ -568,14 +586,14 @@ bool CombatEngine::play_card(int index, int target_index) {
             // Stops on the first non-Attack, a full hand or empty piles.
             while (draw_card() && CardDef::get(hand.back().id).type == CardType::ATTACK) {
             }
-            set_log(upgraded ? "Played Pillage+!" : "Played Pillage!");
+            set_log(upgraded ? "Played Pillage+!"sv : "Played Pillage!"sv);
             break;
         }
         case CardId::UPPERCUT: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             current_target.add_status(StatusType::WEAK, secondary_value);
             current_target.add_status(StatusType::VULNERABLE, secondary_value);
-            set_log(upgraded ? "Played Uppercut+!" : "Played Uppercut!");
+            set_log(upgraded ? "Played Uppercut+!"sv : "Played Uppercut!"sv);
             break;
         }
         case CardId::FIGHT_ME: {
@@ -584,13 +602,13 @@ bool CombatEngine::play_card(int index, int target_index) {
             }
             player.add_status(StatusType::STRENGTH, secondary_value);
             if (current_target.is_alive()) current_target.add_status(StatusType::STRENGTH, 1);
-            set_log(upgraded ? "Played Fight Me+!" : "Played Fight Me!");
+            set_log(upgraded ? "Played Fight Me+!"sv : "Played Fight Me!"sv);
             break;
         }
         case CardId::LEG_SWEEP: {
             current_target.add_status(StatusType::WEAK, secondary_value);
             player.gain_block(base_value);
-            set_log(upgraded ? "Played Leg Sweep+!" : "Played Leg Sweep!");
+            set_log(upgraded ? "Played Leg Sweep+!"sv : "Played Leg Sweep!"sv);
             break;
         }
         case CardId::HAZE: {
@@ -600,20 +618,20 @@ bool CombatEngine::play_card(int index, int target_index) {
                     enemies[i].add_status(StatusType::WEAK, secondary_value);
                 }
             }
-            set_log(upgraded ? "Played Haze+!" : "Played Haze!");
+            set_log(upgraded ? "Played Haze+!"sv : "Played Haze!"sv);
             break;
         }
         case CardId::PRECISE_CUT: {
             // The card already left the hand: what remains are the other cards.
             current_target.take_damage(attack_damage(static_cast<int16_t>(base_value - secondary_value * static_cast<int>(hand.size())), player, current_target));
-            set_log(upgraded ? "Played Precise Cut+!" : "Played Precise Cut!");
+            set_log(upgraded ? "Played Precise Cut+!"sv : "Played Precise Cut!"sv);
             break;
         }
         case CardId::BOUNCING_FLASK: {
             for (uint8_t bounce = 0; bounce < secondary_value; ++bounce) {
                 enemies[random_alive_enemy_index()].add_status(StatusType::POISON, base_value);
             }
-            set_log(upgraded ? "Played Bouncing Flask+!" : "Played Bouncing Flask!");
+            set_log(upgraded ? "Played Bouncing Flask+!"sv : "Played Bouncing Flask!"sv);
             break;
         }
         case CardId::FLECHETTES: {
@@ -622,32 +640,32 @@ bool CombatEngine::play_card(int index, int target_index) {
             for (int hit = 0; hit < skills; ++hit) {
                 current_target.take_damage(attack_damage(base_value, player, current_target));
             }
-            set_log(upgraded ? "Played Flechettes+!" : "Played Flechettes!");
+            set_log(upgraded ? "Played Flechettes+!"sv : "Played Flechettes!"sv);
             break;
         }
         case CardId::FOOTWORK: {
             player.add_status(StatusType::DEXTERITY, base_value);
-            set_log(upgraded ? "Played Footwork+!" : "Played Footwork!");
+            set_log(upgraded ? "Played Footwork+!"sv : "Played Footwork!"sv);
             break;
         }
         case CardId::ESCAPE_PLAN: {
             if (draw_card() && CardDef::get(hand.back().id).type == CardType::SKILL) {
                 player.gain_block(base_value);
             }
-            set_log(upgraded ? "Played Escape Plan+!" : "Played Escape Plan!");
+            set_log(upgraded ? "Played Escape Plan+!"sv : "Played Escape Plan!"sv);
             break;
         }
         case CardId::DASH: {
             player.gain_block(secondary_value);
             current_target.take_damage(attack_damage(base_value, player, current_target));
-            set_log(upgraded ? "Played Dash+!" : "Played Dash!");
+            set_log(upgraded ? "Played Dash+!"sv : "Played Dash!"sv);
             break;
         }
         case CardId::BUBBLE_BUBBLE: {
             if (current_target.get_status(StatusType::POISON) > 0) {
                 current_target.add_status(StatusType::POISON, base_value);
             }
-            set_log(upgraded ? "Played Bubble Bubble+!" : "Played Bubble Bubble!");
+            set_log(upgraded ? "Played Bubble Bubble+!"sv : "Played Bubble Bubble!"sv);
             break;
         }
         case CardId::OUTBREAK: {
@@ -657,36 +675,36 @@ bool CombatEngine::play_card(int index, int target_index) {
                     enemies[i].apply_poison_tick();
                 }
             }
-            set_log(upgraded ? "Played Outbreak+!" : "Played Outbreak!");
+            set_log(upgraded ? "Played Outbreak+!"sv : "Played Outbreak!"sv);
             break;
         }
         case CardId::SHADOW_SHIELD: {
             player.gain_block(base_value);
             player.channel_orb(OrbType::DARK, &current_target);
-            set_log(upgraded ? "Played Shadow Shield+!" : "Played Shadow Shield!");
+            set_log(upgraded ? "Played Shadow Shield+!"sv : "Played Shadow Shield!"sv);
             break;
         }
         case CardId::METEOR_STRIKE: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             for (uint8_t n = 0; n < secondary_value; ++n) player.channel_orb(OrbType::PLASMA, &current_target);
-            set_log(upgraded ? "Played Meteor Strike+!" : "Played Meteor Strike!");
+            set_log(upgraded ? "Played Meteor Strike+!"sv : "Played Meteor Strike!"sv);
             break;
         }
         case CardId::GLACIER: {
             player.gain_block(base_value);
             for (uint8_t n = 0; n < secondary_value; ++n) player.channel_orb(OrbType::FROST, &current_target);
-            set_log(upgraded ? "Played Glacier+!" : "Played Glacier!");
+            set_log(upgraded ? "Played Glacier+!"sv : "Played Glacier!"sv);
             break;
         }
         case CardId::ICE_LANCE: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             for (uint8_t n = 0; n < secondary_value; ++n) player.channel_orb(OrbType::FROST, &current_target);
-            set_log(upgraded ? "Played Ice Lance+!" : "Played Ice Lance!");
+            set_log(upgraded ? "Played Ice Lance+!"sv : "Played Ice Lance!"sv);
             break;
         }
         case CardId::SKIM: {
             draw_cards(secondary_value);
-            set_log(upgraded ? "Played Skim+!" : "Played Skim!");
+            set_log(upgraded ? "Played Skim+!"sv : "Played Skim!"sv);
             break;
         }
         case CardId::ALL_FOR_ONE: {
@@ -700,14 +718,14 @@ bool CombatEngine::play_card(int index, int target_index) {
                     ++i;
                 }
             }
-            set_log(upgraded ? "Played All for One+!" : "Played All for One!");
+            set_log(upgraded ? "Played All for One+!"sv : "Played All for One!"sv);
             break;
         }
         case CardId::NULL_CARD: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
             current_target.add_status(StatusType::WEAK, secondary_value);
             player.channel_orb(OrbType::DARK, &current_target);
-            set_log(upgraded ? "Played Null+!" : "Played Null!");
+            set_log(upgraded ? "Played Null+!"sv : "Played Null!"sv);
             break;
         }
         case CardId::GO_FOR_THE_EYES: {
@@ -715,7 +733,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             if (current_target.current_intent.base_damage > 0) {
                 current_target.add_status(StatusType::WEAK, secondary_value);
             }
-            set_log(upgraded ? "Played Go for the Eyes+!" : "Played Go for the Eyes!");
+            set_log(upgraded ? "Played Go for the Eyes+!"sv : "Played Go for the Eyes!"sv);
             break;
         }
         case CardId::SCRAPE: {
@@ -729,12 +747,12 @@ bool CombatEngine::play_card(int index, int target_index) {
                     discard_pile.push_back(drawn);
                 }
             }
-            set_log(upgraded ? "Played Scrape+!" : "Played Scrape!");
+            set_log(upgraded ? "Played Scrape+!"sv : "Played Scrape!"sv);
             break;
         }
         case CardId::BURY: {
             current_target.take_damage(attack_damage(base_value, player, current_target));
-            set_log(upgraded ? "Played Bury+!" : "Played Bury!");
+            set_log(upgraded ? "Played Bury+!"sv : "Played Bury!"sv);
             break;
         }
         case CardId::MISERY: {
@@ -745,13 +763,202 @@ bool CombatEngine::play_card(int index, int target_index) {
                     if (static_cast<int>(i) != target_idx && enemies[i].is_alive()) enemies[i].add_status(debuff, amount);
                 }
             }
-            set_log(upgraded ? "Played Misery+!" : "Played Misery!");
+            set_log(upgraded ? "Played Misery+!"sv : "Played Misery!"sv);
             break;
         }
         case CardId::UNDEATH: {
             player.gain_block(base_value);
             discard_pile.push_back(DeckCard(CardId::UNDEATH, upgraded));
-            set_log(upgraded ? "Played Undeath+!" : "Played Undeath!");
+            set_log(upgraded ? "Played Undeath+!"sv : "Played Undeath!"sv);
+            break;
+        }
+        case CardId::ASHEN_STRIKE: {
+            current_target.take_damage(attack_damage(base_value + secondary_value * static_cast<int>(exhaust_pile.size()), player, current_target));
+            set_log(upgraded ? "Played Ashen Strike+!"sv : "Played Ashen Strike!"sv);
+            break;
+        }
+        case CardId::TREMBLE: {
+            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            set_log(upgraded ? "Played Tremble+!"sv : "Played Tremble!"sv);
+            break;
+        }
+        case CardId::EVIL_EYE: {
+            player.gain_block(base_value);
+            if (exhausted_this_turn > 0) player.gain_block(base_value);
+            set_log(upgraded ? "Played Evil Eye+!"sv : "Played Evil Eye!"sv);
+            break;
+        }
+        case CardId::MOLTEN_FIST: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            current_target.add_status(StatusType::VULNERABLE, current_target.get_status(StatusType::VULNERABLE));
+            set_log(upgraded ? "Played Molten Fist+!"sv : "Played Molten Fist!"sv);
+            break;
+        }
+        case CardId::CINDER: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            if (!hand.empty()) {
+                exhaust_from_hand(next_random() % hand.size());
+            }
+            set_log(upgraded ? "Played Cinder+!"sv : "Played Cinder!"sv);
+            break;
+        }
+        case CardId::SECOND_WIND: {
+            for (size_t i = hand.size(); i-- > 0;) {
+                if (CardDef::get(hand[i].id).type != CardType::ATTACK) {
+                    exhaust_from_hand(i);
+                    player.gain_block(base_value);
+                }
+            }
+            set_log(upgraded ? "Played Second Wind+!"sv : "Played Second Wind!"sv);
+            break;
+        }
+        case CardId::TRUE_GRIT: {
+            // The upgraded card lets the player choose the card: random as well until hand choices exist (#31).
+            player.gain_block(base_value);
+            if (!hand.empty()) {
+                exhaust_from_hand(next_random() % hand.size());
+            }
+            set_log(upgraded ? "Played True Grit+!"sv : "Played True Grit!"sv);
+            break;
+        }
+        case CardId::DOMINATE: {
+            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            player.add_status(StatusType::STRENGTH, current_target.get_status(StatusType::VULNERABLE));
+            set_log(upgraded ? "Played Dominate+!"sv : "Played Dominate!"sv);
+            break;
+        }
+        case CardId::FIEND_FIRE: {
+            size_t burnt = hand.size();
+            while (!hand.empty()) exhaust_from_hand(hand.size() - 1);
+            for (size_t hit = 0; hit < burnt; ++hit) {
+                current_target.take_damage(attack_damage(base_value, player, current_target));
+            }
+            set_log(upgraded ? "Played Fiend Fire+!"sv : "Played Fiend Fire!"sv);
+            break;
+        }
+        case CardId::THRASH: {
+            for (int hit = 0; hit < 2; ++hit) {
+                current_target.take_damage(attack_damage(base_value + played_card.bonus, player, current_target));
+            }
+            // Exhausts a random Attack of the hand; this copy keeps its damage for the rest of the combat.
+            FixedVector<uint8_t, 10> attacks;
+            for (size_t i = 0; i < hand.size(); ++i) {
+                if (CardDef::get(hand[i].id).type == CardType::ATTACK) attacks.push_back(static_cast<uint8_t>(i));
+            }
+            if (!attacks.empty()) {
+                DeckCard eaten = exhaust_from_hand(attacks[next_random() % attacks.size()]);
+                int gained = CardDef::get_value(eaten.id, eaten.upgraded) + eaten.bonus;
+                played_card.bonus = static_cast<uint8_t>(std::min(255, played_card.bonus + gained));
+            }
+            set_log(upgraded ? "Played Thrash+!"sv : "Played Thrash!"sv);
+            break;
+        }
+        case CardId::IMPERVIOUS: {
+            player.gain_block(base_value);
+            set_log(upgraded ? "Played Impervious+!"sv : "Played Impervious!"sv);
+            break;
+        }
+        case CardId::PACTS_END: {
+            if (exhaust_pile.size() >= secondary_value) {
+                for (size_t i = 0; i < enemies.size(); ++i) {
+                    if (enemies[i].is_alive()) {
+                        enemies[i].take_damage(attack_damage(base_value, player, enemies[i]));
+                    }
+                }
+            }
+            set_log(upgraded ? "Played Pact's End+!"sv : "Played Pact's End!"sv);
+            break;
+        }
+        case CardId::NOT_YET: {
+            player.heal(base_value);
+            set_log(upgraded ? "Played Not Yet+!"sv : "Played Not Yet!"sv);
+            break;
+        }
+        case CardId::ADRENALINE: {
+            player.energy = static_cast<int8_t>(player.energy + base_value);
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Adrenaline+!"sv : "Played Adrenaline!"sv);
+            break;
+        }
+        case CardId::CALCULATED_GAMBLE: {
+            int swapped = static_cast<int>(hand.size());
+            while (!hand.empty()) {
+                discard_pile.push_back(hand.back());
+                hand.pop_back();
+            }
+            draw_cards(swapped);
+            set_log(upgraded ? "Played Calculated Gamble+!"sv : "Played Calculated Gamble!"sv);
+            break;
+        }
+        case CardId::MIRAGE: {
+            int16_t poison = 0;
+            for (const Enemy& foe : enemies) {
+                if (foe.is_alive()) poison += foe.get_status(StatusType::POISON);
+            }
+            player.gain_block(poison);
+            set_log(upgraded ? "Played Mirage+!"sv : "Played Mirage!"sv);
+            break;
+        }
+        case CardId::RAINBOW: {
+            for (OrbType orb : { OrbType::LIGHTNING, OrbType::FROST, OrbType::DARK }) player.channel_orb(orb, &current_target);
+            set_log(upgraded ? "Played Rainbow+!"sv : "Played Rainbow!"sv);
+            break;
+        }
+        case CardId::CHILL: {
+            for (int foes = count_alive_enemies(); foes > 0; --foes) player.channel_orb(OrbType::FROST, &current_target);
+            set_log(upgraded ? "Played Chill+!"sv : "Played Chill!"sv);
+            break;
+        }
+        case CardId::FUSION: {
+            player.channel_orb(OrbType::PLASMA, &current_target);
+            set_log(upgraded ? "Played Fusion+!"sv : "Played Fusion!"sv);
+            break;
+        }
+        case CardId::REBOOT: {
+            while (!hand.empty()) {
+                draw_pile.push_back(hand.back());
+                hand.pop_back();
+            }
+            shuffle_discard_into_draw();
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Reboot+!"sv : "Played Reboot!"sv);
+            break;
+        }
+        case CardId::SUPERCRITICAL: {
+            player.energy = static_cast<int8_t>(player.energy + base_value);
+            set_log(upgraded ? "Played Supercritical+!"sv : "Played Supercritical!"sv);
+            break;
+        }
+        case CardId::DOUBLE_ENERGY: {
+            player.energy = static_cast<int8_t>(player.energy * 2);
+            set_log(upgraded ? "Played Double Energy+!"sv : "Played Double Energy!"sv);
+            break;
+        }
+        case CardId::SHARED_FATE: {
+            player.add_status(StatusType::STRENGTH, static_cast<int16_t>(-base_value));
+            current_target.add_status(StatusType::STRENGTH, static_cast<int16_t>(-secondary_value));
+            set_log(upgraded ? "Played Shared Fate+!"sv : "Played Shared Fate!"sv);
+            break;
+        }
+        case CardId::WISP: {
+            player.energy = static_cast<int8_t>(player.energy + base_value);
+            set_log(upgraded ? "Played Wisp+!"sv : "Played Wisp!"sv);
+            break;
+        }
+        case CardId::PUTREFY: {
+            current_target.add_status(StatusType::WEAK, secondary_value);
+            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            set_log(upgraded ? "Played Putrefy+!"sv : "Played Putrefy!"sv);
+            break;
+        }
+        case CardId::REANIMATE: {
+            player.summon_minion(secondary_value, 0);
+            set_log(upgraded ? "Played Reanimate+!"sv : "Played Reanimate!"sv);
+            break;
+        }
+        case CardId::AFTERLIFE: {
+            player.summon_minion(secondary_value, 0);
+            set_log(upgraded ? "Played Afterlife+!"sv : "Played Afterlife!"sv);
             break;
         }
         default:
@@ -766,7 +973,11 @@ bool CombatEngine::play_card(int index, int target_index) {
 
     // Powers stay in play for the rest of the combat: they never return to the piles.
     if (CardDef::get(card_id).type != CardType::POWER) {
-        discard_pile.push_back(played_card);
+        if (CardDef::has_keyword(card_id, upgraded, KEYWORD_EXHAUST)) {
+            exhaust_card(played_card);
+        } else {
+            discard_pile.push_back(played_card);
+        }
     }
 
     // Check victory

@@ -158,6 +158,60 @@ bn::string_view base_name(engine::CardId id)
         return "Misère";
     case engine::CardId::UNDEATH:
         return "Mort-vivant";
+    case engine::CardId::ASHEN_STRIKE:
+        return "Frappe cendrée";
+    case engine::CardId::TREMBLE:
+        return "Intimidation";
+    case engine::CardId::EVIL_EYE:
+        return "Mauvais œil";
+    case engine::CardId::MOLTEN_FIST:
+        return "Poing en fusion";
+    case engine::CardId::CINDER:
+        return "Scorie";
+    case engine::CardId::SECOND_WIND:
+        return "Second souffle";
+    case engine::CardId::TRUE_GRIT:
+        return "Virilité";
+    case engine::CardId::DOMINATE:
+        return "Domination";
+    case engine::CardId::FIEND_FIRE:
+        return "Feu démoniaque";
+    case engine::CardId::THRASH:
+        return "Furie";
+    case engine::CardId::IMPERVIOUS:
+        return "Insensible";
+    case engine::CardId::PACTS_END:
+        return "Pacte conclu";
+    case engine::CardId::NOT_YET:
+        return "Pas encore";
+    case engine::CardId::ADRENALINE:
+        return "Adrénaline";
+    case engine::CardId::CALCULATED_GAMBLE:
+        return "Coup de poker";
+    case engine::CardId::MIRAGE:
+        return "Mirage";
+    case engine::CardId::RAINBOW:
+        return "Arc-en-ciel";
+    case engine::CardId::CHILL:
+        return "Frisson";
+    case engine::CardId::FUSION:
+        return "Fusion";
+    case engine::CardId::REBOOT:
+        return "Redémarrage";
+    case engine::CardId::SUPERCRITICAL:
+        return "Supercritique";
+    case engine::CardId::DOUBLE_ENERGY:
+        return "Énergie double";
+    case engine::CardId::SHARED_FATE:
+        return "Destin partagé";
+    case engine::CardId::WISP:
+        return "Feu follet";
+    case engine::CardId::PUTREFY:
+        return "Putréfaction";
+    case engine::CardId::REANIMATE:
+        return "Réanimation";
+    case engine::CardId::AFTERLIFE:
+        return "Vie après la mort";
     default:
         return "???";
     }
@@ -180,7 +234,7 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
 {
     out.clear();
     bn::ostringstream stream(out);
-    int value = engine::CardDef::get_value(card.id, card.upgraded);
+    int value = engine::CardDef::get_value(card.id, card.upgraded) + card.bonus;
     int secondary = engine::CardDef::get_secondary(card.id, card.upgraded);
 
     switch(card.id)
@@ -401,6 +455,87 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::UNDEATH:
         stream << "Gagne " << value << " d'Armure. Copie dans la défausse.";
+        break;
+    case engine::CardId::ASHEN_STRIKE:
+        stream << "Inflige " << value << " dégâts, +" << secondary << " par carte épuisée.";
+        break;
+    case engine::CardId::TREMBLE:
+        stream << "Vulnérable " << secondary << ". Épuisement.";
+        break;
+    case engine::CardId::EVIL_EYE:
+        stream << "Gagne " << value << " d'Armure, x2 si carte épuisée.";
+        break;
+    case engine::CardId::MOLTEN_FIST:
+        stream << "Inflige " << value << ". Double Vulnérable. Épuis.";
+        break;
+    case engine::CardId::CINDER:
+        stream << "Inflige " << value << ". Épuise 1 carte au hasard.";
+        break;
+    case engine::CardId::SECOND_WIND:
+        stream << "Épuise les non-Attaques : +" << value << " d'Armure.";
+        break;
+    case engine::CardId::TRUE_GRIT:
+        stream << "Gagne " << value << " d'Armure. Épuise 1 carte.";
+        break;
+    case engine::CardId::DOMINATE:
+        stream << "Vulnérable " << secondary << ". Force +1 par Vuln. Épuis.";
+        break;
+    case engine::CardId::FIEND_FIRE:
+        stream << "Épuise la main : " << value << " par carte. Épuis.";
+        break;
+    case engine::CardId::THRASH:
+        stream << value << " dégâts 2 fois. Absorbe 1 Attaque.";
+        break;
+    case engine::CardId::IMPERVIOUS:
+        stream << "Gagne " << value << " d'Armure. Épuisement.";
+        break;
+    case engine::CardId::PACTS_END:
+        stream << "Si " << secondary << " épuisées : " << value << " dégâts à TOUS.";
+        break;
+    case engine::CardId::NOT_YET:
+        stream << "Récupère " << value << " PV. Épuisement.";
+        break;
+    case engine::CardId::ADRENALINE:
+        stream << "Énergie +" << value << ". Pioche " << secondary << " cartes. Épuisement.";
+        break;
+    case engine::CardId::CALCULATED_GAMBLE:
+        stream << (card.upgraded ? "Retenue. " : "") << "Change toute la main. Épuisement.";
+        break;
+    case engine::CardId::MIRAGE:
+        stream << "Armure = Poison des ennemis." << (card.upgraded ? "" : " Épuisement.");
+        break;
+    case engine::CardId::RAINBOW:
+        stream << "Canalise Foudre, Givre, Ténèbres." << (card.upgraded ? "" : " Épuis.");
+        break;
+    case engine::CardId::CHILL:
+        stream << "Canalise 1 Givre par ennemi." << (card.upgraded ? "" : " Épuisement.");
+        break;
+    case engine::CardId::FUSION:
+        stream << "Canalise 1 Plasma." << (card.upgraded ? "" : " Épuisement.");
+        break;
+    case engine::CardId::REBOOT:
+        stream << "Remélange tout. Pioche " << secondary << ". Épuisement.";
+        break;
+    case engine::CardId::SUPERCRITICAL:
+        stream << "Énergie +" << value << ". Épuisement.";
+        break;
+    case engine::CardId::DOUBLE_ENERGY:
+        stream << "Double votre énergie. Épuisement.";
+        break;
+    case engine::CardId::SHARED_FATE:
+        stream << "Force -" << value << ". Ennemi : Force -" << secondary << ". Épuisement.";
+        break;
+    case engine::CardId::WISP:
+        stream << (card.upgraded ? "Retenue. " : "") << "Énergie +" << value << ". Épuisement.";
+        break;
+    case engine::CardId::PUTREFY:
+        stream << "Affaibli et Vulnérable " << secondary << ". Épuisement.";
+        break;
+    case engine::CardId::REANIMATE:
+        stream << "Invoque Titos (" << secondary << " PV). Épuisement.";
+        break;
+    case engine::CardId::AFTERLIFE:
+        stream << "Invoque Titos (" << secondary << " PV). Épuisement.";
         break;
     default:
         break;

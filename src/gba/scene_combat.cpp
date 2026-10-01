@@ -155,6 +155,7 @@ private:
     Label _resource_label;
     Label _pile_label;
     Label _discard_label;
+    Label _exhaust_label;
     Label _hint_label;
     Label _line1;
     Label _line1_right;
@@ -196,6 +197,7 @@ private:
     int _shown_player_block = -1;
     int _shown_draw = -1;
     int _shown_discard = -1;
+    int _shown_exhaust = -1;
     int _shown_resource = -1;
     int _selected_shown = -1;
     int _hand_size_shown = -1;
@@ -585,6 +587,26 @@ void CombatScene::_refresh_hud()
         text.clear();
         stream << "Défausse " << discard;
         _discard_label.set(-80, -56, text, Align::LEFT, TextColor::GRAY);
+    }
+
+    // The exhaust pile only shows once a card left the combat.
+    int exhausted = int(_combat.exhaust_pile.size());
+
+    if(exhausted != _shown_exhaust)
+    {
+        _shown_exhaust = exhausted;
+
+        if(exhausted > 0)
+        {
+            TextLine text;
+            bn::ostringstream stream(text);
+            stream << "Épuisées " << exhausted;
+            _exhaust_label.set(-80, -46, text, Align::LEFT, TextColor::GRAY);
+        }
+        else
+        {
+            _exhaust_label.clear();
+        }
     }
 
     // Hero-specific resource under the energy orb.

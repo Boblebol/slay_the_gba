@@ -277,24 +277,31 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                 CardId::INFLAME, CardId::PERFECTED_STRIKE, CardId::BLUDGEON,
                                                 CardId::BULLY, CardId::SWORD_BOOMERANG, CardId::CONFLAGRATION,
                                                 CardId::EXPECT_A_FIGHT, CardId::PILLAGE, CardId::UPPERCUT,
-                                                CardId::FIGHT_ME };
+                                                CardId::FIGHT_ME, CardId::ASHEN_STRIKE, CardId::TREMBLE,
+                                                CardId::EVIL_EYE, CardId::MOLTEN_FIST, CardId::CINDER,
+                                                CardId::SECOND_WIND, CardId::TRUE_GRIT, CardId::DOMINATE,
+                                                CardId::FIEND_FIRE, CardId::THRASH, CardId::IMPERVIOUS,
+                                                CardId::PACTS_END, CardId::NOT_YET };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
                                               CardId::PRECISE_CUT, CardId::BOUNCING_FLASK, CardId::FLECHETTES,
                                               CardId::FOOTWORK, CardId::ESCAPE_PLAN, CardId::DASH,
-                                              CardId::BUBBLE_BUBBLE, CardId::OUTBREAK };
+                                              CardId::BUBBLE_BUBBLE, CardId::OUTBREAK, CardId::ADRENALINE,
+                                              CardId::CALCULATED_GAMBLE, CardId::MIRAGE };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL, CardId::BALL_LIGHTNING,
                                               CardId::COLD_SNAP, CardId::LEAP, CardId::COOLHEADED,
                                               CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD, CardId::GLACIER,
                                               CardId::METEOR_STRIKE, CardId::ICE_LANCE, CardId::SKIM,
                                               CardId::ALL_FOR_ONE, CardId::NULL_CARD, CardId::GO_FOR_THE_EYES,
-                                              CardId::SCRAPE };
+                                              CardId::SCRAPE, CardId::RAINBOW, CardId::CHILL, CardId::FUSION,
+                                              CardId::REBOOT, CardId::SUPERCRITICAL, CardId::DOUBLE_ENERGY };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
-                                                   CardId::UNDEATH };
+                                                   CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
+                                                   CardId::PUTREFY, CardId::REANIMATE, CardId::AFTERLIFE };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;
@@ -308,7 +315,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
 void RunManager::generate_rewards() {
     // Offer distinct cards drawn at random from the hero's pool.
     current_card_rewards.clear();
-    FixedVector<CardId, 32> candidates;
+    FixedVector<CardId, 128> candidates;
     for (CardId id : card_reward_pool(character)) {
         candidates.push_back(id);
     }

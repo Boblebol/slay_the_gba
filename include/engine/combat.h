@@ -38,6 +38,7 @@ public:
     FixedVector<DeckCard, 10> hand;
     FixedVector<DeckCard, 50> discard_pile;
     FixedVector<DeckCard, 50> exhaust_pile;
+    uint8_t exhausted_this_turn = 0; // cards exhausted since the start of the player's turn
 
     FixedVector<EnemyActionRecord, 3> last_enemy_actions;
 
@@ -56,6 +57,10 @@ public:
     bool draw_card();
     void draw_cards(int count);
     void shuffle_discard_into_draw();
+    // Removes the card from the combat: it goes to the exhaust pile.
+    void exhaust_card(DeckCard card);
+    // Exhausts the hand card at `index` and returns it.
+    DeckCard exhaust_from_hand(size_t index);
     
     bool can_play_card(int index) const;
     bool play_card(int index, int target_index = -1);

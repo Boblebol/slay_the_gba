@@ -913,6 +913,270 @@ void test_necrobinder_existing_mechanics() {
     std::cout << "[PASS] Necrobinder: Bury, Misery (Retain once upgraded), Undeath" << std::endl;
 }
 
+void test_exhaust() {
+    // An Exhaust card leaves the combat: it goes to the exhaust pile, never to the discard pile.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.discard_pile.clear();
+    play(combat, CardId::IMPERVIOUS);
+    assert(combat.player.block == 30);
+    assert(combat.exhaust_pile.size() == 1 && combat.exhaust_pile[0].id == CardId::IMPERVIOUS);
+    assert(combat.discard_pile.empty() && combat.exhausted_this_turn == 1);
+    assert(CardDef::has_keyword(CardId::IMPERVIOUS, false, KEYWORD_EXHAUST));
+    assert(!CardDef::has_keyword(CardId::STRIKE, false, KEYWORD_EXHAUST));
+
+    // The turn counter restarts each turn, the pile lasts the whole combat and is emptied by the next one.
+    make_enemy_idle(combat.enemies[0]);
+    combat.end_player_turn();
+    assert(combat.exhausted_this_turn == 0 && combat.exhaust_pile.size() == 1);
+    assert(count_in_piles(combat, CardId::IMPERVIOUS) == 1);
+    combat.start_combat(EnemyType::JAW_WORM, CharacterId::IRONCLAD);
+    assert(combat.exhaust_pile.empty());
+
+    // An upgrade can remove the keyword (Mirage) or add Retain (Wisp, Calculated Gamble).
+    assert(CardDef::has_keyword(CardId::MIRAGE, false, KEYWORD_EXHAUST));
+    assert(!CardDef::has_keyword(CardId::MIRAGE, true, KEYWORD_EXHAUST));
+    assert(!CardDef::has_keyword(CardId::WISP, false, KEYWORD_RETAIN));
+    assert(CardDef::has_keyword(CardId::WISP, true, KEYWORD_RETAIN));
+    assert(CardDef::has_keyword(CardId::CALCULATED_GAMBLE, true, KEYWORD_RETAIN));
+    assert(CardDef::has_keyword(CardId::MISERY, true, KEYWORD_RETAIN));
+    std::cout << "[PASS] Exhaust: pile, per-turn counter, keywords changed by upgrades" << std::endl;
+}
+
+void test_ironclad_exhaust() {
+    // Tremble: Vulnerable, then exhausted.
+    CombatEngine tremble = make_combat(CharacterId::IRONCLAD);
+    play(tremble, DeckCard(CardId::TREMBLE, true));
+    assert(tremble.enemies[0].get_status(StatusType::VULNERABLE) == 4);
+    assert(tremble.exhaust_pile.size() == 1);
+
+    // Ashen Strike: 6 damage plus 3 per card in the exhaust pile.
+    CombatEngine ashen = make_combat(CharacterId::IRONCLAD);
+    play(ashen, CardId::ASHEN_STRIKE);
+    assert(ashen.enemies[0].hp == 36);
+    ashen.exhaust_card(CardId::DEFEND);
+    ashen.exhaust_card(CardId::DEFEND);
+    play(ashen, CardId::ASHEN_STRIKE);
+    assert(ashen.enemies[0].hp == 36 - 12);
+
+    // Evil Eye: its Block twice when a card was exhausted this turn.
+    CombatEngine eye = make_combat(CharacterId::IRONCLAD);
+    eye.player.block = 0;
+    play(eye, CardId::EVIL_EYE);
+    assert(eye.player.block == 8);
+    eye.exhaust_card(CardId::DEFEND);
+    play(eye, DeckCard(CardId::EVIL_EYE, true));
+    assert(eye.player.block == 8 + 22);
+
+    // Molten Fist: damage first, then the enemy's Vulnerable is doubled.
+    CombatEngine fist = make_combat(CharacterId::IRONCLAD);
+    fist.enemies[0].add_status(StatusType::VULNERABLE, 2);
+    play(fist, CardId::MOLTEN_FIST);
+    assert(fist.enemies[0].hp == 42 - 15 && fist.enemies[0].get_status(StatusType::VULNERABLE) == 4);
+    assert(fist.exhaust_pile.size() == 1);
+
+    // Cinder and True Grit exhaust a random card of the hand.
+    CombatEngine cinder = make_combat(CharacterId::IRONCLAD);
+    cinder.hand.clear();
+    cinder.hand.push_back(CardId::CINDER);
+    cinder.hand.push_back(CardId::DEFEND);
+    cinder.discard_pile.clear();
+    assert(cinder.play_card(0));
+    assert(cinder.enemies[0].hp == 24 && cinder.hand.empty());
+    assert(cinder.exhaust_pile.size() == 1 && cinder.exhaust_pile[0].id == CardId::DEFEND);
+    assert(cinder.discard_pile.size() == 1 && cinder.discard_pile[0].id == CardId::CINDER);
+    CombatEngine grit = make_combat(CharacterId::IRONCLAD);
+    grit.player.block = 0;
+    play(grit, CardId::TRUE_GRIT); // alone in hand: nothing to exhaust
+    assert(grit.player.block == 7 && grit.exhaust_pile.empty());
+    grit.hand.clear();
+    grit.hand.push_back(DeckCard(CardId::TRUE_GRIT, true));
+    grit.hand.push_back(CardId::STRIKE);
+    assert(grit.play_card(0));
+    assert(grit.player.block == 16 && grit.exhaust_pile.size() == 1 && grit.hand.empty());
+
+    // Second Wind: every non-Attack of the hand is exhausted for Block.
+    CombatEngine wind = make_combat(CharacterId::IRONCLAD);
+    wind.player.block = 0;
+    wind.hand.clear();
+    wind.hand.push_back(CardId::SECOND_WIND);
+    wind.hand.push_back(CardId::DEFEND);
+    wind.hand.push_back(CardId::STRIKE);
+    wind.hand.push_back(CardId::SHRUG_IT_OFF);
+    assert(wind.play_card(0));
+    assert(wind.player.block == 10 && wind.exhaust_pile.size() == 2);
+    assert(wind.hand.size() == 1 && wind.hand[0].id == CardId::STRIKE);
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::ASHEN_STRIKE, CardId::TREMBLE, CardId::EVIL_EYE, CardId::MOLTEN_FIST,
+                                            CardId::CINDER, CardId::SECOND_WIND, CardId::TRUE_GRIT });
+    std::cout << "[PASS] Ironclad Exhaust: Ashen Strike, Tremble, Evil Eye, Molten Fist, Cinder, Second Wind, True Grit"
+              << std::endl;
+
+    // Dominate: Vulnerable, then 1 Strength per Vulnerable on the enemy.
+    CombatEngine dominate = make_combat(CharacterId::IRONCLAD);
+    dominate.enemies[0].add_status(StatusType::VULNERABLE, 2);
+    play(dominate, CardId::DOMINATE);
+    assert(dominate.enemies[0].get_status(StatusType::VULNERABLE) == 3);
+    assert(dominate.player.get_status(StatusType::STRENGTH) == 3 && dominate.exhaust_pile.size() == 1);
+
+    // Fiend Fire: exhausts the hand, one hit of 7 per card, then itself.
+    CombatEngine fiend = make_combat(CharacterId::IRONCLAD);
+    fiend.hand.clear();
+    fiend.hand.push_back(CardId::FIEND_FIRE);
+    fiend.hand.push_back(CardId::STRIKE);
+    fiend.hand.push_back(CardId::DEFEND);
+    fiend.hand.push_back(CardId::DEFEND);
+    assert(fiend.play_card(0));
+    assert(fiend.enemies[0].hp == 42 - 21 && fiend.hand.empty() && fiend.exhaust_pile.size() == 4);
+
+    // Thrash: two hits, then a random Attack of the hand is exhausted and its damage kept by this copy.
+    CombatEngine thrash = make_combat(CharacterId::IRONCLAD);
+    thrash.hand.clear();
+    thrash.hand.push_back(CardId::THRASH);
+    thrash.hand.push_back(CardId::DEFEND);
+    thrash.hand.push_back(CardId::BLUDGEON);
+    thrash.discard_pile.clear();
+    assert(thrash.play_card(0));
+    assert(thrash.enemies[0].hp == 42 - 8);
+    assert(thrash.exhaust_pile.size() == 1 && thrash.exhaust_pile[0].id == CardId::BLUDGEON);
+    assert(thrash.hand.size() == 1 && thrash.discard_pile[0].id == CardId::THRASH && thrash.discard_pile[0].bonus == 32);
+    thrash.enemies[0].hp = 100;
+    thrash.hand.clear();
+    thrash.hand.push_back(thrash.discard_pile[0]);
+    thrash.player.energy = 3;
+    assert(thrash.play_card(0));
+    assert(thrash.enemies[0].hp == 100 - 2 * 36);
+
+    // Pact's End needs 3 exhausted cards.
+    CombatEngine pact = make_pack(CharacterId::IRONCLAD);
+    play(pact, CardId::PACTS_END);
+    assert(pact.enemies[2].hp == 42);
+    for (int n = 0; n < 3; ++n) pact.exhaust_card(CardId::DEFEND);
+    play(pact, CardId::PACTS_END);
+    assert(pact.enemies[0].hp == 0 && pact.enemies[1].hp == 0 && pact.enemies[2].hp == 24);
+    assert(pact.exhaust_pile.size() == 3); // the card itself is discarded
+
+    // Not Yet heals, never above the maximum.
+    CombatEngine heal = make_combat(CharacterId::IRONCLAD);
+    heal.player.hp = 60;
+    play(heal, CardId::NOT_YET);
+    assert(heal.player.hp == 70);
+    play(heal, DeckCard(CardId::NOT_YET, true));
+    assert(heal.player.hp == 80);
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::DOMINATE, CardId::FIEND_FIRE, CardId::THRASH, CardId::IMPERVIOUS,
+                                            CardId::PACTS_END, CardId::NOT_YET });
+    std::cout << "[PASS] Ironclad Exhaust: Dominate, Fiend Fire, Thrash, Impervious, Pact's End, Not Yet" << std::endl;
+}
+
+void test_other_heroes_exhaust() {
+    // Adrenaline: free, energy and 2 cards.
+    CombatEngine adrenaline = make_combat(CharacterId::SILENT);
+    play(adrenaline, DeckCard(CardId::ADRENALINE, true));
+    assert(adrenaline.player.energy == 5 && adrenaline.hand.size() == 2 && adrenaline.exhaust_pile.size() == 1);
+
+    // Calculated Gamble: the whole hand is swapped for as many new cards.
+    CombatEngine gamble = make_combat(CharacterId::SILENT);
+    gamble.hand.clear();
+    gamble.hand.push_back(CardId::CALCULATED_GAMBLE);
+    gamble.hand.push_back(CardId::STRIKE);
+    gamble.hand.push_back(CardId::STRIKE);
+    gamble.discard_pile.clear();
+    assert(gamble.play_card(0));
+    assert(gamble.hand.size() == 2 && gamble.discard_pile.size() == 2 && gamble.exhaust_pile.size() == 1);
+
+    // Mirage: Block equal to the Poison on every enemy; the upgraded card is not exhausted.
+    CombatEngine mirage = make_pack(CharacterId::SILENT);
+    mirage.player.block = 0;
+    mirage.enemies[0].add_status(StatusType::POISON, 4);
+    mirage.enemies[2].add_status(StatusType::POISON, 7);
+    play(mirage, DeckCard(CardId::MIRAGE, true));
+    assert(mirage.player.block == 11 && mirage.exhaust_pile.empty());
+    play(mirage, CardId::MIRAGE);
+    assert(mirage.exhaust_pile.size() == 1);
+
+    assert_in_pool(CharacterId::SILENT, { CardId::ADRENALINE, CardId::CALCULATED_GAMBLE, CardId::MIRAGE });
+    std::cout << "[PASS] Silent Exhaust: Adrenaline, Calculated Gamble, Mirage" << std::endl;
+
+    // Rainbow: one Lightning, one Frost, one Dark.
+    CombatEngine rainbow = make_combat(CharacterId::DEFECT);
+    play(rainbow, CardId::RAINBOW);
+    assert(rainbow.player.orbs.size() == 3 && rainbow.player.orbs[0] == OrbType::LIGHTNING);
+    assert(rainbow.player.orbs[1] == OrbType::FROST && rainbow.player.orbs[2] == OrbType::DARK);
+    assert(rainbow.exhaust_pile.size() == 1);
+
+    // Chill: one Frost per living enemy.
+    CombatEngine chill = make_pack(CharacterId::DEFECT);
+    chill.enemies[1].hp = 0;
+    play(chill, DeckCard(CardId::CHILL, true));
+    assert(chill.player.orbs.size() == 2 && chill.player.orbs[0] == OrbType::FROST && chill.exhaust_pile.empty());
+
+    // Fusion: a Plasma orb, worth 1 energy at the start of each turn.
+    CombatEngine fusion = make_combat(CharacterId::DEFECT);
+    make_enemy_idle(fusion.enemies[0]);
+    play(fusion, CardId::FUSION);
+    assert(fusion.player.orbs.size() == 1 && fusion.player.orbs[0] == OrbType::PLASMA);
+    fusion.end_player_turn();
+    assert(fusion.player.energy == 4);
+
+    // Reboot: hand and discard pile go back into the draw pile, then 4 cards are drawn.
+    CombatEngine reboot = make_combat(CharacterId::DEFECT);
+    reboot.hand.clear();
+    reboot.hand.push_back(CardId::REBOOT);
+    reboot.hand.push_back(CardId::STRIKE);
+    reboot.discard_pile.clear();
+    reboot.discard_pile.push_back(CardId::DEFEND);
+    size_t reboot_pile = reboot.draw_pile.size();
+    assert(reboot.play_card(0));
+    assert(reboot.hand.size() == 4 && reboot.discard_pile.empty());
+    assert(reboot.draw_pile.size() == reboot_pile + 2 - 4);
+
+    // Supercritical and Double Energy; the upgraded Double Energy costs 0.
+    CombatEngine energy = make_combat(CharacterId::DEFECT);
+    play(energy, CardId::SUPERCRITICAL);
+    assert(energy.player.energy == 7);
+    play(energy, CardId::DOUBLE_ENERGY); // play() refills to 3, the card costs 1
+    assert(energy.player.energy == 4);
+    assert(CardDef::get_cost(CardId::DOUBLE_ENERGY, true) == 0);
+    assert(energy.exhaust_pile.size() == 2);
+
+    assert_in_pool(CharacterId::DEFECT, { CardId::RAINBOW, CardId::CHILL, CardId::FUSION, CardId::REBOOT,
+                                          CardId::SUPERCRITICAL, CardId::DOUBLE_ENERGY });
+    std::cout << "[PASS] Defect Exhaust: Rainbow, Chill, Fusion, Reboot, Supercritical, Double Energy" << std::endl;
+
+    // Shared Fate: both sides lose Strength.
+    CombatEngine fate = make_combat(CharacterId::NECROBINDER);
+    play(fate, DeckCard(CardId::SHARED_FATE, true));
+    assert(fate.player.get_status(StatusType::STRENGTH) == -2 && fate.enemies[0].get_status(StatusType::STRENGTH) == -3);
+
+    // Wisp: 1 energy; the upgraded card stays in hand at the end of the turn.
+    CombatEngine wisp = make_combat(CharacterId::NECROBINDER);
+    make_enemy_idle(wisp.enemies[0]);
+    play(wisp, CardId::WISP);
+    assert(wisp.player.energy == 4 && wisp.exhaust_pile.size() == 1);
+    wisp.hand.clear();
+    wisp.hand.push_back(DeckCard(CardId::WISP, true));
+    wisp.end_player_turn();
+    int wisps = 0;
+    for (const DeckCard& card : wisp.hand) wisps += card.id == CardId::WISP;
+    assert(wisps == 1);
+
+    // Putrefy: Weak and Vulnerable.
+    CombatEngine putrefy = make_combat(CharacterId::NECROBINDER);
+    play(putrefy, CardId::PUTREFY);
+    assert(putrefy.enemies[0].get_status(StatusType::WEAK) == 2 && putrefy.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+
+    // Afterlife and Reanimate summon Titos.
+    CombatEngine summon = make_combat(CharacterId::NECROBINDER);
+    play(summon, CardId::AFTERLIFE);
+    assert(summon.player.minion_hp == 6);
+    play(summon, DeckCard(CardId::REANIMATE, true));
+    assert(summon.player.minion_hp == 31 && summon.player.energy == 0 && summon.exhaust_pile.size() == 2);
+
+    assert_in_pool(CharacterId::NECROBINDER, { CardId::SHARED_FATE, CardId::WISP, CardId::PUTREFY, CardId::REANIMATE,
+                                               CardId::AFTERLIFE });
+    std::cout << "[PASS] Necrobinder Exhaust: Shared Fate, Wisp, Putrefy, Reanimate, Afterlife" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -983,6 +1247,9 @@ int main() {
     test_silent_existing_mechanics();
     test_defect_existing_mechanics();
     test_necrobinder_existing_mechanics();
+    test_exhaust();
+    test_ironclad_exhaust();
+    test_other_heroes_exhaust();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;

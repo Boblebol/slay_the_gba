@@ -91,8 +91,39 @@ static const CardDef CARDS[] = {
     { CardId::SCRAPE, "Scrape", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 7, 4, "Deal 7 dmg. Draw 4, discard those not costing 0.", "Scrape+", 1, 10, 5, "Deal 10 dmg. Draw 5, discard those not costing 0." },
     // Necrobinder cards on existing mechanics
     { CardId::BURY, "Bury", 4, CardType::ATTACK, TargetType::SINGLE_ENEMY, 52, 0, "Deal 52 dmg.", "Bury+", 4, 63, 0, "Deal 63 dmg." },
-    { CardId::MISERY, "Misery", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 7, 0, "Deal 7 dmg. Spread its debuffs to the others.", "Misery+", 0, 9, 0, "Retain. Deal 9 dmg. Spread its debuffs to the others." },
-    { CardId::UNDEATH, "Undeath", 0, CardType::SKILL, TargetType::SELF, 7, 0, "Gain 7 block. Copy to discard.", "Undeath+", 0, 9, 0, "Gain 9 block. Copy to discard." }
+    { CardId::MISERY, "Misery", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 7, 0, "Deal 7 dmg. Spread its debuffs to the others.", "Misery+", 0, 9, 0, "Retain. Deal 9 dmg. Spread its debuffs to the others.", 0, KEYWORD_RETAIN },
+    { CardId::UNDEATH, "Undeath", 0, CardType::SKILL, TargetType::SELF, 7, 0, "Gain 7 block. Copy to discard.", "Undeath+", 0, 9, 0, "Gain 9 block. Copy to discard." },
+    // Ironclad Exhaust cards
+    { CardId::ASHEN_STRIKE, "Ashen Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 3, "Deal 6 dmg, +3 per exhausted card.", "Ashen Strike+", 1, 6, 4, "Deal 6 dmg, +4 per exhausted card." },
+    { CardId::TREMBLE, "Tremble", 1, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 3, "Apply 3 Vuln. Exhaust.", "Tremble+", 1, 0, 4, "Apply 4 Vuln. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::EVIL_EYE, "Evil Eye", 1, CardType::SKILL, TargetType::SELF, 8, 0, "Gain 8 block, twice if a card was exhausted this turn.", "Evil Eye+", 1, 11, 0, "Gain 11 block, twice if a card was exhausted this turn." },
+    { CardId::MOLTEN_FIST, "Molten Fist", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 0, "Deal 10 dmg. Double the enemy's Vuln. Exhaust.", "Molten Fist+", 1, 14, 0, "Deal 14 dmg. Double the enemy's Vuln. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::CINDER, "Cinder", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 18, 0, "Deal 18 dmg. Exhaust a random card.", "Cinder+", 2, 24, 0, "Deal 24 dmg. Exhaust a random card." },
+    { CardId::SECOND_WIND, "Second Wind", 1, CardType::SKILL, TargetType::SELF, 5, 0, "Exhaust non-Attacks in hand: 5 block each.", "Second Wind+", 1, 7, 0, "Exhaust non-Attacks in hand: 7 block each." },
+    { CardId::TRUE_GRIT, "True Grit", 1, CardType::SKILL, TargetType::SELF, 7, 0, "Gain 7 block. Exhaust a random card.", "True Grit+", 1, 9, 0, "Gain 9 block. Exhaust a random card." },
+    { CardId::DOMINATE, "Dominate", 1, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 1, "Apply 1 Vuln. Gain 1 Str per Vuln. Exhaust.", "Dominate+", 1, 0, 2, "Apply 2 Vuln. Gain 1 Str per Vuln. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::FIEND_FIRE, "Fiend Fire", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 7, 0, "Exhaust your hand: 7 dmg per card. Exhaust.", "Fiend Fire+", 2, 10, 0, "Exhaust your hand: 10 dmg per card. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::THRASH, "Thrash", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 4, 0, "Deal 4 dmg twice. Exhaust a random Attack, add its dmg.", "Thrash+", 1, 6, 0, "Deal 6 dmg twice. Exhaust a random Attack, add its dmg." },
+    { CardId::IMPERVIOUS, "Impervious", 2, CardType::SKILL, TargetType::SELF, 30, 0, "Gain 30 block. Exhaust.", "Impervious+", 2, 40, 0, "Gain 40 block. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::PACTS_END, "Pact's End", 0, CardType::ATTACK, TargetType::ALL_ENEMIES, 18, 3, "If 3+ cards are exhausted, deal 18 dmg to all.", "Pact's End+", 0, 24, 3, "If 3+ cards are exhausted, deal 24 dmg to all." },
+    { CardId::NOT_YET, "Not Yet", 2, CardType::SKILL, TargetType::SELF, 10, 0, "Heal 10 HP. Exhaust.", "Not Yet+", 2, 13, 0, "Heal 13 HP. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Silent Exhaust cards
+    { CardId::ADRENALINE, "Adrenaline", 0, CardType::SKILL, TargetType::SELF, 1, 2, "Gain 1 energy. Draw 2 cards. Exhaust.", "Adrenaline+", 0, 2, 2, "Gain 2 energy. Draw 2 cards. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::CALCULATED_GAMBLE, "Calculated Gamble", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Discard your hand, draw as many. Exhaust.", "Calculated Gamble+", 0, 0, 0, "Retain. Discard your hand, draw as many. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    { CardId::MIRAGE, "Mirage", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Gain block equal to all enemies' Poison. Exhaust.", "Mirage+", 1, 0, 0, "Gain block equal to all enemies' Poison.", KEYWORD_EXHAUST, 0 },
+    // Defect Exhaust cards
+    { CardId::RAINBOW, "Rainbow", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Channel Lightning, Frost and Dark. Exhaust.", "Rainbow+", 2, 0, 0, "Channel Lightning, Frost and Dark.", KEYWORD_EXHAUST, 0 },
+    { CardId::CHILL, "Chill", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Channel 1 Frost per enemy. Exhaust.", "Chill+", 0, 0, 0, "Channel 1 Frost per enemy.", KEYWORD_EXHAUST, 0 },
+    { CardId::FUSION, "Fusion", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Channel 1 Plasma. Exhaust.", "Fusion+", 1, 0, 0, "Channel 1 Plasma.", KEYWORD_EXHAUST, 0 },
+    { CardId::REBOOT, "Reboot", 0, CardType::SKILL, TargetType::SELF, 0, 4, "Shuffle all your cards into the draw pile. Draw 4. Exhaust.", "Reboot+", 0, 0, 6, "Shuffle all your cards into the draw pile. Draw 6. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::SUPERCRITICAL, "Supercritical", 0, CardType::SKILL, TargetType::SELF, 4, 0, "Gain 4 energy. Exhaust.", "Supercritical+", 0, 6, 0, "Gain 6 energy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::DOUBLE_ENERGY, "Double Energy", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Double your energy. Exhaust.", "Double Energy+", 0, 0, 0, "Double your energy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Necrobinder Exhaust cards
+    { CardId::SHARED_FATE, "Shared Fate", 0, CardType::SKILL, TargetType::SINGLE_ENEMY, 2, 2, "Lose 2 Str. The enemy loses 2 Str. Exhaust.", "Shared Fate+", 0, 2, 3, "Lose 2 Str. The enemy loses 3 Str. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::WISP, "Wisp", 0, CardType::SKILL, TargetType::SELF, 1, 0, "Gain 1 energy. Exhaust.", "Wisp+", 0, 1, 0, "Retain. Gain 1 energy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    { CardId::PUTREFY, "Putrefy", 1, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 2, "Apply 2 Weak and 2 Vuln. Exhaust.", "Putrefy+", 1, 0, 3, "Apply 3 Weak and 3 Vuln. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::REANIMATE, "Reanimate", 3, CardType::SKILL, TargetType::SELF, 0, 20, "Summon 20. Exhaust.", "Reanimate+", 3, 0, 25, "Summon 25. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::AFTERLIFE, "Afterlife", 1, CardType::SKILL, TargetType::SELF, 0, 6, "Summon 6. Exhaust.", "Afterlife+", 1, 0, 9, "Summon 9. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST }
 };
 
 const CardDef& CardDef::get(CardId id) {

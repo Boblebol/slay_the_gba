@@ -96,18 +96,56 @@ enum class CardId : uint8_t {
     BURY,
     MISERY,
     UNDEATH,
+    // Ironclad Exhaust cards (appended: saves store the numeric id)
+    ASHEN_STRIKE,
+    TREMBLE,
+    EVIL_EYE,
+    MOLTEN_FIST,
+    CINDER,
+    SECOND_WIND,
+    TRUE_GRIT,
+    DOMINATE,
+    FIEND_FIRE,
+    THRASH,
+    IMPERVIOUS,
+    PACTS_END,
+    NOT_YET,
+    // Silent Exhaust cards (appended: saves store the numeric id)
+    ADRENALINE,
+    CALCULATED_GAMBLE,
+    MIRAGE,
+    // Defect Exhaust cards (appended: saves store the numeric id)
+    RAINBOW,
+    CHILL,
+    FUSION,
+    REBOOT,
+    SUPERCRITICAL,
+    DOUBLE_ENERGY,
+    // Necrobinder Exhaust cards (appended: saves store the numeric id)
+    SHARED_FATE,
+    WISP,
+    PUTREFY,
+    REANIMATE,
+    AFTERLIFE,
     COUNT
 };
 
 struct DeckCard {
     CardId id = CardId::NONE;
     bool upgraded = false;
+    uint8_t bonus = 0; // damage gained by this copy during the combat (Thrash); not part of the card's identity
 
     constexpr DeckCard() = default;
     constexpr DeckCard(CardId i, bool up = false) : id(i), upgraded(up) {}
     constexpr operator CardId() const { return id; }
     constexpr bool operator==(CardId other) const { return id == other; }
     constexpr bool operator==(const DeckCard& other) const { return id == other.id && upgraded == other.upgraded; }
+};
+
+// Card keywords, combined as bits in CardDef::keywords.
+enum CardKeyword : uint8_t {
+    KEYWORD_EXHAUST = 1, // goes to the exhaust pile when played
+    KEYWORD_RETAIN = 2   // stays in hand at the end of the turn
 };
 
 enum class CardType : uint8_t {
@@ -140,6 +178,10 @@ struct CardDef {
     uint8_t upgraded_secondary_value;
     std::string_view upgraded_description;
 
+    // CardKeyword bits of the base and of the upgraded card: an upgrade can add or remove a keyword.
+    uint8_t keywords = 0;
+    uint8_t upgraded_keywords = 0;
+
     static const CardDef& get(CardId id);
     static std::string_view get_display_name(CardId id, bool upgraded) {
         const auto& c = get(id);
@@ -156,6 +198,10 @@ struct CardDef {
     static uint8_t get_secondary(CardId id, bool upgraded) {
         const auto& c = get(id);
         return upgraded ? c.upgraded_secondary_value : c.secondary_value;
+    }
+    static bool has_keyword(CardId id, bool upgraded, CardKeyword keyword) {
+        const auto& c = get(id);
+        return ((upgraded ? c.upgraded_keywords : c.keywords) & keyword) != 0;
     }
     static std::string_view get_desc(CardId id, bool upgraded) {
         const auto& c = get(id);
