@@ -152,9 +152,9 @@ void RunManager::enter_room(int node_index) {
             break;
         case RoomType::TREASURE: {
             gold += 50;
-            std::string_view relic = draw_treasure_relic();
-            if (!relic.empty()) {
-                add_relic(relic);
+            last_treasure_relic = draw_treasure_relic();
+            if (!last_treasure_relic.empty()) {
+                add_relic(last_treasure_relic);
             }
             phase = RunPhase::TREASURE;
             break;
@@ -269,19 +269,32 @@ bool RunManager::choose_event_choice(int choice_index, char* out_msg, size_t max
 }
 
 std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
-    static constexpr CardId IRONCLAD_POOL[] = { CardId::IRON_WAVE, CardId::CLEAVE, CardId::ANGER, CardId::TWIN_STRIKE,
+    // Left out on purpose: Cleave (replaced by Thunderclap, whose art and name it borrowed) and Break (Ancient
+    // rarity: given by an Ancient, never by a combat).
+    static constexpr CardId IRONCLAD_POOL[] = { CardId::IRON_WAVE, CardId::ANGER, CardId::TWIN_STRIKE,
                                                 CardId::POMMEL_STRIKE, CardId::SHRUG_IT_OFF, CardId::TAUNT,
-                                                CardId::BODY_SLAM };
+                                                CardId::BODY_SLAM, CardId::THUNDERCLAP, CardId::DISMANTLE,
+                                                CardId::INFLAME, CardId::PERFECTED_STRIKE, CardId::BLUDGEON,
+                                                CardId::BULLY, CardId::SWORD_BOOMERANG, CardId::CONFLAGRATION,
+                                                CardId::EXPECT_A_FIGHT, CardId::PILLAGE, CardId::UPPERCUT,
+                                                CardId::FIGHT_ME };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
-                                              CardId::DAGGER_SPRAY, CardId::DEFLECT };
+                                              CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
+                                              CardId::PRECISE_CUT, CardId::BOUNCING_FLASK, CardId::FLECHETTES,
+                                              CardId::FOOTWORK, CardId::ESCAPE_PLAN, CardId::DASH,
+                                              CardId::BUBBLE_BUBBLE, CardId::OUTBREAK };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL, CardId::BALL_LIGHTNING,
                                               CardId::COLD_SNAP, CardId::LEAP, CardId::COOLHEADED,
-                                              CardId::SWEEPING_BEAM };
+                                              CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD, CardId::GLACIER,
+                                              CardId::METEOR_STRIKE, CardId::ICE_LANCE, CardId::SKIM,
+                                              CardId::ALL_FOR_ONE, CardId::NULL_CARD, CardId::GO_FOR_THE_EYES,
+                                              CardId::SCRAPE };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
-                                                   CardId::DRAIN_POWER };
+                                                   CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
+                                                   CardId::UNDEATH };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;
@@ -339,8 +352,11 @@ bool RunManager::has_relic(std::string_view relic_id) const {
 
 std::string_view RunManager::draw_treasure_relic() {
     // Relics with an implemented effect come first, then any other common relic; never one already owned.
-    constexpr std::string_view ACTIVE_RELICS[] = { "VAJRA", "ANCHOR" };
-    FixedVector<std::string_view, 2> active;
+    // Sling of Courage is a shop relic: chests give it too until the GBA shop sells relics (#184).
+    constexpr std::string_view ACTIVE_RELICS[] = { "VAJRA", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK",
+                                                   "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
+                                                   "STONE_CRACKER", "PANTOGRAPH", "SLING_OF_COURAGE" };
+    FixedVector<std::string_view, std::size(ACTIVE_RELICS)> active;
     for (std::string_view id : ACTIVE_RELICS) {
         if (!has_relic(id)) active.push_back(id);
     }
@@ -381,6 +397,47 @@ void RunManager::apply_combat_start_relics() {
     // Anchor: start each combat with 10 Block, added after the turn reset and unaffected by Dexterity.
     if (has_relic("ANCHOR")) {
         combat.player.block += 10;
+    }
+    // Oddly Smooth Stone: start each combat with 1 Dexterity.
+    if (has_relic("ODDLY_SMOOTH_STONE")) {
+        combat.player.add_status(StatusType::DEXTERITY, 1);
+    }
+    // Lantern: 1 additional energy on the first turn.
+    if (has_relic("LANTERN")) {
+        combat.player.energy = static_cast<int8_t>(combat.player.energy + 1);
+    }
+    // Blood Vial: heal 2 HP.
+    if (has_relic("BLOOD_VIAL")) {
+        combat.player.heal(2);
+    }
+    // Sling of Courage and Pantograph only act in Elite and Boss rooms.
+    RoomType room = current_node_index >= 0 ? map.nodes[current_node_index].type : RoomType::MONSTER;
+    if (has_relic("SLING_OF_COURAGE") && room == RoomType::ELITE) {
+        combat.player.add_status(StatusType::STRENGTH, 2);
+    }
+    if (has_relic("PANTOGRAPH") && room == RoomType::BOSS) {
+        combat.player.heal(25);
+    }
+    // Stone Cracker: upgrade 2 random cards of the draw pile for this combat (the piles are copies of the deck).
+    if (has_relic("STONE_CRACKER")) {
+        for (int n = 0; n < 2; ++n) {
+            FixedVector<uint8_t, 50> plain;
+            for (size_t i = 0; i < combat.draw_pile.size(); ++i) {
+                if (!combat.draw_pile[i].upgraded) plain.push_back(static_cast<uint8_t>(i));
+            }
+            if (plain.empty()) break;
+            combat.draw_pile[plain[next_random() % plain.size()]].upgraded = true;
+        }
+    }
+    // Red Mask, Bag of Marbles and Festive Popper hit every enemy: 1 Weak, 1 Vulnerable, 9 damage.
+    for (Enemy& foe : combat.enemies) {
+        if (has_relic("RED_MASK")) foe.add_status(StatusType::WEAK, 1);
+        if (has_relic("BAG_OF_MARBLES")) foe.add_status(StatusType::VULNERABLE, 1);
+        if (has_relic("FESTIVE_POPPER")) foe.take_damage(9);
+    }
+    combat.enemy = combat.enemies[0];
+    if (!combat.has_alive_enemies()) {
+        combat.state = CombatState::VICTORY;
     }
 }
 

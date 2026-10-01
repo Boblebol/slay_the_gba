@@ -21,7 +21,7 @@ bn::string_view base_name(engine::CardId id)
     case engine::CardId::IRON_WAVE:
         return "Vague de fer";
     case engine::CardId::CLEAVE:
-        return "Coup de tonnerre";
+        return "Enchaînement";
     case engine::CardId::ANGER:
         return "Colère";
     case engine::CardId::METALLICIZE:
@@ -88,6 +88,76 @@ bn::string_view base_name(engine::CardId id)
         return "Sang-froid";
     case engine::CardId::SWEEPING_BEAM:
         return "Faisceau circulaire";
+    case engine::CardId::THUNDERCLAP:
+        return "Coup de tonnerre";
+    case engine::CardId::DISMANTLE:
+        return "Démantèlement";
+    case engine::CardId::INFLAME:
+        return "Enflammer";
+    case engine::CardId::PERFECTED_STRIKE:
+        return "Frappe perfectionnée";
+    case engine::CardId::BLUDGEON:
+        return "Gourdin";
+    case engine::CardId::BULLY:
+        return "Harcèlement";
+    case engine::CardId::SWORD_BOOMERANG:
+        return "Épée boomerang";
+    case engine::CardId::BREAK:
+        return "Briser";
+    case engine::CardId::CONFLAGRATION:
+        return "Incendie";
+    case engine::CardId::EXPECT_A_FIGHT:
+        return "Paré au combat";
+    case engine::CardId::PILLAGE:
+        return "Pillage";
+    case engine::CardId::UPPERCUT:
+        return "Uppercut";
+    case engine::CardId::FIGHT_ME:
+        return "Viens te battre !";
+    case engine::CardId::LEG_SWEEP:
+        return "Balayage";
+    case engine::CardId::HAZE:
+        return "Brouillard";
+    case engine::CardId::PRECISE_CUT:
+        return "Entaille";
+    case engine::CardId::BOUNCING_FLASK:
+        return "Fiole rebondissante";
+    case engine::CardId::FLECHETTES:
+        return "Fléchettes";
+    case engine::CardId::FOOTWORK:
+        return "Jeu de jambes";
+    case engine::CardId::ESCAPE_PLAN:
+        return "Plan d'évasion";
+    case engine::CardId::DASH:
+        return "Précipitation";
+    case engine::CardId::BUBBLE_BUBBLE:
+        return "Venin mousseux";
+    case engine::CardId::OUTBREAK:
+        return "Épidémie";
+    case engine::CardId::SHADOW_SHIELD:
+        return "Bouclier ténébreux";
+    case engine::CardId::METEOR_STRIKE:
+        return "Frappe météorique";
+    case engine::CardId::GLACIER:
+        return "Glacier";
+    case engine::CardId::ICE_LANCE:
+        return "Javelot de glace";
+    case engine::CardId::SKIM:
+        return "Parcourir";
+    case engine::CardId::ALL_FOR_ONE:
+        return "Tous pour un";
+    case engine::CardId::NULL_CARD:
+        return "Valeur nulle";
+    case engine::CardId::GO_FOR_THE_EYES:
+        return "Viser les yeux";
+    case engine::CardId::SCRAPE:
+        return "Éraflure";
+    case engine::CardId::BURY:
+        return "Enterrer";
+    case engine::CardId::MISERY:
+        return "Misère";
+    case engine::CardId::UNDEATH:
+        return "Mort-vivant";
     default:
         return "???";
     }
@@ -226,6 +296,111 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SWEEPING_BEAM:
         stream << "Inflige " << value << " dégâts à TOUS. Pioche " << secondary << (secondary > 1 ? " cartes." : " carte.");
+        break;
+    case engine::CardId::THUNDERCLAP:
+        stream << "Inflige " << value << " dégâts à TOUS. Vulnérable " << secondary << ".";
+        break;
+    case engine::CardId::DISMANTLE:
+        stream << "Inflige " << value << " dégâts, 2 fois si Vulnérable.";
+        break;
+    case engine::CardId::INFLAME:
+        stream << "Gagne " << value << " de Force.";
+        break;
+    case engine::CardId::PERFECTED_STRIKE:
+        stream << "Inflige " << value << " dégâts, +" << secondary << " par carte Frappe.";
+        break;
+    case engine::CardId::BLUDGEON:
+        stream << "Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::BULLY:
+        stream << "Inflige " << value << " dégâts, +" << secondary << " par Vulnérable.";
+        break;
+    case engine::CardId::SWORD_BOOMERANG:
+        stream << "Inflige " << value << " dégâts au hasard, " << secondary << " fois.";
+        break;
+    case engine::CardId::BREAK:
+        stream << "Inflige " << value << " dégâts. Vulnérable " << secondary << ".";
+        break;
+    case engine::CardId::CONFLAGRATION:
+        stream << "Inflige " << value << " dégâts à TOUS, " << secondary << " fois.";
+        break;
+    case engine::CardId::EXPECT_A_FIGHT:
+        stream << "Gagne " << value << " d'Armure, +" << secondary << " par Force.";
+        break;
+    case engine::CardId::PILLAGE:
+        stream << "Inflige " << value << ". Pioche jusqu'à 1 non-Attaque.";
+        break;
+    case engine::CardId::UPPERCUT:
+        stream << "Inflige " << value << ". Affaibli et Vulnérable " << secondary << ".";
+        break;
+    case engine::CardId::FIGHT_ME:
+        stream << value << " dégâts 2 fois. Force +" << secondary << ", ennemi +1.";
+        break;
+    case engine::CardId::LEG_SWEEP:
+        stream << "Affaibli " << secondary << ". Gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::HAZE:
+        stream << value << " de Poison et Affaibli " << secondary << " à TOUS.";
+        break;
+    case engine::CardId::PRECISE_CUT:
+        stream << "Inflige " << value << " dégâts, -" << secondary << " par carte en main.";
+        break;
+    case engine::CardId::BOUNCING_FLASK:
+        stream << value << " de Poison au hasard, " << secondary << " fois.";
+        break;
+    case engine::CardId::FLECHETTES:
+        stream << "Inflige " << value << " dégâts par Compétence en main.";
+        break;
+    case engine::CardId::FOOTWORK:
+        stream << "Gagne " << value << " de Dextérité.";
+        break;
+    case engine::CardId::ESCAPE_PLAN:
+        stream << "Pioche 1. Si Compétence : " << value << " d'Armure.";
+        break;
+    case engine::CardId::DASH:
+        stream << "Gagne " << secondary << " d'Armure. Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::BUBBLE_BUBBLE:
+        stream << "Cible empoisonnée : " << value << " de Poison.";
+        break;
+    case engine::CardId::OUTBREAK:
+        stream << value << " de Poison à TOUS, déclenché aussitôt.";
+        break;
+    case engine::CardId::SHADOW_SHIELD:
+        stream << "Gagne " << value << " d'Armure. Canalise 1 Ténèbres.";
+        break;
+    case engine::CardId::METEOR_STRIKE:
+        stream << "Inflige " << value << " dégâts. Canalise " << secondary << " Plasma.";
+        break;
+    case engine::CardId::GLACIER:
+        stream << "Gagne " << value << " d'Armure. Canalise " << secondary << " Givre.";
+        break;
+    case engine::CardId::ICE_LANCE:
+        stream << "Inflige " << value << " dégâts. Canalise " << secondary << " Givre.";
+        break;
+    case engine::CardId::SKIM:
+        stream << "Pioche " << secondary << " cartes.";
+        break;
+    case engine::CardId::ALL_FOR_ONE:
+        stream << "Inflige " << value << ". Reprend les cartes à 0.";
+        break;
+    case engine::CardId::NULL_CARD:
+        stream << "Inflige " << value << ". Affaibli " << secondary << ". 1 Ténèbres.";
+        break;
+    case engine::CardId::GO_FOR_THE_EYES:
+        stream << "Inflige " << value << " dégâts. Affaibli " << secondary << " s'il attaque.";
+        break;
+    case engine::CardId::SCRAPE:
+        stream << "Inflige " << value << ". Pioche " << secondary << ", défausse les non-0.";
+        break;
+    case engine::CardId::BURY:
+        stream << "Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::MISERY:
+        stream << (card.upgraded ? "Retenue. " : "") << "Inflige " << value << ". Propage ses malus.";
+        break;
+    case engine::CardId::UNDEATH:
+        stream << "Gagne " << value << " d'Armure. Copie dans la défausse.";
         break;
     default:
         break;

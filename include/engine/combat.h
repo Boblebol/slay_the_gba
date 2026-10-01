@@ -52,7 +52,8 @@ public:
     void start_combat(EnemyType enemy_type, CharacterId character = CharacterId::IRONCLAD);
     void start_combat_multi(FixedVector<EnemyType, 3> enemy_types, CharacterId character = CharacterId::IRONCLAD);
     void start_player_turn();
-    void draw_card();
+    // Draws one card, reshuffling the discard pile when needed. False when nothing was drawn (full hand, empty piles).
+    bool draw_card();
     void draw_cards(int count);
     void shuffle_discard_into_draw();
     
@@ -74,6 +75,8 @@ public:
 private:
     uint32_t rng_state_ = 123456789;
     uint32_t next_random();
+    // Index of a living enemy picked at random; the first enemy when none is alive.
+    int random_alive_enemy_index();
 };
 
 } // namespace engine

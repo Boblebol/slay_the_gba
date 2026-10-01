@@ -57,6 +57,45 @@ enum class CardId : uint8_t {
     // More Defect commons (appended: saves store the numeric id)
     COOLHEADED,
     SWEEPING_BEAM,
+    // Ironclad cards on existing mechanics (appended: saves store the numeric id)
+    THUNDERCLAP,
+    DISMANTLE,
+    INFLAME,
+    PERFECTED_STRIKE,
+    BLUDGEON,
+    BULLY,
+    SWORD_BOOMERANG,
+    BREAK,
+    CONFLAGRATION,
+    EXPECT_A_FIGHT,
+    PILLAGE,
+    UPPERCUT,
+    FIGHT_ME,
+    // Silent cards on existing mechanics (appended: saves store the numeric id)
+    LEG_SWEEP,
+    HAZE,
+    PRECISE_CUT,
+    BOUNCING_FLASK,
+    FLECHETTES,
+    FOOTWORK,
+    ESCAPE_PLAN,
+    DASH,
+    BUBBLE_BUBBLE,
+    OUTBREAK,
+    // Defect cards on existing mechanics (appended: saves store the numeric id)
+    SHADOW_SHIELD,
+    METEOR_STRIKE,
+    GLACIER,
+    ICE_LANCE,
+    SKIM,
+    ALL_FOR_ONE,
+    NULL_CARD,
+    GO_FOR_THE_EYES,
+    SCRAPE,
+    // Necrobinder cards on existing mechanics (appended: saves store the numeric id)
+    BURY,
+    MISERY,
+    UNDEATH,
     COUNT
 };
 
@@ -80,7 +119,8 @@ enum class CardType : uint8_t {
 enum class TargetType : uint8_t {
     SINGLE_ENEMY,
     SELF,
-    ALL_ENEMIES
+    ALL_ENEMIES,
+    RANDOM_ENEMY // picked by the engine, no targeting
 };
 
 struct CardDef {

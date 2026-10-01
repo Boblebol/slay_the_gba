@@ -16,18 +16,27 @@
 #include "bn_sprite_items_mon_jaw_worm.h"
 #include "bn_sprite_items_mon_louse.h"
 
+#include "bn_sprite_items_card_all_for_one.h"
 #include "bn_sprite_items_card_anger.h"
 #include "bn_sprite_items_card_backflip.h"
 #include "bn_sprite_items_card_ball_lightning.h"
 #include "bn_sprite_items_card_bash.h"
 #include "bn_sprite_items_card_beam_cell.h"
+#include "bn_sprite_items_card_bludgeon.h"
 #include "bn_sprite_items_card_body_slam.h"
 #include "bn_sprite_items_card_bodyguard.h"
+#include "bn_sprite_items_card_bouncing_flask.h"
+#include "bn_sprite_items_card_break.h"
+#include "bn_sprite_items_card_bubble_bubble.h"
+#include "bn_sprite_items_card_bully.h"
+#include "bn_sprite_items_card_bury.h"
 #include "bn_sprite_items_card_celestial_might.h"
 #include "bn_sprite_items_card_cleave.h"
 #include "bn_sprite_items_card_cold_snap.h"
+#include "bn_sprite_items_card_conflagration.h"
 #include "bn_sprite_items_card_coolheaded.h"
 #include "bn_sprite_items_card_dagger_spray.h"
+#include "bn_sprite_items_card_dash.h"
 #include "bn_sprite_items_card_deadly_poison.h"
 #include "bn_sprite_items_card_defend_defect.h"
 #include "bn_sprite_items_card_defend_ironclad.h"
@@ -35,18 +44,40 @@
 #include "bn_sprite_items_card_defend_regent.h"
 #include "bn_sprite_items_card_defend_silent.h"
 #include "bn_sprite_items_card_deflect.h"
+#include "bn_sprite_items_card_dismantle.h"
 #include "bn_sprite_items_card_drain_power.h"
 #include "bn_sprite_items_card_dualcast.h"
+#include "bn_sprite_items_card_escape_plan.h"
+#include "bn_sprite_items_card_expect_a_fight.h"
 #include "bn_sprite_items_card_falling_star.h"
+#include "bn_sprite_items_card_fight_me.h"
+#include "bn_sprite_items_card_flechettes.h"
+#include "bn_sprite_items_card_footwork.h"
 #include "bn_sprite_items_card_gather_light.h"
+#include "bn_sprite_items_card_glacier.h"
+#include "bn_sprite_items_card_go_for_the_eyes.h"
+#include "bn_sprite_items_card_haze.h"
+#include "bn_sprite_items_card_ice_lance.h"
+#include "bn_sprite_items_card_inflame.h"
 #include "bn_sprite_items_card_iron_wave.h"
 #include "bn_sprite_items_card_leap.h"
+#include "bn_sprite_items_card_leg_sweep.h"
 #include "bn_sprite_items_card_metallicize.h"
+#include "bn_sprite_items_card_meteor_strike.h"
+#include "bn_sprite_items_card_misery.h"
 #include "bn_sprite_items_card_neutralize.h"
+#include "bn_sprite_items_card_null_card.h"
+#include "bn_sprite_items_card_outbreak.h"
+#include "bn_sprite_items_card_perfected_strike.h"
+#include "bn_sprite_items_card_pillage.h"
 #include "bn_sprite_items_card_poison_stab.h"
 #include "bn_sprite_items_card_pommel_strike.h"
+#include "bn_sprite_items_card_precise_cut.h"
 #include "bn_sprite_items_card_pull_aggro.h"
+#include "bn_sprite_items_card_scrape.h"
+#include "bn_sprite_items_card_shadow_shield.h"
 #include "bn_sprite_items_card_shrug_it_off.h"
+#include "bn_sprite_items_card_skim.h"
 #include "bn_sprite_items_card_slice.h"
 #include "bn_sprite_items_card_solar_strike.h"
 #include "bn_sprite_items_card_strike_defect.h"
@@ -57,9 +88,13 @@
 #include "bn_sprite_items_card_sucker_punch.h"
 #include "bn_sprite_items_card_survivor.h"
 #include "bn_sprite_items_card_sweeping_beam.h"
+#include "bn_sprite_items_card_sword_boomerang.h"
 #include "bn_sprite_items_card_taunt.h"
+#include "bn_sprite_items_card_thunderclap.h"
 #include "bn_sprite_items_card_twin_strike.h"
+#include "bn_sprite_items_card_undeath.h"
 #include "bn_sprite_items_card_unleash.h"
+#include "bn_sprite_items_card_uppercut.h"
 #include "bn_sprite_items_card_venerate.h"
 #include "bn_sprite_items_card_zap.h"
 
@@ -289,6 +324,76 @@ const bn::sprite_item& big_card_item(engine::CardId id)
         return bn::sprite_items::card_coolheaded;
     case engine::CardId::SWEEPING_BEAM:
         return bn::sprite_items::card_sweeping_beam;
+    case engine::CardId::THUNDERCLAP:
+        return bn::sprite_items::card_thunderclap;
+    case engine::CardId::DISMANTLE:
+        return bn::sprite_items::card_dismantle;
+    case engine::CardId::INFLAME:
+        return bn::sprite_items::card_inflame;
+    case engine::CardId::PERFECTED_STRIKE:
+        return bn::sprite_items::card_perfected_strike;
+    case engine::CardId::BLUDGEON:
+        return bn::sprite_items::card_bludgeon;
+    case engine::CardId::BULLY:
+        return bn::sprite_items::card_bully;
+    case engine::CardId::SWORD_BOOMERANG:
+        return bn::sprite_items::card_sword_boomerang;
+    case engine::CardId::BREAK:
+        return bn::sprite_items::card_break;
+    case engine::CardId::CONFLAGRATION:
+        return bn::sprite_items::card_conflagration;
+    case engine::CardId::EXPECT_A_FIGHT:
+        return bn::sprite_items::card_expect_a_fight;
+    case engine::CardId::PILLAGE:
+        return bn::sprite_items::card_pillage;
+    case engine::CardId::UPPERCUT:
+        return bn::sprite_items::card_uppercut;
+    case engine::CardId::FIGHT_ME:
+        return bn::sprite_items::card_fight_me;
+    case engine::CardId::LEG_SWEEP:
+        return bn::sprite_items::card_leg_sweep;
+    case engine::CardId::HAZE:
+        return bn::sprite_items::card_haze;
+    case engine::CardId::PRECISE_CUT:
+        return bn::sprite_items::card_precise_cut;
+    case engine::CardId::BOUNCING_FLASK:
+        return bn::sprite_items::card_bouncing_flask;
+    case engine::CardId::FLECHETTES:
+        return bn::sprite_items::card_flechettes;
+    case engine::CardId::FOOTWORK:
+        return bn::sprite_items::card_footwork;
+    case engine::CardId::ESCAPE_PLAN:
+        return bn::sprite_items::card_escape_plan;
+    case engine::CardId::DASH:
+        return bn::sprite_items::card_dash;
+    case engine::CardId::BUBBLE_BUBBLE:
+        return bn::sprite_items::card_bubble_bubble;
+    case engine::CardId::OUTBREAK:
+        return bn::sprite_items::card_outbreak;
+    case engine::CardId::SHADOW_SHIELD:
+        return bn::sprite_items::card_shadow_shield;
+    case engine::CardId::METEOR_STRIKE:
+        return bn::sprite_items::card_meteor_strike;
+    case engine::CardId::GLACIER:
+        return bn::sprite_items::card_glacier;
+    case engine::CardId::ICE_LANCE:
+        return bn::sprite_items::card_ice_lance;
+    case engine::CardId::SKIM:
+        return bn::sprite_items::card_skim;
+    case engine::CardId::ALL_FOR_ONE:
+        return bn::sprite_items::card_all_for_one;
+    case engine::CardId::NULL_CARD:
+        return bn::sprite_items::card_null_card;
+    case engine::CardId::GO_FOR_THE_EYES:
+        return bn::sprite_items::card_go_for_the_eyes;
+    case engine::CardId::SCRAPE:
+        return bn::sprite_items::card_scrape;
+    case engine::CardId::BURY:
+        return bn::sprite_items::card_bury;
+    case engine::CardId::MISERY:
+        return bn::sprite_items::card_misery;
+    case engine::CardId::UNDEATH:
+        return bn::sprite_items::card_undeath;
     default:
         return bn::sprite_items::HERO_ITEM(card_strike_);
     }

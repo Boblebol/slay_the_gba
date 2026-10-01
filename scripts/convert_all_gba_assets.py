@@ -20,7 +20,10 @@ if __name__ == "__main__":
     print("Converting core GBA gameplay sprites...")
     # Convert starter relics
     starters = ["burning_blood", "ring_of_the_snake", "cracked_core", "pure_water"]
-    for s in starters:
+    # Relics acting when a combat starts
+    combat_start = ["blood_vial", "sling_of_courage", "lantern", "stone_cracker", "red_mask", "pantograph",
+                    "oddly_smooth_stone", "festive_popper", "bag_of_marbles"]
+    for s in starters + combat_start:
         src = f"bible/images/relics/{s}.webp"
         convert_asset(src, f"graphics/relics/relic_{s}.bmp", f"graphics/relics/relic_{s}.json", (32, 32))
     

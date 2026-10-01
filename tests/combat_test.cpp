@@ -556,6 +556,363 @@ void test_more_commons() {
     std::cout << "[PASS] More commons: Body Slam, Deflect, Coolheaded, Sweeping Beam" << std::endl;
 }
 
+// A fight against three enemies: two Lice (18 HP) and a Jaw Worm (42 HP).
+CombatEngine make_pack(CharacterId hero) {
+    CombatEngine combat;
+    FixedVector<EnemyType, 3> pack;
+    pack.push_back(EnemyType::LOUSE);
+    pack.push_back(EnemyType::LOUSE);
+    pack.push_back(EnemyType::JAW_WORM);
+    combat.start_combat_multi(pack, hero);
+    return combat;
+}
+
+void assert_in_pool(CharacterId hero, std::initializer_list<CardId> cards) {
+    std::span<const CardId> pool = RunManager::card_reward_pool(hero);
+    for (CardId id : cards) {
+        assert(std::find(pool.begin(), pool.end(), id) != pool.end());
+    }
+}
+
+void test_ironclad_existing_mechanics() {
+    // Thunderclap: damage then Vulnerable on every enemy.
+    CombatEngine clap = make_pack(CharacterId::IRONCLAD);
+    play(clap, CardId::THUNDERCLAP);
+    assert(clap.enemies[0].hp == 14 && clap.enemies[1].hp == 14 && clap.enemies[2].hp == 38);
+    for (const Enemy& foe : clap.enemies) assert(foe.get_status(StatusType::VULNERABLE) == 1);
+    assert(CardDef::get_value(CardId::THUNDERCLAP, true) == 7);
+
+    // Dismantle hits twice when the target is already Vulnerable (8 x 1.5 = 12 per hit).
+    CombatEngine dismantle = make_combat(CharacterId::IRONCLAD);
+    play(dismantle, CardId::DISMANTLE);
+    assert(dismantle.enemies[0].hp == 42 - 8);
+    dismantle.enemies[0].add_status(StatusType::VULNERABLE, 1);
+    play(dismantle, CardId::DISMANTLE);
+    assert(dismantle.enemies[0].hp == 34 - 24);
+
+    // Inflame is a Power: Strength for the whole combat, and the card leaves play.
+    CombatEngine inflame = make_combat(CharacterId::IRONCLAD);
+    inflame.discard_pile.clear();
+    play(inflame, DeckCard(CardId::INFLAME, true));
+    assert(inflame.player.get_status(StatusType::STRENGTH) == 3);
+    assert(count_in_piles(inflame, CardId::INFLAME) == 0);
+
+    // Perfected Strike: 6 + 2 per card named "Frappe" in the deck, itself included.
+    CombatEngine perfected = make_combat(CharacterId::IRONCLAD);
+    perfected.draw_pile.clear();
+    perfected.discard_pile.clear();
+    perfected.draw_pile.push_back(CardId::STRIKE);
+    perfected.draw_pile.push_back(CardId::DEFEND);
+    perfected.discard_pile.push_back(CardId::TWIN_STRIKE);
+    perfected.discard_pile.push_back(CardId::POMMEL_STRIKE);
+    play(perfected, CardId::PERFECTED_STRIKE);
+    assert(perfected.enemies[0].hp == 42 - (6 + 2 * 4));
+    assert(CardDef::get_secondary(CardId::PERFECTED_STRIKE, true) == 3);
+
+    // Bludgeon: 32 damage for 3 energy, 42 once upgraded.
+    CombatEngine bludgeon = make_combat(CharacterId::IRONCLAD);
+    play(bludgeon, CardId::BLUDGEON);
+    assert(bludgeon.enemies[0].hp == 10 && bludgeon.player.energy == 0);
+    assert(CardDef::get_value(CardId::BLUDGEON, true) == 42);
+
+    // Bully: +2 damage per Vulnerable stack, then Vulnerable applies: (4 + 2 x 3) x 1.5 = 15.
+    CombatEngine bully = make_combat(CharacterId::IRONCLAD);
+    bully.enemies[0].add_status(StatusType::VULNERABLE, 3);
+    play(bully, CardId::BULLY);
+    assert(bully.enemies[0].hp == 42 - 15 && bully.player.energy == 3);
+
+    // Sword Boomerang: 3 hits of 3 spread at random over the living enemies, 4 hits once upgraded.
+    CombatEngine boomerang = make_pack(CharacterId::IRONCLAD);
+    play(boomerang, CardId::SWORD_BOOMERANG);
+    assert(boomerang.enemies[0].hp + boomerang.enemies[1].hp + boomerang.enemies[2].hp == 18 + 18 + 42 - 9);
+    boomerang.enemies[0].hp = 0;
+    boomerang.enemies[1].hp = 0;
+    int16_t survivor_hp = boomerang.enemies[2].hp;
+    play(boomerang, DeckCard(CardId::SWORD_BOOMERANG, true));
+    assert(boomerang.enemies[2].hp == survivor_hp - 12); // only the survivor can be hit
+    assert(CardDef::get(CardId::SWORD_BOOMERANG).target == TargetType::RANDOM_ENEMY);
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::THUNDERCLAP, CardId::DISMANTLE, CardId::INFLAME,
+                                            CardId::PERFECTED_STRIKE, CardId::BLUDGEON, CardId::BULLY,
+                                            CardId::SWORD_BOOMERANG });
+    std::cout << "[PASS] Ironclad: Thunderclap, Dismantle, Inflame, Perfected Strike, Bludgeon, Bully, Sword Boomerang"
+              << std::endl;
+
+    // Break: 20 damage and 5 Vulnerable (30 and 7 upgraded).
+    CombatEngine brk = make_combat(CharacterId::IRONCLAD);
+    play(brk, CardId::BREAK);
+    assert(brk.enemies[0].hp == 22 && brk.enemies[0].get_status(StatusType::VULNERABLE) == 5);
+    assert(CardDef::get_value(CardId::BREAK, true) == 30 && CardDef::get_secondary(CardId::BREAK, true) == 7);
+
+    // Conflagration: 2 damage to every enemy, 4 times.
+    CombatEngine fire = make_pack(CharacterId::IRONCLAD);
+    play(fire, CardId::CONFLAGRATION);
+    assert(fire.enemies[0].hp == 10 && fire.enemies[1].hp == 10 && fire.enemies[2].hp == 34);
+
+    // Expect a Fight: 15 Block plus 5 per point of Strength; negative Strength adds nothing.
+    CombatEngine expect = make_combat(CharacterId::IRONCLAD);
+    expect.player.block = 0;
+    expect.player.add_status(StatusType::STRENGTH, 2);
+    play(expect, CardId::EXPECT_A_FIGHT);
+    assert(expect.player.block == 25);
+    expect.player.block = 0;
+    expect.player.add_status(StatusType::STRENGTH, -5);
+    play(expect, DeckCard(CardId::EXPECT_A_FIGHT, true));
+    assert(expect.player.block == 16);
+
+    // Pillage: draws until a card that is not an Attack comes up.
+    CombatEngine pillage = make_combat(CharacterId::IRONCLAD);
+    pillage.draw_pile.clear();
+    pillage.discard_pile.clear();
+    pillage.draw_pile.push_back(CardId::STRIKE);  // never reached
+    pillage.draw_pile.push_back(CardId::DEFEND);  // third draw: stops here
+    pillage.draw_pile.push_back(CardId::STRIKE);
+    pillage.draw_pile.push_back(CardId::BASH);    // top of the pile
+    play(pillage, CardId::PILLAGE);
+    assert(pillage.enemies[0].hp == 36);
+    assert(pillage.hand.size() == 3 && pillage.hand[2].id == CardId::DEFEND && pillage.draw_pile.size() == 1);
+
+    // Uppercut: 13 damage, 1 Weak and 1 Vulnerable (2 and 2 upgraded).
+    CombatEngine uppercut = make_combat(CharacterId::IRONCLAD);
+    play(uppercut, DeckCard(CardId::UPPERCUT, true));
+    assert(uppercut.enemies[0].hp == 29);
+    assert(uppercut.enemies[0].get_status(StatusType::WEAK) == 2);
+    assert(uppercut.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+
+    // Fight Me!: two hits of 5, then 3 Strength for the hero and 1 for the enemy.
+    CombatEngine fight = make_combat(CharacterId::IRONCLAD);
+    play(fight, CardId::FIGHT_ME);
+    assert(fight.enemies[0].hp == 32);
+    assert(fight.player.get_status(StatusType::STRENGTH) == 3);
+    assert(fight.enemies[0].get_status(StatusType::STRENGTH) == 1);
+
+    // Break has the Ancient rarity: it comes from an Ancient, never from a combat reward.
+    std::span<const CardId> ironclad_pool = RunManager::card_reward_pool(CharacterId::IRONCLAD);
+    assert(std::find(ironclad_pool.begin(), ironclad_pool.end(), CardId::BREAK) == ironclad_pool.end());
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::CONFLAGRATION, CardId::EXPECT_A_FIGHT, CardId::PILLAGE,
+                                            CardId::UPPERCUT, CardId::FIGHT_ME });
+    std::cout << "[PASS] Ironclad: Break, Conflagration, Expect a Fight, Pillage, Uppercut, Fight Me!" << std::endl;
+}
+
+void test_silent_existing_mechanics() {
+    // Leg Sweep: Weak on the target, Block for the hero.
+    CombatEngine sweep = make_combat(CharacterId::SILENT);
+    sweep.player.block = 0;
+    play(sweep, CardId::LEG_SWEEP);
+    assert(sweep.enemies[0].get_status(StatusType::WEAK) == 2 && sweep.player.block == 11);
+
+    // Haze: Poison and Weak on every enemy.
+    CombatEngine haze = make_pack(CharacterId::SILENT);
+    play(haze, DeckCard(CardId::HAZE, true));
+    for (const Enemy& foe : haze.enemies) {
+        assert(foe.get_status(StatusType::POISON) == 6 && foe.get_status(StatusType::WEAK) == 2);
+    }
+
+    // Precise Cut: 13 damage, 2 less per other card in hand, never below 0.
+    CombatEngine cut = make_combat(CharacterId::SILENT);
+    cut.hand.clear();
+    cut.hand.push_back(CardId::PRECISE_CUT);
+    cut.hand.push_back(CardId::DEFEND);
+    cut.hand.push_back(CardId::DEFEND);
+    assert(cut.play_card(0));
+    assert(cut.enemies[0].hp == 42 - 9 && cut.player.energy == 3);
+    while (cut.hand.size() < 9) cut.hand.push_back(CardId::DEFEND);
+    cut.hand.push_back(CardId::PRECISE_CUT);
+    assert(cut.play_card(9));
+    assert(cut.enemies[0].hp == 33);
+
+    // Bouncing Flask: 3 Poison on a random enemy, 3 times.
+    CombatEngine flask = make_pack(CharacterId::SILENT);
+    play(flask, CardId::BOUNCING_FLASK);
+    int flask_poison = 0;
+    for (const Enemy& foe : flask.enemies) flask_poison += foe.get_status(StatusType::POISON);
+    assert(flask_poison == 9);
+    assert(CardDef::get_secondary(CardId::BOUNCING_FLASK, true) == 4);
+
+    // Flechettes: one hit of 5 per Skill left in hand.
+    CombatEngine darts = make_combat(CharacterId::SILENT);
+    darts.hand.clear();
+    darts.hand.push_back(CardId::FLECHETTES);
+    darts.hand.push_back(CardId::DEFEND);
+    darts.hand.push_back(CardId::SURVIVOR);
+    darts.hand.push_back(CardId::STRIKE);
+    assert(darts.play_card(0));
+    assert(darts.enemies[0].hp == 42 - 10);
+
+    // Footwork: Dexterity for the whole combat adds to every Block gain.
+    CombatEngine footwork = make_combat(CharacterId::SILENT);
+    play(footwork, CardId::FOOTWORK);
+    assert(footwork.player.get_status(StatusType::DEXTERITY) == 2);
+    footwork.player.block = 0;
+    play(footwork, CardId::DEFEND);
+    assert(footwork.player.block == 7);
+
+    // Escape Plan: draws a card, and gives Block only when it is a Skill.
+    CombatEngine escape = make_combat(CharacterId::SILENT);
+    escape.player.block = 0;
+    escape.draw_pile.clear();
+    escape.draw_pile.push_back(CardId::STRIKE);
+    play(escape, CardId::ESCAPE_PLAN);
+    assert(escape.hand.size() == 1 && escape.player.block == 0);
+    escape.draw_pile.clear();
+    escape.draw_pile.push_back(CardId::DEFEND);
+    play(escape, DeckCard(CardId::ESCAPE_PLAN, true));
+    assert(escape.hand.size() == 1 && escape.player.block == 5);
+
+    // Dash: Block and damage together.
+    CombatEngine dash = make_combat(CharacterId::SILENT);
+    dash.player.block = 0;
+    play(dash, DeckCard(CardId::DASH, true));
+    assert(dash.player.block == 13 && dash.enemies[0].hp == 29);
+
+    // Bubble Bubble only works on an enemy that is already Poisoned.
+    CombatEngine bubble = make_combat(CharacterId::SILENT);
+    play(bubble, CardId::BUBBLE_BUBBLE);
+    assert(bubble.enemies[0].get_status(StatusType::POISON) == 0);
+    bubble.enemies[0].add_status(StatusType::POISON, 1);
+    play(bubble, CardId::BUBBLE_BUBBLE);
+    assert(bubble.enemies[0].get_status(StatusType::POISON) == 10);
+
+    // Outbreak: 9 Poison on every enemy, which ticks at once (9 damage, 8 Poison left).
+    CombatEngine outbreak = make_pack(CharacterId::SILENT);
+    play(outbreak, CardId::OUTBREAK);
+    assert(outbreak.enemies[0].hp == 9 && outbreak.enemies[2].hp == 33);
+    for (const Enemy& foe : outbreak.enemies) assert(foe.get_status(StatusType::POISON) == 8);
+
+    assert_in_pool(CharacterId::SILENT, { CardId::LEG_SWEEP, CardId::HAZE, CardId::PRECISE_CUT, CardId::BOUNCING_FLASK,
+                                          CardId::FLECHETTES, CardId::FOOTWORK, CardId::ESCAPE_PLAN, CardId::DASH,
+                                          CardId::BUBBLE_BUBBLE, CardId::OUTBREAK });
+    std::cout << "[PASS] Silent: Leg Sweep, Haze, Precise Cut, Bouncing Flask, Flechettes, Footwork, Escape Plan, "
+                 "Dash, Bubble Bubble, Outbreak" << std::endl;
+}
+
+void test_defect_existing_mechanics() {
+    // Shadow Shield: Block and a Dark orb.
+    CombatEngine shield = make_combat(CharacterId::DEFECT);
+    shield.player.block = 0;
+    play(shield, CardId::SHADOW_SHIELD);
+    assert(shield.player.block == 11);
+    assert(shield.player.orbs.size() == 1 && shield.player.orbs[0] == OrbType::DARK);
+
+    // Meteor Strike costs 5: unplayable with 3 energy, then 24 damage and 3 Plasma orbs.
+    CombatEngine meteor = make_combat(CharacterId::DEFECT);
+    meteor.hand.clear();
+    meteor.hand.push_back(CardId::METEOR_STRIKE);
+    assert(!meteor.play_card(0));
+    meteor.player.energy = 5;
+    assert(meteor.play_card(0));
+    assert(meteor.enemies[0].hp == 18 && meteor.player.energy == 0);
+    assert(meteor.player.orbs.size() == 3);
+    for (OrbType orb : meteor.player.orbs) assert(orb == OrbType::PLASMA);
+
+    // Glacier: Block and 2 Frost orbs. Ice Lance: 19 damage and 3 Frost orbs.
+    CombatEngine glacier = make_combat(CharacterId::DEFECT);
+    glacier.player.block = 0;
+    play(glacier, DeckCard(CardId::GLACIER, true));
+    assert(glacier.player.block == 9 && glacier.player.orbs.size() == 2 && glacier.player.orbs[1] == OrbType::FROST);
+    CombatEngine lance = make_combat(CharacterId::DEFECT);
+    play(lance, CardId::ICE_LANCE);
+    assert(lance.enemies[0].hp == 23 && lance.player.orbs.size() == 3 && lance.player.energy == 0);
+
+    // Skim: 3 cards, 4 once upgraded.
+    CombatEngine skim = make_combat(CharacterId::DEFECT);
+    play(skim, CardId::SKIM);
+    assert(skim.hand.size() == 3);
+    CombatEngine skim_plus = make_combat(CharacterId::DEFECT);
+    play(skim_plus, DeckCard(CardId::SKIM, true));
+    assert(skim_plus.hand.size() == 4);
+
+    // All for One: every card costing 0 comes back from the discard pile.
+    CombatEngine all = make_combat(CharacterId::DEFECT);
+    all.discard_pile.clear();
+    all.discard_pile.push_back(CardId::BEAM_CELL);
+    all.discard_pile.push_back(CardId::STRIKE);
+    all.discard_pile.push_back(CardId::GO_FOR_THE_EYES);
+    play(all, CardId::ALL_FOR_ONE);
+    assert(all.enemies[0].hp == 32);
+    assert(all.hand.size() == 2 && all.hand[0].id == CardId::BEAM_CELL && all.hand[1].id == CardId::GO_FOR_THE_EYES);
+    assert(all.discard_pile.size() == 2); // the Strike and All for One itself
+
+    // Null: damage, Weak and a Dark orb.
+    CombatEngine null = make_combat(CharacterId::DEFECT);
+    play(null, DeckCard(CardId::NULL_CARD, true));
+    assert(null.enemies[0].hp == 29 && null.enemies[0].get_status(StatusType::WEAK) == 2);
+    assert(null.player.orbs.size() == 1 && null.player.orbs[0] == OrbType::DARK);
+
+    // Go for the Eyes: Weak only when the enemy is about to attack.
+    CombatEngine eyes = make_combat(CharacterId::DEFECT);
+    play(eyes, CardId::GO_FOR_THE_EYES);
+    assert(eyes.enemies[0].hp == 39 && eyes.enemies[0].get_status(StatusType::WEAK) == 1);
+    make_enemy_idle(eyes.enemies[0]);
+    play(eyes, CardId::GO_FOR_THE_EYES);
+    assert(eyes.enemies[0].get_status(StatusType::WEAK) == 1);
+
+    // Scrape: draws 4 cards and keeps only those costing 0.
+    CombatEngine scrape = make_combat(CharacterId::DEFECT);
+    scrape.draw_pile.clear();
+    scrape.discard_pile.clear();
+    scrape.draw_pile.push_back(CardId::STRIKE);
+    scrape.draw_pile.push_back(CardId::BEAM_CELL);
+    scrape.draw_pile.push_back(CardId::DEFEND);
+    scrape.draw_pile.push_back(CardId::GO_FOR_THE_EYES);
+    play(scrape, CardId::SCRAPE);
+    assert(scrape.enemies[0].hp == 35);
+    assert(scrape.hand.size() == 2 && scrape.draw_pile.empty());
+    assert(scrape.discard_pile.size() == 3); // Strike, Defend and Scrape itself
+
+    assert_in_pool(CharacterId::DEFECT, { CardId::SHADOW_SHIELD, CardId::METEOR_STRIKE, CardId::GLACIER,
+                                          CardId::ICE_LANCE, CardId::SKIM, CardId::ALL_FOR_ONE, CardId::NULL_CARD,
+                                          CardId::GO_FOR_THE_EYES, CardId::SCRAPE });
+    std::cout << "[PASS] Defect: Shadow Shield, Meteor Strike, Glacier, Ice Lance, Skim, All for One, Null, "
+                 "Go for the Eyes, Scrape" << std::endl;
+}
+
+void test_necrobinder_existing_mechanics() {
+    // Bury costs 4: 52 damage once the energy is there.
+    CombatEngine bury = make_combat(CharacterId::NECROBINDER, EnemyType::CEREMONIAL_BEAST);
+    bury.hand.clear();
+    bury.hand.push_back(CardId::BURY);
+    assert(!bury.play_card(0));
+    bury.player.energy = 4;
+    assert(bury.play_card(0));
+    assert(bury.enemies[0].hp == 150 - 52);
+
+    // Misery: damage, then the target's debuffs are copied to every other enemy.
+    CombatEngine misery = make_pack(CharacterId::NECROBINDER);
+    misery.enemies[2].add_status(StatusType::VULNERABLE, 2);
+    misery.enemies[2].add_status(StatusType::POISON, 4);
+    play(misery, CardId::MISERY, 2);
+    assert(misery.enemies[2].hp == 42 - 10); // 7 x 1.5
+    for (int other : { 0, 1 }) {
+        assert(misery.enemies[other].get_status(StatusType::VULNERABLE) == 2);
+        assert(misery.enemies[other].get_status(StatusType::POISON) == 4);
+        assert(misery.enemies[other].get_status(StatusType::WEAK) == 0);
+    }
+
+    // Misery+ has Retain: it stays in hand when the turn ends, the plain one is discarded.
+    CombatEngine retain = make_combat(CharacterId::NECROBINDER);
+    make_enemy_idle(retain.enemies[0]);
+    retain.hand.clear();
+    retain.hand.push_back(DeckCard(CardId::MISERY, true));
+    retain.hand.push_back(CardId::MISERY);
+    retain.end_player_turn();
+    assert(retain.state == CombatState::PLAYER_TURN);
+    int kept = 0;
+    for (const DeckCard& card : retain.hand) kept += card.id == CardId::MISERY;
+    assert(kept == 1 && retain.hand[0] == DeckCard(CardId::MISERY, true));
+
+    // Undeath: Block and a copy of itself in the discard pile.
+    CombatEngine undeath = make_combat(CharacterId::NECROBINDER);
+    undeath.player.block = 0;
+    undeath.discard_pile.clear();
+    play(undeath, DeckCard(CardId::UNDEATH, true));
+    assert(undeath.player.block == 9 && undeath.player.energy == 3);
+    assert(undeath.discard_pile.size() == 2 && undeath.discard_pile[0] == DeckCard(CardId::UNDEATH, true));
+
+    assert_in_pool(CharacterId::NECROBINDER, { CardId::BURY, CardId::MISERY, CardId::UNDEATH });
+    std::cout << "[PASS] Necrobinder: Bury, Misery (Retain once upgraded), Undeath" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -622,6 +979,10 @@ int main() {
     test_necrobinder();
     test_necrobinder_commons();
     test_more_commons();
+    test_ironclad_existing_mechanics();
+    test_silent_existing_mechanics();
+    test_defect_existing_mechanics();
+    test_necrobinder_existing_mechanics();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;

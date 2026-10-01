@@ -441,6 +441,55 @@ int main() {
     assert(anchor_run.combat.player.block == 10);
     std::cout << "[PASS] Anchor: 10 Block at the start of each combat" << std::endl;
 
+    // Relics acting when a combat starts. The first room is a normal fight against one enemy.
+    auto start_with = [](std::initializer_list<std::string_view> relic_ids, RoomType room = RoomType::MONSTER) {
+        RunManager run;
+        run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+        run.hp = 50;
+        for (std::string_view id : relic_ids) run.add_relic(id);
+        int first_room = run.get_available_rooms()[0];
+        run.map.nodes[first_room].type = room;
+        run.enter_room(first_room);
+        assert(run.phase == RunPhase::IN_COMBAT);
+        return run;
+    };
+    RunManager bare = start_with({});
+    assert(bare.combat.player.hp == 50 && bare.combat.player.energy == 3);
+
+    RunManager stone = start_with({ "ODDLY_SMOOTH_STONE", "LANTERN", "BLOOD_VIAL" });
+    assert(stone.combat.player.get_status(StatusType::DEXTERITY) == 1);
+    assert(stone.combat.player.energy == 4);
+    assert(stone.combat.player.hp == 52);
+    stone.combat.end_player_turn();
+    assert(stone.combat.player.energy == 3); // the Lantern only lights the first turn
+
+    RunManager mask = start_with({ "RED_MASK", "BAG_OF_MARBLES", "FESTIVE_POPPER" });
+    for (const Enemy& foe : mask.combat.enemies) {
+        assert(foe.get_status(StatusType::WEAK) == 1 && foe.get_status(StatusType::VULNERABLE) == 1);
+        assert(foe.hp == foe.max_hp - 9);
+    }
+    assert(mask.combat.enemy.hp == mask.combat.enemies[0].hp);
+
+    // Sling of Courage and Pantograph depend on the room.
+    assert(start_with({ "SLING_OF_COURAGE", "PANTOGRAPH" }).combat.player.get_status(StatusType::STRENGTH) == 0);
+    assert(start_with({ "SLING_OF_COURAGE" }, RoomType::ELITE).combat.player.get_status(StatusType::STRENGTH) == 2);
+    assert(start_with({ "PANTOGRAPH" }, RoomType::ELITE).combat.player.hp == 50);
+    assert(start_with({ "PANTOGRAPH" }, RoomType::BOSS).combat.player.hp == 75);
+
+    // Stone Cracker upgrades 2 cards of the draw pile for the combat, not in the deck.
+    RunManager cracker = start_with({ "STONE_CRACKER" });
+    int upgraded_in_pile = 0;
+    for (const DeckCard& card : cracker.combat.draw_pile) upgraded_in_pile += card.upgraded;
+    assert(upgraded_in_pile == 2);
+    for (const DeckCard& card : cracker.master_deck) assert(!card.upgraded);
+    for (const DeckCard& card : bare.combat.draw_pile) assert(!card.upgraded);
+
+    ShopInventory sling_shop;
+    sling_shop.generate(CharacterId::IRONCLAD, 1);
+    assert(sling_shop.relics.size() == 3 && sling_shop.relics[2].relic_id == "SLING_OF_COURAGE");
+    std::cout << "[PASS] Combat-start relics: Oddly Smooth Stone, Lantern, Blood Vial, Red Mask, Bag of Marbles, "
+                 "Festive Popper, Sling of Courage, Pantograph, Stone Cracker" << std::endl;
+
     // Potions are drunk through the engine: effect applied, potion removed from the belt.
     RunManager potion_run;
     potion_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
@@ -485,11 +534,18 @@ int main() {
     assert(chest_run.phase == RunPhase::TREASURE);
     assert(chest_run.gold == chest_gold + 50);
     assert(chest_run.relics.size() == 2);
-    std::string_view first_chest = chest_run.relics[1];
-    assert(first_chest == "VAJRA" || first_chest == "ANCHOR");
-    std::string_view second_chest = chest_run.draw_treasure_relic();
-    assert((second_chest == "VAJRA" || second_chest == "ANCHOR") && second_chest != first_chest);
-    chest_run.add_relic(second_chest);
+    constexpr std::string_view chest_relics[] = { "VAJRA", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK",
+                                                  "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
+                                                  "STONE_CRACKER", "PANTOGRAPH", "SLING_OF_COURAGE" };
+    auto has_effect = [&](std::string_view id) {
+        return std::find(std::begin(chest_relics), std::end(chest_relics), id) != std::end(chest_relics);
+    };
+    assert(has_effect(chest_run.relics[1]) && chest_run.last_treasure_relic == chest_run.relics[1]);
+    for (size_t draw = 1; draw < std::size(chest_relics); ++draw) {
+        std::string_view relic_id = chest_run.draw_treasure_relic();
+        assert(has_effect(relic_id) && !chest_run.has_relic(relic_id));
+        chest_run.add_relic(relic_id);
+    }
     for (int draw = 0; draw < 5; ++draw) {
         std::string_view relic_id = chest_run.draw_treasure_relic();
         const RelicData* relic = find_relic(relic_id);
@@ -640,7 +696,7 @@ int main() {
     restored_run.open_shop();
     assert(restored_run.phase == RunPhase::SHOP);
     assert(restored_run.current_shop.cards.size() == 3);
-    assert(restored_run.current_shop.relics.size() == 2);
+    assert(restored_run.current_shop.relics.size() == 3);
     prev_gold = restored_run.gold;
     size_t prev_deck_sz = restored_run.master_deck.size();
     bool buy_c_ok = restored_run.buy_shop_card(0);

@@ -2,6 +2,8 @@
 
 #include "bn_sstream.h"
 
+#include "engine/relic.h"
+
 #include "gba/audio.h"
 #include "gba/scene_factories.h"
 
@@ -57,7 +59,16 @@ SceneId scene_for_run_phase(GameContext& context)
         play_sfx(Sfx::RELIC);
         context.map_toast.clear();
         bn::ostringstream stream(context.map_toast);
-        stream << "Coffre : +50 Or et une relique !";
+        const engine::RelicData* relic = engine::find_relic(run.last_treasure_relic);
+
+        if(relic)
+        {
+            stream << "+50 Or, " << bn::string_view(relic->name.data(), relic->name.size());
+        }
+        else
+        {
+            stream << "Coffre : +50 Or";
+        }
         return SceneId::MAP;
     }
     default:

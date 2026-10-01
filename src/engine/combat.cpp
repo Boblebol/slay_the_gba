@@ -3,6 +3,37 @@
 
 namespace engine {
 
+namespace {
+
+// Cards whose French name contains "Frappe" (Perfected Strike counts them).
+bool is_strike(CardId id) {
+    switch (id) {
+        case CardId::STRIKE:
+        case CardId::TWIN_STRIKE:
+        case CardId::POMMEL_STRIKE:
+        case CardId::SOLAR_STRIKE:
+        case CardId::PERFECTED_STRIKE:
+        case CardId::METEOR_STRIKE:
+            return true;
+        default:
+            return false;
+    }
+}
+
+template <size_t Capacity>
+int count_strikes(const FixedVector<DeckCard, Capacity>& pile) {
+    int count = 0;
+    for (const DeckCard& card : pile) count += is_strike(card.id);
+    return count;
+}
+
+// Retain: the card stays in hand at the end of the turn. Misery+ is the only card with the keyword so far.
+bool retains(const DeckCard& card) {
+    return card.id == CardId::MISERY && card.upgraded;
+}
+
+} // namespace
+
 uint32_t CombatEngine::next_random() {
     // 32-bit XorShift
     rng_state_ ^= rng_state_ << 13;
@@ -37,6 +68,16 @@ int CombatEngine::count_alive_enemies() const {
 int CombatEngine::get_first_alive_enemy_index() const {
     for (size_t i = 0; i < enemies.size(); ++i) {
         if (enemies[i].is_alive()) return static_cast<int>(i);
+    }
+    return 0;
+}
+
+int CombatEngine::random_alive_enemy_index() {
+    int alive = count_alive_enemies();
+    if (alive == 0) return 0;
+    int pick = static_cast<int>(next_random() % static_cast<uint32_t>(alive));
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        if (enemies[i].is_alive() && pick-- == 0) return static_cast<int>(i);
     }
     return 0;
 }
@@ -102,18 +143,19 @@ void CombatEngine::shuffle_discard_into_draw() {
     shuffle_draw_pile();
 }
 
-void CombatEngine::draw_card() {
-    if (hand.size() >= hand.capacity()) return; // Hand limit
+bool CombatEngine::draw_card() {
+    if (hand.size() >= hand.capacity()) return false; // Hand limit
 
     if (draw_pile.empty()) {
         shuffle_discard_into_draw();
     }
 
-    if (!draw_pile.empty()) {
-        DeckCard card = draw_pile.back();
-        draw_pile.pop_back();
-        hand.push_back(card);
-    }
+    if (draw_pile.empty()) return false;
+
+    DeckCard card = draw_pile.back();
+    draw_pile.pop_back();
+    hand.push_back(card);
+    return true;
 }
 
 void CombatEngine::draw_cards(int count) {
@@ -449,6 +491,269 @@ bool CombatEngine::play_card(int index, int target_index) {
             set_log(upgraded ? "Played Sweeping Beam+!" : "Played Sweeping Beam!");
             break;
         }
+        case CardId::THUNDERCLAP: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    enemies[i].take_damage(attack_damage(base_value, player, enemies[i]));
+                    enemies[i].add_status(StatusType::VULNERABLE, secondary_value);
+                }
+            }
+            set_log(upgraded ? "Played Thunderclap+!" : "Played Thunderclap!");
+            break;
+        }
+        case CardId::DISMANTLE: {
+            // The second hit is decided before the first one lands.
+            int hits = current_target.get_status(StatusType::VULNERABLE) > 0 ? 2 : 1;
+            for (int hit = 0; hit < hits; ++hit) {
+                current_target.take_damage(attack_damage(base_value, player, current_target));
+            }
+            set_log(upgraded ? "Played Dismantle+!" : "Played Dismantle!");
+            break;
+        }
+        case CardId::INFLAME: {
+            player.add_status(StatusType::STRENGTH, base_value);
+            set_log(upgraded ? "Played Inflame+!" : "Played Inflame!");
+            break;
+        }
+        case CardId::PERFECTED_STRIKE: {
+            // Counts every card named "Frappe" in the deck, this one included (it already left the hand).
+            int strikes = 1 + count_strikes(hand) + count_strikes(draw_pile) + count_strikes(discard_pile);
+            current_target.take_damage(attack_damage(base_value + secondary_value * strikes, player, current_target));
+            set_log(upgraded ? "Played Perfected Strike+!" : "Played Perfected Strike!");
+            break;
+        }
+        case CardId::BLUDGEON: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            set_log(upgraded ? "Played Bludgeon+!" : "Played Bludgeon!");
+            break;
+        }
+        case CardId::BULLY: {
+            current_target.take_damage(attack_damage(base_value + secondary_value * current_target.get_status(StatusType::VULNERABLE), player, current_target));
+            set_log(upgraded ? "Played Bully+!" : "Played Bully!");
+            break;
+        }
+        case CardId::SWORD_BOOMERANG: {
+            for (uint8_t hit = 0; hit < secondary_value && has_alive_enemies(); ++hit) {
+                Enemy& victim = enemies[random_alive_enemy_index()];
+                victim.take_damage(attack_damage(base_value, player, victim));
+            }
+            set_log(upgraded ? "Played Sword Boomerang+!" : "Played Sword Boomerang!");
+            break;
+        }
+        case CardId::BREAK: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            set_log(upgraded ? "Played Break+!" : "Played Break!");
+            break;
+        }
+        case CardId::CONFLAGRATION: {
+            for (uint8_t hit = 0; hit < secondary_value; ++hit) {
+                for (size_t i = 0; i < enemies.size(); ++i) {
+                    if (enemies[i].is_alive()) {
+                        enemies[i].take_damage(attack_damage(base_value, player, enemies[i]));
+                    }
+                }
+            }
+            set_log(upgraded ? "Played Conflagration+!" : "Played Conflagration!");
+            break;
+        }
+        case CardId::EXPECT_A_FIGHT: {
+            int16_t strength = std::max<int16_t>(0, player.get_status(StatusType::STRENGTH));
+            player.gain_block(static_cast<int16_t>(base_value + secondary_value * strength));
+            set_log(upgraded ? "Played Expect a Fight+!" : "Played Expect a Fight!");
+            break;
+        }
+        case CardId::PILLAGE: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            // Stops on the first non-Attack, a full hand or empty piles.
+            while (draw_card() && CardDef::get(hand.back().id).type == CardType::ATTACK) {
+            }
+            set_log(upgraded ? "Played Pillage+!" : "Played Pillage!");
+            break;
+        }
+        case CardId::UPPERCUT: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            current_target.add_status(StatusType::WEAK, secondary_value);
+            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            set_log(upgraded ? "Played Uppercut+!" : "Played Uppercut!");
+            break;
+        }
+        case CardId::FIGHT_ME: {
+            for (int hit = 0; hit < 2; ++hit) {
+                current_target.take_damage(attack_damage(base_value, player, current_target));
+            }
+            player.add_status(StatusType::STRENGTH, secondary_value);
+            if (current_target.is_alive()) current_target.add_status(StatusType::STRENGTH, 1);
+            set_log(upgraded ? "Played Fight Me+!" : "Played Fight Me!");
+            break;
+        }
+        case CardId::LEG_SWEEP: {
+            current_target.add_status(StatusType::WEAK, secondary_value);
+            player.gain_block(base_value);
+            set_log(upgraded ? "Played Leg Sweep+!" : "Played Leg Sweep!");
+            break;
+        }
+        case CardId::HAZE: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    enemies[i].add_status(StatusType::POISON, base_value);
+                    enemies[i].add_status(StatusType::WEAK, secondary_value);
+                }
+            }
+            set_log(upgraded ? "Played Haze+!" : "Played Haze!");
+            break;
+        }
+        case CardId::PRECISE_CUT: {
+            // The card already left the hand: what remains are the other cards.
+            current_target.take_damage(attack_damage(static_cast<int16_t>(base_value - secondary_value * static_cast<int>(hand.size())), player, current_target));
+            set_log(upgraded ? "Played Precise Cut+!" : "Played Precise Cut!");
+            break;
+        }
+        case CardId::BOUNCING_FLASK: {
+            for (uint8_t bounce = 0; bounce < secondary_value; ++bounce) {
+                enemies[random_alive_enemy_index()].add_status(StatusType::POISON, base_value);
+            }
+            set_log(upgraded ? "Played Bouncing Flask+!" : "Played Bouncing Flask!");
+            break;
+        }
+        case CardId::FLECHETTES: {
+            int skills = 0;
+            for (const DeckCard& card : hand) skills += CardDef::get(card.id).type == CardType::SKILL;
+            for (int hit = 0; hit < skills; ++hit) {
+                current_target.take_damage(attack_damage(base_value, player, current_target));
+            }
+            set_log(upgraded ? "Played Flechettes+!" : "Played Flechettes!");
+            break;
+        }
+        case CardId::FOOTWORK: {
+            player.add_status(StatusType::DEXTERITY, base_value);
+            set_log(upgraded ? "Played Footwork+!" : "Played Footwork!");
+            break;
+        }
+        case CardId::ESCAPE_PLAN: {
+            if (draw_card() && CardDef::get(hand.back().id).type == CardType::SKILL) {
+                player.gain_block(base_value);
+            }
+            set_log(upgraded ? "Played Escape Plan+!" : "Played Escape Plan!");
+            break;
+        }
+        case CardId::DASH: {
+            player.gain_block(secondary_value);
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            set_log(upgraded ? "Played Dash+!" : "Played Dash!");
+            break;
+        }
+        case CardId::BUBBLE_BUBBLE: {
+            if (current_target.get_status(StatusType::POISON) > 0) {
+                current_target.add_status(StatusType::POISON, base_value);
+            }
+            set_log(upgraded ? "Played Bubble Bubble+!" : "Played Bubble Bubble!");
+            break;
+        }
+        case CardId::OUTBREAK: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    enemies[i].add_status(StatusType::POISON, base_value);
+                    enemies[i].apply_poison_tick();
+                }
+            }
+            set_log(upgraded ? "Played Outbreak+!" : "Played Outbreak!");
+            break;
+        }
+        case CardId::SHADOW_SHIELD: {
+            player.gain_block(base_value);
+            player.channel_orb(OrbType::DARK, &current_target);
+            set_log(upgraded ? "Played Shadow Shield+!" : "Played Shadow Shield!");
+            break;
+        }
+        case CardId::METEOR_STRIKE: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            for (uint8_t n = 0; n < secondary_value; ++n) player.channel_orb(OrbType::PLASMA, &current_target);
+            set_log(upgraded ? "Played Meteor Strike+!" : "Played Meteor Strike!");
+            break;
+        }
+        case CardId::GLACIER: {
+            player.gain_block(base_value);
+            for (uint8_t n = 0; n < secondary_value; ++n) player.channel_orb(OrbType::FROST, &current_target);
+            set_log(upgraded ? "Played Glacier+!" : "Played Glacier!");
+            break;
+        }
+        case CardId::ICE_LANCE: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            for (uint8_t n = 0; n < secondary_value; ++n) player.channel_orb(OrbType::FROST, &current_target);
+            set_log(upgraded ? "Played Ice Lance+!" : "Played Ice Lance!");
+            break;
+        }
+        case CardId::SKIM: {
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Skim+!" : "Played Skim!");
+            break;
+        }
+        case CardId::ALL_FOR_ONE: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            for (size_t i = 0; i < discard_pile.size() && hand.size() < hand.capacity();) {
+                DeckCard card = discard_pile[i];
+                if (CardDef::get_cost(card.id, card.upgraded) == 0) {
+                    discard_pile.erase(i);
+                    hand.push_back(card);
+                } else {
+                    ++i;
+                }
+            }
+            set_log(upgraded ? "Played All for One+!" : "Played All for One!");
+            break;
+        }
+        case CardId::NULL_CARD: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            current_target.add_status(StatusType::WEAK, secondary_value);
+            player.channel_orb(OrbType::DARK, &current_target);
+            set_log(upgraded ? "Played Null+!" : "Played Null!");
+            break;
+        }
+        case CardId::GO_FOR_THE_EYES: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            if (current_target.current_intent.base_damage > 0) {
+                current_target.add_status(StatusType::WEAK, secondary_value);
+            }
+            set_log(upgraded ? "Played Go for the Eyes+!" : "Played Go for the Eyes!");
+            break;
+        }
+        case CardId::SCRAPE: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            size_t kept = hand.size();
+            draw_cards(secondary_value);
+            for (size_t i = hand.size(); i-- > kept;) {
+                DeckCard drawn = hand[i];
+                if (CardDef::get_cost(drawn.id, drawn.upgraded) != 0) {
+                    hand.erase(i);
+                    discard_pile.push_back(drawn);
+                }
+            }
+            set_log(upgraded ? "Played Scrape+!" : "Played Scrape!");
+            break;
+        }
+        case CardId::BURY: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            set_log(upgraded ? "Played Bury+!" : "Played Bury!");
+            break;
+        }
+        case CardId::MISERY: {
+            current_target.take_damage(attack_damage(base_value, player, current_target));
+            for (StatusType debuff : { StatusType::VULNERABLE, StatusType::WEAK, StatusType::POISON }) {
+                int16_t amount = current_target.get_status(debuff);
+                for (size_t i = 0; amount > 0 && i < enemies.size(); ++i) {
+                    if (static_cast<int>(i) != target_idx && enemies[i].is_alive()) enemies[i].add_status(debuff, amount);
+                }
+            }
+            set_log(upgraded ? "Played Misery+!" : "Played Misery!");
+            break;
+        }
+        case CardId::UNDEATH: {
+            player.gain_block(base_value);
+            discard_pile.push_back(DeckCard(CardId::UNDEATH, upgraded));
+            set_log(upgraded ? "Played Undeath+!" : "Played Undeath!");
+            break;
+        }
         default:
             set_log("Played card!");
             break;
@@ -478,10 +783,11 @@ bool CombatEngine::play_card(int index, int target_index) {
 void CombatEngine::end_player_turn() {
     if (state != CombatState::PLAYER_TURN) return;
 
-    // Discard hand
-    while (!hand.empty()) {
-        discard_pile.push_back(hand.back());
-        hand.pop_back();
+    // Discard the hand, except the cards with Retain
+    for (size_t i = hand.size(); i-- > 0;) {
+        if (retains(hand[i])) continue;
+        discard_pile.push_back(hand[i]);
+        hand.erase(i);
     }
 
     // End of turn effects: Metallicize block, then orb passives on the first living enemy.
