@@ -1,5 +1,5 @@
 // Card filters (type / rarity / text) and simple list searches.
-document.querySelectorAll(".filters").forEach((box) => {
+document.querySelectorAll(".filters:not([data-progress])").forEach((box) => {
   const scope = box.parentElement;
   const cards = () => scope.querySelectorAll(".card");
   const state = { type: "", rarity: "", text: "" };
@@ -50,4 +50,46 @@ document.querySelectorAll("[data-solo]").forEach((input) => {
       item.classList.toggle("hidden", !!text && !item.textContent.toLowerCase().includes(text));
     });
   });
+});
+
+// Progress page: filter the checklist by status and text, folding the categories left empty.
+document.querySelectorAll("[data-progress]").forEach((box) => {
+  const state = { status: "", text: "" };
+  const count = box.querySelector(".count");
+
+  const apply = () => {
+    const filtering = !!(state.status || state.text);
+    let shown = 0;
+    document.querySelectorAll("details.prog-cat").forEach((category) => {
+      let visible = 0;
+      category.querySelectorAll("li").forEach((item) => {
+        const ok =
+          (!state.status || item.dataset.status === state.status) &&
+          (!state.text || item.dataset.name.includes(state.text));
+        item.classList.toggle("hidden", !ok);
+        if (ok) visible += 1;
+      });
+      category.classList.toggle("hidden", visible === 0);
+      // A text search opens the matching categories; a status filter alone would unfold a thousand rows.
+      if (filtering) category.open = !!state.text && visible > 0;
+      shown += visible;
+    });
+    document.querySelectorAll(".prog-section").forEach((section) => {
+      section.classList.toggle("hidden", !section.querySelector("details.prog-cat:not(.hidden)"));
+    });
+    if (count) count.textContent = `${shown} élément${shown > 1 ? "s" : ""}`;
+  };
+
+  box.querySelectorAll("[data-filter-status]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.status = button.dataset.filterStatus;
+      box.querySelectorAll("[data-filter-status]").forEach((b) => b.classList.toggle("on", b === button));
+      apply();
+    });
+  });
+  box.querySelector("[data-search]").addEventListener("input", (event) => {
+    state.text = event.target.value.trim().toLowerCase();
+    apply();
+  });
+  apply();
 });
