@@ -319,6 +319,44 @@ bn::string_view base_name(engine::CardId id)
         return "Semence";
     case engine::CardId::ERADICATE:
         return "Éradication";
+    case engine::CardId::ALIGNMENT:
+        return "Alignement";
+    case engine::CardId::ASTRAL_PULSE:
+        return "Pulsation astrale";
+    case engine::CardId::CLOAK_OF_STARS:
+        return "Manteau d'étoiles";
+    case engine::CardId::COMET:
+        return "Comète";
+    case engine::CardId::CRESCENT_SPEAR:
+        return "Croissant de lance";
+    case engine::CardId::DEVASTATE:
+        return "Dévastation";
+    case engine::CardId::DYING_STAR:
+        return "Étoile mourante";
+    case engine::CardId::GAMMA_BLAST:
+        return "Déflagration gamma";
+    case engine::CardId::GLOW:
+        return "Luminosité";
+    case engine::CardId::GUIDING_STAR:
+        return "Étoile directrice";
+    case engine::CardId::HIDDEN_CACHE:
+        return "Cache secrète";
+    case engine::CardId::METEOR_SHOWER:
+        return "Pluie de météores";
+    case engine::CardId::PARTICLE_WALL:
+        return "Mur de particules";
+    case engine::CardId::RADIATE:
+        return "Rayonnement";
+    case engine::CardId::RESONANCE:
+        return "Résonance";
+    case engine::CardId::ROYAL_GAMBLE:
+        return "Pari royal";
+    case engine::CardId::SEVEN_STARS:
+        return "Pléiades";
+    case engine::CardId::SHINING_STRIKE:
+        return "Frappe rayonnante";
+    case engine::CardId::STARDUST:
+        return "Poussière d'étoiles";
     default:
         return "???";
     }
@@ -387,10 +425,10 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Évoque votre Orbe la plus ancienne 2 fois.";
         break;
     case engine::CardId::FALLING_STAR:
-        stream << "Inflige " << value << " dégâts. Gagne " << secondary << " Étoile(s).";
+        stream << "Inflige " << value << ". Affaibli " << secondary << ". Vulnérable " << secondary << ".";
         break;
     case engine::CardId::VENERATE:
-        stream << "Gagne " << value << " d'Armure et " << secondary << " Étoiles.";
+        stream << "Gagne " << secondary << " Étoiles.";
         break;
     case engine::CardId::BODYGUARD:
         stream << "Gagne " << value << " d'Armure. Invoque Titos.";
@@ -803,15 +841,74 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::ERADICATE:
         stream << "Retenue. Inflige " << value << " dégâts X fois.";
         break;
+    case engine::CardId::ALIGNMENT:
+        stream << "Énergie +" << value << ".";
+        break;
+    case engine::CardId::ASTRAL_PULSE:
+        stream << "Inflige " << value << " dégâts à TOUS, " << secondary << " fois.";
+        break;
+    case engine::CardId::CLOAK_OF_STARS:
+        stream << "Gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::COMET:
+        stream << "Inflige " << value << ". Affaibli " << secondary << ". Vulnérable " << secondary << ".";
+        break;
+    case engine::CardId::CRESCENT_SPEAR:
+        stream << "Inflige " << value << ", +" << secondary << " par carte coûtant des ★.";
+        break;
+    case engine::CardId::DEVASTATE:
+        stream << "Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::DYING_STAR:
+        stream << "Éthéré. TOUS : " << value << ", Force -" << secondary << " ce tour.";
+        break;
+    case engine::CardId::GAMMA_BLAST:
+        stream << "Inflige " << value << ". Affaibli " << secondary << ". Vulnérable " << secondary << ".";
+        break;
+    case engine::CardId::GLOW:
+        stream << "Gagne " << value << " ★. Pioche " << secondary << ", et au tour suivant.";
+        break;
+    case engine::CardId::GUIDING_STAR:
+        stream << "Inflige " << value << " dégâts. Pioche " << secondary << " cartes.";
+        break;
+    case engine::CardId::HIDDEN_CACHE:
+        stream << "Gagne " << value << " ★. Tour suivant : +" << secondary << " ★.";
+        break;
+    case engine::CardId::METEOR_SHOWER:
+        stream << "TOUS : " << value << ", Affaibli et Vulnérable " << secondary << ".";
+        break;
+    case engine::CardId::PARTICLE_WALL:
+        stream << "Gagne " << value << " d'Armure. Revient en main.";
+        break;
+    case engine::CardId::RADIATE:
+        stream << "Inflige " << value << " à TOUS par ★ gagnée ce tour.";
+        break;
+    case engine::CardId::RESONANCE:
+        stream << "Force +" << value << ". TOUS les ennemis : Force -" << secondary << ".";
+        break;
+    case engine::CardId::ROYAL_GAMBLE:
+        stream << (card.upgraded ? "Retenue. " : "") << "Gagne " << value << " ★. Épuisement.";
+        break;
+    case engine::CardId::SEVEN_STARS:
+        stream << "Inflige " << value << " dégâts à TOUS, " << secondary << " fois.";
+        break;
+    case engine::CardId::SHINING_STRIKE:
+        stream << "Inflige " << value << ". +" << secondary << " ★. Retourne sur la pioche.";
+        break;
+    case engine::CardId::STARDUST:
+        stream << "Inflige " << value << " à un ennemi au hasard, X fois.";
+        break;
     default:
         break;
     }
 }
 
-bn::string_view card_cost_label(const engine::DeckCard& card)
+namespace
+{
+
+bn::string_view cost_digit(uint8_t cost)
 {
     static constexpr bn::string_view DIGITS[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-    uint8_t cost = engine::CardDef::get_cost(card.id, card.upgraded);
 
     if(cost == engine::COST_X)
     {
@@ -819,6 +916,19 @@ bn::string_view card_cost_label(const engine::DeckCard& card)
     }
 
     return DIGITS[bn::min(int(cost), 9)];
+}
+
+}
+
+bn::string_view card_cost_label(const engine::DeckCard& card)
+{
+    return cost_digit(engine::CardDef::get_cost(card.id, card.upgraded));
+}
+
+bn::string_view card_star_cost_label(const engine::DeckCard& card)
+{
+    uint8_t cost = engine::CardDef::get_star_cost(card.id, card.upgraded);
+    return cost == 0 ? bn::string_view() : cost_digit(cost);
 }
 
 bn::string_view card_type_name(engine::CardType type)

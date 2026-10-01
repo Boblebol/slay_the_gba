@@ -123,7 +123,7 @@ public:
     FixedVector<OrbType, 3> orbs;
     int16_t dark_orb_charge = 0;
 
-    // Regent Sovereign Stars (0 to 5)
+    // Regent Stars: a second resource, kept from one turn to the next
     uint8_t sovereign_stars = 0;
 
     // Necrobinder Souls & Minion (Osty)

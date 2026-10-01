@@ -394,31 +394,37 @@ void test_defect_commons() {
 }
 
 void test_regent() {
+    // Stars are a resource: Venerate makes them, Falling Star spends 2.
     CombatEngine combat = make_combat(CharacterId::REGENT);
     Enemy& worm = combat.enemies[0];
-    play(combat, CardId::FALLING_STAR);
-    assert(worm.hp == 35 && combat.player.sovereign_stars == 1);
-
-    worm.add_status(StatusType::VULNERABLE, 1);
-    play(combat, CardId::FALLING_STAR);
-    assert(worm.hp == 35 - 10); // Vulnerable now applies to Falling Star too
-
+    combat.hand.clear();
+    combat.hand.push_back(CardId::FALLING_STAR);
+    assert(!combat.can_play_card(0)); // free in energy, but no Star yet
     play(combat, CardId::VENERATE);
-    assert(combat.player.block == 6 && combat.player.sovereign_stars == 4);
-    combat.player.add_stars(10);
-    assert(combat.player.sovereign_stars == 5);
+    assert(combat.player.block == 0 && combat.player.sovereign_stars == 2 && combat.player.energy == 2);
+    assert(combat.counters.stars_gained == 2);
+    play(combat, CardId::FALLING_STAR);
+    assert(worm.hp == 42 - 8 && combat.player.sovereign_stars == 0 && combat.player.energy == 3);
+    assert(worm.get_status(StatusType::WEAK) == 1 && worm.get_status(StatusType::VULNERABLE) == 1);
+    assert(combat.counters.stars_spent == 2);
+    assert(CardDef::get_star_cost(CardId::FALLING_STAR, true) == 2 && CardDef::get_value(CardId::FALLING_STAR, true) == 12);
 
-    // Stars empower the basic Strike and Defend.
-    CombatEngine stars = make_combat(CharacterId::REGENT);
-    stars.player.add_stars(2);
-    play(stars, CardId::STRIKE);
-    play(stars, CardId::DEFEND);
-    assert(stars.enemies[0].hp == 42 - 8 && stars.player.block == 7);
-    std::cout << "[PASS] Regent: Falling Star + Vulnerable, Venerate, Stars cap 5, Stars on Strike/Defend" << std::endl;
+    // Stars are not capped and are kept from one turn to the next; the turn counters restart.
+    combat.gain_stars(10);
+    assert(combat.player.sovereign_stars == 10);
+    make_enemy_idle(worm);
+    combat.end_player_turn();
+    assert(combat.player.sovereign_stars == 10 && combat.counters.stars_gained == 0 && combat.counters.stars_spent == 0);
+
+    // Strike and Defend get nothing from the Stars.
+    play(combat, CardId::STRIKE);
+    play(combat, CardId::DEFEND);
+    assert(worm.hp == 34 - 6 && combat.player.block == 5);
+    std::cout << "[PASS] Regent: Stars gained, spent, kept between turns, Venerate, Falling Star" << std::endl;
 }
 
 void test_regent_commons() {
-    // Solar Strike hits and gains Stars (capped at 5 like the other Star cards).
+    // Solar Strike hits and gains Stars.
     CombatEngine solar = make_combat(CharacterId::REGENT);
     play(solar, DeckCard(CardId::SOLAR_STRIKE, true));
     assert(solar.enemies[0].hp == 42 - 10);
@@ -1701,6 +1707,142 @@ void test_counters() {
     std::cout << "[PASS] Counters: Finisher, Memento Mori, Murder, FTL, Helix Drill, Lunar Blast, Supermassive, Death March, Pull from Below" << std::endl;
 }
 
+void test_regent_stars() {
+    // A Star cost keeps the card in hand until the Stars are there.
+    CombatEngine stars = make_combat(CharacterId::REGENT);
+    stars.hand.clear();
+    stars.hand.push_back(CardId::CLOAK_OF_STARS);
+    assert(!stars.can_play_card(0));
+    stars.gain_stars(1);
+    assert(stars.play_card(0));
+    assert(stars.player.block == 7 && stars.player.sovereign_stars == 0 && stars.player.energy == 3);
+    stars.gain_stars(2);
+    play(stars, DeckCard(CardId::ALIGNMENT, true));
+    assert(stars.player.energy == 6 && stars.player.sovereign_stars == 0);
+
+    CombatEngine pulse = make_pack(CharacterId::REGENT);
+    pulse.gain_stars(3);
+    play(pulse, CardId::ASTRAL_PULSE);
+    assert(pulse.enemies[0].hp == 6 && pulse.enemies[1].hp == 6 && pulse.enemies[2].hp == 30);
+    assert(pulse.player.sovereign_stars == 0);
+
+    CombatEngine comet = make_combat(CharacterId::REGENT);
+    comet.gain_stars(9);
+    play(comet, CardId::COMET);
+    assert(comet.enemies[0].hp == 42 - 33 && comet.player.sovereign_stars == 4);
+    assert(comet.enemies[0].get_status(StatusType::WEAK) == 3 && comet.enemies[0].get_status(StatusType::VULNERABLE) == 3);
+    comet.enemies[0].hp = 100;
+    comet.enemies[0].statuses.clear();
+    play(comet, DeckCard(CardId::DEVASTATE, true));
+    assert(comet.enemies[0].hp == 100 - 45 && comet.player.sovereign_stars == 0 && comet.player.energy == 2);
+
+    CombatEngine gamma = make_combat(CharacterId::REGENT);
+    gamma.gain_stars(4);
+    play(gamma, DeckCard(CardId::GAMMA_BLAST, true));
+    assert(gamma.enemies[0].hp == 42 - 18 && gamma.enemies[0].get_status(StatusType::WEAK) == 2);
+    assert(gamma.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+    gamma.enemies[0].hp = 42;
+    gamma.enemies[0].statuses.clear();
+    play(gamma, CardId::GUIDING_STAR);
+    assert(gamma.enemies[0].hp == 42 - 12 && gamma.hand.size() == 2 && gamma.player.sovereign_stars == 0);
+
+    // Crescent Spear counts the cards with a Star cost left in the piles, and itself.
+    CombatEngine spear = make_combat(CharacterId::REGENT);
+    spear.draw_pile.clear();
+    spear.discard_pile.clear();
+    spear.draw_pile.push_back(CardId::FALLING_STAR);
+    spear.draw_pile.push_back(CardId::STRIKE);
+    spear.discard_pile.push_back(CardId::COMET);
+    spear.gain_stars(1);
+    play(spear, CardId::CRESCENT_SPEAR);
+    assert(spear.enemies[0].hp == 42 - (8 + 3 * 2));
+
+    CombatEngine dying = make_pack(CharacterId::REGENT);
+    dying.gain_stars(3);
+    play(dying, CardId::DYING_STAR);
+    assert(dying.enemies[0].hp == 9 && dying.enemies[2].hp == 33);
+    for (const Enemy& foe : dying.enemies) assert(foe.get_status(StatusType::STRENGTH) == -9);
+    assert(CardDef::has_keyword(CardId::DYING_STAR, false, KEYWORD_ETHEREAL));
+    std::cout << "[PASS] Star costs: Cloak of Stars, Alignment, Astral Pulse, Comet, Devastate, Gamma Blast, Guiding Star, Crescent Spear, Dying Star" << std::endl;
+
+    // Glow: a card now and one more next turn. Hidden Cache: Stars now and next turn. Radiate counts them.
+    CombatEngine glow = make_combat(CharacterId::REGENT);
+    pad_draw_pile(glow, 8);
+    play(glow, DeckCard(CardId::GLOW, true));
+    assert(glow.player.sovereign_stars == 2 && glow.hand.size() == 1);
+    end_turn_idle(glow);
+    assert(glow.hand.size() == 6 && glow.player.sovereign_stars == 2);
+    play(glow, CardId::HIDDEN_CACHE);
+    assert(glow.player.sovereign_stars == 3);
+    end_turn_idle(glow);
+    assert(glow.player.sovereign_stars == 6 && glow.counters.stars_gained == 3);
+    play(glow, CardId::RADIATE);
+    assert(glow.enemies[0].hp == 42 - 3 * 3);
+
+    CombatEngine meteor = make_pack(CharacterId::REGENT);
+    meteor.gain_stars(2);
+    play(meteor, CardId::METEOR_SHOWER);
+    assert(meteor.enemies[0].hp == 4 && meteor.enemies[2].hp == 28);
+    for (const Enemy& foe : meteor.enemies) {
+        assert(foe.get_status(StatusType::WEAK) == 2 && foe.get_status(StatusType::VULNERABLE) == 2);
+    }
+
+    // Particle Wall comes straight back to the hand, as long as Stars pay for it.
+    CombatEngine wall = make_combat(CharacterId::REGENT);
+    wall.gain_stars(4);
+    play(wall, CardId::PARTICLE_WALL);
+    assert(wall.player.block == 9 && wall.hand.size() == 1 && wall.hand[0] == CardId::PARTICLE_WALL);
+    assert(wall.discard_pile.empty() && wall.play_card(0));
+    assert(wall.player.block == 18 && wall.player.sovereign_stars == 0 && !wall.can_play_card(0));
+
+    CombatEngine resonance = make_pack(CharacterId::REGENT);
+    resonance.gain_stars(2);
+    play(resonance, DeckCard(CardId::RESONANCE, true));
+    assert(resonance.player.get_status(StatusType::STRENGTH) == 2);
+    for (const Enemy& foe : resonance.enemies) assert(foe.get_status(StatusType::STRENGTH) == -1);
+
+    CombatEngine gamble = make_combat(CharacterId::REGENT);
+    gamble.gain_stars(5);
+    play(gamble, CardId::ROYAL_GAMBLE);
+    assert(gamble.player.sovereign_stars == 9 && gamble.exhaust_pile.size() == 1);
+    assert(CardDef::has_keyword(CardId::ROYAL_GAMBLE, true, KEYWORD_RETAIN));
+    assert(!CardDef::has_keyword(CardId::ROYAL_GAMBLE, false, KEYWORD_RETAIN));
+
+    CombatEngine seven = make_pack(CharacterId::REGENT);
+    for (Enemy& foe : seven.enemies) foe.hp = 100;
+    seven.gain_stars(7);
+    play(seven, CardId::SEVEN_STARS);
+    for (const Enemy& foe : seven.enemies) assert(foe.hp == 100 - 7 * 7);
+    assert(seven.player.energy == 1 && seven.player.sovereign_stars == 0);
+    assert(CardDef::get_cost(CardId::SEVEN_STARS, true) == 1 && CardDef::get_star_cost(CardId::SEVEN_STARS, true) == 7);
+
+    // Shining Strike goes back on top of the draw pile.
+    CombatEngine shining = make_combat(CharacterId::REGENT);
+    play(shining, CardId::SHINING_STRIKE);
+    assert(shining.enemies[0].hp == 42 - 8 && shining.player.sovereign_stars == 2);
+    assert(shining.draw_pile.back() == CardId::SHINING_STRIKE && shining.discard_pile.empty());
+
+    // Stardust: X is the number of Stars, all spent.
+    CombatEngine dust = make_combat(CharacterId::REGENT);
+    dust.gain_stars(4);
+    play(dust, CardId::STARDUST);
+    assert(dust.enemies[0].hp == 42 - 4 * 5 && dust.player.sovereign_stars == 0 && dust.player.energy == 3);
+    assert(dust.counters.stars_spent == 4);
+    dust.hand.clear();
+    dust.hand.push_back(DeckCard(CardId::STARDUST, true));
+    assert(dust.can_play_card(0) && dust.play_card(0));
+    assert(dust.enemies[0].hp == 22);
+
+    assert_in_pool(CharacterId::REGENT, { CardId::ALIGNMENT, CardId::ASTRAL_PULSE, CardId::CLOAK_OF_STARS, CardId::COMET,
+                                          CardId::CRESCENT_SPEAR, CardId::DEVASTATE, CardId::DYING_STAR, CardId::GAMMA_BLAST,
+                                          CardId::GLOW, CardId::GUIDING_STAR, CardId::HIDDEN_CACHE, CardId::PARTICLE_WALL,
+                                          CardId::RADIATE, CardId::RESONANCE, CardId::ROYAL_GAMBLE, CardId::SEVEN_STARS,
+                                          CardId::SHINING_STRIKE, CardId::STARDUST });
+    std::span<const CardId> pool = RunManager::card_reward_pool(CharacterId::REGENT);
+    assert(std::find(pool.begin(), pool.end(), CardId::METEOR_SHOWER) == pool.end()); // Ancient rarity
+    std::cout << "[PASS] Stars: Glow, Hidden Cache, Radiate, Meteor Shower, Particle Wall, Resonance, Royal Gamble, Seven Stars, Shining Strike, Stardust" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -1780,6 +1922,7 @@ int main() {
     test_temporary_stats();
     test_hp_loss();
     test_counters();
+    test_regent_stars();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;

@@ -870,7 +870,7 @@ int main() {
     Player regent_pl;
     regent_pl.add_stars(4);
     PokemonBattleUI::get_hero_resource_label(regent_pl, CharacterId::REGENT, res_label, sizeof(res_label));
-    assert(std::string_view(res_label) == "ETOILES: 4/5");
+    assert(std::string_view(res_label) == "ETOILES: 4");
 
     Player necro_pl;
     necro_pl.summon_minion(12, 0);

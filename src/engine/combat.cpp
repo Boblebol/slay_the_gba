@@ -193,6 +193,19 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     return target.take_damage(attack_damage(base, player, target));
 }
 
+void CombatEngine::gain_stars(int amount) {
+    if (amount <= 0) return;
+    player.add_stars(static_cast<uint8_t>(std::min(amount, 99)));
+    counters.stars_gained = bump(counters.stars_gained, amount);
+}
+
+void CombatEngine::spend_stars(int amount) {
+    amount = std::min<int>(amount, player.sovereign_stars);
+    if (amount <= 0) return;
+    player.sovereign_stars = static_cast<uint8_t>(player.sovereign_stars - amount);
+    counters.stars_spent = bump(counters.stars_spent, amount);
+}
+
 void CombatEngine::note_player_hp_lost(int16_t amount) {
     if (amount <= 0) return;
     counters.hp_lost = static_cast<int16_t>(counters.hp_lost + amount);
@@ -256,7 +269,7 @@ int CombatEngine::run_delayed_effects(bool end_of_turn) {
                 extra_draw += effect.amount;
                 break;
             case DelayedType::STARS:
-                player.add_stars(static_cast<uint8_t>(effect.amount));
+                gain_stars(effect.amount);
                 break;
             case DelayedType::SUMMON:
                 player.summon_minion(effect.amount, 0);
@@ -392,7 +405,9 @@ bool CombatEngine::can_play_card(int index) const {
     if (index < 0 || static_cast<size_t>(index) >= hand.size()) return false;
 
     uint8_t cost = CardDef::get_cost(hand[index].id, hand[index].upgraded);
-    return cost == COST_X || player.energy >= cost; // an X card can be played for X = 0
+    uint8_t star_cost = CardDef::get_star_cost(hand[index].id, hand[index].upgraded);
+    // An X card can be played for X = 0, in energy as in Stars.
+    return (cost == COST_X || player.energy >= cost) && (star_cost == COST_X || player.sovereign_stars >= star_cost);
 }
 
 bool CombatEngine::play_card(int index, int target_index) {
@@ -422,6 +437,16 @@ bool CombatEngine::play_card(int index, int target_index) {
         cost = static_cast<uint8_t>(x_value);
     }
     player.energy -= cost;
+    // Stars are paid the same way; an X card in Stars spends them all.
+    uint8_t star_cost = CardDef::get_star_cost(card_id, upgraded);
+    if (star_cost == COST_X) {
+        x_value = player.sovereign_stars;
+        star_cost = player.sovereign_stars;
+    }
+    spend_stars(star_cost);
+    // Where the card goes once played, when it is neither exhausted nor returning next turn.
+    enum class AfterPlay : uint8_t { DISCARD, HAND, DRAW_TOP };
+    AfterPlay after_play = AfterPlay::DISCARD;
     // The counters are updated once the effect is resolved: inside the switch they still describe what
     // happened before this card ("already played this turn", "spent on other cards").
 
@@ -431,12 +456,12 @@ bool CombatEngine::play_card(int index, int target_index) {
     // Apply effects
     switch (card_id) {
         case CardId::STRIKE: {
-            hit(current_target, base_value + player.sovereign_stars);
+            hit(current_target, base_value);
             set_log(upgraded ? "Played Strike+!"sv : "Played Strike!"sv);
             break;
         }
         case CardId::DEFEND: {
-            player.gain_block(base_value + player.sovereign_stars);
+            player.gain_block(base_value);
             set_log(upgraded ? "Played Defend+!"sv : "Played Defend!"sv);
             break;
         }
@@ -507,13 +532,13 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::FALLING_STAR: {
             hit(current_target, base_value);
-            player.add_stars(secondary_value);
+            current_target.add_status(StatusType::WEAK, secondary_value);
+            current_target.add_status(StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Cast Falling Star+!"sv : "Cast Falling Star!"sv);
             break;
         }
         case CardId::VENERATE: {
-            player.gain_block(base_value);
-            player.add_stars(secondary_value);
+            gain_stars(secondary_value);
             set_log(upgraded ? "Cast Venerate+!"sv : "Cast Venerate!"sv);
             break;
         }
@@ -607,13 +632,13 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::SOLAR_STRIKE: {
             hit(current_target, base_value);
-            player.add_stars(secondary_value);
+            gain_stars(secondary_value);
             set_log(upgraded ? "Played Solar Strike+!"sv : "Played Solar Strike!"sv);
             break;
         }
         case CardId::GATHER_LIGHT: {
             player.gain_block(base_value);
-            player.add_stars(secondary_value);
+            gain_stars(secondary_value);
             set_log(upgraded ? "Played Gather Light+!"sv : "Played Gather Light!"sv);
             break;
         }
@@ -1455,6 +1480,154 @@ bool CombatEngine::play_card(int index, int target_index) {
             set_log(upgraded ? "Played Eradicate+!"sv : "Played Eradicate!"sv);
             break;
         }
+        case CardId::ALIGNMENT: {
+            player.energy = static_cast<int8_t>(player.energy + base_value);
+            set_log(upgraded ? "Played Alignment+!"sv : "Played Alignment!"sv);
+            break;
+        }
+        case CardId::ASTRAL_PULSE: {
+            for (int wave = 0; wave < secondary_value; ++wave) {
+                for (size_t i = 0; i < enemies.size(); ++i) {
+                    if (enemies[i].is_alive()) {
+                        hit(enemies[i], base_value);
+                    }
+                }
+            }
+            set_log(upgraded ? "Played Astral Pulse+!"sv : "Played Astral Pulse!"sv);
+            break;
+        }
+        case CardId::CLOAK_OF_STARS: {
+            player.gain_block(base_value);
+            set_log(upgraded ? "Played Cloak of Stars+!"sv : "Played Cloak of Stars!"sv);
+            break;
+        }
+        case CardId::COMET: {
+            hit(current_target, base_value);
+            current_target.add_status(StatusType::WEAK, secondary_value);
+            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            set_log(upgraded ? "Played Comet+!"sv : "Played Comet!"sv);
+            break;
+        }
+        case CardId::CRESCENT_SPEAR: {
+            // Every card of the deck still in the piles, and this one.
+            int star_cards = 1;
+            for (const DeckCard& card : hand) star_cards += CardDef::get_star_cost(card.id, card.upgraded) != 0;
+            for (const DeckCard& card : draw_pile) star_cards += CardDef::get_star_cost(card.id, card.upgraded) != 0;
+            for (const DeckCard& card : discard_pile) star_cards += CardDef::get_star_cost(card.id, card.upgraded) != 0;
+            hit(current_target, static_cast<int16_t>(base_value + secondary_value * star_cards));
+            set_log(upgraded ? "Played Crescent Spear+!"sv : "Played Crescent Spear!"sv);
+            break;
+        }
+        case CardId::DEVASTATE: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Devastate+!"sv : "Played Devastate!"sv);
+            break;
+        }
+        case CardId::DYING_STAR: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    hit(enemies[i], base_value);
+                    sap_strength(enemies[i], secondary_value);
+                }
+            }
+            set_log(upgraded ? "Played Dying Star+!"sv : "Played Dying Star!"sv);
+            break;
+        }
+        case CardId::GAMMA_BLAST: {
+            hit(current_target, base_value);
+            current_target.add_status(StatusType::WEAK, secondary_value);
+            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            set_log(upgraded ? "Played Gamma Blast+!"sv : "Played Gamma Blast!"sv);
+            break;
+        }
+        case CardId::GLOW: {
+            gain_stars(base_value);
+            draw_cards(secondary_value);
+            schedule(DelayedType::DRAW, secondary_value);
+            set_log(upgraded ? "Played Glow+!"sv : "Played Glow!"sv);
+            break;
+        }
+        case CardId::GUIDING_STAR: {
+            hit(current_target, base_value);
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Guiding Star+!"sv : "Played Guiding Star!"sv);
+            break;
+        }
+        case CardId::HIDDEN_CACHE: {
+            gain_stars(base_value);
+            schedule(DelayedType::STARS, secondary_value);
+            set_log(upgraded ? "Played Hidden Cache+!"sv : "Played Hidden Cache!"sv);
+            break;
+        }
+        case CardId::METEOR_SHOWER: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    hit(enemies[i], base_value);
+                    enemies[i].add_status(StatusType::WEAK, secondary_value);
+                    enemies[i].add_status(StatusType::VULNERABLE, secondary_value);
+                }
+            }
+            set_log(upgraded ? "Played Meteor Shower+!"sv : "Played Meteor Shower!"sv);
+            break;
+        }
+        case CardId::PARTICLE_WALL: {
+            player.gain_block(base_value);
+            after_play = AfterPlay::HAND;
+            set_log(upgraded ? "Played Particle Wall+!"sv : "Played Particle Wall!"sv);
+            break;
+        }
+        case CardId::RADIATE: {
+            for (int wave = 0; wave < counters.stars_gained; ++wave) {
+                for (size_t i = 0; i < enemies.size(); ++i) {
+                    if (enemies[i].is_alive()) {
+                        hit(enemies[i], base_value);
+                    }
+                }
+            }
+            set_log(upgraded ? "Played Radiate+!"sv : "Played Radiate!"sv);
+            break;
+        }
+        case CardId::RESONANCE: {
+            player.add_status(StatusType::STRENGTH, base_value);
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    enemies[i].add_status(StatusType::STRENGTH, static_cast<int16_t>(-secondary_value));
+                }
+            }
+            set_log(upgraded ? "Played Resonance+!"sv : "Played Resonance!"sv);
+            break;
+        }
+        case CardId::ROYAL_GAMBLE: {
+            gain_stars(base_value);
+            set_log(upgraded ? "Played Royal Gamble+!"sv : "Played Royal Gamble!"sv);
+            break;
+        }
+        case CardId::SEVEN_STARS: {
+            for (int wave = 0; wave < secondary_value; ++wave) {
+                for (size_t i = 0; i < enemies.size(); ++i) {
+                    if (enemies[i].is_alive()) {
+                        hit(enemies[i], base_value);
+                    }
+                }
+            }
+            set_log(upgraded ? "Played Seven Stars+!"sv : "Played Seven Stars!"sv);
+            break;
+        }
+        case CardId::SHINING_STRIKE: {
+            hit(current_target, base_value);
+            gain_stars(secondary_value);
+            after_play = AfterPlay::DRAW_TOP;
+            set_log(upgraded ? "Played Shining Strike+!"sv : "Played Shining Strike!"sv);
+            break;
+        }
+        case CardId::STARDUST: {
+            for (int blow = 0; blow < x_value && has_alive_enemies(); ++blow) {
+                Enemy& victim = enemies[random_alive_enemy_index()];
+                hit(victim, base_value);
+            }
+            set_log(upgraded ? "Played Stardust+!"sv : "Played Stardust!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;
@@ -1486,6 +1659,10 @@ bool CombatEngine::play_card(int index, int target_index) {
             exhaust_card(played_card);
         } else if (CardDef::has_keyword(played_card, KEYWORD_RETURN)) {
             if (!returning_cards.push_back(played_card)) discard_pile.push_back(played_card);
+        } else if (after_play == AfterPlay::HAND && hand.push_back(played_card)) {
+            // back in hand
+        } else if (after_play == AfterPlay::DRAW_TOP) {
+            draw_pile.push_back(played_card);
         } else {
             discard_pile.push_back(played_card);
         }

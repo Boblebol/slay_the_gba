@@ -622,7 +622,7 @@ void CombatScene::_refresh_hud()
         break;
     case engine::CharacterId::REGENT:
         resource = player.sovereign_stars;
-        resource_stream << "★ " << resource << "/5";
+        resource_stream << "★ " << resource;
         break;
     case engine::CharacterId::NECROBINDER:
         resource = player.minion_hp * 100 + player.souls;

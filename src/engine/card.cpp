@@ -20,8 +20,8 @@ static const CardDef CARDS[] = {
     { CardId::ZAP, "Zap", 1, CardType::SKILL, TargetType::SELF, 0, 1, "Channel 1 Lightning.", "Zap+", 0, 0, 1, "Channel 1 Lightning." },
     { CardId::DUALCAST, "Dualcast", 1, CardType::SKILL, TargetType::SELF, 0, 2, "Trigger oldest Orb twice.", "Dualcast+", 0, 0, 2, "Trigger oldest Orb twice." },
     // Regent
-    { CardId::FALLING_STAR, "Falling Star", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 7, 1, "Deal 7 dmg. Gain 1 Star.", "Falling Star+", 1, 10, 2, "Deal 10 dmg. Gain 2 Stars." },
-    { CardId::VENERATE, "Venerate", 1, CardType::SKILL, TargetType::SELF, 6, 2, "Gain 6 block. Gain 2 Stars.", "Venerate+", 1, 9, 3, "Gain 9 block. Gain 3 Stars." },
+    { CardId::FALLING_STAR, "Falling Star", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 1, "2 Stars. Deal 8 dmg. Apply 1 Weak and 1 Vuln.", "Falling Star+", 0, 12, 1, "2 Stars. Deal 12 dmg. Apply 1 Weak and 1 Vuln.", 0, 0, 2, 2 },
+    { CardId::VENERATE, "Venerate", 1, CardType::SKILL, TargetType::SELF, 0, 2, "Gain 2 Stars.", "Venerate+", 1, 0, 3, "Gain 3 Stars." },
     // Necrobinder
     { CardId::UNLEASH, "Unleash", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 0, "Deal 8 necrotic dmg.", "Unleash+", 1, 12, 0, "Deal 12 necrotic dmg." },
     { CardId::BODYGUARD, "Bodyguard", 1, CardType::SKILL, TargetType::SELF, 7, 1, "Gain 7 block. Summon 1 minion.", "Bodyguard+", 1, 10, 1, "Gain 10 block. Summon 1 minion." },
@@ -181,7 +181,27 @@ static const CardDef CARDS[] = {
     { CardId::PULL_FROM_BELOW, "Pull from Below", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 0, "Deal 5 dmg per Ethereal card played this combat.", "Pull from Below+", 1, 7, 0, "Deal 7 dmg per Ethereal card played this combat." },
     { CardId::REAP, "Reap", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 27, 0, "Retain. Deal 27 dmg.", "Reap+", 3, 33, 0, "Retain. Deal 33 dmg.", KEYWORD_RETAIN, KEYWORD_RETAIN },
     { CardId::SOW, "Sow", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 8, 0, "Retain. Deal 8 dmg to all.", "Sow+", 1, 11, 0, "Retain. Deal 11 dmg to all.", KEYWORD_RETAIN, KEYWORD_RETAIN },
-    { CardId::ERADICATE, "Eradicate", COST_X, CardType::ATTACK, TargetType::SINGLE_ENEMY, 11, 0, "Retain. Deal 11 dmg X times.", "Eradicate+", COST_X, 14, 0, "Retain. Deal 14 dmg X times.", KEYWORD_RETAIN, KEYWORD_RETAIN }
+    { CardId::ERADICATE, "Eradicate", COST_X, CardType::ATTACK, TargetType::SINGLE_ENEMY, 11, 0, "Retain. Deal 11 dmg X times.", "Eradicate+", COST_X, 14, 0, "Retain. Deal 14 dmg X times.", KEYWORD_RETAIN, KEYWORD_RETAIN },
+    // Regent: Stars as a resource
+    { CardId::ALIGNMENT, "Alignment", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Gain 2 energy.", "Alignment+", 0, 3, 0, "Gain 3 energy.", 0, 0, 2, 2 },
+    { CardId::ASTRAL_PULSE, "Astral Pulse", 0, CardType::ATTACK, TargetType::ALL_ENEMIES, 6, 2, "Deal 6 dmg to all, 2 times.", "Astral Pulse+", 0, 8, 2, "Deal 8 dmg to all, 2 times.", 0, 0, 3, 3 },
+    { CardId::CLOAK_OF_STARS, "Cloak of Stars", 0, CardType::SKILL, TargetType::SELF, 7, 0, "Gain 7 block.", "Cloak of Stars+", 0, 10, 0, "Gain 10 block.", 0, 0, 1, 1 },
+    { CardId::COMET, "Comet", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 33, 3, "Deal 33 dmg. Apply 3 Weak and 3 Vuln.", "Comet+", 0, 44, 3, "Deal 44 dmg. Apply 3 Weak and 3 Vuln.", 0, 0, 5, 5 },
+    { CardId::CRESCENT_SPEAR, "Crescent Spear", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 2, "Deal 8 dmg, +2 per card of yours that costs Stars.", "Crescent Spear+", 1, 8, 3, "Deal 8 dmg, +3 per card of yours that costs Stars.", 0, 0, 1, 1 },
+    { CardId::DEVASTATE, "Devastate", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 35, 0, "Deal 35 dmg.", "Devastate+", 1, 45, 0, "Deal 45 dmg.", 0, 0, 4, 4 },
+    { CardId::DYING_STAR, "Dying Star", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 9, 9, "Ethereal. Deal 9 dmg to all. They lose 9 Str this turn.", "Dying Star+", 1, 11, 11, "Ethereal. Deal 11 dmg to all. They lose 11 Str this turn.", KEYWORD_ETHEREAL, KEYWORD_ETHEREAL, 3, 3 },
+    { CardId::GAMMA_BLAST, "Gamma Blast", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 13, 2, "Deal 13 dmg. Apply 2 Weak and 2 Vuln.", "Gamma Blast+", 0, 18, 2, "Deal 18 dmg. Apply 2 Weak and 2 Vuln.", 0, 0, 3, 3 },
+    { CardId::GLOW, "Glow", 1, CardType::SKILL, TargetType::SELF, 1, 1, "Gain 1 Star. Draw 1 card now and next turn.", "Glow+", 1, 2, 1, "Gain 2 Stars. Draw 1 card now and next turn." },
+    { CardId::GUIDING_STAR, "Guiding Star", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 12, 2, "Deal 12 dmg. Draw 2 cards.", "Guiding Star+", 1, 13, 3, "Deal 13 dmg. Draw 3 cards.", 0, 0, 1, 1 },
+    { CardId::HIDDEN_CACHE, "Hidden Cache", 1, CardType::SKILL, TargetType::SELF, 1, 3, "Gain 1 Star. Next turn, gain 3 Stars.", "Hidden Cache+", 1, 1, 4, "Gain 1 Star. Next turn, gain 4 Stars." },
+    { CardId::METEOR_SHOWER, "Meteor Shower", 0, CardType::ATTACK, TargetType::ALL_ENEMIES, 14, 2, "Deal 14 dmg to all. Apply 2 Weak and 2 Vuln to all.", "Meteor Shower+", 0, 21, 2, "Deal 21 dmg to all. Apply 2 Weak and 2 Vuln to all.", 0, 0, 2, 2 },
+    { CardId::PARTICLE_WALL, "Particle Wall", 0, CardType::SKILL, TargetType::SELF, 9, 0, "Gain 9 block. Returns to your hand.", "Particle Wall+", 0, 12, 0, "Gain 12 block. Returns to your hand.", 0, 0, 2, 2 },
+    { CardId::RADIATE, "Radiate", 0, CardType::ATTACK, TargetType::ALL_ENEMIES, 3, 0, "Deal 3 dmg to all per Star gained this turn.", "Radiate+", 0, 4, 0, "Deal 4 dmg to all per Star gained this turn." },
+    { CardId::RESONANCE, "Resonance", 1, CardType::SKILL, TargetType::ALL_ENEMIES, 1, 1, "Gain 1 Str. All enemies lose 1 Str.", "Resonance+", 1, 2, 1, "Gain 2 Str. All enemies lose 1 Str.", 0, 0, 2, 2 },
+    { CardId::ROYAL_GAMBLE, "Royal Gamble", 0, CardType::SKILL, TargetType::SELF, 9, 0, "Gain 9 Stars. Exhaust.", "Royal Gamble+", 0, 9, 0, "Retain. Gain 9 Stars. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN, 5, 5 },
+    { CardId::SEVEN_STARS, "Seven Stars", 2, CardType::ATTACK, TargetType::ALL_ENEMIES, 7, 7, "Deal 7 dmg to all, 7 times.", "Seven Stars+", 1, 7, 7, "Deal 7 dmg to all, 7 times.", 0, 0, 7, 7 },
+    { CardId::SHINING_STRIKE, "Shining Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 2, "Deal 8 dmg. Gain 2 Stars. Goes on top of the draw pile.", "Shining Strike+", 1, 11, 2, "Deal 11 dmg. Gain 2 Stars. Goes on top of the draw pile." },
+    { CardId::STARDUST, "Stardust", 0, CardType::ATTACK, TargetType::RANDOM_ENEMY, 5, 0, "Deal 5 dmg to a random enemy, X times.", "Stardust+", 0, 7, 0, "Deal 7 dmg to a random enemy, X times.", 0, 0, COST_X, COST_X }
 };
 
 const CardDef& CardDef::get(CardId id) {

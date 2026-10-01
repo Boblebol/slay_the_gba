@@ -198,6 +198,7 @@ class CardArt:
     art: str         # art file relative to bible/images/cards/<owner>/ ; "{hero}" is substituted
     kind: str        # attack | skill | power
     costs: tuple[int, int]  # base cost, upgraded cost; -1 = X
+    stars: tuple[int, int] = (0, 0)  # Star cost (Regent), base and upgraded; -1 = X
 
 
 # Mirrors engine::CardId order (card.h). Index 0 (NONE) is a blank card.
@@ -216,7 +217,7 @@ CARDS: list[CardArt] = [
     CardArt("deadly_poison", "silent", "deadly_poison", "skill", (1, 1)),
     CardArt("zap", "defect", "zap", "skill", (1, 0)),
     CardArt("dualcast", "defect", "dualcast", "skill", (1, 0)),
-    CardArt("falling_star", "regent", "falling_star", "attack", (1, 1)),
+    CardArt("falling_star", "regent", "falling_star", "attack", (0, 0), (2, 2)),
     CardArt("venerate", "regent", "venerate", "skill", (1, 1)),
     CardArt("unleash", "necrobinder", "unleash", "attack", (1, 1)),
     CardArt("bodyguard", "necrobinder", "bodyguard", "skill", (1, 1)),
@@ -356,6 +357,25 @@ CARDS: list[CardArt] = [
     CardArt("reap", "necrobinder", "reap", "attack", (3, 3)),
     CardArt("sow", "necrobinder", "sow", "attack", (1, 1)),
     CardArt("eradicate", "necrobinder", "eradicate", "attack", (-1, -1)),
+    CardArt("alignment", "regent", "alignment", "skill", (0, 0), (2, 2)),
+    CardArt("astral_pulse", "regent", "astral_pulse", "attack", (0, 0), (3, 3)),
+    CardArt("cloak_of_stars", "regent", "cloak_of_stars", "skill", (0, 0), (1, 1)),
+    CardArt("comet", "regent", "comet", "attack", (0, 0), (5, 5)),
+    CardArt("crescent_spear", "regent", "crescent_spear", "attack", (1, 1), (1, 1)),
+    CardArt("devastate", "regent", "devastate", "attack", (1, 1), (4, 4)),
+    CardArt("dying_star", "regent", "dying_star", "attack", (1, 1), (3, 3)),
+    CardArt("gamma_blast", "regent", "gamma_blast", "attack", (0, 0), (3, 3)),
+    CardArt("glow", "regent", "glow", "skill", (1, 1)),
+    CardArt("guiding_star", "regent", "guiding_star", "attack", (1, 1), (1, 1)),
+    CardArt("hidden_cache", "regent", "hidden_cache", "skill", (1, 1)),
+    CardArt("meteor_shower", "regent", "meteor_shower", "attack", (0, 0), (2, 2)),
+    CardArt("particle_wall", "regent", "particle_wall", "skill", (0, 0), (2, 2)),
+    CardArt("radiate", "regent", "radiate", "attack", (0, 0)),
+    CardArt("resonance", "regent", "resonance", "skill", (1, 1), (2, 2)),
+    CardArt("royal_gamble", "regent", "royal_gamble", "skill", (0, 0), (5, 5)),
+    CardArt("seven_stars", "regent", "seven_stars", "attack", (2, 1), (7, 7)),
+    CardArt("shining_strike", "regent", "shining_strike", "attack", (1, 1)),
+    CardArt("stardust", "regent", "stardust", "attack", (0, 0), (-1, -1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}
@@ -369,6 +389,10 @@ DIGITS = {
     "3": ["###", "..#", ".##", "..#", "###"],
     "4": ["#.#", "#.#", "###", "..#", "..#"],
     "5": ["###", "#..", "###", "..#", "###"],
+    "6": ["###", "#..", "###", "#.#", "###"],
+    "7": ["###", "..#", ".#.", ".#.", ".#."],
+    "8": ["###", "#.#", "###", "#.#", "###"],
+    "9": ["###", "#.#", "###", "..#", "###"],
     "X": ["#.#", "#.#", ".#.", "#.#", "#.#"],
 }
 
@@ -495,6 +519,14 @@ def build_cards() -> None:
                         for dx, ch in enumerate(row):
                             if ch == "#":
                                 draw.point((5 + dx, 3 + dy), fill=(255, 255, 255, 255))
+                    stars = card.stars[1] if upgraded else card.stars[0]
+                    if stars:
+                        # Star cost: a yellow digit on a dark plate under the energy gem.
+                        draw.rectangle((3, 12, 9, 20), fill=(24, 20, 40, 255))
+                        for dy, row in enumerate(DIGITS["X" if stars < 0 else str(stars)]):
+                            for dx, ch in enumerate(row):
+                                if ch == "#":
+                                    draw.point((5 + dx, 14 + dy), fill=(255, 216, 64, 255))
                     if upgraded:
                         # Small green "+" badge in the bottom-right corner.
                         for px, py in [(25, 26), (24, 27), (25, 27), (26, 27), (25, 28)]:

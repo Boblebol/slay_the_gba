@@ -18,11 +18,13 @@
 
 #include "bn_sprite_items_card_adrenaline.h"
 #include "bn_sprite_items_card_afterlife.h"
+#include "bn_sprite_items_card_alignment.h"
 #include "bn_sprite_items_card_all_for_one.h"
 #include "bn_sprite_items_card_anger.h"
 #include "bn_sprite_items_card_anticipate.h"
 #include "bn_sprite_items_card_ashen_strike.h"
 #include "bn_sprite_items_card_assassinate.h"
+#include "bn_sprite_items_card_astral_pulse.h"
 #include "bn_sprite_items_card_backflip.h"
 #include "bn_sprite_items_card_backstab.h"
 #include "bn_sprite_items_card_ball_lightning.h"
@@ -47,10 +49,13 @@
 #include "bn_sprite_items_card_chill.h"
 #include "bn_sprite_items_card_cinder.h"
 #include "bn_sprite_items_card_cleave.h"
+#include "bn_sprite_items_card_cloak_of_stars.h"
 #include "bn_sprite_items_card_cold_snap.h"
+#include "bn_sprite_items_card_comet.h"
 #include "bn_sprite_items_card_conflagration.h"
 #include "bn_sprite_items_card_convergence.h"
 #include "bn_sprite_items_card_coolheaded.h"
+#include "bn_sprite_items_card_crescent_spear.h"
 #include "bn_sprite_items_card_crush_under.h"
 #include "bn_sprite_items_card_dagger_spray.h"
 #include "bn_sprite_items_card_dash.h"
@@ -65,12 +70,14 @@
 #include "bn_sprite_items_card_deflect.h"
 #include "bn_sprite_items_card_defy.h"
 #include "bn_sprite_items_card_delay.h"
+#include "bn_sprite_items_card_devastate.h"
 #include "bn_sprite_items_card_dismantle.h"
 #include "bn_sprite_items_card_dodge_and_roll.h"
 #include "bn_sprite_items_card_dominate.h"
 #include "bn_sprite_items_card_double_energy.h"
 #include "bn_sprite_items_card_drain_power.h"
 #include "bn_sprite_items_card_dualcast.h"
+#include "bn_sprite_items_card_dying_star.h"
 #include "bn_sprite_items_card_enfeebling_touch.h"
 #include "bn_sprite_items_card_eradicate.h"
 #include "bn_sprite_items_card_escape_plan.h"
@@ -87,15 +94,19 @@
 #include "bn_sprite_items_card_forgotten_ritual.h"
 #include "bn_sprite_items_card_ftl.h"
 #include "bn_sprite_items_card_fusion.h"
+#include "bn_sprite_items_card_gamma_blast.h"
 #include "bn_sprite_items_card_gather_light.h"
 #include "bn_sprite_items_card_glacier.h"
 #include "bn_sprite_items_card_glitterstream.h"
+#include "bn_sprite_items_card_glow.h"
 #include "bn_sprite_items_card_go_for_the_eyes.h"
+#include "bn_sprite_items_card_guiding_star.h"
 #include "bn_sprite_items_card_haze.h"
 #include "bn_sprite_items_card_heavenly_drill.h"
 #include "bn_sprite_items_card_hegemony.h"
 #include "bn_sprite_items_card_helix_drill.h"
 #include "bn_sprite_items_card_hemokinesis.h"
+#include "bn_sprite_items_card_hidden_cache.h"
 #include "bn_sprite_items_card_ice_lance.h"
 #include "bn_sprite_items_card_impervious.h"
 #include "bn_sprite_items_card_inflame.h"
@@ -110,6 +121,7 @@
 #include "bn_sprite_items_card_mangle.h"
 #include "bn_sprite_items_card_memento_mori.h"
 #include "bn_sprite_items_card_metallicize.h"
+#include "bn_sprite_items_card_meteor_shower.h"
 #include "bn_sprite_items_card_meteor_strike.h"
 #include "bn_sprite_items_card_mirage.h"
 #include "bn_sprite_items_card_misery.h"
@@ -122,6 +134,7 @@
 #include "bn_sprite_items_card_outbreak.h"
 #include "bn_sprite_items_card_pacts_end.h"
 #include "bn_sprite_items_card_parse.h"
+#include "bn_sprite_items_card_particle_wall.h"
 #include "bn_sprite_items_card_perfected_strike.h"
 #include "bn_sprite_items_card_piercing_wail.h"
 #include "bn_sprite_items_card_pillage.h"
@@ -133,15 +146,20 @@
 #include "bn_sprite_items_card_pull_aggro.h"
 #include "bn_sprite_items_card_pull_from_below.h"
 #include "bn_sprite_items_card_putrefy.h"
+#include "bn_sprite_items_card_radiate.h"
 #include "bn_sprite_items_card_rainbow.h"
 #include "bn_sprite_items_card_reanimate.h"
 #include "bn_sprite_items_card_reap.h"
 #include "bn_sprite_items_card_reboot.h"
+#include "bn_sprite_items_card_resonance.h"
+#include "bn_sprite_items_card_royal_gamble.h"
 #include "bn_sprite_items_card_scrape.h"
 #include "bn_sprite_items_card_second_wind.h"
 #include "bn_sprite_items_card_setup_strike.h"
+#include "bn_sprite_items_card_seven_stars.h"
 #include "bn_sprite_items_card_shadow_shield.h"
 #include "bn_sprite_items_card_shared_fate.h"
+#include "bn_sprite_items_card_shining_strike.h"
 #include "bn_sprite_items_card_shrug_it_off.h"
 #include "bn_sprite_items_card_sidestep.h"
 #include "bn_sprite_items_card_skewer.h"
@@ -151,6 +169,7 @@
 #include "bn_sprite_items_card_solar_strike.h"
 #include "bn_sprite_items_card_sow.h"
 #include "bn_sprite_items_card_spite.h"
+#include "bn_sprite_items_card_stardust.h"
 #include "bn_sprite_items_card_strike_defect.h"
 #include "bn_sprite_items_card_strike_ironclad.h"
 #include "bn_sprite_items_card_strike_necrobinder.h"
@@ -634,6 +653,44 @@ const bn::sprite_item& big_card_item(engine::CardId id)
         return bn::sprite_items::card_sow;
     case engine::CardId::ERADICATE:
         return bn::sprite_items::card_eradicate;
+    case engine::CardId::ALIGNMENT:
+        return bn::sprite_items::card_alignment;
+    case engine::CardId::ASTRAL_PULSE:
+        return bn::sprite_items::card_astral_pulse;
+    case engine::CardId::CLOAK_OF_STARS:
+        return bn::sprite_items::card_cloak_of_stars;
+    case engine::CardId::COMET:
+        return bn::sprite_items::card_comet;
+    case engine::CardId::CRESCENT_SPEAR:
+        return bn::sprite_items::card_crescent_spear;
+    case engine::CardId::DEVASTATE:
+        return bn::sprite_items::card_devastate;
+    case engine::CardId::DYING_STAR:
+        return bn::sprite_items::card_dying_star;
+    case engine::CardId::GAMMA_BLAST:
+        return bn::sprite_items::card_gamma_blast;
+    case engine::CardId::GLOW:
+        return bn::sprite_items::card_glow;
+    case engine::CardId::GUIDING_STAR:
+        return bn::sprite_items::card_guiding_star;
+    case engine::CardId::HIDDEN_CACHE:
+        return bn::sprite_items::card_hidden_cache;
+    case engine::CardId::METEOR_SHOWER:
+        return bn::sprite_items::card_meteor_shower;
+    case engine::CardId::PARTICLE_WALL:
+        return bn::sprite_items::card_particle_wall;
+    case engine::CardId::RADIATE:
+        return bn::sprite_items::card_radiate;
+    case engine::CardId::RESONANCE:
+        return bn::sprite_items::card_resonance;
+    case engine::CardId::ROYAL_GAMBLE:
+        return bn::sprite_items::card_royal_gamble;
+    case engine::CardId::SEVEN_STARS:
+        return bn::sprite_items::card_seven_stars;
+    case engine::CardId::SHINING_STRIKE:
+        return bn::sprite_items::card_shining_strike;
+    case engine::CardId::STARDUST:
+        return bn::sprite_items::card_stardust;
     default:
         return bn::sprite_items::HERO_ITEM(card_strike_);
     }

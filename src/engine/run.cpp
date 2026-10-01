@@ -311,7 +311,13 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
                                               CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
                                               CardId::KNOW_THY_PLACE, CardId::LUNAR_BLAST, CardId::PROPHESIZE,
-                                              CardId::SUPERMASSIVE, CardId::CONVERGENCE };
+                                              CardId::SUPERMASSIVE, CardId::CONVERGENCE, CardId::ALIGNMENT,
+                                              CardId::ASTRAL_PULSE, CardId::CLOAK_OF_STARS, CardId::COMET,
+                                              CardId::CRESCENT_SPEAR, CardId::DEVASTATE, CardId::DYING_STAR,
+                                              CardId::GAMMA_BLAST, CardId::GLOW, CardId::GUIDING_STAR,
+                                              CardId::HIDDEN_CACHE, CardId::PARTICLE_WALL, CardId::RADIATE,
+                                              CardId::RESONANCE, CardId::ROYAL_GAMBLE, CardId::SEVEN_STARS,
+                                              CardId::SHINING_STRIKE, CardId::STARDUST };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,

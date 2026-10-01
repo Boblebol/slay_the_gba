@@ -62,8 +62,8 @@ items = [
 section = "regent"
 title = "Mécaniques"
 items = [
-  { name = "Étoiles : seconde ressource gagnée par les cartes", status = "partiel", issue = 101, note = "Compteur plafonné à 5 qui renforce Frappe et Défense, au lieu d'une ressource à dépenser." },
-  { name = "Cartes à coût en Étoiles", status = "non", issue = 101 },
+  { name = "Étoiles : seconde ressource gagnée par les cartes", status = "oui" },
+  { name = "Cartes à coût en Étoiles", status = "oui" },
   { name = "Forger la Lame souveraine", status = "non", issue = 102 },
   { name = "Sbires (Frappe de sbire, Sbire en piqué)", status = "non", issue = 103 },
   { name = "Compteur d'Étoiles affiché en combat", status = "oui" },
@@ -305,8 +305,6 @@ items = [
 [overrides.cards]
 TRUE_GRIT = { status = "partiel", issue = 31, note = "Améliorée, la carte Épuisée devrait être choisie : elle reste tirée au hasard." }
 SURVIVOR = { status = "partiel", issue = 31, note = "Donne l'Armure mais ne fait pas défausser de carte." }
-FALLING_STAR = { status = "partiel", issue = 34, note = "Coûte 1 et donne des Étoiles au lieu d'appliquer Affaibli et Vulnérable pour 0." }
-VENERATE = { status = "partiel", issue = 34, note = "Donne aussi de l'Armure, absente de la carte d'origine." }
 UNLEASH = { status = "partiel", issue = 34, note = "Dégâts fixes : ne tient pas compte des PV de Titos." }
 BODYGUARD = { status = "partiel", issue = 34, note = "Invoque pour 1 et donne de l'Armure, au lieu d'invoquer pour 5." }
 

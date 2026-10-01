@@ -36,6 +36,8 @@ struct CombatCounters {
     uint8_t cards_discarded = 0; // discarded by effects, not by the end of the turn
     uint8_t energy_spent = 0;
     uint8_t hits_dealt = 0;      // attack hits on enemies
+    uint8_t stars_gained = 0;
+    uint8_t stars_spent = 0;
     int16_t hp_lost = 0;
     // This combat
     uint8_t combat_cards_played = 0;
@@ -48,6 +50,7 @@ struct CombatCounters {
     void start_turn() {
         attacks_played = skills_played = powers_played = 0;
         cards_drawn = cards_discarded = energy_spent = hits_dealt = 0;
+        stars_gained = stars_spent = 0;
         hp_lost = 0;
     }
 };
@@ -122,6 +125,9 @@ public:
 
     // One attack hit on an enemy: Strength, Weak and Vulnerable applied. Returns the HP lost by the enemy.
     int16_t hit(Enemy& target, int16_t base);
+    // Stars gained or spent by the Regent: every change goes through these two.
+    void gain_stars(int amount);
+    void spend_stars(int amount);
     // The player loses HP: Block does not absorb it.
     void lose_hp(int16_t amount);
     // Strength or Dexterity until the end of the turn.

@@ -179,7 +179,14 @@ private:
         TextLine header;
         bn::ostringstream stream(header);
         stream << text << "  (" << card_type_name(engine::CardDef::get(card.id).type) << ", "
-               << card_cost_label(card) << " ●)";
+               << card_cost_label(card) << " ●";
+
+        if(bn::string_view stars = card_star_cost_label(card); ! stars.empty())
+        {
+            stream << " " << stars << " ★";
+        }
+
+        stream << ")";
         _name.set(0, 46, header, Align::CENTER, TextColor::GOLD);
 
         card_description(card, text);

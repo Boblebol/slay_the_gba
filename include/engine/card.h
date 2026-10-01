@@ -185,6 +185,26 @@ enum class CardId : uint8_t {
     REAP,
     SOW,
     ERADICATE,
+    // Regent Star cards (appended: saves store the numeric id)
+    ALIGNMENT,
+    ASTRAL_PULSE,
+    CLOAK_OF_STARS,
+    COMET,
+    CRESCENT_SPEAR,
+    DEVASTATE,
+    DYING_STAR,
+    GAMMA_BLAST,
+    GLOW,
+    GUIDING_STAR,
+    HIDDEN_CACHE,
+    METEOR_SHOWER,
+    PARTICLE_WALL,
+    RADIATE,
+    RESONANCE,
+    ROYAL_GAMBLE,
+    SEVEN_STARS,
+    SHINING_STRIKE,
+    STARDUST,
     COUNT
 };
 
@@ -247,6 +267,9 @@ struct CardDef {
     // CardKeyword bits of the base and of the upgraded card: an upgrade can add or remove a keyword.
     uint8_t keywords = 0;
     uint8_t upgraded_keywords = 0;
+    // Stars spent to play the card, on top of its energy cost (Regent). COST_X: all the Stars left.
+    uint8_t star_cost = 0;
+    uint8_t upgraded_star_cost = 0;
 
     static const CardDef& get(CardId id);
     static std::string_view get_display_name(CardId id, bool upgraded) {
@@ -275,6 +298,10 @@ struct CardDef {
     }
     static bool is_x_cost(CardId id, bool upgraded) {
         return get_cost(id, upgraded) == COST_X;
+    }
+    static uint8_t get_star_cost(CardId id, bool upgraded) {
+        const auto& c = get(id);
+        return upgraded ? c.upgraded_star_cost : c.star_cost;
     }
     static std::string_view get_desc(CardId id, bool upgraded) {
         const auto& c = get(id);
