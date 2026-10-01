@@ -143,7 +143,7 @@ void RunManager::enter_room(int node_index) {
                 combat.draw_pile.push_back(master_deck[i]);
             }
             combat.shuffle_draw_pile();
-            combat.start_player_turn();
+            combat.open_first_turn();
             apply_combat_start_relics();
             break;
         }
@@ -281,27 +281,45 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                 CardId::EVIL_EYE, CardId::MOLTEN_FIST, CardId::CINDER,
                                                 CardId::SECOND_WIND, CardId::TRUE_GRIT, CardId::DOMINATE,
                                                 CardId::FIEND_FIRE, CardId::THRASH, CardId::IMPERVIOUS,
-                                                CardId::PACTS_END, CardId::NOT_YET };
+                                                CardId::PACTS_END, CardId::NOT_YET, CardId::BLOOD_WALL,
+                                                CardId::BLOODLETTING, CardId::BREAKTHROUGH, CardId::FORGOTTEN_RITUAL,
+                                                CardId::HEMOKINESIS, CardId::MANGLE, CardId::OFFERING,
+                                                CardId::SETUP_STRIKE, CardId::SPITE, CardId::WHIRLWIND };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
                                               CardId::PRECISE_CUT, CardId::BOUNCING_FLASK, CardId::FLECHETTES,
                                               CardId::FOOTWORK, CardId::ESCAPE_PLAN, CardId::DASH,
                                               CardId::BUBBLE_BUBBLE, CardId::OUTBREAK, CardId::ADRENALINE,
-                                              CardId::CALCULATED_GAMBLE, CardId::MIRAGE };
-    static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL, CardId::BALL_LIGHTNING,
-                                              CardId::COLD_SNAP, CardId::LEAP, CardId::COOLHEADED,
-                                              CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD, CardId::GLACIER,
-                                              CardId::METEOR_STRIKE, CardId::ICE_LANCE, CardId::SKIM,
-                                              CardId::ALL_FOR_ONE, CardId::NULL_CARD, CardId::GO_FOR_THE_EYES,
-                                              CardId::SCRAPE, CardId::RAINBOW, CardId::CHILL, CardId::FUSION,
-                                              CardId::REBOOT, CardId::SUPERCRITICAL, CardId::DOUBLE_ENERGY };
+                                              CardId::CALCULATED_GAMBLE, CardId::MIRAGE, CardId::ANTICIPATE,
+                                              CardId::ASSASSINATE, CardId::BACKSTAB, CardId::BLUR,
+                                              CardId::DODGE_AND_ROLL, CardId::FINISHER, CardId::MALAISE,
+                                              CardId::MEMENTO_MORI, CardId::MURDER, CardId::PIERCING_WAIL,
+                                              CardId::PREDATOR, CardId::SIDESTEP, CardId::SKEWER, CardId::EXPERTISE,
+                                              CardId::SNAKEBITE };
+    static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
+                                              CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
+                                              CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,
+                                              CardId::GLACIER, CardId::METEOR_STRIKE, CardId::ICE_LANCE,
+                                              CardId::SKIM, CardId::ALL_FOR_ONE, CardId::NULL_CARD,
+                                              CardId::GO_FOR_THE_EYES, CardId::SCRAPE, CardId::RAINBOW,
+                                              CardId::CHILL, CardId::FUSION, CardId::REBOOT, CardId::SUPERCRITICAL,
+                                              CardId::DOUBLE_ENERGY, CardId::BOOT_SEQUENCE, CardId::CHARGE_BATTERY,
+                                              CardId::FTL, CardId::HELIX_DRILL, CardId::LIGHTNING_ROD,
+                                              CardId::TEMPEST };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
-                                              CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT };
+                                              CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
+                                              CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
+                                              CardId::KNOW_THY_PLACE, CardId::LUNAR_BLAST, CardId::PROPHESIZE,
+                                              CardId::SUPERMASSIVE, CardId::CONVERGENCE };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
-                                                   CardId::PUTREFY, CardId::REANIMATE, CardId::AFTERLIFE };
+                                                   CardId::PUTREFY, CardId::REANIMATE, CardId::AFTERLIFE,
+                                                   CardId::DEATH_MARCH, CardId::DEFILE, CardId::DEFY, CardId::DELAY,
+                                                   CardId::ENFEEBLING_TOUCH, CardId::FEAR, CardId::INVOKE,
+                                                   CardId::PARSE, CardId::PULL_FROM_BELOW, CardId::REAP, CardId::SOW,
+                                                   CardId::ERADICATE };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;

@@ -127,6 +127,64 @@ enum class CardId : uint8_t {
     PUTREFY,
     REANIMATE,
     AFTERLIFE,
+    // Ironclad cards on keywords, X cost, delayed effects and counters (appended)
+    BLOOD_WALL,
+    BLOODLETTING,
+    BREAKTHROUGH,
+    FORGOTTEN_RITUAL,
+    HEMOKINESIS,
+    MANGLE,
+    OFFERING,
+    SETUP_STRIKE,
+    SPITE,
+    WHIRLWIND,
+    // Silent cards on keywords, X cost, delayed effects and counters (appended)
+    ANTICIPATE,
+    ASSASSINATE,
+    BACKSTAB,
+    BLUR,
+    DODGE_AND_ROLL,
+    FINISHER,
+    MALAISE,
+    MEMENTO_MORI,
+    MURDER,
+    PIERCING_WAIL,
+    PREDATOR,
+    SIDESTEP,
+    SKEWER,
+    SUPPRESS,
+    EXPERTISE,
+    SNAKEBITE,
+    // Defect cards on keywords, X cost, delayed effects and counters (appended)
+    BOOT_SEQUENCE,
+    CHARGE_BATTERY,
+    FTL,
+    HELIX_DRILL,
+    LIGHTNING_ROD,
+    TEMPEST,
+    // Regent cards on keywords, X cost, delayed effects and counters (appended)
+    CRUSH_UNDER,
+    GLITTERSTREAM,
+    HEAVENLY_DRILL,
+    HEGEMONY,
+    KNOW_THY_PLACE,
+    LUNAR_BLAST,
+    PROPHESIZE,
+    SUPERMASSIVE,
+    CONVERGENCE,
+    // Necrobinder cards on keywords, X cost, delayed effects and counters (appended)
+    DEATH_MARCH,
+    DEFILE,
+    DEFY,
+    DELAY,
+    ENFEEBLING_TOUCH,
+    FEAR,
+    INVOKE,
+    PARSE,
+    PULL_FROM_BELOW,
+    REAP,
+    SOW,
+    ERADICATE,
     COUNT
 };
 
@@ -134,6 +192,7 @@ struct DeckCard {
     CardId id = CardId::NONE;
     bool upgraded = false;
     uint8_t bonus = 0; // damage gained by this copy during the combat (Thrash); not part of the card's identity
+    uint8_t added_keywords = 0; // CardKeyword bits given to this copy during the combat, on top of its CardDef
 
     constexpr DeckCard() = default;
     constexpr DeckCard(CardId i, bool up = false) : id(i), upgraded(up) {}
@@ -144,9 +203,16 @@ struct DeckCard {
 
 // Card keywords, combined as bits in CardDef::keywords.
 enum CardKeyword : uint8_t {
-    KEYWORD_EXHAUST = 1, // goes to the exhaust pile when played
-    KEYWORD_RETAIN = 2   // stays in hand at the end of the turn
+    KEYWORD_EXHAUST = 1,  // goes to the exhaust pile when played
+    KEYWORD_RETAIN = 2,   // stays in hand at the end of the turn
+    KEYWORD_ETHEREAL = 4, // exhausted when still in hand at the end of the turn
+    KEYWORD_INNATE = 8,   // drawn in the opening hand
+    KEYWORD_RETURN = 16,  // once played, comes back to the hand at the start of the next turn
+    KEYWORD_RETAIN_ONCE = 32 // per-copy only: stays in hand at the end of this turn, then the mark is removed
 };
+
+// CardDef::cost of an X card: it spends all the remaining energy and X is the amount spent.
+constexpr uint8_t COST_X = 0xFF;
 
 enum class CardType : uint8_t {
     ATTACK,
@@ -202,6 +268,13 @@ struct CardDef {
     static bool has_keyword(CardId id, bool upgraded, CardKeyword keyword) {
         const auto& c = get(id);
         return ((upgraded ? c.upgraded_keywords : c.keywords) & keyword) != 0;
+    }
+    // Keyword of one copy: from its definition or given to that copy during the combat.
+    static bool has_keyword(const DeckCard& card, CardKeyword keyword) {
+        return (card.added_keywords & keyword) != 0 || has_keyword(card.id, card.upgraded, keyword);
+    }
+    static bool is_x_cost(CardId id, bool upgraded) {
+        return get_cost(id, upgraded) == COST_X;
     }
     static std::string_view get_desc(CardId id, bool upgraded) {
         const auto& c = get(id);

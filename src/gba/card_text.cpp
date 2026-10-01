@@ -1,5 +1,6 @@
 #include "gba/card_text.h"
 
+#include "bn_algorithm.h"
 #include "bn_sstream.h"
 
 namespace gba
@@ -212,6 +213,112 @@ bn::string_view base_name(engine::CardId id)
         return "Réanimation";
     case engine::CardId::AFTERLIFE:
         return "Vie après la mort";
+    case engine::CardId::BLOOD_WALL:
+        return "Mur de sang";
+    case engine::CardId::BLOODLETTING:
+        return "Saignée";
+    case engine::CardId::BREAKTHROUGH:
+        return "Percée";
+    case engine::CardId::FORGOTTEN_RITUAL:
+        return "Rituel oublié";
+    case engine::CardId::HEMOKINESIS:
+        return "Hémokinésie";
+    case engine::CardId::MANGLE:
+        return "Estropier";
+    case engine::CardId::OFFERING:
+        return "Offrande";
+    case engine::CardId::SETUP_STRIKE:
+        return "Frappe préparatoire";
+    case engine::CardId::SPITE:
+        return "Rancune";
+    case engine::CardId::WHIRLWIND:
+        return "Tourbillon";
+    case engine::CardId::ANTICIPATE:
+        return "Anticipation";
+    case engine::CardId::ASSASSINATE:
+        return "Assassiner";
+    case engine::CardId::BACKSTAB:
+        return "Coup sournois";
+    case engine::CardId::BLUR:
+        return "Vision trouble";
+    case engine::CardId::DODGE_AND_ROLL:
+        return "Dérobade";
+    case engine::CardId::FINISHER:
+        return "Coup décisif";
+    case engine::CardId::MALAISE:
+        return "Malaise";
+    case engine::CardId::MEMENTO_MORI:
+        return "Memento mori";
+    case engine::CardId::MURDER:
+        return "Meurtre";
+    case engine::CardId::PIERCING_WAIL:
+        return "Hurlement perçant";
+    case engine::CardId::PREDATOR:
+        return "Prédateur";
+    case engine::CardId::SIDESTEP:
+        return "Pas de côté";
+    case engine::CardId::SKEWER:
+        return "Embrocher";
+    case engine::CardId::SUPPRESS:
+        return "Répression";
+    case engine::CardId::EXPERTISE:
+        return "Expertise";
+    case engine::CardId::SNAKEBITE:
+        return "Morsure de serpent";
+    case engine::CardId::BOOT_SEQUENCE:
+        return "Programme de démarrage";
+    case engine::CardId::CHARGE_BATTERY:
+        return "Piles de recharge";
+    case engine::CardId::FTL:
+        return "FTL";
+    case engine::CardId::HELIX_DRILL:
+        return "Perceuse hélicoïdale";
+    case engine::CardId::LIGHTNING_ROD:
+        return "Paratonnerre";
+    case engine::CardId::TEMPEST:
+        return "Tempête";
+    case engine::CardId::CRUSH_UNDER:
+        return "Broyer";
+    case engine::CardId::GLITTERSTREAM:
+        return "Courant pailleté";
+    case engine::CardId::HEAVENLY_DRILL:
+        return "Foreuse céleste";
+    case engine::CardId::HEGEMONY:
+        return "Hégémonie";
+    case engine::CardId::KNOW_THY_PLACE:
+        return "Hiérarchie";
+    case engine::CardId::LUNAR_BLAST:
+        return "Déflagration lunaire";
+    case engine::CardId::PROPHESIZE:
+        return "Prophétie";
+    case engine::CardId::SUPERMASSIVE:
+        return "Supermassif";
+    case engine::CardId::CONVERGENCE:
+        return "Convergence";
+    case engine::CardId::DEATH_MARCH:
+        return "Marche funeste";
+    case engine::CardId::DEFILE:
+        return "Profanation";
+    case engine::CardId::DEFY:
+        return "Défi";
+    case engine::CardId::DELAY:
+        return "Délai";
+    case engine::CardId::ENFEEBLING_TOUCH:
+        return "Toucher atrophiant";
+    case engine::CardId::FEAR:
+        return "Terreur";
+    case engine::CardId::INVOKE:
+        return "Adjuration";
+    case engine::CardId::PARSE:
+        return "Décomposition";
+    case engine::CardId::PULL_FROM_BELOW:
+        return "Six pieds sous terre";
+    case engine::CardId::REAP:
+        return "Moisson";
+    case engine::CardId::SOW:
+        return "Semence";
+    case engine::CardId::ERADICATE:
+        return "Éradication";
     default:
         return "???";
     }
@@ -537,9 +644,181 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::AFTERLIFE:
         stream << "Invoque Titos (" << secondary << " PV). Épuisement.";
         break;
+    case engine::CardId::BLOOD_WALL:
+        stream << "Perd " << secondary << " PV. Gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::BLOODLETTING:
+        stream << "Perd " << secondary << " PV. Énergie +" << value << ".";
+        break;
+    case engine::CardId::BREAKTHROUGH:
+        stream << "Perd " << secondary << " PV. Inflige " << value << " dégâts à TOUS.";
+        break;
+    case engine::CardId::FORGOTTEN_RITUAL:
+        stream << "Si carte épuisée : Énergie +" << value << ". Épuis.";
+        break;
+    case engine::CardId::HEMOKINESIS:
+        stream << "Perd " << secondary << " PV. Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::MANGLE:
+        stream << "Inflige " << value << ". Ennemi : Force -" << secondary << " ce tour.";
+        break;
+    case engine::CardId::OFFERING:
+        stream << "Perd 6 PV. Énergie +" << value << ". Pioche " << secondary << ". Épuis.";
+        break;
+    case engine::CardId::SETUP_STRIKE:
+        stream << "Inflige " << value << " dégâts. Force +" << secondary << " ce tour.";
+        break;
+    case engine::CardId::SPITE:
+        stream << "Inflige " << value << ", " << secondary << " fois si PV perdus ce tour.";
+        break;
+    case engine::CardId::WHIRLWIND:
+        stream << "Inflige " << value << " dégâts à TOUS, X fois.";
+        break;
+    case engine::CardId::ANTICIPATE:
+        stream << "Dextérité +" << value << " jusqu'à la fin du tour.";
+        break;
+    case engine::CardId::ASSASSINATE:
+        stream << "Inné. Inflige " << value << ". Vulnérable " << secondary << ". Épuis.";
+        break;
+    case engine::CardId::BACKSTAB:
+        stream << "Inné. Inflige " << value << " dégâts. Épuisement.";
+        break;
+    case engine::CardId::BLUR:
+        stream << "Gagne " << value << " d'Armure, gardée au tour suivant.";
+        break;
+    case engine::CardId::DODGE_AND_ROLL:
+        stream << "Gagne " << value << " d'Armure, et au tour suivant.";
+        break;
+    case engine::CardId::FINISHER:
+        stream << "Inflige " << value << " par Attaque jouée ce tour.";
+        break;
+    case engine::CardId::MALAISE:
+        stream << (card.upgraded ? "Force -(X+1), Affaibli X+1. Épuisement." : "Force -X, Affaibli X. Épuisement.");
+        break;
+    case engine::CardId::MEMENTO_MORI:
+        stream << "Inflige " << value << ", +" << secondary << " par défausse ce tour.";
+        break;
+    case engine::CardId::MURDER:
+        stream << "Inflige " << value << ", +" << secondary << " par carte piochée ce combat.";
+        break;
+    case engine::CardId::PIERCING_WAIL:
+        stream << "TOUS : Force -" << secondary << " ce tour. Épuisement.";
+        break;
+    case engine::CardId::PREDATOR:
+        stream << "Inflige " << value << ". Tour suivant : pioche " << secondary << ".";
+        break;
+    case engine::CardId::SIDESTEP:
+        stream << "Tour suivant : Énergie +" << value << ".";
+        break;
+    case engine::CardId::SKEWER:
+        stream << "Inflige " << value << " dégâts X fois.";
+        break;
+    case engine::CardId::SUPPRESS:
+        stream << "Inné. Inflige " << value << " dégâts. Affaibli " << secondary << ".";
+        break;
+    case engine::CardId::EXPERTISE:
+        stream << "Pioche " << secondary << " cartes, Retenues ce tour.";
+        break;
+    case engine::CardId::SNAKEBITE:
+        stream << "Retenue. Applique " << secondary << " de Poison.";
+        break;
+    case engine::CardId::BOOT_SEQUENCE:
+        stream << "Inné. Gagne " << value << " d'Armure. Épuisement.";
+        break;
+    case engine::CardId::CHARGE_BATTERY:
+        stream << "Armure +" << value << ". Tour suivant : Énergie +" << secondary << ".";
+        break;
+    case engine::CardId::FTL:
+        stream << "Inflige " << value << ". Pioche 1 si < " << secondary << " cartes jouées.";
+        break;
+    case engine::CardId::HELIX_DRILL:
+        stream << "Inflige " << value << " par énergie dépensée ce tour.";
+        break;
+    case engine::CardId::LIGHTNING_ROD:
+        stream << "Armure +" << value << ". " << secondary << " tours : canalise 1 Foudre.";
+        break;
+    case engine::CardId::TEMPEST:
+        stream << (card.upgraded ? "Canalise X+1 Orbes de foudre." : "Canalise X Orbes de foudre.");
+        break;
+    case engine::CardId::CRUSH_UNDER:
+        stream << "Inflige " << value << " à TOUS. Force -" << secondary << " ce tour.";
+        break;
+    case engine::CardId::GLITTERSTREAM:
+        stream << "Armure +" << value << ". Tour suivant : Armure +" << secondary << ".";
+        break;
+    case engine::CardId::HEAVENLY_DRILL:
+        stream << "Inflige " << value << " X fois. X doublé dès " << secondary << ".";
+        break;
+    case engine::CardId::HEGEMONY:
+        stream << "Inflige " << value << ". Tour suivant : Énergie +" << secondary << ".";
+        break;
+    case engine::CardId::KNOW_THY_PLACE:
+        stream << "Affaibli " << value << ". Vulnérable " << secondary << "." << (card.upgraded ? "" : " Épuisement.");
+        break;
+    case engine::CardId::LUNAR_BLAST:
+        stream << "Inflige " << value << " par Compétence jouée ce tour.";
+        break;
+    case engine::CardId::PROPHESIZE:
+        stream << "Pioche " << secondary << " cartes.";
+        break;
+    case engine::CardId::SUPERMASSIVE:
+        stream << "Inflige " << value << ", +" << secondary << " par carte créée ce combat.";
+        break;
+    case engine::CardId::CONVERGENCE:
+        stream << "Garde la main. Ensuite : +" << value << " ⚡, +" << secondary << " ★.";
+        break;
+    case engine::CardId::DEATH_MARCH:
+        stream << "Inflige " << value << ", +" << secondary << " par carte piochée ce tour.";
+        break;
+    case engine::CardId::DEFILE:
+        stream << "Éthéré. Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::DEFY:
+        stream << "Éthéré. Gagne " << value << " d'Armure. Affaibli " << secondary << ".";
+        break;
+    case engine::CardId::DELAY:
+        stream << "Armure +" << value << ". Tour suivant : Énergie +" << secondary << ".";
+        break;
+    case engine::CardId::ENFEEBLING_TOUCH:
+        stream << "Éthéré. Ennemi : Force -" << secondary << " ce tour.";
+        break;
+    case engine::CardId::FEAR:
+        stream << "Éthéré. Inflige " << value << " dégâts. Vulnérable " << secondary << ".";
+        break;
+    case engine::CardId::INVOKE:
+        stream << "Tour suivant : invoque " << secondary << ", Énergie +" << value << ".";
+        break;
+    case engine::CardId::PARSE:
+        stream << "Éthéré. Pioche " << secondary << " cartes.";
+        break;
+    case engine::CardId::PULL_FROM_BELOW:
+        stream << "Inflige " << value << " par carte Éthérée jouée.";
+        break;
+    case engine::CardId::REAP:
+        stream << "Retenue. Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::SOW:
+        stream << "Retenue. Inflige " << value << " dégâts à TOUS.";
+        break;
+    case engine::CardId::ERADICATE:
+        stream << "Retenue. Inflige " << value << " dégâts X fois.";
+        break;
     default:
         break;
     }
+}
+
+bn::string_view card_cost_label(const engine::DeckCard& card)
+{
+    static constexpr bn::string_view DIGITS[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+    uint8_t cost = engine::CardDef::get_cost(card.id, card.upgraded);
+
+    if(cost == engine::COST_X)
+    {
+        return "X";
+    }
+
+    return DIGITS[bn::min(int(cost), 9)];
 }
 
 bn::string_view card_type_name(engine::CardType type)

@@ -86,7 +86,7 @@ private:
                 _picker.add(run.combat.exhaust_pile[index], index);
             }
 
-            stream << "ÉPUISÉES - " << count << (count > 1 ? " cartes" : " carte");
+            stream << "EPUISEES - " << count << (count > 1 ? " cartes" : " carte");
         }
         else
         {

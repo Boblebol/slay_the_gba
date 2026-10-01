@@ -1177,6 +1177,530 @@ void test_other_heroes_exhaust() {
     std::cout << "[PASS] Necrobinder Exhaust: Shared Fate, Wisp, Putrefy, Reanimate, Afterlife" << std::endl;
 }
 
+// Ends the turn with every enemy doing nothing, so only the player's own effects show.
+void end_turn_idle(CombatEngine& combat) {
+    for (Enemy& foe : combat.enemies) make_enemy_idle(foe);
+    combat.end_player_turn();
+}
+
+void pad_draw_pile(CombatEngine& combat, int count) {
+    for (int i = 0; i < count; ++i) combat.draw_pile.push_back(CardId::DEFEND);
+}
+
+int count_in_hand(const CombatEngine& combat, CardId id) {
+    int count = 0;
+    for (const DeckCard& card : combat.hand) count += card.id == id;
+    return count;
+}
+
+void test_card_keywords() {
+    // Ethereal: exhausted when still in hand at the end of the turn, discarded as usual when played.
+    CombatEngine ethereal = make_combat(CharacterId::NECROBINDER);
+    ethereal.hand.clear();
+    ethereal.hand.push_back(CardId::DEFILE);
+    ethereal.hand.push_back(CardId::STRIKE);
+    end_turn_idle(ethereal);
+    assert(ethereal.exhaust_pile.size() == 1 && ethereal.exhaust_pile[0] == CardId::DEFILE);
+    assert(ethereal.counters.combat_ethereal_played == 0);
+    play(ethereal, CardId::DEFILE);
+    assert(ethereal.enemies[0].hp == 42 - 13 && ethereal.exhaust_pile.size() == 1);
+    assert(ethereal.counters.combat_ethereal_played == 1);
+
+    // Ethereal given to one copy during the combat.
+    DeckCard haunted(CardId::STRIKE);
+    haunted.added_keywords = KEYWORD_ETHEREAL;
+    ethereal.hand.clear();
+    ethereal.hand.push_back(haunted);
+    ethereal.hand.push_back(CardId::STRIKE);
+    end_turn_idle(ethereal);
+    assert(ethereal.exhaust_pile.size() == 2 && ethereal.exhaust_pile[1].added_keywords == KEYWORD_ETHEREAL);
+
+    // Defy, Fear, Parse and Enfeebling Touch are Ethereal too.
+    for (CardId id : { CardId::DEFY, CardId::FEAR, CardId::PARSE, CardId::ENFEEBLING_TOUCH }) {
+        assert(CardDef::has_keyword(id, false, KEYWORD_ETHEREAL) && CardDef::has_keyword(id, true, KEYWORD_ETHEREAL));
+    }
+    CombatEngine defy = make_combat(CharacterId::NECROBINDER);
+    play(defy, CardId::DEFY);
+    assert(defy.player.block == 6 && defy.enemies[0].get_status(StatusType::WEAK) == 1);
+    play(defy, DeckCard(CardId::FEAR, true));
+    assert(defy.enemies[0].hp == 42 - 8 && defy.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+    play(defy, CardId::PARSE);
+    assert(defy.hand.size() == 3);
+    std::cout << "[PASS] Ethereal: end of turn exhaust, per-copy keyword, Defile, Defy, Fear, Parse" << std::endl;
+
+    // Innate: drawn first, wherever the shuffle put them.
+    CombatEngine innate = make_combat(CharacterId::SILENT);
+    innate.hand.clear();
+    innate.discard_pile.clear();
+    innate.draw_pile.clear();
+    innate.draw_pile.push_back(CardId::BACKSTAB);
+    for (int i = 0; i < 8; ++i) innate.draw_pile.push_back(CardId::STRIKE);
+    innate.draw_pile.push_back(CardId::ASSASSINATE);
+    for (int i = 0; i < 3; ++i) innate.draw_pile.push_back(CardId::DEFEND);
+    innate.open_first_turn();
+    assert(innate.hand.size() == 5 && innate.draw_pile.size() == 8);
+    assert(count_in_hand(innate, CardId::BACKSTAB) == 1 && count_in_hand(innate, CardId::ASSASSINATE) == 1);
+    assert(innate.counters.combat_cards_drawn == 5 && innate.counters.cards_drawn == 0);
+
+    // More Innate cards than the opening draw: all of them are drawn.
+    CombatEngine boot = make_combat(CharacterId::DEFECT);
+    boot.hand.clear();
+    boot.discard_pile.clear();
+    boot.draw_pile.clear();
+    for (int i = 0; i < 7; ++i) boot.draw_pile.push_back(CardId::BOOT_SEQUENCE);
+    for (int i = 0; i < 5; ++i) boot.draw_pile.push_back(CardId::STRIKE);
+    boot.open_first_turn();
+    assert(boot.hand.size() == 7 && count_in_hand(boot, CardId::BOOT_SEQUENCE) == 7);
+
+    play(boot, CardId::BOOT_SEQUENCE);
+    assert(boot.player.block == 10 && boot.player.energy == 3 && boot.exhaust_pile.size() == 1);
+    play(innate, DeckCard(CardId::ASSASSINATE, true));
+    assert(innate.enemies[0].hp == 42 - 13 && innate.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+    assert(innate.exhaust_pile.size() == 1);
+    innate.enemies[0].statuses.clear();
+    play(innate, CardId::BACKSTAB);
+    assert(innate.enemies[0].hp == 29 - 11 && innate.exhaust_pile.size() == 2);
+    play(innate, CardId::SUPPRESS);
+    assert(innate.enemies[0].hp == 18 - 11 && innate.enemies[0].get_status(StatusType::WEAK) == 3);
+    assert(CardDef::has_keyword(CardId::SUPPRESS, false, KEYWORD_INNATE) && innate.exhaust_pile.size() == 2);
+    std::cout << "[PASS] Innate: opening hand, Assassinate, Backstab, Suppress, Boot Sequence" << std::endl;
+
+    // Retain from the card definition (Snakebite, Reap, Sow).
+    CombatEngine retain = make_combat(CharacterId::SILENT);
+    retain.hand.clear();
+    retain.hand.push_back(CardId::SNAKEBITE);
+    retain.hand.push_back(CardId::STRIKE);
+    end_turn_idle(retain);
+    assert(retain.hand.size() == 6 && retain.hand[0] == CardId::SNAKEBITE);
+    play(retain, DeckCard(CardId::SNAKEBITE, true));
+    assert(retain.enemies[0].get_status(StatusType::POISON) == 10 && retain.player.energy == 1);
+
+    // Retain given to one copy for the rest of the combat.
+    DeckCard held(CardId::STRIKE);
+    held.added_keywords = KEYWORD_RETAIN;
+    retain.hand.clear();
+    retain.hand.push_back(held);
+    pad_draw_pile(retain, 10);
+    end_turn_idle(retain);
+    end_turn_idle(retain);
+    assert(retain.hand[0].added_keywords == KEYWORD_RETAIN && retain.hand.size() == 6);
+
+    // Expertise: the cards it draws stay for one end of turn only.
+    CombatEngine expertise = make_combat(CharacterId::SILENT);
+    expertise.hand.clear();
+    expertise.hand.push_back(CardId::EXPERTISE);
+    expertise.hand.push_back(CardId::STRIKE);
+    assert(expertise.play_card(0));
+    assert(expertise.hand.size() == 3 && expertise.hand[1].added_keywords == KEYWORD_RETAIN_ONCE);
+    end_turn_idle(expertise);
+    assert(expertise.hand.size() == 7);
+    for (const DeckCard& card : expertise.hand) assert(card.added_keywords == 0);
+    end_turn_idle(expertise);
+    assert(expertise.hand.size() == 5);
+
+    CombatEngine reap = make_pack(CharacterId::NECROBINDER);
+    play(reap, CardId::REAP, 2);
+    assert(reap.enemies[2].hp == 42 - 27 && reap.player.energy == 0);
+    play(reap, DeckCard(CardId::SOW, true));
+    assert(reap.enemies[0].hp == 18 - 11 && reap.enemies[1].hp == 18 - 11 && reap.enemies[2].hp == 15 - 11);
+    assert(CardDef::has_keyword(CardId::REAP, false, KEYWORD_RETAIN) && CardDef::has_keyword(CardId::SOW, true, KEYWORD_RETAIN));
+    std::cout << "[PASS] Retain: keyword, per-copy, one turn (Expertise), Snakebite, Reap, Sow" << std::endl;
+
+    // Return: a played card comes back to the hand at the start of the next turn.
+    CombatEngine bolas = make_combat(CharacterId::IRONCLAD);
+    DeckCard thrown(CardId::STRIKE);
+    thrown.added_keywords = KEYWORD_RETURN;
+    play(bolas, thrown);
+    assert(bolas.returning_cards.size() == 1 && bolas.discard_pile.empty());
+    end_turn_idle(bolas);
+    assert(bolas.returning_cards.empty() && bolas.hand.size() == 6 && bolas.hand[0].added_keywords == KEYWORD_RETURN);
+    std::cout << "[PASS] Return: the card comes back next turn" << std::endl;
+}
+
+void test_x_cost() {
+    // X = all the energy left; the effect repeats X times.
+    CombatEngine skewer = make_combat(CharacterId::SILENT);
+    play(skewer, CardId::SKEWER);
+    assert(skewer.enemies[0].hp == 42 - 3 * 8 && skewer.player.energy == 0);
+    assert(skewer.counters.energy_spent == 3 && skewer.counters.hits_dealt == 3);
+    assert(CardDef::is_x_cost(CardId::SKEWER, false) && !CardDef::is_x_cost(CardId::STRIKE, false));
+
+    // Playable with no energy: X = 0.
+    skewer.hand.clear();
+    skewer.hand.push_back(DeckCard(CardId::SKEWER, true));
+    skewer.player.energy = 0;
+    assert(skewer.can_play_card(0) && skewer.play_card(0));
+    assert(skewer.enemies[0].hp == 18 && skewer.player.energy == 0);
+
+    CombatEngine whirlwind = make_pack(CharacterId::IRONCLAD);
+    whirlwind.hand.clear();
+    whirlwind.hand.push_back(CardId::WHIRLWIND);
+    whirlwind.player.energy = 2;
+    assert(whirlwind.play_card(0));
+    assert(whirlwind.enemies[0].hp == 8 && whirlwind.enemies[1].hp == 8 && whirlwind.enemies[2].hp == 32);
+
+    // Malaise+: X + 1.
+    CombatEngine malaise = make_combat(CharacterId::SILENT);
+    play(malaise, DeckCard(CardId::MALAISE, true));
+    assert(malaise.enemies[0].get_status(StatusType::STRENGTH) == -4 && malaise.enemies[0].get_status(StatusType::WEAK) == 4);
+    assert(malaise.exhaust_pile.size() == 1);
+
+    // Tempest: X Lightning orbs, X + 1 once upgraded (the fourth pushes the first one out).
+    CombatEngine tempest = make_combat(CharacterId::DEFECT);
+    tempest.hand.clear();
+    tempest.hand.push_back(CardId::TEMPEST);
+    tempest.player.energy = 2;
+    assert(tempest.play_card(0));
+    assert(tempest.player.orbs.size() == 2 && tempest.player.orbs[1] == OrbType::LIGHTNING && tempest.enemies[0].hp == 42);
+    tempest.player.orbs.clear();
+    play(tempest, DeckCard(CardId::TEMPEST, true));
+    assert(tempest.player.orbs.size() == 3 && tempest.enemies[0].hp < 42);
+
+    // Heavenly Drill: X is doubled from 4.
+    CombatEngine drill = make_combat(CharacterId::REGENT);
+    drill.enemies[0].hp = 200;
+    play(drill, CardId::HEAVENLY_DRILL);
+    assert(drill.enemies[0].hp == 200 - 3 * 8);
+    drill.hand.clear();
+    drill.hand.push_back(CardId::HEAVENLY_DRILL);
+    drill.player.energy = 4;
+    assert(drill.play_card(0));
+    assert(drill.enemies[0].hp == 176 - 8 * 8);
+
+    CombatEngine eradicate = make_combat(CharacterId::NECROBINDER);
+    play(eradicate, DeckCard(CardId::ERADICATE, true));
+    assert(eradicate.enemies[0].hp == 42 - 3 * 14);
+    assert(CardDef::has_keyword(CardId::ERADICATE, false, KEYWORD_RETAIN));
+    std::cout << "[PASS] X cost: Skewer, Whirlwind, Malaise, Tempest, Heavenly Drill, Eradicate" << std::endl;
+}
+
+void test_delayed_effects() {
+    // Energy next turn.
+    CombatEngine sidestep = make_combat(CharacterId::SILENT);
+    play(sidestep, DeckCard(CardId::SIDESTEP, true));
+    assert(sidestep.player.energy == 3 && sidestep.delayed_effects.size() == 1);
+    end_turn_idle(sidestep);
+    assert(sidestep.player.energy == 5 && sidestep.delayed_effects.empty());
+    end_turn_idle(sidestep);
+    assert(sidestep.player.energy == 3);
+
+    // Block next turn, with the Dexterity of the moment the card was played.
+    CombatEngine dodge = make_combat(CharacterId::SILENT);
+    play(dodge, CardId::DODGE_AND_ROLL);
+    assert(dodge.player.block == 4);
+    end_turn_idle(dodge);
+    assert(dodge.player.block == 4);
+    dodge.player.add_status(StatusType::DEXTERITY, 2);
+    play(dodge, DeckCard(CardId::DODGE_AND_ROLL, true));
+    assert(dodge.player.block == 4 + 8);
+    end_turn_idle(dodge);
+    assert(dodge.player.block == 8);
+
+    // Blur: Block survives one start of turn.
+    CombatEngine blur = make_combat(CharacterId::SILENT);
+    play(blur, CardId::BLUR);
+    end_turn_idle(blur);
+    assert(blur.player.block == 5 && blur.keep_block_turns == 0);
+    end_turn_idle(blur);
+    assert(blur.player.block == 0);
+
+    // Predator: two more cards in the next opening draw.
+    CombatEngine predator = make_combat(CharacterId::SILENT);
+    pad_draw_pile(predator, 4);
+    play(predator, CardId::PREDATOR);
+    assert(predator.enemies[0].hp == 42 - 15);
+    end_turn_idle(predator);
+    assert(predator.hand.size() == 7 && predator.counters.cards_drawn == 0);
+    assert_in_pool(CharacterId::SILENT, { CardId::ANTICIPATE, CardId::ASSASSINATE, CardId::BACKSTAB, CardId::BLUR,
+                                          CardId::DODGE_AND_ROLL, CardId::FINISHER, CardId::MALAISE, CardId::MEMENTO_MORI,
+                                          CardId::MURDER, CardId::PIERCING_WAIL, CardId::PREDATOR, CardId::SIDESTEP,
+                                          CardId::SKEWER, CardId::EXPERTISE, CardId::SNAKEBITE });
+    std::span<const CardId> silent_pool = RunManager::card_reward_pool(CharacterId::SILENT);
+    assert(std::find(silent_pool.begin(), silent_pool.end(), CardId::SUPPRESS) == silent_pool.end()); // Ancient rarity
+    std::cout << "[PASS] Next turn: Sidestep, Dodge and Roll, Blur, Predator" << std::endl;
+
+    CombatEngine battery = make_combat(CharacterId::DEFECT);
+    play(battery, DeckCard(CardId::CHARGE_BATTERY, true));
+    assert(battery.player.block == 10);
+    end_turn_idle(battery);
+    assert(battery.player.energy == 4 && battery.player.block == 0);
+
+    // Lightning Rod: one orb at the start of each of the next two turns.
+    CombatEngine rod = make_combat(CharacterId::DEFECT);
+    play(rod, CardId::LIGHTNING_ROD);
+    assert(rod.player.block == 4 && rod.player.orbs.empty());
+    end_turn_idle(rod);
+    assert(rod.player.orbs.size() == 1 && rod.player.orbs[0] == OrbType::LIGHTNING);
+    end_turn_idle(rod);
+    assert(rod.player.orbs.size() == 2 && rod.delayed_effects.empty());
+    end_turn_idle(rod);
+    assert(rod.player.orbs.size() == 2);
+    assert_in_pool(CharacterId::DEFECT, { CardId::BOOT_SEQUENCE, CardId::CHARGE_BATTERY, CardId::FTL, CardId::HELIX_DRILL,
+                                          CardId::LIGHTNING_ROD, CardId::TEMPEST });
+
+    CombatEngine glitter = make_combat(CharacterId::REGENT);
+    play(glitter, CardId::GLITTERSTREAM);
+    assert(glitter.player.block == 11);
+    end_turn_idle(glitter);
+    assert(glitter.player.block == 5);
+    play(glitter, DeckCard(CardId::HEGEMONY, true));
+    assert(glitter.enemies[0].hp == 42 - 18);
+    end_turn_idle(glitter);
+    assert(glitter.player.energy == 6);
+
+    // Convergence+: energy and Stars next turn, and the whole hand stays.
+    CombatEngine convergence = make_combat(CharacterId::REGENT);
+    convergence.hand.clear();
+    convergence.hand.push_back(DeckCard(CardId::CONVERGENCE, true));
+    convergence.hand.push_back(CardId::STRIKE);
+    convergence.hand.push_back(CardId::DEFEND);
+    assert(convergence.play_card(0));
+    assert(convergence.retain_hand && convergence.player.sovereign_stars == 0);
+    end_turn_idle(convergence);
+    assert(convergence.hand.size() == 7 && convergence.player.energy == 4 && convergence.player.sovereign_stars == 2);
+    assert(!convergence.retain_hand);
+    end_turn_idle(convergence);
+    assert(convergence.hand.size() == 5);
+
+    CombatEngine delay = make_combat(CharacterId::NECROBINDER);
+    play(delay, DeckCard(CardId::DELAY, true));
+    assert(delay.player.block == 13);
+    end_turn_idle(delay);
+    assert(delay.player.energy == 5);
+
+    // Invoke: Osty and the energy both arrive next turn.
+    CombatEngine invoke = make_combat(CharacterId::NECROBINDER);
+    play(invoke, CardId::INVOKE);
+    assert(invoke.player.minion_hp == 0 && invoke.player.energy == 2);
+    end_turn_idle(invoke);
+    assert(invoke.player.minion_hp == 2 && invoke.player.energy == 5);
+
+    // Countdown: damage to every enemy at the end of the third turn.
+    CombatEngine bomb = make_pack(CharacterId::IRONCLAD);
+    bomb.enemies[2].hp = 100;
+    bomb.schedule(DelayedType::DAMAGE_ALL, 40, 3);
+    end_turn_idle(bomb);
+    end_turn_idle(bomb);
+    assert(bomb.enemies[2].hp == 100 && bomb.enemies[0].hp == 18);
+    end_turn_idle(bomb);
+    assert(bomb.enemies[2].hp == 60 && !bomb.enemies[0].is_alive() && bomb.delayed_effects.empty());
+
+    // A new combat starts with nothing scheduled.
+    sidestep.schedule(DelayedType::ENERGY, 2);
+    sidestep.start_combat(EnemyType::JAW_WORM, CharacterId::SILENT);
+    assert(sidestep.delayed_effects.empty() && sidestep.player.energy == 3);
+    std::cout << "[PASS] Next turn: Charge Battery, Lightning Rod, Glitterstream, Hegemony, Convergence, Delay, Invoke, countdown" << std::endl;
+}
+
+void test_temporary_stats() {
+    // Strength until the end of the turn.
+    CombatEngine setup = make_combat(CharacterId::IRONCLAD);
+    play(setup, CardId::SETUP_STRIKE);
+    assert(setup.enemies[0].hp == 42 - 7 && setup.player.get_status(StatusType::STRENGTH) == 3);
+    play(setup, CardId::STRIKE);
+    assert(setup.enemies[0].hp == 35 - 9);
+    setup.player.add_status(StatusType::STRENGTH, 1); // permanent Strength is kept
+    end_turn_idle(setup);
+    assert(setup.player.get_status(StatusType::STRENGTH) == 1 && setup.temp_strength == 0);
+
+    CombatEngine anticipate = make_combat(CharacterId::SILENT);
+    play(anticipate, DeckCard(CardId::ANTICIPATE, true));
+    play(anticipate, CardId::DEFEND);
+    assert(anticipate.player.block == 9);
+    end_turn_idle(anticipate);
+    assert(anticipate.player.get_status(StatusType::DEXTERITY) == 0);
+
+    // The enemy gets its Strength back after its turn: Chomp (11) hits for 1.
+    CombatEngine mangle = make_combat(CharacterId::IRONCLAD);
+    mangle.enemies[0].add_status(StatusType::STRENGTH, 3);
+    play(mangle, CardId::MANGLE);
+    assert(mangle.enemies[0].hp == 42 - 20 && mangle.enemies[0].get_status(StatusType::STRENGTH) == -7);
+    assert(mangle.enemies[0].intent_damage(mangle.player) == 4);
+    int16_t hp_before = mangle.player.hp;
+    mangle.end_player_turn();
+    assert(mangle.player.hp == hp_before - 4);
+    assert(mangle.enemies[0].get_status(StatusType::STRENGTH) == 3 && mangle.enemies[0].temp_strength_loss == 0);
+
+    CombatEngine wail = make_pack(CharacterId::SILENT);
+    play(wail, DeckCard(CardId::PIERCING_WAIL, true));
+    for (const Enemy& foe : wail.enemies) assert(foe.get_status(StatusType::STRENGTH) == -8);
+    assert(wail.exhaust_pile.size() == 1);
+    end_turn_idle(wail);
+    for (const Enemy& foe : wail.enemies) assert(foe.get_status(StatusType::STRENGTH) == 0);
+
+    CombatEngine crush = make_pack(CharacterId::REGENT);
+    play(crush, DeckCard(CardId::CRUSH_UNDER, true));
+    assert(crush.enemies[0].hp == 9 && crush.enemies[2].hp == 33);
+    for (const Enemy& foe : crush.enemies) assert(foe.temp_strength_loss == 2);
+
+    CombatEngine touch = make_combat(CharacterId::NECROBINDER);
+    play(touch, CardId::ENFEEBLING_TOUCH);
+    assert(touch.enemies[0].get_status(StatusType::STRENGTH) == -8);
+    end_turn_idle(touch);
+    assert(touch.enemies[0].statuses.empty());
+    std::cout << "[PASS] Temporary stats: Setup Strike, Anticipate, Mangle, Piercing Wail, Crush Under, Enfeebling Touch" << std::endl;
+}
+
+void test_hp_loss() {
+    // Losing HP ignores Block and is counted.
+    CombatEngine wall = make_combat(CharacterId::IRONCLAD);
+    wall.player.block = 10;
+    play(wall, CardId::BLOOD_WALL);
+    assert(wall.player.hp == 78 && wall.player.block == 26);
+    assert(wall.counters.hp_lost == 2 && wall.counters.combat_hp_losses == 1);
+    play(wall, DeckCard(CardId::HEMOKINESIS, true));
+    assert(wall.player.hp == 76 && wall.enemies[0].hp == 42 - 20 && wall.counters.hp_lost == 4);
+    play(wall, DeckCard(CardId::BLOODLETTING, true));
+    assert(wall.player.hp == 73 && wall.player.energy == 6 && wall.counters.combat_hp_losses == 3);
+
+    CombatEngine breakthrough = make_pack(CharacterId::IRONCLAD);
+    play(breakthrough, CardId::BREAKTHROUGH);
+    assert(breakthrough.player.hp == 79 && breakthrough.enemies[0].hp == 9 && breakthrough.enemies[2].hp == 33);
+
+    CombatEngine offering = make_combat(CharacterId::IRONCLAD);
+    play(offering, CardId::OFFERING);
+    assert(offering.player.hp == 74 && offering.player.energy == 5 && offering.hand.size() == 3);
+    assert(offering.exhaust_pile.size() == 1);
+
+    // Spite hits again only when HP were lost this turn.
+    CombatEngine spite = make_combat(CharacterId::IRONCLAD);
+    play(spite, CardId::SPITE);
+    assert(spite.enemies[0].hp == 42 - 5);
+    play(spite, CardId::BLOODLETTING);
+    play(spite, CardId::SPITE);
+    assert(spite.enemies[0].hp == 37 - 10);
+    play(spite, DeckCard(CardId::SPITE, true));
+    assert(spite.enemies[0].hp == 27 - 15);
+
+    // The turn counter restarts; damage taken from an enemy counts as a loss for the combat.
+    spite.end_player_turn(); // Chomp: 11
+    assert(spite.player.hp == 80 - 3 - 11);
+    assert(spite.counters.hp_lost == 0 && spite.counters.combat_hp_losses == 2);
+
+    // Paying HP can be lethal.
+    CombatEngine lethal = make_combat(CharacterId::IRONCLAD);
+    lethal.player.hp = 2;
+    play(lethal, CardId::HEMOKINESIS);
+    assert(lethal.player.hp == 0 && lethal.state == CombatState::DEFEAT);
+
+    // Forgotten Ritual pays only after another card was exhausted this turn (its own exhaust comes too late).
+    CombatEngine ritual = make_combat(CharacterId::IRONCLAD);
+    play(ritual, CardId::FORGOTTEN_RITUAL);
+    assert(ritual.player.energy == 2 && ritual.exhaust_pile.size() == 1);
+    play(ritual, DeckCard(CardId::FORGOTTEN_RITUAL, true));
+    assert(ritual.player.energy == 6);
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::BLOOD_WALL, CardId::BLOODLETTING, CardId::BREAKTHROUGH,
+                                            CardId::FORGOTTEN_RITUAL, CardId::HEMOKINESIS, CardId::MANGLE, CardId::OFFERING,
+                                            CardId::SETUP_STRIKE, CardId::SPITE, CardId::WHIRLWIND });
+    std::cout << "[PASS] HP loss: Blood Wall, Hemokinesis, Bloodletting, Breakthrough, Offering, Spite, Forgotten Ritual" << std::endl;
+}
+
+void test_counters() {
+    // Attacks already played this turn.
+    CombatEngine finisher = make_combat(CharacterId::SILENT);
+    play(finisher, CardId::FINISHER);
+    assert(finisher.enemies[0].hp == 42 && finisher.counters.attacks_played == 1);
+    play(finisher, CardId::STRIKE);
+    play(finisher, CardId::FINISHER);
+    assert(finisher.enemies[0].hp == 42 - 6 - 2 * 6);
+    assert(finisher.counters.attacks_played == 3 && finisher.counters.hits_dealt == 3);
+    assert(finisher.counters.combat_cards_played == 3 && finisher.counters.energy_spent == 3);
+    end_turn_idle(finisher);
+    assert(finisher.counters.attacks_played == 0 && finisher.counters.hits_dealt == 0);
+    assert(finisher.counters.energy_spent == 0 && finisher.counters.combat_cards_played == 3);
+    finisher.start_combat(EnemyType::JAW_WORM, CharacterId::SILENT);
+    assert(finisher.counters.combat_cards_played == 0 && finisher.counters.combat_cards_drawn == 5);
+
+    // Cards discarded by effects this turn.
+    CombatEngine memento = make_combat(CharacterId::SILENT);
+    memento.hand.clear();
+    memento.hand.push_back(CardId::CALCULATED_GAMBLE);
+    memento.hand.push_back(CardId::STRIKE);
+    memento.hand.push_back(CardId::DEFEND);
+    assert(memento.play_card(0));
+    assert(memento.counters.cards_discarded == 2 && memento.counters.cards_drawn == 2);
+    play(memento, CardId::MEMENTO_MORI);
+    assert(memento.enemies[0].hp == 42 - (9 + 2 * 4));
+
+    // Murder counts every card drawn since the combat started: 5 in the opening hand.
+    CombatEngine murder = make_combat(CharacterId::SILENT);
+    play(murder, CardId::MURDER);
+    assert(murder.enemies[0].hp == 42 - 6 && murder.player.energy == 0);
+    assert(CardDef::get_cost(CardId::MURDER, true) == 2);
+
+    // FTL draws while fewer than 3 cards were played this turn.
+    CombatEngine ftl = make_combat(CharacterId::DEFECT);
+    play(ftl, CardId::FTL);
+    assert(ftl.enemies[0].hp == 42 - 5 && ftl.hand.size() == 1);
+    play(ftl, CardId::DEFEND);
+    play(ftl, CardId::DEFEND);
+    play(ftl, CardId::FTL);
+    assert(ftl.hand.empty());
+    play(ftl, DeckCard(CardId::FTL, true));
+    assert(ftl.hand.empty() && ftl.counters.cards_played() == 5);
+
+    // Helix Drill: one hit per energy spent on the other cards.
+    CombatEngine helix = make_combat(CharacterId::DEFECT);
+    play(helix, CardId::HELIX_DRILL);
+    assert(helix.enemies[0].hp == 42);
+    play(helix, CardId::DEFEND);
+    play(helix, CardId::LEAP);
+    assert(helix.counters.energy_spent == 2);
+    play(helix, DeckCard(CardId::HELIX_DRILL, true));
+    assert(helix.enemies[0].hp == 42 - 2 * 5);
+
+    CombatEngine lunar = make_combat(CharacterId::REGENT);
+    play(lunar, CardId::DEFEND);
+    play(lunar, CardId::KNOW_THY_PLACE);
+    assert(lunar.enemies[0].get_status(StatusType::WEAK) == 1 && lunar.enemies[0].get_status(StatusType::VULNERABLE) == 1);
+    assert(lunar.exhaust_pile.size() == 1);
+    play(lunar, DeckCard(CardId::KNOW_THY_PLACE, true));
+    assert(lunar.exhaust_pile.size() == 1 && lunar.counters.skills_played == 3);
+    lunar.enemies[0].statuses.clear();
+    play(lunar, CardId::LUNAR_BLAST);
+    assert(lunar.enemies[0].hp == 42 - 3 * 4);
+
+    pad_draw_pile(lunar, 4);
+    play(lunar, CardId::PROPHESIZE);
+    assert(lunar.hand.size() == 6 && lunar.counters.cards_drawn == 6);
+
+    // Cards created during the combat (Anger copies itself).
+    CombatEngine anger = make_combat(CharacterId::IRONCLAD);
+    play(anger, CardId::ANGER);
+    assert(anger.counters.combat_cards_created == 1);
+    CombatEngine massive = make_combat(CharacterId::REGENT);
+    play(massive, CardId::SUPERMASSIVE);
+    assert(massive.enemies[0].hp == 42 - 5);
+    massive.counters.combat_cards_created = 2;
+    play(massive, DeckCard(CardId::SUPERMASSIVE, true));
+    assert(massive.enemies[0].hp == 37 - (5 + 2 * 4));
+    assert_in_pool(CharacterId::REGENT, { CardId::CRUSH_UNDER, CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL,
+                                          CardId::HEGEMONY, CardId::KNOW_THY_PLACE, CardId::LUNAR_BLAST, CardId::PROPHESIZE,
+                                          CardId::SUPERMASSIVE, CardId::CONVERGENCE });
+
+    // Death March: cards drawn by effects this turn, not the opening hand.
+    CombatEngine march = make_combat(CharacterId::NECROBINDER);
+    play(march, CardId::DEATH_MARCH);
+    assert(march.enemies[0].hp == 42 - 8);
+    play(march, CardId::PARSE);
+    play(march, CardId::DEATH_MARCH);
+    assert(march.enemies[0].hp == 34 - (8 + 3 * 4));
+
+    // Pull from Below: one hit per Ethereal card played this combat.
+    CombatEngine pull = make_combat(CharacterId::NECROBINDER);
+    play(pull, CardId::PULL_FROM_BELOW);
+    assert(pull.enemies[0].hp == 42);
+    play(pull, CardId::DEFY);
+    play(pull, CardId::PARSE);
+    play(pull, DeckCard(CardId::PULL_FROM_BELOW, true));
+    assert(pull.enemies[0].hp == 42 - 2 * 7);
+    assert_in_pool(CharacterId::NECROBINDER, { CardId::DEATH_MARCH, CardId::DEFILE, CardId::DEFY, CardId::DELAY,
+                                               CardId::ENFEEBLING_TOUCH, CardId::FEAR, CardId::INVOKE, CardId::PARSE,
+                                               CardId::PULL_FROM_BELOW, CardId::REAP, CardId::SOW, CardId::ERADICATE });
+    std::cout << "[PASS] Counters: Finisher, Memento Mori, Murder, FTL, Helix Drill, Lunar Blast, Supermassive, Death March, Pull from Below" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -1250,6 +1774,12 @@ int main() {
     test_exhaust();
     test_ironclad_exhaust();
     test_other_heroes_exhaust();
+    test_card_keywords();
+    test_x_cost();
+    test_delayed_effects();
+    test_temporary_stats();
+    test_hp_loss();
+    test_counters();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;

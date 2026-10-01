@@ -1189,6 +1189,13 @@ void CombatScene::_update_card_flight()
             _victory = true;
             _phase = Phase::END_BANNER;
         }
+        else if(_combat.state == engine::CombatState::DEFEAT)
+        {
+            // A card that costs HP killed its player.
+            _player_death = DEATH_FRAMES;
+            _victory = false;
+            _phase = Phase::END_BANNER;
+        }
         else
         {
             _phase = Phase::PLAYER;

@@ -23,7 +23,7 @@ items = [
   { name = "Copie de carte dans la Défausse (Colère)", status = "oui" },
   { name = "Dégâts égaux à l'Armure (Plaquage)", status = "oui" },
   { name = "Épuisement de ses cartes et synergies d'Épuisement", status = "partiel", issue = 82, note = "Ses cartes s'Épuisent et comptent la pile ; les pouvoirs déclenchés par l'Épuisement (Sombre étreinte, Ignorer la douleur) manquent." },
-  { name = "Sacrifice de PV contre de la puissance (cartes « Perdez X PV »)", status = "non", issue = 85 },
+  { name = "Sacrifice de PV contre de la puissance (cartes « Perdez X PV »)", status = "oui" },
   { name = "Gain de Force tour après tour (Enflammer, Forme démoniaque)", status = "non", issue = 81 },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
 ]
@@ -78,7 +78,7 @@ items = [
   { name = "Attaques de Titos (Déchaînement proportionnel à ses PV)", status = "non", issue = 104 },
   { name = "Fatalité : l'ennemi périt quand elle atteint ses PV", status = "non", issue = 105 },
   { name = "Âmes ajoutées à la Pioche", status = "non", issue = 106, note = "Le moteur ne tient qu'un compteur sans effet." },
-  { name = "Cartes Éthérées", status = "non", issue = 69 },
+  { name = "Cartes Éthérées", status = "oui" },
   { name = "PV de Titos affichés en combat", status = "oui" },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
 ]
@@ -103,7 +103,7 @@ items = [
   { name = "Cartes Pouvoir : restent en jeu jusqu'à la fin du combat", status = "partiel", issue = 80, note = "Seuls les Pouvoirs à effet immédiat sont jouables (Enflammer, Jeu de jambes)." },
   { name = "Défausse d'une carte au choix", status = "non", issue = 31 },
   { name = "Choix d'une carte parmi plusieurs (Découverte, etc.)", status = "non", issue = 72 },
-  { name = "Cartes à coût X", status = "non", issue = 74 },
+  { name = "Cartes à coût X", status = "oui" },
   { name = "Écho : rejouer une carte", status = "non", issue = 86 },
   { name = "Coup de grâce : effet quand la carte tue un ennemi", status = "non", issue = 87 },
   { name = "Transformer une carte", status = "non", issue = 79 },
@@ -136,9 +136,9 @@ section = "regles"
 title = "Mots-clés de cartes"
 items = [
   { name = "Épuisement", status = "oui" },
-  { name = "Éthéré", status = "non", issue = 69 },
-  { name = "Inné", status = "non", issue = 70 },
-  { name = "Retenue", status = "partiel", issue = 71, note = "Marqueur par carte (Misère+, Feu follet+, Coup de poker+) ; pas encore de « Retenez votre Main » ni de Retenue ajoutée en combat." },
+  { name = "Éthéré", status = "oui" },
+  { name = "Inné", status = "oui" },
+  { name = "Retenue", status = "oui" },
   { name = "Ruse", status = "non", issue = 73 },
   { name = "Injouable", status = "non", issue = 95 },
   { name = "Éternel", status = "non", issue = 95 },

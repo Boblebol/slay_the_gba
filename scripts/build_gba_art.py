@@ -197,7 +197,7 @@ class CardArt:
     owner: str       # hero owning the card (frame colour); "hero" = the ROM's own hero
     art: str         # art file relative to bible/images/cards/<owner>/ ; "{hero}" is substituted
     kind: str        # attack | skill | power
-    costs: tuple[int, int]  # base cost, upgraded cost
+    costs: tuple[int, int]  # base cost, upgraded cost; -1 = X
 
 
 # Mirrors engine::CardId order (card.h). Index 0 (NONE) is a blank card.
@@ -303,6 +303,59 @@ CARDS: list[CardArt] = [
     CardArt("putrefy", "necrobinder", "putrefy", "skill", (1, 1)),
     CardArt("reanimate", "necrobinder", "reanimate", "skill", (3, 3)),
     CardArt("afterlife", "necrobinder", "afterlife", "skill", (1, 1)),
+    CardArt("blood_wall", "ironclad", "blood_wall", "skill", (2, 2)),
+    CardArt("bloodletting", "ironclad", "bloodletting", "skill", (0, 0)),
+    CardArt("breakthrough", "ironclad", "breakthrough", "attack", (1, 1)),
+    CardArt("forgotten_ritual", "ironclad", "forgotten_ritual", "skill", (1, 1)),
+    CardArt("hemokinesis", "ironclad", "hemokinesis", "attack", (1, 1)),
+    CardArt("mangle", "ironclad", "mangle", "attack", (3, 3)),
+    CardArt("offering", "ironclad", "offering", "skill", (0, 0)),
+    CardArt("setup_strike", "ironclad", "setup_strike", "attack", (1, 1)),
+    CardArt("spite", "ironclad", "spite", "attack", (0, 0)),
+    CardArt("whirlwind", "ironclad", "whirlwind", "attack", (-1, -1)),
+    CardArt("anticipate", "silent", "anticipate", "skill", (0, 0)),
+    CardArt("assassinate", "silent", "assassinate", "attack", (0, 0)),
+    CardArt("backstab", "silent", "backstab", "attack", (0, 0)),
+    CardArt("blur", "silent", "blur", "skill", (1, 1)),
+    CardArt("dodge_and_roll", "silent", "dodge_and_roll", "skill", (1, 1)),
+    CardArt("finisher", "silent", "finisher", "attack", (1, 1)),
+    CardArt("malaise", "silent", "malaise", "skill", (-1, -1)),
+    CardArt("memento_mori", "silent", "memento_mori", "attack", (1, 1)),
+    CardArt("murder", "silent", "murder", "attack", (3, 2)),
+    CardArt("piercing_wail", "silent", "piercing_wail", "skill", (1, 1)),
+    CardArt("predator", "silent", "predator", "attack", (2, 2)),
+    CardArt("sidestep", "silent", "sidestep", "skill", (0, 0)),
+    CardArt("skewer", "silent", "skewer", "attack", (-1, -1)),
+    CardArt("suppress", "silent", "suppress", "attack", (0, 0)),
+    CardArt("expertise", "silent", "expertise", "skill", (1, 1)),
+    CardArt("snakebite", "silent", "snakebite", "skill", (2, 2)),
+    CardArt("boot_sequence", "defect", "boot_sequence", "skill", (0, 0)),
+    CardArt("charge_battery", "defect", "charge_battery", "skill", (1, 1)),
+    CardArt("ftl", "defect", "ftl", "attack", (0, 0)),
+    CardArt("helix_drill", "defect", "helix_drill", "attack", (0, 0)),
+    CardArt("lightning_rod", "defect", "lightning_rod", "skill", (1, 1)),
+    CardArt("tempest", "defect", "tempest", "skill", (-1, -1)),
+    CardArt("crush_under", "regent", "crush_under", "attack", (1, 1)),
+    CardArt("glitterstream", "regent", "glitterstream", "skill", (2, 2)),
+    CardArt("heavenly_drill", "regent", "heavenly_drill", "attack", (-1, -1)),
+    CardArt("hegemony", "regent", "hegemony", "attack", (2, 2)),
+    CardArt("know_thy_place", "regent", "know_thy_place", "skill", (0, 0)),
+    CardArt("lunar_blast", "regent", "lunar_blast", "attack", (0, 0)),
+    CardArt("prophesize", "regent", "prophesize", "skill", (2, 2)),
+    CardArt("supermassive", "regent", "supermassive", "attack", (1, 1)),
+    CardArt("convergence", "regent", "convergence", "skill", (1, 1)),
+    CardArt("death_march", "necrobinder", "death_march", "attack", (1, 1)),
+    CardArt("defile", "necrobinder", "defile", "attack", (1, 1)),
+    CardArt("defy", "necrobinder", "defy", "skill", (1, 1)),
+    CardArt("delay", "necrobinder", "delay", "skill", (2, 2)),
+    CardArt("enfeebling_touch", "necrobinder", "enfeebling_touch", "skill", (1, 1)),
+    CardArt("fear", "necrobinder", "fear", "attack", (1, 1)),
+    CardArt("invoke", "necrobinder", "invoke", "skill", (1, 1)),
+    CardArt("parse", "necrobinder", "parse", "skill", (1, 1)),
+    CardArt("pull_from_below", "necrobinder", "pull_from_below", "attack", (1, 1)),
+    CardArt("reap", "necrobinder", "reap", "attack", (3, 3)),
+    CardArt("sow", "necrobinder", "sow", "attack", (1, 1)),
+    CardArt("eradicate", "necrobinder", "eradicate", "attack", (-1, -1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}
@@ -316,6 +369,7 @@ DIGITS = {
     "3": ["###", "..#", ".##", "..#", "###"],
     "4": ["#.#", "#.#", "###", "..#", "..#"],
     "5": ["###", "#..", "###", "..#", "###"],
+    "X": ["#.#", "#.#", ".#.", "#.#", "#.#"],
 }
 
 
@@ -434,7 +488,8 @@ def build_cards() -> None:
                 gem = energy_gem(owner, 11)
                 canvas.alpha_composite(gem, (1, 0))
                 if card.enum_name != "none":
-                    cost = str(card.costs[1] if upgraded else card.costs[0])
+                    value = card.costs[1] if upgraded else card.costs[0]
+                    cost = "X" if value < 0 else str(value)
                     draw = ImageDraw.Draw(canvas)
                     for dy, row in enumerate(DIGITS[cost]):
                         for dx, ch in enumerate(row):

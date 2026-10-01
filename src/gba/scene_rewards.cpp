@@ -179,7 +179,7 @@ private:
         TextLine header;
         bn::ostringstream stream(header);
         stream << text << "  (" << card_type_name(engine::CardDef::get(card.id).type) << ", "
-               << int(engine::CardDef::get_cost(card.id, card.upgraded)) << " ●)";
+               << card_cost_label(card) << " ●)";
         _name.set(0, 46, header, Align::CENTER, TextColor::GOLD);
 
         card_description(card, text);
