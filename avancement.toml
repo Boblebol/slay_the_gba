@@ -1,0 +1,324 @@
+# Suivi d'avancement de Slay the GBA — partie tenue à la main.
+#
+# Les cartes, reliques, potions, monstres et évènements sont détectés dans le code du moteur par
+# scripts/progress.py : inutile de les lister ici. Ce fichier contient ce que le code ne dit pas :
+#   - [[category]] : mécaniques, systèmes de jeu, écrans… avec leur statut ;
+#   - [overrides.*] : corrections de la détection automatique (élément seulement partiel, hors périmètre…).
+#
+# Statuts : "oui" (fait), "partiel" (compte pour moitié), "non" (à faire), "exclu" (hors périmètre, non compté).
+# `issue` renvoie au ticket GitHub correspondant.
+#
+# Après modification : `make progress` (régénère AVANCEMENT.md) ou `make site-build` (site + AVANCEMENT.md).
+
+# ---------------------------------------------------------------------------------------------------------
+# Héros : mécaniques signature (les cartes et reliques de chaque héros sont détectées automatiquement)
+# ---------------------------------------------------------------------------------------------------------
+
+[[category]]
+section = "ironclad"
+title = "Mécaniques"
+items = [
+  { name = "Force appliquée à chaque attaque", status = "oui" },
+  { name = "Vulnérable infligé par ses cartes (Heurt, Provocation)", status = "oui" },
+  { name = "Copie de carte dans la Défausse (Colère)", status = "oui" },
+  { name = "Dégâts égaux à l'Armure (Plaquage)", status = "oui" },
+  { name = "Épuisement de ses cartes et synergies d'Épuisement", status = "non", issue = 68 },
+  { name = "Sacrifice de PV contre de la puissance (cartes « Perdez X PV »)", status = "non", issue = 85 },
+  { name = "Gain de Force tour après tour (Enflammer, Forme démoniaque)", status = "non", issue = 81 },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+]
+
+[[category]]
+section = "silent"
+title = "Mécaniques"
+items = [
+  { name = "Poison : dégâts au début du tour ennemi, traverse l'Armure, diminue de 1", status = "oui" },
+  { name = "Affaibli infligé par ses cartes (Neutralisation, Coup bas)", status = "oui" },
+  { name = "Pioche supplémentaire (Salto arrière)", status = "oui" },
+  { name = "Défausse au choix (Survivant, Acrobaties)", status = "non", issue = 31 },
+  { name = "Surins : attaques à 0 énergie créées en combat", status = "non", issue = 96 },
+  { name = "Ruse : carte jouée gratuitement quand elle est défaussée", status = "non", issue = 73 },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+]
+
+[[category]]
+section = "defect"
+title = "Mécaniques"
+items = [
+  { name = "Canaliser un Orbe (3 emplacements, le plus ancien est Activé quand ils sont pleins)", status = "oui" },
+  { name = "Activer un Orbe (Activation double)", status = "oui" },
+  { name = "Orbe kéraunique : 3 dégâts en fin de tour, 8 à l'Activation", status = "oui" },
+  { name = "Orbe glaciaire : 2 d'Armure en fin de tour, 5 à l'Activation", status = "oui" },
+  { name = "Orbe ténébreux : se charge de 6 par tour, libère sa charge", status = "partiel", note = "Géré par le moteur, mais aucune carte jouable n'en canalise." },
+  { name = "Orbe plasmique : 1 énergie par tour, 2 à l'Activation", status = "partiel", note = "Géré par le moteur, mais aucune carte jouable n'en canalise." },
+  { name = "Orbe vitreux", status = "non", issue = 99 },
+  { name = "Focalisation : renforce tous les Orbes", status = "non", issue = 97 },
+  { name = "Emplacements d'Orbe variables (Condensateur)", status = "non", issue = 100 },
+  { name = "Compteur d'Orbes affiché en combat", status = "oui" },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+]
+
+[[category]]
+section = "regent"
+title = "Mécaniques"
+items = [
+  { name = "Étoiles : seconde ressource gagnée par les cartes", status = "partiel", issue = 101, note = "Compteur plafonné à 5 qui renforce Frappe et Défense, au lieu d'une ressource à dépenser." },
+  { name = "Cartes à coût en Étoiles", status = "non", issue = 101 },
+  { name = "Forger la Lame souveraine", status = "non", issue = 102 },
+  { name = "Sbires (Frappe de sbire, Sbire en piqué)", status = "non", issue = 103 },
+  { name = "Compteur d'Étoiles affiché en combat", status = "oui" },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+]
+
+[[category]]
+section = "necrobinder"
+title = "Mécaniques"
+items = [
+  { name = "Invoquer Titos : ses PV s'additionnent et il encaisse les coups à la place du héros", status = "oui" },
+  { name = "Attaques de Titos (Déchaînement proportionnel à ses PV)", status = "non", issue = 104 },
+  { name = "Fatalité : l'ennemi périt quand elle atteint ses PV", status = "non", issue = 105 },
+  { name = "Âmes ajoutées à la Pioche", status = "non", issue = 106, note = "Le moteur ne tient qu'un compteur sans effet." },
+  { name = "Cartes Éthérées", status = "non", issue = 69 },
+  { name = "PV de Titos affichés en combat", status = "oui" },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+]
+
+# ---------------------------------------------------------------------------------------------------------
+# Règles de combat communes
+# ---------------------------------------------------------------------------------------------------------
+
+[[category]]
+section = "regles"
+title = "Déroulement du combat"
+items = [
+  { name = "Énergie : 3 par tour, dépensée pour jouer les cartes", status = "oui" },
+  { name = "Pioche de 5 cartes, main limitée à 10, Défausse remélangée dans la Pioche", status = "oui" },
+  { name = "Armure remise à zéro au début du tour", status = "oui" },
+  { name = "Jusqu'à 3 ennemis par combat, avec ciblage", status = "oui" },
+  { name = "Intentions ennemies affichées", status = "oui" },
+  { name = "Calcul des dégâts (Force, Affaibli, Vulnérable)", status = "oui" },
+  { name = "Attaques de zone et attaques en plusieurs coups", status = "oui" },
+  { name = "Cartes qui font piocher", status = "oui" },
+  { name = "Amélioration de cartes pendant le combat", status = "oui" },
+  { name = "Cartes Pouvoir : restent en jeu jusqu'à la fin du combat", status = "partiel", issue = 80, note = "Le type existe, mais aucune carte Pouvoir du jeu d'origine n'est jouable." },
+  { name = "Défausse d'une carte au choix", status = "non", issue = 31 },
+  { name = "Choix d'une carte parmi plusieurs (Découverte, etc.)", status = "non", issue = 72 },
+  { name = "Cartes à coût X", status = "non", issue = 74 },
+  { name = "Écho : rejouer une carte", status = "non", issue = 86 },
+  { name = "Coup de grâce : effet quand la carte tue un ennemi", status = "non", issue = 87 },
+  { name = "Transformer une carte", status = "non", issue = 79 },
+]
+
+[[category]]
+section = "regles"
+title = "Pouvoirs et statuts"
+items = [
+  { name = "Force", status = "oui" },
+  { name = "Dextérité", status = "oui" },
+  { name = "Vulnérable", status = "oui" },
+  { name = "Affaibli", status = "oui" },
+  { name = "Poison", status = "oui" },
+  { name = "Rituel (ennemis)", status = "oui" },
+  { name = "Artéfact", status = "non", issue = 92 },
+  { name = "Fragilisé", status = "non", issue = 93 },
+  { name = "Focalisation", status = "non", issue = 97 },
+  { name = "Intangible", status = "non", issue = 92 },
+  { name = "Blindage", status = "non", issue = 91 },
+  { name = "Épines", status = "non", issue = 91 },
+  { name = "Vigueur", status = "non", issue = 93 },
+  { name = "Fatalité", status = "non", issue = 105 },
+  { name = "Désorienté", status = "non", issue = 93 },
+  { name = "Sables mouvants (L'Insatiable)", status = "non", issue = 245 },
+]
+
+[[category]]
+section = "regles"
+title = "Mots-clés de cartes"
+items = [
+  { name = "Épuisement", status = "non", issue = 68 },
+  { name = "Éthéré", status = "non", issue = 69 },
+  { name = "Inné", status = "non", issue = 70 },
+  { name = "Retenue", status = "non", issue = 71 },
+  { name = "Ruse", status = "non", issue = 73 },
+  { name = "Injouable", status = "non", issue = 95 },
+  { name = "Éternel", status = "non", issue = 95 },
+]
+
+[[category]]
+section = "regles"
+title = "Enchantements"
+items = [
+  { name = "Adroit", status = "non", issue = 107 },
+  { name = "Agilité", status = "non", issue = 107 },
+  { name = "Braise de Tezcatara", status = "non", issue = 107 },
+  { name = "Célérité", status = "non", issue = 107 },
+  { name = "Clonage", status = "non", issue = 107 },
+  { name = "Élan", status = "non", issue = 107 },
+  { name = "Encrée", status = "non", issue = 107 },
+  { name = "Glamour", status = "non", issue = 107 },
+  { name = "Imprégnation", status = "non", issue = 107 },
+  { name = "Instinct", status = "non", issue = 107 },
+  { name = "Sceau royal", status = "non", issue = 107 },
+  { name = "Tranchant", status = "non", issue = 107 },
+  { name = "Viscosité", status = "non", issue = 107 },
+]
+
+# ---------------------------------------------------------------------------------------------------------
+# Systèmes de jeu
+# ---------------------------------------------------------------------------------------------------------
+
+[[category]]
+section = "systemes"
+title = "La Tour"
+items = [
+  { name = "Carte procédurale à embranchements (16 étages)", status = "oui", issue = 24 },
+  { name = "Trois actes enchaînés, soin entre les actes", status = "oui" },
+  { name = "Salles : monstre, élite, boss, repos, trésor, boutique, évènement", status = "oui" },
+  { name = "Rencontres propres à chaque acte (81 rencontres du jeu d'origine)", status = "non", issue = 225, note = "Trois groupes fixes de monstres, identiques dans les trois actes." },
+  { name = "Un boss différent par acte", status = "non", issue = 36 },
+  { name = "Neow en début de partie", status = "non", issue = 6 },
+  { name = "Bénédiction d'un Ancien entre les actes", status = "non", issue = 261, note = "La phase existe dans le moteur mais elle est sautée." },
+]
+
+[[category]]
+section = "systemes"
+title = "Récompenses"
+items = [
+  { name = "Une carte parmi trois, tirées au hasard dans les cartes du héros", status = "oui", issue = 35 },
+  { name = "Or après chaque combat", status = "oui" },
+  { name = "Coffre : or et relique jamais en double", status = "oui" },
+  { name = "Potion en récompense de combat", status = "non", issue = 185 },
+  { name = "Relique après un élite", status = "non", issue = 184 },
+  { name = "Relique de boss", status = "non", issue = 184 },
+  { name = "Cartes rares et peu communes selon la salle", status = "non", issue = 67 },
+]
+
+[[category]]
+section = "systemes"
+title = "Feu de camp"
+items = [
+  { name = "Repos : récupère 30 % des PV", status = "oui" },
+  { name = "Forge : améliorer une carte, avec aperçu", status = "oui" },
+  { name = "Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon)", status = "non", issue = 271 },
+]
+
+[[category]]
+section = "systemes"
+title = "Marchand"
+items = [
+  { name = "Achat de cartes", status = "oui" },
+  { name = "Retrait d'une carte, à coût croissant", status = "oui" },
+  { name = "Achat de reliques", status = "partiel", issue = 184, note = "Géré par le moteur, absent de la boutique sur GBA." },
+  { name = "Achat de potions", status = "partiel", issue = 185, note = "Géré par le moteur, absent de la boutique sur GBA." },
+  { name = "Inventaire tiré au hasard à chaque visite", status = "non", issue = 270, note = "Trois cartes fixes par héros." },
+  { name = "Prix selon la rareté, carte en solde", status = "non", issue = 270 },
+]
+
+[[category]]
+section = "systemes"
+title = "Potions"
+items = [
+  { name = "Ceinture de 3 potions", status = "oui" },
+  { name = "Boire une potion en combat sur GBA", status = "non", issue = 30, note = "Le moteur sait appliquer quatre potions, sans interface sur GBA." },
+]
+
+[[category]]
+section = "systemes"
+title = "Ascension"
+items = [
+  { name = "A1 : élites plus fréquents", status = "oui", issue = 29 },
+  { name = "A2 à A4 : dégâts accrus des monstres, élites et boss", status = "oui", issue = 29 },
+  { name = "A5 : soin réduit après un boss", status = "oui", issue = 29 },
+  { name = "A6 : départ avec 10 % de PV en moins", status = "oui", issue = 29 },
+  { name = "A7 à A9 : PV accrus des monstres, élites et boss", status = "oui", issue = 29 },
+  { name = "A10 : malédiction Fléau de l'ascendant dans le deck de départ", status = "non", issue = 40 },
+  { name = "Choix du niveau d'Ascension sur GBA", status = "non", issue = 272, note = "Toutes les parties démarrent en Ascension 0." },
+]
+
+[[category]]
+section = "systemes"
+title = "Sauvegarde"
+items = [
+  { name = "Sauvegarde automatique de la partie sur la cartouche (SRAM)", status = "oui", issue = 13 },
+  { name = "Reprise avec « Continuer » à l'écran titre", status = "oui", issue = 13 },
+  { name = "Volumes de la musique et des effets conservés", status = "oui", issue = 13 },
+  { name = "Statistiques et Compendium (cartes, reliques, monstres rencontrés)", status = "non", issue = 273, note = "Écrans prévus dans le moteur, sans interface sur GBA." },
+]
+
+# ---------------------------------------------------------------------------------------------------------
+# Interface, audio et cartouches
+# ---------------------------------------------------------------------------------------------------------
+
+[[category]]
+section = "interface"
+title = "Écrans"
+items = [
+  { name = "Écran titre", status = "oui" },
+  { name = "Choix de la teinte du héros (4 palettes)", status = "oui" },
+  { name = "Carte de la Tour avec pion animé", status = "oui" },
+  { name = "Combat façon Pokémon", status = "oui" },
+  { name = "Récompenses", status = "oui" },
+  { name = "Évènement avec texte machine à écrire", status = "oui" },
+  { name = "Boutique", status = "oui" },
+  { name = "Feu de camp", status = "oui" },
+  { name = "Registre du deck", status = "oui" },
+  { name = "Défaite (Game Over)", status = "partiel", issue = 11 },
+  { name = "Victoire", status = "partiel", issue = 12 },
+  { name = "Indicateurs de vie, d'armure et de progression", status = "partiel", issue = 20 },
+  { name = "Transitions entre les scènes", status = "partiel", issue = 18 },
+  { name = "Système de dialogue et d'évènements textuels", status = "partiel", issue = 19 },
+  { name = "Options (volume, commandes)", status = "non", issue = 21 },
+  { name = "Menu pause en combat et sur la carte", status = "non", issue = 10 },
+  { name = "Menu principal interactif", status = "non", issue = 9 },
+  { name = "Écran titre animé (nuages, tour, brume)", status = "non", issue = 7 },
+  { name = "Écran titre propre à chaque édition", status = "non", issue = 3 },
+  { name = "Crédits et cinématique d'introduction", status = "non", issue = 1 },
+  { name = "Crédits de fin", status = "non", issue = 22 },
+]
+
+[[category]]
+section = "interface"
+title = "Graphismes et audio"
+items = [
+  { name = "Sprites des 5 héros et arène par édition", status = "oui" },
+  { name = "Illustrations des cartes jouables", status = "oui" },
+  { name = "Police avec accents français", status = "oui" },
+  { name = "Effets sonores", status = "oui", issue = 14 },
+  { name = "Sept musiques en boucle", status = "oui", issue = 15 },
+  { name = "Logo et identité graphique", status = "non", issue = 8 },
+  { name = "Poses des héros tirées des artworks sources (attaque, blessure)", status = "non", issue = 2 },
+  { name = "Animations des ennemis et des boss", status = "partiel", issue = 17, note = "Flottement au repos et fondu de mort ; pas d'animation d'attaque." },
+]
+
+[[category]]
+section = "interface"
+title = "Cartouches"
+items = [
+  { name = "Cinq ROMs, une par héros", status = "oui" },
+  { name = "ROM unique réunissant tout le contenu", status = "non", issue = 4 },
+]
+
+# ---------------------------------------------------------------------------------------------------------
+# Corrections de la détection automatique
+# ---------------------------------------------------------------------------------------------------------
+
+[overrides.cards]
+SURVIVOR = { status = "partiel", issue = 31, note = "Donne l'Armure mais ne fait pas défausser de carte." }
+FALLING_STAR = { status = "partiel", issue = 34, note = "Coûte 1 et donne des Étoiles au lieu d'appliquer Affaibli et Vulnérable pour 0." }
+VENERATE = { status = "partiel", issue = 34, note = "Donne aussi de l'Armure, absente de la carte d'origine." }
+UNLEASH = { status = "partiel", issue = 34, note = "Dégâts fixes : ne tient pas compte des PV de Titos." }
+BODYGUARD = { status = "partiel", issue = 34, note = "Invoque pour 1 et donne de l'Armure, au lieu d'invoquer pour 5." }
+
+[overrides.potions]
+FIRE_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
+BLOCK_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
+ENERGY_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
+BLOOD_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
+
+[overrides.monsters]
+CEREMONIAL_BEAST = { status = "partiel", issue = 36, note = "150 PV et trois attaques simplifiées, contre 252 PV et six attaques dans le jeu d'origine." }
+
+[overrides.events]
+ABYSSAL_BATHS = { status = "partiel", note = "Récit raccourci et choix réinventés pour la GBA." }
+BATTLEWORN_DUMMY = { status = "partiel", note = "Récit raccourci et choix réinventés pour la GBA." }
+COLOSSAL_FLOWER = { status = "partiel", note = "Récit raccourci et choix réinventés pour la GBA." }

@@ -65,6 +65,15 @@ ENERGY = 3
 POTION_SLOTS = 3
 DIFFICULTY = {1: "Accessible", 2: "Intermédiaire", 3: "Expert"}
 
+# French labels for the values found in bible/data.
+TYPE_FR = {"Attack": "Attaque", "Skill": "Compétence", "Power": "Pouvoir", "Curse": "Malédiction", "Quest": "Quête",
+           "Status": "Statut"}
+RARITY_FR = {"Basic": "Base", "Common": "Commune", "Uncommon": "Peu commune", "Rare": "Rare", "Ancient": "Ancienne",
+             "Event": "Évènement", "Curse": "Malédiction", "Quest": "Quête", "Shared": "Partagée",
+             "Fallback": "Secours", "Starter": "Départ", "Boss": "Boss", "Shop": "Boutique", "Token": "Créée en combat",
+             "Status": "Statut"}
+ENCOUNTER_FR = {"normal": "Monstre", "elite": "Élite", "boss": "Boss", "weak": "Faible", "summon": "Invocation"}
+
 HEROES = [
     Hero(
         slug="ironclad", pool="Ironclad", name="Soldat de Fer", english="The Ironclad",

@@ -269,7 +269,11 @@ endif
 # -------------------------------------------------------------------------------------------------
 # 🌐 SITE WEB (généré depuis la bible)
 # -------------------------------------------------------------------------------------------------
-.PHONY: site site-build site-package site-dist deploy deploy-preview
+.PHONY: site site-build site-package site-dist deploy deploy-preview progress
+
+# Implementation tracker: rewrites AVANCEMENT.md from the engine sources and avancement.toml.
+progress:
+	@uv run scripts/progress.py
 
 site-build:
 	@printf "$(CYAN)==> Génération du site web dans site/...$(RESET)\n"
@@ -331,6 +335,7 @@ help:
 	@printf "  $(BLUE)make run$(RESET)            Lance la ROM par défaut dans votre émulateur GBA\n"
 	@printf "  $(BLUE)make run-silent$(RESET)     Lance l'édition La Silencieuse dans l'émulateur GBA\n"
 	@printf "\n"
+	@printf "  $(MAGENTA)make progress$(RESET)       Recalcule l'avancement du portage (AVANCEMENT.md)\n"
 	@printf "  $(MAGENTA)make site$(RESET)           Génère le site web et l'ouvre dans le navigateur\n"
 	@printf "  $(MAGENTA)make site-build$(RESET)     Génère le site web sans l'ouvrir\n"
 	@printf "  $(MAGENTA)make site-dist$(RESET)      Prépare dist/ (site + images + ROMs) pour l'hébergement\n"

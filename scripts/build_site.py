@@ -20,7 +20,9 @@ from pathlib import Path
 import markdown
 from PIL import Image
 
-from editions import CONTROLS, DIFFICULTY, ENERGY, GOLD, HEROES, POTION_SLOTS, Hero
+import progress
+from editions import (CONTROLS, DIFFICULTY, ENCOUNTER_FR, ENERGY, GOLD, HEROES, POTION_SLOTS, RARITY_FR, TYPE_FR,
+                      Hero)
 
 ROOT = Path(__file__).resolve().parent.parent
 BIBLE = ROOT / "bible"
@@ -38,12 +40,7 @@ PAGES: list[str] = []  # indexable pages, collected for sitemap.xml
 # ---------------------------------------------------------------------------------------------
 
 
-TYPE_FR = {"Attack": "Attaque", "Skill": "Compétence", "Power": "Pouvoir", "Curse": "Malédiction", "Quest": "Quête"}
-RARITY_FR = {"Basic": "Base", "Common": "Commune", "Uncommon": "Peu commune", "Rare": "Rare", "Ancient": "Ancienne",
-             "Event": "Évènement", "Curse": "Malédiction", "Quest": "Quête", "Shared": "Partagée",
-             "Fallback": "Secours", "Starter": "Départ", "Boss": "Boss", "Shop": "Boutique"}
 POOL_FR = {"Colorless": "Incolores", "Event": "Évènement", "Curse": "Malédictions", "Quest": "Quêtes"}
-ENCOUNTER_FR = {"normal": "Monstre", "elite": "Élite", "boss": "Boss", "weak": "Faible", "summon": "Invocation"}
 INTENT_FR = {"attack": "Attaque", "defend": "Défense", "buff": "Renforcement", "debuff": "Affaiblissement",
              "status": "Statut", "heal": "Soin", "summon": "Invocation", "escape": "Fuite", "sleep": "Sommeil",
              "stun": "Étourdi", "unknown": "Inconnu", "hidden": "Caché", "card_debuff": "Malus de carte"}
@@ -69,22 +66,29 @@ def rich(text: str) -> str:
 
 
 ROMS = SITE / "roms"
+# What a cartridge is built from: a ROM older than the newest of these files is a stale local build.
+ROM_INPUTS = ("src", "include", "graphics", "audio")
 
 
 def copy_roms() -> None:
-    """Copy the built cartridges next to the pages so download links work locally and once deployed."""
+    """Publish the built cartridges next to the pages, so download links work locally and once deployed.
+    A ROM built before the last change to the game is not published: the previous download stays in place."""
     ROMS.mkdir(exist_ok=True)
+    newest_input = max(f.stat().st_mtime for folder in ROM_INPUTS for f in (ROOT / folder).rglob("*") if f.is_file())
     for hero in HEROES:
         src = ROOT / hero.rom
-        if src.exists():
-            (ROMS / hero.rom).write_bytes(src.read_bytes())
+        if not src.exists():
+            continue
+        if src.stat().st_mtime < newest_input:
+            print(f"WARNING: {hero.rom} is older than the game sources and was not published; run `make roms` first")
+            continue
+        (ROMS / hero.rom).write_bytes(src.read_bytes())
 
 
 def rom_size(hero: "Hero") -> str:
-    for path in (ROOT / hero.rom, ROMS / hero.rom):
-        if path.exists():
-            return f"{path.stat().st_size / 1024:.0f} Ko"
-    return "à compiler"
+    """Size of the published cartridge, the file the download button serves."""
+    path = ROMS / hero.rom
+    return f"{path.stat().st_size / 1024:.0f} Ko" if path.exists() else "à compiler"
 
 
 def download_button(hero: "Hero", depth: int, cls: str = "btn") -> str:
@@ -109,6 +113,7 @@ NAV = [
     ("potions.html", "Potions"),
     ("evenements.html", "Évènements"),
     ("anciens.html", "Anciens"),
+    ("avancement.html", "Avancement"),
     ("guide.html", "Guide"),
     ("bible/index.html", "Bible"),
 ]
@@ -377,7 +382,8 @@ def controls_table() -> str:
     return f'<table class="keys"><tr><th>Écran</th><th>Bouton</th><th>Action</th></tr>{rows}</table>'
 
 
-def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], potions: list[dict], events: list[dict]) -> None:
+def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], potions: list[dict], events: list[dict],
+                prog: progress.Progress) -> None:
     by_id = cards_by_id(cards)
     relic_by_id = {r["id"]: r for r in relics}
     carts = "".join(edition_card(h) for h in HEROES)
@@ -460,6 +466,8 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
 <li>Vous avez une vraie console ? Copiez la ROM sur une cartouche flash (EZ-Flash, EverDrive) et jouez sur GBA, GBA SP ou DS.</li>
 </ol>''')}
 
+{progress_panel(prog)}
+
 {panel('<h2>Questions fréquentes</h2>' + faq + f'<p><a class="btn small ghost" href="{ARTICLE_URL}" target="_blank" rel="noopener">📖 L’histoire du projet</a></p>')}
 """
     (SITE / "index.html").write_text(page("Accueil", body, active="index.html", path="",
@@ -500,7 +508,7 @@ def md_to_html(text: str, depth: int, image_base: str) -> str:
     return html_text
 
 
-def build_hero_pages(cards: list[dict], relics: list[dict]) -> None:
+def build_hero_pages(cards: list[dict], relics: list[dict], prog: progress.Progress) -> None:
     (SITE / "heros").mkdir(exist_ok=True)
     by_id = cards_by_id(cards)
     relic_by_id = {r["id"]: r for r in relics}
@@ -541,6 +549,7 @@ def build_hero_pages(cards: list[dict], relics: list[dict]) -> None:
 </div>''')}
 {panel(f'<h2>Les 4 teintes</h2><p>Choisissez l’apparence de {esc(h.name)} au lancement de chaque partie.</p><div class="palettes">{palettes}</div>')}
 {panel(f'<h2>Conseils de survie</h2><ol class="tips">{tips}</ol><p><a class="btn small" href="../bible/livret_{h.slug}.html">Livret complet de l’édition ►</a> <a class="btn small ghost" href="../bible/{h.tome}.html">Tome des cartes ►</a></p>')}
+{hero_progress_panel(prog.section(h.slug))}
 <section class="panel"><h2>Toutes les cartes ({len(pool)})</h2>{card_filters()}<div class="cards">{''.join(card_html(c, 1) for c in pool)}</div></section>
 {panel('<h2>Reliques exclusives</h2><div class="relics">' + ''.join(relic_html(r, 1) for r in hero_relics) + '</div>')}
 {panel(f'<h2>Les autres éditions</h2><p class="pager"><a href="{prev_h.slug}.html">◄ {esc(prev_h.name)}</a><a href="{next_h.slug}.html">{esc(next_h.name)} ►</a></p><div class="carts">{others}</div>')}
@@ -655,6 +664,112 @@ def ancient_tome(slug: str) -> str:
     return "index.html"
 
 
+# ---------------------------------------------------------------------------------------------
+# Progress tracker (scripts/progress.py)
+# ---------------------------------------------------------------------------------------------
+
+# Status is told by the glyph and the label; the colour only repeats it.
+STATUS_BADGE = {progress.DONE: "<i>●</i> Oui", progress.PARTIAL: "<i>◐</i> Partiel", progress.TODO: "<i>○</i> Non",
+                progress.EXCLUDED: "<i>–</i> Exclu"}
+
+
+def meter(tally: progress.Tally, label: str, color: str = "") -> str:
+    """Progress track of a tally. `label` names what is measured, for screen readers."""
+    width = f"max(3px, {tally.percent:.1f}%)" if tally.percent else "0"
+    fill = f' style="--fill:{color}"' if color else ""
+    return (f'<div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" '
+            f'aria-valuenow="{tally.percent:.0f}" aria-label="{esc(label)}"{fill}><span style="width:{width}"></span></div>')
+
+
+def progress_total(prog: progress.Progress) -> str:
+    version = progress.current_version()
+    release = f"Version {esc(version)} · " if version else ""
+    return (f'<div class="prog-total"><b>{progress.percent_fr(prog.tally.percent)}</b>'
+            f'<div>{meter(prog.tally, "Avancement global")}'
+            f'<p class="meta">{release}{esc(progress.counts_fr(prog.tally))}</p></div></div>')
+
+
+def progress_tile(section: progress.Section, up: str = "") -> str:
+    hero = section.hero
+    sprite = f'<img class="pix" src="{up}assets/sprites/hero_{hero.slug}.png" alt="">' if hero else ""
+    return (f'<a class="prog-tile" href="{up}avancement.html#{section.slug}">{sprite}<div><h3>{esc(section.title)}</h3>'
+            f'<b>{progress.percent_fr(section.tally.percent)}</b>'
+            f'{meter(section.tally, section.title, hero.color if hero else "")}'
+            f'<p class="meta">{esc(progress.counts_fr(section.tally))}</p></div></a>')
+
+
+def progress_item(item: progress.Item) -> str:
+    issue = (f' <a href="{progress.ISSUE_URL}{item.issue}" target="_blank" rel="noopener">#{item.issue}</a>'
+             if item.issue else "")
+    note = f"<small>{esc(item.note)}{issue}</small>" if item.note or issue else ""
+    detail = f' <span class="meta">{esc(item.detail)}</span>' if item.detail else ""
+    search = item.name if item.key == item.name else f"{item.name} {item.key}"
+    return (f'<li data-status="{item.status}" data-name="{esc(search.lower())}">'
+            f'<span class="st st-{item.status}">{STATUS_BADGE[item.status]}</span>'
+            f'<div><b>{esc(item.name)}</b>{detail}{note}</div></li>')
+
+
+def progress_category(category: progress.Category, color: str = "", items: bool = True) -> str:
+    """One category row: name, counts, track and percentage, unfolding to its checklist when `items` is set."""
+    tally = category.tally
+    head = (f'<span><b>{esc(category.title)}</b><span class="meta">{esc(progress.counts_fr(tally))}</span></span>'
+            f'{meter(tally, category.title, color)}<span class="prog-num">{progress.percent_fr(tally.percent)}</span>')
+    if not items:
+        return f'<div class="prog-cat"><div class="prog-row">{head}</div></div>'
+    rows = "".join(progress_item(item) for item in category.items)
+    return f'<details class="prog-cat"><summary class="prog-row">{head}</summary><ul class="prog-list">{rows}</ul></details>'
+
+
+def progress_panel(prog: progress.Progress) -> str:
+    """Home page summary."""
+    tiles = "".join(progress_tile(section) for section in prog.sections if section.hero)
+    return panel(f"""<h2 id="avancement">Où en est le portage ?</h2>
+<p class="intro">Le jeu se construit carte après carte. Voici la part du contenu de Slay the Spire 2 déjà
+implémentée dans le code du jeu, recalculée à chaque mise à jour du site.</p>
+{progress_total(prog)}<div class="prog-grid">{tiles}</div>
+<p><a class="btn small" href="avancement.html">Voir tout le détail ►</a></p>""")
+
+
+def hero_progress_panel(section: progress.Section) -> str:
+    rows = "".join(progress_category(category, section.hero.color, items=False) for category in section.categories)
+    return panel(f"""<h2>Avancement de l'édition : {progress.percent_fr(section.tally.percent)}</h2>
+<p>Ce qui est déjà implémenté dans le code du jeu, sur l'ensemble des cartes, reliques et mécaniques de {esc(section.title)}.</p>
+{rows}<p><a class="btn small" href="../avancement.html#{section.slug}">Voir le détail ►</a></p>""")
+
+
+def build_progress_page(prog: progress.Progress) -> None:
+    heroes = "".join(progress_tile(section) for section in prog.sections if section.hero)
+    shared = "".join(progress_tile(section) for section in prog.sections if not section.hero)
+    chips = "".join(f'<button data-filter-status="{status}">{label}</button>' for status, label in
+                    [(progress.DONE, "Fait"), (progress.PARTIAL, "Partiel"), (progress.TODO, "À faire"),
+                     (progress.EXCLUDED, "Hors périmètre")])
+    details = ""
+    for section in prog.sections:
+        color = section.hero.color if section.hero else ""
+        categories = "".join(progress_category(category, color) for category in section.categories)
+        details += (f'<section class="panel prog-section" id="{section.slug}"><h2>{esc(section.title)} '
+                    f'<small>{progress.percent_fr(section.tally.percent)}</small></h2>{categories}</section>')
+    body = panel(f"""<h1>Avancement du portage</h1>
+<p class="intro">Tout ce que Slay the GBA doit implémenter pour couvrir Slay the Spire 2, héros par héros puis pour
+le jeu entier, et ce qui est déjà fait.</p>
+{progress_total(prog)}
+<p class="meta">Le numéro de version suit l'avancement : 0.9 à 9 %, 1.0 quand tout est fait.
+Un élément partiel compte pour moitié ; les cartes et reliques multijoueur sont hors périmètre.
+Les cartes, reliques, potions, monstres et évènements sont détectés dans le code du jeu.
+{esc(progress.extras_fr(prog))}</p>""")
+    body += panel(f'<h2>Par édition</h2><div class="prog-grid">{heroes}</div>')
+    body += panel(f'<h2>Le jeu commun</h2><div class="prog-grid">{shared}</div>')
+    body += panel(f"""<h2>Le détail</h2><div class="filters" data-progress>
+  <input type="search" placeholder="Rechercher une carte, une relique, un monstre, une mécanique…" data-search>
+  <div class="chips"><button class="on" data-filter-status="">Tout</button>{chips}</div>
+  <p class="count"></p>
+</div>""")
+    (SITE / "avancement.html").write_text(page(
+        "Avancement", body + details, active="avancement.html", path="avancement.html",
+        description=f"Avancement de Slay the GBA : {progress.percent_fr(prog.tally.percent)} du contenu de "
+                    "Slay the Spire 2 est implémenté. Le détail par héros, carte, relique, monstre et système."))
+
+
 def build_guide() -> None:
     parts = []
     for name in ["19_boucle_de_gameplay_et_ascension.md", "21_interface_pokemon_et_navigation_carte.md"]:
@@ -739,11 +854,14 @@ def main() -> None:
     events = load("event", "events")
     ancients = load("ancient", "ancients")
     monsters = json.loads((DATA / "monster_v0.111.0.json").read_text())
+    prog = progress.compute()
+    progress.write_report(prog)
     build_assets()
     copy_roms()
-    build_index(cards, monsters["monsters"], relics, potions, events)
+    build_index(cards, monsters["monsters"], relics, potions, events, prog)
     build_heroes_index(cards, relics)
-    build_hero_pages(cards, relics)
+    build_hero_pages(cards, relics, prog)
+    build_progress_page(prog)
     build_cards_page(cards)
     build_bestiary(monsters)
     relic_labels = {"Shared": "Partagées", **{h.pool: h.name for h in HEROES}, "Event": "Évènement", "Fallback": "Secours"}

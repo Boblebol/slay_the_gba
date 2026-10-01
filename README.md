@@ -130,6 +130,31 @@ signature mechanic, palettes, showcase cards). `make site-build` first regenerat
 (`bible/livrets_gba/`, via `scripts/build_livrets.py`, from that file and the card/relic data), then the website,
 so the booklets, the bible and the site always describe the same five editions.
 
+### Implementation tracker
+
+[`AVANCEMENT.md`](AVANCEMENT.md) and the site's `avancement.html` page list everything the game has to implement to
+cover Slay the Spire 2 (per hero, then for the whole game), whether each item is done, and the resulting percentage.
+
+* Cards, relics, potions, monsters and events are read from `bible/data` and marked done when the engine implements
+  them (`scripts/progress.py` scans `src/engine`), so they follow the code.
+* Mechanics, game systems and screens are listed by hand in [`avancement.toml`](avancement.toml), with a status
+  `oui` / `partiel` / `non`. The same file corrects the detection where an entry is only partly faithful.
+
+```bash
+make progress      # rewrite AVANCEMENT.md and print the summary (make site-build does it too)
+```
+
+### Releases
+
+The version number follows the tracker: `0.<whole percentage>.<patch>` while something is left to implement
+(9.9 % done gives `0.9.x`), `1.0.0` once every item of `AVANCEMENT.md` is done.
+
+`.github/workflows/release.yml` runs on every push to `main`: it runs the tests, regenerates the website and
+`AVANCEMENT.md`, and commits them, which is what Netlify deploys. When the game itself changed since the last tag
+(`src/`, `include/`, `graphics/`, `audio/`), it also builds the five ROMs, publishes them in `site/roms/`, writes
+the version to `VERSION` and creates the GitHub release `vX.Y.Z` with the ROMs and the progress summary.
+`.github/workflows/ci.yml` runs the same tests on pull requests.
+
 Deploy to Netlify: connect the repository in Netlify; `netlify.toml` runs `make site-package`, which
 only assembles committed files (pages, bible images, ROMs) into `dist/`. After changing the game or the
 bible, rebuild and commit the generated files:
@@ -138,5 +163,8 @@ bible, rebuild and commit the generated files:
 make roms && make site-build   # refresh ROMs (site/roms/) and pages
 git add site && git commit -m "build(site): refresh website" && git push
 ```
+
+`make site-build` only publishes a ROM built after the last change to `src/`, `include/`, `graphics/` or `audio/`.
+A stale local build is skipped with a warning and the previous download stays in `site/roms/`.
 
 `make deploy` / `make deploy-preview` still deploy straight from your machine with the Netlify CLI.
