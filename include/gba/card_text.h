@@ -18,6 +18,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out);
 // Energy cost as printed on the card: a digit, or "X" for a card that spends all the energy.
 [[nodiscard]] bn::string_view card_cost_label(const engine::DeckCard& card);
 
+// Label of an energy cost worked out during a combat: "0" to "12", "X".
+[[nodiscard]] bn::string_view cost_label(int cost);
+
 // Star cost (Regent) in the same form, empty for the cards that cost none.
 [[nodiscard]] bn::string_view card_star_cost_label(const engine::DeckCard& card);
 

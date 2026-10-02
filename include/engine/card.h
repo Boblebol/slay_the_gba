@@ -299,14 +299,61 @@ enum class CardId : uint16_t {
     CAPACITOR,
     BULK_UP,
     SYNCHRONIZE,
+    // Ironclad replays, cost changes and evolving cards (appended: saves store the numeric id)
+    HOWL_FROM_BEYOND,
+    HELLRAISER,
+    STAMPEDE,
+    CASCADE,
+    ONE_TWO_PUNCH,
+    TEAR_ASUNDER,
+    HAVOC,
+    CORRUPTION,
+    UNRELENTING,
+    MIDNIGHT,
+    STOMP,
+    RAMPAGE,
+    // Silent replays, cost changes and evolving cards (appended: saves store the numeric id)
+    BURST,
+    BULLET_TIME,
+    PINPOINT,
+    POUNCE,
+    // Defect replays, cost changes and evolving cards (appended: saves store the numeric id)
+    ECHO_FORM,
+    SIGNAL_BOOST,
+    UPROAR,
+    ADAPTIVE_STRIKE,
+    SYNTHESIS,
+    GENETIC_ALGORITHM,
+    MOMENTUM_STRIKE,
+    CLAW,
+    MODDED,
+    // Regent replays, cost changes and evolving cards (appended: saves store the numeric id)
+    BOMBARDMENT,
+    I_AM_INVINCIBLE,
+    VOID_FORM,
+    KINGLY_KICK,
+    KINGLY_PUNCH,
+    // Necrobinder replays, cost changes and evolving cards (appended: saves store the numeric id)
+    EIDOLON,
+    BANSHEES_CRY,
+    VEILPIERCER,
+    BORROWED_TIME,
+    THE_SCYTHE,
+    MELANCHOLY,
+    HANG,
     COUNT
 };
+
+constexpr uint8_t NOT_IN_DECK = 0xFF;
 
 struct DeckCard {
     CardId id = CardId::NONE;
     bool upgraded = false;
-    uint8_t bonus = 0; // damage gained by this copy during the combat (Thrash); not part of the card's identity
+    uint8_t bonus = 0; // added to this copy's base value: gained during the combat (Thrash, Rampage) or kept by the deck
     uint8_t added_keywords = 0; // CardKeyword bits given to this copy during the combat, on top of its CardDef
+    int8_t cost_delta = 0;      // energy cost change of this copy for the combat (Momentum Strike, Modded)
+    bool free_this_turn = false; // this copy costs 0 until the end of the turn (Bullet Time)
+    uint8_t deck_index = NOT_IN_DECK; // position of the card in the run's deck, for the gains that outlive the combat
 
     constexpr DeckCard() = default;
     constexpr DeckCard(CardId i, bool up = false) : id(i), upgraded(up) {}

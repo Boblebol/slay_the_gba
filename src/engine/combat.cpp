@@ -18,6 +18,13 @@ bool is_strike(CardId id) {
         case CardId::SOLAR_STRIKE:
         case CardId::PERFECTED_STRIKE:
         case CardId::METEOR_STRIKE:
+        case CardId::ASHEN_STRIKE:
+        case CardId::SETUP_STRIKE:
+        case CardId::SHINING_STRIKE:
+        case CardId::FOCUSED_STRIKE:
+        case CardId::BLIGHT_STRIKE:
+        case CardId::ADAPTIVE_STRIKE:
+        case CardId::MOMENTUM_STRIKE:
             return true;
         default:
             return false;
@@ -178,6 +185,8 @@ void CombatEngine::settle_deaths() {
         uint8_t bit = static_cast<uint8_t>(1u << i);
         if ((alive_mask_ & bit) && !enemies[i].is_alive()) {
             alive_mask_ = static_cast<uint8_t>(alive_mask_ & ~bit);
+            // Melancholy gets cheaper each time someone dies.
+            change_cost_of_copies(CardId::MELANCHOLY, -1);
             EventInfo info;
             info.enemy = static_cast<int8_t>(i);
             emit(CombatEvent::ENEMY_KILLED, info);
@@ -270,7 +279,32 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             }
             break;
         case PowerId::FERAL:
+        case PowerId::ECHO_FORM:
+        case PowerId::VOID_FORM:
             if (turn_start) power.counter = 0;
+            break;
+        case PowerId::HELLRAISER:
+            // The card just drawn is the last one of the hand.
+            if (event == CombatEvent::CARD_DRAWN && is_strike(info.card.id) && !hand.empty() && hand.back().id == info.card.id) {
+                DeckCard strike = hand.back();
+                hand.pop_back();
+                autoplay(strike);
+            }
+            break;
+        case PowerId::STAMPEDE:
+            if (event == CombatEvent::TURN_END) {
+                for (uint8_t copy = 0; copy < power.stacks; ++copy) {
+                    FixedVector<uint8_t, 10> attacks;
+                    for (size_t i = 0; i < hand.size(); ++i) {
+                        if (CardDef::get(hand[i].id).type == CardType::ATTACK) attacks.push_back(static_cast<uint8_t>(i));
+                    }
+                    if (attacks.empty() || !has_alive_enemies()) break;
+                    size_t pick = attacks[next_random() % attacks.size()];
+                    DeckCard attack = hand[pick];
+                    hand.erase(pick);
+                    autoplay(attack);
+                }
+            }
             break;
         case PowerId::FEEL_NO_PAIN:
             if (event == CombatEvent::CARD_EXHAUSTED) add_block(power.amount);
@@ -726,6 +760,12 @@ bool CombatEngine::draw_card() {
 
     DeckCard card = draw_pile.back();
     draw_pile.pop_back();
+    // Cards that change when they are drawn.
+    if (card.id == CardId::KINGLY_KICK) {
+        card.cost_delta = static_cast<int8_t>(card.cost_delta - 1);
+    } else if (card.id == CardId::KINGLY_PUNCH) {
+        card.bonus = bump(card.bonus, CardDef::get_secondary(card.id, card.upgraded));
+    }
     hand.push_back(card);
     counters.cards_drawn = bump(counters.cards_drawn);
     counters.combat_cards_drawn = bump(counters.combat_cards_drawn);
@@ -964,7 +1004,10 @@ void CombatEngine::reset_combat_state() {
     fatal_kills = 0;
     powers.clear();
     powers_in_play.clear();
+    permanent_gains.clear();
+    end_turn_requested = false;
     event_depth_ = 0;
+    autoplay_depth_ = 0;
     temp_strength = 0;
     temp_dexterity = 0;
     temp_focus = 0;
@@ -1026,6 +1069,11 @@ void CombatEngine::start_player_turn() {
     emit(CombatEvent::TURN_START);
     extra_draw += turn_draw_bonus_;
 
+    // Bombardment plays itself from the exhaust pile at the start of each turn, and stays there.
+    for (size_t i = 0; i < exhaust_pile.size() && has_alive_enemies(); ++i) {
+        if (exhaust_pile[i].id == CardId::BOMBARDMENT) autoplay(exhaust_pile[i], -1, AfterPlay::NOWHERE);
+    }
+
     // Cards played with Return come back before the draw.
     for (const DeckCard& card : returning_cards) {
         if (!hand.push_back(card)) discard_pile.push_back(card);
@@ -1069,7 +1117,7 @@ bool CombatEngine::play_condition_met(PlayCondition condition) const {
 }
 
 PlayBlocker CombatEngine::play_blocker(int index) const {
-    if (state != CombatState::PLAYER_TURN) return PlayBlocker::NOT_PLAYABLE;
+    if (state != CombatState::PLAYER_TURN || end_turn_requested) return PlayBlocker::NOT_PLAYABLE;
     if (index < 0 || static_cast<size_t>(index) >= hand.size()) return PlayBlocker::NOT_PLAYABLE;
 
     const DeckCard& card = hand[index];
@@ -1084,62 +1132,269 @@ PlayBlocker CombatEngine::play_blocker(int index) const {
     if (!play_condition_met(CardDef::get(card.id).condition)) return PlayBlocker::CONDITION;
 
     // An X card can be played for X = 0, in energy as in Stars.
-    uint8_t cost = CardDef::get_cost(card.id, card.upgraded);
+    int cost = effective_cost(card);
     if (cost != COST_X && player.energy < cost) return PlayBlocker::ENERGY;
     uint8_t star_cost = CardDef::get_star_cost(card.id, card.upgraded);
     if (star_cost != COST_X && player.sovereign_stars < star_cost) return PlayBlocker::STARS;
     return PlayBlocker::NONE;
 }
 
+bool CombatEngine::costs_nothing(const DeckCard& card) const {
+    if (card.free_this_turn) return true;
+    CardType type = CardDef::get(card.id).type;
+    if (type == CardType::SKILL && has_power(PowerId::CORRUPTION)) return true;
+    if (type == CardType::ATTACK && has_power(PowerId::FREE_ATTACK)) return true;
+    if (type == CardType::SKILL && has_power(PowerId::FREE_SKILL)) return true;
+    if (type == CardType::POWER && has_power(PowerId::FREE_POWER)) return true;
+    if (CardDef::has_keyword(card, KEYWORD_ETHEREAL) && has_power(PowerId::FREE_ETHEREAL)) return true;
+    return power_counter(PowerId::VOID_FORM) < power_amount(PowerId::VOID_FORM);
+}
+
+int CombatEngine::effective_cost(const DeckCard& card) const {
+    uint8_t printed = CardDef::get_cost(card.id, card.upgraded);
+    if (printed == COST_X) return COST_X;
+    if (costs_nothing(card)) return 0;
+
+    int cost = printed + card.cost_delta;
+    switch (card.id) {
+        case CardId::MIDNIGHT:
+            cost -= static_cast<int>(exhaust_pile.size());
+            break;
+        case CardId::STOMP:
+            cost -= counters.attacks_played;
+            break;
+        case CardId::PINPOINT:
+            cost -= counters.skills_played;
+            break;
+        case CardId::BANSHEES_CRY:
+            cost -= 2 * counters.combat_ethereal_played;
+            break;
+        default:
+            break;
+    }
+    cost += power_amount(PowerId::SURCHARGE);
+    return std::clamp(cost, 0, 99);
+}
+
+int CombatEngine::consume_play_modifiers(const DeckCard& card) {
+    CardType type = CardDef::get(card.id).type;
+    auto use_one = [this](PowerId id) {
+        for (size_t i = 0; i < powers.size(); ++i) {
+            if (powers[i].id == id) {
+                if (--powers[i].amount <= 0) powers.erase(i);
+                return true;
+            }
+        }
+        return false;
+    };
+
+    // "The next ... costs 0": used by the card whether it needed it or not.
+    if (type == CardType::ATTACK) use_one(PowerId::FREE_ATTACK);
+    if (type == CardType::SKILL) use_one(PowerId::FREE_SKILL);
+    if (type == CardType::POWER) use_one(PowerId::FREE_POWER);
+    if (CardDef::has_keyword(card, KEYWORD_ETHEREAL)) use_one(PowerId::FREE_ETHEREAL);
+
+    int extra = 0;
+    if (type == CardType::ATTACK && use_one(PowerId::REPLAY_ATTACK)) ++extra;
+    if (type == CardType::SKILL && use_one(PowerId::REPLAY_SKILL)) ++extra;
+    if (type == CardType::POWER && use_one(PowerId::REPLAY_POWER)) ++extra;
+    ActivePower* echo = find_power(PowerId::ECHO_FORM);
+    if (echo && echo->counter < echo->amount) {
+        ++echo->counter;
+        ++extra;
+    }
+    return extra;
+}
+
 bool CombatEngine::play_card(int index, int target_index) {
     if (!can_play_card(index)) return false;
 
-    fatal_kills = 0;
     DeckCard played_card = hand[index];
-    CardId card_id = played_card.id;
-    bool upgraded = played_card.upgraded;
-    uint8_t cost = CardDef::get_cost(card_id, upgraded);
-    uint8_t base_value = CardDef::get_value(card_id, upgraded);
-    uint8_t secondary_value = CardDef::get_secondary(card_id, upgraded);
+    int cost = effective_cost(played_card);
 
-    // Pay energy. An X card spends everything left: `x_value` is what it spent.
+    // Pay energy. An X card spends everything left: `x_value` is what it spent, or what is there when it is free.
     int x_value = 0;
     if (cost == COST_X) {
         x_value = std::max<int>(player.energy, 0);
-        cost = static_cast<uint8_t>(x_value);
+        cost = costs_nothing(played_card) ? 0 : x_value;
     }
-    player.energy -= cost;
+    player.energy = static_cast<int8_t>(player.energy - cost);
     // Stars are paid the same way; an X card in Stars spends them all.
-    uint8_t star_cost = CardDef::get_star_cost(card_id, upgraded);
+    uint8_t star_cost = CardDef::get_star_cost(played_card.id, played_card.upgraded);
     if (star_cost == COST_X) {
         x_value = player.sovereign_stars;
         star_cost = player.sovereign_stars;
     }
     spend_stars(star_cost);
-    // Where the card goes once played, when it is neither exhausted nor returning next turn.
-    enum class AfterPlay : uint8_t { DISCARD, HAND, DRAW_TOP };
-    AfterPlay after_play = AfterPlay::DISCARD;
-    // The counters are updated once the effect is resolved: inside the switch they still describe what
-    // happened before this card ("already played this turn", "spent on other cards").
 
-    // Remove from hand
     hand.erase(index);
+    // Void Form counts the cards played from the hand, not their replays.
+    if (ActivePower* void_form = find_power(PowerId::VOID_FORM)) void_form->counter = bump(void_form->counter);
 
-    // Powers react before the card resolves, so a power gained from this card does not hear it.
-    EventInfo played;
-    played.card = played_card;
-    played.cost = cost;
-    emit(CombatEvent::CARD_PLAYED, played);
+    AfterPlay after_play = AfterPlay::DISCARD;
+    run_card(played_card, target_index, false, x_value, static_cast<uint8_t>(cost), after_play);
+    place_played_card(played_card, after_play);
+    finish_play();
+    return true;
+}
 
-    // Resolve target: a reaction may have killed the one that was aimed at
-    int target_idx = target_index;
-    if (target_idx < 0 || target_idx >= static_cast<int>(enemies.size()) || !enemies[target_idx].is_alive()) {
-        target_idx = selected_target_index;
+void CombatEngine::autoplay(DeckCard card, int target_index, AfterPlay destination) {
+    // Cards that play cards that play cards: the chain is cut before it gets out of hand.
+    if (autoplay_depth_ >= 4 || state != CombatState::PLAYER_TURN) {
+        if (destination != AfterPlay::NOWHERE) discard_pile.push_back(card);
+        return;
+    }
+    ++autoplay_depth_;
+    AfterPlay after_play = destination;
+    // An X card played for free takes the energy that is there without spending it.
+    int x_value = CardDef::is_x_cost(card.id, card.upgraded) ? std::max<int>(player.energy, 0) : 0;
+    if (CardDef::get_star_cost(card.id, card.upgraded) == COST_X) x_value = player.sovereign_stars;
+    run_card(card, target_index, target_index < 0, x_value, 0, after_play);
+    // The destination asked by whoever plays the card wins over the card's own (Havoc exhausts).
+    if (destination != AfterPlay::DISCARD) after_play = destination;
+    place_played_card(card, after_play);
+    --autoplay_depth_;
+}
+
+void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target, int x_value, uint8_t energy_paid,
+                            AfterPlay& after_play) {
+    const CardType played_type = CardDef::get(card.id).type;
+    const int plays = 1 + consume_play_modifiers(card);
+
+    for (int play = 0; play < plays; ++play) {
+        fatal_kills = 0;
+        const uint8_t paid = play == 0 ? energy_paid : 0;
+
+        // Powers react before the card resolves, so a power gained from this card does not hear it.
+        EventInfo played;
+        played.card = card;
+        played.cost = paid;
+        emit(CombatEvent::CARD_PLAYED, played);
+
+        // Resolve target: a reaction may have killed the one that was aimed at
+        int target_idx = random_target ? random_alive_enemy_index() : target_index;
         if (target_idx < 0 || target_idx >= static_cast<int>(enemies.size()) || !enemies[target_idx].is_alive()) {
-            target_idx = get_first_alive_enemy_index();
+            target_idx = selected_target_index;
+            if (target_idx < 0 || target_idx >= static_cast<int>(enemies.size()) || !enemies[target_idx].is_alive()) {
+                target_idx = get_first_alive_enemy_index();
+            }
+        }
+
+        // The counters are updated once the effect is resolved: inside the effect they still describe what
+        // happened before this card ("already played this turn", "spent on other cards").
+        resolve_effect(card, target_idx, x_value, after_play);
+
+        // Keep primary enemy in sync
+        if (!enemies.empty()) {
+            enemy = enemies[0];
+        }
+
+        // Tallies of the card just played
+        if (played_type == CardType::ATTACK) {
+            counters.attacks_played = bump(counters.attacks_played);
+        } else if (played_type == CardType::SKILL) {
+            counters.skills_played = bump(counters.skills_played);
+        } else {
+            counters.powers_played = bump(counters.powers_played);
+        }
+        counters.energy_spent = bump(counters.energy_spent, paid);
+        counters.combat_cards_played = bump(counters.combat_cards_played);
+        if (CardDef::has_keyword(card, KEYWORD_ETHEREAL)) {
+            counters.combat_ethereal_played = bump(counters.combat_ethereal_played);
+        }
+        if (played_type == CardType::SKILL && counters.skills_played % CardDef::get_secondary(CardId::MAKE_IT_SO, false) == 0) {
+            recall_to_hand(CardId::MAKE_IT_SO);
+        }
+        if (!player.is_alive() || !has_alive_enemies()) break;
+    }
+
+    if (played_type == CardType::POWER) {
+        powers_in_play.push_back(card);
+    } else if (played_type == CardType::ATTACK && CardDef::get_cost(card.id, card.upgraded) == 0 && after_play == AfterPlay::DISCARD) {
+        ActivePower* feral = find_power(PowerId::FERAL);
+        if (feral && feral->counter < feral->amount) {
+            ++feral->counter;
+            after_play = AfterPlay::HAND;
         }
     }
+}
+
+void CombatEngine::place_played_card(const DeckCard& card, AfterPlay after_play) {
+    const CardType played_type = CardDef::get(card.id).type;
+    // Powers stay in play for the rest of the combat: they never return to the piles.
+    if (played_type == CardType::POWER || after_play == AfterPlay::NOWHERE) return;
+
+    // Where it goes is decided by the card as it was played; Razor Tooth upgrades the copy that comes back.
+    DeckCard kept_card = card;
+    kept_card.free_this_turn = false;
+    if (has_power(PowerId::RAZOR_TOOTH)) kept_card.upgraded = true;
+    const bool corrupted = played_type == CardType::SKILL && has_power(PowerId::CORRUPTION);
+    if (CardDef::has_keyword(card, KEYWORD_EXHAUST) || after_play == AfterPlay::EXHAUST || corrupted) {
+        exhaust_card(kept_card);
+    } else if (CardDef::has_keyword(card, KEYWORD_RETURN)) {
+        if (!returning_cards.push_back(kept_card)) discard_pile.push_back(kept_card);
+    } else if (after_play == AfterPlay::HAND && hand.push_back(kept_card)) {
+        // back in hand
+    } else if (after_play == AfterPlay::DRAW_TOP) {
+        draw_pile.push_back(kept_card);
+    } else {
+        discard_pile.push_back(kept_card);
+    }
+}
+
+void CombatEngine::finish_play() {
+    // Deaths not caused by a hit (orbs, HP loss) are noticed here.
+    settle_deaths();
+    if (hand.empty() && has_power(PowerId::UNCEASING_TOP) && player.is_alive()) {
+        draw_card();
+    }
+    if (!enemies.empty()) {
+        enemy = enemies[0];
+    }
+
+    // A card that costs HP can kill its player.
+    if (!player.is_alive()) {
+        state = CombatState::DEFEAT;
+        set_log("You were defeated!");
+        return;
+    }
+
+    // Check victory
+    if (!has_alive_enemies()) {
+        state = CombatState::VICTORY;
+        set_log("Victory!");
+    } else {
+        selected_target_index = get_first_alive_enemy_index();
+    }
+}
+
+void CombatEngine::boost_copies(CardId id, int amount) {
+    auto boost = [id, amount](DeckCard& card) {
+        if (card.id == id) card.bonus = bump(card.bonus, amount);
+    };
+    for (DeckCard& card : hand) boost(card);
+    for (DeckCard& card : draw_pile) boost(card);
+    for (DeckCard& card : discard_pile) boost(card);
+    for (DeckCard& card : exhaust_pile) boost(card);
+}
+
+void CombatEngine::change_cost_of_copies(CardId id, int delta) {
+    auto change = [id, delta](DeckCard& card) {
+        if (card.id == id) card.cost_delta = static_cast<int8_t>(std::clamp(card.cost_delta + delta, -100, 100));
+    };
+    for (DeckCard& card : hand) change(card);
+    for (DeckCard& card : draw_pile) change(card);
+    for (DeckCard& card : discard_pile) change(card);
+}
+
+void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_value, AfterPlay& after_play) {
+    const CardId card_id = played_card.id;
+    const bool upgraded = played_card.upgraded;
+    const uint8_t base_value = CardDef::get_value(card_id, upgraded);
+    const uint8_t secondary_value = CardDef::get_secondary(card_id, upgraded);
     Enemy& current_target = (target_idx >= 0 && target_idx < static_cast<int>(enemies.size())) ? enemies[target_idx] : enemy;
+    (void)x_value;
+    (void)after_play;
 
     // Apply effects
     switch (card_id) {
@@ -2820,89 +3075,281 @@ bool CombatEngine::play_card(int index, int target_index) {
             set_log(upgraded ? "Played Synchronize+!"sv : "Played Synchronize!"sv);
             break;
         }
+        case CardId::HOWL_FROM_BEYOND: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    hit(enemies[i], base_value);
+                }
+            }
+            set_log(upgraded ? "Played Howl from Beyond+!"sv : "Played Howl from Beyond!"sv);
+            break;
+        }
+        case CardId::HELLRAISER: {
+            add_power(PowerId::HELLRAISER);
+            set_log(upgraded ? "Played Hellraiser+!"sv : "Played Hellraiser!"sv);
+            break;
+        }
+        case CardId::STAMPEDE: {
+            add_power(PowerId::STAMPEDE);
+            set_log(upgraded ? "Played Stampede+!"sv : "Played Stampede!"sv);
+            break;
+        }
+        case CardId::CASCADE: {
+            for (int round = x_value + secondary_value; round > 0; --round) {
+                if (draw_pile.empty()) shuffle_discard_into_draw();
+                if (draw_pile.empty()) break;
+                DeckCard top = draw_pile.back();
+                draw_pile.pop_back();
+                autoplay(top, -1, AfterPlay::DISCARD);
+            }
+            set_log(upgraded ? "Played Cascade+!"sv : "Played Cascade!"sv);
+            break;
+        }
+        case CardId::ONE_TWO_PUNCH: {
+            add_power(PowerId::REPLAY_ATTACK, secondary_value, true);
+            set_log(upgraded ? "Played One-Two Punch+!"sv : "Played One-Two Punch!"sv);
+            break;
+        }
+        case CardId::TEAR_ASUNDER: {
+            for (int round = 1 + counters.combat_hp_losses; round > 0; --round) {
+                hit(current_target, base_value);
+            }
+            set_log(upgraded ? "Played Tear Asunder+!"sv : "Played Tear Asunder!"sv);
+            break;
+        }
+        case CardId::HAVOC: {
+            for (int round = 1; round > 0; --round) {
+                if (draw_pile.empty()) shuffle_discard_into_draw();
+                if (draw_pile.empty()) break;
+                DeckCard top = draw_pile.back();
+                draw_pile.pop_back();
+                autoplay(top, -1, AfterPlay::EXHAUST);
+            }
+            set_log(upgraded ? "Played Havoc+!"sv : "Played Havoc!"sv);
+            break;
+        }
+        case CardId::CORRUPTION: {
+            add_power(PowerId::CORRUPTION);
+            set_log(upgraded ? "Played Corruption+!"sv : "Played Corruption!"sv);
+            break;
+        }
+        case CardId::UNRELENTING: {
+            hit(current_target, base_value);
+            add_power(PowerId::FREE_ATTACK);
+            set_log(upgraded ? "Played Unrelenting+!"sv : "Played Unrelenting!"sv);
+            break;
+        }
+        case CardId::MIDNIGHT: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Midnight+!"sv : "Played Midnight!"sv);
+            break;
+        }
+        case CardId::STOMP: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    hit(enemies[i], base_value);
+                }
+            }
+            set_log(upgraded ? "Played Stomp+!"sv : "Played Stomp!"sv);
+            break;
+        }
+        case CardId::RAMPAGE: {
+            hit(current_target, static_cast<int16_t>(base_value + played_card.bonus));
+            played_card.bonus = bump(played_card.bonus, secondary_value);
+            set_log(upgraded ? "Played Rampage+!"sv : "Played Rampage!"sv);
+            break;
+        }
+        case CardId::BURST: {
+            add_power(PowerId::REPLAY_SKILL, secondary_value, true);
+            set_log(upgraded ? "Played Burst+!"sv : "Played Burst!"sv);
+            break;
+        }
+        case CardId::BULLET_TIME: {
+            no_draw_this_turn = true;
+            for (DeckCard& held : hand) held.free_this_turn = true;
+            set_log(upgraded ? "Played Bullet Time+!"sv : "Played Bullet Time!"sv);
+            break;
+        }
+        case CardId::PINPOINT: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Pinpoint+!"sv : "Played Pinpoint!"sv);
+            break;
+        }
+        case CardId::POUNCE: {
+            hit(current_target, base_value);
+            add_power(PowerId::FREE_SKILL);
+            set_log(upgraded ? "Played Pounce+!"sv : "Played Pounce!"sv);
+            break;
+        }
+        case CardId::ECHO_FORM: {
+            add_power(PowerId::ECHO_FORM, base_value);
+            // This turn already had its first card: the echo starts on the next one.
+            if (ActivePower* echo = find_power(PowerId::ECHO_FORM)) echo->counter = static_cast<uint8_t>(echo->amount);
+            set_log(upgraded ? "Played Echo Form+!"sv : "Played Echo Form!"sv);
+            break;
+        }
+        case CardId::SIGNAL_BOOST: {
+            add_power(PowerId::REPLAY_POWER);
+            set_log(upgraded ? "Played Signal Boost+!"sv : "Played Signal Boost!"sv);
+            break;
+        }
+        case CardId::UPROAR: {
+            for (int round = secondary_value; round > 0; --round) {
+                hit(current_target, base_value);
+            }
+            FixedVector<uint8_t, 50> attacks;
+            for (size_t i = 0; i < draw_pile.size(); ++i) {
+                if (CardDef::get(draw_pile[i].id).type == CardType::ATTACK) attacks.push_back(static_cast<uint8_t>(i));
+            }
+            if (!attacks.empty()) {
+                size_t pick = attacks[next_random() % attacks.size()];
+                DeckCard drawn = draw_pile[pick];
+                draw_pile.erase(pick);
+                autoplay(drawn);
+            }
+            set_log(upgraded ? "Played Uproar+!"sv : "Played Uproar!"sv);
+            break;
+        }
+        case CardId::ADAPTIVE_STRIKE: {
+            hit(current_target, base_value);
+            DeckCard copy(card_id, upgraded);
+            copy.cost_delta = static_cast<int8_t>(-CardDef::get_cost(card_id, upgraded));
+            create_card_in_discard(copy);
+            set_log(upgraded ? "Played Adaptive Strike+!"sv : "Played Adaptive Strike!"sv);
+            break;
+        }
+        case CardId::SYNTHESIS: {
+            hit(current_target, base_value);
+            add_power(PowerId::FREE_POWER);
+            set_log(upgraded ? "Played Synthesis+!"sv : "Played Synthesis!"sv);
+            break;
+        }
+        case CardId::GENETIC_ALGORITHM: {
+            gain_block(static_cast<int16_t>(base_value + played_card.bonus));
+            played_card.bonus = bump(played_card.bonus, secondary_value);
+            if (played_card.deck_index != NOT_IN_DECK) {
+                permanent_gains.push_back(PermanentGain{ played_card.deck_index, secondary_value });
+            }
+            set_log(upgraded ? "Played Genetic Algorithm+!"sv : "Played Genetic Algorithm!"sv);
+            break;
+        }
+        case CardId::MOMENTUM_STRIKE: {
+            hit(current_target, base_value);
+            played_card.cost_delta = static_cast<int8_t>(-CardDef::get_cost(card_id, upgraded));
+            set_log(upgraded ? "Played Momentum Strike+!"sv : "Played Momentum Strike!"sv);
+            break;
+        }
+        case CardId::CLAW: {
+            hit(current_target, static_cast<int16_t>(base_value + played_card.bonus));
+            played_card.bonus = bump(played_card.bonus, secondary_value);
+            boost_copies(CardId::CLAW, secondary_value);
+            set_log(upgraded ? "Played Claw+!"sv : "Played Claw!"sv);
+            break;
+        }
+        case CardId::MODDED: {
+            change_orb_slots(base_value);
+            draw_cards(secondary_value);
+            played_card.cost_delta = static_cast<int8_t>(played_card.cost_delta + 1);
+            set_log(upgraded ? "Played Modded+!"sv : "Played Modded!"sv);
+            break;
+        }
+        case CardId::BOMBARDMENT: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Bombardment+!"sv : "Played Bombardment!"sv);
+            break;
+        }
+        case CardId::I_AM_INVINCIBLE: {
+            gain_block(base_value);
+            set_log(upgraded ? "Played I Am Invincible+!"sv : "Played I Am Invincible!"sv);
+            break;
+        }
+        case CardId::VOID_FORM: {
+            add_power(PowerId::VOID_FORM, base_value);
+            end_turn_requested = true;
+            set_log(upgraded ? "Played Void Form+!"sv : "Played Void Form!"sv);
+            break;
+        }
+        case CardId::KINGLY_KICK: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Kingly Kick+!"sv : "Played Kingly Kick!"sv);
+            break;
+        }
+        case CardId::KINGLY_PUNCH: {
+            hit(current_target, static_cast<int16_t>(base_value + played_card.bonus));
+            set_log(upgraded ? "Played Kingly Punch+!"sv : "Played Kingly Punch!"sv);
+            break;
+        }
+        case CardId::EIDOLON: {
+            for (size_t i = 0, count = exhaust_pile.size(); i < count && has_alive_enemies(); ++i) {
+                if (CardDef::has_keyword(exhaust_pile[i], KEYWORD_ETHEREAL)) autoplay(exhaust_pile[i], -1, AfterPlay::NOWHERE);
+            }
+            set_log(upgraded ? "Played Eidolon+!"sv : "Played Eidolon!"sv);
+            break;
+        }
+        case CardId::BANSHEES_CRY: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    hit(enemies[i], base_value);
+                }
+            }
+            set_log(upgraded ? "Played Banshee's Cry+!"sv : "Played Banshee's Cry!"sv);
+            break;
+        }
+        case CardId::VEILPIERCER: {
+            hit(current_target, base_value);
+            add_power(PowerId::FREE_ETHEREAL);
+            set_log(upgraded ? "Played Veilpiercer+!"sv : "Played Veilpiercer!"sv);
+            break;
+        }
+        case CardId::BORROWED_TIME: {
+            player.energy = static_cast<int8_t>(player.energy + base_value);
+            add_power(PowerId::SURCHARGE, secondary_value, true);
+            set_log(upgraded ? "Played Borrowed Time+!"sv : "Played Borrowed Time!"sv);
+            break;
+        }
+        case CardId::THE_SCYTHE: {
+            hit(current_target, static_cast<int16_t>(base_value + played_card.bonus));
+            played_card.bonus = bump(played_card.bonus, secondary_value);
+            if (played_card.deck_index != NOT_IN_DECK) {
+                permanent_gains.push_back(PermanentGain{ played_card.deck_index, secondary_value });
+            }
+            set_log(upgraded ? "Played The Scythe+!"sv : "Played The Scythe!"sv);
+            break;
+        }
+        case CardId::MELANCHOLY: {
+            gain_block(base_value);
+            set_log(upgraded ? "Played Melancholy+!"sv : "Played Melancholy!"sv);
+            break;
+        }
+        case CardId::HANG: {
+            hit(current_target, static_cast<int16_t>(base_value << std::min<int>(current_target.hang_marks, 5)));
+            current_target.hang_marks = bump(current_target.hang_marks);
+            set_log(upgraded ? "Played Hang+!"sv : "Played Hang!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;
     }
-
-    // Keep primary enemy in sync
-    if (!enemies.empty()) {
-        enemy = enemies[0];
-    }
-
-    // Tallies of the card just played
-    CardType played_type = CardDef::get(card_id).type;
-    if (played_type == CardType::ATTACK) {
-        counters.attacks_played = bump(counters.attacks_played);
-    } else if (played_type == CardType::SKILL) {
-        counters.skills_played = bump(counters.skills_played);
-    } else {
-        counters.powers_played = bump(counters.powers_played);
-    }
-    counters.energy_spent = bump(counters.energy_spent, cost);
-    counters.combat_cards_played = bump(counters.combat_cards_played);
-    if (CardDef::has_keyword(played_card, KEYWORD_ETHEREAL)) {
-        counters.combat_ethereal_played = bump(counters.combat_ethereal_played);
-    }
-    if (played_type == CardType::SKILL && counters.skills_played % CardDef::get_secondary(CardId::MAKE_IT_SO, false) == 0) {
-        recall_to_hand(CardId::MAKE_IT_SO);
-    }
-    if (played_type == CardType::POWER) {
-        powers_in_play.push_back(played_card);
-    } else if (played_type == CardType::ATTACK && CardDef::get_cost(card_id, upgraded) == 0) {
-        ActivePower* feral = find_power(PowerId::FERAL);
-        if (feral && feral->counter < feral->amount) {
-            ++feral->counter;
-            after_play = AfterPlay::HAND;
-        }
-    }
-
-    // Powers stay in play for the rest of the combat: they never return to the piles.
-    if (played_type != CardType::POWER) {
-        // Where it goes is decided by the card as it was played; Razor Tooth upgrades the copy that comes back.
-        DeckCard kept_card = played_card;
-        if (has_power(PowerId::RAZOR_TOOTH)) kept_card.upgraded = true;
-        if (CardDef::has_keyword(played_card, KEYWORD_EXHAUST)) {
-            exhaust_card(kept_card);
-        } else if (CardDef::has_keyword(played_card, KEYWORD_RETURN)) {
-            if (!returning_cards.push_back(kept_card)) discard_pile.push_back(kept_card);
-        } else if (after_play == AfterPlay::HAND && hand.push_back(kept_card)) {
-            // back in hand
-        } else if (after_play == AfterPlay::DRAW_TOP) {
-            draw_pile.push_back(kept_card);
-        } else {
-            discard_pile.push_back(kept_card);
-        }
-    }
-
-    // Deaths not caused by a hit (orbs, HP loss) are noticed here.
-    settle_deaths();
-    if (hand.empty() && has_power(PowerId::UNCEASING_TOP) && player.is_alive()) {
-        draw_card();
-    }
-
-    // A card that costs HP can kill its player.
-    if (!player.is_alive()) {
-        state = CombatState::DEFEAT;
-        set_log("You were defeated!");
-        return true;
-    }
-
-    // Check victory
-    if (!has_alive_enemies()) {
-        state = CombatState::VICTORY;
-        set_log("Victory!");
-    } else {
-        selected_target_index = get_first_alive_enemy_index();
-    }
-
-    return true;
 }
 
 void CombatEngine::end_player_turn() {
     if (state != CombatState::PLAYER_TURN) return;
+    end_turn_requested = false;
 
     emit(CombatEvent::TURN_END);
+
+    // Cards that play themselves at the end of the turn: Howl from Beyond from the exhaust pile (it stays
+    // there), I Am Invincible from the top of the draw pile.
+    for (size_t i = 0; i < exhaust_pile.size() && has_alive_enemies(); ++i) {
+        if (exhaust_pile[i].id == CardId::HOWL_FROM_BEYOND) autoplay(exhaust_pile[i], -1, AfterPlay::NOWHERE);
+    }
+    if (!draw_pile.empty() && draw_pile.back().id == CardId::I_AM_INVINCIBLE) {
+        DeckCard top = draw_pile.back();
+        draw_pile.pop_back();
+        autoplay(top);
+    }
+    for (DeckCard& card : hand) card.free_this_turn = false;
 
     // Ethereal cards left in hand are exhausted first: what their exhaustion draws is discarded with the rest.
     for (size_t i = hand.size(); i-- > 0;) {

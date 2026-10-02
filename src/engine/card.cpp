@@ -294,7 +294,49 @@ static const CardDef CARDS[] = {
     // Defect: orb slots and Synchronize
     { CardId::CAPACITOR, "Capacitor", 1, CardType::POWER, TargetType::SELF, 2, 0, "Gain 2 orb slots.", "Capacitor+", 1, 3, 0, "Gain 3 orb slots." },
     { CardId::BULK_UP, "Bulk Up", 2, CardType::POWER, TargetType::SELF, 2, 1, "Lose 1 orb slot. Gain 2 Str and 2 Dex.", "Bulk Up+", 2, 3, 1, "Lose 1 orb slot. Gain 3 Str and 3 Dex." },
-    { CardId::SYNCHRONIZE, "Synchronize", 1, CardType::SKILL, TargetType::SELF, 1, 0, "Gain 1 Focus this turn per orb type you hold.", "Synchronize+", 1, 2, 0, "Gain 2 Focus this turn per orb type you hold." }
+    { CardId::SYNCHRONIZE, "Synchronize", 1, CardType::SKILL, TargetType::SELF, 1, 0, "Gain 1 Focus this turn per orb type you hold.", "Synchronize+", 1, 2, 0, "Gain 2 Focus this turn per orb type you hold." },
+    // Ironclad: replays, cost changes and evolving cards
+    { CardId::HOWL_FROM_BEYOND, "Howl from Beyond", 3, CardType::ATTACK, TargetType::ALL_ENEMIES, 18, 0, "Deal 18 dmg to all. Plays itself at end of turn while exhausted.", "Howl from Beyond+", 3, 24, 0, "Deal 24 dmg to all. Plays itself at end of turn while exhausted." },
+    { CardId::HELLRAISER, "Hellraiser", 2, CardType::POWER, TargetType::SELF, 0, 0, "A Strike card you draw is played at once on a random enemy.", "Hellraiser+", 1, 0, 0, "A Strike card you draw is played at once on a random enemy." },
+    { CardId::STAMPEDE, "Stampede", 2, CardType::POWER, TargetType::SELF, 0, 0, "End of turn: a random Attack of your hand is played.", "Stampede+", 1, 0, 0, "End of turn: a random Attack of your hand is played." },
+    { CardId::CASCADE, "Cascade", COST_X, CardType::SKILL, TargetType::SELF, 0, 0, "Play the top X cards of your draw pile.", "Cascade+", COST_X, 0, 1, "Play the top X+1 cards of your draw pile." },
+    { CardId::ONE_TWO_PUNCH, "One-Two Punch", 1, CardType::SKILL, TargetType::SELF, 0, 1, "Your next Attack this turn is played twice.", "One-Two Punch+", 1, 0, 2, "Your next 2 Attacks this turn are played twice." },
+    { CardId::TEAR_ASUNDER, "Tear Asunder", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 0, "Deal 5 dmg, once more per HP loss this combat.", "Tear Asunder+", 2, 7, 0, "Deal 7 dmg, once more per HP loss this combat." },
+    { CardId::HAVOC, "Havoc", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Play the top card of your draw pile and exhaust it.", "Havoc+", 0, 0, 0, "Play the top card of your draw pile and exhaust it." },
+    { CardId::CORRUPTION, "Corruption", 3, CardType::POWER, TargetType::SELF, 0, 0, "Skills cost 0 and are exhausted when played.", "Corruption+", 2, 0, 0, "Skills cost 0 and are exhausted when played." },
+    { CardId::UNRELENTING, "Unrelenting", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 14, 0, "Deal 14 dmg. Your next Attack costs 0.", "Unrelenting+", 2, 20, 0, "Deal 20 dmg. Your next Attack costs 0." },
+    { CardId::MIDNIGHT, "Midnight", 12, CardType::ATTACK, TargetType::SINGLE_ENEMY, 60, 0, "Deal 60 dmg. Costs 1 less per card exhausted this combat.", "Midnight+", 12, 72, 0, "Deal 72 dmg. Costs 1 less per card exhausted this combat." },
+    { CardId::STOMP, "Stomp", 3, CardType::ATTACK, TargetType::ALL_ENEMIES, 12, 0, "Deal 12 dmg to all. Costs 1 less per Attack played this turn.", "Stomp+", 3, 15, 0, "Deal 15 dmg to all. Costs 1 less per Attack played this turn." },
+    { CardId::RAMPAGE, "Rampage", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 5, "Deal 10 dmg. This card gains 5 dmg for the combat.", "Rampage+", 1, 10, 10, "Deal 10 dmg. This card gains 10 dmg for the combat." },
+    // Silent: replays, cost changes and evolving cards
+    { CardId::BURST, "Burst", 1, CardType::SKILL, TargetType::SELF, 0, 1, "Your next Skill this turn is played twice.", "Burst+", 1, 0, 2, "Your next 2 Skills this turn are played twice." },
+    { CardId::BULLET_TIME, "Bullet Time", 3, CardType::SKILL, TargetType::SELF, 0, 0, "No more draws this turn. Your hand costs 0 this turn.", "Bullet Time+", 2, 0, 0, "No more draws this turn. Your hand costs 0 this turn." },
+    { CardId::PINPOINT, "Pinpoint", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 15, 0, "Deal 15 dmg. Costs 1 less per Skill played this turn.", "Pinpoint+", 3, 19, 0, "Deal 19 dmg. Costs 1 less per Skill played this turn." },
+    { CardId::POUNCE, "Pounce", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 14, 0, "Deal 14 dmg. Your next Skill costs 0.", "Pounce+", 2, 20, 0, "Deal 20 dmg. Your next Skill costs 0." },
+    // Defect: replays, cost changes and evolving cards
+    { CardId::ECHO_FORM, "Echo Form", 3, CardType::POWER, TargetType::SELF, 1, 0, "The first card you play each turn is played twice.", "Echo Form+", 3, 1, 0, "The first card you play each turn is played twice.", KEYWORD_ETHEREAL, 0 },
+    { CardId::SIGNAL_BOOST, "Signal Boost", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Your next Power is played twice. Exhaust.", "Signal Boost+", 0, 0, 0, "Your next Power is played twice. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::UPROAR, "Uproar", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 2, "Deal 6 dmg twice. Play a random Attack from your draw pile.", "Uproar+", 2, 8, 2, "Deal 8 dmg twice. Play a random Attack from your draw pile." },
+    { CardId::ADAPTIVE_STRIKE, "Adaptive Strike", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 18, 0, "Deal 18 dmg. Add a copy that costs 0 to your discard pile.", "Adaptive Strike+", 2, 23, 0, "Deal 23 dmg. Add a copy that costs 0 to your discard pile." },
+    { CardId::SYNTHESIS, "Synthesis", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 14, 0, "Deal 14 dmg. Your next Power costs 0.", "Synthesis+", 2, 20, 0, "Deal 20 dmg. Your next Power costs 0." },
+    { CardId::GENETIC_ALGORITHM, "Genetic Algorithm", 1, CardType::SKILL, TargetType::SELF, 1, 3, "Gain 1 block. This card gains 3 block for good. Exhaust.", "Genetic Algorithm+", 1, 1, 4, "Gain 1 block. This card gains 4 block for good. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::MOMENTUM_STRIKE, "Momentum Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 11, 0, "Deal 11 dmg. This card now costs 0.", "Momentum Strike+", 1, 15, 0, "Deal 15 dmg. This card now costs 0." },
+    { CardId::CLAW, "Claw", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 3, 2, "Deal 3 dmg. All Claws gain 2 dmg for the combat.", "Claw+", 0, 4, 3, "Deal 4 dmg. All Claws gain 3 dmg for the combat." },
+    { CardId::MODDED, "Modded", 0, CardType::SKILL, TargetType::SELF, 1, 1, "Gain 1 orb slot. Draw 1. This card costs 1 more.", "Modded+", 0, 1, 2, "Gain 1 orb slot. Draw 2. This card costs 1 more." },
+    // Regent: replays, cost changes and evolving cards
+    { CardId::BOMBARDMENT, "Bombardment", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 18, 0, "Deal 18 dmg. Plays itself each turn while exhausted. Exhaust.", "Bombardment+", 3, 24, 0, "Deal 24 dmg. Plays itself each turn while exhausted. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::I_AM_INVINCIBLE, "I Am Invincible", 1, CardType::SKILL, TargetType::SELF, 10, 0, "Gain 10 block. Plays itself at end of turn on top of the draw pile.", "I Am Invincible+", 1, 13, 0, "Gain 13 block. Plays itself at end of turn on top of the draw pile." },
+    { CardId::VOID_FORM, "Void Form", 3, CardType::POWER, TargetType::SELF, 2, 0, "Ethereal. End your turn. Your first 2 cards each turn cost 0.", "Void Form+", 3, 2, 0, "End your turn. Your first 2 cards each turn cost 0.", KEYWORD_ETHEREAL, 0 },
+    { CardId::KINGLY_KICK, "Kingly Kick", 4, CardType::ATTACK, TargetType::SINGLE_ENEMY, 27, 0, "Deal 27 dmg. Costs 1 less each time you draw it.", "Kingly Kick+", 4, 35, 0, "Deal 35 dmg. Costs 1 less each time you draw it." },
+    { CardId::KINGLY_PUNCH, "Kingly Punch", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 4, "Deal 8 dmg. Gains 4 dmg each time you draw it.", "Kingly Punch+", 1, 10, 6, "Deal 10 dmg. Gains 6 dmg each time you draw it." },
+    // Necrobinder: replays, cost changes and evolving cards
+    { CardId::EIDOLON, "Eidolon", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Play all the Ethereal cards of your exhaust pile. Exhaust.", "Eidolon+", 1, 0, 0, "Play all the Ethereal cards of your exhaust pile. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::BANSHEES_CRY, "Banshee's Cry", 9, CardType::ATTACK, TargetType::ALL_ENEMIES, 33, 0, "Deal 33 dmg to all. Costs 2 less per Ethereal card played this combat.", "Banshee's Cry+", 7, 33, 0, "Deal 33 dmg to all. Costs 2 less per Ethereal card played this combat." },
+    { CardId::VEILPIERCER, "Veilpiercer", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 0, "Deal 10 dmg. Your next Ethereal card costs 0.", "Veilpiercer+", 1, 13, 0, "Deal 13 dmg. Your next Ethereal card costs 0." },
+    { CardId::BORROWED_TIME, "Borrowed Time", 1, CardType::SKILL, TargetType::SELF, 4, 1, "Gain 4 energy. Cards cost 1 more this turn.", "Borrowed Time+", 1, 6, 1, "Gain 6 energy. Cards cost 1 more this turn." },
+    { CardId::THE_SCYTHE, "The Scythe", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 13, 5, "Deal 13 dmg. This card gains 5 dmg for good. Exhaust.", "The Scythe+", 2, 13, 7, "Deal 13 dmg. This card gains 7 dmg for good. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::MELANCHOLY, "Melancholy", 3, CardType::SKILL, TargetType::SELF, 13, 0, "Gain 13 block. Costs 1 less each time someone dies.", "Melancholy+", 3, 17, 0, "Gain 17 block. Costs 1 less each time someone dies." },
+    { CardId::HANG, "Hang", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 0, "Deal 10 dmg. Doubles the Hang damage on this enemy.", "Hang+", 1, 13, 0, "Deal 13 dmg. Doubles the Hang damage on this enemy." }
 };
 
 const CardDef& CardDef::get(CardId id) {

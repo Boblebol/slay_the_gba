@@ -244,6 +244,7 @@ void SaveManager::autosave_run(const RunManager& run) {
     for (size_t i = 0; i < run.master_deck.size() && i < 50; ++i) {
         r.deck[i].card_id = static_cast<uint16_t>(run.master_deck[i].id);
         r.deck[i].upgraded = run.master_deck[i].upgraded ? 1 : 0;
+        r.deck[i].bonus = run.master_deck[i].bonus;
 
         // Auto-discover in compendium
         p.discover_card(r.deck[i].card_id);
@@ -297,7 +298,9 @@ bool SaveManager::restore_run(RunManager& run) {
     // Restore Deck
     run.master_deck.clear();
     for (uint8_t i = 0; i < r.deck_count && i < 50; ++i) {
-        run.master_deck.push_back(DeckCard(static_cast<CardId>(r.deck[i].card_id), r.deck[i].upgraded != 0));
+        DeckCard card(static_cast<CardId>(r.deck[i].card_id), r.deck[i].upgraded != 0);
+        card.bonus = r.deck[i].bonus;
+        run.master_deck.push_back(card);
     }
 
     // Restore Relics

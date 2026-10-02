@@ -17,7 +17,7 @@ constexpr size_t ANCIENT_BITSET_BYTES = 1;   // 8 / 8 = 1 byte
 struct DeckCardSave {
     uint16_t card_id = 0; // CardId
     uint8_t upgraded = 0;
-    uint8_t reserved = 0; // explicit padding: the whole payload is checksummed
+    uint8_t bonus = 0; // permanent bonus of the card (DeckCard::bonus); 0 in the saves written before it existed
 };
 
 struct InRunSaveData {

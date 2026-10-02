@@ -692,8 +692,40 @@ void CombatScene::_refresh_hud()
     }
     else if(interactive && ! _hand.empty())
     {
-        _hint_label.set(112, LINE1_Y, "START : fin du tour", Align::RIGHT, TextColor::GRAY);
-        _hint_label.set_visible(true);
+        // The mini card shows the printed cost: a cost changed by the combat is written here instead.
+        constexpr bn::string_view REMINDER = "START : fin du tour";
+        TextLine cost;
+        bool room = true;
+
+        if(_selected >= 0 && _selected < int(_combat.hand.size()))
+        {
+            const engine::DeckCard& card = _combat.hand[_selected];
+            int actual = _combat.effective_cost(card);
+
+            if(actual != engine::CardDef::get_cost(card.id, card.upgraded))
+            {
+                bn::ostringstream stream(cost);
+                stream << "Coût " << cost_label(actual) << " ●";
+            }
+            else
+            {
+                // The reminder gives way to a card name that would run into it.
+                TextLine name;
+                card_name(card, name);
+                room = text_width(name) + text_width(REMINDER) + 4 <= 224;
+            }
+        }
+
+        if(cost.empty())
+        {
+            _hint_label.set(112, LINE1_Y, REMINDER, Align::RIGHT, TextColor::GRAY);
+        }
+        else
+        {
+            _hint_label.set(112, LINE1_Y, cost, Align::RIGHT, TextColor::GREEN);
+        }
+
+        _hint_label.set_visible(room);
     }
     else
     {
@@ -1223,6 +1255,12 @@ void CombatScene::_update_card_flight()
             if(_target < 0 || ! _combat.enemies[_target].is_alive())
             {
                 _target = bn::max(0, _combat.get_first_alive_enemy_index());
+            }
+
+            // Void Form ends the turn it is played on.
+            if(_combat.end_turn_requested)
+            {
+                _start_enemy_turn();
             }
         }
     }
