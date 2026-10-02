@@ -140,7 +140,9 @@ void RunManager::enter_room(int node_index) {
             combat.discard_pile.clear();
             combat.exhaust_pile.clear();
             for (size_t i = 0; i < master_deck.size(); ++i) {
-                combat.draw_pile.push_back(master_deck[i]);
+                DeckCard card = master_deck[i];
+                card.deck_index = static_cast<uint8_t>(i);
+                combat.draw_pile.push_back(card);
             }
             combat.shuffle_draw_pile();
             combat.reset_combat_state();
@@ -291,7 +293,10 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                 CardId::DRUM_OF_BATTLE, CardId::BARRICADE, CardId::INFERNO,
                                                 CardId::CRIMSON_MANTLE, CardId::RUPTURE, CardId::AGGRESSION,
                                                 CardId::PYRE, CardId::DEMON_FORM, CardId::JUGGERNAUT, CardId::RAGE,
-                                                CardId::VICIOUS };
+                                                CardId::VICIOUS, CardId::HOWL_FROM_BEYOND, CardId::HELLRAISER,
+                                                CardId::STAMPEDE, CardId::CASCADE, CardId::ONE_TWO_PUNCH,
+                                                CardId::TEAR_ASUNDER, CardId::HAVOC, CardId::UNRELENTING,
+                                                CardId::MIDNIGHT, CardId::STOMP, CardId::RAMPAGE };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
@@ -306,7 +311,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::SNAKEBITE, CardId::ECHOING_SLASH, CardId::GRAND_FINALE,
                                               CardId::ACCELERANT, CardId::SPEEDSTER, CardId::ENVENOM,
                                               CardId::SERPENT_FORM, CardId::AFTERIMAGE, CardId::WELL_LAID_PLANS,
-                                              CardId::STRANGLE, CardId::CORROSIVE_WAVE, CardId::NOXIOUS_FUMES };
+                                              CardId::STRANGLE, CardId::CORROSIVE_WAVE, CardId::NOXIOUS_FUMES,
+                                              CardId::BURST, CardId::BULLET_TIME, CardId::PINPOINT, CardId::POUNCE };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
                                               CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
                                               CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,
@@ -323,7 +329,10 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::LOOP, CardId::CONSUMING_SHADOW, CardId::HAILSTORM,
                                               CardId::THUNDER, CardId::COOLANT, CardId::HOTFIX, CardId::DEFRAGMENT,
                                               CardId::FOCUSED_STRIKE, CardId::HYPERBEAM, CardId::CAPACITOR,
-                                              CardId::BULK_UP, CardId::SYNCHRONIZE };
+                                              CardId::BULK_UP, CardId::SYNCHRONIZE, CardId::ECHO_FORM,
+                                              CardId::SIGNAL_BOOST, CardId::UPROAR, CardId::ADAPTIVE_STRIKE,
+                                              CardId::SYNTHESIS, CardId::GENETIC_ALGORITHM, CardId::MOMENTUM_STRIKE,
+                                              CardId::CLAW, CardId::MODDED };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
                                               CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
@@ -338,7 +347,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::CHILD_OF_THE_STARS, CardId::GENESIS, CardId::BLACK_HOLE,
                                               CardId::MAKE_IT_SO, CardId::PALE_BLUE_DOT, CardId::ARSENAL,
                                               CardId::MONOLOGUE, CardId::ORBIT, CardId::PILLAR_OF_CREATION,
-                                              CardId::MONARCHS_GAZE };
+                                              CardId::MONARCHS_GAZE, CardId::BOMBARDMENT, CardId::I_AM_INVINCIBLE,
+                                              CardId::VOID_FORM, CardId::KINGLY_KICK, CardId::KINGLY_PUNCH };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
@@ -352,7 +362,10 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::END_OF_DAYS, CardId::BLIGHT_STRIKE, CardId::NO_ESCAPE,
                                                    CardId::SCOURGE, CardId::DEATHBRINGER, CardId::DEATHS_DOOR,
                                                    CardId::COUNTDOWN, CardId::REAPER_FORM, CardId::NEUROSURGE,
-                                                   CardId::TIMES_UP, CardId::OBLIVION, CardId::SHROUD };
+                                                   CardId::TIMES_UP, CardId::OBLIVION, CardId::SHROUD,
+                                                   CardId::EIDOLON, CardId::BANSHEES_CRY, CardId::VEILPIERCER,
+                                                   CardId::BORROWED_TIME, CardId::THE_SCYTHE, CardId::MELANCHOLY,
+                                                   CardId::HANG };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;
@@ -590,6 +603,14 @@ void RunManager::proceed_after_combat() {
             }
         }
     }
+    // Bonuses gained "permanently" during the fight go to the cards of the deck (Genetic Algorithm, The Scythe).
+    for (const PermanentGain& gain : combat.permanent_gains) {
+        if (gain.deck_index < master_deck.size()) {
+            DeckCard& card = master_deck[gain.deck_index];
+            card.bonus = static_cast<uint8_t>(std::min(255, card.bonus + gain.amount));
+        }
+    }
+    combat.permanent_gains.clear();
     hp = combat.player.hp;
     max_hp = combat.player.max_hp; // cards can raise it for the rest of the run (Feed)
     // Check Ironclad Burning blood passive

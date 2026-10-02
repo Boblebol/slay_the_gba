@@ -525,6 +525,80 @@ bn::string_view base_name(engine::CardId id)
         return "Prise de masse";
     case engine::CardId::SYNCHRONIZE:
         return "Synchronisation";
+    case engine::CardId::HOWL_FROM_BEYOND:
+        return "Rugissement de l'au-delà";
+    case engine::CardId::HELLRAISER:
+        return "Soulèvement infernal";
+    case engine::CardId::STAMPEDE:
+        return "Ruée";
+    case engine::CardId::CASCADE:
+        return "Cascade";
+    case engine::CardId::ONE_TWO_PUNCH:
+        return "Droite-gauche";
+    case engine::CardId::TEAR_ASUNDER:
+        return "En miettes";
+    case engine::CardId::HAVOC:
+        return "Ravage";
+    case engine::CardId::CORRUPTION:
+        return "Corruption";
+    case engine::CardId::UNRELENTING:
+        return "Acharnement";
+    case engine::CardId::MIDNIGHT:
+        return "Minuit";
+    case engine::CardId::STOMP:
+        return "Piétinement";
+    case engine::CardId::RAMPAGE:
+        return "Saccage";
+    case engine::CardId::BURST:
+        return "Déflagration";
+    case engine::CardId::BULLET_TIME:
+        return "Bullet Time";
+    case engine::CardId::PINPOINT:
+        return "Localisation";
+    case engine::CardId::POUNCE:
+        return "Surgissement";
+    case engine::CardId::ECHO_FORM:
+        return "Forme résonnante";
+    case engine::CardId::SIGNAL_BOOST:
+        return "Amplification du signal";
+    case engine::CardId::UPROAR:
+        return "Tumulte";
+    case engine::CardId::ADAPTIVE_STRIKE:
+        return "Frappe adaptative";
+    case engine::CardId::SYNTHESIS:
+        return "Synthèse";
+    case engine::CardId::GENETIC_ALGORITHM:
+        return "Algorithme génétique";
+    case engine::CardId::MOMENTUM_STRIKE:
+        return "Frappe dynamique";
+    case engine::CardId::CLAW:
+        return "Griffure";
+    case engine::CardId::MODDED:
+        return "Modificateurs";
+    case engine::CardId::BOMBARDMENT:
+        return "Bombardement";
+    case engine::CardId::I_AM_INVINCIBLE:
+        return "Je suis invincible";
+    case engine::CardId::VOID_FORM:
+        return "Forme du néant";
+    case engine::CardId::KINGLY_KICK:
+        return "Coup de pied royal";
+    case engine::CardId::KINGLY_PUNCH:
+        return "Coup de poing royal";
+    case engine::CardId::EIDOLON:
+        return "Eidolon";
+    case engine::CardId::BANSHEES_CRY:
+        return "Cri de la banshee";
+    case engine::CardId::VEILPIERCER:
+        return "Perce-voile";
+    case engine::CardId::BORROWED_TIME:
+        return "Sursis";
+    case engine::CardId::THE_SCYTHE:
+        return "La faux";
+    case engine::CardId::MELANCHOLY:
+        return "Mélancolie";
+    case engine::CardId::HANG:
+        return "Pendaison";
     default:
         return "???";
     }
@@ -1318,6 +1392,117 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::SYNCHRONIZE:
         stream << "Ce tour : Focalisation +" << value << " par type d'Orbe.";
         break;
+    case engine::CardId::HOWL_FROM_BEYOND:
+        stream << "TOUS : " << value << ". Épuisée, rejouée fin de tour.";
+        break;
+    case engine::CardId::HELLRAISER:
+        stream << "Frappe piochée : jouée au hasard aussitôt.";
+        break;
+    case engine::CardId::STAMPEDE:
+        stream << "Fin de tour : joue 1 Attaque de la main.";
+        break;
+    case engine::CardId::CASCADE:
+        stream << (card.upgraded ? "Joue X+1 cartes du dessus de la pioche." : "Joue X cartes du dessus de la pioche.");
+        break;
+    case engine::CardId::ONE_TWO_PUNCH:
+        stream << "Ce tour : " << secondary << " Attaque(s) jouée(s) 2 fois.";
+        break;
+    case engine::CardId::TEAR_ASUNDER:
+        stream << "Inflige " << value << ", +1 fois par perte de PV.";
+        break;
+    case engine::CardId::HAVOC:
+        stream << "Joue le dessus de la pioche et l'épuise.";
+        break;
+    case engine::CardId::CORRUPTION:
+        stream << "Vos Compétences coûtent 0 et s'épuisent.";
+        break;
+    case engine::CardId::UNRELENTING:
+        stream << "Inflige " << value << ". Prochaine Attaque : coût 0.";
+        break;
+    case engine::CardId::MIDNIGHT:
+        stream << "Inflige " << value << ". Coût -1 par carte épuisée.";
+        break;
+    case engine::CardId::STOMP:
+        stream << "TOUS : " << value << ". Coût -1 par Attaque ce tour.";
+        break;
+    case engine::CardId::RAMPAGE:
+        stream << "Inflige " << value << ". +" << secondary << " dégâts pour le combat.";
+        break;
+    case engine::CardId::BURST:
+        stream << "Ce tour : " << secondary << " Compétence(s) jouée(s) 2 fois.";
+        break;
+    case engine::CardId::BULLET_TIME:
+        stream << "Ce tour : plus de pioche, la main coûte 0.";
+        break;
+    case engine::CardId::PINPOINT:
+        stream << "Inflige " << value << ". Coût -1 par Compétence.";
+        break;
+    case engine::CardId::POUNCE:
+        stream << "Inflige " << value << ". Compétence suivante : coût 0.";
+        break;
+    case engine::CardId::ECHO_FORM:
+        stream << (card.upgraded ? "" : "Éthéré. ") << "1re carte du tour : jouée 2 fois.";
+        break;
+    case engine::CardId::SIGNAL_BOOST:
+        stream << "Prochain Pouvoir joué 2 fois. Épuisement.";
+        break;
+    case engine::CardId::UPROAR:
+        stream << value << " dégâts x" << secondary << ". Joue 1 Attaque de la pioche.";
+        break;
+    case engine::CardId::ADAPTIVE_STRIKE:
+        stream << "Inflige " << value << ". Copie à coût 0 en défausse.";
+        break;
+    case engine::CardId::SYNTHESIS:
+        stream << "Inflige " << value << ". Prochain Pouvoir : coût 0.";
+        break;
+    case engine::CardId::GENETIC_ALGORITHM:
+        stream << "Armure " << value << ". +" << secondary << " pour toujours. Épuisement.";
+        break;
+    case engine::CardId::MOMENTUM_STRIKE:
+        stream << "Inflige " << value << ". Cette carte coûte ensuite 0.";
+        break;
+    case engine::CardId::CLAW:
+        stream << "Inflige " << value << ". Vos Griffures : +" << secondary << " dégâts.";
+        break;
+    case engine::CardId::MODDED:
+        stream << "+" << value << " Emplacement. Pioche " << secondary << ". Puis coût +1.";
+        break;
+    case engine::CardId::BOMBARDMENT:
+        stream << "Inflige " << value << ". Épuis. Rejouée à chaque tour.";
+        break;
+    case engine::CardId::I_AM_INVINCIBLE:
+        stream << "Armure " << value << ". Jouée si 1re de la pioche.";
+        break;
+    case engine::CardId::VOID_FORM:
+        stream << (card.upgraded ? "" : "Éthéré. ") << "Fin du tour. " << value << " cartes à 0/tour.";
+        break;
+    case engine::CardId::KINGLY_KICK:
+        stream << "Inflige " << value << ". Coût -1 quand piochée.";
+        break;
+    case engine::CardId::KINGLY_PUNCH:
+        stream << "Inflige " << value << ". +" << secondary << " dégâts quand piochée.";
+        break;
+    case engine::CardId::EIDOLON:
+        stream << "Joue vos Éthérées épuisées. Épuisement.";
+        break;
+    case engine::CardId::BANSHEES_CRY:
+        stream << "TOUS : " << value << ". Coût -2 par Éthérée jouée.";
+        break;
+    case engine::CardId::VEILPIERCER:
+        stream << "Inflige " << value << ". Prochaine Éthérée : coût 0.";
+        break;
+    case engine::CardId::BORROWED_TIME:
+        stream << "Énergie +" << value << ". Ce tour, cartes à coût +" << secondary << ".";
+        break;
+    case engine::CardId::THE_SCYTHE:
+        stream << "Inflige " << value << ". +" << secondary << " pour toujours. Épuisement.";
+        break;
+    case engine::CardId::MELANCHOLY:
+        stream << "Armure " << value << ". Coût -1 à chaque mort.";
+        break;
+    case engine::CardId::HANG:
+        stream << "Inflige " << value << ". Pendaison x2 sur cet ennemi.";
+        break;
     default:
         break;
     }
@@ -1328,14 +1513,15 @@ namespace
 
 bn::string_view cost_digit(uint8_t cost)
 {
-    static constexpr bn::string_view DIGITS[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+    static constexpr bn::string_view DIGITS[] = { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" };
+    constexpr int HIGHEST = sizeof(DIGITS) / sizeof(DIGITS[0]) - 1;
 
     if(cost == engine::COST_X)
     {
         return "X";
     }
 
-    return DIGITS[bn::min(int(cost), 9)];
+    return DIGITS[bn::min(int(cost), HIGHEST)];
 }
 
 }
@@ -1343,6 +1529,11 @@ bn::string_view cost_digit(uint8_t cost)
 bn::string_view card_cost_label(const engine::DeckCard& card)
 {
     return cost_digit(engine::CardDef::get_cost(card.id, card.upgraded));
+}
+
+bn::string_view cost_label(int cost)
+{
+    return cost_digit(uint8_t(bn::clamp(cost, 0, 255)));
 }
 
 bn::string_view card_star_cost_label(const engine::DeckCard& card)

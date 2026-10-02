@@ -55,6 +55,8 @@ void test_cartridge_save() {
     saved.add_relic("VAJRA");
     saved.potions.push_back(get_all_potions()[0].id);
     saved.master_deck.push_back(DeckCard(CardId::POISON_STAB, true));
+    // What a card gained for good (Genetic Algorithm, The Scythe) is saved with it.
+    saved.master_deck.back().bonus = 12;
     // Card ids are stored on 16 bits: one above 255 survives the save, with its upgrade.
     constexpr CardId FAR_CARD = static_cast<CardId>(300);
     saved.master_deck.push_back(DeckCard(FAR_CARD, true));
@@ -78,6 +80,7 @@ void test_cartridge_save() {
     assert(loaded.master_deck.size() == saved.master_deck.size());
     size_t deck_size = loaded.master_deck.size();
     assert(loaded.master_deck[deck_size - 3] == DeckCard(CardId::POISON_STAB, true));
+    assert(loaded.master_deck[deck_size - 3].bonus == 12 && loaded.master_deck[deck_size - 2].bonus == 0);
     assert(loaded.master_deck[deck_size - 2].id == FAR_CARD && loaded.master_deck[deck_size - 2].upgraded);
     assert(static_cast<uint16_t>(loaded.master_deck[deck_size - 1].id) == 511 && !loaded.master_deck[deck_size - 1].upgraded);
     assert(sizeof(CardId) == 2 && sizeof(DeckCardSave) == 4);

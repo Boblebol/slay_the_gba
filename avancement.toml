@@ -104,7 +104,10 @@ items = [
   { name = "Défausse d'une carte au choix", status = "non", issue = 31 },
   { name = "Choix d'une carte parmi plusieurs (Découverte, etc.)", status = "non", issue = 72 },
   { name = "Cartes à coût X", status = "oui" },
-  { name = "Écho : rejouer une carte", status = "non", issue = 86 },
+  { name = "Écho : rejouer une carte", status = "partiel", issue = 86 },
+  { name = "Cartes jouées automatiquement (Pioche, pile d'épuisement, fin de tour)", status = "oui" },
+  { name = "Coûts modifiés pendant le tour ou le combat", status = "partiel", issue = 75 },
+  { name = "Cartes évolutives : bonus et coût propres à chaque exemplaire", status = "oui" },
   { name = "Coup de grâce : effet quand la carte tue un ennemi", status = "oui" },
   { name = "Transformer une carte", status = "non", issue = 79 },
 ]

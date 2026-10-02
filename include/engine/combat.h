@@ -89,6 +89,21 @@ enum class PlayBlocker : uint8_t {
     PLAY_LIMIT    // a card in hand caps the number of cards played this turn
 };
 
+// Where a card goes once it has been played.
+enum class AfterPlay : uint8_t {
+    DISCARD,
+    HAND,
+    DRAW_TOP,
+    EXHAUST,
+    NOWHERE // it stays where it was: played from the exhaust pile
+};
+
+// A gain that outlives the combat: RunManager adds it to the card of the deck.
+struct PermanentGain {
+    uint8_t deck_index = NOT_IN_DECK;
+    uint8_t amount = 0;
+};
+
 class CombatEngine {
 public:
     Player player;
@@ -111,6 +126,8 @@ public:
     uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
     FixedVector<ActivePower, 24> powers;      // active powers, in the order they were gained
     FixedVector<DeckCard, 24> powers_in_play; // Power cards played this combat: they stay in play
+    FixedVector<PermanentGain, 16> permanent_gains; // bonuses to write back to the deck after the combat
+    bool end_turn_requested = false; // a card ended the turn (Void Form): the caller ends it once the card is resolved
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;
     int8_t temp_focus = 0;
@@ -196,6 +213,11 @@ public:
     bool can_play_card(int index) const { return play_blocker(index) == PlayBlocker::NONE; }
     bool play_condition_met(PlayCondition condition) const;
     bool play_card(int index, int target_index = -1);
+    // Plays a card for free that does not come from the hand: the caller has already taken it from where it
+    // was. A single-target card goes to `target_index`, or to a random enemy when it is negative.
+    void autoplay(DeckCard card, int target_index = -1, AfterPlay destination = AfterPlay::DISCARD);
+    // Energy the card costs right now, COST_X for an X card.
+    int effective_cost(const DeckCard& card) const;
     void end_player_turn();
     void execute_enemy_turn();
 
@@ -222,6 +244,20 @@ private:
     int8_t index_of(const Enemy& target) const;
     // Moves every copy of `id` from the draw and discard piles to the hand, as long as there is room.
     void recall_to_hand(CardId id);
+    // One play of a card and the extra plays it is entitled to: event, effect, tallies. The card is not moved.
+    void run_card(DeckCard& card, int target_index, bool random_target, int x_value, uint8_t energy_paid, AfterPlay& after_play);
+    // The card's own effect.
+    void resolve_effect(DeckCard& played_card, int target_idx, int x_value, AfterPlay& after_play);
+    void place_played_card(const DeckCard& card, AfterPlay after_play);
+    // What follows any card: deaths, defeat, victory.
+    void finish_play();
+    bool costs_nothing(const DeckCard& card) const;
+    // Uses up what made the card free or played twice. Returns the number of extra plays.
+    int consume_play_modifiers(const DeckCard& card);
+    // Adds `amount` to the bonus of every copy of `id` in the piles.
+    void boost_copies(CardId id, int amount);
+    void change_cost_of_copies(CardId id, int delta);
+    uint8_t autoplay_depth_ = 0;
     // Orb value once Focus is applied, never negative.
     int16_t with_focus(int16_t base) const;
     // Raises ENEMY_KILLED for every enemy that died since the last call, whatever killed it.

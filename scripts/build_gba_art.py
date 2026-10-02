@@ -461,6 +461,43 @@ CARDS: list[CardArt] = [
     CardArt("capacitor", "defect", "capacitor", "power", (1, 1)),
     CardArt("bulk_up", "defect", "bulk_up", "power", (2, 2)),
     CardArt("synchronize", "defect", "synchronize", "skill", (1, 1)),
+    CardArt("howl_from_beyond", "ironclad", "howl_from_beyond", "attack", (3, 3)),
+    CardArt("hellraiser", "ironclad", "hellraiser", "power", (2, 1)),
+    CardArt("stampede", "ironclad", "stampede", "power", (2, 1)),
+    CardArt("cascade", "ironclad", "cascade", "skill", (-1, -1)),
+    CardArt("one_two_punch", "ironclad", "one_two_punch", "skill", (1, 1)),
+    CardArt("tear_asunder", "ironclad", "tear_asunder", "attack", (2, 2)),
+    CardArt("havoc", "ironclad", "havoc", "skill", (1, 0)),
+    CardArt("corruption", "ironclad", "corruption", "power", (3, 2)),
+    CardArt("unrelenting", "ironclad", "unrelenting", "attack", (2, 2)),
+    CardArt("midnight", "ironclad", "midnight", "attack", (12, 12)),
+    CardArt("stomp", "ironclad", "stomp", "attack", (3, 3)),
+    CardArt("rampage", "ironclad", "rampage", "attack", (1, 1)),
+    CardArt("burst", "silent", "burst", "skill", (1, 1)),
+    CardArt("bullet_time", "silent", "bullet_time", "skill", (3, 2)),
+    CardArt("pinpoint", "silent", "pinpoint", "attack", (3, 3)),
+    CardArt("pounce", "silent", "pounce", "attack", (2, 2)),
+    CardArt("echo_form", "defect", "echo_form", "power", (3, 3)),
+    CardArt("signal_boost", "defect", "signal_boost", "skill", (1, 0)),
+    CardArt("uproar", "defect", "uproar", "attack", (2, 2)),
+    CardArt("adaptive_strike", "defect", "adaptive_strike", "attack", (2, 2)),
+    CardArt("synthesis", "defect", "synthesis", "attack", (2, 2)),
+    CardArt("genetic_algorithm", "defect", "genetic_algorithm", "skill", (1, 1)),
+    CardArt("momentum_strike", "defect", "momentum_strike", "attack", (1, 1)),
+    CardArt("claw", "defect", "claw", "attack", (0, 0)),
+    CardArt("modded", "defect", "modded", "skill", (0, 0)),
+    CardArt("bombardment", "regent", "bombardment", "attack", (3, 3)),
+    CardArt("i_am_invincible", "regent", "i_am_invincible", "skill", (1, 1)),
+    CardArt("void_form", "regent", "void_form", "power", (3, 3)),
+    CardArt("kingly_kick", "regent", "kingly_kick", "attack", (4, 4)),
+    CardArt("kingly_punch", "regent", "kingly_punch", "attack", (1, 1)),
+    CardArt("eidolon", "necrobinder", "eidolon", "skill", (2, 1)),
+    CardArt("banshees_cry", "necrobinder", "banshees_cry", "attack", (9, 7)),
+    CardArt("veilpiercer", "necrobinder", "veilpiercer", "attack", (1, 1)),
+    CardArt("borrowed_time", "necrobinder", "borrowed_time", "skill", (1, 1)),
+    CardArt("the_scythe", "necrobinder", "the_scythe", "attack", (2, 2)),
+    CardArt("melancholy", "necrobinder", "melancholy", "skill", (3, 3)),
+    CardArt("hang", "necrobinder", "hang", "attack", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}
@@ -724,10 +761,13 @@ def build_cards() -> None:
                     value = card.costs[1] if upgraded else card.costs[0]
                     cost = "X" if value < 0 else str(value)
                     draw = ImageDraw.Draw(canvas)
-                    for dy, row in enumerate(DIGITS[cost]):
-                        for dx, ch in enumerate(row):
-                            if ch == "#":
-                                draw.point((5 + dx, 3 + dy), fill=(255, 255, 255, 255))
+                    # One digit sits in the middle of the gem; two digits (Midnight costs 12) share its width.
+                    left = 5 if len(cost) == 1 else 3
+                    for place, digit in enumerate(cost):
+                        for dy, row in enumerate(DIGITS[digit]):
+                            for dx, ch in enumerate(row):
+                                if ch == "#":
+                                    draw.point((left + 4 * place + dx, 3 + dy), fill=(255, 255, 255, 255))
                     stars = card.stars[1] if upgraded else card.stars[0]
                     if stars:
                         # Star cost: a yellow digit on a dark plate under the energy gem.

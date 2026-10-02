@@ -60,6 +60,20 @@ enum class PowerId : uint8_t {
     CONSUMING_SHADOW,   // end of turn: evoke the newest orb, once per stack
     HAILSTORM,          // end of turn with a Frost orb: `amount` damage to every enemy
     THUNDER,            // Lightning orb evoked: `amount` more damage to the enemy it hits
+    // Cards played again or for free
+    REPLAY_ATTACK,      // the next `amount` Attacks are played once more
+    REPLAY_SKILL,       // the next `amount` Skills are played once more
+    REPLAY_POWER,       // the next `amount` Powers are played once more
+    ECHO_FORM,          // the first `amount` cards of each turn are played once more
+    FREE_ATTACK,        // the next `amount` Attacks cost 0
+    FREE_SKILL,         // the next `amount` Skills cost 0
+    FREE_POWER,         // the next `amount` Powers cost 0
+    FREE_ETHEREAL,      // the next `amount` Ethereal cards cost 0
+    VOID_FORM,          // the first `amount` cards of each turn cost 0
+    CORRUPTION,         // Skills cost 0 and are exhausted when played
+    SURCHARGE,          // cards cost `amount` more
+    HELLRAISER,         // a "Strike" card drawn is played at once on a random enemy
+    STAMPEDE,           // end of turn: a random Attack of the hand is played on a random enemy, once per stack
     // Doom (Necrobinder)
     COUNTDOWN,          // start of turn: `amount` Doom to a random enemy
     NEUROSURGE,         // start of turn: `amount` Doom to the player
