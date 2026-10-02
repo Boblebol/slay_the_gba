@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 40,5 %** — 490 faits, 26 partiels, 726 à faire (36 hors périmètre).
+**Avancement global : 40,6 %** — 491 faits, 26 partiels, 725 à faire (36 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -15,7 +15,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
 | [Soldat de Fer](#ironclad) | 85 | 1 | 16 | 83,8 % |
-| [La Silencieuse](#silent) | 79 | 1 | 21 | 78,7 % |
+| [La Silencieuse](#silent) | 80 | 1 | 20 | 79,7 % |
 | [Le Défectueux](#defect) | 96 | 1 | 8 | 91,9 % |
 | [Le Régent](#regent) | 61 | 1 | 38 | 61,5 % |
 | [La Nécrolieuse](#necrobinder) | 57 | 3 | 41 | 57,9 % |
@@ -26,7 +26,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Règles de combat](#regles) | 29 | 2 | 25 | 53,6 % |
 | [Systèmes de jeu](#systemes) | 19 | 2 | 15 | 55,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **490** | **26** | **726** | **40,5 %** |
+| **Total** | **491** | **26** | **725** | **40,6 %** |
 
 <a id="ironclad"></a>
 
@@ -161,11 +161,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="silent"></a>
 
-## La Silencieuse — 78,7 %
+## La Silencieuse — 79,7 %
 
-### Cartes — 81,4 %
+### Cartes — 82,6 %
 
-70 faits, 0 partiel, 16 à faire (5 hors périmètre).
+71 faits, 0 partiel, 15 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -219,7 +219,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Passe-passe | Peu commune · Compétence | Oui |  |
 | Plan d'évasion | Peu commune · Compétence | Oui |  |
 | Poignards dissimulés | Peu commune · Compétence | Oui |  |
-| Point faible | Peu commune · Compétence | Non |  |
+| Point faible | Peu commune · Compétence | Oui |  |
 | Précipitation | Peu commune · Attaque | Oui |  |
 | Précision | Peu commune · Pouvoir | Oui |  |
 | Réflexes | Peu commune · Compétence | Non |  |
