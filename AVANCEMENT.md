@@ -4,29 +4,29 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 38,0 %** — 458 faits, 27 partiels, 757 à faire (36 hors périmètre).
+**Avancement global : 39,2 %** — 473 faits, 28 partiels, 741 à faire (36 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
-Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Fuel, Metallicize, Slimed, Soot, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
+Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Fuel, Metallicize, Shiv, Slimed, Soot, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
 
 ## Synthèse
 
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
 | [Soldat de Fer](#ironclad) | 80 | 2 | 20 | 79,4 % |
-| [La Silencieuse](#silent) | 60 | 2 | 39 | 60,4 % |
+| [La Silencieuse](#silent) | 74 | 2 | 25 | 74,3 % |
 | [Le Défectueux](#defect) | 95 | 1 | 9 | 91,0 % |
 | [Le Régent](#regent) | 58 | 1 | 41 | 58,5 % |
 | [La Nécrolieuse](#necrobinder) | 56 | 3 | 42 | 56,9 % |
-| [Cartes communes aux cinq éditions](#cartes) | 8 | 0 | 112 | 6,7 % |
-| [Reliques et potions](#reliques) | 39 | 4 | 278 | 12,8 % |
+| [Cartes communes aux cinq éditions](#cartes) | 9 | 0 | 111 | 7,5 % |
+| [Reliques et potions](#reliques) | 39 | 5 | 277 | 12,9 % |
 | [Bestiaire](#bestiaire) | 0 | 1 | 103 | 0,5 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 28 | 2 | 26 | 51,8 % |
 | [Systèmes de jeu](#systemes) | 19 | 2 | 15 | 55,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **458** | **27** | **757** | **38,0 %** |
+| **Total** | **473** | **28** | **741** | **39,2 %** |
 
 <a id="ironclad"></a>
 
@@ -161,11 +161,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="silent"></a>
 
-## La Silencieuse — 60,4 %
+## La Silencieuse — 74,3 %
 
-### Cartes — 63,4 %
+### Cartes — 76,2 %
 
-54 faits, 1 partiel, 31 à faire (5 hors périmètre).
+65 faits, 1 partiel, 20 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -174,12 +174,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Neutralisation | Base · Attaque | Oui |  |
 | Survivant | Base · Compétence | Partiel | Donne l'Armure mais ne fait pas défausser de carte. [#31](https://github.com/Boblebol/slay_the_gba/issues/31) |
 | Anticipation | Commune · Compétence | Oui |  |
-| Cape et épée | Commune · Compétence | Non |  |
+| Cape et épée | Commune · Compétence | Oui |  |
 | Coup bas | Commune · Attaque | Oui |  |
-| Danse des lames | Commune · Compétence | Non |  |
+| Danse des lames | Commune · Compétence | Oui |  |
 | Dérobade | Commune · Compétence | Oui |  |
 | Déviation | Commune · Compétence | Oui |  |
-| Frappe initiale | Commune · Attaque | Non |  |
+| Frappe initiale | Commune · Attaque | Oui |  |
 | Hurlement perçant | Commune · Compétence | Oui |  |
 | Intouchable | Commune · Compétence | Non |  |
 | Lancer de couteau | Commune · Attaque | Non |  |
@@ -209,19 +209,19 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Fiole rebondissante | Peu commune · Compétence | Oui |  |
 | Fléchettes | Peu commune · Attaque | Oui |  |
 | Jeu de jambes | Peu commune · Pouvoir | Oui |  |
-| Lames fantomatiques | Peu commune · Pouvoir | Non |  |
-| Lames infinies | Peu commune · Pouvoir | Non |  |
+| Lames fantomatiques | Peu commune · Pouvoir | Oui |  |
+| Lames infinies | Peu commune · Pouvoir | Oui |  |
 | Localisation | Peu commune · Attaque | Oui |  |
 | Memento mori | Peu commune · Attaque | Oui |  |
 | Mirage | Peu commune · Compétence | Oui |  |
 | Oubli | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Pas de côté | Peu commune · Compétence | Oui |  |
-| Passe-passe | Peu commune · Compétence | Non |  |
+| Passe-passe | Peu commune · Compétence | Oui |  |
 | Plan d'évasion | Peu commune · Compétence | Oui |  |
 | Poignards dissimulés | Peu commune · Compétence | Non |  |
 | Point faible | Peu commune · Compétence | Non |  |
 | Précipitation | Peu commune · Attaque | Oui |  |
-| Précision | Peu commune · Pouvoir | Non |  |
+| Précision | Peu commune · Pouvoir | Oui |  |
 | Réflexes | Peu commune · Compétence | Non |  |
 | Strangulation | Peu commune · Attaque | Oui |  |
 | Surgissement | Peu commune · Attaque | Oui |  |
@@ -246,24 +246,24 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Grands desseins | Rare · Pouvoir | Non |  |
 | Image rémanente | Rare · Pouvoir | Oui |  |
 | La traque | Rare · Attaque | Non |  |
-| Lame d'encre | Rare · Compétence | Non |  |
+| Lame d'encre | Rare · Compétence | Oui |  |
 | Malaise | Rare · Compétence | Oui |  |
 | Meurtre | Rare · Attaque | Oui |  |
 | Pas de l'ombre | Rare · Compétence | Non |  |
 | Pistage | Rare · Pouvoir | Non |  |
-| Piège à poignards | Rare · Compétence | Non |  |
+| Piège à poignards | Rare · Compétence | Oui |  |
 | Préméditation | Rare · Pouvoir | Oui |  |
 | Savoir-faire | Rare · Pouvoir | Non |  |
-| Tempête d'acier | Rare · Compétence | Non |  |
+| Tempête d'acier | Rare · Compétence | Oui |  |
 | Vague corrosive | Rare · Compétence | Oui |  |
 | Épidémie | Rare · Compétence | Oui |  |
-| Éventail de couteaux | Rare · Pouvoir | Non |  |
+| Éventail de couteaux | Rare · Pouvoir | Oui |  |
 | Forme spectrale | Ancienne · Pouvoir | Non |  |
 | Répression | Ancienne · Attaque | Oui |  |
 
-### Reliques — 37,5 %
+### Reliques — 62,5 %
 
-3 faits, 0 partiel, 5 à faire.
+5 faits, 0 partiel, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -272,13 +272,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Entonnoir torsadé | Peu commune | Non |  |
 | Tingsha | Peu commune | Oui |  |
 | Bandages résistants | Rare | Oui |  |
-| Fléchette hélicoïdale | Rare | Non |  |
+| Fléchette hélicoïdale | Rare | Oui |  |
 | Grû en papier | Rare | Non |  |
-| Parchemin de ninja | Boutique | Non |  |
+| Parchemin de ninja | Boutique | Oui |  |
 
-### Mécaniques — 50,0 %
+### Mécaniques — 64,3 %
 
-3 faits, 1 partiel, 3 à faire.
+4 faits, 1 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -286,7 +286,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Affaibli infligé par ses cartes (Neutralisation, Coup bas) |  | Oui |  |
 | Pioche supplémentaire (Salto arrière) |  | Oui |  |
 | Défausse au choix (Survivant, Acrobaties) |  | Non | [#31](https://github.com/Boblebol/slay_the_gba/issues/31) |
-| Surins : attaques à 0 énergie créées en combat |  | Non | [#96](https://github.com/Boblebol/slay_the_gba/issues/96) |
+| Surins : attaques à 0 énergie créées en combat |  | Oui |  |
 | Ruse : carte jouée gratuitement quand elle est défaussée |  | Non | [#73](https://github.com/Boblebol/slay_the_gba/issues/73) |
 | Animations du héros (repos, attaque, dégâts, garde) |  | Partiel | Flottement au repos, secousse et fondu de mort ; pas de poses dessinées. [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
 
@@ -688,7 +688,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 6,7 %
+## Cartes communes aux cinq éditions — 7,5 %
 
 ### Cartes incolores — 0,0 %
 
@@ -833,9 +833,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Rhabdomancie | Quête · Quête | Non |  |
 | Œuf d'oizodon | Quête · Quête | Non |  |
 
-### Cartes créées en combat et statuts — 47,1 %
+### Cartes créées en combat et statuts — 52,9 %
 
-8 faits, 0 partiel, 9 à faire.
+9 faits, 0 partiel, 8 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -853,13 +853,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sbire en piqué | Créée en combat · Attaque | Non |  |
 | Sbire sacrificiel | Créée en combat · Compétence | Non |  |
 | Suie | Statut · Statut | Oui |  |
-| Surin | Créée en combat · Attaque | Non |  |
+| Surin | Créée en combat · Attaque | Oui |  |
 | Âme | Créée en combat · Compétence | Non |  |
 | Éclat | Créée en combat · Compétence | Non |  |
 
 <a id="reliques"></a>
 
-## Reliques et potions — 12,8 %
+## Reliques et potions — 12,9 %
 
 ### Reliques partagées — 32,5 %
 
@@ -1140,9 +1140,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Œil de geckobra | Ancienne | Non |  |
 | Œil de verre | Ancienne | Non |  |
 
-### Potions — 3,2 %
+### Potions — 4,0 %
 
-0 fait, 4 partiels, 59 à faire.
+0 fait, 5 partiels, 58 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1179,7 +1179,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Huile de poissâme | Peu commune | Non |  |
 | Infusion osseuse | Peu commune | Non |  |
 | Lampée de radiance | Peu commune | Non |  |
-| Potion de ruse | Peu commune | Non |  |
+| Potion de ruse | Peu commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Potion de régénération | Peu commune | Non |  |
 | Potion de stockage | Peu commune | Non |  |
 | Potion paralysante | Peu commune | Non |  |

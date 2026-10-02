@@ -17,8 +17,8 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - name: Engine tests
         run: make test test-e2e
-      - name: Tracker tests
-        run: uv run --with pytest pytest scripts/progress_test.py
+      - name: Script tests
+        run: uv run --with pytest pytest scripts/progress_test.py scripts/check_rom_memory_test.py
       # Fails when avancement.toml is invalid or the detection no longer matches the engine sources.
       - name: Tracker runs
         run: uv run scripts/progress.py
@@ -26,3 +26,6 @@ jobs:
       # breaks on the GBA toolchain (missing libc symbols, assets, Butano API).
       - name: ROM builds
         run: make ironclad
+      # A cartridge can build and still hang at boot: static data that fills the internal RAM leaves no stack.
+      - name: ROM leaves room for its stack
+        run: uv run scripts/check_rom_memory.py ironclad

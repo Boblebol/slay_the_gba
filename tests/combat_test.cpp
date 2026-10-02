@@ -3714,6 +3714,166 @@ void test_shivs() {
     std::cout << "[PASS] Shivs: Shiv, Blade Dance, Cloak and Dagger, Leading Strike, Blade of Ink, Accuracy, Phantom Blades, Fan of Knives, Infinite Blades, Storm of Steel, Up My Sleeve, Knife Trap, Helical Dart, Ninja Scroll, Cunning Potion" << std::endl;
 }
 
+// Replaces the hand by `cards`, with full energy.
+void deal(CombatEngine& combat, std::initializer_list<DeckCard> cards) {
+    combat.hand.clear();
+    for (const DeckCard& card : cards) combat.hand.push_back(card);
+    combat.player.energy = combat.player.max_energy;
+}
+
+bool pick(CombatEngine& combat, std::initializer_list<uint8_t> hand_indices) {
+    return combat.resolve_choice(std::span<const uint8_t>(hand_indices.begin(), hand_indices.size()));
+}
+
+void test_hand_choices() {
+    // Survivor: the player picks the card to discard, and nothing else can be played meanwhile.
+    CombatEngine survivor = make_combat(CharacterId::SILENT);
+    deal(survivor, { CardId::SURVIVOR, CardId::STRIKE, CardId::DEFEND });
+    assert(survivor.play_card(0) && survivor.player.block == 8);
+    assert(survivor.choice_pending() && survivor.choice_size() == 1 && survivor.hand.size() == 2);
+    assert(!survivor.can_play_card(0) && survivor.play_blocker(0) == PlayBlocker::CHOICE);
+    // Picks that do not answer the choice are refused.
+    assert(!pick(survivor, {}) && !pick(survivor, { 0, 1 }) && !pick(survivor, { 5 }) && survivor.choice_pending());
+    assert(pick(survivor, { 1 }));
+    assert(!survivor.choice_pending() && survivor.hand.size() == 1 && survivor.hand[0] == CardId::STRIKE);
+    assert(survivor.discard_pile.back() == CardId::DEFEND && survivor.counters.cards_discarded == 1);
+    assert(survivor.can_play_card(0));
+    // Nothing to decide: a single card is discarded at once, an empty hand asks nothing.
+    deal(survivor, { CardId::SURVIVOR, CardId::STRIKE });
+    assert(survivor.play_card(0) && !survivor.choice_pending() && survivor.hand.empty());
+    deal(survivor, { CardId::SURVIVOR });
+    assert(survivor.play_card(0) && !survivor.choice_pending());
+    // A choice left unanswered is answered when the turn ends.
+    deal(survivor, { CardId::SURVIVOR, CardId::STRIKE, CardId::DEFEND });
+    assert(survivor.play_card(0) && survivor.choice_pending());
+    end_turn_idle(survivor);
+    assert(!survivor.choice_pending() && survivor.state == CombatState::PLAYER_TURN);
+
+    // Exhaust: True Grit+ lets the player pick, True Grit does not.
+    CombatEngine grit = make_combat(CharacterId::IRONCLAD);
+    deal(grit, { DeckCard(CardId::TRUE_GRIT, true), CardId::STRIKE, CardId::BASH });
+    assert(grit.play_card(0) && grit.choice_pending() && grit.exhaust_pile.empty());
+    assert(pick(grit, { 1 }) && grit.exhaust_pile.back() == CardId::BASH && grit.hand.size() == 1);
+    deal(grit, { CardId::TRUE_GRIT, CardId::STRIKE, CardId::BASH });
+    assert(grit.play_card(0) && !grit.choice_pending() && grit.exhaust_pile.size() == 2);
+
+    // Burning Pact: the draw comes after the card is picked.
+    CombatEngine pact = make_combat(CharacterId::IRONCLAD);
+    pad_draw_pile(pact, 4);
+    deal(pact, { CardId::BURNING_PACT, CardId::STRIKE, CardId::BASH });
+    assert(pact.play_card(0) && pact.choice_pending() && pact.hand.size() == 2);
+    assert(pick(pact, { 0 }) && pact.hand.size() == 3 && pact.exhaust_pile.back() == CardId::STRIKE);
+    deal(pact, { DeckCard(CardId::BURNING_PACT, true) });
+    assert(pact.play_card(0) && pact.hand.size() == 3);
+
+    // Brand: HP and Strength at once, then the exhaust.
+    CombatEngine brand = make_combat(CharacterId::IRONCLAD);
+    int16_t hp = brand.player.hp;
+    deal(brand, { DeckCard(CardId::BRAND, true), CardId::STRIKE, CardId::BASH });
+    assert(brand.play_card(0) && brand.player.hp == hp - 1 && brand.player.get_status(StatusType::STRENGTH) == 2);
+    assert(brand.choice_pending() && pick(brand, { 0 }) && brand.exhaust_pile.size() == 1);
+
+    // Armaments: only a card that can be upgraded can be picked; upgraded, the whole hand is.
+    CombatEngine armaments = make_combat(CharacterId::IRONCLAD);
+    deal(armaments, { CardId::ARMAMENTS, DeckCard(CardId::STRIKE, true), CardId::DEFEND, CardId::BASH, CardId::WOUND });
+    assert(armaments.play_card(0) && armaments.player.block == 5 && armaments.choice_pending());
+    assert(!armaments.choice_allows(0) && armaments.choice_allows(1) && !armaments.choice_allows(3));
+    assert(!pick(armaments, { 0 }) && pick(armaments, { 1 }));
+    assert(armaments.hand[1].upgraded && !armaments.hand[2].upgraded && armaments.hand.size() == 4);
+    deal(armaments, { DeckCard(CardId::ARMAMENTS, true), CardId::DEFEND, CardId::BASH, CardId::WOUND });
+    assert(armaments.play_card(0) && !armaments.choice_pending());
+    assert(armaments.hand[0].upgraded && armaments.hand[1].upgraded && !armaments.hand[2].upgraded);
+
+    // Silent: draw, then discard.
+    CombatEngine acrobatics = make_combat(CharacterId::SILENT);
+    pad_draw_pile(acrobatics, 6);
+    deal(acrobatics, { CardId::ACROBATICS });
+    assert(acrobatics.play_card(0) && acrobatics.hand.size() == 3 && acrobatics.choice_pending());
+    assert(pick(acrobatics, { 2 }) && acrobatics.hand.size() == 2);
+    deal(acrobatics, { CardId::DAGGER_THROW, CardId::STRIKE });
+    assert(acrobatics.play_card(0) && acrobatics.enemies[0].hp == 42 - 9 && acrobatics.hand.size() == 2);
+    assert(acrobatics.choice_pending() && pick(acrobatics, { 0 }) && acrobatics.hand.size() == 1);
+    // Prepared+: two cards to pick.
+    pad_draw_pile(acrobatics, 4);
+    deal(acrobatics, { DeckCard(CardId::PREPARED, true), CardId::STRIKE });
+    assert(acrobatics.play_card(0) && acrobatics.hand.size() == 3 && acrobatics.choice_size() == 2);
+    assert(!pick(acrobatics, { 0 }) && !pick(acrobatics, { 1, 1 }) && pick(acrobatics, { 0, 2 }));
+    assert(acrobatics.hand.size() == 1 && acrobatics.player.energy == 3);
+
+    // Hidden Daggers: the Shivs come once the cards are discarded.
+    CombatEngine daggers = make_combat(CharacterId::SILENT);
+    deal(daggers, { CardId::HIDDEN_DAGGERS, CardId::STRIKE, CardId::DEFEND, CardId::NEUTRALIZE });
+    assert(daggers.play_card(0) && daggers.choice_size() == 2 && count_in(daggers.hand, CardId::SHIV) == 0);
+    assert(pick(daggers, { 0, 1 }) && daggers.hand.size() == 3 && count_in(daggers.hand, CardId::SHIV) == 2);
+    deal(daggers, { DeckCard(CardId::HIDDEN_DAGGERS, true), CardId::STRIKE });
+    assert(daggers.play_card(0) && !daggers.choice_pending() && daggers.hand[0] == DeckCard(CardId::SHIV, true));
+
+    // Scavenge: energy on the next turn.
+    CombatEngine scavenge = make_combat(CharacterId::DEFECT);
+    deal(scavenge, { CardId::SCAVENGE, CardId::STRIKE, CardId::DEFEND });
+    assert(scavenge.play_card(0) && pick(scavenge, { 0 }) && scavenge.exhaust_pile.back() == CardId::STRIKE);
+    end_turn_idle(scavenge);
+    assert(scavenge.player.energy == 5);
+
+    // Regent: a card goes back on top of the draw pile.
+    CombatEngine photon = make_combat(CharacterId::REGENT);
+    pad_draw_pile(photon, 6);
+    deal(photon, { CardId::PHOTON_CUT, CardId::STRIKE });
+    assert(photon.play_card(0) && photon.enemies[0].hp == 42 - 10 && photon.hand.size() == 2 && photon.choice_pending());
+    assert(pick(photon, { 0 }) && photon.draw_pile.back() == CardId::STRIKE && photon.hand.size() == 1);
+    deal(photon, { DeckCard(CardId::GLIMMER, true) });
+    assert(photon.play_card(0) && photon.hand.size() == 4 && pick(photon, { 3 }) && photon.hand.size() == 3);
+
+    // Tyranny: one more card each turn, and one card of the new hand to exhaust.
+    CombatEngine tyranny = make_combat(CharacterId::REGENT);
+    pad_draw_pile(tyranny, 8);
+    play(tyranny, CardId::TYRANNY);
+    end_turn_idle(tyranny);
+    assert(tyranny.hand.size() == 6 && tyranny.choice_pending() && tyranny.pending_choices[0].kind == ChoiceKind::EXHAUST);
+    size_t exhausted = tyranny.exhaust_pile.size();
+    assert(pick(tyranny, { 5 }) && tyranny.hand.size() == 5 && tyranny.exhaust_pile.size() == exhausted + 1);
+    assert(CardDef::has_keyword(CardId::TYRANNY, true, KEYWORD_INNATE) && !CardDef::has_keyword(CardId::TYRANNY, false, KEYWORD_INNATE));
+
+    // Sculpting Strike: the picked card becomes Ethereal.
+    CombatEngine sculpt = make_combat(CharacterId::NECROBINDER);
+    deal(sculpt, { CardId::SCULPTING_STRIKE, CardId::STRIKE, CardId::DEFILE, CardId::DEFEND });
+    assert(sculpt.play_card(0) && sculpt.enemies[0].hp == 42 - 9 && sculpt.choice_pending());
+    assert(!sculpt.choice_allows(1) && pick(sculpt, { 2 }) && CardDef::has_keyword(sculpt.hand[2], KEYWORD_ETHEREAL));
+    end_turn_idle(sculpt);
+    assert(count_in(sculpt.exhaust_pile, CardId::DEFEND) == 1 && count_in(sculpt.exhaust_pile, CardId::DEFILE) == 1);
+
+    // A card played twice asks twice, one choice after the other.
+    CombatEngine twice = make_combat(CharacterId::SILENT);
+    pad_draw_pile(twice, 8);
+    play(twice, CardId::BURST);
+    deal(twice, { CardId::ACROBATICS });
+    assert(twice.play_card(0) && twice.hand.size() == 6 && twice.pending_choices.size() == 2);
+    assert(pick(twice, { 0 }) && twice.choice_pending() && pick(twice, { 0 }) && !twice.choice_pending());
+    assert(twice.hand.size() == 4);
+
+    // Gambling Chip: any number of cards of the first hand, replaced by as many.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("GAMBLING_CHIP");
+    enter_room_of_type(run, RoomType::MONSTER);
+    CombatEngine& chip = run.combat;
+    assert(chip.choice_pending() && chip.pending_choices[0].optional && chip.choice_size() == 5);
+    size_t in_discard = chip.discard_pile.size();
+    assert(pick(chip, { 0, 3 }) && chip.hand.size() == 5 && chip.discard_pile.size() == in_discard + 2);
+    // Left alone, an optional choice picks nothing.
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(chip.choice_pending());
+    chip.resolve_choice_default();
+    assert(!chip.choice_pending() && chip.hand.size() == 5 && chip.discard_pile.empty());
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::ARMAMENTS, CardId::BRAND, CardId::BURNING_PACT });
+    assert_in_pool(CharacterId::SILENT, { CardId::ACROBATICS, CardId::DAGGER_THROW, CardId::PREPARED, CardId::HIDDEN_DAGGERS });
+    assert_in_pool(CharacterId::DEFECT, { CardId::SCAVENGE });
+    assert_in_pool(CharacterId::REGENT, { CardId::PHOTON_CUT, CardId::GLIMMER, CardId::TYRANNY });
+    assert_in_pool(CharacterId::NECROBINDER, { CardId::SCULPTING_STRIKE });
+    std::cout << "[PASS] Hand choices: Survivor, True Grit+, Burning Pact, Brand, Armaments, Acrobatics, Dagger Throw, Prepared, Hidden Daggers, Scavenge, Photon Cut, Glimmer, Tyranny, Sculpting Strike, two choices in a row, Gambling Chip" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -3811,6 +3971,7 @@ int main() {
     test_status_cards();
     test_status_card_users();
     test_shivs();
+    test_hand_choices();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;
