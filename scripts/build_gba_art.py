@@ -548,6 +548,7 @@ CARDS: list[CardArt] = [
     CardArt("tyranny", "regent", "tyranny", "power", (1, 1)),
     CardArt("sculpting_strike", "necrobinder", "sculpting_strike", "attack", (1, 1)),
     CardArt("juggling", "ironclad", "juggling", "power", (1, 1)),
+    CardArt("expose", "silent", "expose", "skill", (0, 0)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

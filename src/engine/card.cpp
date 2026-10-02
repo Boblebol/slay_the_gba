@@ -395,7 +395,9 @@ static constexpr CardDef CARDS[] = {
     // Necrobinder: hand choices
     { CardId::SCULPTING_STRIKE, "Sculpting Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 0, "Deal 9 dmg. A card of your hand gains Ethereal.", "Sculpting Strike+", 1, 12, 0, "Deal 12 dmg. A card of your hand gains Ethereal." },
     // Ironclad: cards on the card-played event
-    { CardId::JUGGLING, "Juggling", 1, CardType::POWER, TargetType::SELF, 0, 0, "The 3rd Attack you play each turn is copied into your hand.", "Juggling+", 1, 0, 0, "The 3rd Attack you play each turn is copied into your hand.", 0, KEYWORD_INNATE }
+    { CardId::JUGGLING, "Juggling", 1, CardType::POWER, TargetType::SELF, 0, 0, "The 3rd Attack you play each turn is copied into your hand.", "Juggling+", 1, 0, 0, "The 3rd Attack you play each turn is copied into your hand.", 0, KEYWORD_INNATE },
+    // Silent: cards on existing mechanics, second batch
+    { CardId::EXPOSE, "Expose", 0, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 2, "Remove all Artifact and Block from the enemy. Apply 2 Vulnerable. Exhaust.", "Expose+", 0, 0, 3, "Remove all Artifact and Block from the enemy. Apply 3 Vulnerable. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST }
 };
 
 const CardDef& CardDef::get(CardId id) {

@@ -3809,6 +3809,13 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Juggling+!"sv : "Played Juggling!"sv);
             break;
         }
+        case CardId::EXPOSE: {
+            current_target.clear_block();
+            current_target.add_status(StatusType::ARTIFACT, static_cast<int16_t>(-current_target.get_status(StatusType::ARTIFACT)));
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
+            set_log(upgraded ? "Played Expose+!"sv : "Played Expose!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;

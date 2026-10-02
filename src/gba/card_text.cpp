@@ -691,6 +691,8 @@ bn::string_view base_name(engine::CardId id)
         return "Frappe du sculpteur";
     case engine::CardId::JUGGLING:
         return "Jonglage";
+    case engine::CardId::EXPOSE:
+        return "Point faible";
     default:
         return "???";
     }
@@ -1737,6 +1739,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::JUGGLING:
         stream << (card.upgraded ? "Inné. " : "") << "3e Attaque du tour : copie en Main.";
+        break;
+    case engine::CardId::EXPOSE:
+        stream << "Armure, Artéf. à 0. Vulnérable " << secondary << ". Épuis.";
         break;
     default:
         break;

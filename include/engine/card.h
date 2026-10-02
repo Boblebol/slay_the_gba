@@ -398,6 +398,8 @@ enum class CardId : uint16_t {
     SCULPTING_STRIKE,
     // Ironclad cards on the card-played event (appended: saves store the numeric id)
     JUGGLING,
+    // Silent cards on existing mechanics, second batch (appended: saves store the numeric id)
+    EXPOSE,
     COUNT
 };
 
