@@ -164,67 +164,6 @@ int16_t Enemy::intent_damage(const CombatEntity& target) const {
     return attack_damage(static_cast<int16_t>(current_intent.base_damage * damage_percent / 100), *this, target);
 }
 
-void Player::channel_orb(OrbType type, CombatEntity* enemy) {
-    if (type == OrbType::NONE) return;
-    if (orbs.size() >= 3) {
-        evoke_oldest_orb(enemy);
-    }
-    orbs.push_back(type);
-    if (type == OrbType::DARK && dark_orb_charge == 0) {
-        dark_orb_charge = 6;
-    }
-}
-
-void Player::evoke_oldest_orb(CombatEntity* enemy, int times) {
-    if (orbs.empty()) return;
-    OrbType oldest = orbs[0];
-    orbs.erase(0);
-
-    for (int i = 0; i < times; ++i) {
-        switch (oldest) {
-            case OrbType::LIGHTNING:
-                if (enemy) enemy->take_damage(8);
-                break;
-            case OrbType::FROST:
-                block += 5; // Orb block ignores Dexterity
-                break;
-            case OrbType::DARK:
-                if (enemy) enemy->take_damage(dark_orb_charge > 0 ? dark_orb_charge : 6);
-                break;
-            case OrbType::PLASMA:
-                energy += 2;
-                break;
-            default:
-                break;
-        }
-    }
-    if (oldest == OrbType::DARK) dark_orb_charge = 0;
-}
-
-void Player::trigger_passive_orbs(CombatEntity* enemy) {
-    for (size_t i = 0; i < orbs.size(); ++i) {
-        switch (orbs[i]) {
-            case OrbType::LIGHTNING:
-                if (enemy) enemy->take_damage(3);
-                break;
-            case OrbType::FROST:
-                block += 2;
-                break;
-            case OrbType::DARK:
-                dark_orb_charge += 6;
-                break;
-            default:
-                break;
-        }
-    }
-}
-
-void Player::trigger_start_of_turn_orbs() {
-    for (size_t i = 0; i < orbs.size(); ++i) {
-        if (orbs[i] == OrbType::PLASMA) energy += 1;
-    }
-}
-
 void Player::add_stars(uint8_t count) {
     sovereign_stars = (sovereign_stars + count > 99) ? 99 : (sovereign_stars + count);
 }

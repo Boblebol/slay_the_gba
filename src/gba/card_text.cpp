@@ -455,6 +455,76 @@ bn::string_view base_name(engine::CardId id)
         return "Pluie de papier";
     case engine::CardId::SLEIGHT_OF_FLESH:
         return "Tour de chair";
+    case engine::CardId::SHATTER:
+        return "Détonation";
+    case engine::CardId::VOLTAIC:
+        return "Voltaïque";
+    case engine::CardId::QUADCAST:
+        return "Activation quadruple";
+    case engine::CardId::BARRAGE:
+        return "Barrage";
+    case engine::CardId::TESLA_COIL:
+        return "Bobine Tesla";
+    case engine::CardId::CHAOS:
+        return "Chaos";
+    case engine::CardId::COMPILE_DRIVER:
+        return "Compilateur de pilote";
+    case engine::CardId::DARKNESS:
+        return "Ténèbres";
+    case engine::CardId::MULTI_CAST:
+        return "Activation multiple";
+    case engine::CardId::LOOP:
+        return "Boucle";
+    case engine::CardId::CONSUMING_SHADOW:
+        return "Ombre dévorante";
+    case engine::CardId::HAILSTORM:
+        return "Pluie de grêlons";
+    case engine::CardId::THUNDER:
+        return "Tonnerre";
+    case engine::CardId::COOLANT:
+        return "Ventilation";
+    case engine::CardId::BIASED_COGNITION:
+        return "Biais cognitif";
+    case engine::CardId::HOTFIX:
+        return "Correctif";
+    case engine::CardId::DEFRAGMENT:
+        return "Défragmentation";
+    case engine::CardId::FOCUSED_STRIKE:
+        return "Frappe focalisée";
+    case engine::CardId::HYPERBEAM:
+        return "Ultralaser";
+    case engine::CardId::NEGATIVE_PULSE:
+        return "Anti-pulsation";
+    case engine::CardId::END_OF_DAYS:
+        return "Fin des temps";
+    case engine::CardId::BLIGHT_STRIKE:
+        return "Frappe du fléau";
+    case engine::CardId::NO_ESCAPE:
+        return "Inéluctable";
+    case engine::CardId::SCOURGE:
+        return "Pestilence";
+    case engine::CardId::DEATHBRINGER:
+        return "Porte-mort";
+    case engine::CardId::DEATHS_DOOR:
+        return "À l'agonie";
+    case engine::CardId::COUNTDOWN:
+        return "Décompte";
+    case engine::CardId::REAPER_FORM:
+        return "Forme de la Faucheuse";
+    case engine::CardId::NEUROSURGE:
+        return "Influx neuronal";
+    case engine::CardId::TIMES_UP:
+        return "L'heure est venue";
+    case engine::CardId::OBLIVION:
+        return "Oblitération";
+    case engine::CardId::SHROUD:
+        return "Voile";
+    case engine::CardId::CAPACITOR:
+        return "Condensateur";
+    case engine::CardId::BULK_UP:
+        return "Prise de masse";
+    case engine::CardId::SYNCHRONIZE:
+        return "Synchronisation";
     default:
         return "???";
     }
@@ -1143,6 +1213,111 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::SLEIGHT_OF_FLESH:
         stream << "Malus appliqué à un ennemi : " << value << " dégâts.";
         break;
+    case engine::CardId::SHATTER:
+        stream << "TOUS : " << value << ". Évoque tout " << secondary << " fois. Épuis.";
+        break;
+    case engine::CardId::VOLTAIC:
+        stream << "Recanalise chaque Foudre du combat." << (card.upgraded ? "" : " Épuis.");
+        break;
+    case engine::CardId::QUADCAST:
+        stream << "Évoque votre Orbe la plus ancienne " << secondary << " fois.";
+        break;
+    case engine::CardId::BARRAGE:
+        stream << "Inflige " << value << " dégâts par Orbe en place.";
+        break;
+    case engine::CardId::TESLA_COIL:
+        stream << "Inflige " << value << ". Passif des Foudres, " << secondary << " fois.";
+        break;
+    case engine::CardId::CHAOS:
+        stream << "Canalise " << secondary << " Orbe(s) au hasard.";
+        break;
+    case engine::CardId::COMPILE_DRIVER:
+        stream << "Inflige " << value << ". Pioche 1 par type d'Orbe.";
+        break;
+    case engine::CardId::DARKNESS:
+        stream << "Canalise 1 Ténèbres. Leur passif, " << secondary << " fois.";
+        break;
+    case engine::CardId::MULTI_CAST:
+        stream << (card.upgraded ? "Évoque l'Orbe la plus ancienne X+1 fois." : "Évoque l'Orbe la plus ancienne X fois.");
+        break;
+    case engine::CardId::LOOP:
+        stream << "Tour : passif du plus vieil Orbe, " << value << " fois.";
+        break;
+    case engine::CardId::CONSUMING_SHADOW:
+        stream << secondary << " Ténèbres. Fin du tour : évoque 1 Orbe.";
+        break;
+    case engine::CardId::HAILSTORM:
+        stream << "Fin de tour avec Givre : " << value << " à TOUS.";
+        break;
+    case engine::CardId::THUNDER:
+        stream << "Foudre évoquée : +" << value << " dégâts à sa cible.";
+        break;
+    case engine::CardId::COOLANT:
+        stream << "Tour : " << value << " d'Armure par type d'Orbe.";
+        break;
+    case engine::CardId::BIASED_COGNITION:
+        stream << "Focalisation +" << value << ". Chaque tour : -" << secondary << ".";
+        break;
+    case engine::CardId::HOTFIX:
+        stream << "Focalisation +" << value << " ce tour." << (card.upgraded ? "" : " Épuisement.");
+        break;
+    case engine::CardId::DEFRAGMENT:
+        stream << "Focalisation +" << value << ".";
+        break;
+    case engine::CardId::FOCUSED_STRIKE:
+        stream << "Inflige " << value << ". Focalisation +" << secondary << " ce tour.";
+        break;
+    case engine::CardId::HYPERBEAM:
+        stream << "Inflige " << value << " à TOUS. Focalisation -" << secondary << ".";
+        break;
+    case engine::CardId::NEGATIVE_PULSE:
+        stream << "Gagne " << value << " d'Armure. Fatalité " << secondary << " à TOUS.";
+        break;
+    case engine::CardId::END_OF_DAYS:
+        stream << "Fatalité " << secondary << " à TOUS, mortelle aussitôt.";
+        break;
+    case engine::CardId::BLIGHT_STRIKE:
+        stream << "Inflige " << value << ". Fatalité = dégâts infligés.";
+        break;
+    case engine::CardId::NO_ESCAPE:
+        stream << "Fatalité " << value << ", +" << secondary << " par 10 déjà présents.";
+        break;
+    case engine::CardId::SCOURGE:
+        stream << "Fatalité " << value << ". Pioche " << secondary << ".";
+        break;
+    case engine::CardId::DEATHBRINGER:
+        stream << "Fatalité " << value << " et Affaibli " << secondary << " à TOUS.";
+        break;
+    case engine::CardId::DEATHS_DOOR:
+        stream << "Armure " << value << ", 3 fois si Fatalité appliquée.";
+        break;
+    case engine::CardId::COUNTDOWN:
+        stream << "Début de tour : Fatalité " << value << " à 1 ennemi.";
+        break;
+    case engine::CardId::REAPER_FORM:
+        stream << (card.upgraded ? "Retenue. Dégâts d'Attaque = Fatalité." : "Dégâts d'Attaque : autant de Fatalité.");
+        break;
+    case engine::CardId::NEUROSURGE:
+        stream << "+" << value << " ⚡, pioche " << secondary << ". Vous : Fatalité 3/tour.";
+        break;
+    case engine::CardId::TIMES_UP:
+        stream << (card.upgraded ? "Retenue. " : "") << "Dégâts = Fatalité de l'ennemi.";
+        break;
+    case engine::CardId::OBLIVION:
+        stream << "Ce tour, carte jouée : Fatalité " << value << " sur lui.";
+        break;
+    case engine::CardId::SHROUD:
+        stream << "Fatalité appliquée : +" << value << " d'Armure.";
+        break;
+    case engine::CardId::CAPACITOR:
+        stream << "Gagne " << value << " Emplacements d'Orbe.";
+        break;
+    case engine::CardId::BULK_UP:
+        stream << "-" << secondary << " Emplacement. Force et Dextérité +" << value << ".";
+        break;
+    case engine::CardId::SYNCHRONIZE:
+        stream << "Ce tour : Focalisation +" << value << " par type d'Orbe.";
+        break;
     default:
         break;
     }
@@ -1234,6 +1409,12 @@ void status_line(const engine::CombatEntity& entity, bn::istring& out)
             break;
         case engine::StatusType::RITUAL:
             stream << "Rituel" << status.amount;
+            break;
+        case engine::StatusType::FOCUS:
+            stream << "Foc" << (status.amount > 0 ? "+" : "") << status.amount;
+            break;
+        case engine::StatusType::DOOM:
+            stream << "Fatal" << status.amount;
             break;
         default:
             break;

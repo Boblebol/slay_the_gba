@@ -323,7 +323,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::STORM:
             if (card_played && CardDef::get(info.card.id).type == CardType::POWER) {
                 for (int16_t orb = 0; orb < power.amount; ++orb) {
-                    player.channel_orb(OrbType::LIGHTNING, has_alive_enemies() ? &enemies[get_first_alive_enemy_index()] : nullptr);
+                    channel_orb(OrbType::LIGHTNING);
                 }
             }
             break;
@@ -376,6 +376,56 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::SLEIGHT_OF_FLESH:
             if (event == CombatEvent::DEBUFF_APPLIED && foe && foe->is_alive()) damage_enemy(*foe, power.amount);
+            break;
+        // Orbs and Focus
+        case PowerId::LOOP:
+            if (turn_start) {
+                for (int16_t repeat = 0; repeat < power.amount; ++repeat) trigger_orb_passive(0);
+            }
+            break;
+        case PowerId::COOLANT:
+            if (turn_start) add_block(static_cast<int16_t>(power.amount * unique_orbs()));
+            break;
+        case PowerId::BIASED_COGNITION:
+            if (turn_start) player.add_status(StatusType::FOCUS, static_cast<int16_t>(-power.stacks));
+            break;
+        case PowerId::CONSUMING_SHADOW:
+            if (event == CombatEvent::TURN_END) {
+                for (uint8_t copy = 0; copy < power.stacks && !player.orbs.empty(); ++copy) {
+                    evoke_orb(player.orbs.size() - 1);
+                }
+            }
+            break;
+        case PowerId::HAILSTORM:
+            if (event == CombatEvent::TURN_END) {
+                for (const Orb& orb : player.orbs) {
+                    if (orb == OrbType::FROST) {
+                        damage_all_enemies(power.amount);
+                        break;
+                    }
+                }
+            }
+            break;
+        // Doom
+        case PowerId::COUNTDOWN:
+            if (turn_start && has_alive_enemies()) afflict(enemies[random_alive_enemy_index()], StatusType::DOOM, power.amount);
+            break;
+        case PowerId::NEUROSURGE:
+            if (turn_start) player.add_status(StatusType::DOOM, power.amount);
+            break;
+        case PowerId::REAPER_FORM:
+            if (event == CombatEvent::UNBLOCKED_DAMAGE_DEALT && foe && foe->is_alive()) {
+                afflict(*foe, StatusType::DOOM, info.amount);
+            }
+            break;
+        case PowerId::OBLIVION:
+            if (card_played && power.target >= 0 && static_cast<size_t>(power.target) < enemies.size() &&
+                enemies[power.target].is_alive()) {
+                afflict(enemies[power.target], StatusType::DOOM, power.amount);
+            }
+            break;
+        case PowerId::SHROUD:
+            if (event == CombatEvent::DEBUFF_APPLIED && info.status == StatusType::DOOM) add_block(power.amount);
             break;
         // Relics
         case PowerId::CAPTAINS_WHEEL:
@@ -460,6 +510,14 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 draw_cards(power.amount);
             }
             break;
+        case PowerId::TURN_SUMMON:
+            if (turn_start) player.summon_minion(power.amount, 0);
+            break;
+        case PowerId::EMOTION_CHIP:
+            if (turn_start && lost_hp_last_turn_) {
+                for (size_t slot = 0; slot < player.orbs.size(); ++slot) trigger_orb_passive(slot);
+            }
+            break;
         case PowerId::TOUGH_BANDAGES:
             if (event == CombatEvent::CARD_DISCARDED && my_turn) add_block(power.amount);
             break;
@@ -469,8 +527,8 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             }
             break;
         default:
-            // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, ICE_CREAM, STURDY_CLAMP, RAZOR_TOOTH,
-            // LIZARD_TAIL, UNCEASING_TOP.
+            // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
+            // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE.
             break;
     }
 }
@@ -497,7 +555,8 @@ void CombatEngine::afflict(Enemy& target, StatusType type, int16_t amount) {
     if (amount == 0) return;
     target.add_status(type, amount);
     bool debuff = type == StatusType::VULNERABLE || type == StatusType::WEAK || type == StatusType::POISON ||
-                  (type == StatusType::STRENGTH && amount < 0);
+                  type == StatusType::DOOM || (type == StatusType::STRENGTH && amount < 0);
+    if (type == StatusType::DOOM) counters.doom_applied = bump(counters.doom_applied);
     if (debuff) {
         EventInfo info;
         info.enemy = index_of(target);
@@ -515,6 +574,120 @@ void CombatEngine::damage_enemy(Enemy& target, int16_t amount) {
 
 void CombatEngine::damage_all_enemies(int16_t amount) {
     for (Enemy& target : enemies) damage_enemy(target, amount);
+}
+
+int16_t CombatEngine::with_focus(int16_t base) const {
+    return std::max<int16_t>(0, static_cast<int16_t>(base + player.get_status(StatusType::FOCUS)));
+}
+
+int CombatEngine::unique_orbs() const {
+    int count = 0;
+    for (OrbType type : { OrbType::LIGHTNING, OrbType::FROST, OrbType::DARK, OrbType::PLASMA }) {
+        for (const Orb& orb : player.orbs) {
+            if (orb == type) {
+                ++count;
+                break;
+            }
+        }
+    }
+    return count;
+}
+
+void CombatEngine::channel_orb(OrbType type) {
+    if (type == OrbType::NONE || player.orb_slots == 0) return;
+    // No free slot: the oldest orb is evoked to make room.
+    if (player.orbs.size() >= player.orb_slots) evoke_orb(0);
+    Orb orb(type);
+    if (type == OrbType::DARK) orb.charge = DARK_PASSIVE;
+    player.orbs.push_back(orb);
+    counters.combat_orbs_channeled = bump(counters.combat_orbs_channeled);
+    if (type == OrbType::LIGHTNING) counters.combat_lightning_channeled = bump(counters.combat_lightning_channeled);
+    ActivePower* metronome = find_power(PowerId::METRONOME);
+    if (metronome && metronome->counter == 0 && counters.combat_orbs_channeled >= METRONOME_ORBS) {
+        metronome->counter = 1;
+        damage_all_enemies(metronome->amount);
+    }
+}
+
+void CombatEngine::change_orb_slots(int delta) {
+    int slots = std::clamp(player.orb_slots + delta, 0, static_cast<int>(MAX_ORB_SLOTS));
+    player.orb_slots = static_cast<uint8_t>(slots);
+    while (player.orbs.size() > player.orb_slots) player.orbs.pop_back();
+}
+
+void CombatEngine::evoke_orb(size_t slot, int times) {
+    if (slot >= player.orbs.size()) return;
+    const Orb orb = player.orbs[slot];
+    player.orbs.erase(slot);
+
+    for (int i = 0; i < times; ++i) {
+        switch (orb.type) {
+            case OrbType::LIGHTNING:
+                if (has_alive_enemies()) {
+                    Enemy& struck = enemies[random_alive_enemy_index()];
+                    damage_enemy(struck, static_cast<int16_t>(with_focus(LIGHTNING_EVOKE) + power_amount(PowerId::THUNDER)));
+                }
+                break;
+            case OrbType::FROST:
+                add_block(with_focus(FROST_EVOKE)); // orb Block ignores Dexterity
+                break;
+            case OrbType::DARK: {
+                // The stored charge goes to the weakest enemy.
+                Enemy* weakest = nullptr;
+                for (Enemy& foe : enemies) {
+                    if (foe.is_alive() && (!weakest || foe.hp < weakest->hp)) weakest = &foe;
+                }
+                if (weakest) damage_enemy(*weakest, orb.charge);
+                break;
+            }
+            case OrbType::PLASMA:
+                player.energy = static_cast<int8_t>(player.energy + PLASMA_EVOKE);
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+void CombatEngine::trigger_orb_passive(size_t slot, Enemy* target) {
+    if (slot >= player.orbs.size()) return;
+    Orb& orb = player.orbs[slot];
+    switch (orb.type) {
+        case OrbType::LIGHTNING:
+            if (!target && has_alive_enemies()) target = &enemies[random_alive_enemy_index()];
+            if (target) damage_enemy(*target, with_focus(LIGHTNING_PASSIVE));
+            break;
+        case OrbType::FROST:
+            add_block(with_focus(FROST_PASSIVE));
+            break;
+        case OrbType::DARK:
+            orb.charge = static_cast<int16_t>(orb.charge + with_focus(DARK_PASSIVE));
+            break;
+        case OrbType::PLASMA:
+            player.energy = static_cast<int8_t>(player.energy + PLASMA_PASSIVE);
+            break;
+        default:
+            break;
+    }
+}
+
+void CombatEngine::trigger_turn_passives(bool turn_start) {
+    // Plasma gives its energy when the turn starts; the other orbs act when it ends.
+    for (size_t slot = 0; slot < player.orbs.size(); ++slot) {
+        if ((player.orbs[slot] == OrbType::PLASMA) == turn_start) trigger_orb_passive(slot);
+    }
+    if (has_power(PowerId::GOLD_PLATED_CABLES) && !player.orbs.empty() &&
+        (player.orbs[0] == OrbType::PLASMA) == turn_start) {
+        trigger_orb_passive(0);
+    }
+}
+
+void CombatEngine::reap(Enemy& target) {
+    if (target.is_alive() && target.get_status(StatusType::DOOM) >= target.hp) {
+        target.hp = 0;
+        if (!target.minion) player.heal(power_amount(PowerId::BOOK_REPAIR_KNIFE));
+        settle_deaths();
+    }
 }
 
 void CombatEngine::recall_to_hand(CardId id) {
@@ -667,6 +840,8 @@ void CombatEngine::gain_temporary(StatusType type, int8_t amount) {
         temp_strength = static_cast<int8_t>(temp_strength + amount);
     } else if (type == StatusType::DEXTERITY) {
         temp_dexterity = static_cast<int8_t>(temp_dexterity + amount);
+    } else if (type == StatusType::FOCUS) {
+        temp_focus = static_cast<int8_t>(temp_focus + amount);
     } else {
         return;
     }
@@ -716,7 +891,7 @@ int CombatEngine::run_delayed_effects(bool end_of_turn) {
                 break;
             case DelayedType::CHANNEL_LIGHTNING:
                 for (int16_t orb = 0; orb < effect.amount; ++orb) {
-                    player.channel_orb(OrbType::LIGHTNING, has_alive_enemies() ? &enemies[get_first_alive_enemy_index()] : nullptr);
+                    channel_orb(OrbType::LIGHTNING);
                 }
                 break;
             case DelayedType::DAMAGE_ALL:
@@ -792,6 +967,7 @@ void CombatEngine::reset_combat_state() {
     event_depth_ = 0;
     temp_strength = 0;
     temp_dexterity = 0;
+    temp_focus = 0;
     alive_mask_ = 0;
     for (size_t i = 0; i < enemies.size(); ++i) {
         if (enemies[i].is_alive()) alive_mask_ = static_cast<uint8_t>(alive_mask_ | (1u << i));
@@ -822,6 +998,7 @@ void CombatEngine::start_player_turn() {
     state = CombatState::PLAYER_TURN;
     int16_t hp_before = player.hp;
     player.apply_poison_tick();
+    lost_hp_last_turn_ = counters.hp_lost > 0;
     counters.start_turn();
     note_player_hp_lost(static_cast<int16_t>(hp_before - player.hp));
     if (!player.is_alive()) {
@@ -843,7 +1020,7 @@ void CombatEngine::start_player_turn() {
     exhausted_this_turn = 0;
     retain_hand = false;
     no_draw_this_turn = false;
-    player.trigger_start_of_turn_orbs();
+    trigger_turn_passives(true);
     int extra_draw = run_delayed_effects(false);
     turn_draw_bonus_ = 0;
     emit(CombatEvent::TURN_START);
@@ -1032,12 +1209,12 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::ZAP: {
-            player.channel_orb(OrbType::LIGHTNING, &current_target);
+            channel_orb(OrbType::LIGHTNING);
             set_log(upgraded ? "Channeled Lightning (Zap+)!"sv : "Channeled Lightning (Zap)!"sv);
             break;
         }
         case CardId::DUALCAST: {
-            player.evoke_oldest_orb(&current_target, 2);
+            evoke_orb(0, 2);
             set_log(upgraded ? "Triggered Dualcast+!"sv : "Triggered Dualcast!"sv);
             break;
         }
@@ -1126,13 +1303,13 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::BALL_LIGHTNING: {
             hit(current_target, base_value);
-            player.channel_orb(OrbType::LIGHTNING, &current_target);
+            channel_orb(OrbType::LIGHTNING);
             set_log(upgraded ? "Played Ball Lightning+!"sv : "Played Ball Lightning!"sv);
             break;
         }
         case CardId::COLD_SNAP: {
             hit(current_target, base_value);
-            player.channel_orb(OrbType::FROST, &current_target);
+            channel_orb(OrbType::FROST);
             set_log(upgraded ? "Played Cold Snap+!"sv : "Played Cold Snap!"sv);
             break;
         }
@@ -1191,7 +1368,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::COOLHEADED: {
-            player.channel_orb(OrbType::FROST, &current_target);
+            channel_orb(OrbType::FROST);
             draw_cards(secondary_value);
             set_log(upgraded ? "Played Coolheaded+!"sv : "Played Coolheaded!"sv);
             break;
@@ -1377,25 +1554,25 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::SHADOW_SHIELD: {
             gain_block(base_value);
-            player.channel_orb(OrbType::DARK, &current_target);
+            channel_orb(OrbType::DARK);
             set_log(upgraded ? "Played Shadow Shield+!"sv : "Played Shadow Shield!"sv);
             break;
         }
         case CardId::METEOR_STRIKE: {
             hit(current_target, base_value);
-            for (uint8_t n = 0; n < secondary_value; ++n) player.channel_orb(OrbType::PLASMA, &current_target);
+            for (uint8_t n = 0; n < secondary_value; ++n) channel_orb(OrbType::PLASMA);
             set_log(upgraded ? "Played Meteor Strike+!"sv : "Played Meteor Strike!"sv);
             break;
         }
         case CardId::GLACIER: {
             gain_block(base_value);
-            for (uint8_t n = 0; n < secondary_value; ++n) player.channel_orb(OrbType::FROST, &current_target);
+            for (uint8_t n = 0; n < secondary_value; ++n) channel_orb(OrbType::FROST);
             set_log(upgraded ? "Played Glacier+!"sv : "Played Glacier!"sv);
             break;
         }
         case CardId::ICE_LANCE: {
             hit(current_target, base_value);
-            for (uint8_t n = 0; n < secondary_value; ++n) player.channel_orb(OrbType::FROST, &current_target);
+            for (uint8_t n = 0; n < secondary_value; ++n) channel_orb(OrbType::FROST);
             set_log(upgraded ? "Played Ice Lance+!"sv : "Played Ice Lance!"sv);
             break;
         }
@@ -1421,7 +1598,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         case CardId::NULL_CARD: {
             hit(current_target, base_value);
             afflict(current_target, StatusType::WEAK, secondary_value);
-            player.channel_orb(OrbType::DARK, &current_target);
+            channel_orb(OrbType::DARK);
             set_log(upgraded ? "Played Null+!"sv : "Played Null!"sv);
             break;
         }
@@ -1593,17 +1770,17 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::RAINBOW: {
-            for (OrbType orb : { OrbType::LIGHTNING, OrbType::FROST, OrbType::DARK }) player.channel_orb(orb, &current_target);
+            for (OrbType orb : { OrbType::LIGHTNING, OrbType::FROST, OrbType::DARK }) channel_orb(orb);
             set_log(upgraded ? "Played Rainbow+!"sv : "Played Rainbow!"sv);
             break;
         }
         case CardId::CHILL: {
-            for (int foes = count_alive_enemies(); foes > 0; --foes) player.channel_orb(OrbType::FROST, &current_target);
+            for (int foes = count_alive_enemies(); foes > 0; --foes) channel_orb(OrbType::FROST);
             set_log(upgraded ? "Played Chill+!"sv : "Played Chill!"sv);
             break;
         }
         case CardId::FUSION: {
-            player.channel_orb(OrbType::PLASMA, &current_target);
+            channel_orb(OrbType::PLASMA);
             set_log(upgraded ? "Played Fusion+!"sv : "Played Fusion!"sv);
             break;
         }
@@ -1855,7 +2032,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::TEMPEST: {
             for (int blow = 0; blow < x_value + secondary_value; ++blow) {
-                player.channel_orb(OrbType::LIGHTNING, &current_target);
+                channel_orb(OrbType::LIGHTNING);
             }
             set_log(upgraded ? "Played Tempest+!"sv : "Played Tempest!"sv);
             break;
@@ -2411,6 +2588,238 @@ bool CombatEngine::play_card(int index, int target_index) {
             set_log(upgraded ? "Played Sleight of Flesh+!"sv : "Played Sleight of Flesh!"sv);
             break;
         }
+        case CardId::SHATTER: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    hit(enemies[i], base_value);
+                }
+            }
+            while (!player.orbs.empty()) evoke_orb(0, secondary_value);
+            set_log(upgraded ? "Played Shatter+!"sv : "Played Shatter!"sv);
+            break;
+        }
+        case CardId::VOLTAIC: {
+            for (int bolts = counters.combat_lightning_channeled; bolts > 0; --bolts) channel_orb(OrbType::LIGHTNING);
+            set_log(upgraded ? "Played Voltaic+!"sv : "Played Voltaic!"sv);
+            break;
+        }
+        case CardId::QUADCAST: {
+            evoke_orb(0, secondary_value);
+            set_log(upgraded ? "Played Quadcast+!"sv : "Played Quadcast!"sv);
+            break;
+        }
+        case CardId::BARRAGE: {
+            for (int round = 0; round < static_cast<int>(player.orbs.size()); ++round) {
+                hit(current_target, base_value);
+            }
+            set_log(upgraded ? "Played Barrage+!"sv : "Played Barrage!"sv);
+            break;
+        }
+        case CardId::TESLA_COIL: {
+            hit(current_target, base_value);
+            for (int round = 0; round < secondary_value; ++round) {
+                for (size_t slot = 0; slot < player.orbs.size(); ++slot) {
+                    if (player.orbs[slot] == OrbType::LIGHTNING) trigger_orb_passive(slot, &current_target);
+                }
+            }
+            set_log(upgraded ? "Played Tesla Coil+!"sv : "Played Tesla Coil!"sv);
+            break;
+        }
+        case CardId::CHAOS: {
+            constexpr OrbType KINDS[] = { OrbType::LIGHTNING, OrbType::FROST, OrbType::DARK, OrbType::PLASMA };
+            for (int round = 0; round < secondary_value; ++round) {
+                channel_orb(KINDS[next_random() % 4]);
+            }
+            set_log(upgraded ? "Played Chaos+!"sv : "Played Chaos!"sv);
+            break;
+        }
+        case CardId::COMPILE_DRIVER: {
+            hit(current_target, base_value);
+            draw_cards(unique_orbs());
+            set_log(upgraded ? "Played Compile Driver+!"sv : "Played Compile Driver!"sv);
+            break;
+        }
+        case CardId::DARKNESS: {
+            channel_orb(OrbType::DARK);
+            for (int round = 0; round < secondary_value; ++round) {
+                for (size_t slot = 0; slot < player.orbs.size(); ++slot) {
+                    if (player.orbs[slot] == OrbType::DARK) trigger_orb_passive(slot);
+                }
+            }
+            set_log(upgraded ? "Played Darkness+!"sv : "Played Darkness!"sv);
+            break;
+        }
+        case CardId::MULTI_CAST: {
+            if (x_value + secondary_value > 0) evoke_orb(0, x_value + secondary_value);
+            set_log(upgraded ? "Played Multi-Cast+!"sv : "Played Multi-Cast!"sv);
+            break;
+        }
+        case CardId::LOOP: {
+            add_power(PowerId::LOOP, base_value);
+            set_log(upgraded ? "Played Loop+!"sv : "Played Loop!"sv);
+            break;
+        }
+        case CardId::CONSUMING_SHADOW: {
+            for (int round = 0; round < secondary_value; ++round) {
+                channel_orb(OrbType::DARK);
+            }
+            add_power(PowerId::CONSUMING_SHADOW);
+            set_log(upgraded ? "Played Consuming Shadow+!"sv : "Played Consuming Shadow!"sv);
+            break;
+        }
+        case CardId::HAILSTORM: {
+            add_power(PowerId::HAILSTORM, base_value);
+            set_log(upgraded ? "Played Hailstorm+!"sv : "Played Hailstorm!"sv);
+            break;
+        }
+        case CardId::THUNDER: {
+            add_power(PowerId::THUNDER, base_value);
+            set_log(upgraded ? "Played Thunder+!"sv : "Played Thunder!"sv);
+            break;
+        }
+        case CardId::COOLANT: {
+            add_power(PowerId::COOLANT, base_value);
+            set_log(upgraded ? "Played Coolant+!"sv : "Played Coolant!"sv);
+            break;
+        }
+        case CardId::BIASED_COGNITION: {
+            player.add_status(StatusType::FOCUS, base_value);
+            add_power(PowerId::BIASED_COGNITION);
+            set_log(upgraded ? "Played Biased Cognition+!"sv : "Played Biased Cognition!"sv);
+            break;
+        }
+        case CardId::HOTFIX: {
+            gain_temporary(StatusType::FOCUS, static_cast<int8_t>(base_value));
+            set_log(upgraded ? "Played Hotfix+!"sv : "Played Hotfix!"sv);
+            break;
+        }
+        case CardId::DEFRAGMENT: {
+            player.add_status(StatusType::FOCUS, base_value);
+            set_log(upgraded ? "Played Defragment+!"sv : "Played Defragment!"sv);
+            break;
+        }
+        case CardId::FOCUSED_STRIKE: {
+            hit(current_target, base_value);
+            gain_temporary(StatusType::FOCUS, static_cast<int8_t>(secondary_value));
+            set_log(upgraded ? "Played Focused Strike+!"sv : "Played Focused Strike!"sv);
+            break;
+        }
+        case CardId::HYPERBEAM: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    hit(enemies[i], base_value);
+                }
+            }
+            player.add_status(StatusType::FOCUS, static_cast<int16_t>(-secondary_value));
+            set_log(upgraded ? "Played Hyperbeam+!"sv : "Played Hyperbeam!"sv);
+            break;
+        }
+        case CardId::NEGATIVE_PULSE: {
+            gain_block(base_value);
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    afflict(enemies[i], StatusType::DOOM, secondary_value);
+                }
+            }
+            set_log(upgraded ? "Played Negative Pulse+!"sv : "Played Negative Pulse!"sv);
+            break;
+        }
+        case CardId::END_OF_DAYS: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    afflict(enemies[i], StatusType::DOOM, secondary_value);
+                }
+            }
+            for (Enemy& foe : enemies) reap(foe);
+            set_log(upgraded ? "Played End of Days+!"sv : "Played End of Days!"sv);
+            break;
+        }
+        case CardId::BLIGHT_STRIKE: {
+            int16_t dealt = hit(current_target, base_value);
+            if (current_target.is_alive()) afflict(current_target, StatusType::DOOM, dealt);
+            set_log(upgraded ? "Played Blight Strike+!"sv : "Played Blight Strike!"sv);
+            break;
+        }
+        case CardId::NO_ESCAPE: {
+            afflict(current_target, StatusType::DOOM, static_cast<int16_t>(base_value + secondary_value * (current_target.get_status(StatusType::DOOM) / 10)));
+            set_log(upgraded ? "Played No Escape+!"sv : "Played No Escape!"sv);
+            break;
+        }
+        case CardId::SCOURGE: {
+            afflict(current_target, StatusType::DOOM, base_value);
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Scourge+!"sv : "Played Scourge!"sv);
+            break;
+        }
+        case CardId::DEATHBRINGER: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    afflict(enemies[i], StatusType::DOOM, base_value);
+                    afflict(enemies[i], StatusType::WEAK, secondary_value);
+                }
+            }
+            set_log(upgraded ? "Played Deathbringer+!"sv : "Played Deathbringer!"sv);
+            break;
+        }
+        case CardId::DEATHS_DOOR: {
+            gain_block(base_value);
+            if (counters.doom_applied > 0) {
+                for (int round = 0; round < secondary_value; ++round) {
+                    gain_block(base_value);
+                }
+            }
+            set_log(upgraded ? "Played Death's Door+!"sv : "Played Death's Door!"sv);
+            break;
+        }
+        case CardId::COUNTDOWN: {
+            add_power(PowerId::COUNTDOWN, base_value);
+            set_log(upgraded ? "Played Countdown+!"sv : "Played Countdown!"sv);
+            break;
+        }
+        case CardId::REAPER_FORM: {
+            add_power(PowerId::REAPER_FORM);
+            set_log(upgraded ? "Played Reaper Form+!"sv : "Played Reaper Form!"sv);
+            break;
+        }
+        case CardId::NEUROSURGE: {
+            player.energy = static_cast<int8_t>(player.energy + base_value);
+            draw_cards(secondary_value);
+            add_power(PowerId::NEUROSURGE, 3);
+            set_log(upgraded ? "Played Neurosurge+!"sv : "Played Neurosurge!"sv);
+            break;
+        }
+        case CardId::TIMES_UP: {
+            hit(current_target, current_target.get_status(StatusType::DOOM));
+            set_log(upgraded ? "Played Time's Up+!"sv : "Played Time's Up!"sv);
+            break;
+        }
+        case CardId::OBLIVION: {
+            add_power(PowerId::OBLIVION, base_value, true, static_cast<int8_t>(target_idx));
+            set_log(upgraded ? "Played Oblivion+!"sv : "Played Oblivion!"sv);
+            break;
+        }
+        case CardId::SHROUD: {
+            add_power(PowerId::SHROUD, base_value);
+            set_log(upgraded ? "Played Shroud+!"sv : "Played Shroud!"sv);
+            break;
+        }
+        case CardId::CAPACITOR: {
+            change_orb_slots(base_value);
+            set_log(upgraded ? "Played Capacitor+!"sv : "Played Capacitor!"sv);
+            break;
+        }
+        case CardId::BULK_UP: {
+            change_orb_slots(-secondary_value);
+            player.add_status(StatusType::STRENGTH, base_value);
+            player.add_status(StatusType::DEXTERITY, base_value);
+            set_log(upgraded ? "Played Bulk Up+!"sv : "Played Bulk Up!"sv);
+            break;
+        }
+        case CardId::SYNCHRONIZE: {
+            gain_temporary(StatusType::FOCUS, static_cast<int8_t>(base_value * unique_orbs()));
+            set_log(upgraded ? "Played Synchronize+!"sv : "Played Synchronize!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;
@@ -2526,15 +2935,25 @@ void CombatEngine::end_player_turn() {
     run_delayed_effects(true);
     int16_t block_before = player.block;
     player.apply_metallicize_tick();
-    if (has_alive_enemies()) {
-        player.trigger_passive_orbs(&enemies[get_first_alive_enemy_index()]);
-    }
     if (player.block > block_before) {
         EventInfo gained;
         gained.amount = static_cast<int16_t>(player.block - block_before);
         emit(CombatEvent::BLOCK_GAINED, gained);
     }
+    trigger_turn_passives(false);
+    // Focus gained "this turn" still counts for the passives above.
+    player.add_status(StatusType::FOCUS, static_cast<int16_t>(-temp_focus));
+    temp_focus = 0;
     settle_deaths();
+
+    // Doom takes the player at the end of the turn, like any enemy.
+    int16_t doom = player.get_status(StatusType::DOOM);
+    if (doom > 0 && doom >= player.hp) {
+        player.hp = 0;
+        state = CombatState::DEFEAT;
+        set_log("You were defeated!");
+        return;
+    }
     if (!enemies.empty()) {
         enemy = enemies[0];
     }
@@ -2566,6 +2985,9 @@ void CombatEngine::execute_enemy_turn() {
             const int16_t shield_before = player.block + player.minion_hp + player.minion_block;
 
             enemies[i].execute_turn(player);
+
+            // Doom: an enemy with at least as much Doom as HP does not survive its turn.
+            reap(enemies[i]);
 
             // The Strength it lost "until the end of its turn" comes back.
             afflict(enemies[i], StatusType::STRENGTH, enemies[i].temp_strength_loss);

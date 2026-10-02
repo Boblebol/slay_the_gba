@@ -256,7 +256,45 @@ static const CardDef CARDS[] = {
     { CardId::DEMESNE, "Demesne", 3, CardType::POWER, TargetType::SELF, 1, 1, "Ethereal. Each turn gain 1 energy and draw 1 more.", "Demesne+", 2, 1, 1, "Ethereal. Each turn gain 1 energy and draw 1 more.", KEYWORD_ETHEREAL, KEYWORD_ETHEREAL },
     { CardId::SPIRIT_OF_ASH, "Spirit of Ash", 1, CardType::POWER, TargetType::SELF, 4, 0, "Ethereal card played: gain 4 block.", "Spirit of Ash+", 1, 5, 0, "Ethereal card played: gain 5 block." },
     { CardId::PAGESTORM, "Pagestorm", 1, CardType::POWER, TargetType::SELF, 1, 0, "Ethereal card drawn: draw 1.", "Pagestorm+", 0, 1, 0, "Ethereal card drawn: draw 1." },
-    { CardId::SLEIGHT_OF_FLESH, "Sleight of Flesh", 2, CardType::POWER, TargetType::SELF, 9, 0, "Debuff applied to an enemy: it takes 9 dmg.", "Sleight of Flesh+", 2, 13, 0, "Debuff applied to an enemy: it takes 13 dmg." }
+    { CardId::SLEIGHT_OF_FLESH, "Sleight of Flesh", 2, CardType::POWER, TargetType::SELF, 9, 0, "Debuff applied to an enemy: it takes 9 dmg.", "Sleight of Flesh+", 2, 13, 0, "Debuff applied to an enemy: it takes 13 dmg." },
+    // Defect: orbs, Focus and Doom
+    { CardId::SHATTER, "Shatter", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 7, 2, "Deal 7 dmg to all. Evoke all your orbs twice. Exhaust.", "Shatter+", 1, 11, 2, "Deal 11 dmg to all. Evoke all your orbs twice. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::VOLTAIC, "Voltaic", 3, CardType::SKILL, TargetType::SELF, 0, 0, "Channel as many Lightning as channeled this combat. Exhaust.", "Voltaic+", 3, 0, 0, "Channel as many Lightning as channeled this combat.", KEYWORD_EXHAUST, 0 },
+    { CardId::QUADCAST, "Quadcast", 1, CardType::SKILL, TargetType::SELF, 0, 4, "Evoke your oldest orb 4 times.", "Quadcast+", 0, 0, 4, "Evoke your oldest orb 4 times." },
+    { CardId::BARRAGE, "Barrage", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 0, "Deal 5 dmg for each orb in your slots.", "Barrage+", 1, 7, 0, "Deal 7 dmg for each orb in your slots." },
+    { CardId::TESLA_COIL, "Tesla Coil", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 3, 1, "Deal 3 dmg. Your Lightning orbs trigger on the enemy.", "Tesla Coil+", 0, 4, 2, "Deal 4 dmg. Your Lightning orbs trigger on the enemy twice." },
+    { CardId::CHAOS, "Chaos", 1, CardType::SKILL, TargetType::SELF, 0, 1, "Channel 1 random orb.", "Chaos+", 1, 0, 2, "Channel 2 random orbs." },
+    { CardId::COMPILE_DRIVER, "Compile Driver", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 7, 0, "Deal 7 dmg. Draw 1 card per orb type you hold.", "Compile Driver+", 1, 10, 0, "Deal 10 dmg. Draw 1 card per orb type you hold." },
+    { CardId::DARKNESS, "Darkness", 1, CardType::SKILL, TargetType::SELF, 0, 1, "Channel 1 Dark. Your Dark orbs trigger.", "Darkness+", 1, 0, 2, "Channel 1 Dark. Your Dark orbs trigger twice." },
+    { CardId::MULTI_CAST, "Multi-Cast", COST_X, CardType::SKILL, TargetType::SELF, 0, 0, "Evoke your oldest orb X times.", "Multi-Cast+", COST_X, 0, 1, "Evoke your oldest orb X+1 times." },
+    { CardId::LOOP, "Loop", 1, CardType::POWER, TargetType::SELF, 1, 0, "Each turn, your oldest orb triggers 1 time(s).", "Loop+", 1, 2, 0, "Each turn, your oldest orb triggers 2 time(s)." },
+    { CardId::CONSUMING_SHADOW, "Consuming Shadow", 2, CardType::POWER, TargetType::SELF, 0, 2, "Channel 2 Dark. At end of turn, evoke your newest orb.", "Consuming Shadow+", 2, 0, 3, "Channel 3 Dark. At end of turn, evoke your newest orb." },
+    { CardId::HAILSTORM, "Hailstorm", 1, CardType::POWER, TargetType::SELF, 6, 0, "End of turn with a Frost orb: 6 dmg to all.", "Hailstorm+", 1, 8, 0, "End of turn with a Frost orb: 8 dmg to all." },
+    { CardId::THUNDER, "Thunder", 1, CardType::POWER, TargetType::SELF, 8, 0, "Lightning evoked: 8 more dmg to the enemy hit.", "Thunder+", 1, 11, 0, "Lightning evoked: 11 more dmg to the enemy hit." },
+    { CardId::COOLANT, "Coolant", 1, CardType::POWER, TargetType::SELF, 2, 0, "Each turn, gain 2 block per orb type you hold.", "Coolant+", 1, 3, 0, "Each turn, gain 3 block per orb type you hold." },
+    { CardId::BIASED_COGNITION, "Biased Cognition", 1, CardType::POWER, TargetType::SELF, 5, 1, "Gain 5 Focus. Each turn, lose 1 Focus.", "Biased Cognition+", 1, 6, 1, "Gain 6 Focus. Each turn, lose 1 Focus." },
+    { CardId::HOTFIX, "Hotfix", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Gain 2 Focus this turn. Exhaust.", "Hotfix+", 0, 2, 0, "Gain 2 Focus this turn.", KEYWORD_EXHAUST, 0 },
+    { CardId::DEFRAGMENT, "Defragment", 1, CardType::POWER, TargetType::SELF, 1, 0, "Gain 1 Focus.", "Defragment+", 1, 2, 0, "Gain 2 Focus." },
+    { CardId::FOCUSED_STRIKE, "Focused Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 1, "Deal 9 dmg. Gain 1 Focus this turn.", "Focused Strike+", 1, 11, 2, "Deal 11 dmg. Gain 2 Focus this turn." },
+    { CardId::HYPERBEAM, "Hyperbeam", 2, CardType::ATTACK, TargetType::ALL_ENEMIES, 24, 3, "Deal 24 dmg to all. Lose 3 Focus.", "Hyperbeam+", 2, 30, 3, "Deal 30 dmg to all. Lose 3 Focus." },
+    // Necrobinder: orbs, Focus and Doom
+    { CardId::NEGATIVE_PULSE, "Negative Pulse", 1, CardType::SKILL, TargetType::ALL_ENEMIES, 5, 7, "Gain 5 block. Apply 7 Doom to all.", "Negative Pulse+", 1, 6, 11, "Gain 6 block. Apply 11 Doom to all." },
+    { CardId::END_OF_DAYS, "End of Days", 3, CardType::SKILL, TargetType::ALL_ENEMIES, 0, 29, "Apply 29 Doom to all. Enemies with Doom at their HP die.", "End of Days+", 3, 0, 37, "Apply 37 Doom to all. Enemies with Doom at their HP die." },
+    { CardId::BLIGHT_STRIKE, "Blight Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 0, "Deal 8 dmg. Apply as much Doom as damage dealt.", "Blight Strike+", 1, 10, 0, "Deal 10 dmg. Apply as much Doom as damage dealt." },
+    { CardId::NO_ESCAPE, "No Escape", 1, CardType::SKILL, TargetType::SINGLE_ENEMY, 10, 5, "Apply 10 Doom, +5 per 10 Doom already there.", "No Escape+", 1, 15, 5, "Apply 15 Doom, +5 per 10 Doom already there." },
+    { CardId::SCOURGE, "Scourge", 1, CardType::SKILL, TargetType::SINGLE_ENEMY, 13, 1, "Apply 13 Doom. Draw 1 card.", "Scourge+", 1, 16, 2, "Apply 16 Doom. Draw 2 cards." },
+    { CardId::DEATHBRINGER, "Deathbringer", 2, CardType::SKILL, TargetType::ALL_ENEMIES, 21, 1, "Apply 21 Doom and 1 Weak to all.", "Deathbringer+", 2, 26, 1, "Apply 26 Doom and 1 Weak to all." },
+    { CardId::DEATHS_DOOR, "Death's Door", 1, CardType::SKILL, TargetType::SELF, 6, 2, "Gain 6 block, 2 more times if you applied Doom this turn.", "Death's Door+", 1, 7, 2, "Gain 7 block, 2 more times if you applied Doom this turn." },
+    { CardId::COUNTDOWN, "Countdown", 1, CardType::POWER, TargetType::SELF, 6, 0, "Each turn, apply 6 Doom to a random enemy.", "Countdown+", 1, 9, 0, "Each turn, apply 9 Doom to a random enemy." },
+    { CardId::REAPER_FORM, "Reaper Form", 3, CardType::POWER, TargetType::SELF, 0, 0, "Your attack damage also applies as much Doom.", "Reaper Form+", 3, 0, 0, "Your attack damage also applies as much Doom.", 0, KEYWORD_RETAIN },
+    { CardId::NEUROSURGE, "Neurosurge", 0, CardType::POWER, TargetType::SELF, 3, 2, "Gain 3 energy. Draw 2. Each turn, 3 Doom on yourself.", "Neurosurge+", 0, 4, 2, "Gain 4 energy. Draw 2. Each turn, 3 Doom on yourself." },
+    { CardId::TIMES_UP, "Time's Up", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 0, 0, "Deal damage equal to the enemy's Doom.", "Time's Up+", 2, 0, 0, "Retain. Deal damage equal to the enemy's Doom.", 0, KEYWORD_RETAIN },
+    { CardId::OBLIVION, "Oblivion", 0, CardType::SKILL, TargetType::SINGLE_ENEMY, 3, 0, "This turn, each card played applies 3 Doom to the enemy.", "Oblivion+", 0, 4, 0, "This turn, each card played applies 4 Doom to the enemy." },
+    { CardId::SHROUD, "Shroud", 1, CardType::POWER, TargetType::SELF, 3, 0, "When you apply Doom, gain 3 block.", "Shroud+", 1, 4, 0, "When you apply Doom, gain 4 block." },
+    // Defect: orb slots and Synchronize
+    { CardId::CAPACITOR, "Capacitor", 1, CardType::POWER, TargetType::SELF, 2, 0, "Gain 2 orb slots.", "Capacitor+", 1, 3, 0, "Gain 3 orb slots." },
+    { CardId::BULK_UP, "Bulk Up", 2, CardType::POWER, TargetType::SELF, 2, 1, "Lose 1 orb slot. Gain 2 Str and 2 Dex.", "Bulk Up+", 2, 3, 1, "Lose 1 orb slot. Gain 3 Str and 3 Dex." },
+    { CardId::SYNCHRONIZE, "Synchronize", 1, CardType::SKILL, TargetType::SELF, 1, 0, "Gain 1 Focus this turn per orb type you hold.", "Synchronize+", 1, 2, 0, "Gain 2 Focus this turn per orb type you hold." }
 };
 
 const CardDef& CardDef::get(CardId id) {

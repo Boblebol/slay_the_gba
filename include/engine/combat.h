@@ -46,12 +46,16 @@ struct CombatCounters {
     uint8_t combat_cards_created = 0;
     uint8_t combat_ethereal_played = 0;
     uint8_t combat_hp_losses = 0; // number of times the player lost HP
+    uint8_t combat_orbs_channeled = 0;
+    uint8_t combat_lightning_channeled = 0;
+    uint8_t doom_applied = 0;     // this turn: times Doom was applied to an enemy
 
     uint8_t cards_played() const { return static_cast<uint8_t>(attacks_played + skills_played + powers_played); }
     void start_turn() {
         attacks_played = skills_played = powers_played = 0;
         cards_drawn = cards_discarded = energy_spent = hits_dealt = 0;
         stars_gained = stars_spent = 0;
+        doom_applied = 0;
         hp_lost = 0;
     }
 };
@@ -109,6 +113,7 @@ public:
     FixedVector<DeckCard, 24> powers_in_play; // Power cards played this combat: they stay in play
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;
+    int8_t temp_focus = 0;
 
     FixedVector<EnemyActionRecord, 3> last_enemy_actions;
 
@@ -162,6 +167,19 @@ public:
     void damage_enemy(Enemy& target, int16_t amount);
     void damage_all_enemies(int16_t amount);
 
+    // Orbs (Defect). Slot 0 is the oldest orb, the "rightmost" of the card texts.
+    void channel_orb(OrbType type);
+    // Triggers the orb's evoke effect `times` times, then removes it from its slot.
+    void evoke_orb(size_t slot, int times = 1);
+    // Triggers the orb's passive effect. Lightning hits `target` when given, a random enemy otherwise.
+    void trigger_orb_passive(size_t slot, Enemy* target = nullptr);
+    // Gains or loses orb slots. An orb left without a slot is removed, the newest first, without being evoked.
+    void change_orb_slots(int delta);
+    // Number of different orb types in the slots.
+    int unique_orbs() const;
+    // Kills the enemy when its Doom has reached its HP.
+    void reap(Enemy& target);
+
     // Stars gained or spent by the Regent: every change goes through these two.
     void gain_stars(int amount);
     void spend_stars(int amount);
@@ -204,12 +222,17 @@ private:
     int8_t index_of(const Enemy& target) const;
     // Moves every copy of `id` from the draw and discard piles to the hand, as long as there is room.
     void recall_to_hand(CardId id);
+    // Orb value once Focus is applied, never negative.
+    int16_t with_focus(int16_t base) const;
     // Raises ENEMY_KILLED for every enemy that died since the last call, whatever killed it.
     void settle_deaths();
     uint8_t alive_mask_ = 0;      // enemies known to be alive, one bit each
     uint8_t event_depth_ = 0;     // reactions triggering reactions
     int16_t turn_draw_bonus_ = 0; // cards added to the opening draw by the start-of-turn powers
     bool opening_draw_ = false;   // the turn's opening hand is being drawn
+    bool lost_hp_last_turn_ = false; // HP lost between the previous turn start and this one
+    // Orb passives of the start (Plasma) or of the end (the others) of the turn.
+    void trigger_turn_passives(bool turn_start);
     // Triggers the scheduled effects of the start (or the end) of the turn. Returns the extra cards to draw.
     int run_delayed_effects(bool end_of_turn);
 };

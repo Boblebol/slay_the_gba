@@ -311,14 +311,14 @@ void test_defect() {
     // Frost passive block (2, Dexterity ignored) protects during the enemy turn.
     CombatEngine frost = make_combat(CharacterId::DEFECT);
     frost.player.add_status(StatusType::DEXTERITY, 5);
-    frost.player.channel_orb(OrbType::FROST);
+    frost.channel_orb(OrbType::FROST);
     frost.end_player_turn();
     assert(frost.player.hp == 75 - (11 - 2));
 
     // Dualcast evokes the same orb twice.
     CombatEngine dual = make_combat(CharacterId::DEFECT);
-    dual.player.channel_orb(OrbType::LIGHTNING);
-    dual.player.channel_orb(OrbType::FROST);
+    dual.channel_orb(OrbType::LIGHTNING);
+    dual.channel_orb(OrbType::FROST);
     play(dual, CardId::DUALCAST);
     assert(dual.enemies[0].hp == 42 - 16);
     assert(dual.player.orbs.size() == 1 && dual.player.orbs[0] == OrbType::FROST);
@@ -327,28 +327,28 @@ void test_defect() {
     // Dark charges +6 per turn and deals its charge on evoke.
     CombatEngine dark = make_combat(CharacterId::DEFECT);
     make_enemy_idle(dark.enemies[0]);
-    dark.player.channel_orb(OrbType::DARK);
-    assert(dark.player.dark_orb_charge == 6);
+    dark.channel_orb(OrbType::DARK);
+    assert(dark.player.orbs[0].charge == 6);
     dark.end_player_turn();
-    assert(dark.player.dark_orb_charge == 12);
+    assert(dark.player.orbs[0].charge == 12);
     play(dark, CardId::DUALCAST);
     assert(dark.enemies[0].hp == 42 - 24);
 
     // Channeling into full slots evokes the oldest orb first.
     CombatEngine full = make_combat(CharacterId::DEFECT);
     Enemy& worm = full.enemies[0];
-    for (int i = 0; i < 3; ++i) full.player.channel_orb(OrbType::LIGHTNING, &worm);
+    for (int i = 0; i < 3; ++i) full.channel_orb(OrbType::LIGHTNING);
     assert(worm.hp == 42);
-    full.player.channel_orb(OrbType::FROST, &worm);
+    full.channel_orb(OrbType::FROST);
     assert(worm.hp == 34);
     assert(full.player.orbs.size() == 3 && full.player.orbs[2] == OrbType::FROST);
 
     // Plasma: +1 energy at the start of each turn, +2 on evoke.
     CombatEngine plasma = make_combat(CharacterId::DEFECT);
-    plasma.player.channel_orb(OrbType::PLASMA);
+    plasma.channel_orb(OrbType::PLASMA);
     plasma.end_player_turn();
     assert(plasma.player.energy == 4);
-    plasma.player.evoke_oldest_orb();
+    plasma.evoke_orb(0);
     assert(plasma.player.energy == 6);
     std::cout << "[PASS] Defect: Zap + Lightning passive, Frost block, Dualcast twice, Dark charge, full slots, Plasma energy" << std::endl;
 }
@@ -2566,6 +2566,394 @@ void test_event_relics() {
     std::cout << "[PASS] Relics in a run: registered before the first turn, Bellows, Lizard Tail leaves once used" << std::endl;
 }
 
+void test_orb_operations() {
+    // Lightning picks a random living enemy: with one left, it is that one.
+    CombatEngine random = make_pack(CharacterId::DEFECT);
+    random.enemies[0].hp = 0;
+    random.enemies[1].hp = 0;
+    random.channel_orb(OrbType::LIGHTNING);
+    random.trigger_orb_passive(0);
+    assert(random.enemies[2].hp == 42 - 3);
+    random.evoke_orb(0);
+    assert(random.enemies[2].hp == 39 - 8 && random.player.orbs.empty());
+    assert(random.counters.combat_orbs_channeled == 1 && random.counters.combat_lightning_channeled == 1);
+
+    // Each Dark orb keeps its own charge and hits the weakest enemy.
+    CombatEngine dark = make_pack(CharacterId::DEFECT);
+    play(dark, DeckCard(CardId::DARKNESS, true));
+    assert(dark.player.orbs.size() == 1 && dark.player.orbs[0].charge == 6 + 2 * 6);
+    dark.channel_orb(OrbType::DARK);
+    assert(dark.player.orbs[1].charge == 6);
+    dark.enemies[1].hp = 30;
+    dark.enemies[0].hp = 25;
+    dark.evoke_orb(0);
+    assert(dark.enemies[0].hp == 25 - 18 && dark.enemies[1].hp == 30 && dark.enemies[2].hp == 42);
+
+    // Focus is added to passives and evokes, and can make them worthless but never negative.
+    CombatEngine focus = make_combat(CharacterId::DEFECT);
+    make_enemy_idle(focus.enemies[0]);
+    play(focus, DeckCard(CardId::DEFRAGMENT, true));
+    assert(focus.player.get_status(StatusType::FOCUS) == 2 && focus.powers.empty());
+    focus.channel_orb(OrbType::LIGHTNING);
+    focus.channel_orb(OrbType::FROST);
+    focus.channel_orb(OrbType::DARK);
+    focus.end_player_turn();
+    assert(focus.enemies[0].hp == 42 - 5 && focus.player.orbs[2].charge == 6 + 8);
+    focus.player.block = 0;
+    focus.evoke_orb(1);
+    assert(focus.player.block == 7);
+    focus.evoke_orb(0);
+    assert(focus.enemies[0].hp == 37 - 10);
+    focus.player.add_status(StatusType::FOCUS, -9);
+    focus.channel_orb(OrbType::LIGHTNING);
+    focus.trigger_orb_passive(1);
+    assert(focus.enemies[0].hp == 27);
+
+    // Focus "this turn" still counts for the passives of the end of the turn.
+    CombatEngine hotfix = make_combat(CharacterId::DEFECT);
+    make_enemy_idle(hotfix.enemies[0]);
+    hotfix.channel_orb(OrbType::LIGHTNING);
+    play(hotfix, CardId::HOTFIX);
+    assert(hotfix.player.get_status(StatusType::FOCUS) == 2 && hotfix.exhaust_pile.size() == 1);
+    play(hotfix, DeckCard(CardId::FOCUSED_STRIKE, true));
+    assert(hotfix.enemies[0].hp == 42 - 11 && hotfix.player.get_status(StatusType::FOCUS) == 4);
+    hotfix.end_player_turn();
+    assert(hotfix.enemies[0].hp == 31 - 7 && hotfix.player.get_status(StatusType::FOCUS) == 0);
+    play(hotfix, DeckCard(CardId::HOTFIX, true));
+    assert(hotfix.exhaust_pile.size() == 1);
+
+    CombatEngine beam = make_pack(CharacterId::DEFECT);
+    play(beam, DeckCard(CardId::BIASED_COGNITION, true));
+    assert(beam.player.get_status(StatusType::FOCUS) == 6);
+    for (Enemy& foe : beam.enemies) foe.hp = 100;
+    play(beam, CardId::HYPERBEAM);
+    for (const Enemy& foe : beam.enemies) assert(foe.hp == 76);
+    assert(beam.player.get_status(StatusType::FOCUS) == 3);
+    end_turn_idle(beam);
+    assert(beam.player.get_status(StatusType::FOCUS) == 2);
+    std::cout << "[PASS] Orbs: random Lightning, Dark charge per orb, Focus, Defragment, Hotfix, Focused Strike, Biased Cognition, Hyperbeam" << std::endl;
+
+    // Evoking: all the orbs, the oldest several times.
+    CombatEngine shatter = make_pack(CharacterId::DEFECT);
+    for (Enemy& foe : shatter.enemies) foe.hp = 100;
+    shatter.enemies[0].hp = 0;
+    shatter.enemies[1].hp = 0;
+    shatter.channel_orb(OrbType::LIGHTNING);
+    shatter.channel_orb(OrbType::FROST);
+    shatter.player.block = 0;
+    play(shatter, CardId::SHATTER);
+    assert(shatter.enemies[2].hp == 100 - 7 - 2 * 8 && shatter.player.block == 10 && shatter.player.orbs.empty());
+    assert(shatter.exhaust_pile.size() == 1);
+
+    CombatEngine quad = make_combat(CharacterId::DEFECT);
+    quad.channel_orb(OrbType::FROST);
+    quad.channel_orb(OrbType::LIGHTNING);
+    quad.player.block = 0;
+    play(quad, DeckCard(CardId::QUADCAST, true));
+    assert(quad.player.block == 20 && quad.player.energy == 3 && quad.player.orbs.size() == 1);
+    play(quad, DeckCard(CardId::MULTI_CAST, true));
+    assert(quad.enemies[0].hp == 42 - 4 * 8 && quad.player.orbs.empty() && quad.player.energy == 0);
+    quad.channel_orb(OrbType::PLASMA);
+    quad.hand.clear();
+    quad.hand.push_back(CardId::MULTI_CAST);
+    assert(quad.play_card(0)); // X = 0: nothing is evoked, the orb stays
+    assert(quad.player.orbs.size() == 1 && quad.player.energy == 0);
+
+    // Counting orbs.
+    CombatEngine barrage = make_combat(CharacterId::DEFECT);
+    barrage.channel_orb(OrbType::FROST);
+    barrage.channel_orb(OrbType::FROST);
+    barrage.channel_orb(OrbType::DARK);
+    assert(barrage.unique_orbs() == 2);
+    play(barrage, DeckCard(CardId::BARRAGE, true));
+    assert(barrage.enemies[0].hp == 42 - 3 * 7);
+    pad_draw_pile(barrage, 10);
+    play(barrage, CardId::COMPILE_DRIVER);
+    assert(barrage.enemies[0].hp == 21 - 7 && barrage.hand.size() == 2);
+
+    // Voltaic channels again as many Lightning as the combat already saw.
+    CombatEngine voltaic = make_combat(CharacterId::DEFECT);
+    voltaic.channel_orb(OrbType::LIGHTNING);
+    voltaic.channel_orb(OrbType::LIGHTNING);
+    voltaic.player.orbs.clear();
+    play(voltaic, CardId::VOLTAIC);
+    assert(voltaic.player.orbs.size() == 2 && voltaic.counters.combat_lightning_channeled == 4);
+    assert(voltaic.exhaust_pile.size() == 1 && !CardDef::has_keyword(CardId::VOLTAIC, true, KEYWORD_EXHAUST));
+
+    // Tesla Coil points the Lightning passives at its target.
+    CombatEngine tesla = make_pack(CharacterId::DEFECT);
+    tesla.channel_orb(OrbType::LIGHTNING);
+    tesla.channel_orb(OrbType::FROST);
+    tesla.channel_orb(OrbType::LIGHTNING);
+    play(tesla, DeckCard(CardId::TESLA_COIL, true), 2);
+    assert(tesla.enemies[2].hp == 42 - 4 - 4 * 3 && tesla.enemies[0].hp == 18 && tesla.enemies[1].hp == 18);
+
+    CombatEngine chaos = make_combat(CharacterId::DEFECT);
+    play(chaos, DeckCard(CardId::CHAOS, true));
+    assert(chaos.player.orbs.size() == 2 && chaos.player.orbs[0].type != OrbType::NONE);
+    std::cout << "[PASS] Orb cards: Shatter, Quadcast, Multi-Cast, Barrage, Compile Driver, Voltaic, Tesla Coil, Chaos, Darkness" << std::endl;
+
+    // Powers on orbs.
+    CombatEngine loop = make_combat(CharacterId::DEFECT);
+    loop.channel_orb(OrbType::PLASMA);
+    loop.channel_orb(OrbType::FROST);
+    play(loop, DeckCard(CardId::LOOP, true));
+    play(loop, CardId::COOLANT);
+    end_turn_idle(loop);
+    // Frost passive at the end of the turn is gone with the turn; Plasma +1, Loop +2 on the oldest orb, Coolant 2 x 2.
+    assert(loop.player.energy == 3 + 1 + 2 && loop.player.block == 4);
+
+    CombatEngine shadow = make_combat(CharacterId::DEFECT);
+    shadow.enemies[0].hp = 100;
+    play(shadow, CardId::CONSUMING_SHADOW);
+    assert(shadow.player.orbs.size() == 2);
+    end_turn_idle(shadow);
+    // The newest Dark orb is evoked with its starting charge; the other one charges.
+    assert(shadow.enemies[0].hp == 100 - 6 && shadow.player.orbs.size() == 1 && shadow.player.orbs[0].charge == 12);
+
+    CombatEngine hail = make_pack(CharacterId::DEFECT);
+    play(hail, DeckCard(CardId::HAILSTORM, true));
+    end_turn_idle(hail);
+    assert(hail.enemies[2].hp == 42);
+    hail.channel_orb(OrbType::FROST);
+    end_turn_idle(hail);
+    assert(hail.enemies[0].hp == 10 && hail.enemies[2].hp == 34);
+
+    CombatEngine thunder = make_combat(CharacterId::DEFECT);
+    play(thunder, CardId::THUNDER);
+    thunder.channel_orb(OrbType::LIGHTNING);
+    thunder.trigger_orb_passive(0);
+    assert(thunder.enemies[0].hp == 42 - 3);
+    thunder.evoke_orb(0);
+    assert(thunder.enemies[0].hp == 39 - 8 - 8);
+
+    assert_in_pool(CharacterId::DEFECT, { CardId::SHATTER, CardId::VOLTAIC, CardId::BARRAGE, CardId::TESLA_COIL, CardId::CHAOS,
+                                          CardId::COMPILE_DRIVER, CardId::DARKNESS, CardId::MULTI_CAST, CardId::LOOP,
+                                          CardId::CONSUMING_SHADOW, CardId::HAILSTORM, CardId::THUNDER, CardId::COOLANT,
+                                          CardId::HOTFIX, CardId::DEFRAGMENT, CardId::FOCUSED_STRIKE, CardId::HYPERBEAM });
+    std::span<const CardId> pool = RunManager::card_reward_pool(CharacterId::DEFECT);
+    for (CardId ancient : { CardId::QUADCAST, CardId::BIASED_COGNITION }) {
+        assert(std::find(pool.begin(), pool.end(), ancient) == pool.end());
+    }
+    std::cout << "[PASS] Orb powers: Loop, Coolant, Consuming Shadow, Hailstorm, Thunder" << std::endl;
+}
+
+void test_doom() {
+    // An enemy with at least as much Doom as HP dies at the end of its turn, after acting.
+    CombatEngine doom = make_combat(CharacterId::NECROBINDER);
+    play(doom, CardId::SCOURGE);
+    assert(doom.enemies[0].get_status(StatusType::DOOM) == 13 && doom.hand.size() == 1);
+    assert(doom.counters.doom_applied == 1);
+    doom.enemies[0].hp = 13;
+    assert(doom.enemies[0].is_alive());
+    int16_t hp_before = doom.player.hp;
+    doom.end_player_turn();
+    assert(doom.player.hp == hp_before - 11); // it still attacked
+    assert(!doom.enemies[0].is_alive() && doom.state == CombatState::VICTORY);
+
+    // Below its HP, Doom waits.
+    CombatEngine waits = make_combat(CharacterId::NECROBINDER);
+    play(waits, DeckCard(CardId::SCOURGE, true));
+    end_turn_idle(waits);
+    assert(waits.enemies[0].hp == 42 && waits.enemies[0].get_status(StatusType::DOOM) == 16);
+
+    // On the player too, at the end of the player's turn.
+    CombatEngine self = make_combat(CharacterId::NECROBINDER);
+    pad_draw_pile(self, 10);
+    play(self, DeckCard(CardId::NEUROSURGE, true));
+    assert(self.player.energy == 3 + 4 && self.hand.size() == 2);
+    end_turn_idle(self);
+    assert(self.player.get_status(StatusType::DOOM) == 3 && self.state == CombatState::PLAYER_TURN);
+    self.player.hp = 3;
+    end_turn_idle(self);
+    assert(self.state == CombatState::DEFEAT && self.player.hp == 0);
+    std::cout << "[PASS] Doom: death at the end of the turn, enemy and player, Scourge, Neurosurge" << std::endl;
+
+    CombatEngine pulse = make_pack(CharacterId::NECROBINDER);
+    play(pulse, DeckCard(CardId::NEGATIVE_PULSE, true));
+    assert(pulse.player.block == 6);
+    for (const Enemy& foe : pulse.enemies) assert(foe.get_status(StatusType::DOOM) == 11);
+    play(pulse, CardId::DEATHBRINGER);
+    for (const Enemy& foe : pulse.enemies) {
+        assert(foe.get_status(StatusType::DOOM) == 32 && foe.get_status(StatusType::WEAK) == 1);
+    }
+    // End of Days does not wait for the end of the turn.
+    play(pulse, CardId::END_OF_DAYS);
+    assert(!pulse.enemies[0].is_alive() && !pulse.enemies[1].is_alive() && !pulse.enemies[2].is_alive());
+    assert(pulse.state == CombatState::VICTORY);
+
+    // Blight Strike: as much Doom as HP taken. Time's Up turns the Doom into damage.
+    CombatEngine blight = make_combat(CharacterId::NECROBINDER);
+    blight.enemies[0].block = 3;
+    play(blight, CardId::BLIGHT_STRIKE);
+    assert(blight.enemies[0].hp == 42 - 5 && blight.enemies[0].get_status(StatusType::DOOM) == 5);
+    play(blight, CardId::NO_ESCAPE);
+    assert(blight.enemies[0].get_status(StatusType::DOOM) == 15);
+    play(blight, DeckCard(CardId::NO_ESCAPE, true));
+    assert(blight.enemies[0].get_status(StatusType::DOOM) == 15 + 15 + 5);
+    play(blight, CardId::TIMES_UP);
+    assert(blight.enemies[0].hp == 37 - 35);
+    assert(CardDef::has_keyword(CardId::TIMES_UP, true, KEYWORD_RETAIN));
+
+    // Death's Door: three times the Block once Doom was applied this turn.
+    CombatEngine door = make_combat(CharacterId::NECROBINDER);
+    play(door, CardId::DEATHS_DOOR);
+    assert(door.player.block == 6);
+    play(door, CardId::SCOURGE);
+    door.player.block = 0;
+    play(door, DeckCard(CardId::DEATHS_DOOR, true));
+    assert(door.player.block == 21);
+    end_turn_idle(door);
+    play(door, CardId::DEATHS_DOOR);
+    assert(door.player.block == 6);
+
+    // Powers: Countdown, Reaper Form, Oblivion, Shroud.
+    CombatEngine countdown = make_combat(CharacterId::NECROBINDER);
+    play(countdown, DeckCard(CardId::COUNTDOWN, true));
+    play(countdown, CardId::SHROUD);
+    end_turn_idle(countdown);
+    assert(countdown.enemies[0].get_status(StatusType::DOOM) == 9 && countdown.player.block == 3);
+
+    CombatEngine reaper = make_combat(CharacterId::NECROBINDER);
+    play(reaper, CardId::REAPER_FORM);
+    reaper.enemies[0].block = 2;
+    play(reaper, CardId::STRIKE);
+    assert(reaper.enemies[0].hp == 42 - 4 && reaper.enemies[0].get_status(StatusType::DOOM) == 4);
+    assert(CardDef::has_keyword(CardId::REAPER_FORM, true, KEYWORD_RETAIN));
+
+    CombatEngine oblivion = make_pack(CharacterId::NECROBINDER);
+    play(oblivion, DeckCard(CardId::OBLIVION, true), 2);
+    assert(oblivion.enemies[2].get_status(StatusType::DOOM) == 0);
+    play(oblivion, CardId::DEFEND);
+    play(oblivion, CardId::DEFEND);
+    assert(oblivion.enemies[2].get_status(StatusType::DOOM) == 8 && oblivion.enemies[0].get_status(StatusType::DOOM) == 0);
+    end_turn_idle(oblivion);
+    play(oblivion, CardId::DEFEND);
+    assert(oblivion.enemies[2].get_status(StatusType::DOOM) == 8);
+
+    assert_in_pool(CharacterId::NECROBINDER, { CardId::NEGATIVE_PULSE, CardId::END_OF_DAYS, CardId::BLIGHT_STRIKE,
+                                               CardId::NO_ESCAPE, CardId::SCOURGE, CardId::DEATHBRINGER, CardId::DEATHS_DOOR,
+                                               CardId::COUNTDOWN, CardId::REAPER_FORM, CardId::NEUROSURGE, CardId::TIMES_UP,
+                                               CardId::OBLIVION, CardId::SHROUD });
+    std::cout << "[PASS] Doom cards: Negative Pulse, Deathbringer, End of Days, Blight Strike, No Escape, Time's Up, Death's Door, Countdown, Shroud, Reaper Form, Oblivion" << std::endl;
+}
+
+void test_orb_slots() {
+    // Capacitor: more slots, so more orbs before the oldest is evoked.
+    CombatEngine capacitor = make_combat(CharacterId::DEFECT);
+    assert(capacitor.player.orb_slots == 3);
+    play(capacitor, CardId::CAPACITOR);
+    assert(capacitor.player.orb_slots == 5);
+    for (int i = 0; i < 5; ++i) capacitor.channel_orb(OrbType::LIGHTNING);
+    assert(capacitor.player.orbs.size() == 5 && capacitor.enemies[0].hp == 42);
+    capacitor.channel_orb(OrbType::FROST);
+    assert(capacitor.player.orbs.size() == 5 && capacitor.enemies[0].hp == 34);
+
+    // Bulk Up: one slot less; the orb that no longer fits leaves without being evoked.
+    play(capacitor, DeckCard(CardId::BULK_UP, true));
+    assert(capacitor.player.orb_slots == 4 && capacitor.player.orbs.size() == 4);
+    assert(capacitor.player.block == 0 && capacitor.player.orbs[3] == OrbType::LIGHTNING);
+    assert(capacitor.player.get_status(StatusType::STRENGTH) == 3 && capacitor.player.get_status(StatusType::DEXTERITY) == 3);
+
+    // No slot left: nothing can be channeled. The count never goes below 0 nor above the maximum.
+    capacitor.change_orb_slots(-10);
+    assert(capacitor.player.orb_slots == 0 && capacitor.player.orbs.empty());
+    capacitor.channel_orb(OrbType::DARK);
+    assert(capacitor.player.orbs.empty());
+    capacitor.change_orb_slots(50);
+    assert(capacitor.player.orb_slots == MAX_ORB_SLOTS);
+
+    // A new combat starts with 3 slots again.
+    capacitor.start_combat(EnemyType::JAW_WORM, CharacterId::DEFECT);
+    assert(capacitor.player.orb_slots == 3);
+
+    // Synchronize: Focus for the turn, for each different orb.
+    CombatEngine sync = make_combat(CharacterId::DEFECT);
+    sync.channel_orb(OrbType::LIGHTNING);
+    sync.channel_orb(OrbType::LIGHTNING);
+    sync.channel_orb(OrbType::FROST);
+    play(sync, DeckCard(CardId::SYNCHRONIZE, true));
+    assert(sync.player.get_status(StatusType::FOCUS) == 4);
+    end_turn_idle(sync);
+    assert(sync.player.get_status(StatusType::FOCUS) == 0);
+    assert_in_pool(CharacterId::DEFECT, { CardId::CAPACITOR, CardId::BULK_UP, CardId::SYNCHRONIZE });
+    std::cout << "[PASS] Orb slots: Capacitor, Bulk Up, limits, Synchronize" << std::endl;
+}
+
+void test_hero_relics() {
+    // Starter relics of the Regent and of the Necrobinder.
+    RunManager regent;
+    regent.start_run(CharacterId::REGENT, 0, PaletteVariant::CLASSIC, 777);
+    assert(regent.has_relic("DIVINE_RIGHT"));
+    enter_room_of_type(regent, RoomType::MONSTER);
+    assert(regent.combat.player.sovereign_stars == 3);
+
+    RunManager necro;
+    necro.start_run(CharacterId::NECROBINDER, 0, PaletteVariant::CLASSIC, 777);
+    assert(necro.has_relic("BOUND_PHYLACTERY"));
+    enter_room_of_type(necro, RoomType::MONSTER);
+    assert(necro.combat.player.minion_hp == 1);
+    end_turn_idle(necro.combat);
+    assert(necro.combat.player.minion_hp == 2);
+
+    // Defect relics that act when the fight starts.
+    RunManager defect;
+    defect.start_run(CharacterId::DEFECT, 0, PaletteVariant::CLASSIC, 777);
+    for (std::string_view relic : { "DATA_DISK", "SYMBIOTIC_VIRUS", "RUNIC_CAPACITOR", "POWER_CELL" }) defect.add_relic(relic);
+    defect.master_deck.push_back(CardId::GO_FOR_THE_EYES);
+    defect.master_deck.push_back(CardId::BEAM_CELL);
+    enter_room_of_type(defect, RoomType::MONSTER);
+    const Player& player = defect.combat.player;
+    assert(player.get_status(StatusType::FOCUS) == 1 && player.orb_slots == 6);
+    assert(player.orbs.size() == 2 && player.orbs[0] == OrbType::DARK && player.orbs[1] == OrbType::LIGHTNING);
+    int free_cards = 0;
+    for (const DeckCard& card : defect.combat.hand) free_cards += CardDef::get_cost(card.id, card.upgraded) == 0;
+    assert(free_cards == 2 && defect.combat.hand.size() >= 5 && defect.combat.hand.size() <= 7);
+    std::cout << "[PASS] Hero relics at combat start: Divine Right, Bound Phylactery, Data Disk, Symbiotic Virus, Runic Capacitor, Power Cell" << std::endl;
+
+    // Gold-Plated Cables: the oldest orb's passive, once more.
+    CombatEngine cables = make_relic_combat(CharacterId::DEFECT, PowerId::GOLD_PLATED_CABLES);
+    cables.channel_orb(OrbType::LIGHTNING);
+    cables.channel_orb(OrbType::FROST);
+    end_turn_idle(cables);
+    assert(cables.enemies[0].hp == 42 - 6);
+    cables.player.orbs.clear();
+    cables.channel_orb(OrbType::PLASMA);
+    end_turn_idle(cables);
+    assert(cables.player.energy == 5);
+
+    // Metronome: the seventh orb of the combat, once.
+    CombatEngine metronome = make_relic_combat(CharacterId::DEFECT, PowerId::METRONOME, 30);
+    metronome.enemies[0].hp = 200;
+    for (int i = 0; i < 6; ++i) metronome.channel_orb(OrbType::FROST);
+    assert(metronome.enemies[0].hp == 200);
+    metronome.channel_orb(OrbType::FROST);
+    assert(metronome.enemies[0].hp == 170);
+    metronome.channel_orb(OrbType::FROST);
+    assert(metronome.enemies[0].hp == 170);
+
+    // Emotion Chip: every passive again at the start of a turn that follows a HP loss.
+    CombatEngine chip = make_relic_combat(CharacterId::DEFECT, PowerId::EMOTION_CHIP);
+    chip.enemies[0].hp = 100;
+    chip.channel_orb(OrbType::LIGHTNING);
+    end_turn_idle(chip);
+    assert(chip.enemies[0].hp == 97);
+    chip.enemies[0].current_intent = EnemyIntent{};
+    chip.enemies[0].current_intent.base_damage = 11;
+    chip.end_player_turn(); // the hit hurts: the passive triggers at the end of the turn and at the start of the next
+    assert(chip.player.hp == 75 - 11 && chip.enemies[0].hp == 91);
+
+    // Book Repair Knife: HP back when Doom takes an enemy.
+    CombatEngine knife = make_relic_combat(CharacterId::NECROBINDER, PowerId::BOOK_REPAIR_KNIFE, 3, true);
+    knife.player.hp = 50;
+    knife.enemies[0].add_status(StatusType::DOOM, 30);
+    knife.enemies[1].add_status(StatusType::DOOM, 30);
+    knife.enemies[1].minion = true;
+    end_turn_idle(knife);
+    assert(!knife.enemies[0].is_alive() && !knife.enemies[1].is_alive() && knife.player.hp == 53);
+    std::cout << "[PASS] Hero relics in combat: Gold-Plated Cables, Metronome, Emotion Chip, Book Repair Knife" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -2653,6 +3041,10 @@ int main() {
     test_reaction_powers();
     test_turn_relics();
     test_event_relics();
+    test_orb_operations();
+    test_doom();
+    test_orb_slots();
+    test_hero_relics();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;

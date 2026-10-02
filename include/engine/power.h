@@ -53,6 +53,19 @@ enum class PowerId : uint8_t {
     SPIRIT_OF_ASH,      // Ethereal card played: `amount` Block
     PAGESTORM,          // Ethereal card drawn: draw `amount`
     SLEIGHT_OF_FLESH,   // debuff applied to an enemy: it takes `amount` damage
+    // Orbs and Focus (Defect)
+    LOOP,               // start of turn: the oldest orb's passive triggers `amount` times
+    COOLANT,            // start of turn: `amount` Block for each different orb type
+    BIASED_COGNITION,   // start of turn: lose 1 Focus per stack
+    CONSUMING_SHADOW,   // end of turn: evoke the newest orb, once per stack
+    HAILSTORM,          // end of turn with a Frost orb: `amount` damage to every enemy
+    THUNDER,            // Lightning orb evoked: `amount` more damage to the enemy it hits
+    // Doom (Necrobinder)
+    COUNTDOWN,          // start of turn: `amount` Doom to a random enemy
+    NEUROSURGE,         // start of turn: `amount` Doom to the player
+    REAPER_FORM,        // unblocked attack damage: as much Doom
+    OBLIVION,           // card played: `amount` Doom to the enemy it is bound to
+    SHROUD,             // Doom applied: `amount` Block
     // Relics, registered by RunManager when the fight starts. `turns` is then the number of the turn.
     CAPTAINS_WHEEL,    // start of turn 3: `amount` Block
     HORN_CLEAT,        // start of turn 2: `amount` Block
@@ -81,7 +94,12 @@ enum class PowerId : uint8_t {
     LIZARD_TAIL,       // HP reduced to 0: back to `amount` % of Max HP, once (counter = 1 when spent)
     UNCEASING_TOP,     // hand empty during the turn: draw 1
     TOUGH_BANDAGES,    // card discarded during the turn: `amount` Block
-    TINGSHA            // card discarded during the turn: `amount` damage to a random enemy
+    TINGSHA,           // card discarded during the turn: `amount` damage to a random enemy
+    TURN_SUMMON,       // start of turn: summon Osty for `amount` (Bound Phylactery)
+    GOLD_PLATED_CABLES, // the oldest orb's passive triggers once more
+    METRONOME,         // METRONOME_ORBS orbs channeled in the combat: `amount` damage to every enemy, once
+    EMOTION_CHIP,      // start of a turn that follows a HP loss: every orb's passive triggers
+    BOOK_REPAIR_KNIFE  // enemy killed by Doom (minions excepted): heal `amount`
 };
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
@@ -91,6 +109,7 @@ constexpr uint8_t BREAD_ENERGY_LOST = 2;
 constexpr uint8_t POCKETWATCH_CARDS = 3;
 constexpr uint8_t PARRYING_SHIELD_BLOCK = 10;
 constexpr uint8_t STONE_CALENDAR_TURN = 7;
+constexpr uint8_t METRONOME_ORBS = 7;
 
 struct ActivePower {
     PowerId id = PowerId::NONE;
