@@ -2,7 +2,9 @@
 
 namespace engine {
 
-static const CardDef CARDS[] = {
+// constexpr, not just const: the table must be built at compile time and stay in the ROM. Built at start-up,
+// its 19 KB went to the GBA's 32 KB of internal RAM and left no room for the stack (white screen at boot).
+static constexpr CardDef CARDS[] = {
     { CardId::NONE, "None", 0, CardType::SKILL, TargetType::SELF, 0, 0, "", "None+", 0, 0, 0, "" },
     { CardId::STRIKE, "Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 0, "Deal 6 dmg.", "Strike+", 1, 9, 0, "Deal 9 dmg." },
     { CardId::DEFEND, "Defend", 1, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 block.", "Defend+", 1, 8, 0, "Gain 8 block." },
