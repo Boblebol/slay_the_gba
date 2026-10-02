@@ -317,7 +317,13 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::DOUBLE_ENERGY, CardId::BOOT_SEQUENCE, CardId::CHARGE_BATTERY,
                                               CardId::FTL, CardId::HELIX_DRILL, CardId::LIGHTNING_ROD,
                                               CardId::TEMPEST, CardId::SUNDER, CardId::MACHINE_LEARNING,
-                                              CardId::STORM, CardId::FERAL, CardId::SUBROUTINE };
+                                              CardId::STORM, CardId::FERAL, CardId::SUBROUTINE, CardId::SHATTER,
+                                              CardId::VOLTAIC, CardId::BARRAGE, CardId::TESLA_COIL, CardId::CHAOS,
+                                              CardId::COMPILE_DRIVER, CardId::DARKNESS, CardId::MULTI_CAST,
+                                              CardId::LOOP, CardId::CONSUMING_SHADOW, CardId::HAILSTORM,
+                                              CardId::THUNDER, CardId::COOLANT, CardId::HOTFIX, CardId::DEFRAGMENT,
+                                              CardId::FOCUSED_STRIKE, CardId::HYPERBEAM, CardId::CAPACITOR,
+                                              CardId::BULK_UP, CardId::SYNCHRONIZE };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
                                               CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
@@ -342,7 +348,11 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::PARSE, CardId::PULL_FROM_BELOW, CardId::REAP, CardId::SOW,
                                                    CardId::ERADICATE, CardId::FRIENDSHIP, CardId::DANSE_MACABRE,
                                                    CardId::DEMESNE, CardId::SPIRIT_OF_ASH, CardId::PAGESTORM,
-                                                   CardId::SLEIGHT_OF_FLESH };
+                                                   CardId::SLEIGHT_OF_FLESH, CardId::NEGATIVE_PULSE,
+                                                   CardId::END_OF_DAYS, CardId::BLIGHT_STRIKE, CardId::NO_ESCAPE,
+                                                   CardId::SCOURGE, CardId::DEATHBRINGER, CardId::DEATHS_DOOR,
+                                                   CardId::COUNTDOWN, CardId::REAPER_FORM, CardId::NEUROSURGE,
+                                                   CardId::TIMES_UP, CardId::OBLIVION, CardId::SHROUD };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;
@@ -409,7 +419,10 @@ std::span<const std::string_view> RunManager::active_relics() {
         "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP",
         // Combat events
         "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
-        "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA"
+        "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA",
+        // Defect and Necrobinder
+        "DATA_DISK", "SYMBIOTIC_VIRUS", "GOLD_PLATED_CABLES", "METRONOME", "RUNIC_CAPACITOR", "POWER_CELL", "EMOTION_CHIP",
+        "BOOK_REPAIR_KNIFE"
     };
     return ACTIVE_RELICS;
 }
@@ -467,6 +480,12 @@ void RunManager::register_relic_powers() {
     if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);
     if (has_relic("TOUGH_BANDAGES")) combat.add_power(PowerId::TOUGH_BANDAGES, 3);
     if (has_relic("TINGSHA")) combat.add_power(PowerId::TINGSHA, 3);
+    // Hero relics
+    if (has_relic("BOUND_PHYLACTERY")) combat.add_power(PowerId::TURN_SUMMON, 1);
+    if (has_relic("GOLD_PLATED_CABLES")) combat.add_power(PowerId::GOLD_PLATED_CABLES);
+    if (has_relic("METRONOME")) combat.add_power(PowerId::METRONOME, 30);
+    if (has_relic("EMOTION_CHIP")) combat.add_power(PowerId::EMOTION_CHIP);
+    if (has_relic("BOOK_REPAIR_KNIFE")) combat.add_power(PowerId::BOOK_REPAIR_KNIFE, 3);
 }
 
 void RunManager::apply_combat_start_relics() {
@@ -482,9 +501,37 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("BELLOWS")) {
         for (DeckCard& card : combat.hand) card.upgraded = true;
     }
+    // Divine Right (Regent): 3 Stars.
+    if (has_relic("DIVINE_RIGHT")) {
+        combat.gain_stars(3);
+    }
+    // Data Disk: 1 Focus. Runic Capacitor: 3 more orb slots. Symbiotic Virus: 1 Dark orb.
+    if (has_relic("DATA_DISK")) {
+        combat.player.add_status(StatusType::FOCUS, 1);
+    }
+    if (has_relic("RUNIC_CAPACITOR")) {
+        combat.change_orb_slots(3);
+    }
+    if (has_relic("SYMBIOTIC_VIRUS")) {
+        combat.channel_orb(OrbType::DARK);
+    }
+    // Power Cell: 2 random cards that cost 0 go from the draw pile to the hand.
+    if (has_relic("POWER_CELL")) {
+        for (int n = 0; n < 2 && combat.hand.size() < combat.hand.capacity(); ++n) {
+            FixedVector<uint8_t, 50> free_cards;
+            for (size_t i = 0; i < combat.draw_pile.size(); ++i) {
+                const DeckCard& card = combat.draw_pile[i];
+                if (CardDef::get_cost(card.id, card.upgraded) == 0) free_cards.push_back(static_cast<uint8_t>(i));
+            }
+            if (free_cards.empty()) break;
+            size_t pick = free_cards[next_random() % free_cards.size()];
+            combat.hand.push_back(combat.draw_pile[pick]);
+            combat.draw_pile.erase(pick);
+        }
+    }
     // Cracked Core (Defect): channel 1 Lightning.
     if (has_relic("CRACKED_CORE")) {
-        combat.player.channel_orb(OrbType::LIGHTNING);
+        combat.channel_orb(OrbType::LIGHTNING);
     }
     // Anchor: start each combat with 10 Block, added after the turn reset and unaffected by Dexterity.
     if (has_relic("ANCHOR")) {

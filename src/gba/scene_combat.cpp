@@ -617,8 +617,9 @@ void CombatScene::_refresh_hud()
     switch(current_hero())
     {
     case engine::CharacterId::DEFECT:
-        resource = int(player.orbs.size());
-        resource_stream << "Orbes " << resource << "/3";
+        // Both numbers are part of what is shown: the label is redrawn when either changes.
+        resource = int(player.orbs.size()) + 16 * player.orb_slots;
+        resource_stream << "Orbes " << int(player.orbs.size()) << "/" << int(player.orb_slots);
         break;
     case engine::CharacterId::REGENT:
         resource = player.sovereign_stars;

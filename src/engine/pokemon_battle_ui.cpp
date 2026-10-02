@@ -284,7 +284,8 @@ void PokemonBattleUI::get_hero_resource_label(const Player& player, CharacterId 
         case CharacterId::DEFECT:
             append_lit(out_buf, pos, max_len, "ORBES: ");
             append_int(out_buf, pos, max_len, static_cast<int>(player.orbs.size()));
-            append_lit(out_buf, pos, max_len, "/3");
+            append_lit(out_buf, pos, max_len, "/");
+            append_int(out_buf, pos, max_len, static_cast<int>(player.orb_slots));
             break;
         case CharacterId::REGENT:
             append_lit(out_buf, pos, max_len, "ETOILES: ");

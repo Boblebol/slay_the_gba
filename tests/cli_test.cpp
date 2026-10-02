@@ -741,12 +741,12 @@ int main() {
     // 2. Defect Orbs (Lightning channel, passive & evoke)
     CombatEngine defect_c;
     defect_c.start_combat(EnemyType::CULTIST, CharacterId::DEFECT);
-    defect_c.player.channel_orb(OrbType::LIGHTNING, &defect_c.enemy);
+    defect_c.channel_orb(OrbType::LIGHTNING);
     assert(defect_c.player.orbs.size() == 1);
-    defect_c.player.trigger_passive_orbs(&defect_c.enemy);
-    assert(defect_c.enemy.hp == 47); // 3 passive lightning damage
-    defect_c.player.evoke_oldest_orb(&defect_c.enemy);
-    assert(defect_c.enemy.hp == 39); // 8 evoke lightning damage
+    defect_c.trigger_orb_passive(0);
+    assert(defect_c.enemies[0].hp == 47); // 3 passive lightning damage
+    defect_c.evoke_orb(0);
+    assert(defect_c.enemies[0].hp == 39); // 8 evoke lightning damage
     assert(defect_c.player.orbs.empty());
 
     // 3. Regent Sovereign Stars
@@ -874,7 +874,7 @@ int main() {
     assert(std::string_view(res_label) == "POISON");
 
     Player defect_pl;
-    defect_pl.channel_orb(OrbType::LIGHTNING);
+    defect_pl.orbs.push_back(OrbType::LIGHTNING);
     PokemonBattleUI::get_hero_resource_label(defect_pl, CharacterId::DEFECT, res_label, sizeof(res_label));
     assert(std::string_view(res_label) == "ORBES: 1/3");
 

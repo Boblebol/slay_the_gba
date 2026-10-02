@@ -7,7 +7,7 @@
 
 namespace engine {
 
-constexpr size_t MAX_STATUSES = 6;
+constexpr size_t MAX_STATUSES = 10;
 
 class CombatEntity {
 public:
@@ -119,9 +119,9 @@ public:
     int8_t energy = 3;
     int8_t max_energy = 3;
 
-    // Defect Orbs (Max 3 slots)
-    FixedVector<OrbType, 3> orbs;
-    int16_t dark_orb_charge = 0;
+    // Defect Orbs. CombatEngine channels, evokes and triggers them, and changes the number of slots.
+    FixedVector<Orb, MAX_ORB_SLOTS> orbs;
+    uint8_t orb_slots = STARTING_ORB_SLOTS;
 
     // Regent Stars: a second resource, kept from one turn to the next
     uint8_t sovereign_stars = 0;
@@ -139,7 +139,7 @@ public:
         max_energy = 3;
         statuses.clear();
         orbs.clear();
-        dark_orb_charge = 0;
+        orb_slots = STARTING_ORB_SLOTS;
         sovereign_stars = 0;
         souls = 0;
         minion_hp = 0;
@@ -173,13 +173,6 @@ public:
         return take_damage(amount);
     }
 
-    void channel_orb(OrbType type, CombatEntity* enemy = nullptr);
-    // Triggers the oldest orb's evoke effect `times` times (Dualcast: 2), then removes it.
-    void evoke_oldest_orb(CombatEntity* enemy = nullptr, int times = 1);
-    // End of turn passives: Lightning hits, Frost blocks, Dark charges.
-    void trigger_passive_orbs(CombatEntity* enemy = nullptr);
-    // Start of turn passive: each Plasma orb gives 1 energy.
-    void trigger_start_of_turn_orbs();
     void add_stars(uint8_t count);
     void add_souls(uint8_t count);
     void summon_minion(int16_t m_hp, int16_t m_block = 0);
