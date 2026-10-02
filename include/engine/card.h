@@ -379,6 +379,8 @@ enum class CardId : uint16_t {
     ACCURACY,
     UP_MY_SLEEVE,
     KNIFE_TRAP,
+    // Ironclad cards on the card-played event (appended: saves store the numeric id)
+    JUGGLING,
     COUNT
 };
 

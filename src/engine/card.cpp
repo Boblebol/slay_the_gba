@@ -374,7 +374,9 @@ static const CardDef CARDS[] = {
     { CardId::PHANTOM_BLADES, "Phantom Blades", 1, CardType::POWER, TargetType::SELF, 9, 0, "Shivs gain Retain. The first Shiv you play each turn deals 9 more dmg.", "Phantom Blades+", 1, 12, 0, "Shivs gain Retain. The first Shiv you play each turn deals 12 more dmg." },
     { CardId::ACCURACY, "Accuracy", 1, CardType::POWER, TargetType::SELF, 4, 0, "Shivs deal 4 more dmg.", "Accuracy+", 1, 6, 0, "Shivs deal 6 more dmg." },
     { CardId::UP_MY_SLEEVE, "Up My Sleeve", 2, CardType::SKILL, TargetType::SELF, 3, 0, "Add 3 Shivs to your hand. This card costs 1 less.", "Up My Sleeve+", 2, 4, 0, "Add 4 Shivs to your hand. This card costs 1 less." },
-    { CardId::KNIFE_TRAP, "Knife Trap", 2, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 0, "Play every Shiv of your exhaust pile on the enemy.", "Knife Trap+", 2, 0, 0, "Upgrade and play every Shiv of your exhaust pile on the enemy." }
+    { CardId::KNIFE_TRAP, "Knife Trap", 2, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 0, "Play every Shiv of your exhaust pile on the enemy.", "Knife Trap+", 2, 0, 0, "Upgrade and play every Shiv of your exhaust pile on the enemy." },
+    // Ironclad: cards on the card-played event
+    { CardId::JUGGLING, "Juggling", 1, CardType::POWER, TargetType::SELF, 0, 0, "The 3rd Attack you play each turn is copied into your hand.", "Juggling+", 1, 0, 0, "The 3rd Attack you play each turn is copied into your hand.", 0, KEYWORD_INNATE }
 };
 
 const CardDef& CardDef::get(CardId id) {

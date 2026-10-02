@@ -89,6 +89,8 @@ enum class PowerId : uint8_t {
     REAPER_FORM,        // unblocked attack damage: as much Doom
     OBLIVION,           // card played: `amount` Doom to the enemy it is bound to
     SHROUD,             // Doom applied: `amount` Block
+    // Attacks played
+    JUGGLING,           // the JUGGLING_ATTACK-th Attack played each turn: a copy of it comes to the hand
     // Relics, registered by RunManager when the fight starts. `turns` is then the number of the turn.
     CAPTAINS_WHEEL,    // start of turn 3: `amount` Block
     HORN_CLEAT,        // start of turn 2: `amount` Block
@@ -134,6 +136,7 @@ constexpr uint8_t POCKETWATCH_CARDS = 3;
 constexpr uint8_t PARRYING_SHIELD_BLOCK = 10;
 constexpr uint8_t STONE_CALENDAR_TURN = 7;
 constexpr uint8_t METRONOME_ORBS = 7;
+constexpr uint8_t JUGGLING_ATTACK = 3;
 
 struct ActivePower {
     PowerId id = PowerId::NONE;

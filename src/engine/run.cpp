@@ -296,7 +296,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                 CardId::VICIOUS, CardId::HOWL_FROM_BEYOND, CardId::HELLRAISER,
                                                 CardId::STAMPEDE, CardId::CASCADE, CardId::ONE_TWO_PUNCH,
                                                 CardId::TEAR_ASUNDER, CardId::HAVOC, CardId::UNRELENTING,
-                                                CardId::MIDNIGHT, CardId::STOMP, CardId::RAMPAGE };
+                                                CardId::MIDNIGHT, CardId::STOMP, CardId::RAMPAGE,
+                                                CardId::JUGGLING };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,

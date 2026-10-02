@@ -665,6 +665,8 @@ bn::string_view base_name(engine::CardId id)
         return "Passe-passe";
     case engine::CardId::KNIFE_TRAP:
         return "Piège à poignards";
+    case engine::CardId::JUGGLING:
+        return "Jonglage";
     default:
         return "???";
     }
@@ -1672,6 +1674,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::KNIFE_TRAP:
         stream << (card.upgraded ? "Améliore et joue les Surins épuisés." : "Joue les Surins épuisés sur l'ennemi.");
+        break;
+    case engine::CardId::JUGGLING:
+        stream << (card.upgraded ? "Inné. " : "") << "3e Attaque du tour : copie en Main.";
         break;
     default:
         break;

@@ -535,6 +535,7 @@ CARDS: list[CardArt] = [
     CardArt("accuracy", "silent", "accuracy", "power", (1, 1)),
     CardArt("up_my_sleeve", "silent", "up_my_sleeve", "skill", (2, 2)),
     CardArt("knife_trap", "silent", "knife_trap", "skill", (2, 2)),
+    CardArt("juggling", "ironclad", "juggling", "power", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
