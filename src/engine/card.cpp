@@ -2,7 +2,9 @@
 
 namespace engine {
 
-static const CardDef CARDS[] = {
+// constexpr, not just const: the table must be built at compile time and stay in the ROM. Built at start-up,
+// its 19 KB went to the GBA's 32 KB of internal RAM and left no room for the stack (white screen at boot).
+static constexpr CardDef CARDS[] = {
     { CardId::NONE, "None", 0, CardType::SKILL, TargetType::SELF, 0, 0, "", "None+", 0, 0, 0, "" },
     { CardId::STRIKE, "Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 0, "Deal 6 dmg.", "Strike+", 1, 9, 0, "Deal 9 dmg." },
     { CardId::DEFEND, "Defend", 1, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 block.", "Defend+", 1, 8, 0, "Gain 8 block." },
@@ -374,7 +376,24 @@ static const CardDef CARDS[] = {
     { CardId::PHANTOM_BLADES, "Phantom Blades", 1, CardType::POWER, TargetType::SELF, 9, 0, "Shivs gain Retain. The first Shiv you play each turn deals 9 more dmg.", "Phantom Blades+", 1, 12, 0, "Shivs gain Retain. The first Shiv you play each turn deals 12 more dmg." },
     { CardId::ACCURACY, "Accuracy", 1, CardType::POWER, TargetType::SELF, 4, 0, "Shivs deal 4 more dmg.", "Accuracy+", 1, 6, 0, "Shivs deal 6 more dmg." },
     { CardId::UP_MY_SLEEVE, "Up My Sleeve", 2, CardType::SKILL, TargetType::SELF, 3, 0, "Add 3 Shivs to your hand. This card costs 1 less.", "Up My Sleeve+", 2, 4, 0, "Add 4 Shivs to your hand. This card costs 1 less." },
-    { CardId::KNIFE_TRAP, "Knife Trap", 2, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 0, "Play every Shiv of your exhaust pile on the enemy.", "Knife Trap+", 2, 0, 0, "Upgrade and play every Shiv of your exhaust pile on the enemy." }
+    { CardId::KNIFE_TRAP, "Knife Trap", 2, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 0, "Play every Shiv of your exhaust pile on the enemy.", "Knife Trap+", 2, 0, 0, "Upgrade and play every Shiv of your exhaust pile on the enemy." },
+    // Ironclad: hand choices
+    { CardId::ARMAMENTS, "Armaments", 1, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 block. Upgrade a card in your hand.", "Armaments+", 1, 5, 0, "Gain 5 block. Upgrade all the cards in your hand." },
+    { CardId::BRAND, "Brand", 0, CardType::SKILL, TargetType::SELF, 1, 1, "Lose 1 HP. Exhaust 1 card. Gain 1 Strength.", "Brand+", 0, 1, 2, "Lose 1 HP. Exhaust 1 card. Gain 2 Strength." },
+    { CardId::BURNING_PACT, "Burning Pact", 1, CardType::SKILL, TargetType::SELF, 2, 0, "Exhaust 1 card. Draw 2 cards.", "Burning Pact+", 1, 3, 0, "Exhaust 1 card. Draw 3 cards." },
+    // Silent: hand choices
+    { CardId::ACROBATICS, "Acrobatics", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Draw 3 cards. Discard 1 card.", "Acrobatics+", 1, 4, 0, "Draw 4 cards. Discard 1 card." },
+    { CardId::DAGGER_THROW, "Dagger Throw", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 1, "Deal 9 dmg. Draw 1 card. Discard 1 card.", "Dagger Throw+", 1, 12, 1, "Deal 12 dmg. Draw 1 card. Discard 1 card." },
+    { CardId::PREPARED, "Prepared", 0, CardType::SKILL, TargetType::SELF, 1, 0, "Draw 1 card. Discard 1 card.", "Prepared+", 0, 2, 0, "Draw 2 cards. Discard 2 cards." },
+    { CardId::HIDDEN_DAGGERS, "Hidden Daggers", 0, CardType::SKILL, TargetType::SELF, 2, 2, "Discard 2 cards. Add 2 Shivs to your hand.", "Hidden Daggers+", 0, 2, 2, "Discard 2 cards. Add 2 Shivs+ to your hand." },
+    // Defect: hand choices
+    { CardId::SCAVENGE, "Scavenge", 1, CardType::SKILL, TargetType::SELF, 2, 0, "Exhaust a card. Next turn, gain 2 energy.", "Scavenge+", 1, 3, 0, "Exhaust a card. Next turn, gain 3 energy." },
+    // Regent: hand choices
+    { CardId::PHOTON_CUT, "Photon Cut", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 1, "Deal 10 dmg. Draw 1 card. Put a card of your hand on top of your draw pile.", "Photon Cut+", 1, 13, 2, "Deal 13 dmg. Draw 2 cards. Put a card of your hand on top of your draw pile." },
+    { CardId::GLIMMER, "Glimmer", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Draw 3 cards. Put a card of your hand on top of your draw pile.", "Glimmer+", 1, 4, 0, "Draw 4 cards. Put a card of your hand on top of your draw pile." },
+    { CardId::TYRANNY, "Tyranny", 1, CardType::POWER, TargetType::SELF, 1, 0, "At the start of your turn, draw 1 card and exhaust 1 card of your hand.", "Tyranny+", 1, 1, 0, "Innate. At the start of your turn, draw 1 card and exhaust 1 card of your hand.", 0, KEYWORD_INNATE },
+    // Necrobinder: hand choices
+    { CardId::SCULPTING_STRIKE, "Sculpting Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 0, "Deal 9 dmg. A card of your hand gains Ethereal.", "Sculpting Strike+", 1, 12, 0, "Deal 12 dmg. A card of your hand gains Ethereal." }
 };
 
 const CardDef& CardDef::get(CardId id) {
