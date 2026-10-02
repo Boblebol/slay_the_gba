@@ -360,7 +360,21 @@ static const CardDef CARDS[] = {
     { CardId::TURBO, "TURBO", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Gain 2 energy. Add a Void to your discard pile.", "TURBO+", 0, 3, 0, "Gain 3 energy. Add a Void to your discard pile." },
     // Regent: Status cards
     { CardId::COLLISION_COURSE, "Collision Course", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 0, "Deal 10 dmg. Add a Debris to your hand.", "Collision Course+", 0, 14, 0, "Deal 14 dmg. Add a Debris to your hand." },
-    { CardId::CRASH_LANDING, "Crash Landing", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 21, 0, "Deal 21 dmg to all enemies. Fill your hand with Debris.", "Crash Landing+", 1, 26, 0, "Deal 26 dmg to all enemies. Fill your hand with Debris." }
+    { CardId::CRASH_LANDING, "Crash Landing", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 21, 0, "Deal 21 dmg to all enemies. Fill your hand with Debris.", "Crash Landing+", 1, 26, 0, "Deal 26 dmg to all enemies. Fill your hand with Debris." },
+    // Shiv: created by the Silent's cards, never offered as a reward
+    { CardId::SHIV, "Shiv", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 4, 0, "Deal 4 dmg. Exhaust.", "Shiv+", 0, 6, 0, "Deal 6 dmg. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Silent: Shivs
+    { CardId::BLADE_DANCE, "Blade Dance", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Add 3 Shivs to your hand. Exhaust.", "Blade Dance+", 1, 4, 0, "Add 4 Shivs to your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::CLOAK_AND_DAGGER, "Cloak and Dagger", 1, CardType::SKILL, TargetType::SELF, 6, 1, "Gain 6 block. Add 1 Shiv to your hand.", "Cloak and Dagger+", 1, 6, 2, "Gain 6 block. Add 2 Shivs to your hand." },
+    { CardId::LEADING_STRIKE, "Leading Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 3, 2, "Deal 3 dmg. Add 2 Shivs to your hand.", "Leading Strike+", 1, 6, 2, "Deal 6 dmg. Add 2 Shivs to your hand." },
+    { CardId::BLADE_OF_INK, "Blade of Ink", 1, CardType::SKILL, TargetType::SELF, 2, 0, "Add 2 Inky Shivs to your hand.", "Blade of Ink+", 1, 3, 0, "Add 3 Inky Shivs to your hand." },
+    { CardId::INFINITE_BLADES, "Infinite Blades", 1, CardType::POWER, TargetType::SELF, 1, 0, "At the start of your turn, add a Shiv to your hand.", "Infinite Blades+", 1, 1, 0, "Innate. At the start of your turn, add a Shiv to your hand.", 0, KEYWORD_INNATE },
+    { CardId::STORM_OF_STEEL, "Storm of Steel", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Discard your hand. Add a Shiv to your hand for each card discarded.", "Storm of Steel+", 1, 0, 0, "Discard your hand. Add a Shiv+ to your hand for each card discarded." },
+    { CardId::FAN_OF_KNIVES, "Fan of Knives", 2, CardType::POWER, TargetType::SELF, 4, 0, "Shivs now hit all enemies. Add 4 Shivs to your hand.", "Fan of Knives+", 2, 5, 0, "Shivs now hit all enemies. Add 5 Shivs to your hand." },
+    { CardId::PHANTOM_BLADES, "Phantom Blades", 1, CardType::POWER, TargetType::SELF, 9, 0, "Shivs gain Retain. The first Shiv you play each turn deals 9 more dmg.", "Phantom Blades+", 1, 12, 0, "Shivs gain Retain. The first Shiv you play each turn deals 12 more dmg." },
+    { CardId::ACCURACY, "Accuracy", 1, CardType::POWER, TargetType::SELF, 4, 0, "Shivs deal 4 more dmg.", "Accuracy+", 1, 6, 0, "Shivs deal 6 more dmg." },
+    { CardId::UP_MY_SLEEVE, "Up My Sleeve", 2, CardType::SKILL, TargetType::SELF, 3, 0, "Add 3 Shivs to your hand. This card costs 1 less.", "Up My Sleeve+", 2, 4, 0, "Add 4 Shivs to your hand. This card costs 1 less." },
+    { CardId::KNIFE_TRAP, "Knife Trap", 2, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 0, "Play every Shiv of your exhaust pile on the enemy.", "Knife Trap+", 2, 0, 0, "Upgrade and play every Shiv of your exhaust pile on the enemy." }
 };
 
 const CardDef& CardDef::get(CardId id) {

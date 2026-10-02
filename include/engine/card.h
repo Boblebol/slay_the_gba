@@ -365,10 +365,32 @@ enum class CardId : uint16_t {
     // Regent Status cards (appended: saves store the numeric id)
     COLLISION_COURSE,
     CRASH_LANDING,
+    // Shiv: the Silent's token (appended: saves store the numeric id)
+    SHIV,
+    // Silent Shivs (appended: saves store the numeric id)
+    BLADE_DANCE,
+    CLOAK_AND_DAGGER,
+    LEADING_STRIKE,
+    BLADE_OF_INK,
+    INFINITE_BLADES,
+    STORM_OF_STEEL,
+    FAN_OF_KNIVES,
+    PHANTOM_BLADES,
+    ACCURACY,
+    UP_MY_SLEEVE,
+    KNIFE_TRAP,
     COUNT
 };
 
 constexpr uint8_t NOT_IN_DECK = 0xFF;
+
+// What an enchantment adds to one copy of a card.
+enum class Enchantment : uint8_t {
+    NONE,
+    INKY // applies INKY_WEAK Weak to the enemies the card hits
+};
+
+constexpr uint8_t INKY_WEAK = 1;
 
 struct DeckCard {
     CardId id = CardId::NONE;
@@ -378,6 +400,7 @@ struct DeckCard {
     int8_t cost_delta = 0;      // energy cost change of this copy for the combat (Momentum Strike, Modded)
     bool free_this_turn = false; // this copy costs 0 until the end of the turn (Bullet Time)
     uint8_t deck_index = NOT_IN_DECK; // position of the card in the run's deck, for the gains that outlive the combat
+    Enchantment enchantment = Enchantment::NONE;
 
     constexpr DeckCard() = default;
     constexpr DeckCard(CardId i, bool up = false) : id(i), upgraded(up) {}

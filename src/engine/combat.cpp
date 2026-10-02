@@ -25,6 +25,7 @@ bool is_strike(CardId id) {
         case CardId::BLIGHT_STRIKE:
         case CardId::ADAPTIVE_STRIKE:
         case CardId::MOMENTUM_STRIKE:
+        case CardId::LEADING_STRIKE:
             return true;
         default:
             return false;
@@ -305,6 +306,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                     autoplay(attack);
                 }
             }
+            break;
+        case PowerId::INFINITE_BLADES:
+            if (turn_start) add_shivs(power.amount);
+            break;
+        case PowerId::HELICAL_DART:
+            if (card_played && info.card.id == CardId::SHIV) gain_temporary(StatusType::DEXTERITY, static_cast<int8_t>(power.amount));
             break;
         case PowerId::SMOKESTACK:
             if (event == CombatEvent::CARD_CREATED && CardDef::get(info.card.id).type == CardType::STATUS) {
@@ -846,6 +853,12 @@ void CombatEngine::create_card(DeckCard card, Pile pile) {
     emit(CombatEvent::CARD_CREATED, info);
 }
 
+void CombatEngine::add_shivs(int count, bool upgraded, Enchantment enchantment) {
+    DeckCard shiv(CardId::SHIV, upgraded);
+    shiv.enchantment = enchantment;
+    for (int copy = 0; copy < count; ++copy) create_card(shiv, Pile::HAND);
+}
+
 int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     counters.hits_dealt = bump(counters.hits_dealt);
     bool was_alive = target.is_alive();
@@ -1342,6 +1355,7 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         } else {
             counters.statuses_played = bump(counters.statuses_played);
         }
+        if (card.id == CardId::SHIV) counters.shivs_played = bump(counters.shivs_played);
         counters.energy_spent = bump(counters.energy_spent, paid);
         counters.combat_cards_played = bump(counters.combat_cards_played);
         if (CardDef::has_keyword(card, KEYWORD_ETHEREAL)) {
@@ -3488,6 +3502,87 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Crash Landing+!"sv : "Played Crash Landing!"sv);
             break;
         }
+        case CardId::SHIV: {
+            int16_t damage = static_cast<int16_t>(base_value + played_card.bonus + power_amount(PowerId::ACCURACY));
+            // Phantom Blades: the first Shiv of the turn hits harder.
+            if (counters.shivs_played == 0) damage = static_cast<int16_t>(damage + power_amount(PowerId::PHANTOM_BLADES));
+            const bool inky = played_card.enchantment == Enchantment::INKY;
+            // Fan of Knives: every enemy instead of the one aimed at.
+            const bool fan = has_power(PowerId::FAN_OF_KNIVES);
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                Enemy& foe = enemies[i];
+                if (!foe.is_alive() || (!fan && &foe != &current_target)) continue;
+                hit(foe, damage);
+                if (inky && foe.is_alive()) afflict(foe, StatusType::WEAK, INKY_WEAK);
+            }
+            set_log(upgraded ? "Played Shiv+!"sv : "Played Shiv!"sv);
+            break;
+        }
+        case CardId::BLADE_DANCE: {
+            add_shivs(base_value);
+            set_log(upgraded ? "Played Blade Dance+!"sv : "Played Blade Dance!"sv);
+            break;
+        }
+        case CardId::CLOAK_AND_DAGGER: {
+            gain_block(base_value);
+            add_shivs(secondary_value);
+            set_log(upgraded ? "Played Cloak and Dagger+!"sv : "Played Cloak and Dagger!"sv);
+            break;
+        }
+        case CardId::LEADING_STRIKE: {
+            hit(current_target, base_value);
+            add_shivs(secondary_value);
+            set_log(upgraded ? "Played Leading Strike+!"sv : "Played Leading Strike!"sv);
+            break;
+        }
+        case CardId::BLADE_OF_INK: {
+            add_shivs(base_value, false, Enchantment::INKY);
+            set_log(upgraded ? "Played Blade of Ink+!"sv : "Played Blade of Ink!"sv);
+            break;
+        }
+        case CardId::INFINITE_BLADES: {
+            add_power(PowerId::INFINITE_BLADES, base_value);
+            set_log(upgraded ? "Played Infinite Blades+!"sv : "Played Infinite Blades!"sv);
+            break;
+        }
+        case CardId::STORM_OF_STEEL: {
+            int thrown = static_cast<int>(hand.size());
+            while (!hand.empty()) discard_from_hand(hand.size() - 1);
+            add_shivs(thrown, upgraded);
+            set_log(upgraded ? "Played Storm of Steel+!"sv : "Played Storm of Steel!"sv);
+            break;
+        }
+        case CardId::FAN_OF_KNIVES: {
+            add_power(PowerId::FAN_OF_KNIVES);
+            add_shivs(base_value);
+            set_log(upgraded ? "Played Fan of Knives+!"sv : "Played Fan of Knives!"sv);
+            break;
+        }
+        case CardId::PHANTOM_BLADES: {
+            add_power(PowerId::PHANTOM_BLADES, base_value);
+            set_log(upgraded ? "Played Phantom Blades+!"sv : "Played Phantom Blades!"sv);
+            break;
+        }
+        case CardId::ACCURACY: {
+            add_power(PowerId::ACCURACY, base_value);
+            set_log(upgraded ? "Played Accuracy+!"sv : "Played Accuracy!"sv);
+            break;
+        }
+        case CardId::UP_MY_SLEEVE: {
+            add_shivs(base_value);
+            played_card.cost_delta = static_cast<int8_t>(played_card.cost_delta - 1);
+            set_log(upgraded ? "Played Up My Sleeve+!"sv : "Played Up My Sleeve!"sv);
+            break;
+        }
+        case CardId::KNIFE_TRAP: {
+            for (size_t i = 0, count = exhaust_pile.size(); i < count && has_alive_enemies(); ++i) {
+                if (exhaust_pile[i].id != CardId::SHIV) continue;
+                if (upgraded) exhaust_pile[i].upgraded = true;
+                autoplay(exhaust_pile[i], target_idx, AfterPlay::NOWHERE);
+            }
+            set_log(upgraded ? "Played Knife Trap+!"sv : "Played Knife Trap!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;
@@ -3529,7 +3624,9 @@ void CombatEngine::end_player_turn() {
     // The rest is discarded, except the cards with Retain.
     const bool keep_hand = retain_hand || has_power(PowerId::KEEP_HAND);
     for (size_t i = hand.size(); i-- > 0;) {
-        if (keep_hand || CardDef::has_keyword(hand[i], KEYWORD_RETAIN) ||
+        // Phantom Blades keeps the Shivs.
+        const bool kept_shiv = hand[i].id == CardId::SHIV && has_power(PowerId::PHANTOM_BLADES);
+        if (keep_hand || kept_shiv || CardDef::has_keyword(hand[i], KEYWORD_RETAIN) ||
             CardDef::has_keyword(hand[i], KEYWORD_RETAIN_ONCE)) {
             hand[i].added_keywords &= static_cast<uint8_t>(~KEYWORD_RETAIN_ONCE);
             continue;
@@ -3671,6 +3768,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "BLOOD_POTION") {
         player.heal(player.max_hp / 5);
         set_log("Blood Potion!");
+    } else if (potion_id == "CUNNING_POTION") {
+        add_shivs(3, true);
+        set_log("Cunning Potion!");
     } else {
         return false;
     }

@@ -312,7 +312,11 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::ACCELERANT, CardId::SPEEDSTER, CardId::ENVENOM,
                                               CardId::SERPENT_FORM, CardId::AFTERIMAGE, CardId::WELL_LAID_PLANS,
                                               CardId::STRANGLE, CardId::CORROSIVE_WAVE, CardId::NOXIOUS_FUMES,
-                                              CardId::BURST, CardId::BULLET_TIME, CardId::PINPOINT, CardId::POUNCE };
+                                              CardId::BURST, CardId::BULLET_TIME, CardId::PINPOINT, CardId::POUNCE,
+                                              CardId::BLADE_DANCE, CardId::CLOAK_AND_DAGGER, CardId::LEADING_STRIKE,
+                                              CardId::BLADE_OF_INK, CardId::INFINITE_BLADES, CardId::STORM_OF_STEEL,
+                                              CardId::FAN_OF_KNIVES, CardId::PHANTOM_BLADES, CardId::ACCURACY,
+                                              CardId::UP_MY_SLEEVE, CardId::KNIFE_TRAP };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
                                               CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
                                               CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,
@@ -508,6 +512,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("METRONOME")) combat.add_power(PowerId::METRONOME, 30);
     if (has_relic("EMOTION_CHIP")) combat.add_power(PowerId::EMOTION_CHIP);
     if (has_relic("BOOK_REPAIR_KNIFE")) combat.add_power(PowerId::BOOK_REPAIR_KNIFE, 3);
+    if (has_relic("HELICAL_DART")) combat.add_power(PowerId::HELICAL_DART, 1);
 }
 
 void RunManager::apply_combat_start_relics() {
@@ -522,6 +527,10 @@ void RunManager::apply_combat_start_relics() {
     // Bellows: the first hand of the combat is upgraded, the cards of Ring of the Snake included.
     if (has_relic("BELLOWS")) {
         for (DeckCard& card : combat.hand) card.upgraded = true;
+    }
+    // Ninja Scroll (Silent): 3 Shivs.
+    if (has_relic("NINJA_SCROLL")) {
+        combat.add_shivs(3);
     }
     // Divine Right (Regent): 3 Stars.
     if (has_relic("DIVINE_RIGHT")) {

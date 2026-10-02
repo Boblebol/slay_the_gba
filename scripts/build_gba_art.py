@@ -523,6 +523,18 @@ CARDS: list[CardArt] = [
     CardArt("turbo", "defect", "turbo", "skill", (0, 0)),
     CardArt("collision_course", "regent", "collision_course", "attack", (0, 0)),
     CardArt("crash_landing", "regent", "crash_landing", "attack", (1, 1)),
+    CardArt("shiv", "silent", "shiv", "attack", (0, 0), folder="token"),
+    CardArt("blade_dance", "silent", "blade_dance", "skill", (1, 1)),
+    CardArt("cloak_and_dagger", "silent", "cloak_and_dagger", "skill", (1, 1)),
+    CardArt("leading_strike", "silent", "leading_strike", "attack", (1, 1)),
+    CardArt("blade_of_ink", "silent", "blade_of_ink", "skill", (1, 1)),
+    CardArt("infinite_blades", "silent", "infinite_blades", "power", (1, 1)),
+    CardArt("storm_of_steel", "silent", "storm_of_steel", "skill", (1, 1)),
+    CardArt("fan_of_knives", "silent", "fan_of_knives", "power", (2, 2)),
+    CardArt("phantom_blades", "silent", "phantom_blades", "power", (1, 1)),
+    CardArt("accuracy", "silent", "accuracy", "power", (1, 1)),
+    CardArt("up_my_sleeve", "silent", "up_my_sleeve", "skill", (2, 2)),
+    CardArt("knife_trap", "silent", "knife_trap", "skill", (2, 2)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
