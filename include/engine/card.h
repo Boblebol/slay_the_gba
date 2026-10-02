@@ -379,6 +379,23 @@ enum class CardId : uint16_t {
     ACCURACY,
     UP_MY_SLEEVE,
     KNIFE_TRAP,
+    // Ironclad hand choices (appended: saves store the numeric id)
+    ARMAMENTS,
+    BRAND,
+    BURNING_PACT,
+    // Silent hand choices (appended: saves store the numeric id)
+    ACROBATICS,
+    DAGGER_THROW,
+    PREPARED,
+    HIDDEN_DAGGERS,
+    // Defect hand choices (appended: saves store the numeric id)
+    SCAVENGE,
+    // Regent hand choices (appended: saves store the numeric id)
+    PHOTON_CUT,
+    GLIMMER,
+    TYRANNY,
+    // Necrobinder hand choices (appended: saves store the numeric id)
+    SCULPTING_STRIKE,
     // Ironclad cards on the card-played event (appended: saves store the numeric id)
     JUGGLING,
     COUNT

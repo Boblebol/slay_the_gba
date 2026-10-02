@@ -61,6 +61,8 @@ jobs:
           VERSION: ${{ steps.plan.outputs.version }}
         run: |
           make roms
+          # Never publish a cartridge that hangs at boot for lack of stack room.
+          uv run scripts/check_rom_memory.py
           echo "$VERSION" > VERSION
 
       # Publishes the fresh ROMs in site/roms, regenerates the pages and AVANCEMENT.md.
