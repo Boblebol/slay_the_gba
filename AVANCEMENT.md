@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 32,9 %** — 395 faits, 25 partiels, 818 à faire (36 hors périmètre).
+**Avancement global : 36,1 %** — 434 faits, 27 partiels, 780 à faire (36 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -14,27 +14,27 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
-| [Soldat de Fer](#ironclad) | 68 | 2 | 32 | 67,6 % |
-| [La Silencieuse](#silent) | 56 | 2 | 43 | 56,4 % |
-| [Le Défectueux](#defect) | 75 | 1 | 29 | 71,9 % |
-| [Le Régent](#regent) | 51 | 1 | 48 | 51,5 % |
-| [La Nécrolieuse](#necrobinder) | 49 | 3 | 49 | 50,0 % |
+| [Soldat de Fer](#ironclad) | 80 | 2 | 20 | 79,4 % |
+| [La Silencieuse](#silent) | 60 | 2 | 39 | 60,4 % |
+| [Le Défectueux](#defect) | 84 | 1 | 20 | 80,5 % |
+| [Le Régent](#regent) | 56 | 1 | 43 | 56,5 % |
+| [La Nécrolieuse](#necrobinder) | 56 | 3 | 42 | 56,9 % |
 | [Cartes communes aux cinq éditions](#cartes) | 0 | 0 | 120 | 0,0 % |
 | [Reliques et potions](#reliques) | 38 | 4 | 279 | 12,5 % |
 | [Bestiaire](#bestiaire) | 0 | 1 | 103 | 0,5 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 24 | 0 | 28 | 46,2 % |
+| [Règles de combat](#regles) | 26 | 2 | 27 | 49,1 % |
 | [Systèmes de jeu](#systemes) | 19 | 2 | 15 | 55,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **395** | **25** | **818** | **32,9 %** |
+| **Total** | **434** | **27** | **780** | **36,1 %** |
 
 <a id="ironclad"></a>
 
-## Soldat de Fer — 67,6 %
+## Soldat de Fer — 79,4 %
 
-### Cartes — 70,3 %
+### Cartes — 84,3 %
 
-60 faits, 1 partiel, 25 à faire (4 hors périmètre).
+72 faits, 1 partiel, 13 à faire (4 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -56,12 +56,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Plaquage | Commune · Attaque | Oui |  |
 | Poing en fusion | Commune · Attaque | Oui |  |
 | Provocation | Commune · Compétence | Oui |  |
-| Ravage | Commune · Compétence | Non |  |
+| Ravage | Commune · Compétence | Oui |  |
 | Scorie | Commune · Attaque | Oui |  |
 | Vague de fer | Commune · Attaque | Oui |  |
 | Virilité | Commune · Compétence | Partiel | Améliorée, la carte Épuisée devrait être choisie : elle reste tirée au hasard. [#31](https://github.com/Boblebol/slay_the_gba/issues/31) |
 | Épée boomerang | Commune · Attaque | Oui |  |
-| Acharnement | Peu commune · Attaque | Non |  |
+| Acharnement | Peu commune · Attaque | Oui |  |
 | Armure de pierre | Peu commune · Pouvoir | Non |  |
 | Barrière de flammes | Peu commune · Compétence | Non |  |
 | Bouclier démoniaque | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
@@ -83,14 +83,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Pacte brûlant | Peu commune · Compétence | Non |  |
 | Paré au combat | Peu commune · Compétence | Oui |  |
 | Pillage | Peu commune · Attaque | Oui |  |
-| Piétinement | Peu commune · Attaque | Non |  |
+| Piétinement | Peu commune · Attaque | Oui |  |
 | Rage | Peu commune · Compétence | Oui |  |
 | Rancune | Peu commune · Attaque | Oui |  |
 | Rituel oublié | Peu commune · Compétence | Oui |  |
-| Rugissement de l'au-delà | Peu commune · Attaque | Non |  |
+| Rugissement de l'au-delà | Peu commune · Attaque | Oui |  |
 | Rupture | Peu commune · Pouvoir | Oui |  |
-| Ruée | Peu commune · Pouvoir | Non |  |
-| Saccage | Peu commune · Attaque | Non |  |
+| Ruée | Peu commune · Pouvoir | Oui |  |
+| Saccage | Peu commune · Attaque | Oui |  |
 | Saignée | Peu commune · Compétence | Oui |  |
 | Scandale | Peu commune · Attaque | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Second souffle | Peu commune · Compétence | Oui |  |
@@ -104,10 +104,10 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Attiser les flammes | Rare · Compétence | Non |  |
 | Barricade | Rare · Pouvoir | Oui |  |
 | Bûcher | Rare · Pouvoir | Oui |  |
-| Cascade | Rare · Compétence | Non |  |
+| Cascade | Rare · Compétence | Oui |  |
 | Domination | Rare · Compétence | Oui |  |
-| Droite-gauche | Rare · Compétence | Non |  |
-| En miettes | Rare · Attaque | Non |  |
+| Droite-gauche | Rare · Compétence | Oui |  |
+| En miettes | Rare · Attaque | Oui |  |
 | Estropier | Rare · Attaque | Oui |  |
 | Feu démoniaque | Rare · Attaque | Oui |  |
 | Force primitive | Rare · Compétence | Non |  |
@@ -119,15 +119,15 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Juggernaut | Rare · Pouvoir | Oui |  |
 | Manteau pourpre | Rare · Pouvoir | Oui |  |
 | Marqué au fer rouge | Rare · Compétence | Non |  |
-| Minuit | Rare · Attaque | Non |  |
+| Minuit | Rare · Attaque | Oui |  |
 | Offrande | Rare · Compétence | Oui |  |
 | Pacte conclu | Rare · Attaque | Oui |  |
 | Pas encore | Rare · Compétence | Oui |  |
 | Sombre étreinte | Rare · Pouvoir | Oui |  |
-| Soulèvement infernal | Rare · Pouvoir | Non |  |
+| Soulèvement infernal | Rare · Pouvoir | Oui |  |
 | Tank | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Briser | Ancienne · Attaque | Oui |  |
-| Corruption | Ancienne · Pouvoir | Non |  |
+| Corruption | Ancienne · Pouvoir | Oui |  |
 
 ### Reliques — 12,5 %
 
@@ -161,11 +161,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="silent"></a>
 
-## La Silencieuse — 56,4 %
+## La Silencieuse — 60,4 %
 
-### Cartes — 58,7 %
+### Cartes — 63,4 %
 
-50 faits, 1 partiel, 35 à faire (5 hors périmètre).
+54 faits, 1 partiel, 31 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -211,7 +211,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Jeu de jambes | Peu commune · Pouvoir | Oui |  |
 | Lames fantomatiques | Peu commune · Pouvoir | Non |  |
 | Lames infinies | Peu commune · Pouvoir | Non |  |
-| Localisation | Peu commune · Attaque | Non |  |
+| Localisation | Peu commune · Attaque | Oui |  |
 | Memento mori | Peu commune · Attaque | Oui |  |
 | Mirage | Peu commune · Compétence | Oui |  |
 | Oubli | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
@@ -224,7 +224,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Précision | Peu commune · Pouvoir | Non |  |
 | Réflexes | Peu commune · Compétence | Non |  |
 | Strangulation | Peu commune · Attaque | Oui |  |
-| Surgissement | Peu commune · Attaque | Non |  |
+| Surgissement | Peu commune · Attaque | Oui |  |
 | Symphonie de lames | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Tactique | Peu commune · Compétence | Non |  |
 | Trucage | Peu commune · Compétence | Non |  |
@@ -234,11 +234,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Abrasif | Rare · Pouvoir | Non |  |
 | Adrénaline | Rare · Compétence | Oui |  |
 | Assassiner | Rare · Attaque | Oui |  |
-| Bullet Time | Rare · Compétence | Non |  |
+| Bullet Time | Rare · Compétence | Oui |  |
 | Camouflage | Rare · Compétence | Non |  |
 | Cauchemar | Rare · Compétence | Non |  |
 | Clou du spectacle | Rare · Attaque | Oui |  |
-| Déflagration | Rare · Compétence | Non |  |
+| Déflagration | Rare · Compétence | Oui |  |
 | Encerclement | Rare · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Envenimer | Rare · Pouvoir | Oui |  |
 | Forme du serpent | Rare · Pouvoir | Oui |  |
@@ -292,11 +292,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="defect"></a>
 
-## Le Défectueux — 71,9 %
+## Le Défectueux — 80,5 %
 
-### Cartes — 67,4 %
+### Cartes — 77,9 %
 
-58 faits, 0 partiel, 28 à faire (5 hors périmètre).
+67 faits, 0 partiel, 19 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -312,16 +312,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Encrassage | Commune · Attaque | Non |  |
 | Faisceau circulaire | Commune · Attaque | Oui |  |
 | Foudre en boule | Commune · Attaque | Oui |  |
-| Frappe dynamique | Commune · Attaque | Non |  |
+| Frappe dynamique | Commune · Attaque | Oui |  |
 | Frappe focalisée | Commune · Attaque | Oui |  |
-| Griffure | Commune · Attaque | Non |  |
+| Griffure | Commune · Attaque | Oui |  |
 | Hologramme | Commune · Compétence | Non |  |
 | Paratonnerre | Commune · Compétence | Oui |  |
 | Piles de recharge | Commune · Compétence | Oui |  |
 | Rayon cellulaire | Commune · Attaque | Oui |  |
 | Sang-froid | Commune · Compétence | Oui |  |
 | TURBO | Commune · Compétence | Non |  |
-| Tumulte | Commune · Attaque | Non |  |
+| Tumulte | Commune · Attaque | Oui |  |
 | Vague de froid | Commune · Attaque | Oui |  |
 | Viser les yeux | Commune · Attaque | Oui |  |
 | Allumage | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
@@ -354,7 +354,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Scission | Peu commune · Attaque | Oui |  |
 | Sous-programme | Peu commune · Pouvoir | Oui |  |
 | Synchronisation | Peu commune · Compétence | Oui |  |
-| Synthèse | Peu commune · Attaque | Non |  |
+| Synthèse | Peu commune · Attaque | Oui |  |
 | Tempête | Peu commune · Compétence | Oui |  |
 | Tonnerre | Peu commune · Pouvoir | Oui |  |
 | Ténèbres | Peu commune · Compétence | Oui |  |
@@ -363,20 +363,20 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Énergie double | Peu commune · Compétence | Oui |  |
 | Éraflure | Peu commune · Attaque | Oui |  |
 | Activation multiple | Rare · Compétence | Oui |  |
-| Algorithme génétique | Rare · Compétence | Non |  |
-| Amplification du signal | Rare · Compétence | Non |  |
+| Algorithme génétique | Rare · Compétence | Oui |  |
+| Amplification du signal | Rare · Compétence | Oui |  |
 | Apprentissage guidé | Rare · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Arc-en-ciel | Rare · Compétence | Oui |  |
 | Canon anti-aérien | Rare · Attaque | Non |  |
 | Défragmentation | Rare · Pouvoir | Oui |  |
 | Détonation | Rare · Attaque | Oui |  |
-| Forme résonnante | Rare · Pouvoir | Non |  |
-| Frappe adaptative | Rare · Attaque | Non |  |
+| Forme résonnante | Rare · Pouvoir | Oui |  |
+| Frappe adaptative | Rare · Attaque | Oui |  |
 | Frappe météorique | Rare · Attaque | Oui |  |
 | IA créative | Rare · Pouvoir | Non |  |
 | Javelot de glace | Rare · Attaque | Oui |  |
 | Machine Learning | Rare · Pouvoir | Oui |  |
-| Modificateurs | Rare · Compétence | Non |  |
+| Modificateurs | Rare · Compétence | Oui |  |
 | Ombre dévorante | Rare · Pouvoir | Oui |  |
 | Perceuse hélicoïdale | Rare · Attaque | Oui |  |
 | Redémarrage | Rare · Compétence | Oui |  |
@@ -427,11 +427,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regent"></a>
 
-## Le Régent — 51,5 %
+## Le Régent — 56,5 %
 
-### Cartes — 54,7 %
+### Cartes — 60,5 %
 
-47 faits, 0 partiel, 39 à faire (5 hors périmètre).
+52 faits, 0 partiel, 34 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -465,8 +465,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Conquérant | Peu commune · Compétence | Non |  |
 | Constellation | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Convergence | Peu commune · Compétence | Oui |  |
-| Coup de pied royal | Peu commune · Attaque | Non |  |
-| Coup de poing royal | Peu commune · Attaque | Non |  |
+| Coup de pied royal | Peu commune · Attaque | Oui |  |
+| Coup de poing royal | Peu commune · Attaque | Oui |  |
 | Déflagration gamma | Peu commune · Attaque | Oui |  |
 | Déflagration lunaire | Peu commune · Attaque | Oui |  |
 | Dévastation | Peu commune · Attaque | Oui |  |
@@ -501,17 +501,17 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Arsenal | Rare · Pouvoir | Oui |  |
 | Atterrissage forcé | Rare · Attaque | Non |  |
 | Big Bang | Rare · Compétence | Non |  |
-| Bombardement | Rare · Attaque | Non |  |
+| Bombardement | Rare · Attaque | Oui |  |
 | Cadeau joyeux | Rare · Compétence | Non |  |
 | Châtiment | Rare · Attaque | Non |  |
 | Comète | Rare · Attaque | Oui |  |
 | Couru d'avance | Rare · Compétence | Non |  |
 | Foreuse céleste | Rare · Attaque | Oui |  |
-| Forme du néant | Rare · Pouvoir | Non |  |
+| Forme du néant | Rare · Pouvoir | Oui |  |
 | GARDES !!! | Rare · Compétence | Non |  |
 | Genèse | Rare · Pouvoir | Oui |  |
 | Grandes décisions | Rare · Compétence | Non |  |
-| Je suis invincible | Rare · Compétence | Non |  |
+| Je suis invincible | Rare · Compétence | Oui |  |
 | L'heure du marteau | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Lame chercheuse | Rare · Pouvoir | Non |  |
 | Le forgeron | Rare · Compétence | Non |  |
@@ -557,11 +557,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 50,0 %
+## La Nécrolieuse — 56,9 %
 
-### Cartes — 51,2 %
+### Cartes — 59,3 %
 
-43 faits, 2 partiels, 41 à faire (5 hors périmètre).
+50 faits, 2 partiels, 34 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -609,16 +609,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Légion d'ossements | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Létalité | Peu commune · Pouvoir | Non |  |
 | Marche funeste | Peu commune · Attaque | Oui |  |
-| Mélancolie | Peu commune · Compétence | Non |  |
+| Mélancolie | Peu commune · Compétence | Oui |  |
 | Oraison | Peu commune · Compétence | Non |  |
-| Perce-voile | Peu commune · Attaque | Non |  |
+| Perce-voile | Peu commune · Attaque | Oui |  |
 | Pluie de papier | Peu commune · Pouvoir | Oui |  |
 | Porte-mort | Peu commune · Compétence | Oui |  |
 | Purge | Peu commune · Compétence | Non |  |
 | Putréfaction | Peu commune · Compétence | Oui |  |
 | Six pieds sous terre | Peu commune · Attaque | Oui |  |
 | Stimulation | Peu commune · Compétence | Non |  |
-| Sursis | Peu commune · Compétence | Non |  |
+| Sursis | Peu commune · Compétence | Oui |  |
 | Tope là | Peu commune · Attaque | Non |  |
 | Toucher atrophiant | Peu commune · Compétence | Oui |  |
 | Tour de chair | Peu commune · Pouvoir | Oui |  |
@@ -629,23 +629,23 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Âme sœur | Peu commune · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Appel du néant | Rare · Pouvoir | Non |  |
 | Cacophonie | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
-| Cri de la banshee | Rare · Attaque | Non |  |
+| Cri de la banshee | Rare · Attaque | Oui |  |
 | Destin partagé | Rare · Compétence | Oui |  |
 | Domaine | Rare · Pouvoir | Oui |  |
 | Dévoration de vie | Rare · Pouvoir | Non |  |
-| Eidolon | Rare · Compétence | Non |  |
+| Eidolon | Rare · Compétence | Oui |  |
 | Esprit des cendres | Rare · Pouvoir | Oui |  |
 | Fin des temps | Rare · Compétence | Oui |  |
 | Forme de la Faucheuse | Rare · Pouvoir | Oui |  |
 | Influx neuronal | Rare · Pouvoir | Oui |  |
 | Joug | Rare · Attaque | Non |  |
 | L'heure est venue | Rare · Attaque | Oui |  |
-| La faux | Rare · Attaque | Non |  |
+| La faux | Rare · Attaque | Oui |  |
 | Maîtrise nécrologique | Rare · Pouvoir | Non |  |
 | Misère | Rare · Attaque | Oui |  |
 | Mort-vivant | Rare · Compétence | Oui |  |
 | Oblitération | Rare · Compétence | Oui |  |
-| Pendaison | Rare · Attaque | Non |  |
+| Pendaison | Rare · Attaque | Oui |  |
 | Réanimation | Rare · Compétence | Oui |  |
 | Sacrifice | Rare · Compétence | Non |  |
 | Sentinelle | Rare · Pouvoir | Non |  |
@@ -1424,11 +1424,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regles"></a>
 
-## Règles de combat — 46,2 %
+## Règles de combat — 49,1 %
 
-### Déroulement du combat — 75,0 %
+### Déroulement du combat — 78,9 %
 
-12 faits, 0 partiel, 4 à faire.
+14 faits, 2 partiels, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1445,7 +1445,10 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Défausse d'une carte au choix |  | Non | [#31](https://github.com/Boblebol/slay_the_gba/issues/31) |
 | Choix d'une carte parmi plusieurs (Découverte, etc.) |  | Non | [#72](https://github.com/Boblebol/slay_the_gba/issues/72) |
 | Cartes à coût X |  | Oui |  |
-| Écho : rejouer une carte |  | Non | [#86](https://github.com/Boblebol/slay_the_gba/issues/86) |
+| Écho : rejouer une carte |  | Partiel | [#86](https://github.com/Boblebol/slay_the_gba/issues/86) |
+| Cartes jouées automatiquement (Pioche, pile d'épuisement, fin de tour) |  | Oui |  |
+| Coûts modifiés pendant le tour ou le combat |  | Partiel | [#75](https://github.com/Boblebol/slay_the_gba/issues/75) |
+| Cartes évolutives : bonus et coût propres à chaque exemplaire |  | Oui |  |
 | Coup de grâce : effet quand la carte tue un ennemi |  | Oui |  |
 | Transformer une carte |  | Non | [#79](https://github.com/Boblebol/slay_the_gba/issues/79) |
 
