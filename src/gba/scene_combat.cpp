@@ -1483,6 +1483,13 @@ void CombatScene::_update_card_flight()
             }
         }
 
+        // The views keep a copy of each card: what a card gained without changing its look (damage of the
+        // other Claws, a cost change) is taken from the engine, or the text shown would be the old one.
+        for(int index = 0; index < _hand.size() && index < int(_combat.hand.size()); ++index)
+        {
+            _hand[index].card = _combat.hand[index];
+        }
+
         _selected = bn::clamp(_flying_hand_index, 0, bn::max(0, _hand.size() - 1));
         _selected_shown = -1;
 
