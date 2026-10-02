@@ -197,7 +197,8 @@ class CardArt:
     owner: str       # hero owning the card (frame colour); "hero" = the ROM's own hero
     art: str         # art file relative to bible/images/cards/<owner>/ ; "{hero}" is substituted
     kind: str        # attack | skill | power
-    costs: tuple[int, int]  # base cost, upgraded cost
+    costs: tuple[int, int]  # base cost, upgraded cost; -1 = X
+    stars: tuple[int, int] = (0, 0)  # Star cost (Regent), base and upgraded; -1 = X
 
 
 # Mirrors engine::CardId order (card.h). Index 0 (NONE) is a blank card.
@@ -216,7 +217,7 @@ CARDS: list[CardArt] = [
     CardArt("deadly_poison", "silent", "deadly_poison", "skill", (1, 1)),
     CardArt("zap", "defect", "zap", "skill", (1, 0)),
     CardArt("dualcast", "defect", "dualcast", "skill", (1, 0)),
-    CardArt("falling_star", "regent", "falling_star", "attack", (1, 1)),
+    CardArt("falling_star", "regent", "falling_star", "attack", (0, 0), (2, 2)),
     CardArt("venerate", "regent", "venerate", "skill", (1, 1)),
     CardArt("unleash", "necrobinder", "unleash", "attack", (1, 1)),
     CardArt("bodyguard", "necrobinder", "bodyguard", "skill", (1, 1)),
@@ -241,6 +242,146 @@ CARDS: list[CardArt] = [
     CardArt("deflect", "silent", "deflect", "skill", (0, 0)),
     CardArt("coolheaded", "defect", "coolheaded", "skill", (1, 1)),
     CardArt("sweeping_beam", "defect", "sweeping_beam", "attack", (1, 1)),
+    CardArt("thunderclap", "ironclad", "thunderclap", "attack", (1, 1)),
+    CardArt("dismantle", "ironclad", "dismantle", "attack", (1, 1)),
+    CardArt("inflame", "ironclad", "inflame", "power", (1, 1)),
+    CardArt("perfected_strike", "ironclad", "perfected_strike", "attack", (2, 2)),
+    CardArt("bludgeon", "ironclad", "bludgeon", "attack", (3, 3)),
+    CardArt("bully", "ironclad", "bully", "attack", (0, 0)),
+    CardArt("sword_boomerang", "ironclad", "sword_boomerang", "attack", (1, 1)),
+    CardArt("break", "ironclad", "break", "attack", (1, 1)),
+    CardArt("conflagration", "ironclad", "conflagration", "attack", (1, 1)),
+    CardArt("expect_a_fight", "ironclad", "expect_a_fight", "skill", (3, 3)),
+    CardArt("pillage", "ironclad", "pillage", "attack", (1, 1)),
+    CardArt("uppercut", "ironclad", "uppercut", "attack", (2, 2)),
+    CardArt("fight_me", "ironclad", "fight_me", "attack", (2, 2)),
+    CardArt("leg_sweep", "silent", "leg_sweep", "skill", (2, 2)),
+    CardArt("haze", "silent", "haze", "skill", (2, 2)),
+    CardArt("precise_cut", "silent", "precise_cut", "attack", (0, 0)),
+    CardArt("bouncing_flask", "silent", "bouncing_flask", "skill", (2, 2)),
+    CardArt("flechettes", "silent", "flechettes", "attack", (1, 1)),
+    CardArt("footwork", "silent", "footwork", "power", (1, 1)),
+    CardArt("escape_plan", "silent", "escape_plan", "skill", (0, 0)),
+    CardArt("dash", "silent", "dash", "attack", (2, 2)),
+    CardArt("bubble_bubble", "silent", "bubble_bubble", "skill", (1, 1)),
+    CardArt("outbreak", "silent", "outbreak", "skill", (3, 3)),
+    CardArt("shadow_shield", "defect", "shadow_shield", "skill", (2, 2)),
+    CardArt("meteor_strike", "defect", "meteor_strike", "attack", (5, 5)),
+    CardArt("glacier", "defect", "glacier", "skill", (2, 2)),
+    CardArt("ice_lance", "defect", "ice_lance", "attack", (3, 3)),
+    CardArt("skim", "defect", "skim", "skill", (1, 1)),
+    CardArt("all_for_one", "defect", "all_for_one", "attack", (2, 2)),
+    CardArt("null_card", "defect", "null", "attack", (2, 2)),
+    CardArt("go_for_the_eyes", "defect", "go_for_the_eyes", "attack", (0, 0)),
+    CardArt("scrape", "defect", "scrape", "attack", (1, 1)),
+    CardArt("bury", "necrobinder", "bury", "attack", (4, 4)),
+    CardArt("misery", "necrobinder", "misery", "attack", (0, 0)),
+    CardArt("undeath", "necrobinder", "undeath", "skill", (0, 0)),
+    CardArt("ashen_strike", "ironclad", "ashen_strike", "attack", (1, 1)),
+    CardArt("tremble", "ironclad", "tremble", "skill", (1, 1)),
+    CardArt("evil_eye", "ironclad", "evil_eye", "skill", (1, 1)),
+    CardArt("molten_fist", "ironclad", "molten_fist", "attack", (1, 1)),
+    CardArt("cinder", "ironclad", "cinder", "attack", (2, 2)),
+    CardArt("second_wind", "ironclad", "second_wind", "skill", (1, 1)),
+    CardArt("true_grit", "ironclad", "true_grit", "skill", (1, 1)),
+    CardArt("dominate", "ironclad", "dominate", "skill", (1, 1)),
+    CardArt("fiend_fire", "ironclad", "fiend_fire", "attack", (2, 2)),
+    CardArt("thrash", "ironclad", "thrash", "attack", (1, 1)),
+    CardArt("impervious", "ironclad", "impervious", "skill", (2, 2)),
+    CardArt("pacts_end", "ironclad", "pacts_end", "attack", (0, 0)),
+    CardArt("not_yet", "ironclad", "not_yet", "skill", (2, 2)),
+    CardArt("adrenaline", "silent", "adrenaline", "skill", (0, 0)),
+    CardArt("calculated_gamble", "silent", "calculated_gamble", "skill", (0, 0)),
+    CardArt("mirage", "silent", "mirage", "skill", (1, 1)),
+    CardArt("rainbow", "defect", "rainbow", "skill", (2, 2)),
+    CardArt("chill", "defect", "chill", "skill", (0, 0)),
+    CardArt("fusion", "defect", "fusion", "skill", (1, 1)),
+    CardArt("reboot", "defect", "reboot", "skill", (0, 0)),
+    CardArt("supercritical", "defect", "supercritical", "skill", (0, 0)),
+    CardArt("double_energy", "defect", "double_energy", "skill", (1, 0)),
+    CardArt("shared_fate", "necrobinder", "shared_fate", "skill", (0, 0)),
+    CardArt("wisp", "necrobinder", "wisp", "skill", (0, 0)),
+    CardArt("putrefy", "necrobinder", "putrefy", "skill", (1, 1)),
+    CardArt("reanimate", "necrobinder", "reanimate", "skill", (3, 3)),
+    CardArt("afterlife", "necrobinder", "afterlife", "skill", (1, 1)),
+    CardArt("blood_wall", "ironclad", "blood_wall", "skill", (2, 2)),
+    CardArt("bloodletting", "ironclad", "bloodletting", "skill", (0, 0)),
+    CardArt("breakthrough", "ironclad", "breakthrough", "attack", (1, 1)),
+    CardArt("forgotten_ritual", "ironclad", "forgotten_ritual", "skill", (1, 1)),
+    CardArt("hemokinesis", "ironclad", "hemokinesis", "attack", (1, 1)),
+    CardArt("mangle", "ironclad", "mangle", "attack", (3, 3)),
+    CardArt("offering", "ironclad", "offering", "skill", (0, 0)),
+    CardArt("setup_strike", "ironclad", "setup_strike", "attack", (1, 1)),
+    CardArt("spite", "ironclad", "spite", "attack", (0, 0)),
+    CardArt("whirlwind", "ironclad", "whirlwind", "attack", (-1, -1)),
+    CardArt("anticipate", "silent", "anticipate", "skill", (0, 0)),
+    CardArt("assassinate", "silent", "assassinate", "attack", (0, 0)),
+    CardArt("backstab", "silent", "backstab", "attack", (0, 0)),
+    CardArt("blur", "silent", "blur", "skill", (1, 1)),
+    CardArt("dodge_and_roll", "silent", "dodge_and_roll", "skill", (1, 1)),
+    CardArt("finisher", "silent", "finisher", "attack", (1, 1)),
+    CardArt("malaise", "silent", "malaise", "skill", (-1, -1)),
+    CardArt("memento_mori", "silent", "memento_mori", "attack", (1, 1)),
+    CardArt("murder", "silent", "murder", "attack", (3, 2)),
+    CardArt("piercing_wail", "silent", "piercing_wail", "skill", (1, 1)),
+    CardArt("predator", "silent", "predator", "attack", (2, 2)),
+    CardArt("sidestep", "silent", "sidestep", "skill", (0, 0)),
+    CardArt("skewer", "silent", "skewer", "attack", (-1, -1)),
+    CardArt("suppress", "silent", "suppress", "attack", (0, 0)),
+    CardArt("expertise", "silent", "expertise", "skill", (1, 1)),
+    CardArt("snakebite", "silent", "snakebite", "skill", (2, 2)),
+    CardArt("boot_sequence", "defect", "boot_sequence", "skill", (0, 0)),
+    CardArt("charge_battery", "defect", "charge_battery", "skill", (1, 1)),
+    CardArt("ftl", "defect", "ftl", "attack", (0, 0)),
+    CardArt("helix_drill", "defect", "helix_drill", "attack", (0, 0)),
+    CardArt("lightning_rod", "defect", "lightning_rod", "skill", (1, 1)),
+    CardArt("tempest", "defect", "tempest", "skill", (-1, -1)),
+    CardArt("crush_under", "regent", "crush_under", "attack", (1, 1)),
+    CardArt("glitterstream", "regent", "glitterstream", "skill", (2, 2)),
+    CardArt("heavenly_drill", "regent", "heavenly_drill", "attack", (-1, -1)),
+    CardArt("hegemony", "regent", "hegemony", "attack", (2, 2)),
+    CardArt("know_thy_place", "regent", "know_thy_place", "skill", (0, 0)),
+    CardArt("lunar_blast", "regent", "lunar_blast", "attack", (0, 0)),
+    CardArt("prophesize", "regent", "prophesize", "skill", (2, 2)),
+    CardArt("supermassive", "regent", "supermassive", "attack", (1, 1)),
+    CardArt("convergence", "regent", "convergence", "skill", (1, 1)),
+    CardArt("death_march", "necrobinder", "death_march", "attack", (1, 1)),
+    CardArt("defile", "necrobinder", "defile", "attack", (1, 1)),
+    CardArt("defy", "necrobinder", "defy", "skill", (1, 1)),
+    CardArt("delay", "necrobinder", "delay", "skill", (2, 2)),
+    CardArt("enfeebling_touch", "necrobinder", "enfeebling_touch", "skill", (1, 1)),
+    CardArt("fear", "necrobinder", "fear", "attack", (1, 1)),
+    CardArt("invoke", "necrobinder", "invoke", "skill", (1, 1)),
+    CardArt("parse", "necrobinder", "parse", "skill", (1, 1)),
+    CardArt("pull_from_below", "necrobinder", "pull_from_below", "attack", (1, 1)),
+    CardArt("reap", "necrobinder", "reap", "attack", (3, 3)),
+    CardArt("sow", "necrobinder", "sow", "attack", (1, 1)),
+    CardArt("eradicate", "necrobinder", "eradicate", "attack", (-1, -1)),
+    CardArt("alignment", "regent", "alignment", "skill", (0, 0), (2, 2)),
+    CardArt("astral_pulse", "regent", "astral_pulse", "attack", (0, 0), (3, 3)),
+    CardArt("cloak_of_stars", "regent", "cloak_of_stars", "skill", (0, 0), (1, 1)),
+    CardArt("comet", "regent", "comet", "attack", (0, 0), (5, 5)),
+    CardArt("crescent_spear", "regent", "crescent_spear", "attack", (1, 1), (1, 1)),
+    CardArt("devastate", "regent", "devastate", "attack", (1, 1), (4, 4)),
+    CardArt("dying_star", "regent", "dying_star", "attack", (1, 1), (3, 3)),
+    CardArt("gamma_blast", "regent", "gamma_blast", "attack", (0, 0), (3, 3)),
+    CardArt("glow", "regent", "glow", "skill", (1, 1)),
+    CardArt("guiding_star", "regent", "guiding_star", "attack", (1, 1), (1, 1)),
+    CardArt("hidden_cache", "regent", "hidden_cache", "skill", (1, 1)),
+    CardArt("meteor_shower", "regent", "meteor_shower", "attack", (0, 0), (2, 2)),
+    CardArt("particle_wall", "regent", "particle_wall", "skill", (0, 0), (2, 2)),
+    CardArt("radiate", "regent", "radiate", "attack", (0, 0)),
+    CardArt("resonance", "regent", "resonance", "skill", (1, 1), (2, 2)),
+    CardArt("royal_gamble", "regent", "royal_gamble", "skill", (0, 0), (5, 5)),
+    CardArt("seven_stars", "regent", "seven_stars", "attack", (2, 1), (7, 7)),
+    CardArt("shining_strike", "regent", "shining_strike", "attack", (1, 1)),
+    CardArt("stardust", "regent", "stardust", "attack", (0, 0), (-1, -1)),
+    CardArt("feed", "ironclad", "feed", "attack", (1, 1)),
+    CardArt("battle_trance", "ironclad", "battle_trance", "skill", (0, 0)),
+    CardArt("echoing_slash", "silent", "echoing_slash", "attack", (1, 1)),
+    CardArt("grand_finale", "silent", "grand_finale", "attack", (0, 0)),
+    CardArt("sunder", "defect", "sunder", "attack", (3, 3)),
+    CardArt("knockout_blow", "regent", "knockout_blow", "attack", (3, 3)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}
@@ -252,6 +393,13 @@ DIGITS = {
     "1": [".#.", "##.", ".#.", ".#.", "###"],
     "2": ["###", "..#", "###", "#..", "###"],
     "3": ["###", "..#", ".##", "..#", "###"],
+    "4": ["#.#", "#.#", "###", "..#", "..#"],
+    "5": ["###", "#..", "###", "..#", "###"],
+    "6": ["###", "#..", "###", "#.#", "###"],
+    "7": ["###", "..#", ".#.", ".#.", ".#."],
+    "8": ["###", "#.#", "###", "#.#", "###"],
+    "9": ["###", "#.#", "###", "..#", "###"],
+    "X": ["#.#", "#.#", ".#.", "#.#", "#.#"],
 }
 
 
@@ -370,12 +518,21 @@ def build_cards() -> None:
                 gem = energy_gem(owner, 11)
                 canvas.alpha_composite(gem, (1, 0))
                 if card.enum_name != "none":
-                    cost = str(card.costs[1] if upgraded else card.costs[0])
+                    value = card.costs[1] if upgraded else card.costs[0]
+                    cost = "X" if value < 0 else str(value)
                     draw = ImageDraw.Draw(canvas)
                     for dy, row in enumerate(DIGITS[cost]):
                         for dx, ch in enumerate(row):
                             if ch == "#":
                                 draw.point((5 + dx, 3 + dy), fill=(255, 255, 255, 255))
+                    stars = card.stars[1] if upgraded else card.stars[0]
+                    if stars:
+                        # Star cost: a yellow digit on a dark plate under the energy gem.
+                        draw.rectangle((3, 12, 9, 20), fill=(24, 20, 40, 255))
+                        for dy, row in enumerate(DIGITS["X" if stars < 0 else str(stars)]):
+                            for dx, ch in enumerate(row):
+                                if ch == "#":
+                                    draw.point((5 + dx, 14 + dy), fill=(255, 216, 64, 255))
                     if upgraded:
                         # Small green "+" badge in the bottom-right corner.
                         for px, py in [(25, 26), (24, 27), (25, 27), (26, 27), (25, 28)]:

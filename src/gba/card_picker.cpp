@@ -208,7 +208,13 @@ void CardPicker::_refresh_preview()
     const engine::CardDef& def = engine::CardDef::get(card.id);
     TextLine type;
     bn::ostringstream stream(type);
-    stream << card_type_name(def.type) << " - " << int(engine::CardDef::get_cost(card.id, card.upgraded)) << " ●";
+    stream << card_type_name(def.type) << " - " << card_cost_label(card) << " ●";
+
+    if(bn::string_view stars = card_star_cost_label(card); ! stars.empty())
+    {
+        stream << "  " << stars << " ★";
+    }
+
     Label& type_label = _text.emplace_back();
     type_label.set(_layout.text_x, _layout.text_y + 11, type, Align::LEFT, TextColor::GRAY);
 

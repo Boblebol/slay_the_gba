@@ -157,7 +157,7 @@ int main() {
     run.open_shop();
     assert(run.phase == RunPhase::SHOP);
     assert(run.current_shop.cards.size() == 3);
-    assert(run.current_shop.relics.size() == 2);
+    assert(run.current_shop.relics.size() == 3);
     std::cout << "[E2E Step 12] Entered Merchant Shop with " << run.gold << " Gold.\n";
 
     // Buy Card 0 & Card Removal

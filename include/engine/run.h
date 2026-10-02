@@ -43,6 +43,7 @@ public:
     FixedVector<DeckCard, 50> master_deck;
     FixedVector<std::string_view, 25> relics;
     FixedVector<std::string_view, 3> potions;
+    std::string_view last_treasure_relic; // relic found in the last chest, empty when it held none
 
     MapGraph map;
     uint32_t map_seed = 0; // seed of the current act's map, saved so a resumed run gets the same map

@@ -1,4 +1,4 @@
-# Checks run on every pull request: engine rules, tracker script.
+# Checks run on every pull request: engine rules, tracker script, ROM build.
 name: CI
 
 on:
@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive  # Butano, for the ROM build
       - uses: astral-sh/setup-uv@v5
       - name: Engine tests
         run: make test test-e2e
@@ -20,3 +22,7 @@ jobs:
       # Fails when avancement.toml is invalid or the detection no longer matches the engine sources.
       - name: Tracker runs
         run: uv run scripts/progress.py
+      # The native tests link against libc; the cartridge does not. One ROM is enough to catch what only
+      # breaks on the GBA toolchain (missing libc symbols, assets, Butano API).
+      - name: ROM builds
+        run: make ironclad

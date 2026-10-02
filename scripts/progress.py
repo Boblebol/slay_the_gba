@@ -146,7 +146,7 @@ def detect(pattern: str, path: Path) -> set[str]:
 
 
 # Engine card names that differ from the identifier of the same card in bible/data.
-ENGINE_CARD_ALIASES = {"POISON_STAB": "POISONED_STAB"}
+ENGINE_CARD_ALIASES = {"POISON_STAB": "POISONED_STAB", "NULL_CARD": "NULL"}
 
 
 def implemented_cards() -> set[str]:

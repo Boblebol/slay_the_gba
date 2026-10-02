@@ -226,7 +226,7 @@ void Player::trigger_start_of_turn_orbs() {
 }
 
 void Player::add_stars(uint8_t count) {
-    sovereign_stars = (sovereign_stars + count > 5) ? 5 : (sovereign_stars + count);
+    sovereign_stars = (sovereign_stars + count > 99) ? 99 : (sovereign_stars + count);
 }
 
 void Player::add_souls(uint8_t count) {

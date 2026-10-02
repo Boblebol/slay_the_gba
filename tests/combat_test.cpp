@@ -394,31 +394,37 @@ void test_defect_commons() {
 }
 
 void test_regent() {
+    // Stars are a resource: Venerate makes them, Falling Star spends 2.
     CombatEngine combat = make_combat(CharacterId::REGENT);
     Enemy& worm = combat.enemies[0];
-    play(combat, CardId::FALLING_STAR);
-    assert(worm.hp == 35 && combat.player.sovereign_stars == 1);
-
-    worm.add_status(StatusType::VULNERABLE, 1);
-    play(combat, CardId::FALLING_STAR);
-    assert(worm.hp == 35 - 10); // Vulnerable now applies to Falling Star too
-
+    combat.hand.clear();
+    combat.hand.push_back(CardId::FALLING_STAR);
+    assert(!combat.can_play_card(0)); // free in energy, but no Star yet
     play(combat, CardId::VENERATE);
-    assert(combat.player.block == 6 && combat.player.sovereign_stars == 4);
-    combat.player.add_stars(10);
-    assert(combat.player.sovereign_stars == 5);
+    assert(combat.player.block == 0 && combat.player.sovereign_stars == 2 && combat.player.energy == 2);
+    assert(combat.counters.stars_gained == 2);
+    play(combat, CardId::FALLING_STAR);
+    assert(worm.hp == 42 - 8 && combat.player.sovereign_stars == 0 && combat.player.energy == 3);
+    assert(worm.get_status(StatusType::WEAK) == 1 && worm.get_status(StatusType::VULNERABLE) == 1);
+    assert(combat.counters.stars_spent == 2);
+    assert(CardDef::get_star_cost(CardId::FALLING_STAR, true) == 2 && CardDef::get_value(CardId::FALLING_STAR, true) == 12);
 
-    // Stars empower the basic Strike and Defend.
-    CombatEngine stars = make_combat(CharacterId::REGENT);
-    stars.player.add_stars(2);
-    play(stars, CardId::STRIKE);
-    play(stars, CardId::DEFEND);
-    assert(stars.enemies[0].hp == 42 - 8 && stars.player.block == 7);
-    std::cout << "[PASS] Regent: Falling Star + Vulnerable, Venerate, Stars cap 5, Stars on Strike/Defend" << std::endl;
+    // Stars are not capped and are kept from one turn to the next; the turn counters restart.
+    combat.gain_stars(10);
+    assert(combat.player.sovereign_stars == 10);
+    make_enemy_idle(worm);
+    combat.end_player_turn();
+    assert(combat.player.sovereign_stars == 10 && combat.counters.stars_gained == 0 && combat.counters.stars_spent == 0);
+
+    // Strike and Defend get nothing from the Stars.
+    play(combat, CardId::STRIKE);
+    play(combat, CardId::DEFEND);
+    assert(worm.hp == 34 - 6 && combat.player.block == 5);
+    std::cout << "[PASS] Regent: Stars gained, spent, kept between turns, Venerate, Falling Star" << std::endl;
 }
 
 void test_regent_commons() {
-    // Solar Strike hits and gains Stars (capped at 5 like the other Star cards).
+    // Solar Strike hits and gains Stars.
     CombatEngine solar = make_combat(CharacterId::REGENT);
     play(solar, DeckCard(CardId::SOLAR_STRIKE, true));
     assert(solar.enemies[0].hp == 42 - 10);
@@ -556,6 +562,1417 @@ void test_more_commons() {
     std::cout << "[PASS] More commons: Body Slam, Deflect, Coolheaded, Sweeping Beam" << std::endl;
 }
 
+// A fight against three enemies: two Lice (18 HP) and a Jaw Worm (42 HP).
+CombatEngine make_pack(CharacterId hero) {
+    CombatEngine combat;
+    FixedVector<EnemyType, 3> pack;
+    pack.push_back(EnemyType::LOUSE);
+    pack.push_back(EnemyType::LOUSE);
+    pack.push_back(EnemyType::JAW_WORM);
+    combat.start_combat_multi(pack, hero);
+    return combat;
+}
+
+void assert_in_pool(CharacterId hero, std::initializer_list<CardId> cards) {
+    std::span<const CardId> pool = RunManager::card_reward_pool(hero);
+    for (CardId id : cards) {
+        assert(std::find(pool.begin(), pool.end(), id) != pool.end());
+    }
+}
+
+void test_ironclad_existing_mechanics() {
+    // Thunderclap: damage then Vulnerable on every enemy.
+    CombatEngine clap = make_pack(CharacterId::IRONCLAD);
+    play(clap, CardId::THUNDERCLAP);
+    assert(clap.enemies[0].hp == 14 && clap.enemies[1].hp == 14 && clap.enemies[2].hp == 38);
+    for (const Enemy& foe : clap.enemies) assert(foe.get_status(StatusType::VULNERABLE) == 1);
+    assert(CardDef::get_value(CardId::THUNDERCLAP, true) == 7);
+
+    // Dismantle hits twice when the target is already Vulnerable (8 x 1.5 = 12 per hit).
+    CombatEngine dismantle = make_combat(CharacterId::IRONCLAD);
+    play(dismantle, CardId::DISMANTLE);
+    assert(dismantle.enemies[0].hp == 42 - 8);
+    dismantle.enemies[0].add_status(StatusType::VULNERABLE, 1);
+    play(dismantle, CardId::DISMANTLE);
+    assert(dismantle.enemies[0].hp == 34 - 24);
+
+    // Inflame is a Power: Strength for the whole combat, and the card leaves play.
+    CombatEngine inflame = make_combat(CharacterId::IRONCLAD);
+    inflame.discard_pile.clear();
+    play(inflame, DeckCard(CardId::INFLAME, true));
+    assert(inflame.player.get_status(StatusType::STRENGTH) == 3);
+    assert(count_in_piles(inflame, CardId::INFLAME) == 0);
+
+    // Perfected Strike: 6 + 2 per card named "Frappe" in the deck, itself included.
+    CombatEngine perfected = make_combat(CharacterId::IRONCLAD);
+    perfected.draw_pile.clear();
+    perfected.discard_pile.clear();
+    perfected.draw_pile.push_back(CardId::STRIKE);
+    perfected.draw_pile.push_back(CardId::DEFEND);
+    perfected.discard_pile.push_back(CardId::TWIN_STRIKE);
+    perfected.discard_pile.push_back(CardId::POMMEL_STRIKE);
+    play(perfected, CardId::PERFECTED_STRIKE);
+    assert(perfected.enemies[0].hp == 42 - (6 + 2 * 4));
+    assert(CardDef::get_secondary(CardId::PERFECTED_STRIKE, true) == 3);
+
+    // Bludgeon: 32 damage for 3 energy, 42 once upgraded.
+    CombatEngine bludgeon = make_combat(CharacterId::IRONCLAD);
+    play(bludgeon, CardId::BLUDGEON);
+    assert(bludgeon.enemies[0].hp == 10 && bludgeon.player.energy == 0);
+    assert(CardDef::get_value(CardId::BLUDGEON, true) == 42);
+
+    // Bully: +2 damage per Vulnerable stack, then Vulnerable applies: (4 + 2 x 3) x 1.5 = 15.
+    CombatEngine bully = make_combat(CharacterId::IRONCLAD);
+    bully.enemies[0].add_status(StatusType::VULNERABLE, 3);
+    play(bully, CardId::BULLY);
+    assert(bully.enemies[0].hp == 42 - 15 && bully.player.energy == 3);
+
+    // Sword Boomerang: 3 hits of 3 spread at random over the living enemies, 4 hits once upgraded.
+    CombatEngine boomerang = make_pack(CharacterId::IRONCLAD);
+    play(boomerang, CardId::SWORD_BOOMERANG);
+    assert(boomerang.enemies[0].hp + boomerang.enemies[1].hp + boomerang.enemies[2].hp == 18 + 18 + 42 - 9);
+    boomerang.enemies[0].hp = 0;
+    boomerang.enemies[1].hp = 0;
+    int16_t survivor_hp = boomerang.enemies[2].hp;
+    play(boomerang, DeckCard(CardId::SWORD_BOOMERANG, true));
+    assert(boomerang.enemies[2].hp == survivor_hp - 12); // only the survivor can be hit
+    assert(CardDef::get(CardId::SWORD_BOOMERANG).target == TargetType::RANDOM_ENEMY);
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::THUNDERCLAP, CardId::DISMANTLE, CardId::INFLAME,
+                                            CardId::PERFECTED_STRIKE, CardId::BLUDGEON, CardId::BULLY,
+                                            CardId::SWORD_BOOMERANG });
+    std::cout << "[PASS] Ironclad: Thunderclap, Dismantle, Inflame, Perfected Strike, Bludgeon, Bully, Sword Boomerang"
+              << std::endl;
+
+    // Break: 20 damage and 5 Vulnerable (30 and 7 upgraded).
+    CombatEngine brk = make_combat(CharacterId::IRONCLAD);
+    play(brk, CardId::BREAK);
+    assert(brk.enemies[0].hp == 22 && brk.enemies[0].get_status(StatusType::VULNERABLE) == 5);
+    assert(CardDef::get_value(CardId::BREAK, true) == 30 && CardDef::get_secondary(CardId::BREAK, true) == 7);
+
+    // Conflagration: 2 damage to every enemy, 4 times.
+    CombatEngine fire = make_pack(CharacterId::IRONCLAD);
+    play(fire, CardId::CONFLAGRATION);
+    assert(fire.enemies[0].hp == 10 && fire.enemies[1].hp == 10 && fire.enemies[2].hp == 34);
+
+    // Expect a Fight: 15 Block plus 5 per point of Strength; negative Strength adds nothing.
+    CombatEngine expect = make_combat(CharacterId::IRONCLAD);
+    expect.player.block = 0;
+    expect.player.add_status(StatusType::STRENGTH, 2);
+    play(expect, CardId::EXPECT_A_FIGHT);
+    assert(expect.player.block == 25);
+    expect.player.block = 0;
+    expect.player.add_status(StatusType::STRENGTH, -5);
+    play(expect, DeckCard(CardId::EXPECT_A_FIGHT, true));
+    assert(expect.player.block == 16);
+
+    // Pillage: draws until a card that is not an Attack comes up.
+    CombatEngine pillage = make_combat(CharacterId::IRONCLAD);
+    pillage.draw_pile.clear();
+    pillage.discard_pile.clear();
+    pillage.draw_pile.push_back(CardId::STRIKE);  // never reached
+    pillage.draw_pile.push_back(CardId::DEFEND);  // third draw: stops here
+    pillage.draw_pile.push_back(CardId::STRIKE);
+    pillage.draw_pile.push_back(CardId::BASH);    // top of the pile
+    play(pillage, CardId::PILLAGE);
+    assert(pillage.enemies[0].hp == 36);
+    assert(pillage.hand.size() == 3 && pillage.hand[2].id == CardId::DEFEND && pillage.draw_pile.size() == 1);
+
+    // Uppercut: 13 damage, 1 Weak and 1 Vulnerable (2 and 2 upgraded).
+    CombatEngine uppercut = make_combat(CharacterId::IRONCLAD);
+    play(uppercut, DeckCard(CardId::UPPERCUT, true));
+    assert(uppercut.enemies[0].hp == 29);
+    assert(uppercut.enemies[0].get_status(StatusType::WEAK) == 2);
+    assert(uppercut.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+
+    // Fight Me!: two hits of 5, then 3 Strength for the hero and 1 for the enemy.
+    CombatEngine fight = make_combat(CharacterId::IRONCLAD);
+    play(fight, CardId::FIGHT_ME);
+    assert(fight.enemies[0].hp == 32);
+    assert(fight.player.get_status(StatusType::STRENGTH) == 3);
+    assert(fight.enemies[0].get_status(StatusType::STRENGTH) == 1);
+
+    // Break has the Ancient rarity: it comes from an Ancient, never from a combat reward.
+    std::span<const CardId> ironclad_pool = RunManager::card_reward_pool(CharacterId::IRONCLAD);
+    assert(std::find(ironclad_pool.begin(), ironclad_pool.end(), CardId::BREAK) == ironclad_pool.end());
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::CONFLAGRATION, CardId::EXPECT_A_FIGHT, CardId::PILLAGE,
+                                            CardId::UPPERCUT, CardId::FIGHT_ME });
+    std::cout << "[PASS] Ironclad: Break, Conflagration, Expect a Fight, Pillage, Uppercut, Fight Me!" << std::endl;
+}
+
+void test_silent_existing_mechanics() {
+    // Leg Sweep: Weak on the target, Block for the hero.
+    CombatEngine sweep = make_combat(CharacterId::SILENT);
+    sweep.player.block = 0;
+    play(sweep, CardId::LEG_SWEEP);
+    assert(sweep.enemies[0].get_status(StatusType::WEAK) == 2 && sweep.player.block == 11);
+
+    // Haze: Poison and Weak on every enemy.
+    CombatEngine haze = make_pack(CharacterId::SILENT);
+    play(haze, DeckCard(CardId::HAZE, true));
+    for (const Enemy& foe : haze.enemies) {
+        assert(foe.get_status(StatusType::POISON) == 6 && foe.get_status(StatusType::WEAK) == 2);
+    }
+
+    // Precise Cut: 13 damage, 2 less per other card in hand, never below 0.
+    CombatEngine cut = make_combat(CharacterId::SILENT);
+    cut.hand.clear();
+    cut.hand.push_back(CardId::PRECISE_CUT);
+    cut.hand.push_back(CardId::DEFEND);
+    cut.hand.push_back(CardId::DEFEND);
+    assert(cut.play_card(0));
+    assert(cut.enemies[0].hp == 42 - 9 && cut.player.energy == 3);
+    while (cut.hand.size() < 9) cut.hand.push_back(CardId::DEFEND);
+    cut.hand.push_back(CardId::PRECISE_CUT);
+    assert(cut.play_card(9));
+    assert(cut.enemies[0].hp == 33);
+
+    // Bouncing Flask: 3 Poison on a random enemy, 3 times.
+    CombatEngine flask = make_pack(CharacterId::SILENT);
+    play(flask, CardId::BOUNCING_FLASK);
+    int flask_poison = 0;
+    for (const Enemy& foe : flask.enemies) flask_poison += foe.get_status(StatusType::POISON);
+    assert(flask_poison == 9);
+    assert(CardDef::get_secondary(CardId::BOUNCING_FLASK, true) == 4);
+
+    // Flechettes: one hit of 5 per Skill left in hand.
+    CombatEngine darts = make_combat(CharacterId::SILENT);
+    darts.hand.clear();
+    darts.hand.push_back(CardId::FLECHETTES);
+    darts.hand.push_back(CardId::DEFEND);
+    darts.hand.push_back(CardId::SURVIVOR);
+    darts.hand.push_back(CardId::STRIKE);
+    assert(darts.play_card(0));
+    assert(darts.enemies[0].hp == 42 - 10);
+
+    // Footwork: Dexterity for the whole combat adds to every Block gain.
+    CombatEngine footwork = make_combat(CharacterId::SILENT);
+    play(footwork, CardId::FOOTWORK);
+    assert(footwork.player.get_status(StatusType::DEXTERITY) == 2);
+    footwork.player.block = 0;
+    play(footwork, CardId::DEFEND);
+    assert(footwork.player.block == 7);
+
+    // Escape Plan: draws a card, and gives Block only when it is a Skill.
+    CombatEngine escape = make_combat(CharacterId::SILENT);
+    escape.player.block = 0;
+    escape.draw_pile.clear();
+    escape.draw_pile.push_back(CardId::STRIKE);
+    play(escape, CardId::ESCAPE_PLAN);
+    assert(escape.hand.size() == 1 && escape.player.block == 0);
+    escape.draw_pile.clear();
+    escape.draw_pile.push_back(CardId::DEFEND);
+    play(escape, DeckCard(CardId::ESCAPE_PLAN, true));
+    assert(escape.hand.size() == 1 && escape.player.block == 5);
+
+    // Dash: Block and damage together.
+    CombatEngine dash = make_combat(CharacterId::SILENT);
+    dash.player.block = 0;
+    play(dash, DeckCard(CardId::DASH, true));
+    assert(dash.player.block == 13 && dash.enemies[0].hp == 29);
+
+    // Bubble Bubble only works on an enemy that is already Poisoned.
+    CombatEngine bubble = make_combat(CharacterId::SILENT);
+    play(bubble, CardId::BUBBLE_BUBBLE);
+    assert(bubble.enemies[0].get_status(StatusType::POISON) == 0);
+    bubble.enemies[0].add_status(StatusType::POISON, 1);
+    play(bubble, CardId::BUBBLE_BUBBLE);
+    assert(bubble.enemies[0].get_status(StatusType::POISON) == 10);
+
+    // Outbreak: 9 Poison on every enemy, which ticks at once (9 damage, 8 Poison left).
+    CombatEngine outbreak = make_pack(CharacterId::SILENT);
+    play(outbreak, CardId::OUTBREAK);
+    assert(outbreak.enemies[0].hp == 9 && outbreak.enemies[2].hp == 33);
+    for (const Enemy& foe : outbreak.enemies) assert(foe.get_status(StatusType::POISON) == 8);
+
+    assert_in_pool(CharacterId::SILENT, { CardId::LEG_SWEEP, CardId::HAZE, CardId::PRECISE_CUT, CardId::BOUNCING_FLASK,
+                                          CardId::FLECHETTES, CardId::FOOTWORK, CardId::ESCAPE_PLAN, CardId::DASH,
+                                          CardId::BUBBLE_BUBBLE, CardId::OUTBREAK });
+    std::cout << "[PASS] Silent: Leg Sweep, Haze, Precise Cut, Bouncing Flask, Flechettes, Footwork, Escape Plan, "
+                 "Dash, Bubble Bubble, Outbreak" << std::endl;
+}
+
+void test_defect_existing_mechanics() {
+    // Shadow Shield: Block and a Dark orb.
+    CombatEngine shield = make_combat(CharacterId::DEFECT);
+    shield.player.block = 0;
+    play(shield, CardId::SHADOW_SHIELD);
+    assert(shield.player.block == 11);
+    assert(shield.player.orbs.size() == 1 && shield.player.orbs[0] == OrbType::DARK);
+
+    // Meteor Strike costs 5: unplayable with 3 energy, then 24 damage and 3 Plasma orbs.
+    CombatEngine meteor = make_combat(CharacterId::DEFECT);
+    meteor.hand.clear();
+    meteor.hand.push_back(CardId::METEOR_STRIKE);
+    assert(!meteor.play_card(0));
+    meteor.player.energy = 5;
+    assert(meteor.play_card(0));
+    assert(meteor.enemies[0].hp == 18 && meteor.player.energy == 0);
+    assert(meteor.player.orbs.size() == 3);
+    for (OrbType orb : meteor.player.orbs) assert(orb == OrbType::PLASMA);
+
+    // Glacier: Block and 2 Frost orbs. Ice Lance: 19 damage and 3 Frost orbs.
+    CombatEngine glacier = make_combat(CharacterId::DEFECT);
+    glacier.player.block = 0;
+    play(glacier, DeckCard(CardId::GLACIER, true));
+    assert(glacier.player.block == 9 && glacier.player.orbs.size() == 2 && glacier.player.orbs[1] == OrbType::FROST);
+    CombatEngine lance = make_combat(CharacterId::DEFECT);
+    play(lance, CardId::ICE_LANCE);
+    assert(lance.enemies[0].hp == 23 && lance.player.orbs.size() == 3 && lance.player.energy == 0);
+
+    // Skim: 3 cards, 4 once upgraded.
+    CombatEngine skim = make_combat(CharacterId::DEFECT);
+    play(skim, CardId::SKIM);
+    assert(skim.hand.size() == 3);
+    CombatEngine skim_plus = make_combat(CharacterId::DEFECT);
+    play(skim_plus, DeckCard(CardId::SKIM, true));
+    assert(skim_plus.hand.size() == 4);
+
+    // All for One: every card costing 0 comes back from the discard pile.
+    CombatEngine all = make_combat(CharacterId::DEFECT);
+    all.discard_pile.clear();
+    all.discard_pile.push_back(CardId::BEAM_CELL);
+    all.discard_pile.push_back(CardId::STRIKE);
+    all.discard_pile.push_back(CardId::GO_FOR_THE_EYES);
+    play(all, CardId::ALL_FOR_ONE);
+    assert(all.enemies[0].hp == 32);
+    assert(all.hand.size() == 2 && all.hand[0].id == CardId::BEAM_CELL && all.hand[1].id == CardId::GO_FOR_THE_EYES);
+    assert(all.discard_pile.size() == 2); // the Strike and All for One itself
+
+    // Null: damage, Weak and a Dark orb.
+    CombatEngine null = make_combat(CharacterId::DEFECT);
+    play(null, DeckCard(CardId::NULL_CARD, true));
+    assert(null.enemies[0].hp == 29 && null.enemies[0].get_status(StatusType::WEAK) == 2);
+    assert(null.player.orbs.size() == 1 && null.player.orbs[0] == OrbType::DARK);
+
+    // Go for the Eyes: Weak only when the enemy is about to attack.
+    CombatEngine eyes = make_combat(CharacterId::DEFECT);
+    play(eyes, CardId::GO_FOR_THE_EYES);
+    assert(eyes.enemies[0].hp == 39 && eyes.enemies[0].get_status(StatusType::WEAK) == 1);
+    make_enemy_idle(eyes.enemies[0]);
+    play(eyes, CardId::GO_FOR_THE_EYES);
+    assert(eyes.enemies[0].get_status(StatusType::WEAK) == 1);
+
+    // Scrape: draws 4 cards and keeps only those costing 0.
+    CombatEngine scrape = make_combat(CharacterId::DEFECT);
+    scrape.draw_pile.clear();
+    scrape.discard_pile.clear();
+    scrape.draw_pile.push_back(CardId::STRIKE);
+    scrape.draw_pile.push_back(CardId::BEAM_CELL);
+    scrape.draw_pile.push_back(CardId::DEFEND);
+    scrape.draw_pile.push_back(CardId::GO_FOR_THE_EYES);
+    play(scrape, CardId::SCRAPE);
+    assert(scrape.enemies[0].hp == 35);
+    assert(scrape.hand.size() == 2 && scrape.draw_pile.empty());
+    assert(scrape.discard_pile.size() == 3); // Strike, Defend and Scrape itself
+
+    assert_in_pool(CharacterId::DEFECT, { CardId::SHADOW_SHIELD, CardId::METEOR_STRIKE, CardId::GLACIER,
+                                          CardId::ICE_LANCE, CardId::SKIM, CardId::ALL_FOR_ONE, CardId::NULL_CARD,
+                                          CardId::GO_FOR_THE_EYES, CardId::SCRAPE });
+    std::cout << "[PASS] Defect: Shadow Shield, Meteor Strike, Glacier, Ice Lance, Skim, All for One, Null, "
+                 "Go for the Eyes, Scrape" << std::endl;
+}
+
+void test_necrobinder_existing_mechanics() {
+    // Bury costs 4: 52 damage once the energy is there.
+    CombatEngine bury = make_combat(CharacterId::NECROBINDER, EnemyType::CEREMONIAL_BEAST);
+    bury.hand.clear();
+    bury.hand.push_back(CardId::BURY);
+    assert(!bury.play_card(0));
+    bury.player.energy = 4;
+    assert(bury.play_card(0));
+    assert(bury.enemies[0].hp == 150 - 52);
+
+    // Misery: damage, then the target's debuffs are copied to every other enemy.
+    CombatEngine misery = make_pack(CharacterId::NECROBINDER);
+    misery.enemies[2].add_status(StatusType::VULNERABLE, 2);
+    misery.enemies[2].add_status(StatusType::POISON, 4);
+    play(misery, CardId::MISERY, 2);
+    assert(misery.enemies[2].hp == 42 - 10); // 7 x 1.5
+    for (int other : { 0, 1 }) {
+        assert(misery.enemies[other].get_status(StatusType::VULNERABLE) == 2);
+        assert(misery.enemies[other].get_status(StatusType::POISON) == 4);
+        assert(misery.enemies[other].get_status(StatusType::WEAK) == 0);
+    }
+
+    // Misery+ has Retain: it stays in hand when the turn ends, the plain one is discarded.
+    CombatEngine retain = make_combat(CharacterId::NECROBINDER);
+    make_enemy_idle(retain.enemies[0]);
+    retain.hand.clear();
+    retain.hand.push_back(DeckCard(CardId::MISERY, true));
+    retain.hand.push_back(CardId::MISERY);
+    retain.end_player_turn();
+    assert(retain.state == CombatState::PLAYER_TURN);
+    int kept = 0;
+    for (const DeckCard& card : retain.hand) kept += card.id == CardId::MISERY;
+    assert(kept == 1 && retain.hand[0] == DeckCard(CardId::MISERY, true));
+
+    // Undeath: Block and a copy of itself in the discard pile.
+    CombatEngine undeath = make_combat(CharacterId::NECROBINDER);
+    undeath.player.block = 0;
+    undeath.discard_pile.clear();
+    play(undeath, DeckCard(CardId::UNDEATH, true));
+    assert(undeath.player.block == 9 && undeath.player.energy == 3);
+    assert(undeath.discard_pile.size() == 2 && undeath.discard_pile[0] == DeckCard(CardId::UNDEATH, true));
+
+    assert_in_pool(CharacterId::NECROBINDER, { CardId::BURY, CardId::MISERY, CardId::UNDEATH });
+    std::cout << "[PASS] Necrobinder: Bury, Misery (Retain once upgraded), Undeath" << std::endl;
+}
+
+void test_exhaust() {
+    // An Exhaust card leaves the combat: it goes to the exhaust pile, never to the discard pile.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.discard_pile.clear();
+    play(combat, CardId::IMPERVIOUS);
+    assert(combat.player.block == 30);
+    assert(combat.exhaust_pile.size() == 1 && combat.exhaust_pile[0].id == CardId::IMPERVIOUS);
+    assert(combat.discard_pile.empty() && combat.exhausted_this_turn == 1);
+    assert(CardDef::has_keyword(CardId::IMPERVIOUS, false, KEYWORD_EXHAUST));
+    assert(!CardDef::has_keyword(CardId::STRIKE, false, KEYWORD_EXHAUST));
+
+    // The turn counter restarts each turn, the pile lasts the whole combat and is emptied by the next one.
+    make_enemy_idle(combat.enemies[0]);
+    combat.end_player_turn();
+    assert(combat.exhausted_this_turn == 0 && combat.exhaust_pile.size() == 1);
+    assert(count_in_piles(combat, CardId::IMPERVIOUS) == 1);
+    combat.start_combat(EnemyType::JAW_WORM, CharacterId::IRONCLAD);
+    assert(combat.exhaust_pile.empty());
+
+    // An upgrade can remove the keyword (Mirage) or add Retain (Wisp, Calculated Gamble).
+    assert(CardDef::has_keyword(CardId::MIRAGE, false, KEYWORD_EXHAUST));
+    assert(!CardDef::has_keyword(CardId::MIRAGE, true, KEYWORD_EXHAUST));
+    assert(!CardDef::has_keyword(CardId::WISP, false, KEYWORD_RETAIN));
+    assert(CardDef::has_keyword(CardId::WISP, true, KEYWORD_RETAIN));
+    assert(CardDef::has_keyword(CardId::CALCULATED_GAMBLE, true, KEYWORD_RETAIN));
+    assert(CardDef::has_keyword(CardId::MISERY, true, KEYWORD_RETAIN));
+    std::cout << "[PASS] Exhaust: pile, per-turn counter, keywords changed by upgrades" << std::endl;
+}
+
+void test_ironclad_exhaust() {
+    // Tremble: Vulnerable, then exhausted.
+    CombatEngine tremble = make_combat(CharacterId::IRONCLAD);
+    play(tremble, DeckCard(CardId::TREMBLE, true));
+    assert(tremble.enemies[0].get_status(StatusType::VULNERABLE) == 4);
+    assert(tremble.exhaust_pile.size() == 1);
+
+    // Ashen Strike: 6 damage plus 3 per card in the exhaust pile.
+    CombatEngine ashen = make_combat(CharacterId::IRONCLAD);
+    play(ashen, CardId::ASHEN_STRIKE);
+    assert(ashen.enemies[0].hp == 36);
+    ashen.exhaust_card(CardId::DEFEND);
+    ashen.exhaust_card(CardId::DEFEND);
+    play(ashen, CardId::ASHEN_STRIKE);
+    assert(ashen.enemies[0].hp == 36 - 12);
+
+    // Evil Eye: its Block twice when a card was exhausted this turn.
+    CombatEngine eye = make_combat(CharacterId::IRONCLAD);
+    eye.player.block = 0;
+    play(eye, CardId::EVIL_EYE);
+    assert(eye.player.block == 8);
+    eye.exhaust_card(CardId::DEFEND);
+    play(eye, DeckCard(CardId::EVIL_EYE, true));
+    assert(eye.player.block == 8 + 22);
+
+    // Molten Fist: damage first, then the enemy's Vulnerable is doubled.
+    CombatEngine fist = make_combat(CharacterId::IRONCLAD);
+    fist.enemies[0].add_status(StatusType::VULNERABLE, 2);
+    play(fist, CardId::MOLTEN_FIST);
+    assert(fist.enemies[0].hp == 42 - 15 && fist.enemies[0].get_status(StatusType::VULNERABLE) == 4);
+    assert(fist.exhaust_pile.size() == 1);
+
+    // Cinder and True Grit exhaust a random card of the hand.
+    CombatEngine cinder = make_combat(CharacterId::IRONCLAD);
+    cinder.hand.clear();
+    cinder.hand.push_back(CardId::CINDER);
+    cinder.hand.push_back(CardId::DEFEND);
+    cinder.discard_pile.clear();
+    assert(cinder.play_card(0));
+    assert(cinder.enemies[0].hp == 24 && cinder.hand.empty());
+    assert(cinder.exhaust_pile.size() == 1 && cinder.exhaust_pile[0].id == CardId::DEFEND);
+    assert(cinder.discard_pile.size() == 1 && cinder.discard_pile[0].id == CardId::CINDER);
+    CombatEngine grit = make_combat(CharacterId::IRONCLAD);
+    grit.player.block = 0;
+    play(grit, CardId::TRUE_GRIT); // alone in hand: nothing to exhaust
+    assert(grit.player.block == 7 && grit.exhaust_pile.empty());
+    grit.hand.clear();
+    grit.hand.push_back(DeckCard(CardId::TRUE_GRIT, true));
+    grit.hand.push_back(CardId::STRIKE);
+    assert(grit.play_card(0));
+    assert(grit.player.block == 16 && grit.exhaust_pile.size() == 1 && grit.hand.empty());
+
+    // Second Wind: every non-Attack of the hand is exhausted for Block.
+    CombatEngine wind = make_combat(CharacterId::IRONCLAD);
+    wind.player.block = 0;
+    wind.hand.clear();
+    wind.hand.push_back(CardId::SECOND_WIND);
+    wind.hand.push_back(CardId::DEFEND);
+    wind.hand.push_back(CardId::STRIKE);
+    wind.hand.push_back(CardId::SHRUG_IT_OFF);
+    assert(wind.play_card(0));
+    assert(wind.player.block == 10 && wind.exhaust_pile.size() == 2);
+    assert(wind.hand.size() == 1 && wind.hand[0].id == CardId::STRIKE);
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::ASHEN_STRIKE, CardId::TREMBLE, CardId::EVIL_EYE, CardId::MOLTEN_FIST,
+                                            CardId::CINDER, CardId::SECOND_WIND, CardId::TRUE_GRIT });
+    std::cout << "[PASS] Ironclad Exhaust: Ashen Strike, Tremble, Evil Eye, Molten Fist, Cinder, Second Wind, True Grit"
+              << std::endl;
+
+    // Dominate: Vulnerable, then 1 Strength per Vulnerable on the enemy.
+    CombatEngine dominate = make_combat(CharacterId::IRONCLAD);
+    dominate.enemies[0].add_status(StatusType::VULNERABLE, 2);
+    play(dominate, CardId::DOMINATE);
+    assert(dominate.enemies[0].get_status(StatusType::VULNERABLE) == 3);
+    assert(dominate.player.get_status(StatusType::STRENGTH) == 3 && dominate.exhaust_pile.size() == 1);
+
+    // Fiend Fire: exhausts the hand, one hit of 7 per card, then itself.
+    CombatEngine fiend = make_combat(CharacterId::IRONCLAD);
+    fiend.hand.clear();
+    fiend.hand.push_back(CardId::FIEND_FIRE);
+    fiend.hand.push_back(CardId::STRIKE);
+    fiend.hand.push_back(CardId::DEFEND);
+    fiend.hand.push_back(CardId::DEFEND);
+    assert(fiend.play_card(0));
+    assert(fiend.enemies[0].hp == 42 - 21 && fiend.hand.empty() && fiend.exhaust_pile.size() == 4);
+
+    // Thrash: two hits, then a random Attack of the hand is exhausted and its damage kept by this copy.
+    CombatEngine thrash = make_combat(CharacterId::IRONCLAD);
+    thrash.hand.clear();
+    thrash.hand.push_back(CardId::THRASH);
+    thrash.hand.push_back(CardId::DEFEND);
+    thrash.hand.push_back(CardId::BLUDGEON);
+    thrash.discard_pile.clear();
+    assert(thrash.play_card(0));
+    assert(thrash.enemies[0].hp == 42 - 8);
+    assert(thrash.exhaust_pile.size() == 1 && thrash.exhaust_pile[0].id == CardId::BLUDGEON);
+    assert(thrash.hand.size() == 1 && thrash.discard_pile[0].id == CardId::THRASH && thrash.discard_pile[0].bonus == 32);
+    thrash.enemies[0].hp = 100;
+    thrash.hand.clear();
+    thrash.hand.push_back(thrash.discard_pile[0]);
+    thrash.player.energy = 3;
+    assert(thrash.play_card(0));
+    assert(thrash.enemies[0].hp == 100 - 2 * 36);
+
+    // Pact's End needs 3 exhausted cards.
+    CombatEngine pact = make_pack(CharacterId::IRONCLAD);
+    play(pact, CardId::PACTS_END);
+    assert(pact.enemies[2].hp == 42);
+    for (int n = 0; n < 3; ++n) pact.exhaust_card(CardId::DEFEND);
+    play(pact, CardId::PACTS_END);
+    assert(pact.enemies[0].hp == 0 && pact.enemies[1].hp == 0 && pact.enemies[2].hp == 24);
+    assert(pact.exhaust_pile.size() == 3); // the card itself is discarded
+
+    // Not Yet heals, never above the maximum.
+    CombatEngine heal = make_combat(CharacterId::IRONCLAD);
+    heal.player.hp = 60;
+    play(heal, CardId::NOT_YET);
+    assert(heal.player.hp == 70);
+    play(heal, DeckCard(CardId::NOT_YET, true));
+    assert(heal.player.hp == 80);
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::DOMINATE, CardId::FIEND_FIRE, CardId::THRASH, CardId::IMPERVIOUS,
+                                            CardId::PACTS_END, CardId::NOT_YET });
+    std::cout << "[PASS] Ironclad Exhaust: Dominate, Fiend Fire, Thrash, Impervious, Pact's End, Not Yet" << std::endl;
+}
+
+void test_other_heroes_exhaust() {
+    // Adrenaline: free, energy and 2 cards.
+    CombatEngine adrenaline = make_combat(CharacterId::SILENT);
+    play(adrenaline, DeckCard(CardId::ADRENALINE, true));
+    assert(adrenaline.player.energy == 5 && adrenaline.hand.size() == 2 && adrenaline.exhaust_pile.size() == 1);
+
+    // Calculated Gamble: the whole hand is swapped for as many new cards.
+    CombatEngine gamble = make_combat(CharacterId::SILENT);
+    gamble.hand.clear();
+    gamble.hand.push_back(CardId::CALCULATED_GAMBLE);
+    gamble.hand.push_back(CardId::STRIKE);
+    gamble.hand.push_back(CardId::STRIKE);
+    gamble.discard_pile.clear();
+    assert(gamble.play_card(0));
+    assert(gamble.hand.size() == 2 && gamble.discard_pile.size() == 2 && gamble.exhaust_pile.size() == 1);
+
+    // Mirage: Block equal to the Poison on every enemy; the upgraded card is not exhausted.
+    CombatEngine mirage = make_pack(CharacterId::SILENT);
+    mirage.player.block = 0;
+    mirage.enemies[0].add_status(StatusType::POISON, 4);
+    mirage.enemies[2].add_status(StatusType::POISON, 7);
+    play(mirage, DeckCard(CardId::MIRAGE, true));
+    assert(mirage.player.block == 11 && mirage.exhaust_pile.empty());
+    play(mirage, CardId::MIRAGE);
+    assert(mirage.exhaust_pile.size() == 1);
+
+    assert_in_pool(CharacterId::SILENT, { CardId::ADRENALINE, CardId::CALCULATED_GAMBLE, CardId::MIRAGE });
+    std::cout << "[PASS] Silent Exhaust: Adrenaline, Calculated Gamble, Mirage" << std::endl;
+
+    // Rainbow: one Lightning, one Frost, one Dark.
+    CombatEngine rainbow = make_combat(CharacterId::DEFECT);
+    play(rainbow, CardId::RAINBOW);
+    assert(rainbow.player.orbs.size() == 3 && rainbow.player.orbs[0] == OrbType::LIGHTNING);
+    assert(rainbow.player.orbs[1] == OrbType::FROST && rainbow.player.orbs[2] == OrbType::DARK);
+    assert(rainbow.exhaust_pile.size() == 1);
+
+    // Chill: one Frost per living enemy.
+    CombatEngine chill = make_pack(CharacterId::DEFECT);
+    chill.enemies[1].hp = 0;
+    play(chill, DeckCard(CardId::CHILL, true));
+    assert(chill.player.orbs.size() == 2 && chill.player.orbs[0] == OrbType::FROST && chill.exhaust_pile.empty());
+
+    // Fusion: a Plasma orb, worth 1 energy at the start of each turn.
+    CombatEngine fusion = make_combat(CharacterId::DEFECT);
+    make_enemy_idle(fusion.enemies[0]);
+    play(fusion, CardId::FUSION);
+    assert(fusion.player.orbs.size() == 1 && fusion.player.orbs[0] == OrbType::PLASMA);
+    fusion.end_player_turn();
+    assert(fusion.player.energy == 4);
+
+    // Reboot: hand and discard pile go back into the draw pile, then 4 cards are drawn.
+    CombatEngine reboot = make_combat(CharacterId::DEFECT);
+    reboot.hand.clear();
+    reboot.hand.push_back(CardId::REBOOT);
+    reboot.hand.push_back(CardId::STRIKE);
+    reboot.discard_pile.clear();
+    reboot.discard_pile.push_back(CardId::DEFEND);
+    size_t reboot_pile = reboot.draw_pile.size();
+    assert(reboot.play_card(0));
+    assert(reboot.hand.size() == 4 && reboot.discard_pile.empty());
+    assert(reboot.draw_pile.size() == reboot_pile + 2 - 4);
+
+    // Supercritical and Double Energy; the upgraded Double Energy costs 0.
+    CombatEngine energy = make_combat(CharacterId::DEFECT);
+    play(energy, CardId::SUPERCRITICAL);
+    assert(energy.player.energy == 7);
+    play(energy, CardId::DOUBLE_ENERGY); // play() refills to 3, the card costs 1
+    assert(energy.player.energy == 4);
+    assert(CardDef::get_cost(CardId::DOUBLE_ENERGY, true) == 0);
+    assert(energy.exhaust_pile.size() == 2);
+
+    assert_in_pool(CharacterId::DEFECT, { CardId::RAINBOW, CardId::CHILL, CardId::FUSION, CardId::REBOOT,
+                                          CardId::SUPERCRITICAL, CardId::DOUBLE_ENERGY });
+    std::cout << "[PASS] Defect Exhaust: Rainbow, Chill, Fusion, Reboot, Supercritical, Double Energy" << std::endl;
+
+    // Shared Fate: both sides lose Strength.
+    CombatEngine fate = make_combat(CharacterId::NECROBINDER);
+    play(fate, DeckCard(CardId::SHARED_FATE, true));
+    assert(fate.player.get_status(StatusType::STRENGTH) == -2 && fate.enemies[0].get_status(StatusType::STRENGTH) == -3);
+
+    // Wisp: 1 energy; the upgraded card stays in hand at the end of the turn.
+    CombatEngine wisp = make_combat(CharacterId::NECROBINDER);
+    make_enemy_idle(wisp.enemies[0]);
+    play(wisp, CardId::WISP);
+    assert(wisp.player.energy == 4 && wisp.exhaust_pile.size() == 1);
+    wisp.hand.clear();
+    wisp.hand.push_back(DeckCard(CardId::WISP, true));
+    wisp.end_player_turn();
+    int wisps = 0;
+    for (const DeckCard& card : wisp.hand) wisps += card.id == CardId::WISP;
+    assert(wisps == 1);
+
+    // Putrefy: Weak and Vulnerable.
+    CombatEngine putrefy = make_combat(CharacterId::NECROBINDER);
+    play(putrefy, CardId::PUTREFY);
+    assert(putrefy.enemies[0].get_status(StatusType::WEAK) == 2 && putrefy.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+
+    // Afterlife and Reanimate summon Titos.
+    CombatEngine summon = make_combat(CharacterId::NECROBINDER);
+    play(summon, CardId::AFTERLIFE);
+    assert(summon.player.minion_hp == 6);
+    play(summon, DeckCard(CardId::REANIMATE, true));
+    assert(summon.player.minion_hp == 31 && summon.player.energy == 0 && summon.exhaust_pile.size() == 2);
+
+    assert_in_pool(CharacterId::NECROBINDER, { CardId::SHARED_FATE, CardId::WISP, CardId::PUTREFY, CardId::REANIMATE,
+                                               CardId::AFTERLIFE });
+    std::cout << "[PASS] Necrobinder Exhaust: Shared Fate, Wisp, Putrefy, Reanimate, Afterlife" << std::endl;
+}
+
+// Ends the turn with every enemy doing nothing, so only the player's own effects show.
+void end_turn_idle(CombatEngine& combat) {
+    for (Enemy& foe : combat.enemies) make_enemy_idle(foe);
+    combat.end_player_turn();
+}
+
+void pad_draw_pile(CombatEngine& combat, int count) {
+    for (int i = 0; i < count; ++i) combat.draw_pile.push_back(CardId::DEFEND);
+}
+
+int count_in_hand(const CombatEngine& combat, CardId id) {
+    int count = 0;
+    for (const DeckCard& card : combat.hand) count += card.id == id;
+    return count;
+}
+
+void test_card_keywords() {
+    // Ethereal: exhausted when still in hand at the end of the turn, discarded as usual when played.
+    CombatEngine ethereal = make_combat(CharacterId::NECROBINDER);
+    ethereal.hand.clear();
+    ethereal.hand.push_back(CardId::DEFILE);
+    ethereal.hand.push_back(CardId::STRIKE);
+    end_turn_idle(ethereal);
+    assert(ethereal.exhaust_pile.size() == 1 && ethereal.exhaust_pile[0] == CardId::DEFILE);
+    assert(ethereal.counters.combat_ethereal_played == 0);
+    play(ethereal, CardId::DEFILE);
+    assert(ethereal.enemies[0].hp == 42 - 13 && ethereal.exhaust_pile.size() == 1);
+    assert(ethereal.counters.combat_ethereal_played == 1);
+
+    // Ethereal given to one copy during the combat.
+    DeckCard haunted(CardId::STRIKE);
+    haunted.added_keywords = KEYWORD_ETHEREAL;
+    ethereal.hand.clear();
+    ethereal.hand.push_back(haunted);
+    ethereal.hand.push_back(CardId::STRIKE);
+    end_turn_idle(ethereal);
+    assert(ethereal.exhaust_pile.size() == 2 && ethereal.exhaust_pile[1].added_keywords == KEYWORD_ETHEREAL);
+
+    // Defy, Fear, Parse and Enfeebling Touch are Ethereal too.
+    for (CardId id : { CardId::DEFY, CardId::FEAR, CardId::PARSE, CardId::ENFEEBLING_TOUCH }) {
+        assert(CardDef::has_keyword(id, false, KEYWORD_ETHEREAL) && CardDef::has_keyword(id, true, KEYWORD_ETHEREAL));
+    }
+    CombatEngine defy = make_combat(CharacterId::NECROBINDER);
+    play(defy, CardId::DEFY);
+    assert(defy.player.block == 6 && defy.enemies[0].get_status(StatusType::WEAK) == 1);
+    play(defy, DeckCard(CardId::FEAR, true));
+    assert(defy.enemies[0].hp == 42 - 8 && defy.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+    play(defy, CardId::PARSE);
+    assert(defy.hand.size() == 3);
+    std::cout << "[PASS] Ethereal: end of turn exhaust, per-copy keyword, Defile, Defy, Fear, Parse" << std::endl;
+
+    // Innate: drawn first, wherever the shuffle put them.
+    CombatEngine innate = make_combat(CharacterId::SILENT);
+    innate.hand.clear();
+    innate.discard_pile.clear();
+    innate.draw_pile.clear();
+    innate.draw_pile.push_back(CardId::BACKSTAB);
+    for (int i = 0; i < 8; ++i) innate.draw_pile.push_back(CardId::STRIKE);
+    innate.draw_pile.push_back(CardId::ASSASSINATE);
+    for (int i = 0; i < 3; ++i) innate.draw_pile.push_back(CardId::DEFEND);
+    innate.open_first_turn();
+    assert(innate.hand.size() == 5 && innate.draw_pile.size() == 8);
+    assert(count_in_hand(innate, CardId::BACKSTAB) == 1 && count_in_hand(innate, CardId::ASSASSINATE) == 1);
+    assert(innate.counters.combat_cards_drawn == 5 && innate.counters.cards_drawn == 0);
+
+    // More Innate cards than the opening draw: all of them are drawn.
+    CombatEngine boot = make_combat(CharacterId::DEFECT);
+    boot.hand.clear();
+    boot.discard_pile.clear();
+    boot.draw_pile.clear();
+    for (int i = 0; i < 7; ++i) boot.draw_pile.push_back(CardId::BOOT_SEQUENCE);
+    for (int i = 0; i < 5; ++i) boot.draw_pile.push_back(CardId::STRIKE);
+    boot.open_first_turn();
+    assert(boot.hand.size() == 7 && count_in_hand(boot, CardId::BOOT_SEQUENCE) == 7);
+
+    play(boot, CardId::BOOT_SEQUENCE);
+    assert(boot.player.block == 10 && boot.player.energy == 3 && boot.exhaust_pile.size() == 1);
+    play(innate, DeckCard(CardId::ASSASSINATE, true));
+    assert(innate.enemies[0].hp == 42 - 13 && innate.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+    assert(innate.exhaust_pile.size() == 1);
+    innate.enemies[0].statuses.clear();
+    play(innate, CardId::BACKSTAB);
+    assert(innate.enemies[0].hp == 29 - 11 && innate.exhaust_pile.size() == 2);
+    play(innate, CardId::SUPPRESS);
+    assert(innate.enemies[0].hp == 18 - 11 && innate.enemies[0].get_status(StatusType::WEAK) == 3);
+    assert(CardDef::has_keyword(CardId::SUPPRESS, false, KEYWORD_INNATE) && innate.exhaust_pile.size() == 2);
+    std::cout << "[PASS] Innate: opening hand, Assassinate, Backstab, Suppress, Boot Sequence" << std::endl;
+
+    // Retain from the card definition (Snakebite, Reap, Sow).
+    CombatEngine retain = make_combat(CharacterId::SILENT);
+    retain.hand.clear();
+    retain.hand.push_back(CardId::SNAKEBITE);
+    retain.hand.push_back(CardId::STRIKE);
+    end_turn_idle(retain);
+    assert(retain.hand.size() == 6 && retain.hand[0] == CardId::SNAKEBITE);
+    play(retain, DeckCard(CardId::SNAKEBITE, true));
+    assert(retain.enemies[0].get_status(StatusType::POISON) == 10 && retain.player.energy == 1);
+
+    // Retain given to one copy for the rest of the combat.
+    DeckCard held(CardId::STRIKE);
+    held.added_keywords = KEYWORD_RETAIN;
+    retain.hand.clear();
+    retain.hand.push_back(held);
+    pad_draw_pile(retain, 10);
+    end_turn_idle(retain);
+    end_turn_idle(retain);
+    assert(retain.hand[0].added_keywords == KEYWORD_RETAIN && retain.hand.size() == 6);
+
+    // Expertise: the cards it draws stay for one end of turn only.
+    CombatEngine expertise = make_combat(CharacterId::SILENT);
+    expertise.hand.clear();
+    expertise.hand.push_back(CardId::EXPERTISE);
+    expertise.hand.push_back(CardId::STRIKE);
+    assert(expertise.play_card(0));
+    assert(expertise.hand.size() == 3 && expertise.hand[1].added_keywords == KEYWORD_RETAIN_ONCE);
+    end_turn_idle(expertise);
+    assert(expertise.hand.size() == 7);
+    for (const DeckCard& card : expertise.hand) assert(card.added_keywords == 0);
+    end_turn_idle(expertise);
+    assert(expertise.hand.size() == 5);
+
+    CombatEngine reap = make_pack(CharacterId::NECROBINDER);
+    play(reap, CardId::REAP, 2);
+    assert(reap.enemies[2].hp == 42 - 27 && reap.player.energy == 0);
+    play(reap, DeckCard(CardId::SOW, true));
+    assert(reap.enemies[0].hp == 18 - 11 && reap.enemies[1].hp == 18 - 11 && reap.enemies[2].hp == 15 - 11);
+    assert(CardDef::has_keyword(CardId::REAP, false, KEYWORD_RETAIN) && CardDef::has_keyword(CardId::SOW, true, KEYWORD_RETAIN));
+    std::cout << "[PASS] Retain: keyword, per-copy, one turn (Expertise), Snakebite, Reap, Sow" << std::endl;
+
+    // Return: a played card comes back to the hand at the start of the next turn.
+    CombatEngine bolas = make_combat(CharacterId::IRONCLAD);
+    DeckCard thrown(CardId::STRIKE);
+    thrown.added_keywords = KEYWORD_RETURN;
+    play(bolas, thrown);
+    assert(bolas.returning_cards.size() == 1 && bolas.discard_pile.empty());
+    end_turn_idle(bolas);
+    assert(bolas.returning_cards.empty() && bolas.hand.size() == 6 && bolas.hand[0].added_keywords == KEYWORD_RETURN);
+    std::cout << "[PASS] Return: the card comes back next turn" << std::endl;
+}
+
+void test_x_cost() {
+    // X = all the energy left; the effect repeats X times.
+    CombatEngine skewer = make_combat(CharacterId::SILENT);
+    play(skewer, CardId::SKEWER);
+    assert(skewer.enemies[0].hp == 42 - 3 * 8 && skewer.player.energy == 0);
+    assert(skewer.counters.energy_spent == 3 && skewer.counters.hits_dealt == 3);
+    assert(CardDef::is_x_cost(CardId::SKEWER, false) && !CardDef::is_x_cost(CardId::STRIKE, false));
+
+    // Playable with no energy: X = 0.
+    skewer.hand.clear();
+    skewer.hand.push_back(DeckCard(CardId::SKEWER, true));
+    skewer.player.energy = 0;
+    assert(skewer.can_play_card(0) && skewer.play_card(0));
+    assert(skewer.enemies[0].hp == 18 && skewer.player.energy == 0);
+
+    CombatEngine whirlwind = make_pack(CharacterId::IRONCLAD);
+    whirlwind.hand.clear();
+    whirlwind.hand.push_back(CardId::WHIRLWIND);
+    whirlwind.player.energy = 2;
+    assert(whirlwind.play_card(0));
+    assert(whirlwind.enemies[0].hp == 8 && whirlwind.enemies[1].hp == 8 && whirlwind.enemies[2].hp == 32);
+
+    // Malaise+: X + 1.
+    CombatEngine malaise = make_combat(CharacterId::SILENT);
+    play(malaise, DeckCard(CardId::MALAISE, true));
+    assert(malaise.enemies[0].get_status(StatusType::STRENGTH) == -4 && malaise.enemies[0].get_status(StatusType::WEAK) == 4);
+    assert(malaise.exhaust_pile.size() == 1);
+
+    // Tempest: X Lightning orbs, X + 1 once upgraded (the fourth pushes the first one out).
+    CombatEngine tempest = make_combat(CharacterId::DEFECT);
+    tempest.hand.clear();
+    tempest.hand.push_back(CardId::TEMPEST);
+    tempest.player.energy = 2;
+    assert(tempest.play_card(0));
+    assert(tempest.player.orbs.size() == 2 && tempest.player.orbs[1] == OrbType::LIGHTNING && tempest.enemies[0].hp == 42);
+    tempest.player.orbs.clear();
+    play(tempest, DeckCard(CardId::TEMPEST, true));
+    assert(tempest.player.orbs.size() == 3 && tempest.enemies[0].hp < 42);
+
+    // Heavenly Drill: X is doubled from 4.
+    CombatEngine drill = make_combat(CharacterId::REGENT);
+    drill.enemies[0].hp = 200;
+    play(drill, CardId::HEAVENLY_DRILL);
+    assert(drill.enemies[0].hp == 200 - 3 * 8);
+    drill.hand.clear();
+    drill.hand.push_back(CardId::HEAVENLY_DRILL);
+    drill.player.energy = 4;
+    assert(drill.play_card(0));
+    assert(drill.enemies[0].hp == 176 - 8 * 8);
+
+    CombatEngine eradicate = make_combat(CharacterId::NECROBINDER);
+    play(eradicate, DeckCard(CardId::ERADICATE, true));
+    assert(eradicate.enemies[0].hp == 42 - 3 * 14);
+    assert(CardDef::has_keyword(CardId::ERADICATE, false, KEYWORD_RETAIN));
+    std::cout << "[PASS] X cost: Skewer, Whirlwind, Malaise, Tempest, Heavenly Drill, Eradicate" << std::endl;
+}
+
+void test_delayed_effects() {
+    // Energy next turn.
+    CombatEngine sidestep = make_combat(CharacterId::SILENT);
+    play(sidestep, DeckCard(CardId::SIDESTEP, true));
+    assert(sidestep.player.energy == 3 && sidestep.delayed_effects.size() == 1);
+    end_turn_idle(sidestep);
+    assert(sidestep.player.energy == 5 && sidestep.delayed_effects.empty());
+    end_turn_idle(sidestep);
+    assert(sidestep.player.energy == 3);
+
+    // Block next turn, with the Dexterity of the moment the card was played.
+    CombatEngine dodge = make_combat(CharacterId::SILENT);
+    play(dodge, CardId::DODGE_AND_ROLL);
+    assert(dodge.player.block == 4);
+    end_turn_idle(dodge);
+    assert(dodge.player.block == 4);
+    dodge.player.add_status(StatusType::DEXTERITY, 2);
+    play(dodge, DeckCard(CardId::DODGE_AND_ROLL, true));
+    assert(dodge.player.block == 4 + 8);
+    end_turn_idle(dodge);
+    assert(dodge.player.block == 8);
+
+    // Blur: Block survives one start of turn.
+    CombatEngine blur = make_combat(CharacterId::SILENT);
+    play(blur, CardId::BLUR);
+    end_turn_idle(blur);
+    assert(blur.player.block == 5 && blur.keep_block_turns == 0);
+    end_turn_idle(blur);
+    assert(blur.player.block == 0);
+
+    // Predator: two more cards in the next opening draw.
+    CombatEngine predator = make_combat(CharacterId::SILENT);
+    pad_draw_pile(predator, 4);
+    play(predator, CardId::PREDATOR);
+    assert(predator.enemies[0].hp == 42 - 15);
+    end_turn_idle(predator);
+    assert(predator.hand.size() == 7 && predator.counters.cards_drawn == 0);
+    assert_in_pool(CharacterId::SILENT, { CardId::ANTICIPATE, CardId::ASSASSINATE, CardId::BACKSTAB, CardId::BLUR,
+                                          CardId::DODGE_AND_ROLL, CardId::FINISHER, CardId::MALAISE, CardId::MEMENTO_MORI,
+                                          CardId::MURDER, CardId::PIERCING_WAIL, CardId::PREDATOR, CardId::SIDESTEP,
+                                          CardId::SKEWER, CardId::EXPERTISE, CardId::SNAKEBITE });
+    std::span<const CardId> silent_pool = RunManager::card_reward_pool(CharacterId::SILENT);
+    assert(std::find(silent_pool.begin(), silent_pool.end(), CardId::SUPPRESS) == silent_pool.end()); // Ancient rarity
+    std::cout << "[PASS] Next turn: Sidestep, Dodge and Roll, Blur, Predator" << std::endl;
+
+    CombatEngine battery = make_combat(CharacterId::DEFECT);
+    play(battery, DeckCard(CardId::CHARGE_BATTERY, true));
+    assert(battery.player.block == 10);
+    end_turn_idle(battery);
+    assert(battery.player.energy == 4 && battery.player.block == 0);
+
+    // Lightning Rod: one orb at the start of each of the next two turns.
+    CombatEngine rod = make_combat(CharacterId::DEFECT);
+    play(rod, CardId::LIGHTNING_ROD);
+    assert(rod.player.block == 4 && rod.player.orbs.empty());
+    end_turn_idle(rod);
+    assert(rod.player.orbs.size() == 1 && rod.player.orbs[0] == OrbType::LIGHTNING);
+    end_turn_idle(rod);
+    assert(rod.player.orbs.size() == 2 && rod.delayed_effects.empty());
+    end_turn_idle(rod);
+    assert(rod.player.orbs.size() == 2);
+    assert_in_pool(CharacterId::DEFECT, { CardId::BOOT_SEQUENCE, CardId::CHARGE_BATTERY, CardId::FTL, CardId::HELIX_DRILL,
+                                          CardId::LIGHTNING_ROD, CardId::TEMPEST });
+
+    CombatEngine glitter = make_combat(CharacterId::REGENT);
+    play(glitter, CardId::GLITTERSTREAM);
+    assert(glitter.player.block == 11);
+    end_turn_idle(glitter);
+    assert(glitter.player.block == 5);
+    play(glitter, DeckCard(CardId::HEGEMONY, true));
+    assert(glitter.enemies[0].hp == 42 - 18);
+    end_turn_idle(glitter);
+    assert(glitter.player.energy == 6);
+
+    // Convergence+: energy and Stars next turn, and the whole hand stays.
+    CombatEngine convergence = make_combat(CharacterId::REGENT);
+    convergence.hand.clear();
+    convergence.hand.push_back(DeckCard(CardId::CONVERGENCE, true));
+    convergence.hand.push_back(CardId::STRIKE);
+    convergence.hand.push_back(CardId::DEFEND);
+    assert(convergence.play_card(0));
+    assert(convergence.retain_hand && convergence.player.sovereign_stars == 0);
+    end_turn_idle(convergence);
+    assert(convergence.hand.size() == 7 && convergence.player.energy == 4 && convergence.player.sovereign_stars == 2);
+    assert(!convergence.retain_hand);
+    end_turn_idle(convergence);
+    assert(convergence.hand.size() == 5);
+
+    CombatEngine delay = make_combat(CharacterId::NECROBINDER);
+    play(delay, DeckCard(CardId::DELAY, true));
+    assert(delay.player.block == 13);
+    end_turn_idle(delay);
+    assert(delay.player.energy == 5);
+
+    // Invoke: Osty and the energy both arrive next turn.
+    CombatEngine invoke = make_combat(CharacterId::NECROBINDER);
+    play(invoke, CardId::INVOKE);
+    assert(invoke.player.minion_hp == 0 && invoke.player.energy == 2);
+    end_turn_idle(invoke);
+    assert(invoke.player.minion_hp == 2 && invoke.player.energy == 5);
+
+    // Countdown: damage to every enemy at the end of the third turn.
+    CombatEngine bomb = make_pack(CharacterId::IRONCLAD);
+    bomb.enemies[2].hp = 100;
+    bomb.schedule(DelayedType::DAMAGE_ALL, 40, 3);
+    end_turn_idle(bomb);
+    end_turn_idle(bomb);
+    assert(bomb.enemies[2].hp == 100 && bomb.enemies[0].hp == 18);
+    end_turn_idle(bomb);
+    assert(bomb.enemies[2].hp == 60 && !bomb.enemies[0].is_alive() && bomb.delayed_effects.empty());
+
+    // A new combat starts with nothing scheduled.
+    sidestep.schedule(DelayedType::ENERGY, 2);
+    sidestep.start_combat(EnemyType::JAW_WORM, CharacterId::SILENT);
+    assert(sidestep.delayed_effects.empty() && sidestep.player.energy == 3);
+    std::cout << "[PASS] Next turn: Charge Battery, Lightning Rod, Glitterstream, Hegemony, Convergence, Delay, Invoke, countdown" << std::endl;
+}
+
+void test_temporary_stats() {
+    // Strength until the end of the turn.
+    CombatEngine setup = make_combat(CharacterId::IRONCLAD);
+    play(setup, CardId::SETUP_STRIKE);
+    assert(setup.enemies[0].hp == 42 - 7 && setup.player.get_status(StatusType::STRENGTH) == 3);
+    play(setup, CardId::STRIKE);
+    assert(setup.enemies[0].hp == 35 - 9);
+    setup.player.add_status(StatusType::STRENGTH, 1); // permanent Strength is kept
+    end_turn_idle(setup);
+    assert(setup.player.get_status(StatusType::STRENGTH) == 1 && setup.temp_strength == 0);
+
+    CombatEngine anticipate = make_combat(CharacterId::SILENT);
+    play(anticipate, DeckCard(CardId::ANTICIPATE, true));
+    play(anticipate, CardId::DEFEND);
+    assert(anticipate.player.block == 9);
+    end_turn_idle(anticipate);
+    assert(anticipate.player.get_status(StatusType::DEXTERITY) == 0);
+
+    // The enemy gets its Strength back after its turn: Chomp (11) hits for 1.
+    CombatEngine mangle = make_combat(CharacterId::IRONCLAD);
+    mangle.enemies[0].add_status(StatusType::STRENGTH, 3);
+    play(mangle, CardId::MANGLE);
+    assert(mangle.enemies[0].hp == 42 - 20 && mangle.enemies[0].get_status(StatusType::STRENGTH) == -7);
+    assert(mangle.enemies[0].intent_damage(mangle.player) == 4);
+    int16_t hp_before = mangle.player.hp;
+    mangle.end_player_turn();
+    assert(mangle.player.hp == hp_before - 4);
+    assert(mangle.enemies[0].get_status(StatusType::STRENGTH) == 3 && mangle.enemies[0].temp_strength_loss == 0);
+
+    CombatEngine wail = make_pack(CharacterId::SILENT);
+    play(wail, DeckCard(CardId::PIERCING_WAIL, true));
+    for (const Enemy& foe : wail.enemies) assert(foe.get_status(StatusType::STRENGTH) == -8);
+    assert(wail.exhaust_pile.size() == 1);
+    end_turn_idle(wail);
+    for (const Enemy& foe : wail.enemies) assert(foe.get_status(StatusType::STRENGTH) == 0);
+
+    CombatEngine crush = make_pack(CharacterId::REGENT);
+    play(crush, DeckCard(CardId::CRUSH_UNDER, true));
+    assert(crush.enemies[0].hp == 9 && crush.enemies[2].hp == 33);
+    for (const Enemy& foe : crush.enemies) assert(foe.temp_strength_loss == 2);
+
+    CombatEngine touch = make_combat(CharacterId::NECROBINDER);
+    play(touch, CardId::ENFEEBLING_TOUCH);
+    assert(touch.enemies[0].get_status(StatusType::STRENGTH) == -8);
+    end_turn_idle(touch);
+    assert(touch.enemies[0].statuses.empty());
+    std::cout << "[PASS] Temporary stats: Setup Strike, Anticipate, Mangle, Piercing Wail, Crush Under, Enfeebling Touch" << std::endl;
+}
+
+void test_hp_loss() {
+    // Losing HP ignores Block and is counted.
+    CombatEngine wall = make_combat(CharacterId::IRONCLAD);
+    wall.player.block = 10;
+    play(wall, CardId::BLOOD_WALL);
+    assert(wall.player.hp == 78 && wall.player.block == 26);
+    assert(wall.counters.hp_lost == 2 && wall.counters.combat_hp_losses == 1);
+    play(wall, DeckCard(CardId::HEMOKINESIS, true));
+    assert(wall.player.hp == 76 && wall.enemies[0].hp == 42 - 20 && wall.counters.hp_lost == 4);
+    play(wall, DeckCard(CardId::BLOODLETTING, true));
+    assert(wall.player.hp == 73 && wall.player.energy == 6 && wall.counters.combat_hp_losses == 3);
+
+    CombatEngine breakthrough = make_pack(CharacterId::IRONCLAD);
+    play(breakthrough, CardId::BREAKTHROUGH);
+    assert(breakthrough.player.hp == 79 && breakthrough.enemies[0].hp == 9 && breakthrough.enemies[2].hp == 33);
+
+    CombatEngine offering = make_combat(CharacterId::IRONCLAD);
+    play(offering, CardId::OFFERING);
+    assert(offering.player.hp == 74 && offering.player.energy == 5 && offering.hand.size() == 3);
+    assert(offering.exhaust_pile.size() == 1);
+
+    // Spite hits again only when HP were lost this turn.
+    CombatEngine spite = make_combat(CharacterId::IRONCLAD);
+    play(spite, CardId::SPITE);
+    assert(spite.enemies[0].hp == 42 - 5);
+    play(spite, CardId::BLOODLETTING);
+    play(spite, CardId::SPITE);
+    assert(spite.enemies[0].hp == 37 - 10);
+    play(spite, DeckCard(CardId::SPITE, true));
+    assert(spite.enemies[0].hp == 27 - 15);
+
+    // The turn counter restarts; damage taken from an enemy counts as a loss for the combat.
+    spite.end_player_turn(); // Chomp: 11
+    assert(spite.player.hp == 80 - 3 - 11);
+    assert(spite.counters.hp_lost == 0 && spite.counters.combat_hp_losses == 2);
+
+    // Paying HP can be lethal.
+    CombatEngine lethal = make_combat(CharacterId::IRONCLAD);
+    lethal.player.hp = 2;
+    play(lethal, CardId::HEMOKINESIS);
+    assert(lethal.player.hp == 0 && lethal.state == CombatState::DEFEAT);
+
+    // Forgotten Ritual pays only after another card was exhausted this turn (its own exhaust comes too late).
+    CombatEngine ritual = make_combat(CharacterId::IRONCLAD);
+    play(ritual, CardId::FORGOTTEN_RITUAL);
+    assert(ritual.player.energy == 2 && ritual.exhaust_pile.size() == 1);
+    play(ritual, DeckCard(CardId::FORGOTTEN_RITUAL, true));
+    assert(ritual.player.energy == 6);
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::BLOOD_WALL, CardId::BLOODLETTING, CardId::BREAKTHROUGH,
+                                            CardId::FORGOTTEN_RITUAL, CardId::HEMOKINESIS, CardId::MANGLE, CardId::OFFERING,
+                                            CardId::SETUP_STRIKE, CardId::SPITE, CardId::WHIRLWIND });
+    std::cout << "[PASS] HP loss: Blood Wall, Hemokinesis, Bloodletting, Breakthrough, Offering, Spite, Forgotten Ritual" << std::endl;
+}
+
+void test_counters() {
+    // Attacks already played this turn.
+    CombatEngine finisher = make_combat(CharacterId::SILENT);
+    play(finisher, CardId::FINISHER);
+    assert(finisher.enemies[0].hp == 42 && finisher.counters.attacks_played == 1);
+    play(finisher, CardId::STRIKE);
+    play(finisher, CardId::FINISHER);
+    assert(finisher.enemies[0].hp == 42 - 6 - 2 * 6);
+    assert(finisher.counters.attacks_played == 3 && finisher.counters.hits_dealt == 3);
+    assert(finisher.counters.combat_cards_played == 3 && finisher.counters.energy_spent == 3);
+    end_turn_idle(finisher);
+    assert(finisher.counters.attacks_played == 0 && finisher.counters.hits_dealt == 0);
+    assert(finisher.counters.energy_spent == 0 && finisher.counters.combat_cards_played == 3);
+    finisher.start_combat(EnemyType::JAW_WORM, CharacterId::SILENT);
+    assert(finisher.counters.combat_cards_played == 0 && finisher.counters.combat_cards_drawn == 5);
+
+    // Cards discarded by effects this turn.
+    CombatEngine memento = make_combat(CharacterId::SILENT);
+    memento.hand.clear();
+    memento.hand.push_back(CardId::CALCULATED_GAMBLE);
+    memento.hand.push_back(CardId::STRIKE);
+    memento.hand.push_back(CardId::DEFEND);
+    assert(memento.play_card(0));
+    assert(memento.counters.cards_discarded == 2 && memento.counters.cards_drawn == 2);
+    play(memento, CardId::MEMENTO_MORI);
+    assert(memento.enemies[0].hp == 42 - (9 + 2 * 4));
+
+    // Murder counts every card drawn since the combat started: 5 in the opening hand.
+    CombatEngine murder = make_combat(CharacterId::SILENT);
+    play(murder, CardId::MURDER);
+    assert(murder.enemies[0].hp == 42 - 6 && murder.player.energy == 0);
+    assert(CardDef::get_cost(CardId::MURDER, true) == 2);
+
+    // FTL draws while fewer than 3 cards were played this turn.
+    CombatEngine ftl = make_combat(CharacterId::DEFECT);
+    play(ftl, CardId::FTL);
+    assert(ftl.enemies[0].hp == 42 - 5 && ftl.hand.size() == 1);
+    play(ftl, CardId::DEFEND);
+    play(ftl, CardId::DEFEND);
+    play(ftl, CardId::FTL);
+    assert(ftl.hand.empty());
+    play(ftl, DeckCard(CardId::FTL, true));
+    assert(ftl.hand.empty() && ftl.counters.cards_played() == 5);
+
+    // Helix Drill: one hit per energy spent on the other cards.
+    CombatEngine helix = make_combat(CharacterId::DEFECT);
+    play(helix, CardId::HELIX_DRILL);
+    assert(helix.enemies[0].hp == 42);
+    play(helix, CardId::DEFEND);
+    play(helix, CardId::LEAP);
+    assert(helix.counters.energy_spent == 2);
+    play(helix, DeckCard(CardId::HELIX_DRILL, true));
+    assert(helix.enemies[0].hp == 42 - 2 * 5);
+
+    CombatEngine lunar = make_combat(CharacterId::REGENT);
+    play(lunar, CardId::DEFEND);
+    play(lunar, CardId::KNOW_THY_PLACE);
+    assert(lunar.enemies[0].get_status(StatusType::WEAK) == 1 && lunar.enemies[0].get_status(StatusType::VULNERABLE) == 1);
+    assert(lunar.exhaust_pile.size() == 1);
+    play(lunar, DeckCard(CardId::KNOW_THY_PLACE, true));
+    assert(lunar.exhaust_pile.size() == 1 && lunar.counters.skills_played == 3);
+    lunar.enemies[0].statuses.clear();
+    play(lunar, CardId::LUNAR_BLAST);
+    assert(lunar.enemies[0].hp == 42 - 3 * 4);
+
+    pad_draw_pile(lunar, 4);
+    play(lunar, CardId::PROPHESIZE);
+    assert(lunar.hand.size() == 6 && lunar.counters.cards_drawn == 6);
+
+    // Cards created during the combat (Anger copies itself).
+    CombatEngine anger = make_combat(CharacterId::IRONCLAD);
+    play(anger, CardId::ANGER);
+    assert(anger.counters.combat_cards_created == 1);
+    CombatEngine massive = make_combat(CharacterId::REGENT);
+    play(massive, CardId::SUPERMASSIVE);
+    assert(massive.enemies[0].hp == 42 - 5);
+    massive.counters.combat_cards_created = 2;
+    play(massive, DeckCard(CardId::SUPERMASSIVE, true));
+    assert(massive.enemies[0].hp == 37 - (5 + 2 * 4));
+    assert_in_pool(CharacterId::REGENT, { CardId::CRUSH_UNDER, CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL,
+                                          CardId::HEGEMONY, CardId::KNOW_THY_PLACE, CardId::LUNAR_BLAST, CardId::PROPHESIZE,
+                                          CardId::SUPERMASSIVE, CardId::CONVERGENCE });
+
+    // Death March: cards drawn by effects this turn, not the opening hand.
+    CombatEngine march = make_combat(CharacterId::NECROBINDER);
+    play(march, CardId::DEATH_MARCH);
+    assert(march.enemies[0].hp == 42 - 8);
+    play(march, CardId::PARSE);
+    play(march, CardId::DEATH_MARCH);
+    assert(march.enemies[0].hp == 34 - (8 + 3 * 4));
+
+    // Pull from Below: one hit per Ethereal card played this combat.
+    CombatEngine pull = make_combat(CharacterId::NECROBINDER);
+    play(pull, CardId::PULL_FROM_BELOW);
+    assert(pull.enemies[0].hp == 42);
+    play(pull, CardId::DEFY);
+    play(pull, CardId::PARSE);
+    play(pull, DeckCard(CardId::PULL_FROM_BELOW, true));
+    assert(pull.enemies[0].hp == 42 - 2 * 7);
+    assert_in_pool(CharacterId::NECROBINDER, { CardId::DEATH_MARCH, CardId::DEFILE, CardId::DEFY, CardId::DELAY,
+                                               CardId::ENFEEBLING_TOUCH, CardId::FEAR, CardId::INVOKE, CardId::PARSE,
+                                               CardId::PULL_FROM_BELOW, CardId::REAP, CardId::SOW, CardId::ERADICATE });
+    std::cout << "[PASS] Counters: Finisher, Memento Mori, Murder, FTL, Helix Drill, Lunar Blast, Supermassive, Death March, Pull from Below" << std::endl;
+}
+
+void test_regent_stars() {
+    // A Star cost keeps the card in hand until the Stars are there.
+    CombatEngine stars = make_combat(CharacterId::REGENT);
+    stars.hand.clear();
+    stars.hand.push_back(CardId::CLOAK_OF_STARS);
+    assert(!stars.can_play_card(0));
+    stars.gain_stars(1);
+    assert(stars.play_card(0));
+    assert(stars.player.block == 7 && stars.player.sovereign_stars == 0 && stars.player.energy == 3);
+    stars.gain_stars(2);
+    play(stars, DeckCard(CardId::ALIGNMENT, true));
+    assert(stars.player.energy == 6 && stars.player.sovereign_stars == 0);
+
+    CombatEngine pulse = make_pack(CharacterId::REGENT);
+    pulse.gain_stars(3);
+    play(pulse, CardId::ASTRAL_PULSE);
+    assert(pulse.enemies[0].hp == 6 && pulse.enemies[1].hp == 6 && pulse.enemies[2].hp == 30);
+    assert(pulse.player.sovereign_stars == 0);
+
+    CombatEngine comet = make_combat(CharacterId::REGENT);
+    comet.gain_stars(9);
+    play(comet, CardId::COMET);
+    assert(comet.enemies[0].hp == 42 - 33 && comet.player.sovereign_stars == 4);
+    assert(comet.enemies[0].get_status(StatusType::WEAK) == 3 && comet.enemies[0].get_status(StatusType::VULNERABLE) == 3);
+    comet.enemies[0].hp = 100;
+    comet.enemies[0].statuses.clear();
+    play(comet, DeckCard(CardId::DEVASTATE, true));
+    assert(comet.enemies[0].hp == 100 - 45 && comet.player.sovereign_stars == 0 && comet.player.energy == 2);
+
+    CombatEngine gamma = make_combat(CharacterId::REGENT);
+    gamma.gain_stars(4);
+    play(gamma, DeckCard(CardId::GAMMA_BLAST, true));
+    assert(gamma.enemies[0].hp == 42 - 18 && gamma.enemies[0].get_status(StatusType::WEAK) == 2);
+    assert(gamma.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+    gamma.enemies[0].hp = 42;
+    gamma.enemies[0].statuses.clear();
+    play(gamma, CardId::GUIDING_STAR);
+    assert(gamma.enemies[0].hp == 42 - 12 && gamma.hand.size() == 2 && gamma.player.sovereign_stars == 0);
+
+    // Crescent Spear counts the cards with a Star cost left in the piles, and itself.
+    CombatEngine spear = make_combat(CharacterId::REGENT);
+    spear.draw_pile.clear();
+    spear.discard_pile.clear();
+    spear.draw_pile.push_back(CardId::FALLING_STAR);
+    spear.draw_pile.push_back(CardId::STRIKE);
+    spear.discard_pile.push_back(CardId::COMET);
+    spear.gain_stars(1);
+    play(spear, CardId::CRESCENT_SPEAR);
+    assert(spear.enemies[0].hp == 42 - (8 + 3 * 2));
+
+    CombatEngine dying = make_pack(CharacterId::REGENT);
+    dying.gain_stars(3);
+    play(dying, CardId::DYING_STAR);
+    assert(dying.enemies[0].hp == 9 && dying.enemies[2].hp == 33);
+    for (const Enemy& foe : dying.enemies) assert(foe.get_status(StatusType::STRENGTH) == -9);
+    assert(CardDef::has_keyword(CardId::DYING_STAR, false, KEYWORD_ETHEREAL));
+    std::cout << "[PASS] Star costs: Cloak of Stars, Alignment, Astral Pulse, Comet, Devastate, Gamma Blast, Guiding Star, Crescent Spear, Dying Star" << std::endl;
+
+    // Glow: a card now and one more next turn. Hidden Cache: Stars now and next turn. Radiate counts them.
+    CombatEngine glow = make_combat(CharacterId::REGENT);
+    pad_draw_pile(glow, 8);
+    play(glow, DeckCard(CardId::GLOW, true));
+    assert(glow.player.sovereign_stars == 2 && glow.hand.size() == 1);
+    end_turn_idle(glow);
+    assert(glow.hand.size() == 6 && glow.player.sovereign_stars == 2);
+    play(glow, CardId::HIDDEN_CACHE);
+    assert(glow.player.sovereign_stars == 3);
+    end_turn_idle(glow);
+    assert(glow.player.sovereign_stars == 6 && glow.counters.stars_gained == 3);
+    play(glow, CardId::RADIATE);
+    assert(glow.enemies[0].hp == 42 - 3 * 3);
+
+    CombatEngine meteor = make_pack(CharacterId::REGENT);
+    meteor.gain_stars(2);
+    play(meteor, CardId::METEOR_SHOWER);
+    assert(meteor.enemies[0].hp == 4 && meteor.enemies[2].hp == 28);
+    for (const Enemy& foe : meteor.enemies) {
+        assert(foe.get_status(StatusType::WEAK) == 2 && foe.get_status(StatusType::VULNERABLE) == 2);
+    }
+
+    // Particle Wall comes straight back to the hand, as long as Stars pay for it.
+    CombatEngine wall = make_combat(CharacterId::REGENT);
+    wall.gain_stars(4);
+    play(wall, CardId::PARTICLE_WALL);
+    assert(wall.player.block == 9 && wall.hand.size() == 1 && wall.hand[0] == CardId::PARTICLE_WALL);
+    assert(wall.discard_pile.empty() && wall.play_card(0));
+    assert(wall.player.block == 18 && wall.player.sovereign_stars == 0 && !wall.can_play_card(0));
+
+    CombatEngine resonance = make_pack(CharacterId::REGENT);
+    resonance.gain_stars(2);
+    play(resonance, DeckCard(CardId::RESONANCE, true));
+    assert(resonance.player.get_status(StatusType::STRENGTH) == 2);
+    for (const Enemy& foe : resonance.enemies) assert(foe.get_status(StatusType::STRENGTH) == -1);
+
+    CombatEngine gamble = make_combat(CharacterId::REGENT);
+    gamble.gain_stars(5);
+    play(gamble, CardId::ROYAL_GAMBLE);
+    assert(gamble.player.sovereign_stars == 9 && gamble.exhaust_pile.size() == 1);
+    assert(CardDef::has_keyword(CardId::ROYAL_GAMBLE, true, KEYWORD_RETAIN));
+    assert(!CardDef::has_keyword(CardId::ROYAL_GAMBLE, false, KEYWORD_RETAIN));
+
+    CombatEngine seven = make_pack(CharacterId::REGENT);
+    for (Enemy& foe : seven.enemies) foe.hp = 100;
+    seven.gain_stars(7);
+    play(seven, CardId::SEVEN_STARS);
+    for (const Enemy& foe : seven.enemies) assert(foe.hp == 100 - 7 * 7);
+    assert(seven.player.energy == 1 && seven.player.sovereign_stars == 0);
+    assert(CardDef::get_cost(CardId::SEVEN_STARS, true) == 1 && CardDef::get_star_cost(CardId::SEVEN_STARS, true) == 7);
+
+    // Shining Strike goes back on top of the draw pile.
+    CombatEngine shining = make_combat(CharacterId::REGENT);
+    play(shining, CardId::SHINING_STRIKE);
+    assert(shining.enemies[0].hp == 42 - 8 && shining.player.sovereign_stars == 2);
+    assert(shining.draw_pile.back() == CardId::SHINING_STRIKE && shining.discard_pile.empty());
+
+    // Stardust: X is the number of Stars, all spent.
+    CombatEngine dust = make_combat(CharacterId::REGENT);
+    dust.gain_stars(4);
+    play(dust, CardId::STARDUST);
+    assert(dust.enemies[0].hp == 42 - 4 * 5 && dust.player.sovereign_stars == 0 && dust.player.energy == 3);
+    assert(dust.counters.stars_spent == 4);
+    dust.hand.clear();
+    dust.hand.push_back(DeckCard(CardId::STARDUST, true));
+    assert(dust.can_play_card(0) && dust.play_card(0));
+    assert(dust.enemies[0].hp == 22);
+
+    assert_in_pool(CharacterId::REGENT, { CardId::ALIGNMENT, CardId::ASTRAL_PULSE, CardId::CLOAK_OF_STARS, CardId::COMET,
+                                          CardId::CRESCENT_SPEAR, CardId::DEVASTATE, CardId::DYING_STAR, CardId::GAMMA_BLAST,
+                                          CardId::GLOW, CardId::GUIDING_STAR, CardId::HIDDEN_CACHE, CardId::PARTICLE_WALL,
+                                          CardId::RADIATE, CardId::RESONANCE, CardId::ROYAL_GAMBLE, CardId::SEVEN_STARS,
+                                          CardId::SHINING_STRIKE, CardId::STARDUST });
+    std::span<const CardId> pool = RunManager::card_reward_pool(CharacterId::REGENT);
+    assert(std::find(pool.begin(), pool.end(), CardId::METEOR_SHOWER) == pool.end()); // Ancient rarity
+    std::cout << "[PASS] Stars: Glow, Hidden Cache, Radiate, Meteor Shower, Particle Wall, Resonance, Royal Gamble, Seven Stars, Shining Strike, Stardust" << std::endl;
+}
+
+void test_fatal() {
+    // Sunder: the energy comes back only when the hit kills.
+    CombatEngine sunder = make_pack(CharacterId::DEFECT);
+    play(sunder, CardId::SUNDER, 2);
+    assert(sunder.enemies[2].hp == 42 - 26 && sunder.player.energy == 0 && sunder.fatal_kills == 0);
+    play(sunder, CardId::SUNDER, 0);
+    assert(!sunder.enemies[0].is_alive() && sunder.player.energy == 3 && sunder.fatal_kills == 1);
+
+    // Killing a minion is not a Fatal blow.
+    sunder.enemies[1].minion = true;
+    play(sunder, DeckCard(CardId::SUNDER, true), 1);
+    assert(!sunder.enemies[1].is_alive() && sunder.player.energy == 0 && sunder.fatal_kills == 0);
+
+    // The tally belongs to the card being played.
+    play(sunder, CardId::STRIKE, 2);
+    assert(sunder.fatal_kills == 0);
+
+    CombatEngine knockout = make_pack(CharacterId::REGENT);
+    play(knockout, CardId::KNOCKOUT_BLOW, 2);
+    assert(knockout.enemies[2].hp == 42 - 30 && knockout.player.sovereign_stars == 0);
+    play(knockout, DeckCard(CardId::KNOCKOUT_BLOW, true), 0);
+    assert(knockout.player.sovereign_stars == 5 && knockout.counters.stars_gained == 5);
+
+    // Echoing Slash: each enemy killed by a sweep adds a sweep, kills of the extra sweeps included.
+    CombatEngine echo = make_pack(CharacterId::SILENT);
+    play(echo, CardId::ECHOING_SLASH);
+    assert(echo.enemies[0].hp == 8 && echo.enemies[1].hp == 8 && echo.enemies[2].hp == 32);
+    echo.enemies[0].hp = 10;
+    echo.enemies[1].hp = 15;
+    echo.enemies[2].hp = 42;
+    play(echo, CardId::ECHOING_SLASH);
+    assert(!echo.enemies[0].is_alive() && !echo.enemies[1].is_alive());
+    assert(echo.enemies[2].hp == 42 - 3 * 10 && echo.fatal_kills == 2);
+    assert(CardDef::get_value(CardId::ECHOING_SLASH, true) == 13);
+
+    // Feed: the Max HP gained is kept by the run after the fight.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(run, RoomType::MONSTER);
+    int16_t max_before = run.max_hp;
+    int16_t hp_before = run.combat.player.hp;
+    for (Enemy& foe : run.combat.enemies) foe.hp = 5;
+    while (run.combat.has_alive_enemies()) {
+        play(run.combat, DeckCard(CardId::FEED, true));
+    }
+    int kills = static_cast<int>(run.combat.enemies.size());
+    assert(run.combat.player.max_hp == max_before + 4 * kills && run.combat.player.hp == hp_before + 4 * kills);
+    assert(run.combat.exhaust_pile.size() == static_cast<size_t>(kills));
+    run.proceed_after_combat();
+    assert(run.max_hp == max_before + 4 * kills);
+
+    CombatEngine feed = make_combat(CharacterId::IRONCLAD);
+    play(feed, CardId::FEED);
+    assert(feed.enemies[0].hp == 42 - 10 && feed.player.max_hp == 80);
+
+    assert_in_pool(CharacterId::DEFECT, { CardId::SUNDER });
+    assert_in_pool(CharacterId::REGENT, { CardId::KNOCKOUT_BLOW });
+    assert_in_pool(CharacterId::SILENT, { CardId::ECHOING_SLASH, CardId::GRAND_FINALE });
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::FEED, CardId::BATTLE_TRANCE });
+    std::cout << "[PASS] Fatal: Sunder, Knockout Blow, Echoing Slash, Feed, minions do not count" << std::endl;
+}
+
+void test_play_conditions() {
+    // Grand Finale needs an empty draw pile.
+    CombatEngine finale = make_pack(CharacterId::SILENT);
+    for (Enemy& foe : finale.enemies) foe.hp = 100;
+    finale.hand.clear();
+    finale.hand.push_back(CardId::GRAND_FINALE);
+    assert(!finale.draw_pile.empty());
+    assert(finale.play_blocker(0) == PlayBlocker::CONDITION && !finale.play_card(0));
+    finale.draw_pile.clear();
+    assert(finale.play_blocker(0) == PlayBlocker::NONE && finale.play_card(0));
+    for (const Enemy& foe : finale.enemies) assert(foe.hp == 40);
+    assert(CardDef::get_value(CardId::GRAND_FINALE, true) == 75);
+
+    // A hand made of Attacks only.
+    CombatEngine clash = make_combat(CharacterId::IRONCLAD);
+    clash.hand.clear();
+    clash.hand.push_back(CardId::STRIKE);
+    clash.hand.push_back(CardId::BASH);
+    assert(clash.play_condition_met(PlayCondition::HAND_ALL_ATTACKS));
+    clash.hand.push_back(CardId::DEFEND);
+    assert(!clash.play_condition_met(PlayCondition::HAND_ALL_ATTACKS));
+    assert(clash.play_condition_met(PlayCondition::NONE));
+
+    // Battle Trance: nothing more is drawn this turn, whatever asks for it.
+    CombatEngine trance = make_combat(CharacterId::IRONCLAD);
+    pad_draw_pile(trance, 10);
+    play(trance, DeckCard(CardId::BATTLE_TRANCE, true));
+    assert(trance.hand.size() == 4 && trance.no_draw_this_turn && trance.player.energy == 3);
+    trance.hand.clear();
+    play(trance, CardId::POMMEL_STRIKE);
+    assert(trance.hand.empty() && !trance.draw_card());
+    end_turn_idle(trance);
+    assert(trance.hand.size() == 5 && !trance.no_draw_this_turn);
+
+    // A card that must be played before the others.
+    CombatEngine first = make_combat(CharacterId::IRONCLAD);
+    DeckCard demanding(CardId::DEFEND);
+    demanding.added_keywords = KEYWORD_PLAY_FIRST;
+    first.hand.clear();
+    first.hand.push_back(CardId::STRIKE);
+    first.hand.push_back(demanding);
+    assert(first.play_blocker(0) == PlayBlocker::PLAY_FIRST && first.play_blocker(1) == PlayBlocker::NONE);
+    assert(first.play_card(1));
+    assert(first.play_blocker(0) == PlayBlocker::NONE);
+
+    // A card that caps the turn at 3 cards while it is in hand.
+    CombatEngine limit = make_combat(CharacterId::IRONCLAD);
+    DeckCard numbing(CardId::DEFEND);
+    numbing.added_keywords = KEYWORD_LIMIT_PLAYS;
+    limit.hand.clear();
+    limit.hand.push_back(numbing);
+    for (int i = 0; i < 4; ++i) limit.hand.push_back(CardId::ANGER); // free
+    for (int i = 0; i < 3; ++i) assert(limit.play_card(1));
+    assert(limit.play_blocker(1) == PlayBlocker::PLAY_LIMIT && limit.play_blocker(0) == PlayBlocker::PLAY_LIMIT);
+    limit.hand.erase(0);
+    assert(limit.play_blocker(0) == PlayBlocker::NONE);
+
+    // The other reasons a card stays in hand.
+    CombatEngine blocked = make_combat(CharacterId::REGENT);
+    blocked.hand.clear();
+    blocked.hand.push_back(CardId::STRIKE);
+    blocked.hand.push_back(CardId::FALLING_STAR);
+    blocked.player.energy = 0;
+    assert(blocked.play_blocker(0) == PlayBlocker::ENERGY && blocked.play_blocker(1) == PlayBlocker::STARS);
+    assert(blocked.play_blocker(5) == PlayBlocker::NOT_PLAYABLE);
+    std::cout << "[PASS] Play conditions: Grand Finale, Attack-only hand, Battle Trance, play first, play limit" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -622,6 +2039,22 @@ int main() {
     test_necrobinder();
     test_necrobinder_commons();
     test_more_commons();
+    test_ironclad_existing_mechanics();
+    test_silent_existing_mechanics();
+    test_defect_existing_mechanics();
+    test_necrobinder_existing_mechanics();
+    test_exhaust();
+    test_ironclad_exhaust();
+    test_other_heroes_exhaust();
+    test_card_keywords();
+    test_x_cost();
+    test_delayed_effects();
+    test_temporary_stats();
+    test_hp_loss();
+    test_counters();
+    test_regent_stars();
+    test_fatal();
+    test_play_conditions();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;

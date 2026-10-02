@@ -143,7 +143,7 @@ void RunManager::enter_room(int node_index) {
                 combat.draw_pile.push_back(master_deck[i]);
             }
             combat.shuffle_draw_pile();
-            combat.start_player_turn();
+            combat.open_first_turn();
             apply_combat_start_relics();
             break;
         }
@@ -152,9 +152,9 @@ void RunManager::enter_room(int node_index) {
             break;
         case RoomType::TREASURE: {
             gold += 50;
-            std::string_view relic = draw_treasure_relic();
-            if (!relic.empty()) {
-                add_relic(relic);
+            last_treasure_relic = draw_treasure_relic();
+            if (!last_treasure_relic.empty()) {
+                add_relic(last_treasure_relic);
             }
             phase = RunPhase::TREASURE;
             break;
@@ -269,19 +269,65 @@ bool RunManager::choose_event_choice(int choice_index, char* out_msg, size_t max
 }
 
 std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
-    static constexpr CardId IRONCLAD_POOL[] = { CardId::IRON_WAVE, CardId::CLEAVE, CardId::ANGER, CardId::TWIN_STRIKE,
+    // Left out on purpose: Cleave (replaced by Thunderclap, whose art and name it borrowed) and Break (Ancient
+    // rarity: given by an Ancient, never by a combat).
+    static constexpr CardId IRONCLAD_POOL[] = { CardId::IRON_WAVE, CardId::ANGER, CardId::TWIN_STRIKE,
                                                 CardId::POMMEL_STRIKE, CardId::SHRUG_IT_OFF, CardId::TAUNT,
-                                                CardId::BODY_SLAM };
+                                                CardId::BODY_SLAM, CardId::THUNDERCLAP, CardId::DISMANTLE,
+                                                CardId::INFLAME, CardId::PERFECTED_STRIKE, CardId::BLUDGEON,
+                                                CardId::BULLY, CardId::SWORD_BOOMERANG, CardId::CONFLAGRATION,
+                                                CardId::EXPECT_A_FIGHT, CardId::PILLAGE, CardId::UPPERCUT,
+                                                CardId::FIGHT_ME, CardId::ASHEN_STRIKE, CardId::TREMBLE,
+                                                CardId::EVIL_EYE, CardId::MOLTEN_FIST, CardId::CINDER,
+                                                CardId::SECOND_WIND, CardId::TRUE_GRIT, CardId::DOMINATE,
+                                                CardId::FIEND_FIRE, CardId::THRASH, CardId::IMPERVIOUS,
+                                                CardId::PACTS_END, CardId::NOT_YET, CardId::BLOOD_WALL,
+                                                CardId::BLOODLETTING, CardId::BREAKTHROUGH, CardId::FORGOTTEN_RITUAL,
+                                                CardId::HEMOKINESIS, CardId::MANGLE, CardId::OFFERING,
+                                                CardId::SETUP_STRIKE, CardId::SPITE, CardId::WHIRLWIND,
+                                                CardId::FEED, CardId::BATTLE_TRANCE };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
-                                              CardId::DAGGER_SPRAY, CardId::DEFLECT };
-    static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL, CardId::BALL_LIGHTNING,
-                                              CardId::COLD_SNAP, CardId::LEAP, CardId::COOLHEADED,
-                                              CardId::SWEEPING_BEAM };
+                                              CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
+                                              CardId::PRECISE_CUT, CardId::BOUNCING_FLASK, CardId::FLECHETTES,
+                                              CardId::FOOTWORK, CardId::ESCAPE_PLAN, CardId::DASH,
+                                              CardId::BUBBLE_BUBBLE, CardId::OUTBREAK, CardId::ADRENALINE,
+                                              CardId::CALCULATED_GAMBLE, CardId::MIRAGE, CardId::ANTICIPATE,
+                                              CardId::ASSASSINATE, CardId::BACKSTAB, CardId::BLUR,
+                                              CardId::DODGE_AND_ROLL, CardId::FINISHER, CardId::MALAISE,
+                                              CardId::MEMENTO_MORI, CardId::MURDER, CardId::PIERCING_WAIL,
+                                              CardId::PREDATOR, CardId::SIDESTEP, CardId::SKEWER, CardId::EXPERTISE,
+                                              CardId::SNAKEBITE, CardId::ECHOING_SLASH, CardId::GRAND_FINALE };
+    static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
+                                              CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
+                                              CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,
+                                              CardId::GLACIER, CardId::METEOR_STRIKE, CardId::ICE_LANCE,
+                                              CardId::SKIM, CardId::ALL_FOR_ONE, CardId::NULL_CARD,
+                                              CardId::GO_FOR_THE_EYES, CardId::SCRAPE, CardId::RAINBOW,
+                                              CardId::CHILL, CardId::FUSION, CardId::REBOOT, CardId::SUPERCRITICAL,
+                                              CardId::DOUBLE_ENERGY, CardId::BOOT_SEQUENCE, CardId::CHARGE_BATTERY,
+                                              CardId::FTL, CardId::HELIX_DRILL, CardId::LIGHTNING_ROD,
+                                              CardId::TEMPEST, CardId::SUNDER };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
-                                              CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT };
+                                              CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
+                                              CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
+                                              CardId::KNOW_THY_PLACE, CardId::LUNAR_BLAST, CardId::PROPHESIZE,
+                                              CardId::SUPERMASSIVE, CardId::CONVERGENCE, CardId::ALIGNMENT,
+                                              CardId::ASTRAL_PULSE, CardId::CLOAK_OF_STARS, CardId::COMET,
+                                              CardId::CRESCENT_SPEAR, CardId::DEVASTATE, CardId::DYING_STAR,
+                                              CardId::GAMMA_BLAST, CardId::GLOW, CardId::GUIDING_STAR,
+                                              CardId::HIDDEN_CACHE, CardId::PARTICLE_WALL, CardId::RADIATE,
+                                              CardId::RESONANCE, CardId::ROYAL_GAMBLE, CardId::SEVEN_STARS,
+                                              CardId::SHINING_STRIKE, CardId::STARDUST,
+                                              CardId::KNOCKOUT_BLOW };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
-                                                   CardId::DRAIN_POWER };
+                                                   CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
+                                                   CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
+                                                   CardId::PUTREFY, CardId::REANIMATE, CardId::AFTERLIFE,
+                                                   CardId::DEATH_MARCH, CardId::DEFILE, CardId::DEFY, CardId::DELAY,
+                                                   CardId::ENFEEBLING_TOUCH, CardId::FEAR, CardId::INVOKE,
+                                                   CardId::PARSE, CardId::PULL_FROM_BELOW, CardId::REAP, CardId::SOW,
+                                                   CardId::ERADICATE };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;
@@ -295,7 +341,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
 void RunManager::generate_rewards() {
     // Offer distinct cards drawn at random from the hero's pool.
     current_card_rewards.clear();
-    FixedVector<CardId, 32> candidates;
+    FixedVector<CardId, 128> candidates;
     for (CardId id : card_reward_pool(character)) {
         candidates.push_back(id);
     }
@@ -339,8 +385,11 @@ bool RunManager::has_relic(std::string_view relic_id) const {
 
 std::string_view RunManager::draw_treasure_relic() {
     // Relics with an implemented effect come first, then any other common relic; never one already owned.
-    constexpr std::string_view ACTIVE_RELICS[] = { "VAJRA", "ANCHOR" };
-    FixedVector<std::string_view, 2> active;
+    // Sling of Courage is a shop relic: chests give it too until the GBA shop sells relics (#184).
+    constexpr std::string_view ACTIVE_RELICS[] = { "VAJRA", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK",
+                                                   "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
+                                                   "STONE_CRACKER", "PANTOGRAPH", "SLING_OF_COURAGE" };
+    FixedVector<std::string_view, std::size(ACTIVE_RELICS)> active;
     for (std::string_view id : ACTIVE_RELICS) {
         if (!has_relic(id)) active.push_back(id);
     }
@@ -382,10 +431,52 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("ANCHOR")) {
         combat.player.block += 10;
     }
+    // Oddly Smooth Stone: start each combat with 1 Dexterity.
+    if (has_relic("ODDLY_SMOOTH_STONE")) {
+        combat.player.add_status(StatusType::DEXTERITY, 1);
+    }
+    // Lantern: 1 additional energy on the first turn.
+    if (has_relic("LANTERN")) {
+        combat.player.energy = static_cast<int8_t>(combat.player.energy + 1);
+    }
+    // Blood Vial: heal 2 HP.
+    if (has_relic("BLOOD_VIAL")) {
+        combat.player.heal(2);
+    }
+    // Sling of Courage and Pantograph only act in Elite and Boss rooms.
+    RoomType room = current_node_index >= 0 ? map.nodes[current_node_index].type : RoomType::MONSTER;
+    if (has_relic("SLING_OF_COURAGE") && room == RoomType::ELITE) {
+        combat.player.add_status(StatusType::STRENGTH, 2);
+    }
+    if (has_relic("PANTOGRAPH") && room == RoomType::BOSS) {
+        combat.player.heal(25);
+    }
+    // Stone Cracker: upgrade 2 random cards of the draw pile for this combat (the piles are copies of the deck).
+    if (has_relic("STONE_CRACKER")) {
+        for (int n = 0; n < 2; ++n) {
+            FixedVector<uint8_t, 50> plain;
+            for (size_t i = 0; i < combat.draw_pile.size(); ++i) {
+                if (!combat.draw_pile[i].upgraded) plain.push_back(static_cast<uint8_t>(i));
+            }
+            if (plain.empty()) break;
+            combat.draw_pile[plain[next_random() % plain.size()]].upgraded = true;
+        }
+    }
+    // Red Mask, Bag of Marbles and Festive Popper hit every enemy: 1 Weak, 1 Vulnerable, 9 damage.
+    for (Enemy& foe : combat.enemies) {
+        if (has_relic("RED_MASK")) foe.add_status(StatusType::WEAK, 1);
+        if (has_relic("BAG_OF_MARBLES")) foe.add_status(StatusType::VULNERABLE, 1);
+        if (has_relic("FESTIVE_POPPER")) foe.take_damage(9);
+    }
+    combat.enemy = combat.enemies[0];
+    if (!combat.has_alive_enemies()) {
+        combat.state = CombatState::VICTORY;
+    }
 }
 
 void RunManager::proceed_after_combat() {
     hp = combat.player.hp;
+    max_hp = combat.player.max_hp; // cards can raise it for the rest of the run (Feed)
     // Check Ironclad Burning blood passive
     for (size_t i = 0; i < relics.size(); ++i) {
         if (relics[i] == "BURNING_BLOOD") {

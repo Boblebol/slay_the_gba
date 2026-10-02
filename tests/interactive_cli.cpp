@@ -9,6 +9,12 @@
 
 using namespace engine;
 
+// Energy cost as text: "X" for the cards that spend all the energy.
+static std::string cost_label(CardId id, bool upgraded) {
+    uint8_t cost = CardDef::get_cost(id, upgraded);
+    return cost == COST_X ? "X" : std::to_string(static_cast<int>(cost));
+}
+
 const char* get_hero_realm(CharacterId c) {
     switch (c) {
         case CharacterId::SILENT: return "MARAIS DU VENIN";
@@ -50,7 +56,7 @@ void render_deck_view(const RunManager& run) {
         bool up = run.master_deck[i].upgraded;
         std::cout << "   " << (i + 1 < 10 ? " " : "") << (i + 1) << ". " 
                   << CardDef::get_display_name(cid, up) << " (" 
-                  << (int)CardDef::get_cost(cid, up) << "E) : " 
+                  << cost_label(cid, up) << "E) : " 
                   << CardDef::get_desc(cid, up) << "\n";
     }
     std::cout << "======================================================\n";
@@ -105,7 +111,7 @@ void render_yugioh_combat(const RunManager& run, const CombatEngine& combat) {
         CardId cid = combat.hand[i].id;
         bool up = combat.hand[i].upgraded;
         std::cout << "    [" << (i + 1) << "] " << CardDef::get_display_name(cid, up)
-                  << " (" << (int)CardDef::get_cost(cid, up) << "E) : " 
+                  << " (" << cost_label(cid, up) << "E) : " 
                   << CardDef::get_desc(cid, up) << "\n";
     }
     std::cout << "==================================================================================\n";
@@ -311,7 +317,7 @@ int main() {
                 CardId cid = run.current_card_rewards[i].id;
                 bool up = run.current_card_rewards[i].upgraded;
                 std::cout << "    [" << (i + 1) << "] " << CardDef::get_display_name(cid, up)
-                          << " (" << (int)CardDef::get_cost(cid, up) << "E) : " 
+                          << " (" << cost_label(cid, up) << "E) : " 
                           << CardDef::get_desc(cid, up) << "\n";
             }
             std::cout << "    [s] Passer les cartes\nChoix: ";

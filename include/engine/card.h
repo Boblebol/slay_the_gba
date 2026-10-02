@@ -57,12 +57,169 @@ enum class CardId : uint8_t {
     // More Defect commons (appended: saves store the numeric id)
     COOLHEADED,
     SWEEPING_BEAM,
+    // Ironclad cards on existing mechanics (appended: saves store the numeric id)
+    THUNDERCLAP,
+    DISMANTLE,
+    INFLAME,
+    PERFECTED_STRIKE,
+    BLUDGEON,
+    BULLY,
+    SWORD_BOOMERANG,
+    BREAK,
+    CONFLAGRATION,
+    EXPECT_A_FIGHT,
+    PILLAGE,
+    UPPERCUT,
+    FIGHT_ME,
+    // Silent cards on existing mechanics (appended: saves store the numeric id)
+    LEG_SWEEP,
+    HAZE,
+    PRECISE_CUT,
+    BOUNCING_FLASK,
+    FLECHETTES,
+    FOOTWORK,
+    ESCAPE_PLAN,
+    DASH,
+    BUBBLE_BUBBLE,
+    OUTBREAK,
+    // Defect cards on existing mechanics (appended: saves store the numeric id)
+    SHADOW_SHIELD,
+    METEOR_STRIKE,
+    GLACIER,
+    ICE_LANCE,
+    SKIM,
+    ALL_FOR_ONE,
+    NULL_CARD,
+    GO_FOR_THE_EYES,
+    SCRAPE,
+    // Necrobinder cards on existing mechanics (appended: saves store the numeric id)
+    BURY,
+    MISERY,
+    UNDEATH,
+    // Ironclad Exhaust cards (appended: saves store the numeric id)
+    ASHEN_STRIKE,
+    TREMBLE,
+    EVIL_EYE,
+    MOLTEN_FIST,
+    CINDER,
+    SECOND_WIND,
+    TRUE_GRIT,
+    DOMINATE,
+    FIEND_FIRE,
+    THRASH,
+    IMPERVIOUS,
+    PACTS_END,
+    NOT_YET,
+    // Silent Exhaust cards (appended: saves store the numeric id)
+    ADRENALINE,
+    CALCULATED_GAMBLE,
+    MIRAGE,
+    // Defect Exhaust cards (appended: saves store the numeric id)
+    RAINBOW,
+    CHILL,
+    FUSION,
+    REBOOT,
+    SUPERCRITICAL,
+    DOUBLE_ENERGY,
+    // Necrobinder Exhaust cards (appended: saves store the numeric id)
+    SHARED_FATE,
+    WISP,
+    PUTREFY,
+    REANIMATE,
+    AFTERLIFE,
+    // Ironclad cards on keywords, X cost, delayed effects and counters (appended)
+    BLOOD_WALL,
+    BLOODLETTING,
+    BREAKTHROUGH,
+    FORGOTTEN_RITUAL,
+    HEMOKINESIS,
+    MANGLE,
+    OFFERING,
+    SETUP_STRIKE,
+    SPITE,
+    WHIRLWIND,
+    // Silent cards on keywords, X cost, delayed effects and counters (appended)
+    ANTICIPATE,
+    ASSASSINATE,
+    BACKSTAB,
+    BLUR,
+    DODGE_AND_ROLL,
+    FINISHER,
+    MALAISE,
+    MEMENTO_MORI,
+    MURDER,
+    PIERCING_WAIL,
+    PREDATOR,
+    SIDESTEP,
+    SKEWER,
+    SUPPRESS,
+    EXPERTISE,
+    SNAKEBITE,
+    // Defect cards on keywords, X cost, delayed effects and counters (appended)
+    BOOT_SEQUENCE,
+    CHARGE_BATTERY,
+    FTL,
+    HELIX_DRILL,
+    LIGHTNING_ROD,
+    TEMPEST,
+    // Regent cards on keywords, X cost, delayed effects and counters (appended)
+    CRUSH_UNDER,
+    GLITTERSTREAM,
+    HEAVENLY_DRILL,
+    HEGEMONY,
+    KNOW_THY_PLACE,
+    LUNAR_BLAST,
+    PROPHESIZE,
+    SUPERMASSIVE,
+    CONVERGENCE,
+    // Necrobinder cards on keywords, X cost, delayed effects and counters (appended)
+    DEATH_MARCH,
+    DEFILE,
+    DEFY,
+    DELAY,
+    ENFEEBLING_TOUCH,
+    FEAR,
+    INVOKE,
+    PARSE,
+    PULL_FROM_BELOW,
+    REAP,
+    SOW,
+    ERADICATE,
+    // Regent Star cards (appended: saves store the numeric id)
+    ALIGNMENT,
+    ASTRAL_PULSE,
+    CLOAK_OF_STARS,
+    COMET,
+    CRESCENT_SPEAR,
+    DEVASTATE,
+    DYING_STAR,
+    GAMMA_BLAST,
+    GLOW,
+    GUIDING_STAR,
+    HIDDEN_CACHE,
+    METEOR_SHOWER,
+    PARTICLE_WALL,
+    RADIATE,
+    RESONANCE,
+    ROYAL_GAMBLE,
+    SEVEN_STARS,
+    SHINING_STRIKE,
+    STARDUST,
+    // Fatal and play conditions (appended: saves store the numeric id)
+    FEED,
+    BATTLE_TRANCE,
+    ECHOING_SLASH,
+    GRAND_FINALE,
+    SUNDER,
+    KNOCKOUT_BLOW,
     COUNT
 };
 
 struct DeckCard {
     CardId id = CardId::NONE;
     bool upgraded = false;
+    uint8_t bonus = 0; // damage gained by this copy during the combat (Thrash); not part of the card's identity
+    uint8_t added_keywords = 0; // CardKeyword bits given to this copy during the combat, on top of its CardDef
 
     constexpr DeckCard() = default;
     constexpr DeckCard(CardId i, bool up = false) : id(i), upgraded(up) {}
@@ -70,6 +227,30 @@ struct DeckCard {
     constexpr bool operator==(CardId other) const { return id == other; }
     constexpr bool operator==(const DeckCard& other) const { return id == other.id && upgraded == other.upgraded; }
 };
+
+// Card keywords, combined as bits in CardDef::keywords.
+enum CardKeyword : uint8_t {
+    KEYWORD_EXHAUST = 1,  // goes to the exhaust pile when played
+    KEYWORD_RETAIN = 2,   // stays in hand at the end of the turn
+    KEYWORD_ETHEREAL = 4, // exhausted when still in hand at the end of the turn
+    KEYWORD_INNATE = 8,   // drawn in the opening hand
+    KEYWORD_RETURN = 16,  // once played, comes back to the hand at the start of the next turn
+    KEYWORD_RETAIN_ONCE = 32, // per-copy only: stays in hand at the end of this turn, then the mark is removed
+    KEYWORD_PLAY_FIRST = 64,  // while in hand, it must be played before any other card
+    KEYWORD_LIMIT_PLAYS = 128 // while in hand, no more than MAX_PLAYS_WHEN_LIMITED cards can be played each turn
+};
+
+constexpr uint8_t MAX_PLAYS_WHEN_LIMITED = 3;
+
+// What a card needs, besides its cost, to be played.
+enum class PlayCondition : uint8_t {
+    NONE,
+    DRAW_PILE_EMPTY,
+    HAND_ALL_ATTACKS // every card in hand, itself included, is an Attack
+};
+
+// CardDef::cost of an X card: it spends all the remaining energy and X is the amount spent.
+constexpr uint8_t COST_X = 0xFF;
 
 enum class CardType : uint8_t {
     ATTACK,
@@ -80,7 +261,8 @@ enum class CardType : uint8_t {
 enum class TargetType : uint8_t {
     SINGLE_ENEMY,
     SELF,
-    ALL_ENEMIES
+    ALL_ENEMIES,
+    RANDOM_ENEMY // picked by the engine, no targeting
 };
 
 struct CardDef {
@@ -100,6 +282,14 @@ struct CardDef {
     uint8_t upgraded_secondary_value;
     std::string_view upgraded_description;
 
+    // CardKeyword bits of the base and of the upgraded card: an upgrade can add or remove a keyword.
+    uint8_t keywords = 0;
+    uint8_t upgraded_keywords = 0;
+    // Stars spent to play the card, on top of its energy cost (Regent). COST_X: all the Stars left.
+    uint8_t star_cost = 0;
+    uint8_t upgraded_star_cost = 0;
+    PlayCondition condition = PlayCondition::NONE;
+
     static const CardDef& get(CardId id);
     static std::string_view get_display_name(CardId id, bool upgraded) {
         const auto& c = get(id);
@@ -116,6 +306,21 @@ struct CardDef {
     static uint8_t get_secondary(CardId id, bool upgraded) {
         const auto& c = get(id);
         return upgraded ? c.upgraded_secondary_value : c.secondary_value;
+    }
+    static bool has_keyword(CardId id, bool upgraded, CardKeyword keyword) {
+        const auto& c = get(id);
+        return ((upgraded ? c.upgraded_keywords : c.keywords) & keyword) != 0;
+    }
+    // Keyword of one copy: from its definition or given to that copy during the combat.
+    static bool has_keyword(const DeckCard& card, CardKeyword keyword) {
+        return (card.added_keywords & keyword) != 0 || has_keyword(card.id, card.upgraded, keyword);
+    }
+    static bool is_x_cost(CardId id, bool upgraded) {
+        return get_cost(id, upgraded) == COST_X;
+    }
+    static uint8_t get_star_cost(CardId id, bool upgraded) {
+        const auto& c = get(id);
+        return upgraded ? c.upgraded_star_cost : c.star_cost;
     }
     static std::string_view get_desc(CardId id, bool upgraded) {
         const auto& c = get(id);

@@ -22,8 +22,8 @@ items = [
   { name = "Vulnérable infligé par ses cartes (Heurt, Provocation)", status = "oui" },
   { name = "Copie de carte dans la Défausse (Colère)", status = "oui" },
   { name = "Dégâts égaux à l'Armure (Plaquage)", status = "oui" },
-  { name = "Épuisement de ses cartes et synergies d'Épuisement", status = "non", issue = 68 },
-  { name = "Sacrifice de PV contre de la puissance (cartes « Perdez X PV »)", status = "non", issue = 85 },
+  { name = "Épuisement de ses cartes et synergies d'Épuisement", status = "partiel", issue = 82, note = "Ses cartes s'Épuisent et comptent la pile ; les pouvoirs déclenchés par l'Épuisement (Sombre étreinte, Ignorer la douleur) manquent." },
+  { name = "Sacrifice de PV contre de la puissance (cartes « Perdez X PV »)", status = "oui" },
   { name = "Gain de Force tour après tour (Enflammer, Forme démoniaque)", status = "non", issue = 81 },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
 ]
@@ -49,8 +49,8 @@ items = [
   { name = "Activer un Orbe (Activation double)", status = "oui" },
   { name = "Orbe kéraunique : 3 dégâts en fin de tour, 8 à l'Activation", status = "oui" },
   { name = "Orbe glaciaire : 2 d'Armure en fin de tour, 5 à l'Activation", status = "oui" },
-  { name = "Orbe ténébreux : se charge de 6 par tour, libère sa charge", status = "partiel", note = "Géré par le moteur, mais aucune carte jouable n'en canalise." },
-  { name = "Orbe plasmique : 1 énergie par tour, 2 à l'Activation", status = "partiel", note = "Géré par le moteur, mais aucune carte jouable n'en canalise." },
+  { name = "Orbe ténébreux : se charge de 6 par tour, libère sa charge", status = "oui" },
+  { name = "Orbe plasmique : 1 énergie par tour, 2 à l'Activation", status = "partiel", note = "Seule Frappe météorique en canalise, et elle coûte 5 d'énergie." },
   { name = "Orbe vitreux", status = "non", issue = 99 },
   { name = "Focalisation : renforce tous les Orbes", status = "non", issue = 97 },
   { name = "Emplacements d'Orbe variables (Condensateur)", status = "non", issue = 100 },
@@ -62,8 +62,8 @@ items = [
 section = "regent"
 title = "Mécaniques"
 items = [
-  { name = "Étoiles : seconde ressource gagnée par les cartes", status = "partiel", issue = 101, note = "Compteur plafonné à 5 qui renforce Frappe et Défense, au lieu d'une ressource à dépenser." },
-  { name = "Cartes à coût en Étoiles", status = "non", issue = 101 },
+  { name = "Étoiles : seconde ressource gagnée par les cartes", status = "oui" },
+  { name = "Cartes à coût en Étoiles", status = "oui" },
   { name = "Forger la Lame souveraine", status = "non", issue = 102 },
   { name = "Sbires (Frappe de sbire, Sbire en piqué)", status = "non", issue = 103 },
   { name = "Compteur d'Étoiles affiché en combat", status = "oui" },
@@ -78,7 +78,7 @@ items = [
   { name = "Attaques de Titos (Déchaînement proportionnel à ses PV)", status = "non", issue = 104 },
   { name = "Fatalité : l'ennemi périt quand elle atteint ses PV", status = "non", issue = 105 },
   { name = "Âmes ajoutées à la Pioche", status = "non", issue = 106, note = "Le moteur ne tient qu'un compteur sans effet." },
-  { name = "Cartes Éthérées", status = "non", issue = 69 },
+  { name = "Cartes Éthérées", status = "oui" },
   { name = "PV de Titos affichés en combat", status = "oui" },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
 ]
@@ -100,12 +100,12 @@ items = [
   { name = "Attaques de zone et attaques en plusieurs coups", status = "oui" },
   { name = "Cartes qui font piocher", status = "oui" },
   { name = "Amélioration de cartes pendant le combat", status = "oui" },
-  { name = "Cartes Pouvoir : restent en jeu jusqu'à la fin du combat", status = "partiel", issue = 80, note = "Le type existe, mais aucune carte Pouvoir du jeu d'origine n'est jouable." },
+  { name = "Cartes Pouvoir : restent en jeu jusqu'à la fin du combat", status = "partiel", issue = 80, note = "Seuls les Pouvoirs à effet immédiat sont jouables (Enflammer, Jeu de jambes)." },
   { name = "Défausse d'une carte au choix", status = "non", issue = 31 },
   { name = "Choix d'une carte parmi plusieurs (Découverte, etc.)", status = "non", issue = 72 },
-  { name = "Cartes à coût X", status = "non", issue = 74 },
+  { name = "Cartes à coût X", status = "oui" },
   { name = "Écho : rejouer une carte", status = "non", issue = 86 },
-  { name = "Coup de grâce : effet quand la carte tue un ennemi", status = "non", issue = 87 },
+  { name = "Coup de grâce : effet quand la carte tue un ennemi", status = "oui" },
   { name = "Transformer une carte", status = "non", issue = 79 },
 ]
 
@@ -135,10 +135,10 @@ items = [
 section = "regles"
 title = "Mots-clés de cartes"
 items = [
-  { name = "Épuisement", status = "non", issue = 68 },
-  { name = "Éthéré", status = "non", issue = 69 },
-  { name = "Inné", status = "non", issue = 70 },
-  { name = "Retenue", status = "non", issue = 71 },
+  { name = "Épuisement", status = "oui" },
+  { name = "Éthéré", status = "oui" },
+  { name = "Inné", status = "oui" },
+  { name = "Retenue", status = "oui" },
   { name = "Ruse", status = "non", issue = 73 },
   { name = "Injouable", status = "non", issue = 95 },
   { name = "Éternel", status = "non", issue = 95 },
@@ -303,9 +303,8 @@ items = [
 # ---------------------------------------------------------------------------------------------------------
 
 [overrides.cards]
+TRUE_GRIT = { status = "partiel", issue = 31, note = "Améliorée, la carte Épuisée devrait être choisie : elle reste tirée au hasard." }
 SURVIVOR = { status = "partiel", issue = 31, note = "Donne l'Armure mais ne fait pas défausser de carte." }
-FALLING_STAR = { status = "partiel", issue = 34, note = "Coûte 1 et donne des Étoiles au lieu d'appliquer Affaibli et Vulnérable pour 0." }
-VENERATE = { status = "partiel", issue = 34, note = "Donne aussi de l'Armure, absente de la carte d'origine." }
 UNLEASH = { status = "partiel", issue = 34, note = "Dégâts fixes : ne tient pas compte des PV de Titos." }
 BODYGUARD = { status = "partiel", issue = 34, note = "Invoque pour 1 et donne de l'Armure, au lieu d'invoquer pour 5." }
 

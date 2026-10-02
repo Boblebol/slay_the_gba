@@ -123,7 +123,7 @@ public:
     FixedVector<OrbType, 3> orbs;
     int16_t dark_orb_charge = 0;
 
-    // Regent Sovereign Stars (0 to 5)
+    // Regent Stars: a second resource, kept from one turn to the next
     uint8_t sovereign_stars = 0;
 
     // Necrobinder Souls & Minion (Osty)
@@ -225,6 +225,8 @@ public:
     std::string_view name = "Cultist";
     EnemyIntent current_intent;
     int16_t damage_percent = 100; // Ascension bonus on attack damage
+    int16_t temp_strength_loss = 0; // Strength taken away until the end of this enemy's turn
+    bool minion = false; // summoned by another enemy: killing it triggers no Fatal effect
 
     void init(EnemyType enemy_type);
     // Damage the current intent would deal to `target` right now (0 when it does not attack).

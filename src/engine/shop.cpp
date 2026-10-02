@@ -35,14 +35,15 @@ void ShopInventory::generate(CharacterId char_id, uint32_t seed, uint8_t previou
             break;
         default: // IRONCLAD
             cards.push_back({ DeckCard(CardId::IRON_WAVE, false), 50, false });
-            cards.push_back({ DeckCard(CardId::CLEAVE, false), 75, false });
+            cards.push_back({ DeckCard(CardId::THUNDERCLAP, false), 75, false });
             cards.push_back({ DeckCard(CardId::METALLICIZE, false), 150, false });
             break;
     }
 
-    // 2 Relics
+    // 3 Relics
     relics.push_back({ "VAJRA", 160, false });
     relics.push_back({ "ANCHOR", 150, false });
+    relics.push_back({ "SLING_OF_COURAGE", 150, false });
 
     // 2 Potions
     potions.push_back({ "FIRE_POTION", 50, false });

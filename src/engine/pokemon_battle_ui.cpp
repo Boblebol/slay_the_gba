@@ -289,7 +289,6 @@ void PokemonBattleUI::get_hero_resource_label(const Player& player, CharacterId 
         case CharacterId::REGENT:
             append_lit(out_buf, pos, max_len, "ETOILES: ");
             append_int(out_buf, pos, max_len, static_cast<int>(player.sovereign_stars));
-            append_lit(out_buf, pos, max_len, "/5");
             break;
         case CharacterId::NECROBINDER:
             append_lit(out_buf, pos, max_len, "AMES: ");
