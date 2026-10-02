@@ -665,6 +665,30 @@ bn::string_view base_name(engine::CardId id)
         return "Passe-passe";
     case engine::CardId::KNIFE_TRAP:
         return "Piège à poignards";
+    case engine::CardId::ARMAMENTS:
+        return "Armement";
+    case engine::CardId::BRAND:
+        return "Marqué au fer rouge";
+    case engine::CardId::BURNING_PACT:
+        return "Pacte brûlant";
+    case engine::CardId::ACROBATICS:
+        return "Acrobaties";
+    case engine::CardId::DAGGER_THROW:
+        return "Lancer de couteau";
+    case engine::CardId::PREPARED:
+        return "Préparatifs";
+    case engine::CardId::HIDDEN_DAGGERS:
+        return "Poignards dissimulés";
+    case engine::CardId::SCAVENGE:
+        return "Récupération";
+    case engine::CardId::PHOTON_CUT:
+        return "Entaille photonique";
+    case engine::CardId::GLIMMER:
+        return "Lueur";
+    case engine::CardId::TYRANNY:
+        return "Tyran";
+    case engine::CardId::SCULPTING_STRIKE:
+        return "Frappe du sculpteur";
     default:
         return "???";
     }
@@ -1672,6 +1696,42 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::KNIFE_TRAP:
         stream << (card.upgraded ? "Améliore et joue les Surins épuisés." : "Joue les Surins épuisés sur l'ennemi.");
+        break;
+    case engine::CardId::ARMAMENTS:
+        stream << "Armure " << value << ". " << (card.upgraded ? "Améliore la main." : "Améliore 1 carte en main.");
+        break;
+    case engine::CardId::BRAND:
+        stream << "Perd " << value << " PV. Épuise 1 carte. Force +" << secondary << ".";
+        break;
+    case engine::CardId::BURNING_PACT:
+        stream << "Épuise 1 carte. Pioche " << value << " cartes.";
+        break;
+    case engine::CardId::ACROBATICS:
+        stream << "Pioche " << value << " cartes. Défausse 1 carte.";
+        break;
+    case engine::CardId::DAGGER_THROW:
+        stream << "Inflige " << value << ". Pioche " << secondary << ", défausse 1.";
+        break;
+    case engine::CardId::PREPARED:
+        stream << "Pioche " << value << ", puis défausse " << value << ".";
+        break;
+    case engine::CardId::HIDDEN_DAGGERS:
+        stream << "Défausse " << value << " cartes. " << secondary << (card.upgraded ? " Surins+ en main." : " Surins en main.");
+        break;
+    case engine::CardId::SCAVENGE:
+        stream << "Épuise 1 carte. Tour suivant : +" << value << " ⚡.";
+        break;
+    case engine::CardId::PHOTON_CUT:
+        stream << "Inflige " << value << ". Pioche " << secondary << ", remet 1 carte.";
+        break;
+    case engine::CardId::GLIMMER:
+        stream << "Pioche " << value << ". Remet 1 carte sur la pioche.";
+        break;
+    case engine::CardId::TYRANNY:
+        stream << (card.upgraded ? "Inné. " : "") << "Début de tour : pioche " << value << ", épuise " << value << ".";
+        break;
+    case engine::CardId::SCULPTING_STRIKE:
+        stream << "Inflige " << value << ". 1 carte devient Éthérée.";
         break;
     default:
         break;

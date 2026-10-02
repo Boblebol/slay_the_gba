@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <span>
 #include <string_view>
 #include "engine/card.h"
 #include "engine/entity.h"
@@ -90,7 +91,35 @@ enum class PlayBlocker : uint8_t {
     STARS,
     CONDITION,    // the card's own PlayCondition
     PLAY_FIRST,   // another card in hand must be played first
-    PLAY_LIMIT    // a card in hand caps the number of cards played this turn
+    PLAY_LIMIT,   // a card in hand caps the number of cards played this turn
+    CHOICE        // cards of the hand must be picked first (CombatEngine::pending_choices)
+};
+
+// What happens to the hand cards the player picks.
+enum class ChoiceKind : uint8_t {
+    DISCARD,
+    EXHAUST,
+    TOP_OF_DRAW,  // put on top of the draw pile
+    UPGRADE,      // for the rest of the combat
+    MAKE_ETHEREAL // the copy gains Ethereal
+};
+
+// What follows once the cards are picked: the part of a card's text that comes after its choice.
+enum class ChoiceThen : uint8_t {
+    NONE,
+    DRAW,          // draw `amount` cards
+    DRAW_PER_CARD, // draw one card for each card picked
+    SHIVS          // add `amount` Shivs to the hand, upgraded when `upgraded`
+};
+
+// Cards of the hand the player has to pick before the combat goes on.
+struct HandChoice {
+    ChoiceKind kind = ChoiceKind::DISCARD;
+    uint8_t count = 1;     // cards to pick; all the cards that can be picked when there are fewer
+    bool optional = false; // fewer cards, or none, can be picked ("any number of cards")
+    ChoiceThen then = ChoiceThen::NONE;
+    uint8_t amount = 0;
+    bool upgraded = false;
 };
 
 // Where a card goes once it has been played.
@@ -137,6 +166,7 @@ public:
     FixedVector<ActivePower, 24> powers;      // active powers, in the order they were gained
     FixedVector<DeckCard, 24> powers_in_play; // Power cards played this combat: they stay in play
     FixedVector<PermanentGain, 16> permanent_gains; // bonuses to write back to the deck after the combat
+    FixedVector<HandChoice, 4> pending_choices;      // asked in order, the first one first
     bool end_turn_requested = false; // a card ended the turn (Void Form): the caller ends it once the card is resolved
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;
@@ -225,6 +255,22 @@ public:
     // Schedules an effect: see DelayedEffect.
     void schedule(DelayedType type, int16_t amount, uint8_t delay = 1, uint8_t repeat = 1);
     
+    // Asks the player to pick cards of the hand. Nothing is asked when there is nothing to decide: every card
+    // that can be picked is, at once. Otherwise the choice waits in `pending_choices`, and no card can be
+    // played until it is resolved.
+    void ask_choice(const HandChoice& choice);
+    bool choice_pending() const { return !pending_choices.empty(); }
+    // Whether the hand card can be picked for the choice being asked.
+    bool choice_allows(size_t hand_index) const;
+    // Number of cards the choice being asked expects: fewer than its count when the hand is short.
+    int choice_size() const;
+    // Applies the choice being asked to the picked hand cards. False, and nothing happens, when the picks
+    // do not answer it (wrong number, same card twice, card that cannot be picked).
+    bool resolve_choice(std::span<const uint8_t> hand_indices);
+    // Answers the choice being asked without the player: the first cards that can be picked, none when
+    // the choice is optional.
+    void resolve_choice_default();
+
     PlayBlocker play_blocker(int index) const;
     bool can_play_card(int index) const { return play_blocker(index) == PlayBlocker::NONE; }
     bool play_condition_met(PlayCondition condition) const;
@@ -272,6 +318,10 @@ private:
     int consume_play_modifiers(const DeckCard& card);
     // Adds `amount` to the bonus of every copy of `id` in the piles.
     void boost_copies(CardId id, int amount);
+    bool can_be_picked(const DeckCard& card, ChoiceKind kind) const;
+    void apply_choice(const HandChoice& choice, std::span<const uint8_t> hand_indices);
+    // Answers, without asking, the choices that leave nothing to decide.
+    void settle_choices();
     void change_cost_of_copies(CardId id, int delta);
     uint8_t autoplay_depth_ = 0;
     // Orb value once Focus is applied, never negative.

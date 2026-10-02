@@ -535,6 +535,18 @@ CARDS: list[CardArt] = [
     CardArt("accuracy", "silent", "accuracy", "power", (1, 1)),
     CardArt("up_my_sleeve", "silent", "up_my_sleeve", "skill", (2, 2)),
     CardArt("knife_trap", "silent", "knife_trap", "skill", (2, 2)),
+    CardArt("armaments", "ironclad", "armaments", "skill", (1, 1)),
+    CardArt("brand", "ironclad", "brand", "skill", (0, 0)),
+    CardArt("burning_pact", "ironclad", "burning_pact", "skill", (1, 1)),
+    CardArt("acrobatics", "silent", "acrobatics", "skill", (1, 1)),
+    CardArt("dagger_throw", "silent", "dagger_throw", "attack", (1, 1)),
+    CardArt("prepared", "silent", "prepared", "skill", (0, 0)),
+    CardArt("hidden_daggers", "silent", "hidden_daggers", "skill", (0, 0)),
+    CardArt("scavenge", "defect", "scavenge", "skill", (1, 1)),
+    CardArt("photon_cut", "regent", "photon_cut", "attack", (1, 1)),
+    CardArt("glimmer", "regent", "glimmer", "skill", (1, 1)),
+    CardArt("tyranny", "regent", "tyranny", "power", (1, 1)),
+    CardArt("sculpting_strike", "necrobinder", "sculpting_strike", "attack", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
