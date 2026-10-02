@@ -6,7 +6,8 @@
 
 namespace engine {
 
-// Lasting effects on the player: Power cards and "this turn" effects of other cards.
+// Lasting effects on the player: Power cards, "this turn" effects of other cards, and the relics that act
+// during a fight.
 // One id per behaviour: two cards with the same effect share it (Pyre and Friendship both give TURN_ENERGY).
 enum class PowerId : uint8_t {
     NONE = 0,
@@ -51,12 +52,45 @@ enum class PowerId : uint8_t {
     DANSE_MACABRE,      // card costing DANSE_MACABRE_COST energy or more played: `amount` Block
     SPIRIT_OF_ASH,      // Ethereal card played: `amount` Block
     PAGESTORM,          // Ethereal card drawn: draw `amount`
-    SLEIGHT_OF_FLESH    // debuff applied to an enemy: it takes `amount` damage
+    SLEIGHT_OF_FLESH,   // debuff applied to an enemy: it takes `amount` damage
+    // Relics, registered by RunManager when the fight starts. `turns` is then the number of the turn.
+    CAPTAINS_WHEEL,    // start of turn 3: `amount` Block
+    HORN_CLEAT,        // start of turn 2: `amount` Block
+    CANDELABRA,        // start of turn 2: `amount` energy
+    CHANDELIER,        // start of turn 3: `amount` energy
+    SPARKLING_ROUGE,   // start of turn 3: `amount` Strength and Dexterity
+    HAPPY_FLOWER,      // every 3 turns: `amount` energy
+    PENDULUM,          // every 3 turns: draw `amount` more
+    BREAD,             // turn 1: lose BREAD_ENERGY_LOST energy; later turns: `amount` energy
+    MERCURY_HOURGLASS, // start of turn: `amount` damage to every enemy
+    CLOAK_CLASP,       // end of turn: `amount` Block for each card in hand
+    POCKETWATCH,       // end of a turn with POCKETWATCH_CARDS cards played or fewer: draw `amount` more next turn
+    PARRYING_SHIELD,   // end of turn with PARRYING_SHIELD_BLOCK Block or more: `amount` damage to a random enemy
+    STONE_CALENDAR,    // end of turn 7: `amount` damage to every enemy
+    ART_OF_WAR,        // end of a turn without an Attack: `amount` energy next turn
+    ORICHALCUM,        // end of turn without Block: `amount` Block
+    SCREAMING_FLAGON,  // end of turn with an empty hand: `amount` damage to every enemy
+    ICE_CREAM,         // unspent energy is kept
+    STURDY_CLAMP,      // up to `amount` Block is kept
+    GREMLIN_HORN,      // enemy killed: `amount` energy and 1 card
+    RAZOR_TOOTH,       // an Attack or a Skill played is upgraded for the rest of the combat
+    THE_ABACUS,        // draw pile shuffled: `amount` Block
+    PERMAFROST,        // first Power played: `amount` Block
+    GAME_PIECE,        // Power played: draw `amount`
+    CENTENNIAL_PUZZLE, // first HP loss: draw `amount`
+    LIZARD_TAIL,       // HP reduced to 0: back to `amount` % of Max HP, once (counter = 1 when spent)
+    UNCEASING_TOP,     // hand empty during the turn: draw 1
+    TOUGH_BANDAGES,    // card discarded during the turn: `amount` Block
+    TINGSHA            // card discarded during the turn: `amount` damage to a random enemy
 };
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
 constexpr uint8_t ORBIT_ENERGY = 4;
 constexpr uint8_t DANSE_MACABRE_COST = 2;
+constexpr uint8_t BREAD_ENERGY_LOST = 2;
+constexpr uint8_t POCKETWATCH_CARDS = 3;
+constexpr uint8_t PARRYING_SHIELD_BLOCK = 10;
+constexpr uint8_t STONE_CALENDAR_TURN = 7;
 
 struct ActivePower {
     PowerId id = PowerId::NONE;
@@ -74,6 +108,7 @@ enum class CombatEvent : uint8_t {
     TURN_END,               // player's turn, before the hand is discarded
     CARD_PLAYED,            // costs paid, before the card's effect; `card`, `cost` (energy paid)
     CARD_DRAWN,             // `card`, `opening_draw`
+    CARD_DISCARDED,         // by an effect, not by the end of the turn; `card`
     CARD_EXHAUSTED,         // `card`
     CARD_CREATED,           // `card`
     BLOCK_GAINED,           // `amount`
@@ -81,6 +116,8 @@ enum class CombatEvent : uint8_t {
     ATTACK_HIT,             // one attack hit on an enemy; `enemy`
     UNBLOCKED_DAMAGE_DEALT, // that hit went through the enemy's Block; `enemy`, `amount`
     DEBUFF_APPLIED,         // to an enemy; `enemy`, `status`, `amount`
+    ENEMY_KILLED,           // whatever killed it; `enemy`
+    DRAW_PILE_SHUFFLED,
     STARS_GAINED,           // `amount`
     STARS_SPENT             // `amount`
 };

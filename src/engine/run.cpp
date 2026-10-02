@@ -143,7 +143,9 @@ void RunManager::enter_room(int node_index) {
                 combat.draw_pile.push_back(master_deck[i]);
             }
             combat.shuffle_draw_pile();
-            combat.open_first_turn();
+            combat.reset_combat_state();
+            register_relic_powers();
+            combat.begin_first_turn();
             apply_combat_start_relics();
             break;
         }
@@ -396,35 +398,75 @@ bool RunManager::has_relic(std::string_view relic_id) const {
     return false;
 }
 
-std::string_view RunManager::draw_treasure_relic() {
-    // Relics with an implemented effect come first, then any other common relic; never one already owned.
-    // Sling of Courage is a shop relic: chests give it too until the GBA shop sells relics (#184).
-    constexpr std::string_view ACTIVE_RELICS[] = { "VAJRA", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK",
-                                                   "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
-                                                   "STONE_CRACKER", "PANTOGRAPH", "SLING_OF_COURAGE" };
-    FixedVector<std::string_view, std::size(ACTIVE_RELICS)> active;
-    for (std::string_view id : ACTIVE_RELICS) {
-        if (!has_relic(id)) active.push_back(id);
-    }
-    if (!active.empty()) {
-        return active[next_random() % active.size()];
-    }
-
-    auto is_candidate = [this](const RelicData& relic) {
-        return relic.rarity == RelicRarity::COMMON && relic.pool == "Shared" && !has_relic(relic.id);
+std::span<const std::string_view> RunManager::active_relics() {
+    // Shop relics are in the list too: chests give them until the GBA shop sells relics (#184).
+    static constexpr std::string_view ACTIVE_RELICS[] = {
+        "VAJRA", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK", "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
+        "STONE_CRACKER", "PANTOGRAPH", "SLING_OF_COURAGE",
+        // Start and end of turn
+        "CAPTAINS_WHEEL", "HORN_CLEAT", "CANDELABRA", "CHANDELIER", "SPARKLING_ROUGE", "HAPPY_FLOWER", "PENDULUM", "BREAD",
+        "MERCURY_HOURGLASS", "CLOAK_CLASP", "POCKETWATCH", "PARRYING_SHIELD", "STONE_CALENDAR", "ART_OF_WAR", "ORICHALCUM",
+        "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP",
+        // Combat events
+        "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
+        "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA"
     };
-    std::span<const RelicData> all = get_all_relics();
+    return ACTIVE_RELICS;
+}
+
+std::string_view RunManager::draw_treasure_relic() {
+    // A relic with an implemented effect, shared or of this hero, never one already owned.
+    std::string_view hero_pool = get_character(character).english_name;
+    auto is_candidate = [&](std::string_view id) {
+        const RelicData* relic = find_relic(id);
+        return relic && (relic->pool == "Shared" || relic->pool == hero_pool) && !has_relic(id);
+    };
     uint32_t count = 0;
-    for (const RelicData& relic : all) {
-        if (is_candidate(relic)) ++count;
+    for (std::string_view id : active_relics()) {
+        if (is_candidate(id)) ++count;
     }
     if (count == 0) return {};
 
     uint32_t pick = next_random() % count;
-    for (const RelicData& relic : all) {
-        if (is_candidate(relic) && pick-- == 0) return relic.id;
+    for (std::string_view id : active_relics()) {
+        if (is_candidate(id) && pick-- == 0) return id;
     }
     return {};
+}
+
+void RunManager::register_relic_powers() {
+    // Start of turn
+    if (has_relic("CAPTAINS_WHEEL")) combat.add_power(PowerId::CAPTAINS_WHEEL, 18);
+    if (has_relic("HORN_CLEAT")) combat.add_power(PowerId::HORN_CLEAT, 14);
+    if (has_relic("CANDELABRA")) combat.add_power(PowerId::CANDELABRA, 2);
+    if (has_relic("CHANDELIER")) combat.add_power(PowerId::CHANDELIER, 3);
+    if (has_relic("SPARKLING_ROUGE")) combat.add_power(PowerId::SPARKLING_ROUGE, 1);
+    if (has_relic("HAPPY_FLOWER")) combat.add_power(PowerId::HAPPY_FLOWER, 1);
+    if (has_relic("PENDULUM")) combat.add_power(PowerId::PENDULUM, 1);
+    if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
+    if (has_relic("MERCURY_HOURGLASS")) combat.add_power(PowerId::MERCURY_HOURGLASS, 3);
+    // End of turn
+    if (has_relic("CLOAK_CLASP")) combat.add_power(PowerId::CLOAK_CLASP, 1);
+    if (has_relic("POCKETWATCH")) combat.add_power(PowerId::POCKETWATCH, 3);
+    if (has_relic("PARRYING_SHIELD")) combat.add_power(PowerId::PARRYING_SHIELD, 6);
+    if (has_relic("STONE_CALENDAR")) combat.add_power(PowerId::STONE_CALENDAR, 52);
+    if (has_relic("ART_OF_WAR")) combat.add_power(PowerId::ART_OF_WAR, 1);
+    if (has_relic("ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 6);
+    if (has_relic("SCREAMING_FLAGON")) combat.add_power(PowerId::SCREAMING_FLAGON, 20);
+    // Kept from one turn to the next
+    if (has_relic("ICE_CREAM")) combat.add_power(PowerId::ICE_CREAM);
+    if (has_relic("STURDY_CLAMP")) combat.add_power(PowerId::STURDY_CLAMP, 10);
+    // Combat events
+    if (has_relic("GREMLIN_HORN")) combat.add_power(PowerId::GREMLIN_HORN, 1);
+    if (has_relic("RAZOR_TOOTH")) combat.add_power(PowerId::RAZOR_TOOTH);
+    if (has_relic("THE_ABACUS")) combat.add_power(PowerId::THE_ABACUS, 6);
+    if (has_relic("PERMAFROST")) combat.add_power(PowerId::PERMAFROST, 7);
+    if (has_relic("GAME_PIECE")) combat.add_power(PowerId::GAME_PIECE, 1);
+    if (has_relic("CENTENNIAL_PUZZLE")) combat.add_power(PowerId::CENTENNIAL_PUZZLE, 3);
+    if (has_relic("LIZARD_TAIL")) combat.add_power(PowerId::LIZARD_TAIL, 50);
+    if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);
+    if (has_relic("TOUGH_BANDAGES")) combat.add_power(PowerId::TOUGH_BANDAGES, 3);
+    if (has_relic("TINGSHA")) combat.add_power(PowerId::TINGSHA, 3);
 }
 
 void RunManager::apply_combat_start_relics() {
@@ -435,6 +477,10 @@ void RunManager::apply_combat_start_relics() {
     // Ring of the Snake (Silent): draw 2 additional cards on the first turn.
     if (has_relic("RING_OF_THE_SNAKE")) {
         combat.draw_cards(2);
+    }
+    // Bellows: the first hand of the combat is upgraded, the cards of Ring of the Snake included.
+    if (has_relic("BELLOWS")) {
+        for (DeckCard& card : combat.hand) card.upgraded = true;
     }
     // Cracked Core (Defect): channel 1 Lightning.
     if (has_relic("CRACKED_CORE")) {
@@ -488,6 +534,15 @@ void RunManager::apply_combat_start_relics() {
 }
 
 void RunManager::proceed_after_combat() {
+    // Lizard Tail only works once: it leaves the run when it saved its owner.
+    if (combat.power_counter(PowerId::LIZARD_TAIL) > 0) {
+        for (size_t i = 0; i < relics.size(); ++i) {
+            if (relics[i] == "LIZARD_TAIL") {
+                relics.erase(i);
+                break;
+            }
+        }
+    }
     hp = combat.player.hp;
     max_hp = combat.player.max_hp; // cards can raise it for the rest of the run (Feed)
     // Check Ironclad Burning blood passive

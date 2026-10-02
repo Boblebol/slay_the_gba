@@ -166,6 +166,25 @@ int16_t CombatEngine::power_amount(PowerId id) const {
     return total;
 }
 
+uint8_t CombatEngine::power_counter(PowerId id) const {
+    for (const ActivePower& power : powers) {
+        if (power.id == id) return power.counter;
+    }
+    return 0;
+}
+
+void CombatEngine::settle_deaths() {
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        uint8_t bit = static_cast<uint8_t>(1u << i);
+        if ((alive_mask_ & bit) && !enemies[i].is_alive()) {
+            alive_mask_ = static_cast<uint8_t>(alive_mask_ & ~bit);
+            EventInfo info;
+            info.enemy = static_cast<int8_t>(i);
+            emit(CombatEvent::ENEMY_KILLED, info);
+        }
+    }
+}
+
 ActivePower* CombatEngine::find_power(PowerId id) {
     for (ActivePower& power : powers) {
         if (power.id == id) return &power;
@@ -358,8 +377,101 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::SLEIGHT_OF_FLESH:
             if (event == CombatEvent::DEBUFF_APPLIED && foe && foe->is_alive()) damage_enemy(*foe, power.amount);
             break;
+        // Relics
+        case PowerId::CAPTAINS_WHEEL:
+            if (turn_start && power.turns == 3) add_block(power.amount);
+            break;
+        case PowerId::HORN_CLEAT:
+            if (turn_start && power.turns == 2) add_block(power.amount);
+            break;
+        case PowerId::CANDELABRA:
+            if (turn_start && power.turns == 2) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
+        case PowerId::CHANDELIER:
+            if (turn_start && power.turns == 3) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
+        case PowerId::SPARKLING_ROUGE:
+            if (turn_start && power.turns == 3) {
+                player.add_status(StatusType::STRENGTH, power.amount);
+                player.add_status(StatusType::DEXTERITY, power.amount);
+            }
+            break;
+        case PowerId::HAPPY_FLOWER:
+            if (turn_start && power.turns % 3 == 0) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
+        case PowerId::PENDULUM:
+            if (turn_start && power.turns % 3 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
+            break;
+        case PowerId::BREAD:
+            if (turn_start) {
+                int change = power.turns == 1 ? -BREAD_ENERGY_LOST : power.amount;
+                player.energy = static_cast<int8_t>(std::max(0, player.energy + change));
+            }
+            break;
+        case PowerId::MERCURY_HOURGLASS:
+            if (turn_start) damage_all_enemies(power.amount);
+            break;
+        case PowerId::CLOAK_CLASP:
+            if (event == CombatEvent::TURN_END) add_block(static_cast<int16_t>(power.amount * hand.size()));
+            break;
+        case PowerId::POCKETWATCH:
+            if (event == CombatEvent::TURN_END && counters.cards_played() <= POCKETWATCH_CARDS) {
+                schedule(DelayedType::DRAW, power.amount);
+            }
+            break;
+        case PowerId::PARRYING_SHIELD:
+            if (event == CombatEvent::TURN_END && player.block >= PARRYING_SHIELD_BLOCK && has_alive_enemies()) {
+                damage_enemy(enemies[random_alive_enemy_index()], power.amount);
+            }
+            break;
+        case PowerId::STONE_CALENDAR:
+            if (event == CombatEvent::TURN_END && power.turns == STONE_CALENDAR_TURN) damage_all_enemies(power.amount);
+            break;
+        case PowerId::ART_OF_WAR:
+            if (event == CombatEvent::TURN_END && counters.attacks_played == 0) schedule(DelayedType::ENERGY, power.amount);
+            break;
+        case PowerId::ORICHALCUM:
+            if (event == CombatEvent::TURN_END && player.block == 0) add_block(power.amount);
+            break;
+        case PowerId::SCREAMING_FLAGON:
+            if (event == CombatEvent::TURN_END && hand.empty()) damage_all_enemies(power.amount);
+            break;
+        case PowerId::GREMLIN_HORN:
+            if (event == CombatEvent::ENEMY_KILLED) {
+                player.energy = static_cast<int8_t>(player.energy + power.amount);
+                draw_cards(1);
+            }
+            break;
+        case PowerId::THE_ABACUS:
+            if (event == CombatEvent::DRAW_PILE_SHUFFLED) add_block(power.amount);
+            break;
+        case PowerId::PERMAFROST:
+            if (card_played && CardDef::get(info.card.id).type == CardType::POWER && power.counter == 0) {
+                power.counter = 1;
+                add_block(power.amount);
+            }
+            break;
+        case PowerId::GAME_PIECE:
+            if (card_played && CardDef::get(info.card.id).type == CardType::POWER) draw_cards(power.amount);
+            break;
+        case PowerId::CENTENNIAL_PUZZLE:
+            if (event == CombatEvent::HP_LOST && power.counter == 0) {
+                power.counter = 1;
+                draw_cards(power.amount);
+            }
+            break;
+        case PowerId::TOUGH_BANDAGES:
+            if (event == CombatEvent::CARD_DISCARDED && my_turn) add_block(power.amount);
+            break;
+        case PowerId::TINGSHA:
+            if (event == CombatEvent::CARD_DISCARDED && my_turn && has_alive_enemies()) {
+                damage_enemy(enemies[random_alive_enemy_index()], power.amount);
+            }
+            break;
         default:
-            break; // rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT
+            // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, ICE_CREAM, STURDY_CLAMP, RAZOR_TOOTH,
+            // LIZARD_TAIL, UNCEASING_TOP.
+            break;
     }
 }
 
@@ -396,7 +508,9 @@ void CombatEngine::afflict(Enemy& target, StatusType type, int16_t amount) {
 }
 
 void CombatEngine::damage_enemy(Enemy& target, int16_t amount) {
-    if (target.is_alive()) target.take_damage(amount);
+    if (!target.is_alive()) return;
+    target.take_damage(amount);
+    settle_deaths();
 }
 
 void CombatEngine::damage_all_enemies(int16_t amount) {
@@ -424,6 +538,7 @@ void CombatEngine::shuffle_discard_into_draw() {
         discard_pile.pop_back();
     }
     shuffle_draw_pile();
+    if (!draw_pile.empty()) emit(CombatEvent::DRAW_PILE_SHUFFLED);
 }
 
 bool CombatEngine::draw_card() {
@@ -469,9 +584,13 @@ DeckCard CombatEngine::exhaust_from_hand(size_t index) {
 }
 
 void CombatEngine::discard_from_hand(size_t index) {
-    discard_pile.push_back(hand[index]);
+    DeckCard card = hand[index];
+    discard_pile.push_back(card);
     hand.erase(index);
     counters.cards_discarded = bump(counters.cards_discarded);
+    EventInfo info;
+    info.card = card;
+    emit(CombatEvent::CARD_DISCARDED, info);
 }
 
 void CombatEngine::create_card_in_discard(DeckCard card) {
@@ -493,6 +612,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
         info.amount = lost;
         emit(CombatEvent::ATTACK_HIT, info);
         if (lost > 0) emit(CombatEvent::UNBLOCKED_DAMAGE_DEALT, info);
+        settle_deaths();
     }
     return lost;
 }
@@ -520,6 +640,13 @@ void CombatEngine::note_player_hp_lost(int16_t amount) {
     if (amount <= 0) return;
     counters.hp_lost = static_cast<int16_t>(counters.hp_lost + amount);
     counters.combat_hp_losses = bump(counters.combat_hp_losses);
+    if (player.hp <= 0) {
+        ActivePower* tail = find_power(PowerId::LIZARD_TAIL);
+        if (tail && tail->counter == 0) {
+            tail->counter = 1;
+            player.hp = static_cast<int16_t>(player.max_hp * tail->amount / 100);
+        }
+    }
     EventInfo info;
     info.amount = amount;
     emit(CombatEvent::HP_LOST, info);
@@ -593,9 +720,7 @@ int CombatEngine::run_delayed_effects(bool end_of_turn) {
                 }
                 break;
             case DelayedType::DAMAGE_ALL:
-                for (Enemy& foe : enemies) {
-                    if (foe.is_alive()) foe.take_damage(effect.amount);
-                }
+                damage_all_enemies(effect.amount);
                 break;
         }
         if (--effect.repeat == 0) {
@@ -650,6 +775,11 @@ void CombatEngine::start_combat_multi(FixedVector<EnemyType, 3> enemy_types, Cha
 }
 
 void CombatEngine::open_first_turn() {
+    reset_combat_state();
+    begin_first_turn();
+}
+
+void CombatEngine::reset_combat_state() {
     counters = CombatCounters();
     delayed_effects.clear();
     returning_cards.clear();
@@ -662,7 +792,13 @@ void CombatEngine::open_first_turn() {
     event_depth_ = 0;
     temp_strength = 0;
     temp_dexterity = 0;
+    alive_mask_ = 0;
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        if (enemies[i].is_alive()) alive_mask_ = static_cast<uint8_t>(alive_mask_ | (1u << i));
+    }
+}
 
+void CombatEngine::begin_first_turn() {
     // Innate cards go on top of the draw pile (its back), in their shuffled order.
     FixedVector<DeckCard, 50> innate;
     for (size_t i = draw_pile.size(); i-- > 0;) {
@@ -693,13 +829,17 @@ void CombatEngine::start_player_turn() {
         set_log("You were defeated!");
         return;
     }
-    int16_t kept_block = has_power(PowerId::BARRICADE) ? player.block : 0;
+    int16_t kept_block = std::min(player.block, power_amount(PowerId::STURDY_CLAMP));
+    if (has_power(PowerId::BARRICADE)) kept_block = player.block;
     if (keep_block_turns > 0) {
         --keep_block_turns;
         kept_block = player.block;
     }
+    // Ice Cream: the energy left from the previous turn is added to the new one.
+    int8_t kept_energy = (has_power(PowerId::ICE_CREAM) && turn_number > 1) ? std::max<int8_t>(player.energy, 0) : 0;
     player.reset_turn();
     player.block = kept_block;
+    player.energy = static_cast<int8_t>(player.energy + kept_energy);
     exhausted_this_turn = 0;
     retain_hand = false;
     no_draw_this_turn = false;
@@ -721,6 +861,7 @@ void CombatEngine::start_player_turn() {
     // Only the cards drawn by effects during the turn count as drawn this turn.
     counters.cards_drawn = 0;
     selected_card_index = 0;
+    settle_deaths();
     selected_target_index = get_first_alive_enemy_index();
 
     // Start-of-turn powers can end the fight either way.
@@ -2309,17 +2450,26 @@ bool CombatEngine::play_card(int index, int target_index) {
 
     // Powers stay in play for the rest of the combat: they never return to the piles.
     if (played_type != CardType::POWER) {
+        // Where it goes is decided by the card as it was played; Razor Tooth upgrades the copy that comes back.
+        DeckCard kept_card = played_card;
+        if (has_power(PowerId::RAZOR_TOOTH)) kept_card.upgraded = true;
         if (CardDef::has_keyword(played_card, KEYWORD_EXHAUST)) {
-            exhaust_card(played_card);
+            exhaust_card(kept_card);
         } else if (CardDef::has_keyword(played_card, KEYWORD_RETURN)) {
-            if (!returning_cards.push_back(played_card)) discard_pile.push_back(played_card);
-        } else if (after_play == AfterPlay::HAND && hand.push_back(played_card)) {
+            if (!returning_cards.push_back(kept_card)) discard_pile.push_back(kept_card);
+        } else if (after_play == AfterPlay::HAND && hand.push_back(kept_card)) {
             // back in hand
         } else if (after_play == AfterPlay::DRAW_TOP) {
-            draw_pile.push_back(played_card);
+            draw_pile.push_back(kept_card);
         } else {
-            discard_pile.push_back(played_card);
+            discard_pile.push_back(kept_card);
         }
+    }
+
+    // Deaths not caused by a hit (orbs, HP loss) are noticed here.
+    settle_deaths();
+    if (hand.empty() && has_power(PowerId::UNCEASING_TOP) && player.is_alive()) {
+        draw_card();
     }
 
     // A card that costs HP can kill its player.
@@ -2384,6 +2534,7 @@ void CombatEngine::end_player_turn() {
         gained.amount = static_cast<int16_t>(player.block - block_before);
         emit(CombatEvent::BLOCK_GAINED, gained);
     }
+    settle_deaths();
     if (!enemies.empty()) {
         enemy = enemies[0];
     }
@@ -2406,6 +2557,7 @@ void CombatEngine::execute_enemy_turn() {
         for (int16_t tick = power_amount(PowerId::ACCELERANT); tick >= 0 && enemies[i].is_alive(); --tick) {
             enemies[i].apply_poison_tick();
         }
+        settle_deaths();
         if (enemies[i].is_alive()) {
             EnemyActionRecord record;
             record.enemy_index = static_cast<int8_t>(i);
@@ -2468,7 +2620,7 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         if (target_index < 0 || target_index >= static_cast<int>(enemies.size()) || !enemies[target_index].is_alive()) {
             target_index = get_first_alive_enemy_index();
         }
-        enemies[target_index].take_damage(20);
+        damage_enemy(enemies[target_index], 20);
         set_log("Fire Potion!");
     } else if (potion_id == "BLOCK_POTION") {
         add_block(12); // Potion Block is not modified by Dexterity

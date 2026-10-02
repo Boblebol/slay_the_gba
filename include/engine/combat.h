@@ -122,9 +122,12 @@ public:
     void init_starter_deck(CharacterId character = CharacterId::IRONCLAD);
     void start_combat(EnemyType enemy_type, CharacterId character = CharacterId::IRONCLAD);
     void start_combat_multi(FixedVector<EnemyType, 3> enemy_types, CharacterId character = CharacterId::IRONCLAD);
-    // Opens the fight once the draw pile is ready: clears the combat state, puts the Innate cards on top of the
-    // draw pile and starts the first turn.
+    // Opens the fight once the draw pile is ready: clears the combat state, then starts the first turn.
     void open_first_turn();
+    // The two halves of open_first_turn, for whoever registers powers (relics) between them.
+    void reset_combat_state();
+    // Puts the Innate cards on top of the draw pile and starts the first turn.
+    void begin_first_turn();
     void start_player_turn();
     // Draws one card, reshuffling the discard pile when needed. False when nothing was drawn (full hand, empty piles).
     bool draw_card();
@@ -146,6 +149,8 @@ public:
     // Total amount of a power, 0 when it is not active.
     int16_t power_amount(PowerId id) const;
     bool has_power(PowerId id) const { return power_amount(id) != 0; }
+    // The power's own tally (see ActivePower::counter), 0 when it is not active.
+    uint8_t power_counter(PowerId id) const;
 
     // Block from a card: Dexterity applies.
     void gain_block(int16_t amount);
@@ -199,6 +204,9 @@ private:
     int8_t index_of(const Enemy& target) const;
     // Moves every copy of `id` from the draw and discard piles to the hand, as long as there is room.
     void recall_to_hand(CardId id);
+    // Raises ENEMY_KILLED for every enemy that died since the last call, whatever killed it.
+    void settle_deaths();
+    uint8_t alive_mask_ = 0;      // enemies known to be alive, one bit each
     uint8_t event_depth_ = 0;     // reactions triggering reactions
     int16_t turn_draw_bonus_ = 0; // cards added to the opening draw by the start-of-turn powers
     bool opening_draw_ = false;   // the turn's opening hand is being drawn

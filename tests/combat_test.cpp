@@ -2336,6 +2336,236 @@ void test_reaction_powers() {
     std::cout << "[PASS] Necrobinder powers: Danse Macabre, Spirit of Ash, Pagestorm, Sleight of Flesh" << std::endl;
 }
 
+// A fight opened the way RunManager does it: state reset, relic registered as a power, then the first turn.
+struct RelicPower {
+    PowerId id;
+    int16_t amount = 1;
+};
+
+CombatEngine make_relic_combat(CharacterId hero, std::initializer_list<RelicPower> relics, bool pack = false) {
+    CombatEngine combat = pack ? make_pack(hero) : make_combat(hero);
+    while (!combat.hand.empty()) {
+        combat.draw_pile.push_back(combat.hand.back());
+        combat.hand.pop_back();
+    }
+    pad_draw_pile(combat, 30);
+    combat.reset_combat_state();
+    for (const RelicPower& relic : relics) combat.add_power(relic.id, relic.amount);
+    combat.begin_first_turn();
+    return combat;
+}
+
+CombatEngine make_relic_combat(CharacterId hero, PowerId relic, int16_t amount = 1, bool pack = false) {
+    return make_relic_combat(hero, { RelicPower{ relic, amount } }, pack);
+}
+
+void test_turn_relics() {
+    // Effects tied to a turn number.
+    CombatEngine wheel = make_relic_combat(CharacterId::IRONCLAD, { { PowerId::CAPTAINS_WHEEL, 18 }, { PowerId::HORN_CLEAT, 14 } });
+    assert(wheel.player.block == 0 && wheel.powers[0].turns == 1);
+    end_turn_idle(wheel);
+    assert(wheel.player.block == 14);
+    end_turn_idle(wheel);
+    assert(wheel.player.block == 18);
+    end_turn_idle(wheel);
+    assert(wheel.player.block == 0);
+
+    CombatEngine candles = make_relic_combat(CharacterId::IRONCLAD, { { PowerId::CANDELABRA, 2 }, { PowerId::CHANDELIER, 3 },
+                                                                      { PowerId::SPARKLING_ROUGE, 1 } });
+    assert(candles.player.energy == 3);
+    end_turn_idle(candles);
+    assert(candles.player.energy == 5 && candles.player.get_status(StatusType::STRENGTH) == 0);
+    end_turn_idle(candles);
+    assert(candles.player.energy == 6);
+    assert(candles.player.get_status(StatusType::STRENGTH) == 1 && candles.player.get_status(StatusType::DEXTERITY) == 1);
+    end_turn_idle(candles);
+    assert(candles.player.energy == 3 && candles.player.get_status(StatusType::STRENGTH) == 1);
+
+    // Effects every 3 turns.
+    CombatEngine flower = make_relic_combat(CharacterId::IRONCLAD, { { PowerId::HAPPY_FLOWER, 1 }, { PowerId::PENDULUM, 1 } });
+    end_turn_idle(flower);
+    assert(flower.player.energy == 3 && flower.hand.size() == 5);
+    end_turn_idle(flower);
+    assert(flower.player.energy == 4 && flower.hand.size() == 6);
+    end_turn_idle(flower);
+    assert(flower.player.energy == 3 && flower.hand.size() == 5);
+    end_turn_idle(flower);
+    end_turn_idle(flower);
+    assert(flower.player.energy == 4 && flower.hand.size() == 6);
+
+    // Bread costs the first turn and pays the next ones.
+    CombatEngine bread = make_relic_combat(CharacterId::IRONCLAD, PowerId::BREAD, 1);
+    assert(bread.player.energy == 1);
+    end_turn_idle(bread);
+    assert(bread.player.energy == 4);
+
+    CombatEngine hourglass = make_relic_combat(CharacterId::IRONCLAD, PowerId::MERCURY_HOURGLASS, 3, true);
+    assert(hourglass.enemies[0].hp == 15 && hourglass.enemies[2].hp == 39);
+    end_turn_idle(hourglass);
+    assert(hourglass.enemies[0].hp == 12 && hourglass.enemies[2].hp == 36);
+    std::cout << "[PASS] Turn start relics: Captain's Wheel, Horn Cleat, Candelabra, Chandelier, Sparkling Rouge, Happy Flower, Pendulum, Bread, Mercury Hourglass" << std::endl;
+
+    // End of turn: Block for the enemy's attack (Chomp: 11).
+    CombatEngine clasp = make_relic_combat(CharacterId::IRONCLAD, PowerId::CLOAK_CLASP, 1);
+    clasp.hand.pop_back(); // 4 cards left
+    clasp.end_player_turn();
+    assert(clasp.player.hp == 80 - (11 - 4));
+
+    CombatEngine orichalcum = make_relic_combat(CharacterId::IRONCLAD, PowerId::ORICHALCUM, 6);
+    orichalcum.end_player_turn();
+    assert(orichalcum.player.hp == 80 - (11 - 6));
+    play(orichalcum, CardId::DEFEND); // with Block already, nothing more
+    orichalcum.enemies[0].current_intent.base_damage = 11;
+    orichalcum.enemies[0].current_intent.type = EnemyIntentType::ATTACK;
+    int16_t hp_before = orichalcum.player.hp;
+    orichalcum.end_player_turn();
+    assert(orichalcum.player.hp == hp_before - (11 - 5));
+
+    CombatEngine parry = make_relic_combat(CharacterId::IRONCLAD, PowerId::PARRYING_SHIELD, 6);
+    end_turn_idle(parry);
+    assert(parry.enemies[0].hp == 42);
+    play(parry, CardId::IMPERVIOUS);
+    end_turn_idle(parry);
+    assert(parry.enemies[0].hp == 42 - 6);
+
+    // Stone Calendar: the end of turn 7, and only that one.
+    CombatEngine calendar = make_relic_combat(CharacterId::IRONCLAD, PowerId::STONE_CALENDAR, 52);
+    calendar.enemies[0].hp = 100;
+    for (int turn = 1; turn <= 6; ++turn) end_turn_idle(calendar);
+    assert(calendar.enemies[0].hp == 100);
+    end_turn_idle(calendar);
+    assert(calendar.enemies[0].hp == 48);
+    end_turn_idle(calendar);
+    assert(calendar.enemies[0].hp == 48);
+
+    CombatEngine flagon = make_relic_combat(CharacterId::IRONCLAD, PowerId::SCREAMING_FLAGON, 20, true);
+    for (Enemy& foe : flagon.enemies) foe.hp = 100;
+    end_turn_idle(flagon);
+    assert(flagon.enemies[0].hp == 100);
+    flagon.hand.clear();
+    end_turn_idle(flagon);
+    for (const Enemy& foe : flagon.enemies) assert(foe.hp == 80);
+
+    // What the turn was like decides the next one.
+    CombatEngine war = make_relic_combat(CharacterId::IRONCLAD, PowerId::ART_OF_WAR, 1);
+    play(war, CardId::DEFEND);
+    end_turn_idle(war);
+    assert(war.player.energy == 4);
+    play(war, CardId::STRIKE);
+    end_turn_idle(war);
+    assert(war.player.energy == 3);
+
+    CombatEngine watch = make_relic_combat(CharacterId::IRONCLAD, PowerId::POCKETWATCH, 3);
+    for (int i = 0; i < 3; ++i) play(watch, CardId::DEFEND);
+    end_turn_idle(watch);
+    assert(watch.hand.size() == 8);
+    for (int i = 0; i < 4; ++i) play(watch, CardId::DEFEND);
+    end_turn_idle(watch);
+    assert(watch.hand.size() == 5);
+
+    // Kept from one turn to the next.
+    CombatEngine cream = make_relic_combat(CharacterId::IRONCLAD, PowerId::ICE_CREAM);
+    assert(cream.player.energy == 3);
+    cream.player.energy = 2;
+    end_turn_idle(cream);
+    assert(cream.player.energy == 5);
+
+    CombatEngine clamp = make_relic_combat(CharacterId::IRONCLAD, PowerId::STURDY_CLAMP, 10);
+    play(clamp, CardId::IMPERVIOUS);
+    end_turn_idle(clamp);
+    assert(clamp.player.block == 10);
+    clamp.player.block = 4;
+    end_turn_idle(clamp);
+    assert(clamp.player.block == 4);
+    std::cout << "[PASS] Turn end relics: Cloak Clasp, Orichalcum, Parrying Shield, Stone Calendar, Screaming Flagon, Art of War, Pocketwatch, Ice Cream, Sturdy Clamp" << std::endl;
+}
+
+void test_event_relics() {
+    // Enemy killed, by an attack or by anything else.
+    CombatEngine horn = make_relic_combat(CharacterId::IRONCLAD, PowerId::GREMLIN_HORN, 1, true);
+    horn.enemies[0].hp = 5;
+    play(horn, CardId::STRIKE, 0);
+    assert(!horn.enemies[0].is_alive() && horn.player.energy == 3 - 1 + 1 && horn.hand.size() == 1);
+    horn.enemies[1].hp = 3;
+    horn.enemies[1].add_status(StatusType::POISON, 3);
+    end_turn_idle(horn); // Poison kills it during the enemy turn: the card is drawn on top of the new hand
+    assert(!horn.enemies[1].is_alive() && horn.hand.size() == 6);
+
+    // Razor Tooth upgrades what comes back to the piles; Powers never come back.
+    CombatEngine tooth = make_relic_combat(CharacterId::IRONCLAD, PowerId::RAZOR_TOOTH);
+    play(tooth, CardId::STRIKE);
+    assert(tooth.enemies[0].hp == 42 - 6 && tooth.discard_pile.back() == CardId::STRIKE && tooth.discard_pile.back().upgraded);
+    play(tooth, CardId::IMPERVIOUS);
+    assert(tooth.exhaust_pile.back().upgraded && tooth.player.block == 30);
+
+    // The Abacus: Block when the discard pile becomes the draw pile.
+    CombatEngine abacus = make_relic_combat(CharacterId::IRONCLAD, PowerId::THE_ABACUS, 6);
+    abacus.draw_pile.clear();
+    abacus.draw_cards(1);
+    assert(abacus.player.block == 0); // nothing to shuffle
+    abacus.discard_pile.push_back(CardId::STRIKE);
+    abacus.draw_cards(1);
+    assert(abacus.player.block == 6);
+
+    // Powers played.
+    CombatEngine frost = make_relic_combat(CharacterId::IRONCLAD, PowerId::PERMAFROST, 7);
+    frost.add_power(PowerId::GAME_PIECE, 1);
+    play(frost, CardId::INFLAME);
+    assert(frost.player.block == 7 && frost.hand.size() == 1 && frost.power_counter(PowerId::PERMAFROST) == 1);
+    play(frost, CardId::INFLAME);
+    assert(frost.player.block == 7 && frost.hand.size() == 1);
+
+    // First HP loss of the combat.
+    CombatEngine puzzle = make_relic_combat(CharacterId::IRONCLAD, PowerId::CENTENNIAL_PUZZLE, 3);
+    puzzle.hand.clear();
+    puzzle.lose_hp(1);
+    assert(puzzle.hand.size() == 3);
+    puzzle.lose_hp(1);
+    assert(puzzle.hand.size() == 3);
+
+    // Lizard Tail: once.
+    CombatEngine tail = make_relic_combat(CharacterId::IRONCLAD, PowerId::LIZARD_TAIL, 50);
+    tail.player.hp = 5;
+    tail.lose_hp(10);
+    assert(tail.player.hp == 40 && tail.state == CombatState::PLAYER_TURN && tail.power_counter(PowerId::LIZARD_TAIL) == 1);
+    tail.lose_hp(60);
+    assert(tail.player.hp == 0 && tail.state == CombatState::DEFEAT);
+
+    // Unceasing Top: a card when the hand is empty.
+    CombatEngine top = make_relic_combat(CharacterId::IRONCLAD, PowerId::UNCEASING_TOP);
+    play(top, CardId::STRIKE);
+    assert(top.hand.size() == 1);
+
+    // Cards discarded during the turn (the end of turn discard does not count).
+    CombatEngine tingsha = make_relic_combat(CharacterId::SILENT, PowerId::TINGSHA, 3);
+    tingsha.add_power(PowerId::TOUGH_BANDAGES, 3);
+    tingsha.hand.clear();
+    tingsha.hand.push_back(CardId::CALCULATED_GAMBLE);
+    tingsha.hand.push_back(CardId::STRIKE);
+    tingsha.hand.push_back(CardId::DEFEND);
+    assert(tingsha.play_card(0));
+    assert(tingsha.enemies[0].hp == 42 - 6 && tingsha.player.block == 6);
+    end_turn_idle(tingsha);
+    assert(tingsha.enemies[0].hp == 36);
+    std::cout << "[PASS] Event relics: Gremlin Horn, Razor Tooth, The Abacus, Permafrost, Game Piece, Centennial Puzzle, Lizard Tail, Unceasing Top, Tingsha, Tough Bandages" << std::endl;
+
+    // RunManager registers the relics before the first turn.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    for (std::string_view relic : { "BREAD", "MERCURY_HOURGLASS", "BELLOWS", "LIZARD_TAIL" }) run.add_relic(relic);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.has_power(PowerId::BREAD) && run.combat.has_power(PowerId::LIZARD_TAIL));
+    assert(!run.combat.has_power(PowerId::HAPPY_FLOWER) && run.combat.powers_in_play.empty());
+    assert(run.combat.player.energy == 1); // Bread acted on the first turn
+    for (const Enemy& foe : run.combat.enemies) assert(foe.hp == foe.max_hp - 3);
+    for (const DeckCard& card : run.combat.hand) assert(card.upgraded); // Bellows
+    run.combat.lose_hp(run.combat.player.hp);
+    assert(run.combat.player.hp == run.max_hp / 2);
+    run.proceed_after_combat();
+    assert(!run.has_relic("LIZARD_TAIL") && run.has_relic("BREAD"));
+    std::cout << "[PASS] Relics in a run: registered before the first turn, Bellows, Lizard Tail leaves once used" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -2421,6 +2651,8 @@ int main() {
     test_power_registry();
     test_turn_powers();
     test_reaction_powers();
+    test_turn_relics();
+    test_event_relics();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;
