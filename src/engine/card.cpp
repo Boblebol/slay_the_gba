@@ -260,8 +260,8 @@ static const CardDef CARDS[] = {
 };
 
 const CardDef& CardDef::get(CardId id) {
-    uint8_t index = static_cast<uint8_t>(id);
-    if (index >= static_cast<uint8_t>(CardId::COUNT)) {
+    uint16_t index = static_cast<uint16_t>(id);
+    if (index >= static_cast<uint16_t>(CardId::COUNT)) {
         return CARDS[0];
     }
     return CARDS[index];

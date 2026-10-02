@@ -242,8 +242,8 @@ void SaveManager::autosave_run(const RunManager& run) {
     // Deck
     r.deck_count = static_cast<uint8_t>(run.master_deck.size());
     for (size_t i = 0; i < run.master_deck.size() && i < 50; ++i) {
-        r.deck[i].card_id = static_cast<uint8_t>(run.master_deck[i].id);
-        r.deck[i].upgraded = run.master_deck[i].upgraded;
+        r.deck[i].card_id = static_cast<uint16_t>(run.master_deck[i].id);
+        r.deck[i].upgraded = run.master_deck[i].upgraded ? 1 : 0;
 
         // Auto-discover in compendium
         p.discover_card(r.deck[i].card_id);
@@ -297,7 +297,7 @@ bool SaveManager::restore_run(RunManager& run) {
     // Restore Deck
     run.master_deck.clear();
     for (uint8_t i = 0; i < r.deck_count && i < 50; ++i) {
-        run.master_deck.push_back(DeckCard(static_cast<CardId>(r.deck[i].card_id), r.deck[i].upgraded));
+        run.master_deck.push_back(DeckCard(static_cast<CardId>(r.deck[i].card_id), r.deck[i].upgraded != 0));
     }
 
     // Restore Relics
@@ -447,10 +447,6 @@ bool SaveManager::load_from_storage() {
     storage_->read(&data_, sizeof(SaveData), best_offset + sizeof(SaveHeader));
     sequence_ = best.sequence;
     if (data_.active_slot >= PROFILE_COUNT) data_.active_slot = 0;
-    // Runs saved before the map generator changed would resume on another map: drop them.
-    if (best.version < 3) {
-        for (SaveProfile& profile : data_.profiles) profile.active_run.has_active_run = false;
-    }
     return true;
 }
 

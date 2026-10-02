@@ -55,6 +55,10 @@ void test_cartridge_save() {
     saved.add_relic("VAJRA");
     saved.potions.push_back(get_all_potions()[0].id);
     saved.master_deck.push_back(DeckCard(CardId::POISON_STAB, true));
+    // Card ids are stored on 16 bits: one above 255 survives the save, with its upgrade.
+    constexpr CardId FAR_CARD = static_cast<CardId>(300);
+    saved.master_deck.push_back(DeckCard(FAR_CARD, true));
+    saved.master_deck.push_back(DeckCard(static_cast<CardId>(511), false));
     store.settings().music_volume = 3;
     store.autosave_run(saved);
 
@@ -72,7 +76,11 @@ void test_cartridge_save() {
     assert(loaded.palette == PaletteVariant::SHADOW);
     assert(loaded.hp == 40 && loaded.gold == 321);
     assert(loaded.master_deck.size() == saved.master_deck.size());
-    assert(loaded.master_deck.back() == DeckCard(CardId::POISON_STAB, true));
+    size_t deck_size = loaded.master_deck.size();
+    assert(loaded.master_deck[deck_size - 3] == DeckCard(CardId::POISON_STAB, true));
+    assert(loaded.master_deck[deck_size - 2].id == FAR_CARD && loaded.master_deck[deck_size - 2].upgraded);
+    assert(static_cast<uint16_t>(loaded.master_deck[deck_size - 1].id) == 511 && !loaded.master_deck[deck_size - 1].upgraded);
+    assert(sizeof(CardId) == 2 && sizeof(DeckCardSave) == 4);
     assert(loaded.relics.size() == saved.relics.size());
     assert(loaded.relics.back() == "VAJRA");
     assert(loaded.potions.size() == 1 && loaded.potions[0] == saved.potions[0]);
@@ -101,17 +109,24 @@ void test_cartridge_save() {
     assert(!store.has_active_run());
     assert(store.get_active_profile().total_runs == 1);
 
-    // A version 2 cartridge keeps its profiles and settings, but its run was saved on an older map layout.
+    // A cartridge saved with an older layout (8-bit card ids) is not read as if it were the new one:
+    // the game starts again from the defaults.
     store.autosave_run(saved);
     for (size_t bank = 0; bank < 2; ++bank) {
-        uint16_t old_version = 2;
+        uint16_t old_version = SAVE_FORMAT_VERSION - 1;
         std::memcpy(storage.bytes.data() + bank * SAVE_BANK_SIZE + 8, &old_version, sizeof(old_version));
     }
     store.reset_to_defaults();
-    assert(store.load_from_storage());
+    assert(!store.load_from_storage());
     assert(!store.has_active_run());
-    assert(store.settings().music_volume == 3);
-    assert(store.get_active_profile().total_runs == 1);
+    assert(store.settings().music_volume == 8);
+    assert(store.get_active_profile().total_runs == 0);
+
+    // The next save makes the cartridge valid again.
+    store.settings().music_volume = 5;
+    store.commit_to_storage();
+    store.reset_to_defaults();
+    assert(store.load_from_storage() && store.settings().music_volume == 5);
 
     store.set_storage(nullptr);
     store.reset_to_defaults();
