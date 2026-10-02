@@ -36,7 +36,7 @@ items = [
   { name = "Affaibli infligé par ses cartes (Neutralisation, Coup bas)", status = "oui" },
   { name = "Pioche supplémentaire (Salto arrière)", status = "oui" },
   { name = "Défausse au choix (Survivant, Acrobaties)", status = "non", issue = 31 },
-  { name = "Surins : attaques à 0 énergie créées en combat", status = "non", issue = 96 },
+  { name = "Surins : attaques à 0 énergie créées en combat", status = "oui" },
   { name = "Ruse : carte jouée gratuitement quand elle est défaussée", status = "non", issue = 73 },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
 ]
@@ -317,6 +317,7 @@ FIRE_POTION = { status = "partiel", issue = 30, note = "Effet géré par le mote
 BLOCK_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
 ENERGY_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
 BLOOD_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
+CUNNING_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
 
 [overrides.monsters]
 CEREMONIAL_BEAST = { status = "partiel", issue = 36, note = "150 PV et trois attaques simplifiées, contre 252 PV et six attaques dans le jeu d'origine." }

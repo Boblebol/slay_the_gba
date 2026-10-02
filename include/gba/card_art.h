@@ -74,6 +74,18 @@
 #include "bn_sprite_items_card_soot.h"
 #include "bn_sprite_items_card_void_card.h"
 #include "bn_sprite_items_card_wound.h"
+#include "bn_sprite_items_card_shiv.h"
+#include "bn_sprite_items_card_blade_dance.h"
+#include "bn_sprite_items_card_cloak_and_dagger.h"
+#include "bn_sprite_items_card_leading_strike.h"
+#include "bn_sprite_items_card_blade_of_ink.h"
+#include "bn_sprite_items_card_infinite_blades.h"
+#include "bn_sprite_items_card_storm_of_steel.h"
+#include "bn_sprite_items_card_fan_of_knives.h"
+#include "bn_sprite_items_card_phantom_blades.h"
+#include "bn_sprite_items_card_accuracy.h"
+#include "bn_sprite_items_card_up_my_sleeve.h"
+#include "bn_sprite_items_card_knife_trap.h"
 
 namespace gba::card_art
 {
@@ -207,6 +219,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_void_card;
     case engine::CardId::WOUND:
         return &bn::sprite_items::card_wound;
+    case engine::CardId::SHIV:
+        return &bn::sprite_items::card_shiv;
+    case engine::CardId::BLADE_DANCE:
+        return &bn::sprite_items::card_blade_dance;
+    case engine::CardId::CLOAK_AND_DAGGER:
+        return &bn::sprite_items::card_cloak_and_dagger;
+    case engine::CardId::LEADING_STRIKE:
+        return &bn::sprite_items::card_leading_strike;
+    case engine::CardId::BLADE_OF_INK:
+        return &bn::sprite_items::card_blade_of_ink;
+    case engine::CardId::INFINITE_BLADES:
+        return &bn::sprite_items::card_infinite_blades;
+    case engine::CardId::STORM_OF_STEEL:
+        return &bn::sprite_items::card_storm_of_steel;
+    case engine::CardId::FAN_OF_KNIVES:
+        return &bn::sprite_items::card_fan_of_knives;
+    case engine::CardId::PHANTOM_BLADES:
+        return &bn::sprite_items::card_phantom_blades;
+    case engine::CardId::ACCURACY:
+        return &bn::sprite_items::card_accuracy;
+    case engine::CardId::UP_MY_SLEEVE:
+        return &bn::sprite_items::card_up_my_sleeve;
+    case engine::CardId::KNIFE_TRAP:
+        return &bn::sprite_items::card_knife_trap;
     default:
         return nullptr;
     }
@@ -229,7 +265,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 52, 53, 54, 55, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 57, 58, 59, 60, 61,
-    62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 64, 65, 66, 67,
+    68, 69, 70, 71, 72, 73, 74,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -528,7 +565,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 57, 58, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 59, 60, 61, 62, 63, 64, 65,
     66, 67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 68, 69, 70, 71, 72, 73,
-    74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 0, 0,
+    74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -752,7 +790,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 48, 49, 50, 51, 52, 0, 0, 0, 0, 0, 0, 0, 53, 54, 55, 56, 57, 58,
-    59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 61,
+    59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 61, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -970,7 +1009,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58,
-    59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1257,7 +1297,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 65, 66,
     67, 68, 69, 70, 71, 72, 73, 74, 75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 76, 77, 78, 79, 80, 81,
-    82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.

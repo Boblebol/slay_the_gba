@@ -34,6 +34,7 @@ struct CombatCounters {
     uint8_t skills_played = 0;
     uint8_t powers_played = 0;
     uint8_t statuses_played = 0; // Status cards that can be played (Slimed, Debris)
+    uint8_t shivs_played = 0;
     uint8_t cards_drawn = 0;     // drawn by effects, after the turn's opening draw
     uint8_t cards_discarded = 0; // discarded by effects, not by the end of the turn
     uint8_t energy_spent = 0;
@@ -55,7 +56,7 @@ struct CombatCounters {
         return static_cast<uint8_t>(attacks_played + skills_played + powers_played + statuses_played);
     }
     void start_turn() {
-        attacks_played = skills_played = powers_played = statuses_played = 0;
+        attacks_played = skills_played = powers_played = statuses_played = shivs_played = 0;
         cards_drawn = cards_discarded = energy_spent = hits_dealt = 0;
         stars_gained = stars_spent = 0;
         doom_applied = 0;
@@ -174,6 +175,8 @@ public:
     // pile when the hand is full.
     void create_card(DeckCard card, Pile pile);
     void create_card_in_discard(DeckCard card) { create_card(card, Pile::DISCARD); }
+    // Adds Shivs to the hand (Silent).
+    void add_shivs(int count, bool upgraded = false, Enchantment enchantment = Enchantment::NONE);
 
     // One attack hit on an enemy: Strength, Weak and Vulnerable applied. Returns the HP lost by the enemy.
     int16_t hit(Enemy& target, int16_t base);

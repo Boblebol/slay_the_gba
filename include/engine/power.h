@@ -74,6 +74,11 @@ enum class PowerId : uint8_t {
     SURCHARGE,          // cards cost `amount` more
     HELLRAISER,         // a "Strike" card drawn is played at once on a random enemy
     STAMPEDE,           // end of turn: a random Attack of the hand is played on a random enemy, once per stack
+    // Shivs (Silent)
+    ACCURACY,           // Shivs deal `amount` more damage
+    PHANTOM_BLADES,     // Shivs are kept in hand; the first one played each turn deals `amount` more damage
+    FAN_OF_KNIVES,      // Shivs hit every enemy
+    INFINITE_BLADES,    // start of turn: `amount` Shivs in hand
     // Status cards
     SMOKESTACK,         // Status card created: `amount` damage to every enemy
     TRASH_TO_TREASURE,  // Status card created: channel a random orb, once per stack
@@ -117,7 +122,8 @@ enum class PowerId : uint8_t {
     GOLD_PLATED_CABLES, // the oldest orb's passive triggers once more
     METRONOME,         // METRONOME_ORBS orbs channeled in the combat: `amount` damage to every enemy, once
     EMOTION_CHIP,      // start of a turn that follows a HP loss: every orb's passive triggers
-    BOOK_REPAIR_KNIFE  // enemy killed by Doom (minions excepted): heal `amount`
+    BOOK_REPAIR_KNIFE, // enemy killed by Doom (minions excepted): heal `amount`
+    HELICAL_DART       // Shiv played: `amount` Dexterity until the end of the turn
 };
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;

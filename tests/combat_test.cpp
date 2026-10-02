@@ -3564,6 +3564,156 @@ void test_status_card_users() {
     std::cout << "[PASS] Status card users: Boost Away, Fight Through, Gunk Up, Overclock, Turbo, Smokestack, Trash to Treasure, Iteration, Rocket Punch, Compact, Flak Cannon, Collision Course, Crash Landing, Blessed Antler" << std::endl;
 }
 
+void test_shivs() {
+    // Shiv: a 0-cost Attack that exhausts.
+    CombatEngine shiv = make_combat(CharacterId::SILENT);
+    play(shiv, CardId::SHIV);
+    assert(shiv.enemies[0].hp == 38 && shiv.player.energy == 3 && count_in(shiv.exhaust_pile, CardId::SHIV) == 1);
+    play(shiv, DeckCard(CardId::SHIV, true));
+    assert(shiv.enemies[0].hp == 32 && shiv.counters.shivs_played == 2 && shiv.counters.attacks_played == 2);
+    // Added to the hand; what does not fit goes to the discard pile.
+    shiv.hand.clear();
+    for (int i = 0; i < 8; ++i) shiv.hand.push_back(CardId::DEFEND);
+    size_t discarded = shiv.discard_pile.size();
+    shiv.add_shivs(3);
+    assert(count_in(shiv.hand, CardId::SHIV) == 2 && shiv.discard_pile.size() == discarded + 1);
+
+    // Cards that add Shivs.
+    CombatEngine dance = make_combat(CharacterId::SILENT);
+    play(dance, CardId::BLADE_DANCE);
+    assert(count_in(dance.hand, CardId::SHIV) == 3 && count_in(dance.exhaust_pile, CardId::BLADE_DANCE) == 1);
+    play(dance, DeckCard(CardId::BLADE_DANCE, true));
+    assert(count_in(dance.hand, CardId::SHIV) == 4);
+    play(dance, CardId::CLOAK_AND_DAGGER);
+    assert(dance.player.block == 6 && count_in(dance.hand, CardId::SHIV) == 1);
+    play(dance, DeckCard(CardId::CLOAK_AND_DAGGER, true));
+    assert(dance.player.block == 12 && count_in(dance.hand, CardId::SHIV) == 2);
+    play(dance, CardId::LEADING_STRIKE);
+    assert(dance.enemies[0].hp == 39 && count_in(dance.hand, CardId::SHIV) == 2);
+    play(dance, DeckCard(CardId::LEADING_STRIKE, true));
+    assert(dance.enemies[0].hp == 33);
+
+    // Blade of Ink: Inky Shivs also apply Weak.
+    CombatEngine ink = make_combat(CharacterId::SILENT);
+    play(ink, CardId::BLADE_OF_INK);
+    assert(ink.hand.size() == 2 && ink.hand[0].enchantment == Enchantment::INKY);
+    assert(ink.play_card(0, 0) && ink.enemies[0].hp == 38 && ink.enemies[0].get_status(StatusType::WEAK) == INKY_WEAK);
+    play(ink, DeckCard(CardId::BLADE_OF_INK, true));
+    assert(count_in(ink.hand, CardId::SHIV) == 3);
+
+    // Accuracy: more damage for every Shiv.
+    CombatEngine accuracy = make_combat(CharacterId::SILENT);
+    play(accuracy, CardId::ACCURACY);
+    play(accuracy, CardId::SHIV);
+    assert(accuracy.enemies[0].hp == 42 - 8);
+    play(accuracy, DeckCard(CardId::ACCURACY, true));
+    play(accuracy, CardId::STRIKE);
+    play(accuracy, DeckCard(CardId::SHIV, true));
+    assert(accuracy.enemies[0].hp == 34 - 6 - 16);
+
+    // Phantom Blades: the first Shiv of each turn hits harder, and Shivs stay in hand.
+    CombatEngine phantom = make_combat(CharacterId::SILENT);
+    play(phantom, CardId::PHANTOM_BLADES);
+    play(phantom, CardId::SHIV);
+    play(phantom, CardId::SHIV);
+    assert(phantom.enemies[0].hp == 42 - 13 - 4);
+    phantom.hand.clear();
+    phantom.hand.push_back(CardId::SHIV);
+    phantom.hand.push_back(CardId::STRIKE);
+    end_turn_idle(phantom);
+    assert(count_in(phantom.hand, CardId::SHIV) == 1 && count_in(phantom.discard_pile, CardId::STRIKE) >= 1);
+    play(phantom, CardId::SHIV);
+    assert(phantom.enemies[0].hp == 25 - 13);
+    // A Shiv played before the power was gained already was the first of the turn.
+    CombatEngine late = make_combat(CharacterId::SILENT);
+    play(late, CardId::SHIV);
+    play(late, DeckCard(CardId::PHANTOM_BLADES, true));
+    play(late, CardId::SHIV);
+    assert(late.enemies[0].hp == 42 - 4 - 4);
+
+    // Fan of Knives: Shivs hit every enemy.
+    CombatEngine fan = make_pack(CharacterId::SILENT);
+    play(fan, CardId::FAN_OF_KNIVES);
+    assert(count_in(fan.hand, CardId::SHIV) == 4);
+    assert(fan.play_card(0, 2));
+    assert(fan.enemies[0].hp == 14 && fan.enemies[1].hp == 14 && fan.enemies[2].hp == 38);
+    fan.hand.clear();
+    fan.add_shivs(1, false, Enchantment::INKY);
+    assert(fan.play_card(0, 0));
+    for (const Enemy& foe : fan.enemies) assert(foe.get_status(StatusType::WEAK) == 1);
+    play(fan, DeckCard(CardId::FAN_OF_KNIVES, true));
+    assert(count_in(fan.hand, CardId::SHIV) == 5);
+
+    // Infinite Blades: a Shiv at the start of each turn.
+    CombatEngine infinite = make_combat(CharacterId::SILENT);
+    play(infinite, CardId::INFINITE_BLADES);
+    assert(count_in(infinite.hand, CardId::SHIV) == 0);
+    end_turn_idle(infinite);
+    assert(count_in(infinite.hand, CardId::SHIV) == 1 && infinite.hand.size() == 6);
+    assert(CardDef::has_keyword(CardId::INFINITE_BLADES, true, KEYWORD_INNATE) && !CardDef::has_keyword(CardId::INFINITE_BLADES, false, KEYWORD_INNATE));
+
+    // Storm of Steel: the hand becomes as many Shivs.
+    CombatEngine storm = make_combat(CharacterId::SILENT);
+    storm.hand.clear();
+    for (CardId id : { CardId::STORM_OF_STEEL, CardId::STRIKE, CardId::DEFEND, CardId::DEFEND }) storm.hand.push_back(id);
+    assert(storm.play_card(0));
+    assert(storm.hand.size() == 3 && count_in(storm.hand, CardId::SHIV) == 3 && !storm.hand[0].upgraded);
+    assert(storm.counters.cards_discarded == 3);
+    storm.hand.clear();
+    storm.hand.push_back(DeckCard(CardId::STORM_OF_STEEL, true));
+    storm.hand.push_back(CardId::STRIKE);
+    assert(storm.play_card(0) && storm.hand.size() == 1 && storm.hand[0] == DeckCard(CardId::SHIV, true));
+
+    // Up My Sleeve: 1 cheaper each time it is played.
+    CombatEngine sleeve = make_combat(CharacterId::SILENT);
+    play(sleeve, CardId::UP_MY_SLEEVE);
+    assert(sleeve.player.energy == 1 && count_in(sleeve.hand, CardId::SHIV) == 3);
+    DeckCard cheaper = sleeve.discard_pile.back();
+    assert(cheaper.id == CardId::UP_MY_SLEEVE && sleeve.effective_cost(cheaper) == 1);
+    play(sleeve, cheaper);
+    assert(sleeve.player.energy == 2 && sleeve.effective_cost(sleeve.discard_pile.back()) == 0);
+
+    // Knife Trap: the Shivs of the exhaust pile are played on the enemy, and stay exhausted.
+    CombatEngine trap = make_pack(CharacterId::SILENT);
+    trap.exhaust_pile.push_back(CardId::SHIV);
+    trap.exhaust_pile.push_back(CardId::STRIKE);
+    trap.exhaust_pile.push_back(CardId::SHIV);
+    play(trap, CardId::KNIFE_TRAP, 2);
+    assert(trap.enemies[2].hp == 42 - 8 && trap.enemies[0].hp == 18 && trap.exhaust_pile.size() == 3);
+    assert(count_in(trap.discard_pile, CardId::KNIFE_TRAP) == 1 && trap.counters.shivs_played == 2);
+    play(trap, DeckCard(CardId::KNIFE_TRAP, true), 2);
+    assert(trap.enemies[2].hp == 34 - 12 && trap.exhaust_pile[0].upgraded && !trap.exhaust_pile[1].upgraded);
+
+    // Helical Dart: Dexterity until the end of the turn for each Shiv played.
+    CombatEngine dart = make_relic_combat(CharacterId::SILENT, PowerId::HELICAL_DART);
+    play(dart, CardId::SHIV);
+    play(dart, CardId::DEFEND);
+    assert(dart.player.block == 6);
+    end_turn_idle(dart);
+    assert(dart.player.get_status(StatusType::DEXTERITY) == 0);
+
+    // Ninja Scroll: three Shivs in the first hand.
+    RunManager run;
+    run.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("NINJA_SCROLL");
+    run.add_relic("HELICAL_DART");
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(count_in(run.combat.hand, CardId::SHIV) == 3 && run.combat.has_power(PowerId::HELICAL_DART));
+
+    // Cunning Potion: three upgraded Shivs.
+    CombatEngine potion = make_combat(CharacterId::IRONCLAD);
+    potion.hand.clear();
+    assert(potion.use_potion("CUNNING_POTION"));
+    assert(potion.hand.size() == 3 && potion.hand[2] == DeckCard(CardId::SHIV, true));
+
+    assert_in_pool(CharacterId::SILENT, { CardId::BLADE_DANCE, CardId::CLOAK_AND_DAGGER, CardId::LEADING_STRIKE, CardId::BLADE_OF_INK,
+                                          CardId::INFINITE_BLADES, CardId::STORM_OF_STEEL, CardId::FAN_OF_KNIVES, CardId::PHANTOM_BLADES,
+                                          CardId::ACCURACY, CardId::UP_MY_SLEEVE, CardId::KNIFE_TRAP });
+    std::span<const CardId> silent_pool = RunManager::card_reward_pool(CharacterId::SILENT);
+    assert(std::find(silent_pool.begin(), silent_pool.end(), CardId::SHIV) == silent_pool.end());
+    std::cout << "[PASS] Shivs: Shiv, Blade Dance, Cloak and Dagger, Leading Strike, Blade of Ink, Accuracy, Phantom Blades, Fan of Knives, Infinite Blades, Storm of Steel, Up My Sleeve, Knife Trap, Helical Dart, Ninja Scroll, Cunning Potion" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -3660,6 +3810,7 @@ int main() {
     test_evolving_cards();
     test_status_cards();
     test_status_card_users();
+    test_shivs();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;

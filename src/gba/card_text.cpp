@@ -641,6 +641,30 @@ bn::string_view base_name(engine::CardId id)
         return "Trajectoire de collision";
     case engine::CardId::CRASH_LANDING:
         return "Atterrissage forcé";
+    case engine::CardId::SHIV:
+        return "Surin";
+    case engine::CardId::BLADE_DANCE:
+        return "Danse des lames";
+    case engine::CardId::CLOAK_AND_DAGGER:
+        return "Cape et épée";
+    case engine::CardId::LEADING_STRIKE:
+        return "Frappe initiale";
+    case engine::CardId::BLADE_OF_INK:
+        return "Lame d'encre";
+    case engine::CardId::INFINITE_BLADES:
+        return "Lames infinies";
+    case engine::CardId::STORM_OF_STEEL:
+        return "Tempête d'acier";
+    case engine::CardId::FAN_OF_KNIVES:
+        return "Éventail de couteaux";
+    case engine::CardId::PHANTOM_BLADES:
+        return "Lames fantomatiques";
+    case engine::CardId::ACCURACY:
+        return "Précision";
+    case engine::CardId::UP_MY_SLEEVE:
+        return "Passe-passe";
+    case engine::CardId::KNIFE_TRAP:
+        return "Piège à poignards";
     default:
         return "???";
     }
@@ -652,6 +676,11 @@ void card_name(const engine::DeckCard& card, bn::istring& out)
 {
     out.clear();
     out.append(base_name(card.id));
+
+    if(card.enchantment == engine::Enchantment::INKY)
+    {
+        out.append(" encré");
+    }
 
     // A Status card has no upgraded version, whatever upgraded the hand it was in.
     if(card.upgraded && engine::CardDef::get(card.id).type != engine::CardType::STATUS)
@@ -1606,6 +1635,43 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::CRASH_LANDING:
         stream << "TOUS : " << value << ". Main remplie de Débris.";
+        break;
+    case engine::CardId::SHIV:
+        stream << "Inflige " << value << " dégâts."
+               << (card.enchantment == engine::Enchantment::INKY ? " Affaibli 1." : "") << " Épuisement.";
+        break;
+    case engine::CardId::BLADE_DANCE:
+        stream << "Ajoute " << value << " Surins à la main. Épuisement.";
+        break;
+    case engine::CardId::CLOAK_AND_DAGGER:
+        stream << "Gagne " << value << " d'Armure. Surins en main : " << secondary << ".";
+        break;
+    case engine::CardId::LEADING_STRIKE:
+        stream << "Inflige " << value << " dégâts. " << secondary << " Surins en main.";
+        break;
+    case engine::CardId::BLADE_OF_INK:
+        stream << "Ajoute " << value << " Surins encrés à la main.";
+        break;
+    case engine::CardId::INFINITE_BLADES:
+        stream << (card.upgraded ? "Inné. " : "") << "Début de tour : " << value << " Surin en main.";
+        break;
+    case engine::CardId::STORM_OF_STEEL:
+        stream << (card.upgraded ? "Défausse la main : 1 Surin+ par carte." : "Défausse la main : 1 Surin par carte.");
+        break;
+    case engine::CardId::FAN_OF_KNIVES:
+        stream << "Surins : touchent TOUS. " << value << " en main.";
+        break;
+    case engine::CardId::PHANTOM_BLADES:
+        stream << "Surins : Retenue. 1er du tour : +" << value << ".";
+        break;
+    case engine::CardId::ACCURACY:
+        stream << "Les Surins infligent " << value << " dégâts de plus.";
+        break;
+    case engine::CardId::UP_MY_SLEEVE:
+        stream << value << " Surins en main. Puis coût -1.";
+        break;
+    case engine::CardId::KNIFE_TRAP:
+        stream << (card.upgraded ? "Améliore et joue les Surins épuisés." : "Joue les Surins épuisés sur l'ennemi.");
         break;
     default:
         break;
