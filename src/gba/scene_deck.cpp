@@ -33,10 +33,10 @@ public:
     {
         _picker.update(_ctx.frame);
 
-        if(_has_exhausted() && (bn::keypad::l_pressed() || bn::keypad::r_pressed()))
+        if(_view_count() > 1 && (bn::keypad::l_pressed() || bn::keypad::r_pressed()))
         {
             play_sfx(Sfx::UI_CURSOR);
-            _show(_view == View::DECK ? View::EXHAUSTED : View::DECK);
+            _show(_next_view(bn::keypad::r_pressed() ? 1 : -1));
         }
 
         if(bn::keypad::b_pressed() || bn::keypad::select_pressed())
@@ -50,11 +50,15 @@ public:
     }
 
 private:
+    // Card lists the viewer can show. The last two only exist during a fight.
     enum class View : uint8_t
     {
         DECK,
-        EXHAUSTED   // cards exhausted in the fight the viewer was opened from
+        EXHAUSTED, // cards exhausted in the fight the viewer was opened from
+        POWERS     // Power cards in play in that fight
     };
+
+    static constexpr int VIEWS = 3;
 
     GameContext& _ctx;
     bn::regular_bg_ptr _bg;
@@ -63,9 +67,43 @@ private:
     Label _hint;
     View _view = View::DECK;
 
-    [[nodiscard]] bool _has_exhausted() const
+    [[nodiscard]] bool _available(View view) const
     {
-        return _ctx.deck_return == SceneId::COMBAT && ! _ctx.run.combat.exhaust_pile.empty();
+        if(view == View::DECK)
+        {
+            return true;
+        }
+
+        if(_ctx.deck_return != SceneId::COMBAT)
+        {
+            return false;
+        }
+
+        return view == View::EXHAUSTED ? ! _ctx.run.combat.exhaust_pile.empty()
+                                       : ! _ctx.run.combat.powers_in_play.empty();
+    }
+
+    [[nodiscard]] int _view_count() const
+    {
+        return 1 + _available(View::EXHAUSTED) + _available(View::POWERS);
+    }
+
+    // Next view with something to show, going forward (1) or backward (-1).
+    [[nodiscard]] View _next_view(int step) const
+    {
+        int index = int(_view);
+
+        for(int tries = 0; tries < VIEWS; ++tries)
+        {
+            index = (index + step + VIEWS) % VIEWS;
+
+            if(_available(View(index)))
+            {
+                break;
+            }
+        }
+
+        return View(index);
     }
 
     void _show(View view)
@@ -88,6 +126,17 @@ private:
 
             stream << "EPUISEES - " << count << (count > 1 ? " cartes" : " carte");
         }
+        else if(view == View::POWERS)
+        {
+            int count = int(run.combat.powers_in_play.size());
+
+            for(int index = 0; index < count; ++index)
+            {
+                _picker.add(run.combat.powers_in_play[index], index);
+            }
+
+            stream << "POUVOIRS - " << count << (count > 1 ? " cartes" : " carte");
+        }
         else
         {
             for(int index = 0; index < int(run.master_deck.size()); ++index)
@@ -100,19 +149,8 @@ private:
         }
 
         _title.set(0, -72, title, Align::CENTER, TextColor::GOLD);
-
-        if(! _has_exhausted())
-        {
-            _hint.set(0, 73, "◄► Parcourir   B Retour", Align::CENTER, TextColor::GRAY);
-        }
-        else if(view == View::EXHAUSTED)
-        {
-            _hint.set(0, 73, "◄► Parcourir  L/R Deck  B Retour", Align::CENTER, TextColor::GRAY);
-        }
-        else
-        {
-            _hint.set(0, 73, "◄► Parcourir  L/R Épuisées  B Retour", Align::CENTER, TextColor::GRAY);
-        }
+        _hint.set(0, 73, _view_count() > 1 ? "◄► Parcourir  L/R Vue  B Retour" : "◄► Parcourir   B Retour", Align::CENTER,
+                  TextColor::GRAY);
     }
 };
 

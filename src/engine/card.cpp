@@ -208,7 +208,55 @@ static const CardDef CARDS[] = {
     { CardId::ECHOING_SLASH, "Echoing Slash", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 10, 0, "Deal 10 dmg to all. Repeat per enemy killed.", "Echoing Slash+", 1, 13, 0, "Deal 13 dmg to all. Repeat per enemy killed." },
     { CardId::GRAND_FINALE, "Grand Finale", 0, CardType::ATTACK, TargetType::ALL_ENEMIES, 60, 0, "Only if the draw pile is empty. Deal 60 dmg to all.", "Grand Finale+", 0, 75, 0, "Only if the draw pile is empty. Deal 75 dmg to all.", 0, 0, 0, 0, PlayCondition::DRAW_PILE_EMPTY },
     { CardId::SUNDER, "Sunder", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 26, 3, "Deal 26 dmg. Fatal: gain 3 energy.", "Sunder+", 3, 34, 3, "Deal 34 dmg. Fatal: gain 3 energy." },
-    { CardId::KNOCKOUT_BLOW, "Knockout Blow", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 30, 5, "Deal 30 dmg. Fatal: gain 5 Stars.", "Knockout Blow+", 3, 38, 5, "Deal 38 dmg. Fatal: gain 5 Stars." }
+    { CardId::KNOCKOUT_BLOW, "Knockout Blow", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 30, 5, "Deal 30 dmg. Fatal: gain 5 Stars.", "Knockout Blow+", 3, 38, 5, "Deal 38 dmg. Fatal: gain 5 Stars." },
+    // Ironclad: powers and triggers
+    { CardId::FEEL_NO_PAIN, "Feel No Pain", 1, CardType::POWER, TargetType::SELF, 3, 0, "When a card is exhausted, gain 3 block.", "Feel No Pain+", 1, 4, 0, "When a card is exhausted, gain 4 block." },
+    { CardId::DARK_EMBRACE, "Dark Embrace", 2, CardType::POWER, TargetType::SELF, 1, 0, "When a card is exhausted, draw 1 card.", "Dark Embrace+", 1, 1, 0, "When a card is exhausted, draw 1 card." },
+    { CardId::DRUM_OF_BATTLE, "Drum of Battle", 1, CardType::SKILL, TargetType::SELF, 2, 2, "Draw 2 cards. When exhausted, gain 2 energy.", "Drum of Battle+", 1, 2, 3, "Draw 2 cards. When exhausted, gain 3 energy." },
+    { CardId::BARRICADE, "Barricade", 3, CardType::POWER, TargetType::SELF, 0, 0, "Block is no longer lost at the start of your turn.", "Barricade+", 2, 0, 0, "Block is no longer lost at the start of your turn." },
+    { CardId::INFERNO, "Inferno", 1, CardType::POWER, TargetType::SELF, 6, 0, "Each turn lose 1 HP. HP lost on your turn: 6 dmg to all.", "Inferno+", 1, 9, 0, "Each turn lose 1 HP. HP lost on your turn: 9 dmg to all." },
+    { CardId::CRIMSON_MANTLE, "Crimson Mantle", 1, CardType::POWER, TargetType::SELF, 7, 0, "Each turn lose 1 HP and gain 7 block.", "Crimson Mantle+", 1, 10, 0, "Each turn lose 1 HP and gain 10 block." },
+    { CardId::RUPTURE, "Rupture", 1, CardType::POWER, TargetType::SELF, 1, 0, "HP lost on your turn: gain 1 Str.", "Rupture+", 1, 2, 0, "HP lost on your turn: gain 2 Str." },
+    { CardId::AGGRESSION, "Aggression", 1, CardType::POWER, TargetType::SELF, 0, 0, "Each turn a random discarded Attack returns, upgraded.", "Aggression+", 1, 0, 0, "Each turn a random discarded Attack returns, upgraded.", 0, KEYWORD_INNATE },
+    { CardId::PYRE, "Pyre", 2, CardType::POWER, TargetType::SELF, 1, 0, "Gain 1 energy at the start of each turn.", "Pyre+", 2, 2, 0, "Gain 2 energy at the start of each turn." },
+    { CardId::DEMON_FORM, "Demon Form", 3, CardType::POWER, TargetType::SELF, 3, 0, "Gain 3 Str at the start of each turn.", "Demon Form+", 3, 4, 0, "Gain 4 Str at the start of each turn." },
+    { CardId::JUGGERNAUT, "Juggernaut", 2, CardType::POWER, TargetType::SELF, 6, 0, "Block gained: 6 dmg to a random enemy.", "Juggernaut+", 2, 8, 0, "Block gained: 8 dmg to a random enemy." },
+    { CardId::RAGE, "Rage", 0, CardType::SKILL, TargetType::SELF, 3, 0, "This turn, each Attack played gives 3 block.", "Rage+", 0, 5, 0, "This turn, each Attack played gives 5 block." },
+    { CardId::VICIOUS, "Vicious", 1, CardType::POWER, TargetType::SELF, 1, 0, "When you apply Vuln, draw 1.", "Vicious+", 1, 2, 0, "When you apply Vuln, draw 2." },
+    // Silent: powers and triggers
+    { CardId::ACCELERANT, "Accelerant", 1, CardType::POWER, TargetType::SELF, 1, 0, "Poison triggers 1 more time(s).", "Accelerant+", 1, 2, 0, "Poison triggers 2 more time(s)." },
+    { CardId::SPEEDSTER, "Speedster", 2, CardType::POWER, TargetType::SELF, 2, 0, "Card drawn on your turn: 2 dmg to all.", "Speedster+", 2, 2, 0, "Card drawn on your turn: 2 dmg to all.", 0, KEYWORD_INNATE },
+    { CardId::ENVENOM, "Envenom", 2, CardType::POWER, TargetType::SELF, 1, 0, "Unblocked attack damage applies 1 Poison.", "Envenom+", 2, 2, 0, "Unblocked attack damage applies 2 Poison." },
+    { CardId::SERPENT_FORM, "Serpent Form", 3, CardType::POWER, TargetType::SELF, 4, 0, "Card played: 4 dmg to a random enemy.", "Serpent Form+", 3, 6, 0, "Card played: 6 dmg to a random enemy." },
+    { CardId::AFTERIMAGE, "Afterimage", 1, CardType::POWER, TargetType::SELF, 1, 0, "Card played: gain 1 block.", "Afterimage+", 1, 1, 0, "Card played: gain 1 block.", 0, KEYWORD_INNATE },
+    { CardId::WELL_LAID_PLANS, "Well-Laid Plans", 2, CardType::POWER, TargetType::SELF, 0, 0, "Your hand is no longer discarded at end of turn.", "Well-Laid Plans+", 1, 0, 0, "Your hand is no longer discarded at end of turn." },
+    { CardId::STRANGLE, "Strangle", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 2, "Deal 8 dmg. This turn, each card played costs it 2 HP.", "Strangle+", 1, 10, 3, "Deal 10 dmg. This turn, each card played costs it 3 HP." },
+    { CardId::CORROSIVE_WAVE, "Corrosive Wave", 1, CardType::SKILL, TargetType::SELF, 2, 0, "This turn, each card drawn applies 2 Poison to all.", "Corrosive Wave+", 1, 3, 0, "This turn, each card drawn applies 3 Poison to all." },
+    { CardId::NOXIOUS_FUMES, "Noxious Fumes", 1, CardType::POWER, TargetType::SELF, 2, 0, "Each turn apply 2 Poison to all.", "Noxious Fumes+", 1, 3, 0, "Each turn apply 3 Poison to all." },
+    // Defect: powers and triggers
+    { CardId::MACHINE_LEARNING, "Machine Learning", 1, CardType::POWER, TargetType::SELF, 1, 0, "Draw 1 more card each turn.", "Machine Learning+", 1, 1, 0, "Draw 1 more card each turn.", 0, KEYWORD_INNATE },
+    { CardId::STORM, "Storm", 1, CardType::POWER, TargetType::SELF, 1, 0, "Power played: channel 1 Lightning.", "Storm+", 1, 2, 0, "Power played: channel 2 Lightning." },
+    { CardId::FERAL, "Feral", 2, CardType::POWER, TargetType::SELF, 1, 0, "The first 0-cost Attack of each turn returns to your hand.", "Feral+", 1, 1, 0, "The first 0-cost Attack of each turn returns to your hand." },
+    { CardId::SUBROUTINE, "Subroutine", 1, CardType::POWER, TargetType::SELF, 1, 0, "Power played: gain 1 energy.", "Subroutine+", 0, 1, 0, "Power played: gain 1 energy." },
+    // Regent: powers and triggers
+    { CardId::CHILD_OF_THE_STARS, "Child of the Stars", 1, CardType::POWER, TargetType::SELF, 2, 0, "Each Star spent gives 2 block.", "Child of the Stars+", 1, 3, 0, "Each Star spent gives 3 block." },
+    { CardId::GENESIS, "Genesis", 2, CardType::POWER, TargetType::SELF, 2, 0, "Gain 2 Stars at the start of each turn.", "Genesis+", 2, 3, 0, "Gain 3 Stars at the start of each turn." },
+    { CardId::THE_SEALED_THRONE, "The Sealed Throne", 1, CardType::POWER, TargetType::SELF, 1, 0, "Card played: gain 1 Star.", "The Sealed Throne+", 0, 1, 0, "Card played: gain 1 Star.", 0, 0, 3, 3 },
+    { CardId::BLACK_HOLE, "Black Hole", 1, CardType::POWER, TargetType::SELF, 3, 0, "Stars gained or spent: 3 dmg to all.", "Black Hole+", 1, 4, 0, "Stars gained or spent: 4 dmg to all." },
+    { CardId::MAKE_IT_SO, "Make It So", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 3, "Deal 6 dmg. Returns to hand every 3 Skills played in a turn.", "Make It So+", 0, 9, 3, "Deal 9 dmg. Returns to hand every 3 Skills played in a turn." },
+    { CardId::PALE_BLUE_DOT, "Pale Blue Dot", 1, CardType::POWER, TargetType::SELF, 1, 0, "After a turn with 5 cards played, draw 1 more next turn.", "Pale Blue Dot+", 1, 2, 0, "After a turn with 5 cards played, draw 2 more next turn." },
+    { CardId::ARSENAL, "Arsenal", 1, CardType::POWER, TargetType::SELF, 1, 0, "Card created: gain 1 Str.", "Arsenal+", 1, 1, 0, "Card created: gain 1 Str.", 0, KEYWORD_INNATE },
+    { CardId::MONOLOGUE, "Monologue", 0, CardType::SKILL, TargetType::SELF, 1, 0, "This turn, each card played gives 1 Str until end of turn.", "Monologue+", 0, 1, 0, "Retain. This turn, each card played gives 1 Str until end of turn.", 0, KEYWORD_RETAIN },
+    { CardId::ORBIT, "Orbit", 2, CardType::POWER, TargetType::SELF, 1, 0, "Every 4 energy spent, gain 1 energy.", "Orbit+", 1, 1, 0, "Every 4 energy spent, gain 1 energy." },
+    { CardId::PILLAR_OF_CREATION, "Pillar of Creation", 1, CardType::POWER, TargetType::SELF, 2, 0, "Card created: gain 2 block.", "Pillar of Creation+", 1, 3, 0, "Card created: gain 3 block." },
+    { CardId::MONARCHS_GAZE, "Monarch's Gaze", 2, CardType::POWER, TargetType::SELF, 1, 0, "Enemy attacked: it loses 1 Str this turn.", "Monarch's Gaze+", 1, 1, 0, "Enemy attacked: it loses 1 Str this turn." },
+    // Necrobinder: powers and triggers
+    { CardId::FRIENDSHIP, "Friendship", 1, CardType::POWER, TargetType::SELF, 1, 2, "Lose 2 Str. Gain 1 energy each turn.", "Friendship+", 1, 1, 1, "Lose 1 Str. Gain 1 energy each turn." },
+    { CardId::DANSE_MACABRE, "Danse Macabre", 1, CardType::POWER, TargetType::SELF, 4, 0, "Card costing 2 or more played: gain 4 block.", "Danse Macabre+", 1, 6, 0, "Card costing 2 or more played: gain 6 block." },
+    { CardId::DEMESNE, "Demesne", 3, CardType::POWER, TargetType::SELF, 1, 1, "Ethereal. Each turn gain 1 energy and draw 1 more.", "Demesne+", 2, 1, 1, "Ethereal. Each turn gain 1 energy and draw 1 more.", KEYWORD_ETHEREAL, KEYWORD_ETHEREAL },
+    { CardId::SPIRIT_OF_ASH, "Spirit of Ash", 1, CardType::POWER, TargetType::SELF, 4, 0, "Ethereal card played: gain 4 block.", "Spirit of Ash+", 1, 5, 0, "Ethereal card played: gain 5 block." },
+    { CardId::PAGESTORM, "Pagestorm", 1, CardType::POWER, TargetType::SELF, 1, 0, "Ethereal card drawn: draw 1.", "Pagestorm+", 0, 1, 0, "Ethereal card drawn: draw 1." },
+    { CardId::SLEIGHT_OF_FLESH, "Sleight of Flesh", 2, CardType::POWER, TargetType::SELF, 9, 0, "Debuff applied to an enemy: it takes 9 dmg.", "Sleight of Flesh+", 2, 13, 0, "Debuff applied to an enemy: it takes 13 dmg." }
 };
 
 const CardDef& CardDef::get(CardId id) {

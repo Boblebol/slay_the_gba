@@ -382,6 +382,49 @@ CARDS: list[CardArt] = [
     CardArt("grand_finale", "silent", "grand_finale", "attack", (0, 0)),
     CardArt("sunder", "defect", "sunder", "attack", (3, 3)),
     CardArt("knockout_blow", "regent", "knockout_blow", "attack", (3, 3)),
+    CardArt("feel_no_pain", "ironclad", "feel_no_pain", "power", (1, 1)),
+    CardArt("dark_embrace", "ironclad", "dark_embrace", "power", (2, 1)),
+    CardArt("drum_of_battle", "ironclad", "drum_of_battle", "skill", (1, 1)),
+    CardArt("barricade", "ironclad", "barricade", "power", (3, 2)),
+    CardArt("inferno", "ironclad", "inferno", "power", (1, 1)),
+    CardArt("crimson_mantle", "ironclad", "crimson_mantle", "power", (1, 1)),
+    CardArt("rupture", "ironclad", "rupture", "power", (1, 1)),
+    CardArt("aggression", "ironclad", "aggression", "power", (1, 1)),
+    CardArt("pyre", "ironclad", "pyre", "power", (2, 2)),
+    CardArt("demon_form", "ironclad", "demon_form", "power", (3, 3)),
+    CardArt("juggernaut", "ironclad", "juggernaut", "power", (2, 2)),
+    CardArt("rage", "ironclad", "rage", "skill", (0, 0)),
+    CardArt("vicious", "ironclad", "vicious", "power", (1, 1)),
+    CardArt("accelerant", "silent", "accelerant", "power", (1, 1)),
+    CardArt("speedster", "silent", "speedster", "power", (2, 2)),
+    CardArt("envenom", "silent", "envenom", "power", (2, 2)),
+    CardArt("serpent_form", "silent", "serpent_form", "power", (3, 3)),
+    CardArt("afterimage", "silent", "afterimage", "power", (1, 1)),
+    CardArt("well_laid_plans", "silent", "well_laid_plans", "power", (2, 1)),
+    CardArt("strangle", "silent", "strangle", "attack", (1, 1)),
+    CardArt("corrosive_wave", "silent", "corrosive_wave", "skill", (1, 1)),
+    CardArt("noxious_fumes", "silent", "noxious_fumes", "power", (1, 1)),
+    CardArt("machine_learning", "defect", "machine_learning", "power", (1, 1)),
+    CardArt("storm", "defect", "storm", "power", (1, 1)),
+    CardArt("feral", "defect", "feral", "power", (2, 1)),
+    CardArt("subroutine", "defect", "subroutine", "power", (1, 0)),
+    CardArt("child_of_the_stars", "regent", "child_of_the_stars", "power", (1, 1)),
+    CardArt("genesis", "regent", "genesis", "power", (2, 2)),
+    CardArt("the_sealed_throne", "regent", "the_sealed_throne", "power", (1, 0), (3, 3)),
+    CardArt("black_hole", "regent", "black_hole", "power", (1, 1)),
+    CardArt("make_it_so", "regent", "make_it_so", "attack", (0, 0)),
+    CardArt("pale_blue_dot", "regent", "pale_blue_dot", "power", (1, 1)),
+    CardArt("arsenal", "regent", "arsenal", "power", (1, 1)),
+    CardArt("monologue", "regent", "monologue", "skill", (0, 0)),
+    CardArt("orbit", "regent", "orbit", "power", (2, 1)),
+    CardArt("pillar_of_creation", "regent", "pillar_of_creation", "power", (1, 1)),
+    CardArt("monarchs_gaze", "regent", "monarchs_gaze", "power", (2, 1)),
+    CardArt("friendship", "necrobinder", "friendship", "power", (1, 1)),
+    CardArt("danse_macabre", "necrobinder", "danse_macabre", "power", (1, 1)),
+    CardArt("demesne", "necrobinder", "demesne", "power", (3, 2)),
+    CardArt("spirit_of_ash", "necrobinder", "spirit_of_ash", "power", (1, 1)),
+    CardArt("pagestorm", "necrobinder", "pagestorm", "power", (1, 0)),
+    CardArt("sleight_of_flesh", "necrobinder", "sleight_of_flesh", "power", (2, 2)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}
@@ -403,9 +446,49 @@ DIGITS = {
 }
 
 
+FRAME_BORDER_VALUE = 100  # HSV value above which a coloured frame pixel belongs to the border, not the text panel
+
+
+def frame_tone(hsv: np.ndarray, mask: np.ndarray) -> tuple[float, float, float]:
+    """Average hue (0-255, circular), saturation and value of the masked pixels."""
+    angles = hsv[..., 0][mask] * (2 * math.pi / 256)
+    hue = math.atan2(np.sin(angles).mean(), np.cos(angles).mean()) * 256 / (2 * math.pi)
+    return hue, float(hsv[..., 1][mask].mean()), float(hsv[..., 2][mask].mean())
+
+
+def frame_zones(image: Image.Image) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """HSV pixels of a frame, with the masks of its coloured border and of its coloured text panel."""
+    hsv = np.asarray(image.convert("RGB").convert("HSV"), dtype=np.float32)
+    coloured = (np.asarray(image.getchannel("A")) > 128) & (hsv[..., 1] > 96)
+    border = coloured & (hsv[..., 2] > FRAME_BORDER_VALUE)
+    return hsv, border, coloured & ~border
+
+
+def load_frame(kind: str, color: str) -> Image.Image:
+    """Card frame of a kind and hero colour. The dump has no orange Power frame: a missing frame is the red
+    one of that kind, with its border and its text panel moved by the hue, saturation and value differences
+    seen between the two Skill frames."""
+    template = BIBLE / "card_template"
+    path = template / f"frame_{kind}_{color}.webp"
+    if path.exists():
+        return Image.open(path).convert("RGBA")
+    red = Image.open(template / f"frame_{kind}_red.webp").convert("RGBA")
+    hsv, *zones = frame_zones(red)
+    wanted_hsv, *wanted_zones = frame_zones(Image.open(template / f"frame_skill_{color}.webp").convert("RGBA"))
+    known_hsv, *known_zones = frame_zones(Image.open(template / "frame_skill_red.webp").convert("RGBA"))
+    for zone, wanted_zone, known_zone in zip(zones, wanted_zones, known_zones):
+        wanted, known = frame_tone(wanted_hsv, wanted_zone), frame_tone(known_hsv, known_zone)
+        hsv[..., 0] = np.where(zone, np.mod(hsv[..., 0] + wanted[0] - known[0], 256), hsv[..., 0])
+        hsv[..., 1] = np.where(zone, np.clip(hsv[..., 1] * wanted[1] / known[1], 0, 255), hsv[..., 1])
+        hsv[..., 2] = np.where(zone, np.clip(hsv[..., 2] * wanted[2] / known[2], 0, 255), hsv[..., 2])
+    recoloured = Image.fromarray(hsv.astype(np.uint8), "HSV").convert("RGBA")
+    recoloured.putalpha(red.getchannel("A"))
+    return recoloured
+
+
 def compose_card(card: CardArt, hero: str, size: tuple[int, int]) -> Image.Image:
     owner = hero if card.owner == "hero" else card.owner
-    frame = Image.open(BIBLE / "card_template" / f"frame_{card.kind}_{FRAME_COLOR[owner]}.webp").convert("RGBA")
+    frame = load_frame(card.kind, FRAME_COLOR[owner])
     full = Image.new("RGBA", frame.size, (0, 0, 0, 0))
     if card.art:
         art_path = BIBLE / "cards" / owner / (card.art.format(hero=hero) + ".webp")

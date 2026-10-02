@@ -524,7 +524,7 @@ int main() {
     assert(!potion_combat.use_potion("BLOCK_POTION"));
     std::cout << "[PASS] Potions: Fire, Block, Energy & Blood drunk in combat through the engine" << std::endl;
 
-    // Treasure chests never give a relic twice: active relics first, then any common one.
+    // Treasure chests give relics with an implemented effect, shared or of the hero, never twice.
     RunManager chest_run;
     chest_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
     int chest_room = chest_run.get_available_rooms()[0];
@@ -534,22 +534,18 @@ int main() {
     assert(chest_run.phase == RunPhase::TREASURE);
     assert(chest_run.gold == chest_gold + 50);
     assert(chest_run.relics.size() == 2);
-    constexpr std::string_view chest_relics[] = { "VAJRA", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK",
-                                                  "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
-                                                  "STONE_CRACKER", "PANTOGRAPH", "SLING_OF_COURAGE" };
-    auto has_effect = [&](std::string_view id) {
-        return std::find(std::begin(chest_relics), std::end(chest_relics), id) != std::end(chest_relics);
+    std::span<const std::string_view> chest_relics = RunManager::active_relics();
+    auto can_hold = [&](std::string_view id) {
+        const RelicData* relic = find_relic(id);
+        bool listed = std::find(chest_relics.begin(), chest_relics.end(), id) != chest_relics.end();
+        return listed && relic && (relic->pool == "Shared" || relic->pool == "Ironclad");
     };
-    assert(has_effect(chest_run.relics[1]) && chest_run.last_treasure_relic == chest_run.relics[1]);
-    for (size_t draw = 1; draw < std::size(chest_relics); ++draw) {
+    for (std::string_view id : chest_relics) assert(find_relic(id) != nullptr);
+    assert(!can_hold("TINGSHA") && can_hold("HAPPY_FLOWER")); // Tingsha belongs to the Silent
+    assert(can_hold(chest_run.relics[1]) && chest_run.last_treasure_relic == chest_run.relics[1]);
+    while (chest_run.relics.size() < chest_run.relics.capacity()) {
         std::string_view relic_id = chest_run.draw_treasure_relic();
-        assert(has_effect(relic_id) && !chest_run.has_relic(relic_id));
-        chest_run.add_relic(relic_id);
-    }
-    for (int draw = 0; draw < 5; ++draw) {
-        std::string_view relic_id = chest_run.draw_treasure_relic();
-        const RelicData* relic = find_relic(relic_id);
-        assert(relic && relic->rarity == RelicRarity::COMMON && !chest_run.has_relic(relic_id));
+        assert(can_hold(relic_id) && !chest_run.has_relic(relic_id));
         chest_run.add_relic(relic_id);
     }
 

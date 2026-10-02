@@ -35,6 +35,9 @@ uint8_t bump(uint8_t value, int amount = 1) {
     return static_cast<uint8_t>(std::min(255, value + amount));
 }
 
+// Reactions that trigger reactions stop here: no chain of real cards goes that deep.
+constexpr uint8_t MAX_EVENT_DEPTH = 6;
+
 } // namespace
 
 uint32_t CombatEngine::next_random() {
@@ -138,12 +141,404 @@ void CombatEngine::shuffle_draw_pile() {
     }
 }
 
+void CombatEngine::add_power(PowerId id, int16_t amount, bool turn_only, int8_t target) {
+    for (ActivePower& power : powers) {
+        if (power.id == id && power.turn_only == turn_only && power.target == target) {
+            power.amount = static_cast<int16_t>(power.amount + amount);
+            power.stacks = bump(power.stacks);
+            return;
+        }
+    }
+    ActivePower power;
+    power.id = id;
+    power.amount = amount;
+    power.stacks = 1;
+    power.turn_only = turn_only;
+    power.target = target;
+    powers.push_back(power);
+}
+
+int16_t CombatEngine::power_amount(PowerId id) const {
+    int16_t total = 0;
+    for (const ActivePower& power : powers) {
+        if (power.id == id) total = static_cast<int16_t>(total + power.amount);
+    }
+    return total;
+}
+
+uint8_t CombatEngine::power_counter(PowerId id) const {
+    for (const ActivePower& power : powers) {
+        if (power.id == id) return power.counter;
+    }
+    return 0;
+}
+
+void CombatEngine::settle_deaths() {
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        uint8_t bit = static_cast<uint8_t>(1u << i);
+        if ((alive_mask_ & bit) && !enemies[i].is_alive()) {
+            alive_mask_ = static_cast<uint8_t>(alive_mask_ & ~bit);
+            EventInfo info;
+            info.enemy = static_cast<int8_t>(i);
+            emit(CombatEvent::ENEMY_KILLED, info);
+        }
+    }
+}
+
+ActivePower* CombatEngine::find_power(PowerId id) {
+    for (ActivePower& power : powers) {
+        if (power.id == id) return &power;
+    }
+    return nullptr;
+}
+
+int8_t CombatEngine::index_of(const Enemy& target) const {
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        if (&enemies[i] == &target) return static_cast<int8_t>(i);
+    }
+    return -1;
+}
+
+void CombatEngine::emit(CombatEvent event, const EventInfo& info) {
+    if (powers.empty() || event_depth_ >= MAX_EVENT_DEPTH) return;
+    ++event_depth_;
+    // A power gained while the others react only hears the next event.
+    size_t listeners = powers.size();
+    for (size_t i = 0; i < listeners && i < powers.size(); ++i) {
+        react(powers[i], event, info);
+    }
+    --event_depth_;
+}
+
+void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo& info) {
+    const bool my_turn = state == CombatState::PLAYER_TURN;
+    const bool turn_start = event == CombatEvent::TURN_START;
+    const bool card_played = event == CombatEvent::CARD_PLAYED;
+    Enemy* foe = (info.enemy >= 0 && static_cast<size_t>(info.enemy) < enemies.size()) ? &enemies[info.enemy] : nullptr;
+
+    if (turn_start) {
+        power.turns = bump(power.turns);
+    }
+
+    switch (power.id) {
+        case PowerId::TURN_ENERGY:
+            if (turn_start) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
+        case PowerId::TURN_DRAW:
+            if (turn_start) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
+            break;
+        case PowerId::TURN_STRENGTH:
+            if (turn_start) player.add_status(StatusType::STRENGTH, power.amount);
+            break;
+        case PowerId::TURN_STARS:
+            if (turn_start) gain_stars(power.amount);
+            break;
+        case PowerId::TURN_POISON_ALL:
+            if (turn_start) {
+                for (Enemy& enemy_hit : enemies) {
+                    if (enemy_hit.is_alive()) afflict(enemy_hit, StatusType::POISON, power.amount);
+                }
+            }
+            break;
+        case PowerId::CRIMSON_MANTLE:
+            if (turn_start) {
+                lose_hp(power.stacks);
+                add_block(power.amount);
+            }
+            break;
+        case PowerId::INFERNO:
+            if (turn_start) {
+                lose_hp(power.stacks);
+            } else if (event == CombatEvent::HP_LOST && my_turn) {
+                damage_all_enemies(power.amount);
+            }
+            break;
+        case PowerId::AGGRESSION:
+            if (turn_start) {
+                for (uint8_t copy = 0; copy < power.stacks && hand.size() < hand.capacity(); ++copy) {
+                    FixedVector<uint8_t, 50> attacks;
+                    for (size_t i = 0; i < discard_pile.size(); ++i) {
+                        if (CardDef::get(discard_pile[i].id).type == CardType::ATTACK) attacks.push_back(static_cast<uint8_t>(i));
+                    }
+                    if (attacks.empty()) break;
+                    size_t pick = attacks[next_random() % attacks.size()];
+                    DeckCard card = discard_pile[pick];
+                    card.upgraded = true;
+                    discard_pile.erase(pick);
+                    hand.push_back(card);
+                }
+            }
+            break;
+        case PowerId::FERAL:
+            if (turn_start) power.counter = 0;
+            break;
+        case PowerId::FEEL_NO_PAIN:
+            if (event == CombatEvent::CARD_EXHAUSTED) add_block(power.amount);
+            break;
+        case PowerId::DARK_EMBRACE:
+            if (event == CombatEvent::CARD_EXHAUSTED) draw_cards(power.amount);
+            break;
+        case PowerId::RUPTURE:
+            if (event == CombatEvent::HP_LOST && my_turn) player.add_status(StatusType::STRENGTH, power.amount);
+            break;
+        case PowerId::JUGGERNAUT:
+            if (event == CombatEvent::BLOCK_GAINED && has_alive_enemies()) {
+                damage_enemy(enemies[random_alive_enemy_index()], power.amount);
+            }
+            break;
+        case PowerId::RAGE:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK) add_block(power.amount);
+            break;
+        case PowerId::VICIOUS:
+            if (event == CombatEvent::DEBUFF_APPLIED && info.status == StatusType::VULNERABLE) draw_cards(power.amount);
+            break;
+        case PowerId::SPEEDSTER:
+            if (event == CombatEvent::CARD_DRAWN && my_turn && !info.opening_draw) damage_all_enemies(power.amount);
+            break;
+        case PowerId::ENVENOM:
+            if (event == CombatEvent::UNBLOCKED_DAMAGE_DEALT && foe && foe->is_alive()) {
+                afflict(*foe, StatusType::POISON, power.amount);
+            }
+            break;
+        case PowerId::SERPENT_FORM:
+            if (card_played && has_alive_enemies()) damage_enemy(enemies[random_alive_enemy_index()], power.amount);
+            break;
+        case PowerId::AFTERIMAGE:
+            if (card_played) add_block(power.amount);
+            break;
+        case PowerId::STRANGLE:
+            if (card_played && power.target >= 0 && static_cast<size_t>(power.target) < enemies.size()) {
+                // HP loss: the enemy's Block does not absorb it.
+                Enemy& victim = enemies[power.target];
+                victim.hp = std::max<int16_t>(0, static_cast<int16_t>(victim.hp - power.amount));
+            }
+            break;
+        case PowerId::CORROSIVE_WAVE:
+            if (event == CombatEvent::CARD_DRAWN && !info.opening_draw) {
+                for (Enemy& enemy_hit : enemies) {
+                    if (enemy_hit.is_alive()) afflict(enemy_hit, StatusType::POISON, power.amount);
+                }
+            }
+            break;
+        case PowerId::STORM:
+            if (card_played && CardDef::get(info.card.id).type == CardType::POWER) {
+                for (int16_t orb = 0; orb < power.amount; ++orb) {
+                    player.channel_orb(OrbType::LIGHTNING, has_alive_enemies() ? &enemies[get_first_alive_enemy_index()] : nullptr);
+                }
+            }
+            break;
+        case PowerId::SUBROUTINE:
+            if (card_played && CardDef::get(info.card.id).type == CardType::POWER) {
+                player.energy = static_cast<int8_t>(player.energy + power.amount);
+            }
+            break;
+        case PowerId::CHILD_OF_THE_STARS:
+            if (event == CombatEvent::STARS_SPENT) add_block(static_cast<int16_t>(power.amount * info.amount));
+            break;
+        case PowerId::SEALED_THRONE:
+            if (card_played) gain_stars(power.amount);
+            break;
+        case PowerId::BLACK_HOLE:
+            if (event == CombatEvent::STARS_GAINED || event == CombatEvent::STARS_SPENT) damage_all_enemies(power.amount);
+            break;
+        case PowerId::PALE_BLUE_DOT:
+            if (event == CombatEvent::TURN_END && counters.cards_played() >= PALE_BLUE_DOT_CARDS) {
+                schedule(DelayedType::DRAW, power.amount);
+            }
+            break;
+        case PowerId::ARSENAL:
+            if (event == CombatEvent::CARD_CREATED) player.add_status(StatusType::STRENGTH, power.amount);
+            break;
+        case PowerId::MONOLOGUE:
+            if (card_played) gain_temporary(StatusType::STRENGTH, static_cast<int8_t>(power.amount));
+            break;
+        case PowerId::ORBIT:
+            if (card_played) {
+                int spent = power.counter + info.cost;
+                player.energy = static_cast<int8_t>(player.energy + power.amount * (spent / ORBIT_ENERGY));
+                power.counter = static_cast<uint8_t>(spent % ORBIT_ENERGY);
+            }
+            break;
+        case PowerId::PILLAR_OF_CREATION:
+            if (event == CombatEvent::CARD_CREATED) add_block(power.amount);
+            break;
+        case PowerId::MONARCHS_GAZE:
+            if (event == CombatEvent::ATTACK_HIT && foe && foe->is_alive()) sap_strength(*foe, power.amount);
+            break;
+        case PowerId::DANSE_MACABRE:
+            if (card_played && info.cost >= DANSE_MACABRE_COST) add_block(power.amount);
+            break;
+        case PowerId::SPIRIT_OF_ASH:
+            if (card_played && CardDef::has_keyword(info.card, KEYWORD_ETHEREAL)) add_block(power.amount);
+            break;
+        case PowerId::PAGESTORM:
+            if (event == CombatEvent::CARD_DRAWN && CardDef::has_keyword(info.card, KEYWORD_ETHEREAL)) draw_cards(power.amount);
+            break;
+        case PowerId::SLEIGHT_OF_FLESH:
+            if (event == CombatEvent::DEBUFF_APPLIED && foe && foe->is_alive()) damage_enemy(*foe, power.amount);
+            break;
+        // Relics
+        case PowerId::CAPTAINS_WHEEL:
+            if (turn_start && power.turns == 3) add_block(power.amount);
+            break;
+        case PowerId::HORN_CLEAT:
+            if (turn_start && power.turns == 2) add_block(power.amount);
+            break;
+        case PowerId::CANDELABRA:
+            if (turn_start && power.turns == 2) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
+        case PowerId::CHANDELIER:
+            if (turn_start && power.turns == 3) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
+        case PowerId::SPARKLING_ROUGE:
+            if (turn_start && power.turns == 3) {
+                player.add_status(StatusType::STRENGTH, power.amount);
+                player.add_status(StatusType::DEXTERITY, power.amount);
+            }
+            break;
+        case PowerId::HAPPY_FLOWER:
+            if (turn_start && power.turns % 3 == 0) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
+        case PowerId::PENDULUM:
+            if (turn_start && power.turns % 3 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
+            break;
+        case PowerId::BREAD:
+            if (turn_start) {
+                int change = power.turns == 1 ? -BREAD_ENERGY_LOST : power.amount;
+                player.energy = static_cast<int8_t>(std::max(0, player.energy + change));
+            }
+            break;
+        case PowerId::MERCURY_HOURGLASS:
+            if (turn_start) damage_all_enemies(power.amount);
+            break;
+        case PowerId::CLOAK_CLASP:
+            if (event == CombatEvent::TURN_END) add_block(static_cast<int16_t>(power.amount * hand.size()));
+            break;
+        case PowerId::POCKETWATCH:
+            if (event == CombatEvent::TURN_END && counters.cards_played() <= POCKETWATCH_CARDS) {
+                schedule(DelayedType::DRAW, power.amount);
+            }
+            break;
+        case PowerId::PARRYING_SHIELD:
+            if (event == CombatEvent::TURN_END && player.block >= PARRYING_SHIELD_BLOCK && has_alive_enemies()) {
+                damage_enemy(enemies[random_alive_enemy_index()], power.amount);
+            }
+            break;
+        case PowerId::STONE_CALENDAR:
+            if (event == CombatEvent::TURN_END && power.turns == STONE_CALENDAR_TURN) damage_all_enemies(power.amount);
+            break;
+        case PowerId::ART_OF_WAR:
+            if (event == CombatEvent::TURN_END && counters.attacks_played == 0) schedule(DelayedType::ENERGY, power.amount);
+            break;
+        case PowerId::ORICHALCUM:
+            if (event == CombatEvent::TURN_END && player.block == 0) add_block(power.amount);
+            break;
+        case PowerId::SCREAMING_FLAGON:
+            if (event == CombatEvent::TURN_END && hand.empty()) damage_all_enemies(power.amount);
+            break;
+        case PowerId::GREMLIN_HORN:
+            if (event == CombatEvent::ENEMY_KILLED) {
+                player.energy = static_cast<int8_t>(player.energy + power.amount);
+                draw_cards(1);
+            }
+            break;
+        case PowerId::THE_ABACUS:
+            if (event == CombatEvent::DRAW_PILE_SHUFFLED) add_block(power.amount);
+            break;
+        case PowerId::PERMAFROST:
+            if (card_played && CardDef::get(info.card.id).type == CardType::POWER && power.counter == 0) {
+                power.counter = 1;
+                add_block(power.amount);
+            }
+            break;
+        case PowerId::GAME_PIECE:
+            if (card_played && CardDef::get(info.card.id).type == CardType::POWER) draw_cards(power.amount);
+            break;
+        case PowerId::CENTENNIAL_PUZZLE:
+            if (event == CombatEvent::HP_LOST && power.counter == 0) {
+                power.counter = 1;
+                draw_cards(power.amount);
+            }
+            break;
+        case PowerId::TOUGH_BANDAGES:
+            if (event == CombatEvent::CARD_DISCARDED && my_turn) add_block(power.amount);
+            break;
+        case PowerId::TINGSHA:
+            if (event == CombatEvent::CARD_DISCARDED && my_turn && has_alive_enemies()) {
+                damage_enemy(enemies[random_alive_enemy_index()], power.amount);
+            }
+            break;
+        default:
+            // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, ICE_CREAM, STURDY_CLAMP, RAZOR_TOOTH,
+            // LIZARD_TAIL, UNCEASING_TOP.
+            break;
+    }
+}
+
+void CombatEngine::gain_block(int16_t amount) {
+    int16_t before = player.block;
+    player.gain_block(amount);
+    if (player.block > before) {
+        EventInfo info;
+        info.amount = static_cast<int16_t>(player.block - before);
+        emit(CombatEvent::BLOCK_GAINED, info);
+    }
+}
+
+void CombatEngine::add_block(int16_t amount) {
+    if (amount <= 0) return;
+    player.block = static_cast<int16_t>(player.block + amount);
+    EventInfo info;
+    info.amount = amount;
+    emit(CombatEvent::BLOCK_GAINED, info);
+}
+
+void CombatEngine::afflict(Enemy& target, StatusType type, int16_t amount) {
+    if (amount == 0) return;
+    target.add_status(type, amount);
+    bool debuff = type == StatusType::VULNERABLE || type == StatusType::WEAK || type == StatusType::POISON ||
+                  (type == StatusType::STRENGTH && amount < 0);
+    if (debuff) {
+        EventInfo info;
+        info.enemy = index_of(target);
+        info.status = type;
+        info.amount = amount;
+        emit(CombatEvent::DEBUFF_APPLIED, info);
+    }
+}
+
+void CombatEngine::damage_enemy(Enemy& target, int16_t amount) {
+    if (!target.is_alive()) return;
+    target.take_damage(amount);
+    settle_deaths();
+}
+
+void CombatEngine::damage_all_enemies(int16_t amount) {
+    for (Enemy& target : enemies) damage_enemy(target, amount);
+}
+
+void CombatEngine::recall_to_hand(CardId id) {
+    for (size_t i = discard_pile.size(); i-- > 0 && hand.size() < hand.capacity();) {
+        if (discard_pile[i].id == id) {
+            hand.push_back(discard_pile[i]);
+            discard_pile.erase(i);
+        }
+    }
+    for (size_t i = draw_pile.size(); i-- > 0 && hand.size() < hand.capacity();) {
+        if (draw_pile[i].id == id) {
+            hand.push_back(draw_pile[i]);
+            draw_pile.erase(i);
+        }
+    }
+}
+
 void CombatEngine::shuffle_discard_into_draw() {
     while (!discard_pile.empty()) {
         draw_pile.push_back(discard_pile.back());
         discard_pile.pop_back();
     }
     shuffle_draw_pile();
+    if (!draw_pile.empty()) emit(CombatEvent::DRAW_PILE_SHUFFLED);
 }
 
 bool CombatEngine::draw_card() {
@@ -161,6 +556,10 @@ bool CombatEngine::draw_card() {
     hand.push_back(card);
     counters.cards_drawn = bump(counters.cards_drawn);
     counters.combat_cards_drawn = bump(counters.combat_cards_drawn);
+    EventInfo info;
+    info.card = card;
+    info.opening_draw = opening_draw_;
+    emit(CombatEvent::CARD_DRAWN, info);
     return true;
 }
 
@@ -169,6 +568,12 @@ void CombatEngine::exhaust_card(DeckCard card) {
         exhaust_pile.push_back(card);
     }
     if (exhausted_this_turn < UINT8_MAX) ++exhausted_this_turn;
+    if (card.id == CardId::DRUM_OF_BATTLE) {
+        player.energy = static_cast<int8_t>(player.energy + CardDef::get_secondary(card.id, card.upgraded));
+    }
+    EventInfo info;
+    info.card = card;
+    emit(CombatEvent::CARD_EXHAUSTED, info);
 }
 
 DeckCard CombatEngine::exhaust_from_hand(size_t index) {
@@ -179,14 +584,21 @@ DeckCard CombatEngine::exhaust_from_hand(size_t index) {
 }
 
 void CombatEngine::discard_from_hand(size_t index) {
-    discard_pile.push_back(hand[index]);
+    DeckCard card = hand[index];
+    discard_pile.push_back(card);
     hand.erase(index);
     counters.cards_discarded = bump(counters.cards_discarded);
+    EventInfo info;
+    info.card = card;
+    emit(CombatEvent::CARD_DISCARDED, info);
 }
 
 void CombatEngine::create_card_in_discard(DeckCard card) {
     discard_pile.push_back(card);
     counters.combat_cards_created = bump(counters.combat_cards_created);
+    EventInfo info;
+    info.card = card;
+    emit(CombatEvent::CARD_CREATED, info);
 }
 
 int16_t CombatEngine::hit(Enemy& target, int16_t base) {
@@ -194,6 +606,14 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     bool was_alive = target.is_alive();
     int16_t lost = target.take_damage(attack_damage(base, player, target));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
+    if (was_alive) {
+        EventInfo info;
+        info.enemy = index_of(target);
+        info.amount = lost;
+        emit(CombatEvent::ATTACK_HIT, info);
+        if (lost > 0) emit(CombatEvent::UNBLOCKED_DAMAGE_DEALT, info);
+        settle_deaths();
+    }
     return lost;
 }
 
@@ -201,6 +621,9 @@ void CombatEngine::gain_stars(int amount) {
     if (amount <= 0) return;
     player.add_stars(static_cast<uint8_t>(std::min(amount, 99)));
     counters.stars_gained = bump(counters.stars_gained, amount);
+    EventInfo info;
+    info.amount = static_cast<int16_t>(amount);
+    emit(CombatEvent::STARS_GAINED, info);
 }
 
 void CombatEngine::spend_stars(int amount) {
@@ -208,12 +631,25 @@ void CombatEngine::spend_stars(int amount) {
     if (amount <= 0) return;
     player.sovereign_stars = static_cast<uint8_t>(player.sovereign_stars - amount);
     counters.stars_spent = bump(counters.stars_spent, amount);
+    EventInfo info;
+    info.amount = static_cast<int16_t>(amount);
+    emit(CombatEvent::STARS_SPENT, info);
 }
 
 void CombatEngine::note_player_hp_lost(int16_t amount) {
     if (amount <= 0) return;
     counters.hp_lost = static_cast<int16_t>(counters.hp_lost + amount);
     counters.combat_hp_losses = bump(counters.combat_hp_losses);
+    if (player.hp <= 0) {
+        ActivePower* tail = find_power(PowerId::LIZARD_TAIL);
+        if (tail && tail->counter == 0) {
+            tail->counter = 1;
+            player.hp = static_cast<int16_t>(player.max_hp * tail->amount / 100);
+        }
+    }
+    EventInfo info;
+    info.amount = amount;
+    emit(CombatEvent::HP_LOST, info);
 }
 
 void CombatEngine::lose_hp(int16_t amount) {
@@ -240,7 +676,7 @@ void CombatEngine::gain_temporary(StatusType type, int8_t amount) {
 void CombatEngine::sap_strength(Enemy& target, int16_t amount) {
     // Measured rather than assumed: the status list can be full.
     int16_t before = target.get_status(StatusType::STRENGTH);
-    target.add_status(StatusType::STRENGTH, static_cast<int16_t>(-amount));
+    afflict(target, StatusType::STRENGTH, static_cast<int16_t>(-amount));
     target.temp_strength_loss = static_cast<int16_t>(target.temp_strength_loss + before - target.get_status(StatusType::STRENGTH));
 }
 
@@ -267,7 +703,7 @@ int CombatEngine::run_delayed_effects(bool end_of_turn) {
                 player.energy = static_cast<int8_t>(player.energy + effect.amount);
                 break;
             case DelayedType::BLOCK:
-                player.block = static_cast<int16_t>(player.block + effect.amount);
+                add_block(effect.amount);
                 break;
             case DelayedType::DRAW:
                 extra_draw += effect.amount;
@@ -284,9 +720,7 @@ int CombatEngine::run_delayed_effects(bool end_of_turn) {
                 }
                 break;
             case DelayedType::DAMAGE_ALL:
-                for (Enemy& foe : enemies) {
-                    if (foe.is_alive()) foe.take_damage(effect.amount);
-                }
+                damage_all_enemies(effect.amount);
                 break;
         }
         if (--effect.repeat == 0) {
@@ -341,6 +775,11 @@ void CombatEngine::start_combat_multi(FixedVector<EnemyType, 3> enemy_types, Cha
 }
 
 void CombatEngine::open_first_turn() {
+    reset_combat_state();
+    begin_first_turn();
+}
+
+void CombatEngine::reset_combat_state() {
     counters = CombatCounters();
     delayed_effects.clear();
     returning_cards.clear();
@@ -348,9 +787,18 @@ void CombatEngine::open_first_turn() {
     retain_hand = false;
     no_draw_this_turn = false;
     fatal_kills = 0;
+    powers.clear();
+    powers_in_play.clear();
+    event_depth_ = 0;
     temp_strength = 0;
     temp_dexterity = 0;
+    alive_mask_ = 0;
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        if (enemies[i].is_alive()) alive_mask_ = static_cast<uint8_t>(alive_mask_ | (1u << i));
+    }
+}
 
+void CombatEngine::begin_first_turn() {
     // Innate cards go on top of the draw pile (its back), in their shuffled order.
     FixedVector<DeckCard, 50> innate;
     for (size_t i = draw_pile.size(); i-- > 0;) {
@@ -381,18 +829,25 @@ void CombatEngine::start_player_turn() {
         set_log("You were defeated!");
         return;
     }
-    int16_t kept_block = 0;
+    int16_t kept_block = std::min(player.block, power_amount(PowerId::STURDY_CLAMP));
+    if (has_power(PowerId::BARRICADE)) kept_block = player.block;
     if (keep_block_turns > 0) {
         --keep_block_turns;
         kept_block = player.block;
     }
+    // Ice Cream: the energy left from the previous turn is added to the new one.
+    int8_t kept_energy = (has_power(PowerId::ICE_CREAM) && turn_number > 1) ? std::max<int8_t>(player.energy, 0) : 0;
     player.reset_turn();
     player.block = kept_block;
+    player.energy = static_cast<int8_t>(player.energy + kept_energy);
     exhausted_this_turn = 0;
     retain_hand = false;
     no_draw_this_turn = false;
     player.trigger_start_of_turn_orbs();
     int extra_draw = run_delayed_effects(false);
+    turn_draw_bonus_ = 0;
+    emit(CombatEvent::TURN_START);
+    extra_draw += turn_draw_bonus_;
 
     // Cards played with Return come back before the draw.
     for (const DeckCard& card : returning_cards) {
@@ -400,11 +855,26 @@ void CombatEngine::start_player_turn() {
     }
     returning_cards.clear();
 
+    opening_draw_ = true;
     draw_cards(5 + extra_draw);
+    opening_draw_ = false;
     // Only the cards drawn by effects during the turn count as drawn this turn.
     counters.cards_drawn = 0;
     selected_card_index = 0;
+    settle_deaths();
     selected_target_index = get_first_alive_enemy_index();
+
+    // Start-of-turn powers can end the fight either way.
+    if (!enemies.empty()) {
+        enemy = enemies[0];
+    }
+    if (!player.is_alive()) {
+        state = CombatState::DEFEAT;
+        set_log("You were defeated!");
+    } else if (!has_alive_enemies()) {
+        state = CombatState::VICTORY;
+        set_log("Victory!");
+    }
 }
 
 bool CombatEngine::play_condition_met(PlayCondition condition) const {
@@ -455,16 +925,6 @@ bool CombatEngine::play_card(int index, int target_index) {
     uint8_t base_value = CardDef::get_value(card_id, upgraded);
     uint8_t secondary_value = CardDef::get_secondary(card_id, upgraded);
 
-    // Resolve target
-    int target_idx = target_index;
-    if (target_idx < 0 || target_idx >= static_cast<int>(enemies.size()) || !enemies[target_idx].is_alive()) {
-        target_idx = selected_target_index;
-        if (target_idx < 0 || target_idx >= static_cast<int>(enemies.size()) || !enemies[target_idx].is_alive()) {
-            target_idx = get_first_alive_enemy_index();
-        }
-    }
-    Enemy& current_target = (target_idx >= 0 && target_idx < static_cast<int>(enemies.size())) ? enemies[target_idx] : enemy;
-
     // Pay energy. An X card spends everything left: `x_value` is what it spent.
     int x_value = 0;
     if (cost == COST_X) {
@@ -488,6 +948,22 @@ bool CombatEngine::play_card(int index, int target_index) {
     // Remove from hand
     hand.erase(index);
 
+    // Powers react before the card resolves, so a power gained from this card does not hear it.
+    EventInfo played;
+    played.card = played_card;
+    played.cost = cost;
+    emit(CombatEvent::CARD_PLAYED, played);
+
+    // Resolve target: a reaction may have killed the one that was aimed at
+    int target_idx = target_index;
+    if (target_idx < 0 || target_idx >= static_cast<int>(enemies.size()) || !enemies[target_idx].is_alive()) {
+        target_idx = selected_target_index;
+        if (target_idx < 0 || target_idx >= static_cast<int>(enemies.size()) || !enemies[target_idx].is_alive()) {
+            target_idx = get_first_alive_enemy_index();
+        }
+    }
+    Enemy& current_target = (target_idx >= 0 && target_idx < static_cast<int>(enemies.size())) ? enemies[target_idx] : enemy;
+
     // Apply effects
     switch (card_id) {
         case CardId::STRIKE: {
@@ -496,18 +972,18 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::DEFEND: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             set_log(upgraded ? "Played Defend+!"sv : "Played Defend!"sv);
             break;
         }
         case CardId::BASH: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Bash+!"sv : "Played Bash!"sv);
             break;
         }
         case CardId::IRON_WAVE: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             hit(current_target, secondary_value);
             set_log(upgraded ? "Played Iron Wave+!"sv : "Played Iron Wave!"sv);
             break;
@@ -535,23 +1011,23 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::NEUTRALIZE: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::WEAK, secondary_value);
+            afflict(current_target, StatusType::WEAK, secondary_value);
             set_log(upgraded ? "Played Neutralize+!"sv : "Played Neutralize!"sv);
             break;
         }
         case CardId::SURVIVOR: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             set_log(upgraded ? "Played Survivor+!"sv : "Played Survivor!"sv);
             break;
         }
         case CardId::POISON_STAB: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::POISON, secondary_value);
+            afflict(current_target, StatusType::POISON, secondary_value);
             set_log(upgraded ? "Played Poison Stab+!"sv : "Played Poison Stab!"sv);
             break;
         }
         case CardId::DEADLY_POISON: {
-            current_target.add_status(StatusType::POISON, secondary_value);
+            afflict(current_target, StatusType::POISON, secondary_value);
             set_log(upgraded ? "Played Deadly Poison+!"sv : "Played Deadly Poison!"sv);
             break;
         }
@@ -567,8 +1043,8 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::FALLING_STAR: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::WEAK, secondary_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::WEAK, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Cast Falling Star+!"sv : "Cast Falling Star!"sv);
             break;
         }
@@ -584,7 +1060,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::BODYGUARD: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             player.summon_minion(secondary_value, 0);
             set_log(upgraded ? "Summoned Osty (Bodyguard+)!"sv : "Summoned Osty (Bodyguard)!"sv);
             break;
@@ -603,14 +1079,14 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::SHRUG_IT_OFF: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             draw_cards(secondary_value);
             set_log(upgraded ? "Played Shrug It Off+!"sv : "Played Shrug It Off!"sv);
             break;
         }
         case CardId::TAUNT: {
-            player.gain_block(base_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            gain_block(base_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Taunt+!"sv : "Played Taunt!"sv);
             break;
         }
@@ -620,14 +1096,14 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::BACKFLIP: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             draw_cards(secondary_value);
             set_log(upgraded ? "Played Backflip+!"sv : "Played Backflip!"sv);
             break;
         }
         case CardId::SUCKER_PUNCH: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::WEAK, secondary_value);
+            afflict(current_target, StatusType::WEAK, secondary_value);
             set_log(upgraded ? "Played Sucker Punch+!"sv : "Played Sucker Punch!"sv);
             break;
         }
@@ -644,7 +1120,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::BEAM_CELL: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Beam Cell+!"sv : "Played Beam Cell!"sv);
             break;
         }
@@ -661,7 +1137,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::LEAP: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             set_log(upgraded ? "Played Leap+!"sv : "Played Leap!"sv);
             break;
         }
@@ -672,7 +1148,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::GATHER_LIGHT: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             gain_stars(secondary_value);
             set_log(upgraded ? "Played Gather Light+!"sv : "Played Gather Light!"sv);
             break;
@@ -686,7 +1162,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::PULL_AGGRO: {
             player.summon_minion(secondary_value, 0);
-            player.gain_block(base_value);
+            gain_block(base_value);
             set_log(upgraded ? "Played Pull Aggro+!"sv : "Played Pull Aggro!"sv);
             break;
         }
@@ -710,7 +1186,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::DEFLECT: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             set_log(upgraded ? "Played Deflect+!"sv : "Played Deflect!"sv);
             break;
         }
@@ -734,7 +1210,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             for (size_t i = 0; i < enemies.size(); ++i) {
                 if (enemies[i].is_alive()) {
                     hit(enemies[i], base_value);
-                    enemies[i].add_status(StatusType::VULNERABLE, secondary_value);
+                    afflict(enemies[i], StatusType::VULNERABLE, secondary_value);
                 }
             }
             set_log(upgraded ? "Played Thunderclap+!"sv : "Played Thunderclap!"sv);
@@ -781,7 +1257,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::BREAK: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Break+!"sv : "Played Break!"sv);
             break;
         }
@@ -798,7 +1274,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::EXPECT_A_FIGHT: {
             int16_t strength = std::max<int16_t>(0, player.get_status(StatusType::STRENGTH));
-            player.gain_block(static_cast<int16_t>(base_value + secondary_value * strength));
+            gain_block(static_cast<int16_t>(base_value + secondary_value * strength));
             set_log(upgraded ? "Played Expect a Fight+!"sv : "Played Expect a Fight!"sv);
             break;
         }
@@ -812,8 +1288,8 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::UPPERCUT: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::WEAK, secondary_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::WEAK, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Uppercut+!"sv : "Played Uppercut!"sv);
             break;
         }
@@ -822,21 +1298,21 @@ bool CombatEngine::play_card(int index, int target_index) {
                 hit(current_target, base_value);
             }
             player.add_status(StatusType::STRENGTH, secondary_value);
-            if (current_target.is_alive()) current_target.add_status(StatusType::STRENGTH, 1);
+            if (current_target.is_alive()) afflict(current_target, StatusType::STRENGTH, 1);
             set_log(upgraded ? "Played Fight Me+!"sv : "Played Fight Me!"sv);
             break;
         }
         case CardId::LEG_SWEEP: {
-            current_target.add_status(StatusType::WEAK, secondary_value);
-            player.gain_block(base_value);
+            afflict(current_target, StatusType::WEAK, secondary_value);
+            gain_block(base_value);
             set_log(upgraded ? "Played Leg Sweep+!"sv : "Played Leg Sweep!"sv);
             break;
         }
         case CardId::HAZE: {
             for (size_t i = 0; i < enemies.size(); ++i) {
                 if (enemies[i].is_alive()) {
-                    enemies[i].add_status(StatusType::POISON, base_value);
-                    enemies[i].add_status(StatusType::WEAK, secondary_value);
+                    afflict(enemies[i], StatusType::POISON, base_value);
+                    afflict(enemies[i], StatusType::WEAK, secondary_value);
                 }
             }
             set_log(upgraded ? "Played Haze+!"sv : "Played Haze!"sv);
@@ -850,7 +1326,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::BOUNCING_FLASK: {
             for (uint8_t bounce = 0; bounce < secondary_value; ++bounce) {
-                enemies[random_alive_enemy_index()].add_status(StatusType::POISON, base_value);
+                afflict(enemies[random_alive_enemy_index()], StatusType::POISON, base_value);
             }
             set_log(upgraded ? "Played Bouncing Flask+!"sv : "Played Bouncing Flask!"sv);
             break;
@@ -871,20 +1347,20 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::ESCAPE_PLAN: {
             if (draw_card() && CardDef::get(hand.back().id).type == CardType::SKILL) {
-                player.gain_block(base_value);
+                gain_block(base_value);
             }
             set_log(upgraded ? "Played Escape Plan+!"sv : "Played Escape Plan!"sv);
             break;
         }
         case CardId::DASH: {
-            player.gain_block(secondary_value);
+            gain_block(secondary_value);
             hit(current_target, base_value);
             set_log(upgraded ? "Played Dash+!"sv : "Played Dash!"sv);
             break;
         }
         case CardId::BUBBLE_BUBBLE: {
             if (current_target.get_status(StatusType::POISON) > 0) {
-                current_target.add_status(StatusType::POISON, base_value);
+                afflict(current_target, StatusType::POISON, base_value);
             }
             set_log(upgraded ? "Played Bubble Bubble+!"sv : "Played Bubble Bubble!"sv);
             break;
@@ -892,7 +1368,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         case CardId::OUTBREAK: {
             for (size_t i = 0; i < enemies.size(); ++i) {
                 if (enemies[i].is_alive()) {
-                    enemies[i].add_status(StatusType::POISON, base_value);
+                    afflict(enemies[i], StatusType::POISON, base_value);
                     enemies[i].apply_poison_tick();
                 }
             }
@@ -900,7 +1376,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::SHADOW_SHIELD: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             player.channel_orb(OrbType::DARK, &current_target);
             set_log(upgraded ? "Played Shadow Shield+!"sv : "Played Shadow Shield!"sv);
             break;
@@ -912,7 +1388,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::GLACIER: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             for (uint8_t n = 0; n < secondary_value; ++n) player.channel_orb(OrbType::FROST, &current_target);
             set_log(upgraded ? "Played Glacier+!"sv : "Played Glacier!"sv);
             break;
@@ -944,7 +1420,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::NULL_CARD: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::WEAK, secondary_value);
+            afflict(current_target, StatusType::WEAK, secondary_value);
             player.channel_orb(OrbType::DARK, &current_target);
             set_log(upgraded ? "Played Null+!"sv : "Played Null!"sv);
             break;
@@ -952,7 +1428,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         case CardId::GO_FOR_THE_EYES: {
             hit(current_target, base_value);
             if (current_target.current_intent.base_damage > 0) {
-                current_target.add_status(StatusType::WEAK, secondary_value);
+                afflict(current_target, StatusType::WEAK, secondary_value);
             }
             set_log(upgraded ? "Played Go for the Eyes+!"sv : "Played Go for the Eyes!"sv);
             break;
@@ -980,14 +1456,14 @@ bool CombatEngine::play_card(int index, int target_index) {
             for (StatusType debuff : { StatusType::VULNERABLE, StatusType::WEAK, StatusType::POISON }) {
                 int16_t amount = current_target.get_status(debuff);
                 for (size_t i = 0; amount > 0 && i < enemies.size(); ++i) {
-                    if (static_cast<int>(i) != target_idx && enemies[i].is_alive()) enemies[i].add_status(debuff, amount);
+                    if (static_cast<int>(i) != target_idx && enemies[i].is_alive()) afflict(enemies[i], debuff, amount);
                 }
             }
             set_log(upgraded ? "Played Misery+!"sv : "Played Misery!"sv);
             break;
         }
         case CardId::UNDEATH: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             create_card_in_discard(DeckCard(CardId::UNDEATH, upgraded));
             set_log(upgraded ? "Played Undeath+!"sv : "Played Undeath!"sv);
             break;
@@ -998,19 +1474,19 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::TREMBLE: {
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Tremble+!"sv : "Played Tremble!"sv);
             break;
         }
         case CardId::EVIL_EYE: {
-            player.gain_block(base_value);
-            if (exhausted_this_turn > 0) player.gain_block(base_value);
+            gain_block(base_value);
+            if (exhausted_this_turn > 0) gain_block(base_value);
             set_log(upgraded ? "Played Evil Eye+!"sv : "Played Evil Eye!"sv);
             break;
         }
         case CardId::MOLTEN_FIST: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::VULNERABLE, current_target.get_status(StatusType::VULNERABLE));
+            afflict(current_target, StatusType::VULNERABLE, current_target.get_status(StatusType::VULNERABLE));
             set_log(upgraded ? "Played Molten Fist+!"sv : "Played Molten Fist!"sv);
             break;
         }
@@ -1026,7 +1502,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             for (size_t i = hand.size(); i-- > 0;) {
                 if (CardDef::get(hand[i].id).type != CardType::ATTACK) {
                     exhaust_from_hand(i);
-                    player.gain_block(base_value);
+                    gain_block(base_value);
                 }
             }
             set_log(upgraded ? "Played Second Wind+!"sv : "Played Second Wind!"sv);
@@ -1034,7 +1510,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::TRUE_GRIT: {
             // The upgraded card lets the player choose the card: random as well until hand choices exist (#31).
-            player.gain_block(base_value);
+            gain_block(base_value);
             if (!hand.empty()) {
                 exhaust_from_hand(next_random() % hand.size());
             }
@@ -1042,7 +1518,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::DOMINATE: {
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             player.add_status(StatusType::STRENGTH, current_target.get_status(StatusType::VULNERABLE));
             set_log(upgraded ? "Played Dominate+!"sv : "Played Dominate!"sv);
             break;
@@ -1074,7 +1550,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::IMPERVIOUS: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             set_log(upgraded ? "Played Impervious+!"sv : "Played Impervious!"sv);
             break;
         }
@@ -1112,7 +1588,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             for (const Enemy& foe : enemies) {
                 if (foe.is_alive()) poison += foe.get_status(StatusType::POISON);
             }
-            player.gain_block(poison);
+            gain_block(poison);
             set_log(upgraded ? "Played Mirage+!"sv : "Played Mirage!"sv);
             break;
         }
@@ -1153,7 +1629,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::SHARED_FATE: {
             player.add_status(StatusType::STRENGTH, static_cast<int16_t>(-base_value));
-            current_target.add_status(StatusType::STRENGTH, static_cast<int16_t>(-secondary_value));
+            afflict(current_target, StatusType::STRENGTH, static_cast<int16_t>(-secondary_value));
             set_log(upgraded ? "Played Shared Fate+!"sv : "Played Shared Fate!"sv);
             break;
         }
@@ -1163,8 +1639,8 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::PUTREFY: {
-            current_target.add_status(StatusType::WEAK, secondary_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::WEAK, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Putrefy+!"sv : "Played Putrefy!"sv);
             break;
         }
@@ -1180,7 +1656,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::BLOOD_WALL: {
             lose_hp(secondary_value);
-            player.gain_block(base_value);
+            gain_block(base_value);
             set_log(upgraded ? "Played Blood Wall+!"sv : "Played Blood Wall!"sv);
             break;
         }
@@ -1257,7 +1733,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::ASSASSINATE: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Assassinate+!"sv : "Played Assassinate!"sv);
             break;
         }
@@ -1267,13 +1743,13 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::BLUR: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             if (keep_block_turns < UINT8_MAX) ++keep_block_turns;
             set_log(upgraded ? "Played Blur+!"sv : "Played Blur!"sv);
             break;
         }
         case CardId::DODGE_AND_ROLL: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             schedule(DelayedType::BLOCK, static_cast<int16_t>(base_value + player.get_status(StatusType::DEXTERITY)));
             set_log(upgraded ? "Played Dodge and Roll+!"sv : "Played Dodge and Roll!"sv);
             break;
@@ -1287,8 +1763,8 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::MALAISE: {
             int16_t dose = static_cast<int16_t>(x_value + secondary_value);
-            current_target.add_status(StatusType::STRENGTH, static_cast<int16_t>(-dose));
-            current_target.add_status(StatusType::WEAK, dose);
+            afflict(current_target, StatusType::STRENGTH, static_cast<int16_t>(-dose));
+            afflict(current_target, StatusType::WEAK, dose);
             set_log(upgraded ? "Played Malaise+!"sv : "Played Malaise!"sv);
             break;
         }
@@ -1331,7 +1807,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::SUPPRESS: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::WEAK, secondary_value);
+            afflict(current_target, StatusType::WEAK, secondary_value);
             set_log(upgraded ? "Played Suppress+!"sv : "Played Suppress!"sv);
             break;
         }
@@ -1343,17 +1819,17 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::SNAKEBITE: {
-            current_target.add_status(StatusType::POISON, secondary_value);
+            afflict(current_target, StatusType::POISON, secondary_value);
             set_log(upgraded ? "Played Snakebite+!"sv : "Played Snakebite!"sv);
             break;
         }
         case CardId::BOOT_SEQUENCE: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             set_log(upgraded ? "Played Boot Sequence+!"sv : "Played Boot Sequence!"sv);
             break;
         }
         case CardId::CHARGE_BATTERY: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             schedule(DelayedType::ENERGY, secondary_value);
             set_log(upgraded ? "Played Charge Battery+!"sv : "Played Charge Battery!"sv);
             break;
@@ -1372,7 +1848,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::LIGHTNING_ROD: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             schedule(DelayedType::CHANNEL_LIGHTNING, 1, 1, secondary_value);
             set_log(upgraded ? "Played Lightning Rod+!"sv : "Played Lightning Rod!"sv);
             break;
@@ -1395,7 +1871,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::GLITTERSTREAM: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             schedule(DelayedType::BLOCK, static_cast<int16_t>(secondary_value + player.get_status(StatusType::DEXTERITY)));
             set_log(upgraded ? "Played Glitterstream+!"sv : "Played Glitterstream!"sv);
             break;
@@ -1414,8 +1890,8 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::KNOW_THY_PLACE: {
-            current_target.add_status(StatusType::WEAK, base_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::WEAK, base_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Know Thy Place+!"sv : "Played Know Thy Place!"sv);
             break;
         }
@@ -1454,13 +1930,13 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::DEFY: {
-            player.gain_block(base_value);
-            current_target.add_status(StatusType::WEAK, secondary_value);
+            gain_block(base_value);
+            afflict(current_target, StatusType::WEAK, secondary_value);
             set_log(upgraded ? "Played Defy+!"sv : "Played Defy!"sv);
             break;
         }
         case CardId::DELAY: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             schedule(DelayedType::ENERGY, secondary_value);
             set_log(upgraded ? "Played Delay+!"sv : "Played Delay!"sv);
             break;
@@ -1472,7 +1948,7 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::FEAR: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Fear+!"sv : "Played Fear!"sv);
             break;
         }
@@ -1532,14 +2008,14 @@ bool CombatEngine::play_card(int index, int target_index) {
             break;
         }
         case CardId::CLOAK_OF_STARS: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             set_log(upgraded ? "Played Cloak of Stars+!"sv : "Played Cloak of Stars!"sv);
             break;
         }
         case CardId::COMET: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::WEAK, secondary_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::WEAK, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Comet+!"sv : "Played Comet!"sv);
             break;
         }
@@ -1570,8 +2046,8 @@ bool CombatEngine::play_card(int index, int target_index) {
         }
         case CardId::GAMMA_BLAST: {
             hit(current_target, base_value);
-            current_target.add_status(StatusType::WEAK, secondary_value);
-            current_target.add_status(StatusType::VULNERABLE, secondary_value);
+            afflict(current_target, StatusType::WEAK, secondary_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Gamma Blast+!"sv : "Played Gamma Blast!"sv);
             break;
         }
@@ -1598,15 +2074,15 @@ bool CombatEngine::play_card(int index, int target_index) {
             for (size_t i = 0; i < enemies.size(); ++i) {
                 if (enemies[i].is_alive()) {
                     hit(enemies[i], base_value);
-                    enemies[i].add_status(StatusType::WEAK, secondary_value);
-                    enemies[i].add_status(StatusType::VULNERABLE, secondary_value);
+                    afflict(enemies[i], StatusType::WEAK, secondary_value);
+                    afflict(enemies[i], StatusType::VULNERABLE, secondary_value);
                 }
             }
             set_log(upgraded ? "Played Meteor Shower+!"sv : "Played Meteor Shower!"sv);
             break;
         }
         case CardId::PARTICLE_WALL: {
-            player.gain_block(base_value);
+            gain_block(base_value);
             after_play = AfterPlay::HAND;
             set_log(upgraded ? "Played Particle Wall+!"sv : "Played Particle Wall!"sv);
             break;
@@ -1626,7 +2102,7 @@ bool CombatEngine::play_card(int index, int target_index) {
             player.add_status(StatusType::STRENGTH, base_value);
             for (size_t i = 0; i < enemies.size(); ++i) {
                 if (enemies[i].is_alive()) {
-                    enemies[i].add_status(StatusType::STRENGTH, static_cast<int16_t>(-secondary_value));
+                    afflict(enemies[i], StatusType::STRENGTH, static_cast<int16_t>(-secondary_value));
                 }
             }
             set_log(upgraded ? "Played Resonance+!"sv : "Played Resonance!"sv);
@@ -1717,6 +2193,224 @@ bool CombatEngine::play_card(int index, int target_index) {
             set_log(upgraded ? "Played Knockout Blow+!"sv : "Played Knockout Blow!"sv);
             break;
         }
+        case CardId::FEEL_NO_PAIN: {
+            add_power(PowerId::FEEL_NO_PAIN, base_value);
+            set_log(upgraded ? "Played Feel No Pain+!"sv : "Played Feel No Pain!"sv);
+            break;
+        }
+        case CardId::DARK_EMBRACE: {
+            add_power(PowerId::DARK_EMBRACE, base_value);
+            set_log(upgraded ? "Played Dark Embrace+!"sv : "Played Dark Embrace!"sv);
+            break;
+        }
+        case CardId::DRUM_OF_BATTLE: {
+            draw_cards(base_value);
+            set_log(upgraded ? "Played Drum of Battle+!"sv : "Played Drum of Battle!"sv);
+            break;
+        }
+        case CardId::BARRICADE: {
+            add_power(PowerId::BARRICADE);
+            set_log(upgraded ? "Played Barricade+!"sv : "Played Barricade!"sv);
+            break;
+        }
+        case CardId::INFERNO: {
+            add_power(PowerId::INFERNO, base_value);
+            set_log(upgraded ? "Played Inferno+!"sv : "Played Inferno!"sv);
+            break;
+        }
+        case CardId::CRIMSON_MANTLE: {
+            add_power(PowerId::CRIMSON_MANTLE, base_value);
+            set_log(upgraded ? "Played Crimson Mantle+!"sv : "Played Crimson Mantle!"sv);
+            break;
+        }
+        case CardId::RUPTURE: {
+            add_power(PowerId::RUPTURE, base_value);
+            set_log(upgraded ? "Played Rupture+!"sv : "Played Rupture!"sv);
+            break;
+        }
+        case CardId::AGGRESSION: {
+            add_power(PowerId::AGGRESSION);
+            set_log(upgraded ? "Played Aggression+!"sv : "Played Aggression!"sv);
+            break;
+        }
+        case CardId::PYRE: {
+            add_power(PowerId::TURN_ENERGY, base_value);
+            set_log(upgraded ? "Played Pyre+!"sv : "Played Pyre!"sv);
+            break;
+        }
+        case CardId::DEMON_FORM: {
+            add_power(PowerId::TURN_STRENGTH, base_value);
+            set_log(upgraded ? "Played Demon Form+!"sv : "Played Demon Form!"sv);
+            break;
+        }
+        case CardId::JUGGERNAUT: {
+            add_power(PowerId::JUGGERNAUT, base_value);
+            set_log(upgraded ? "Played Juggernaut+!"sv : "Played Juggernaut!"sv);
+            break;
+        }
+        case CardId::RAGE: {
+            add_power(PowerId::RAGE, base_value, true);
+            set_log(upgraded ? "Played Rage+!"sv : "Played Rage!"sv);
+            break;
+        }
+        case CardId::VICIOUS: {
+            add_power(PowerId::VICIOUS, base_value);
+            set_log(upgraded ? "Played Vicious+!"sv : "Played Vicious!"sv);
+            break;
+        }
+        case CardId::ACCELERANT: {
+            add_power(PowerId::ACCELERANT, base_value);
+            set_log(upgraded ? "Played Accelerant+!"sv : "Played Accelerant!"sv);
+            break;
+        }
+        case CardId::SPEEDSTER: {
+            add_power(PowerId::SPEEDSTER, base_value);
+            set_log(upgraded ? "Played Speedster+!"sv : "Played Speedster!"sv);
+            break;
+        }
+        case CardId::ENVENOM: {
+            add_power(PowerId::ENVENOM, base_value);
+            set_log(upgraded ? "Played Envenom+!"sv : "Played Envenom!"sv);
+            break;
+        }
+        case CardId::SERPENT_FORM: {
+            add_power(PowerId::SERPENT_FORM, base_value);
+            set_log(upgraded ? "Played Serpent Form+!"sv : "Played Serpent Form!"sv);
+            break;
+        }
+        case CardId::AFTERIMAGE: {
+            add_power(PowerId::AFTERIMAGE, base_value);
+            set_log(upgraded ? "Played Afterimage+!"sv : "Played Afterimage!"sv);
+            break;
+        }
+        case CardId::WELL_LAID_PLANS: {
+            add_power(PowerId::KEEP_HAND);
+            set_log(upgraded ? "Played Well-Laid Plans+!"sv : "Played Well-Laid Plans!"sv);
+            break;
+        }
+        case CardId::STRANGLE: {
+            hit(current_target, base_value);
+            add_power(PowerId::STRANGLE, secondary_value, true, static_cast<int8_t>(target_idx));
+            set_log(upgraded ? "Played Strangle+!"sv : "Played Strangle!"sv);
+            break;
+        }
+        case CardId::CORROSIVE_WAVE: {
+            add_power(PowerId::CORROSIVE_WAVE, base_value, true);
+            set_log(upgraded ? "Played Corrosive Wave+!"sv : "Played Corrosive Wave!"sv);
+            break;
+        }
+        case CardId::NOXIOUS_FUMES: {
+            add_power(PowerId::TURN_POISON_ALL, base_value);
+            set_log(upgraded ? "Played Noxious Fumes+!"sv : "Played Noxious Fumes!"sv);
+            break;
+        }
+        case CardId::MACHINE_LEARNING: {
+            add_power(PowerId::TURN_DRAW, base_value);
+            set_log(upgraded ? "Played Machine Learning+!"sv : "Played Machine Learning!"sv);
+            break;
+        }
+        case CardId::STORM: {
+            add_power(PowerId::STORM, base_value);
+            set_log(upgraded ? "Played Storm+!"sv : "Played Storm!"sv);
+            break;
+        }
+        case CardId::FERAL: {
+            add_power(PowerId::FERAL, base_value);
+            set_log(upgraded ? "Played Feral+!"sv : "Played Feral!"sv);
+            break;
+        }
+        case CardId::SUBROUTINE: {
+            add_power(PowerId::SUBROUTINE, base_value);
+            set_log(upgraded ? "Played Subroutine+!"sv : "Played Subroutine!"sv);
+            break;
+        }
+        case CardId::CHILD_OF_THE_STARS: {
+            add_power(PowerId::CHILD_OF_THE_STARS, base_value);
+            set_log(upgraded ? "Played Child of the Stars+!"sv : "Played Child of the Stars!"sv);
+            break;
+        }
+        case CardId::GENESIS: {
+            add_power(PowerId::TURN_STARS, base_value);
+            set_log(upgraded ? "Played Genesis+!"sv : "Played Genesis!"sv);
+            break;
+        }
+        case CardId::THE_SEALED_THRONE: {
+            add_power(PowerId::SEALED_THRONE, base_value);
+            set_log(upgraded ? "Played The Sealed Throne+!"sv : "Played The Sealed Throne!"sv);
+            break;
+        }
+        case CardId::BLACK_HOLE: {
+            add_power(PowerId::BLACK_HOLE, base_value);
+            set_log(upgraded ? "Played Black Hole+!"sv : "Played Black Hole!"sv);
+            break;
+        }
+        case CardId::MAKE_IT_SO: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Make It So+!"sv : "Played Make It So!"sv);
+            break;
+        }
+        case CardId::PALE_BLUE_DOT: {
+            add_power(PowerId::PALE_BLUE_DOT, base_value);
+            set_log(upgraded ? "Played Pale Blue Dot+!"sv : "Played Pale Blue Dot!"sv);
+            break;
+        }
+        case CardId::ARSENAL: {
+            add_power(PowerId::ARSENAL, base_value);
+            set_log(upgraded ? "Played Arsenal+!"sv : "Played Arsenal!"sv);
+            break;
+        }
+        case CardId::MONOLOGUE: {
+            add_power(PowerId::MONOLOGUE, base_value, true);
+            set_log(upgraded ? "Played Monologue+!"sv : "Played Monologue!"sv);
+            break;
+        }
+        case CardId::ORBIT: {
+            add_power(PowerId::ORBIT, base_value);
+            set_log(upgraded ? "Played Orbit+!"sv : "Played Orbit!"sv);
+            break;
+        }
+        case CardId::PILLAR_OF_CREATION: {
+            add_power(PowerId::PILLAR_OF_CREATION, base_value);
+            set_log(upgraded ? "Played Pillar of Creation+!"sv : "Played Pillar of Creation!"sv);
+            break;
+        }
+        case CardId::MONARCHS_GAZE: {
+            add_power(PowerId::MONARCHS_GAZE, base_value);
+            set_log(upgraded ? "Played Monarch's Gaze+!"sv : "Played Monarch's Gaze!"sv);
+            break;
+        }
+        case CardId::FRIENDSHIP: {
+            player.add_status(StatusType::STRENGTH, static_cast<int16_t>(-secondary_value));
+            add_power(PowerId::TURN_ENERGY, base_value);
+            set_log(upgraded ? "Played Friendship+!"sv : "Played Friendship!"sv);
+            break;
+        }
+        case CardId::DANSE_MACABRE: {
+            add_power(PowerId::DANSE_MACABRE, base_value);
+            set_log(upgraded ? "Played Danse Macabre+!"sv : "Played Danse Macabre!"sv);
+            break;
+        }
+        case CardId::DEMESNE: {
+            add_power(PowerId::TURN_ENERGY, base_value);
+            add_power(PowerId::TURN_DRAW, secondary_value);
+            set_log(upgraded ? "Played Demesne+!"sv : "Played Demesne!"sv);
+            break;
+        }
+        case CardId::SPIRIT_OF_ASH: {
+            add_power(PowerId::SPIRIT_OF_ASH, base_value);
+            set_log(upgraded ? "Played Spirit of Ash+!"sv : "Played Spirit of Ash!"sv);
+            break;
+        }
+        case CardId::PAGESTORM: {
+            add_power(PowerId::PAGESTORM, base_value);
+            set_log(upgraded ? "Played Pagestorm+!"sv : "Played Pagestorm!"sv);
+            break;
+        }
+        case CardId::SLEIGHT_OF_FLESH: {
+            add_power(PowerId::SLEIGHT_OF_FLESH, base_value);
+            set_log(upgraded ? "Played Sleight of Flesh+!"sv : "Played Sleight of Flesh!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;
@@ -1741,20 +2435,41 @@ bool CombatEngine::play_card(int index, int target_index) {
     if (CardDef::has_keyword(played_card, KEYWORD_ETHEREAL)) {
         counters.combat_ethereal_played = bump(counters.combat_ethereal_played);
     }
+    if (played_type == CardType::SKILL && counters.skills_played % CardDef::get_secondary(CardId::MAKE_IT_SO, false) == 0) {
+        recall_to_hand(CardId::MAKE_IT_SO);
+    }
+    if (played_type == CardType::POWER) {
+        powers_in_play.push_back(played_card);
+    } else if (played_type == CardType::ATTACK && CardDef::get_cost(card_id, upgraded) == 0) {
+        ActivePower* feral = find_power(PowerId::FERAL);
+        if (feral && feral->counter < feral->amount) {
+            ++feral->counter;
+            after_play = AfterPlay::HAND;
+        }
+    }
 
     // Powers stay in play for the rest of the combat: they never return to the piles.
     if (played_type != CardType::POWER) {
+        // Where it goes is decided by the card as it was played; Razor Tooth upgrades the copy that comes back.
+        DeckCard kept_card = played_card;
+        if (has_power(PowerId::RAZOR_TOOTH)) kept_card.upgraded = true;
         if (CardDef::has_keyword(played_card, KEYWORD_EXHAUST)) {
-            exhaust_card(played_card);
+            exhaust_card(kept_card);
         } else if (CardDef::has_keyword(played_card, KEYWORD_RETURN)) {
-            if (!returning_cards.push_back(played_card)) discard_pile.push_back(played_card);
-        } else if (after_play == AfterPlay::HAND && hand.push_back(played_card)) {
+            if (!returning_cards.push_back(kept_card)) discard_pile.push_back(kept_card);
+        } else if (after_play == AfterPlay::HAND && hand.push_back(kept_card)) {
             // back in hand
         } else if (after_play == AfterPlay::DRAW_TOP) {
-            draw_pile.push_back(played_card);
+            draw_pile.push_back(kept_card);
         } else {
-            discard_pile.push_back(played_card);
+            discard_pile.push_back(kept_card);
         }
+    }
+
+    // Deaths not caused by a hit (orbs, HP loss) are noticed here.
+    settle_deaths();
+    if (hand.empty() && has_power(PowerId::UNCEASING_TOP) && player.is_alive()) {
+        draw_card();
     }
 
     // A card that costs HP can kill its player.
@@ -1778,19 +2493,27 @@ bool CombatEngine::play_card(int index, int target_index) {
 void CombatEngine::end_player_turn() {
     if (state != CombatState::PLAYER_TURN) return;
 
-    // Ethereal cards left in hand are exhausted; the rest is discarded, except the cards with Retain.
+    emit(CombatEvent::TURN_END);
+
+    // Ethereal cards left in hand are exhausted first: what their exhaustion draws is discarded with the rest.
     for (size_t i = hand.size(); i-- > 0;) {
-        if (CardDef::has_keyword(hand[i], KEYWORD_ETHEREAL)) {
-            exhaust_from_hand(i);
-            continue;
-        }
-        if (retain_hand || CardDef::has_keyword(hand[i], KEYWORD_RETAIN) ||
+        if (i < hand.size() && CardDef::has_keyword(hand[i], KEYWORD_ETHEREAL)) exhaust_from_hand(i);
+    }
+    // The rest is discarded, except the cards with Retain.
+    const bool keep_hand = retain_hand || has_power(PowerId::KEEP_HAND);
+    for (size_t i = hand.size(); i-- > 0;) {
+        if (keep_hand || CardDef::has_keyword(hand[i], KEYWORD_RETAIN) ||
             CardDef::has_keyword(hand[i], KEYWORD_RETAIN_ONCE)) {
             hand[i].added_keywords &= static_cast<uint8_t>(~KEYWORD_RETAIN_ONCE);
             continue;
         }
         discard_pile.push_back(hand[i]);
         hand.erase(i);
+    }
+
+    // Effects that only lasted this turn are over.
+    for (size_t i = powers.size(); i-- > 0;) {
+        if (powers[i].turn_only) powers.erase(i);
     }
 
     // Strength and Dexterity gained "until the end of the turn" go away.
@@ -1801,10 +2524,17 @@ void CombatEngine::end_player_turn() {
 
     // End of turn effects: countdowns, Metallicize block, then orb passives on the first living enemy.
     run_delayed_effects(true);
+    int16_t block_before = player.block;
     player.apply_metallicize_tick();
     if (has_alive_enemies()) {
         player.trigger_passive_orbs(&enemies[get_first_alive_enemy_index()]);
     }
+    if (player.block > block_before) {
+        EventInfo gained;
+        gained.amount = static_cast<int16_t>(player.block - block_before);
+        emit(CombatEvent::BLOCK_GAINED, gained);
+    }
+    settle_deaths();
     if (!enemies.empty()) {
         enemy = enemies[0];
     }
@@ -1824,9 +2554,10 @@ void CombatEngine::execute_enemy_turn() {
     last_enemy_actions.clear();
     for (size_t i = 0; i < enemies.size(); ++i) {
         // Poison hits at the start of the poisoned enemy's turn and can kill it before it acts.
-        if (enemies[i].is_alive()) {
+        for (int16_t tick = power_amount(PowerId::ACCELERANT); tick >= 0 && enemies[i].is_alive(); --tick) {
             enemies[i].apply_poison_tick();
         }
+        settle_deaths();
         if (enemies[i].is_alive()) {
             EnemyActionRecord record;
             record.enemy_index = static_cast<int8_t>(i);
@@ -1837,7 +2568,7 @@ void CombatEngine::execute_enemy_turn() {
             enemies[i].execute_turn(player);
 
             // The Strength it lost "until the end of its turn" comes back.
-            enemies[i].add_status(StatusType::STRENGTH, enemies[i].temp_strength_loss);
+            afflict(enemies[i], StatusType::STRENGTH, enemies[i].temp_strength_loss);
             enemies[i].temp_strength_loss = 0;
 
             record.damage_to_player = hp_before - player.hp;
@@ -1889,10 +2620,10 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         if (target_index < 0 || target_index >= static_cast<int>(enemies.size()) || !enemies[target_index].is_alive()) {
             target_index = get_first_alive_enemy_index();
         }
-        enemies[target_index].take_damage(20);
+        damage_enemy(enemies[target_index], 20);
         set_log("Fire Potion!");
     } else if (potion_id == "BLOCK_POTION") {
-        player.block += 12; // Potion Block is not modified by Dexterity
+        add_block(12); // Potion Block is not modified by Dexterity
         set_log("Block Potion!");
     } else if (potion_id == "ENERGY_POTION") {
         player.energy = static_cast<int8_t>(player.energy + 2);

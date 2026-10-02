@@ -91,10 +91,14 @@ public:
     void add_relic(std::string_view relic_id);
     bool has_relic(std::string_view relic_id) const;
     std::string_view draw_treasure_relic();
+    // Relics with an implemented effect: the ones a chest can hold.
+    static std::span<const std::string_view> active_relics();
     bool remove_card_from_deck(int deck_index);
     bool upgrade_card_in_deck(int deck_index);
 
     // Act Progression
+    // Relics that act during the fight become powers of the combat. Called before the first turn.
+    void register_relic_powers();
     void apply_combat_start_relics();
     void proceed_after_combat();
     void advance_act();
