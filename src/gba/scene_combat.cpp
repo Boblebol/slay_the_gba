@@ -74,6 +74,21 @@ Point enemy_slot(int index, int count, bool boss)
     return three[bn::clamp(index, 0, 2)];
 }
 
+// Centre of a status line, moved towards the middle of the screen when the line is too long to fit around
+// `wanted_x`: with three or four statuses it would run past the edge.
+int status_line_x(int wanted_x, const bn::string_view& text)
+{
+    constexpr int EDGE = 118;
+    int half = (text_width(text) + 1) / 2;
+
+    if(half >= EDGE)
+    {
+        return 0;
+    }
+
+    return bn::clamp(wanted_x, half - EDGE, EDGE - half);
+}
+
 // Offsets of the four 64x64 quarters of a 128x128 boss sprite.
 constexpr Point boss_parts[] = { { -32, -32 }, { 32, -32 }, { -32, 32 }, { 32, 32 } };
 
@@ -680,7 +695,7 @@ void CombatScene::_refresh_hud()
     if(status != _player_status_text)
     {
         _player_status_text = status;
-        _player_status.set(PLAYER_X, STATUS_Y, status, Align::CENTER, TextColor::PURPLE);
+        _player_status.set(status_line_x(PLAYER_X, status), STATUS_Y, status, Align::CENTER, TextColor::PURPLE);
     }
 
     bool interactive = _phase == Phase::PLAYER;
@@ -790,7 +805,7 @@ void CombatScene::_refresh_enemy_hud(int index)
     if(status != view.status_text)
     {
         view.status_text = status;
-        view.status_label.set(view.x, STATUS_Y, status, Align::CENTER, TextColor::PURPLE);
+        view.status_label.set(status_line_x(view.x, status), STATUS_Y, status, Align::CENTER, TextColor::PURPLE);
     }
 
     int block = enemy.block;
