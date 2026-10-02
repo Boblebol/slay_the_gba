@@ -1027,9 +1027,28 @@ void CombatScene::_update_player_input()
     {
         if(! _combat.can_play_card(_selected))
         {
+            bn::string_view reason = "Pas assez d'énergie";
+
+            switch(_combat.play_blocker(_selected))
+            {
+            case engine::PlayBlocker::STARS:
+                reason = "Pas assez d'Étoiles";
+                break;
+            case engine::PlayBlocker::CONDITION:
+                reason = "Condition non remplie";
+                break;
+            case engine::PlayBlocker::PLAY_FIRST:
+                reason = "Autre carte d'abord";
+                break;
+            case engine::PlayBlocker::PLAY_LIMIT:
+                reason = "Limite atteinte";
+                break;
+            default:
+                break;
+            }
+
             play_sfx(Sfx::ERROR);
-            _popups.spawn(_hand[_selected].x.round_integer(), HAND_FOCUS_Y - 24, "Pas assez d'énergie",
-                          TextColor::RED);
+            _popups.spawn(_hand[_selected].x.round_integer(), HAND_FOCUS_Y - 24, reason, TextColor::RED);
             _hand[_selected].x += 6;
             return;
         }

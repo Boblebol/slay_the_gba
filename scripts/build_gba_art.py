@@ -376,6 +376,12 @@ CARDS: list[CardArt] = [
     CardArt("seven_stars", "regent", "seven_stars", "attack", (2, 1), (7, 7)),
     CardArt("shining_strike", "regent", "shining_strike", "attack", (1, 1)),
     CardArt("stardust", "regent", "stardust", "attack", (0, 0), (-1, -1)),
+    CardArt("feed", "ironclad", "feed", "attack", (1, 1)),
+    CardArt("battle_trance", "ironclad", "battle_trance", "skill", (0, 0)),
+    CardArt("echoing_slash", "silent", "echoing_slash", "attack", (1, 1)),
+    CardArt("grand_finale", "silent", "grand_finale", "attack", (0, 0)),
+    CardArt("sunder", "defect", "sunder", "attack", (3, 3)),
+    CardArt("knockout_blow", "regent", "knockout_blow", "attack", (3, 3)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}

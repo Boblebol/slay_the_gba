@@ -29,6 +29,7 @@
 #include "bn_sprite_items_card_backstab.h"
 #include "bn_sprite_items_card_ball_lightning.h"
 #include "bn_sprite_items_card_bash.h"
+#include "bn_sprite_items_card_battle_trance.h"
 #include "bn_sprite_items_card_beam_cell.h"
 #include "bn_sprite_items_card_blood_wall.h"
 #include "bn_sprite_items_card_bloodletting.h"
@@ -78,6 +79,7 @@
 #include "bn_sprite_items_card_drain_power.h"
 #include "bn_sprite_items_card_dualcast.h"
 #include "bn_sprite_items_card_dying_star.h"
+#include "bn_sprite_items_card_echoing_slash.h"
 #include "bn_sprite_items_card_enfeebling_touch.h"
 #include "bn_sprite_items_card_eradicate.h"
 #include "bn_sprite_items_card_escape_plan.h"
@@ -86,6 +88,7 @@
 #include "bn_sprite_items_card_expertise.h"
 #include "bn_sprite_items_card_falling_star.h"
 #include "bn_sprite_items_card_fear.h"
+#include "bn_sprite_items_card_feed.h"
 #include "bn_sprite_items_card_fiend_fire.h"
 #include "bn_sprite_items_card_fight_me.h"
 #include "bn_sprite_items_card_finisher.h"
@@ -100,6 +103,7 @@
 #include "bn_sprite_items_card_glitterstream.h"
 #include "bn_sprite_items_card_glow.h"
 #include "bn_sprite_items_card_go_for_the_eyes.h"
+#include "bn_sprite_items_card_grand_finale.h"
 #include "bn_sprite_items_card_guiding_star.h"
 #include "bn_sprite_items_card_haze.h"
 #include "bn_sprite_items_card_heavenly_drill.h"
@@ -112,6 +116,7 @@
 #include "bn_sprite_items_card_inflame.h"
 #include "bn_sprite_items_card_invoke.h"
 #include "bn_sprite_items_card_iron_wave.h"
+#include "bn_sprite_items_card_knockout_blow.h"
 #include "bn_sprite_items_card_know_thy_place.h"
 #include "bn_sprite_items_card_leap.h"
 #include "bn_sprite_items_card_leg_sweep.h"
@@ -176,6 +181,7 @@
 #include "bn_sprite_items_card_strike_regent.h"
 #include "bn_sprite_items_card_strike_silent.h"
 #include "bn_sprite_items_card_sucker_punch.h"
+#include "bn_sprite_items_card_sunder.h"
 #include "bn_sprite_items_card_supercritical.h"
 #include "bn_sprite_items_card_supermassive.h"
 #include "bn_sprite_items_card_suppress.h"
@@ -691,6 +697,18 @@ const bn::sprite_item& big_card_item(engine::CardId id)
         return bn::sprite_items::card_shining_strike;
     case engine::CardId::STARDUST:
         return bn::sprite_items::card_stardust;
+    case engine::CardId::FEED:
+        return bn::sprite_items::card_feed;
+    case engine::CardId::BATTLE_TRANCE:
+        return bn::sprite_items::card_battle_trance;
+    case engine::CardId::ECHOING_SLASH:
+        return bn::sprite_items::card_echoing_slash;
+    case engine::CardId::GRAND_FINALE:
+        return bn::sprite_items::card_grand_finale;
+    case engine::CardId::SUNDER:
+        return bn::sprite_items::card_sunder;
+    case engine::CardId::KNOCKOUT_BLOW:
+        return bn::sprite_items::card_knockout_blow;
     default:
         return bn::sprite_items::HERO_ITEM(card_strike_);
     }

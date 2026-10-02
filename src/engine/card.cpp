@@ -201,7 +201,14 @@ static const CardDef CARDS[] = {
     { CardId::ROYAL_GAMBLE, "Royal Gamble", 0, CardType::SKILL, TargetType::SELF, 9, 0, "Gain 9 Stars. Exhaust.", "Royal Gamble+", 0, 9, 0, "Retain. Gain 9 Stars. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN, 5, 5 },
     { CardId::SEVEN_STARS, "Seven Stars", 2, CardType::ATTACK, TargetType::ALL_ENEMIES, 7, 7, "Deal 7 dmg to all, 7 times.", "Seven Stars+", 1, 7, 7, "Deal 7 dmg to all, 7 times.", 0, 0, 7, 7 },
     { CardId::SHINING_STRIKE, "Shining Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 2, "Deal 8 dmg. Gain 2 Stars. Goes on top of the draw pile.", "Shining Strike+", 1, 11, 2, "Deal 11 dmg. Gain 2 Stars. Goes on top of the draw pile." },
-    { CardId::STARDUST, "Stardust", 0, CardType::ATTACK, TargetType::RANDOM_ENEMY, 5, 0, "Deal 5 dmg to a random enemy, X times.", "Stardust+", 0, 7, 0, "Deal 7 dmg to a random enemy, X times.", 0, 0, COST_X, COST_X }
+    { CardId::STARDUST, "Stardust", 0, CardType::ATTACK, TargetType::RANDOM_ENEMY, 5, 0, "Deal 5 dmg to a random enemy, X times.", "Stardust+", 0, 7, 0, "Deal 7 dmg to a random enemy, X times.", 0, 0, COST_X, COST_X },
+    // Fatal (an effect when the card kills) and play conditions
+    { CardId::FEED, "Feed", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 3, "Deal 10 dmg. Fatal: +3 max HP. Exhaust.", "Feed+", 1, 12, 4, "Deal 12 dmg. Fatal: +4 max HP. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::BATTLE_TRANCE, "Battle Trance", 0, CardType::SKILL, TargetType::SELF, 0, 3, "Draw 3 cards. No more draws this turn.", "Battle Trance+", 0, 0, 4, "Draw 4 cards. No more draws this turn." },
+    { CardId::ECHOING_SLASH, "Echoing Slash", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 10, 0, "Deal 10 dmg to all. Repeat per enemy killed.", "Echoing Slash+", 1, 13, 0, "Deal 13 dmg to all. Repeat per enemy killed." },
+    { CardId::GRAND_FINALE, "Grand Finale", 0, CardType::ATTACK, TargetType::ALL_ENEMIES, 60, 0, "Only if the draw pile is empty. Deal 60 dmg to all.", "Grand Finale+", 0, 75, 0, "Only if the draw pile is empty. Deal 75 dmg to all.", 0, 0, 0, 0, PlayCondition::DRAW_PILE_EMPTY },
+    { CardId::SUNDER, "Sunder", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 26, 3, "Deal 26 dmg. Fatal: gain 3 energy.", "Sunder+", 3, 34, 3, "Deal 34 dmg. Fatal: gain 3 energy." },
+    { CardId::KNOCKOUT_BLOW, "Knockout Blow", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 30, 5, "Deal 30 dmg. Fatal: gain 5 Stars.", "Knockout Blow+", 3, 38, 5, "Deal 38 dmg. Fatal: gain 5 Stars." }
 };
 
 const CardDef& CardDef::get(CardId id) {

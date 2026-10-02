@@ -357,6 +357,18 @@ bn::string_view base_name(engine::CardId id)
         return "Frappe rayonnante";
     case engine::CardId::STARDUST:
         return "Poussière d'étoiles";
+    case engine::CardId::FEED:
+        return "Appétit";
+    case engine::CardId::BATTLE_TRANCE:
+        return "Ivresse du combat";
+    case engine::CardId::ECHOING_SLASH:
+        return "Coup résonnant";
+    case engine::CardId::GRAND_FINALE:
+        return "Clou du spectacle";
+    case engine::CardId::SUNDER:
+        return "Scission";
+    case engine::CardId::KNOCKOUT_BLOW:
+        return "Hors d'état";
     default:
         return "???";
     }
@@ -897,6 +909,24 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::STARDUST:
         stream << "Inflige " << value << " à un ennemi au hasard, X fois.";
+        break;
+    case engine::CardId::FEED:
+        stream << "Inflige " << value << ". Si tue : PV Max +" << secondary << ". Épuis.";
+        break;
+    case engine::CardId::BATTLE_TRANCE:
+        stream << "Pioche " << secondary << " cartes. Plus de pioche ce tour.";
+        break;
+    case engine::CardId::ECHOING_SLASH:
+        stream << "TOUS : " << value << " dégâts. Rejoue par ennemi tué.";
+        break;
+    case engine::CardId::GRAND_FINALE:
+        stream << "Pioche vide requise. Inflige " << value << " à TOUS.";
+        break;
+    case engine::CardId::SUNDER:
+        stream << "Inflige " << value << ". Si tue : Énergie +" << secondary << ".";
+        break;
+    case engine::CardId::KNOCKOUT_BLOW:
+        stream << "Inflige " << value << ". Si tue : +" << secondary << " ★.";
         break;
     default:
         break;

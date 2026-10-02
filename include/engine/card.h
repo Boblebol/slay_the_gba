@@ -205,6 +205,13 @@ enum class CardId : uint8_t {
     SEVEN_STARS,
     SHINING_STRIKE,
     STARDUST,
+    // Fatal and play conditions (appended: saves store the numeric id)
+    FEED,
+    BATTLE_TRANCE,
+    ECHOING_SLASH,
+    GRAND_FINALE,
+    SUNDER,
+    KNOCKOUT_BLOW,
     COUNT
 };
 
@@ -228,7 +235,18 @@ enum CardKeyword : uint8_t {
     KEYWORD_ETHEREAL = 4, // exhausted when still in hand at the end of the turn
     KEYWORD_INNATE = 8,   // drawn in the opening hand
     KEYWORD_RETURN = 16,  // once played, comes back to the hand at the start of the next turn
-    KEYWORD_RETAIN_ONCE = 32 // per-copy only: stays in hand at the end of this turn, then the mark is removed
+    KEYWORD_RETAIN_ONCE = 32, // per-copy only: stays in hand at the end of this turn, then the mark is removed
+    KEYWORD_PLAY_FIRST = 64,  // while in hand, it must be played before any other card
+    KEYWORD_LIMIT_PLAYS = 128 // while in hand, no more than MAX_PLAYS_WHEN_LIMITED cards can be played each turn
+};
+
+constexpr uint8_t MAX_PLAYS_WHEN_LIMITED = 3;
+
+// What a card needs, besides its cost, to be played.
+enum class PlayCondition : uint8_t {
+    NONE,
+    DRAW_PILE_EMPTY,
+    HAND_ALL_ATTACKS // every card in hand, itself included, is an Attack
 };
 
 // CardDef::cost of an X card: it spends all the remaining energy and X is the amount spent.
@@ -270,6 +288,7 @@ struct CardDef {
     // Stars spent to play the card, on top of its energy cost (Regent). COST_X: all the Stars left.
     uint8_t star_cost = 0;
     uint8_t upgraded_star_cost = 0;
+    PlayCondition condition = PlayCondition::NONE;
 
     static const CardDef& get(CardId id);
     static std::string_view get_display_name(CardId id, bool upgraded) {

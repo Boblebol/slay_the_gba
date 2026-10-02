@@ -226,6 +226,7 @@ public:
     EnemyIntent current_intent;
     int16_t damage_percent = 100; // Ascension bonus on attack damage
     int16_t temp_strength_loss = 0; // Strength taken away until the end of this enemy's turn
+    bool minion = false; // summoned by another enemy: killing it triggers no Fatal effect
 
     void init(EnemyType enemy_type);
     // Damage the current intent would deal to `target` right now (0 when it does not attack).

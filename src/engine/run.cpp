@@ -284,7 +284,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                 CardId::PACTS_END, CardId::NOT_YET, CardId::BLOOD_WALL,
                                                 CardId::BLOODLETTING, CardId::BREAKTHROUGH, CardId::FORGOTTEN_RITUAL,
                                                 CardId::HEMOKINESIS, CardId::MANGLE, CardId::OFFERING,
-                                                CardId::SETUP_STRIKE, CardId::SPITE, CardId::WHIRLWIND };
+                                                CardId::SETUP_STRIKE, CardId::SPITE, CardId::WHIRLWIND,
+                                                CardId::FEED, CardId::BATTLE_TRANCE };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
@@ -296,7 +297,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::DODGE_AND_ROLL, CardId::FINISHER, CardId::MALAISE,
                                               CardId::MEMENTO_MORI, CardId::MURDER, CardId::PIERCING_WAIL,
                                               CardId::PREDATOR, CardId::SIDESTEP, CardId::SKEWER, CardId::EXPERTISE,
-                                              CardId::SNAKEBITE };
+                                              CardId::SNAKEBITE, CardId::ECHOING_SLASH, CardId::GRAND_FINALE };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
                                               CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
                                               CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,
@@ -306,7 +307,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::CHILL, CardId::FUSION, CardId::REBOOT, CardId::SUPERCRITICAL,
                                               CardId::DOUBLE_ENERGY, CardId::BOOT_SEQUENCE, CardId::CHARGE_BATTERY,
                                               CardId::FTL, CardId::HELIX_DRILL, CardId::LIGHTNING_ROD,
-                                              CardId::TEMPEST };
+                                              CardId::TEMPEST, CardId::SUNDER };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
                                               CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
@@ -317,7 +318,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::GAMMA_BLAST, CardId::GLOW, CardId::GUIDING_STAR,
                                               CardId::HIDDEN_CACHE, CardId::PARTICLE_WALL, CardId::RADIATE,
                                               CardId::RESONANCE, CardId::ROYAL_GAMBLE, CardId::SEVEN_STARS,
-                                              CardId::SHINING_STRIKE, CardId::STARDUST };
+                                              CardId::SHINING_STRIKE, CardId::STARDUST,
+                                              CardId::KNOCKOUT_BLOW };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
@@ -474,6 +476,7 @@ void RunManager::apply_combat_start_relics() {
 
 void RunManager::proceed_after_combat() {
     hp = combat.player.hp;
+    max_hp = combat.player.max_hp; // cards can raise it for the rest of the run (Feed)
     // Check Ironclad Burning blood passive
     for (size_t i = 0; i < relics.size(); ++i) {
         if (relics[i] == "BURNING_BLOOD") {

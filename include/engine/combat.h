@@ -73,6 +73,17 @@ struct DelayedEffect {
     uint8_t repeat = 1; // consecutive turns it triggers
 };
 
+// Why a hand card cannot be played right now.
+enum class PlayBlocker : uint8_t {
+    NONE,
+    NOT_PLAYABLE, // not the player's turn, or no such card
+    ENERGY,
+    STARS,
+    CONDITION,    // the card's own PlayCondition
+    PLAY_FIRST,   // another card in hand must be played first
+    PLAY_LIMIT    // a card in hand caps the number of cards played this turn
+};
+
 class CombatEngine {
 public:
     Player player;
@@ -91,6 +102,8 @@ public:
     FixedVector<DelayedEffect, 12> delayed_effects;
     uint8_t keep_block_turns = 0;  // starts of turn where the player's Block is not removed (Blur)
     bool retain_hand = false;      // the whole hand stays at the end of this turn
+    bool no_draw_this_turn = false; // "you cannot draw any more cards this turn"
+    uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;
 
@@ -137,7 +150,9 @@ public:
     // Schedules an effect: see DelayedEffect.
     void schedule(DelayedType type, int16_t amount, uint8_t delay = 1, uint8_t repeat = 1);
     
-    bool can_play_card(int index) const;
+    PlayBlocker play_blocker(int index) const;
+    bool can_play_card(int index) const { return play_blocker(index) == PlayBlocker::NONE; }
+    bool play_condition_met(PlayCondition condition) const;
     bool play_card(int index, int target_index = -1);
     void end_player_turn();
     void execute_enemy_turn();

@@ -147,6 +147,7 @@ void CombatEngine::shuffle_discard_into_draw() {
 }
 
 bool CombatEngine::draw_card() {
+    if (no_draw_this_turn) return false;
     if (hand.size() >= hand.capacity()) return false; // Hand limit
 
     if (draw_pile.empty()) {
@@ -190,7 +191,10 @@ void CombatEngine::create_card_in_discard(DeckCard card) {
 
 int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     counters.hits_dealt = bump(counters.hits_dealt);
-    return target.take_damage(attack_damage(base, player, target));
+    bool was_alive = target.is_alive();
+    int16_t lost = target.take_damage(attack_damage(base, player, target));
+    if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
+    return lost;
 }
 
 void CombatEngine::gain_stars(int amount) {
@@ -342,6 +346,8 @@ void CombatEngine::open_first_turn() {
     returning_cards.clear();
     keep_block_turns = 0;
     retain_hand = false;
+    no_draw_this_turn = false;
+    fatal_kills = 0;
     temp_strength = 0;
     temp_dexterity = 0;
 
@@ -384,6 +390,7 @@ void CombatEngine::start_player_turn() {
     player.block = kept_block;
     exhausted_this_turn = 0;
     retain_hand = false;
+    no_draw_this_turn = false;
     player.trigger_start_of_turn_orbs();
     int extra_draw = run_delayed_effects(false);
 
@@ -400,19 +407,47 @@ void CombatEngine::start_player_turn() {
     selected_target_index = get_first_alive_enemy_index();
 }
 
-bool CombatEngine::can_play_card(int index) const {
-    if (state != CombatState::PLAYER_TURN) return false;
-    if (index < 0 || static_cast<size_t>(index) >= hand.size()) return false;
+bool CombatEngine::play_condition_met(PlayCondition condition) const {
+    switch (condition) {
+        case PlayCondition::DRAW_PILE_EMPTY:
+            return draw_pile.empty();
+        case PlayCondition::HAND_ALL_ATTACKS:
+            for (const DeckCard& card : hand) {
+                if (CardDef::get(card.id).type != CardType::ATTACK) return false;
+            }
+            return true;
+        default:
+            return true;
+    }
+}
 
-    uint8_t cost = CardDef::get_cost(hand[index].id, hand[index].upgraded);
-    uint8_t star_cost = CardDef::get_star_cost(hand[index].id, hand[index].upgraded);
+PlayBlocker CombatEngine::play_blocker(int index) const {
+    if (state != CombatState::PLAYER_TURN) return PlayBlocker::NOT_PLAYABLE;
+    if (index < 0 || static_cast<size_t>(index) >= hand.size()) return PlayBlocker::NOT_PLAYABLE;
+
+    const DeckCard& card = hand[index];
+    // Restrictions set by the cards held in hand.
+    bool plays_first = CardDef::has_keyword(card, KEYWORD_PLAY_FIRST);
+    for (const DeckCard& held : hand) {
+        if (!plays_first && CardDef::has_keyword(held, KEYWORD_PLAY_FIRST)) return PlayBlocker::PLAY_FIRST;
+        if (CardDef::has_keyword(held, KEYWORD_LIMIT_PLAYS) && counters.cards_played() >= MAX_PLAYS_WHEN_LIMITED) {
+            return PlayBlocker::PLAY_LIMIT;
+        }
+    }
+    if (!play_condition_met(CardDef::get(card.id).condition)) return PlayBlocker::CONDITION;
+
     // An X card can be played for X = 0, in energy as in Stars.
-    return (cost == COST_X || player.energy >= cost) && (star_cost == COST_X || player.sovereign_stars >= star_cost);
+    uint8_t cost = CardDef::get_cost(card.id, card.upgraded);
+    if (cost != COST_X && player.energy < cost) return PlayBlocker::ENERGY;
+    uint8_t star_cost = CardDef::get_star_cost(card.id, card.upgraded);
+    if (star_cost != COST_X && player.sovereign_stars < star_cost) return PlayBlocker::STARS;
+    return PlayBlocker::NONE;
 }
 
 bool CombatEngine::play_card(int index, int target_index) {
     if (!can_play_card(index)) return false;
 
+    fatal_kills = 0;
     DeckCard played_card = hand[index];
     CardId card_id = played_card.id;
     bool upgraded = played_card.upgraded;
@@ -1626,6 +1661,60 @@ bool CombatEngine::play_card(int index, int target_index) {
                 hit(victim, base_value);
             }
             set_log(upgraded ? "Played Stardust+!"sv : "Played Stardust!"sv);
+            break;
+        }
+        case CardId::FEED: {
+            hit(current_target, base_value);
+            if (fatal_kills > 0) {
+                player.max_hp = static_cast<int16_t>(player.max_hp + secondary_value);
+                player.hp = static_cast<int16_t>(player.hp + secondary_value);
+            }
+            set_log(upgraded ? "Played Feed+!"sv : "Played Feed!"sv);
+            break;
+        }
+        case CardId::BATTLE_TRANCE: {
+            draw_cards(secondary_value);
+            no_draw_this_turn = true;
+            set_log(upgraded ? "Played Battle Trance+!"sv : "Played Battle Trance!"sv);
+            break;
+        }
+        case CardId::ECHOING_SLASH: {
+            // Every enemy killed by a sweep buys one more sweep.
+            for (int sweeps = 1; sweeps > 0 && has_alive_enemies(); --sweeps) {
+                uint8_t killed_before = fatal_kills;
+                for (size_t i = 0; i < enemies.size(); ++i) {
+                    if (enemies[i].is_alive()) {
+                        hit(enemies[i], base_value);
+                    }
+                }
+                sweeps += fatal_kills - killed_before;
+            }
+            set_log(upgraded ? "Played Echoing Slash+!"sv : "Played Echoing Slash!"sv);
+            break;
+        }
+        case CardId::GRAND_FINALE: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    hit(enemies[i], base_value);
+                }
+            }
+            set_log(upgraded ? "Played Grand Finale+!"sv : "Played Grand Finale!"sv);
+            break;
+        }
+        case CardId::SUNDER: {
+            hit(current_target, base_value);
+            if (fatal_kills > 0) {
+                player.energy = static_cast<int8_t>(player.energy + secondary_value);
+            }
+            set_log(upgraded ? "Played Sunder+!"sv : "Played Sunder!"sv);
+            break;
+        }
+        case CardId::KNOCKOUT_BLOW: {
+            hit(current_target, base_value);
+            if (fatal_kills > 0) {
+                gain_stars(secondary_value);
+            }
+            set_log(upgraded ? "Played Knockout Blow+!"sv : "Played Knockout Blow!"sv);
             break;
         }
         default:

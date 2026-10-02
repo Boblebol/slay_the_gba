@@ -1843,6 +1843,136 @@ void test_regent_stars() {
     std::cout << "[PASS] Stars: Glow, Hidden Cache, Radiate, Meteor Shower, Particle Wall, Resonance, Royal Gamble, Seven Stars, Shining Strike, Stardust" << std::endl;
 }
 
+void test_fatal() {
+    // Sunder: the energy comes back only when the hit kills.
+    CombatEngine sunder = make_pack(CharacterId::DEFECT);
+    play(sunder, CardId::SUNDER, 2);
+    assert(sunder.enemies[2].hp == 42 - 26 && sunder.player.energy == 0 && sunder.fatal_kills == 0);
+    play(sunder, CardId::SUNDER, 0);
+    assert(!sunder.enemies[0].is_alive() && sunder.player.energy == 3 && sunder.fatal_kills == 1);
+
+    // Killing a minion is not a Fatal blow.
+    sunder.enemies[1].minion = true;
+    play(sunder, DeckCard(CardId::SUNDER, true), 1);
+    assert(!sunder.enemies[1].is_alive() && sunder.player.energy == 0 && sunder.fatal_kills == 0);
+
+    // The tally belongs to the card being played.
+    play(sunder, CardId::STRIKE, 2);
+    assert(sunder.fatal_kills == 0);
+
+    CombatEngine knockout = make_pack(CharacterId::REGENT);
+    play(knockout, CardId::KNOCKOUT_BLOW, 2);
+    assert(knockout.enemies[2].hp == 42 - 30 && knockout.player.sovereign_stars == 0);
+    play(knockout, DeckCard(CardId::KNOCKOUT_BLOW, true), 0);
+    assert(knockout.player.sovereign_stars == 5 && knockout.counters.stars_gained == 5);
+
+    // Echoing Slash: each enemy killed by a sweep adds a sweep, kills of the extra sweeps included.
+    CombatEngine echo = make_pack(CharacterId::SILENT);
+    play(echo, CardId::ECHOING_SLASH);
+    assert(echo.enemies[0].hp == 8 && echo.enemies[1].hp == 8 && echo.enemies[2].hp == 32);
+    echo.enemies[0].hp = 10;
+    echo.enemies[1].hp = 15;
+    echo.enemies[2].hp = 42;
+    play(echo, CardId::ECHOING_SLASH);
+    assert(!echo.enemies[0].is_alive() && !echo.enemies[1].is_alive());
+    assert(echo.enemies[2].hp == 42 - 3 * 10 && echo.fatal_kills == 2);
+    assert(CardDef::get_value(CardId::ECHOING_SLASH, true) == 13);
+
+    // Feed: the Max HP gained is kept by the run after the fight.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(run, RoomType::MONSTER);
+    int16_t max_before = run.max_hp;
+    int16_t hp_before = run.combat.player.hp;
+    for (Enemy& foe : run.combat.enemies) foe.hp = 5;
+    while (run.combat.has_alive_enemies()) {
+        play(run.combat, DeckCard(CardId::FEED, true));
+    }
+    int kills = static_cast<int>(run.combat.enemies.size());
+    assert(run.combat.player.max_hp == max_before + 4 * kills && run.combat.player.hp == hp_before + 4 * kills);
+    assert(run.combat.exhaust_pile.size() == static_cast<size_t>(kills));
+    run.proceed_after_combat();
+    assert(run.max_hp == max_before + 4 * kills);
+
+    CombatEngine feed = make_combat(CharacterId::IRONCLAD);
+    play(feed, CardId::FEED);
+    assert(feed.enemies[0].hp == 42 - 10 && feed.player.max_hp == 80);
+
+    assert_in_pool(CharacterId::DEFECT, { CardId::SUNDER });
+    assert_in_pool(CharacterId::REGENT, { CardId::KNOCKOUT_BLOW });
+    assert_in_pool(CharacterId::SILENT, { CardId::ECHOING_SLASH, CardId::GRAND_FINALE });
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::FEED, CardId::BATTLE_TRANCE });
+    std::cout << "[PASS] Fatal: Sunder, Knockout Blow, Echoing Slash, Feed, minions do not count" << std::endl;
+}
+
+void test_play_conditions() {
+    // Grand Finale needs an empty draw pile.
+    CombatEngine finale = make_pack(CharacterId::SILENT);
+    for (Enemy& foe : finale.enemies) foe.hp = 100;
+    finale.hand.clear();
+    finale.hand.push_back(CardId::GRAND_FINALE);
+    assert(!finale.draw_pile.empty());
+    assert(finale.play_blocker(0) == PlayBlocker::CONDITION && !finale.play_card(0));
+    finale.draw_pile.clear();
+    assert(finale.play_blocker(0) == PlayBlocker::NONE && finale.play_card(0));
+    for (const Enemy& foe : finale.enemies) assert(foe.hp == 40);
+    assert(CardDef::get_value(CardId::GRAND_FINALE, true) == 75);
+
+    // A hand made of Attacks only.
+    CombatEngine clash = make_combat(CharacterId::IRONCLAD);
+    clash.hand.clear();
+    clash.hand.push_back(CardId::STRIKE);
+    clash.hand.push_back(CardId::BASH);
+    assert(clash.play_condition_met(PlayCondition::HAND_ALL_ATTACKS));
+    clash.hand.push_back(CardId::DEFEND);
+    assert(!clash.play_condition_met(PlayCondition::HAND_ALL_ATTACKS));
+    assert(clash.play_condition_met(PlayCondition::NONE));
+
+    // Battle Trance: nothing more is drawn this turn, whatever asks for it.
+    CombatEngine trance = make_combat(CharacterId::IRONCLAD);
+    pad_draw_pile(trance, 10);
+    play(trance, DeckCard(CardId::BATTLE_TRANCE, true));
+    assert(trance.hand.size() == 4 && trance.no_draw_this_turn && trance.player.energy == 3);
+    trance.hand.clear();
+    play(trance, CardId::POMMEL_STRIKE);
+    assert(trance.hand.empty() && !trance.draw_card());
+    end_turn_idle(trance);
+    assert(trance.hand.size() == 5 && !trance.no_draw_this_turn);
+
+    // A card that must be played before the others.
+    CombatEngine first = make_combat(CharacterId::IRONCLAD);
+    DeckCard demanding(CardId::DEFEND);
+    demanding.added_keywords = KEYWORD_PLAY_FIRST;
+    first.hand.clear();
+    first.hand.push_back(CardId::STRIKE);
+    first.hand.push_back(demanding);
+    assert(first.play_blocker(0) == PlayBlocker::PLAY_FIRST && first.play_blocker(1) == PlayBlocker::NONE);
+    assert(first.play_card(1));
+    assert(first.play_blocker(0) == PlayBlocker::NONE);
+
+    // A card that caps the turn at 3 cards while it is in hand.
+    CombatEngine limit = make_combat(CharacterId::IRONCLAD);
+    DeckCard numbing(CardId::DEFEND);
+    numbing.added_keywords = KEYWORD_LIMIT_PLAYS;
+    limit.hand.clear();
+    limit.hand.push_back(numbing);
+    for (int i = 0; i < 4; ++i) limit.hand.push_back(CardId::ANGER); // free
+    for (int i = 0; i < 3; ++i) assert(limit.play_card(1));
+    assert(limit.play_blocker(1) == PlayBlocker::PLAY_LIMIT && limit.play_blocker(0) == PlayBlocker::PLAY_LIMIT);
+    limit.hand.erase(0);
+    assert(limit.play_blocker(0) == PlayBlocker::NONE);
+
+    // The other reasons a card stays in hand.
+    CombatEngine blocked = make_combat(CharacterId::REGENT);
+    blocked.hand.clear();
+    blocked.hand.push_back(CardId::STRIKE);
+    blocked.hand.push_back(CardId::FALLING_STAR);
+    blocked.player.energy = 0;
+    assert(blocked.play_blocker(0) == PlayBlocker::ENERGY && blocked.play_blocker(1) == PlayBlocker::STARS);
+    assert(blocked.play_blocker(5) == PlayBlocker::NOT_PLAYABLE);
+    std::cout << "[PASS] Play conditions: Grand Finale, Attack-only hand, Battle Trance, play first, play limit" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -1923,6 +2053,8 @@ int main() {
     test_hp_loss();
     test_counters();
     test_regent_stars();
+    test_fatal();
+    test_play_conditions();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;

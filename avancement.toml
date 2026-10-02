@@ -105,7 +105,7 @@ items = [
   { name = "Choix d'une carte parmi plusieurs (Découverte, etc.)", status = "non", issue = 72 },
   { name = "Cartes à coût X", status = "oui" },
   { name = "Écho : rejouer une carte", status = "non", issue = 86 },
-  { name = "Coup de grâce : effet quand la carte tue un ennemi", status = "non", issue = 87 },
+  { name = "Coup de grâce : effet quand la carte tue un ennemi", status = "oui" },
   { name = "Transformer une carte", status = "non", issue = 79 },
 ]
 
