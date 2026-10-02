@@ -34,6 +34,7 @@ constexpr int STATUS_Y = 9;
 constexpr int HAND_Y = 64;
 constexpr int HAND_FOCUS_Y = 57;
 constexpr int HAND_PICKED_Y = 50;
+constexpr int CHOICE_BANNER_X = 36;
 constexpr int LINE1_Y = 30;
 constexpr int LINE2_Y = 41;
 constexpr int STAGE_X = 0;
@@ -197,6 +198,7 @@ private:
     int _player_guard = 0;
     int _player_death = 0;
     int _banner_timer = 0;
+    int _banner_x = 0;
     bool _victory = false;
 
     // Card flight
@@ -911,6 +913,7 @@ int CombatScene::_next_alive(int from, int step) const
 
 void CombatScene::_set_banner(const bn::string_view& text, TextColor color)
 {
+    _banner_x = 0;
     _banner.set(0, -48, text, Align::CENTER, color);
     _banner_timer = 60;
 }
@@ -1243,7 +1246,9 @@ void CombatScene::_refresh_choice_banner()
         stream << " : 1 carte";
     }
 
-    _banner.set(0, -48, text, Align::CENTER, TextColor::GOLD);
+    // Off centre: the pile counters are on the left, and the prompt stays as long as the choice does.
+    _banner_x = CHOICE_BANNER_X;
+    _banner.set(_banner_x, -48, text, Align::CENTER, TextColor::GOLD);
     _banner_timer = bn::max(_banner_timer, 50);
 }
 
@@ -1950,7 +1955,7 @@ bn::optional<SceneId> CombatScene::update()
         --_banner_timer;
         int age = 60 - _banner_timer;
         int x = age < 10 ? ((10 - age) * (10 - age) * 2) : 0;
-        _banner.move_to(-x, -48);
+        _banner.move_to(_banner_x - x, -48);
         _banner.set_visible(_banner_timer > 0);
     }
 
