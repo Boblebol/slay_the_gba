@@ -61,6 +61,10 @@ STACKTRACE      :=
 USERBUILD       := 
 EXTTOOL         := 
 
+# Every tests/*_test.cpp is a unit test with its own main, built and run by `make test`. The end-to-end
+# run has its own target.
+UNIT_TESTS      := $(filter-out tests/e2e_test.cpp,$(sort $(wildcard tests/*_test.cpp)))
+
 ENGINE_SOURCES  := src/engine/card.cpp \
                    src/engine/entity.cpp \
                    src/engine/combat.cpp \
@@ -159,10 +163,10 @@ clean-all: clean
 test:
 	@mkdir -p bin
 	@printf "$(CYAN)==> Compilation et exécution des tests unitaires déterministes...$(RESET)\n"
-	@clang++ -std=c++20 -Iinclude $(ENGINE_SOURCES) tests/cli_test.cpp -o bin/cli_test
-	@./bin/cli_test
-	@clang++ -std=c++20 -Iinclude $(ENGINE_SOURCES) tests/combat_test.cpp -o bin/combat_test
-	@./bin/combat_test
+	@for source in $(UNIT_TESTS); do \
+		binary=bin/$$(basename $$source .cpp); \
+		clang++ -std=c++20 -Iinclude $(ENGINE_SOURCES) $$source -o $$binary && ./$$binary || exit 1; \
+	done
 	@printf "$(GREEN)✓ Tous les tests unitaires ont réussi !$(RESET)\n"
 
 test-e2e:
@@ -244,10 +248,10 @@ clean-all: clean clean-obsolete
 
 test:
 	@mkdir -p bin
-	@clang++ -std=c++20 -Iinclude $(ENGINE_SOURCES) tests/cli_test.cpp -o bin/cli_test
-	@./bin/cli_test
-	@clang++ -std=c++20 -Iinclude $(ENGINE_SOURCES) tests/combat_test.cpp -o bin/combat_test
-	@./bin/combat_test
+	@for source in $(UNIT_TESTS); do \
+		binary=bin/$$(basename $$source .cpp); \
+		clang++ -std=c++20 -Iinclude $(ENGINE_SOURCES) $$source -o $$binary && ./$$binary || exit 1; \
+	done
 
 test-e2e:
 	@mkdir -p bin
