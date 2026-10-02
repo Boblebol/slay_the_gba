@@ -519,6 +519,33 @@ void RunManager::register_relic_powers() {
     if (has_relic("EMOTION_CHIP")) combat.add_power(PowerId::EMOTION_CHIP);
     if (has_relic("BOOK_REPAIR_KNIFE")) combat.add_power(PowerId::BOOK_REPAIR_KNIFE, 3);
     if (has_relic("HELICAL_DART")) combat.add_power(PowerId::HELICAL_DART, 1);
+    // Cards played, exhausted or created
+    if (has_relic("JOSS_PAPER")) combat.add_power(PowerId::JOSS_PAPER, 1);
+    if (has_relic("LETTER_OPENER")) combat.add_power(PowerId::LETTER_OPENER, 5);
+    if (has_relic("TUNING_FORK")) combat.add_power(PowerId::TUNING_FORK, 7);
+    if (has_relic("KUNAI")) combat.add_power(PowerId::KUNAI, 1);
+    if (has_relic("KUSARIGAMA")) combat.add_power(PowerId::KUSARIGAMA, 6);
+    if (has_relic("MUMMIFIED_HAND")) combat.add_power(PowerId::MUMMIFIED_HAND);
+    if (has_relic("NUNCHAKU")) combat.add_power(PowerId::NUNCHAKU, 1);
+    if (has_relic("RAINBOW_RING")) combat.add_power(PowerId::RAINBOW_RING, 1);
+    if (has_relic("RIPPLE_BASIN")) combat.add_power(PowerId::RIPPLE_BASIN, 4);
+    if (has_relic("BURNING_STICKS")) combat.add_power(PowerId::BURNING_STICKS);
+    // Intimidating Helmet does what Danse Macabre does: Block for a card that costs 2 or more.
+    if (has_relic("INTIMIDATING_HELMET")) combat.add_power(PowerId::DANSE_MACABRE, 4);
+    if (has_relic("SHURIKEN")) combat.add_power(PowerId::SHURIKEN, 1);
+    if (has_relic("ORNAMENTAL_FAN")) combat.add_power(PowerId::ORNAMENTAL_FAN, 4);
+    // More hero relics
+    if (has_relic("SELF_FORMING_CLAY")) combat.add_power(PowerId::SELF_FORMING_CLAY, 3);
+    if (has_relic("CHARONS_ASHES")) combat.add_power(PowerId::CHARONS_ASHES, 3);
+    if (has_relic("RED_SKULL")) combat.add_power(PowerId::RED_SKULL, 3);
+    if (has_relic("DEMON_TONGUE")) combat.add_power(PowerId::DEMON_TONGUE);
+    if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
+    if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
+    if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);
+    if (has_relic("GALACTIC_DUST")) combat.add_power(PowerId::GALACTIC_DUST, 10);
+    if (has_relic("LUNAR_PASTRY")) combat.add_power(PowerId::LUNAR_PASTRY, 1);
+    if (has_relic("REGALITE")) combat.add_power(PowerId::REGALITE, 4);
+    if (has_relic("IVORY_TILE")) combat.add_power(PowerId::IVORY_TILE, 1);
 }
 
 void RunManager::apply_combat_start_relics() {
@@ -528,6 +555,10 @@ void RunManager::apply_combat_start_relics() {
     }
     // Ring of the Snake (Silent): draw 2 additional cards on the first turn.
     if (has_relic("RING_OF_THE_SNAKE")) {
+        combat.draw_cards(2);
+    }
+    // Bag of Preparation: 2 additional cards as well.
+    if (has_relic("BAG_OF_PREPARATION")) {
         combat.draw_cards(2);
     }
     // Bellows: the first hand of the combat is upgraded, the cards of Ring of the Snake included.
@@ -541,6 +572,24 @@ void RunManager::apply_combat_start_relics() {
     // Ninja Scroll (Silent): 3 Shivs.
     if (has_relic("NINJA_SCROLL")) {
         combat.add_shivs(3);
+    }
+    // Vexing Puzzlebox: a random card of the hero's pool, free this turn unless a full hand sends it to the
+    // discard pile.
+    if (has_relic("VEXING_PUZZLEBOX")) {
+        std::span<const CardId> pool = card_reward_pool(character);
+        DeckCard gift(pool[next_random() % pool.size()]);
+        gift.free_this_turn = combat.hand.size() < combat.hand.capacity();
+        combat.create_card(gift, Pile::HAND);
+    }
+    // Big Hat (Necrobinder): 2 random Ethereal cards of the hero's pool.
+    if (has_relic("BIG_HAT")) {
+        FixedVector<CardId, 128> ethereal;
+        for (CardId id : card_reward_pool(character)) {
+            if (CardDef::has_keyword(id, false, KEYWORD_ETHEREAL)) ethereal.push_back(id);
+        }
+        for (int n = 0; n < 2 && !ethereal.empty(); ++n) {
+            combat.create_card(ethereal[next_random() % ethereal.size()], Pile::HAND);
+        }
     }
     // Divine Right (Regent): 3 Stars.
     if (has_relic("DIVINE_RIGHT")) {
@@ -610,9 +659,11 @@ void RunManager::apply_combat_start_relics() {
         }
     }
     // Red Mask, Bag of Marbles and Festive Popper hit every enemy: 1 Weak, 1 Vulnerable, 9 damage.
+    // So does Twisted Funnel (Silent): 4 Poison, which the powers hear about (Snecko Skull adds its own).
     for (Enemy& foe : combat.enemies) {
         if (has_relic("RED_MASK")) foe.add_status(StatusType::WEAK, 1);
         if (has_relic("BAG_OF_MARBLES")) foe.add_status(StatusType::VULNERABLE, 1);
+        if (has_relic("TWISTED_FUNNEL")) combat.afflict(foe, StatusType::POISON, 4);
         if (has_relic("FESTIVE_POPPER")) foe.take_damage(9);
     }
     combat.enemy = combat.enemies[0];
@@ -646,6 +697,10 @@ void RunManager::proceed_after_combat() {
         if (relics[i] == "BURNING_BLOOD") {
             hp = std::min<int16_t>(max_hp, hp + 6);
         }
+    }
+    // Meat on the Bone: 12 HP for whoever leaves the fight with half their HP or less.
+    if (has_relic("MEAT_ON_THE_BONE") && hp * 2 <= max_hp) {
+        hp = std::min<int16_t>(max_hp, hp + 12);
     }
 
     if (map.nodes[current_node_index].type == RoomType::BOSS) {
