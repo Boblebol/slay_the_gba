@@ -41,7 +41,7 @@ jobs:
       - name: Tests
         run: |
           make test test-e2e
-          uv run --with pytest pytest scripts/progress_test.py
+          uv run --with pytest --with pillow --with numpy --with markdown pytest scripts
 
       - name: Plan the release
         id: plan
