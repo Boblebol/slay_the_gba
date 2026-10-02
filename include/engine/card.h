@@ -5,7 +5,8 @@
 
 namespace engine {
 
-enum class CardId : uint8_t {
+// 16 bits: the reference game has 569 cards.
+enum class CardId : uint16_t {
     NONE = 0,
     STRIKE,
     DEFEND,

@@ -52,7 +52,9 @@ Sprites, backgrounds and the French-capable font are generated from the `bible/i
 uv run scripts/build_gba_art.py
 ```
 
-Everything lands in `graphics/` (plus `include/gba/slay_font.h`).
+Everything lands in `graphics/`, plus two generated headers: `include/gba/slay_font.h` and
+`include/gba/card_art.h`. The second one lists, for each cartridge, the card art it carries (its hero's cards
+and the shared ones): a ROM does not embed the illustrations of the four other heroes.
 
 Sound effects (8-bit WAV) and the seven looping background themes (4-channel ProTracker modules:
 title, map, combat, elite, boss, victory, game over) are synthesised from chiptune oscillators and
