@@ -488,6 +488,17 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::SHROUD:
             if (event == CombatEvent::DEBUFF_APPLIED && info.status == StatusType::DOOM) add_block(power.amount);
             break;
+        // Attacks played
+        case PowerId::JUGGLING:
+            // The tally of the turn does not count the card being played yet.
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK &&
+                counters.attacks_played + 1 == JUGGLING_ATTACK) {
+                DeckCard copy = info.card;
+                copy.free_this_turn = false;
+                copy.deck_index = NOT_IN_DECK; // a gain on the copy does not reach the deck
+                create_card(copy, Pile::HAND);
+            }
+            break;
         // Relics
         case PowerId::CAPTAINS_WHEEL:
             if (turn_start && power.turns == 3) add_block(power.amount);
@@ -3791,6 +3802,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             hit(current_target, base_value);
             ask_choice(HandChoice{ ChoiceKind::MAKE_ETHEREAL, 1 });
             set_log(upgraded ? "Played Sculpting Strike+!"sv : "Played Sculpting Strike!"sv);
+            break;
+        }
+        case CardId::JUGGLING: {
+            add_power(PowerId::JUGGLING);
+            set_log(upgraded ? "Played Juggling+!"sv : "Played Juggling!"sv);
             break;
         }
         default:

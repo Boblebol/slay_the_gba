@@ -396,6 +396,8 @@ enum class CardId : uint16_t {
     TYRANNY,
     // Necrobinder hand choices (appended: saves store the numeric id)
     SCULPTING_STRIKE,
+    // Ironclad cards on the card-played event (appended: saves store the numeric id)
+    JUGGLING,
     COUNT
 };
 

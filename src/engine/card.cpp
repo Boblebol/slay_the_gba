@@ -393,7 +393,9 @@ static constexpr CardDef CARDS[] = {
     { CardId::GLIMMER, "Glimmer", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Draw 3 cards. Put a card of your hand on top of your draw pile.", "Glimmer+", 1, 4, 0, "Draw 4 cards. Put a card of your hand on top of your draw pile." },
     { CardId::TYRANNY, "Tyranny", 1, CardType::POWER, TargetType::SELF, 1, 0, "At the start of your turn, draw 1 card and exhaust 1 card of your hand.", "Tyranny+", 1, 1, 0, "Innate. At the start of your turn, draw 1 card and exhaust 1 card of your hand.", 0, KEYWORD_INNATE },
     // Necrobinder: hand choices
-    { CardId::SCULPTING_STRIKE, "Sculpting Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 0, "Deal 9 dmg. A card of your hand gains Ethereal.", "Sculpting Strike+", 1, 12, 0, "Deal 12 dmg. A card of your hand gains Ethereal." }
+    { CardId::SCULPTING_STRIKE, "Sculpting Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 0, "Deal 9 dmg. A card of your hand gains Ethereal.", "Sculpting Strike+", 1, 12, 0, "Deal 12 dmg. A card of your hand gains Ethereal." },
+    // Ironclad: cards on the card-played event
+    { CardId::JUGGLING, "Juggling", 1, CardType::POWER, TargetType::SELF, 0, 0, "The 3rd Attack you play each turn is copied into your hand.", "Juggling+", 1, 0, 0, "The 3rd Attack you play each turn is copied into your hand.", 0, KEYWORD_INNATE }
 };
 
 const CardDef& CardDef::get(CardId id) {

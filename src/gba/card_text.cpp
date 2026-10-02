@@ -689,6 +689,8 @@ bn::string_view base_name(engine::CardId id)
         return "Tyran";
     case engine::CardId::SCULPTING_STRIKE:
         return "Frappe du sculpteur";
+    case engine::CardId::JUGGLING:
+        return "Jonglage";
     default:
         return "???";
     }
@@ -1732,6 +1734,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SCULPTING_STRIKE:
         stream << "Inflige " << value << ". 1 carte devient Éthérée.";
+        break;
+    case engine::CardId::JUGGLING:
+        stream << (card.upgraded ? "Inné. " : "") << "3e Attaque du tour : copie en Main.";
         break;
     default:
         break;
