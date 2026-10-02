@@ -298,7 +298,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                 CardId::TEAR_ASUNDER, CardId::HAVOC, CardId::UNRELENTING,
                                                 CardId::MIDNIGHT, CardId::STOMP, CardId::RAMPAGE, CardId::ARMAMENTS,
                                                 CardId::BRAND, CardId::BURNING_PACT,
-                                                CardId::JUGGLING };
+                                                CardId::JUGGLING,
+                                                CardId::HEADBUTT };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
@@ -344,7 +345,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::SMOKESTACK, CardId::COMPACT, CardId::GUNK_UP,
                                               CardId::ITERATION, CardId::FIGHT_THROUGH, CardId::OVERCLOCK,
                                               CardId::ROCKET_PUNCH, CardId::TRASH_TO_TREASURE, CardId::TURBO,
-                                              CardId::SCAVENGE };
+                                              CardId::SCAVENGE,
+                                              CardId::HOLOGRAM };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
                                               CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
@@ -362,7 +364,9 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::MONARCHS_GAZE, CardId::BOMBARDMENT, CardId::I_AM_INVINCIBLE,
                                               CardId::VOID_FORM, CardId::KINGLY_KICK, CardId::KINGLY_PUNCH,
                                               CardId::COLLISION_COURSE, CardId::CRASH_LANDING, CardId::PHOTON_CUT,
-                                              CardId::GLIMMER, CardId::TYRANNY };
+                                              CardId::GLIMMER, CardId::TYRANNY,
+                                              CardId::COSMIC_INDIFFERENCE,
+                                              CardId::FOREGONE_CONCLUSION };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
@@ -379,7 +383,10 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::TIMES_UP, CardId::OBLIVION, CardId::SHROUD,
                                                    CardId::EIDOLON, CardId::BANSHEES_CRY, CardId::VEILPIERCER,
                                                    CardId::BORROWED_TIME, CardId::THE_SCYTHE, CardId::MELANCHOLY,
-                                                   CardId::HANG, CardId::SCULPTING_STRIKE };
+                                                   CardId::HANG, CardId::SCULPTING_STRIKE,
+                                                   CardId::GRAVEBLAST,
+                                                   CardId::DREDGE,
+                                                   CardId::CLEANSE };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;
@@ -536,7 +543,7 @@ void RunManager::apply_combat_start_relics() {
     }
     // Gambling Chip: any number of cards of the first hand are discarded, and as many are drawn.
     if (has_relic("GAMBLING_CHIP")) {
-        combat.ask_choice(HandChoice{ ChoiceKind::DISCARD, 10, true, ChoiceThen::DRAW_PER_CARD });
+        combat.ask_choice(CardChoice{ ChoiceKind::DISCARD, 10, true, ChoiceThen::DRAW_PER_CARD });
     }
     // Ninja Scroll (Silent): 3 Shivs.
     if (has_relic("NINJA_SCROLL")) {

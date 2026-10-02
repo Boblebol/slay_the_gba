@@ -3874,6 +3874,96 @@ void test_hand_choices() {
     std::cout << "[PASS] Hand choices: Survivor, True Grit+, Burning Pact, Brand, Armaments, Acrobatics, Dagger Throw, Prepared, Hidden Daggers, Scavenge, Photon Cut, Glimmer, Tyranny, Sculpting Strike, two choices in a row, Gambling Chip" << std::endl;
 }
 
+void test_pile_choices() {
+    // Headbutt: a card of the discard pile goes on top of the draw pile; the Headbutt itself cannot be picked.
+    CombatEngine headbutt = make_combat(CharacterId::IRONCLAD);
+    headbutt.discard_pile.push_back(CardId::BASH);
+    headbutt.discard_pile.push_back(CardId::DEFEND);
+    deal(headbutt, { CardId::HEADBUTT });
+    assert(headbutt.play_card(0) && headbutt.enemies[0].hp == 42 - 9 && headbutt.choice_pending());
+    assert(headbutt.pending_choices[0].source == Pile::DISCARD && headbutt.choice_pool_size() == 2);
+    assert(headbutt.discard_pile.size() == 3 && headbutt.discard_pile[2] == CardId::HEADBUTT);
+    assert(!headbutt.choice_allows(2) && !pick(headbutt, { 2 }) && headbutt.choice_pending());
+    assert(pick(headbutt, { 0 }) && headbutt.draw_pile.back() == CardId::BASH && headbutt.discard_pile.size() == 2);
+    // A single card in the discard pile leaves nothing to decide; none, nothing happens.
+    CombatEngine alone = make_combat(CharacterId::IRONCLAD);
+    alone.discard_pile.push_back(CardId::BASH);
+    deal(alone, { DeckCard(CardId::HEADBUTT, true) });
+    assert(alone.play_card(0) && !alone.choice_pending() && alone.draw_pile.back() == CardId::BASH);
+    assert(alone.enemies[0].hp == 42 - 12);
+    deal(alone, { CardId::HEADBUTT });
+    alone.discard_pile.clear();
+    assert(alone.play_card(0) && !alone.choice_pending() && alone.discard_pile.size() == 1);
+
+    // Hologram: from the discard pile to the hand.
+    CombatEngine hologram = make_combat(CharacterId::DEFECT);
+    hologram.discard_pile.push_back(CardId::ZAP);
+    hologram.discard_pile.push_back(CardId::STRIKE);
+    deal(hologram, { CardId::HOLOGRAM });
+    assert(hologram.play_card(0) && hologram.player.block == 3 && hologram.choice_pending());
+    assert(pick(hologram, { 0 }) && hologram.hand.size() == 1 && hologram.hand[0] == CardId::ZAP);
+    assert(count_in(hologram.exhaust_pile, CardId::HOLOGRAM) == 1 && !CardDef::has_keyword(CardId::HOLOGRAM, true, KEYWORD_EXHAUST));
+
+    // Cosmic Indifference, and Foregone Conclusion's pick in the draw pile once the next hand is drawn.
+    CombatEngine regent = make_combat(CharacterId::REGENT);
+    regent.discard_pile.push_back(CardId::STRIKE);
+    regent.discard_pile.push_back(CardId::DEFEND);
+    deal(regent, { DeckCard(CardId::COSMIC_INDIFFERENCE, true) });
+    assert(regent.play_card(0) && regent.player.block == 9 && pick(regent, { 1 }) && regent.draw_pile.back() == CardId::DEFEND);
+    pad_draw_pile(regent, 10);
+    deal(regent, { CardId::FOREGONE_CONCLUSION });
+    assert(regent.play_card(0) && !regent.choice_pending());
+    end_turn_idle(regent);
+    assert(regent.choice_pending() && regent.pending_choices[0].source == Pile::DRAW && regent.choice_size() == 2);
+    size_t in_draw = regent.draw_pile.size();
+    assert(regent.hand.size() == 5 && pick(regent, { 0, 1 }) && regent.hand.size() == 7 && regent.draw_pile.size() == in_draw - 2);
+    end_turn_idle(regent);
+    assert(!regent.choice_pending());
+
+    // Graveblast and Dredge; a full hand leaves the cards where they are.
+    CombatEngine grave = make_combat(CharacterId::NECROBINDER);
+    for (CardId id : { CardId::STRIKE, CardId::DEFEND, CardId::DEFILE, CardId::HANG }) grave.discard_pile.push_back(id);
+    deal(grave, { CardId::GRAVEBLAST });
+    assert(grave.play_card(0) && grave.enemies[0].hp == 42 - 4 && pick(grave, { 3 }) && grave.hand[0] == CardId::HANG);
+    assert(count_in(grave.exhaust_pile, CardId::GRAVEBLAST) == 1);
+    deal(grave, { DeckCard(CardId::DREDGE, true) });
+    assert(CardDef::has_keyword(CardId::DREDGE, true, KEYWORD_RETAIN) && CardDef::has_keyword(CardId::DREDGE, true, KEYWORD_EXHAUST));
+    assert(grave.play_card(0) && !grave.choice_pending() && grave.hand.size() == 3 && grave.discard_pile.empty());
+    for (CardId id : { CardId::STRIKE, CardId::DEFEND, CardId::DEFILE, CardId::HANG }) grave.discard_pile.push_back(id);
+    grave.hand.clear();
+    grave.hand.push_back(CardId::DREDGE);
+    for (int i = 0; i < 8; ++i) grave.hand.push_back(CardId::STRIKE);
+    grave.player.energy = 3;
+    assert(grave.play_card(0) && grave.choice_size() == 3 && pick(grave, { 0, 1, 2 }));
+    assert(grave.hand.size() == 10 && grave.discard_pile.size() == 2);
+
+    // Cleanse: a card of the draw pile is exhausted.
+    CombatEngine cleanse = make_combat(CharacterId::NECROBINDER);
+    cleanse.draw_pile.clear();
+    cleanse.draw_pile.push_back(CardId::STRIKE);
+    cleanse.draw_pile.push_back(CardId::WOUND);
+    deal(cleanse, { CardId::CLEANSE });
+    int16_t minion = cleanse.player.minion_hp;
+    assert(cleanse.play_card(0) && cleanse.player.minion_hp == minion + 3 && cleanse.choice_pending());
+    assert(pick(cleanse, { 1 }) && cleanse.draw_pile.size() == 1 && cleanse.exhaust_pile.back() == CardId::WOUND);
+
+    // Two choices on the discard pile in a row: the second one is about what the first one left.
+    CombatEngine twice = make_combat(CharacterId::IRONCLAD);
+    for (CardId id : { CardId::STRIKE, CardId::DEFEND, CardId::BASH }) twice.discard_pile.push_back(id);
+    play(twice, CardId::ONE_TWO_PUNCH);
+    deal(twice, { CardId::HEADBUTT });
+    size_t before = twice.discard_pile.size();
+    assert(twice.play_card(0) && twice.pending_choices.size() == 2);
+    assert(pick(twice, { 0 }) && twice.choice_pending() && twice.choice_pool_size() == static_cast<int>(before) - 1);
+    assert(!twice.choice_allows(before - 1) && pick(twice, { 0 }) && !twice.choice_pending());
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::HEADBUTT });
+    assert_in_pool(CharacterId::DEFECT, { CardId::HOLOGRAM });
+    assert_in_pool(CharacterId::REGENT, { CardId::COSMIC_INDIFFERENCE, CardId::FOREGONE_CONCLUSION });
+    assert_in_pool(CharacterId::NECROBINDER, { CardId::GRAVEBLAST, CardId::DREDGE, CardId::CLEANSE });
+    std::cout << "[PASS] Pile choices: Headbutt, Hologram, Cosmic Indifference, Foregone Conclusion, Graveblast, Dredge, Cleanse, two choices on the discard pile" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -3972,6 +4062,7 @@ int main() {
     test_status_card_users();
     test_shivs();
     test_hand_choices();
+    test_pile_choices();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;
