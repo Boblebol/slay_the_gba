@@ -293,6 +293,11 @@ int main() {
                             if (played) {
                                 std::cout << "\n>>> ⚡ Vous jouez " << CardDef::get_display_name(dc.id, dc.upgraded) << " ! <<<\n";
                             }
+                            // The CLI has no card picker: a choice asked by the card is answered with the first cards.
+                            while (run.combat.choice_pending()) {
+                                run.combat.resolve_choice_default();
+                                std::cout << ">>> Choix de carte résolu automatiquement. <<<\n";
+                            }
                         }
                     } else {
                         std::cout << "\n>>> Numéro de carte invalide ! <<<\n";

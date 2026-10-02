@@ -101,7 +101,7 @@ items = [
   { name = "Cartes qui font piocher", status = "oui" },
   { name = "Amélioration de cartes pendant le combat", status = "oui" },
   { name = "Cartes Pouvoir : restent en jeu jusqu'à la fin du combat", status = "oui" },
-  { name = "Défausse d'une carte au choix", status = "non", issue = 31 },
+  { name = "Choix de cartes en main (défausser, épuiser, améliorer, remettre sur la Pioche)", status = "oui" },
   { name = "Choix d'une carte parmi plusieurs (Découverte, etc.)", status = "non", issue = 72 },
   { name = "Cartes à coût X", status = "oui" },
   { name = "Écho : rejouer une carte", status = "partiel", issue = 86 },
@@ -307,8 +307,6 @@ items = [
 # ---------------------------------------------------------------------------------------------------------
 
 [overrides.cards]
-TRUE_GRIT = { status = "partiel", issue = 31, note = "Améliorée, la carte Épuisée devrait être choisie : elle reste tirée au hasard." }
-SURVIVOR = { status = "partiel", issue = 31, note = "Donne l'Armure mais ne fait pas défausser de carte." }
 UNLEASH = { status = "partiel", issue = 34, note = "Dégâts fixes : ne tient pas compte des PV de Titos." }
 BODYGUARD = { status = "partiel", issue = 34, note = "Invoque pour 1 et donne de l'Armure, au lieu d'invoquer pour 5." }
 

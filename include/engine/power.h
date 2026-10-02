@@ -79,6 +79,7 @@ enum class PowerId : uint8_t {
     PHANTOM_BLADES,     // Shivs are kept in hand; the first one played each turn deals `amount` more damage
     FAN_OF_KNIVES,      // Shivs hit every enemy
     INFINITE_BLADES,    // start of turn: `amount` Shivs in hand
+    TYRANNY,            // start of turn: draw `amount` more, then exhaust `amount` cards of the hand, picked by the player
     // Status cards
     SMOKESTACK,         // Status card created: `amount` damage to every enemy
     TRASH_TO_TREASURE,  // Status card created: channel a random orb, once per stack
