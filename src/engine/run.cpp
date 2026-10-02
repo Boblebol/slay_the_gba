@@ -284,8 +284,12 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                 CardId::PACTS_END, CardId::NOT_YET, CardId::BLOOD_WALL,
                                                 CardId::BLOODLETTING, CardId::BREAKTHROUGH, CardId::FORGOTTEN_RITUAL,
                                                 CardId::HEMOKINESIS, CardId::MANGLE, CardId::OFFERING,
-                                                CardId::SETUP_STRIKE, CardId::SPITE, CardId::WHIRLWIND,
-                                                CardId::FEED, CardId::BATTLE_TRANCE };
+                                                CardId::SETUP_STRIKE, CardId::SPITE, CardId::WHIRLWIND, CardId::FEED,
+                                                CardId::BATTLE_TRANCE, CardId::FEEL_NO_PAIN, CardId::DARK_EMBRACE,
+                                                CardId::DRUM_OF_BATTLE, CardId::BARRICADE, CardId::INFERNO,
+                                                CardId::CRIMSON_MANTLE, CardId::RUPTURE, CardId::AGGRESSION,
+                                                CardId::PYRE, CardId::DEMON_FORM, CardId::JUGGERNAUT, CardId::RAGE,
+                                                CardId::VICIOUS };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
@@ -297,7 +301,10 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::DODGE_AND_ROLL, CardId::FINISHER, CardId::MALAISE,
                                               CardId::MEMENTO_MORI, CardId::MURDER, CardId::PIERCING_WAIL,
                                               CardId::PREDATOR, CardId::SIDESTEP, CardId::SKEWER, CardId::EXPERTISE,
-                                              CardId::SNAKEBITE, CardId::ECHOING_SLASH, CardId::GRAND_FINALE };
+                                              CardId::SNAKEBITE, CardId::ECHOING_SLASH, CardId::GRAND_FINALE,
+                                              CardId::ACCELERANT, CardId::SPEEDSTER, CardId::ENVENOM,
+                                              CardId::SERPENT_FORM, CardId::AFTERIMAGE, CardId::WELL_LAID_PLANS,
+                                              CardId::STRANGLE, CardId::CORROSIVE_WAVE, CardId::NOXIOUS_FUMES };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
                                               CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
                                               CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,
@@ -307,7 +314,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::CHILL, CardId::FUSION, CardId::REBOOT, CardId::SUPERCRITICAL,
                                               CardId::DOUBLE_ENERGY, CardId::BOOT_SEQUENCE, CardId::CHARGE_BATTERY,
                                               CardId::FTL, CardId::HELIX_DRILL, CardId::LIGHTNING_ROD,
-                                              CardId::TEMPEST, CardId::SUNDER };
+                                              CardId::TEMPEST, CardId::SUNDER, CardId::MACHINE_LEARNING,
+                                              CardId::STORM, CardId::FERAL, CardId::SUBROUTINE };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
                                               CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
@@ -318,8 +326,11 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::GAMMA_BLAST, CardId::GLOW, CardId::GUIDING_STAR,
                                               CardId::HIDDEN_CACHE, CardId::PARTICLE_WALL, CardId::RADIATE,
                                               CardId::RESONANCE, CardId::ROYAL_GAMBLE, CardId::SEVEN_STARS,
-                                              CardId::SHINING_STRIKE, CardId::STARDUST,
-                                              CardId::KNOCKOUT_BLOW };
+                                              CardId::SHINING_STRIKE, CardId::STARDUST, CardId::KNOCKOUT_BLOW,
+                                              CardId::CHILD_OF_THE_STARS, CardId::GENESIS, CardId::BLACK_HOLE,
+                                              CardId::MAKE_IT_SO, CardId::PALE_BLUE_DOT, CardId::ARSENAL,
+                                              CardId::MONOLOGUE, CardId::ORBIT, CardId::PILLAR_OF_CREATION,
+                                              CardId::MONARCHS_GAZE };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
@@ -327,7 +338,9 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::DEATH_MARCH, CardId::DEFILE, CardId::DEFY, CardId::DELAY,
                                                    CardId::ENFEEBLING_TOUCH, CardId::FEAR, CardId::INVOKE,
                                                    CardId::PARSE, CardId::PULL_FROM_BELOW, CardId::REAP, CardId::SOW,
-                                                   CardId::ERADICATE };
+                                                   CardId::ERADICATE, CardId::FRIENDSHIP, CardId::DANSE_MACABRE,
+                                                   CardId::DEMESNE, CardId::SPIRIT_OF_ASH, CardId::PAGESTORM,
+                                                   CardId::SLEIGHT_OF_FLESH };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;

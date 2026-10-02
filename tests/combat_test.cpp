@@ -1973,6 +1973,369 @@ void test_play_conditions() {
     std::cout << "[PASS] Play conditions: Grand Finale, Attack-only hand, Battle Trance, play first, play limit" << std::endl;
 }
 
+void test_power_registry() {
+    // A Power stays in play: it leaves the piles, and playing it again adds to the same power.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    play(combat, CardId::FEEL_NO_PAIN);
+    play(combat, DeckCard(CardId::FEEL_NO_PAIN, true));
+    assert(combat.powers.size() == 1 && combat.powers[0].id == PowerId::FEEL_NO_PAIN);
+    assert(combat.powers[0].amount == 7 && combat.powers[0].stacks == 2);
+    assert(combat.power_amount(PowerId::FEEL_NO_PAIN) == 7 && !combat.has_power(PowerId::BARRICADE));
+    assert(combat.powers_in_play.size() == 2 && count_in_piles(combat, CardId::FEEL_NO_PAIN) == 0);
+
+    // An effect "this turn" is a power that leaves at the end of the turn.
+    play(combat, CardId::RAGE);
+    assert(combat.powers.size() == 2 && combat.powers[1].turn_only && combat.powers_in_play.size() == 2);
+    end_turn_idle(combat);
+    assert(combat.powers.size() == 1 && combat.powers[0].turns == 1);
+    end_turn_idle(combat);
+    assert(combat.powers[0].turns == 2);
+
+    // A new combat starts without any power.
+    combat.start_combat(EnemyType::JAW_WORM, CharacterId::IRONCLAD);
+    assert(combat.powers.empty() && combat.powers_in_play.empty());
+
+    // Rules read by the engine: Barricade keeps the Block, Well-Laid Plans keeps the hand.
+    play(combat, CardId::BARRICADE);
+    play(combat, CardId::DEFEND);
+    end_turn_idle(combat);
+    assert(combat.player.block == 5);
+    assert(CardDef::get_cost(CardId::BARRICADE, false) == 3 && CardDef::get_cost(CardId::BARRICADE, true) == 2);
+
+    CombatEngine plans = make_combat(CharacterId::SILENT);
+    pad_draw_pile(plans, 10);
+    play(plans, DeckCard(CardId::WELL_LAID_PLANS, true));
+    assert(plans.player.energy == 2);
+    plans.hand.push_back(CardId::STRIKE);
+    plans.hand.push_back(CardId::DEFILE);
+    end_turn_idle(plans);
+    assert(plans.hand.size() == 6 && plans.hand[0] == CardId::STRIKE); // the Ethereal card is still exhausted
+    assert(plans.exhaust_pile.size() == 1);
+
+    // Accelerant: one more Poison tick on each enemy turn.
+    CombatEngine poison = make_combat(CharacterId::SILENT);
+    play(poison, CardId::ACCELERANT);
+    poison.enemies[0].add_status(StatusType::POISON, 5);
+    end_turn_idle(poison);
+    assert(poison.enemies[0].hp == 42 - 5 - 4 && poison.enemies[0].get_status(StatusType::POISON) == 3);
+    std::cout << "[PASS] Power registry: stacking, turn-only effects, Barricade, Well-Laid Plans, Accelerant" << std::endl;
+}
+
+void test_turn_powers() {
+    // Energy, Strength, Stars and cards at the start of each turn.
+    CombatEngine pyre = make_combat(CharacterId::IRONCLAD);
+    play(pyre, DeckCard(CardId::PYRE, true));
+    play(pyre, CardId::DEMON_FORM);
+    assert(pyre.player.get_status(StatusType::STRENGTH) == 0);
+    end_turn_idle(pyre);
+    assert(pyre.player.energy == 5 && pyre.player.get_status(StatusType::STRENGTH) == 3);
+    end_turn_idle(pyre);
+    assert(pyre.player.energy == 5 && pyre.player.get_status(StatusType::STRENGTH) == 6);
+
+    CombatEngine learning = make_combat(CharacterId::DEFECT);
+    pad_draw_pile(learning, 10);
+    play(learning, CardId::MACHINE_LEARNING);
+    end_turn_idle(learning);
+    assert(learning.hand.size() == 6 && learning.counters.cards_drawn == 0);
+    assert(CardDef::has_keyword(CardId::MACHINE_LEARNING, true, KEYWORD_INNATE));
+
+    CombatEngine genesis = make_combat(CharacterId::REGENT);
+    play(genesis, DeckCard(CardId::GENESIS, true));
+    end_turn_idle(genesis);
+    assert(genesis.player.sovereign_stars == 3 && genesis.counters.stars_gained == 3);
+
+    // Noxious Fumes: Poison on every enemy when the turn starts.
+    CombatEngine fumes = make_pack(CharacterId::SILENT);
+    play(fumes, CardId::NOXIOUS_FUMES);
+    end_turn_idle(fumes);
+    for (const Enemy& foe : fumes.enemies) assert(foe.get_status(StatusType::POISON) == 2);
+
+    // Crimson Mantle: 1 HP for Block, each turn.
+    CombatEngine mantle = make_combat(CharacterId::IRONCLAD);
+    play(mantle, CardId::CRIMSON_MANTLE);
+    end_turn_idle(mantle);
+    assert(mantle.player.hp == 79 && mantle.player.block == 7 && mantle.counters.hp_lost == 1);
+    mantle.player.hp = 1;
+    end_turn_idle(mantle);
+    assert(mantle.state == CombatState::DEFEAT);
+
+    // Inferno: the HP it takes at the start of the turn already burns every enemy.
+    CombatEngine inferno = make_pack(CharacterId::IRONCLAD);
+    play(inferno, CardId::INFERNO);
+    end_turn_idle(inferno);
+    assert(inferno.player.hp == 79 && inferno.enemies[0].hp == 12 && inferno.enemies[2].hp == 36);
+    play(inferno, CardId::BLOODLETTING);
+    assert(inferno.enemies[0].hp == 6 && inferno.enemies[2].hp == 30);
+    inferno.enemies[0].hp = 3;
+    inferno.enemies[1].hp = 3;
+    inferno.enemies[2].hp = 3;
+    end_turn_idle(inferno);
+    assert(inferno.state == CombatState::VICTORY);
+
+    // Rupture: only the HP lost during the player's turn count.
+    CombatEngine rupture = make_combat(CharacterId::IRONCLAD);
+    play(rupture, DeckCard(CardId::RUPTURE, true));
+    play(rupture, CardId::BLOODLETTING);
+    assert(rupture.player.get_status(StatusType::STRENGTH) == 2);
+    rupture.end_player_turn(); // Chomp
+    assert(rupture.player.hp == 80 - 3 - 11 && rupture.player.get_status(StatusType::STRENGTH) == 2);
+
+    // Aggression: a random Attack of the discard pile comes back upgraded.
+    CombatEngine aggression = make_combat(CharacterId::IRONCLAD);
+    play(aggression, CardId::AGGRESSION);
+    aggression.hand.clear();
+    aggression.draw_pile.clear();
+    pad_draw_pile(aggression, 10);
+    aggression.discard_pile.clear();
+    aggression.discard_pile.push_back(CardId::DEFEND);
+    aggression.discard_pile.push_back(CardId::BASH);
+    end_turn_idle(aggression);
+    assert(aggression.hand.size() == 6 && aggression.hand[0] == CardId::BASH && aggression.hand[0].upgraded);
+    assert(aggression.discard_pile.size() == 1);
+    assert(CardDef::has_keyword(CardId::AGGRESSION, true, KEYWORD_INNATE));
+
+    // Friendship and Demesne.
+    CombatEngine friendship = make_combat(CharacterId::NECROBINDER);
+    pad_draw_pile(friendship, 10);
+    play(friendship, CardId::FRIENDSHIP);
+    assert(friendship.player.get_status(StatusType::STRENGTH) == -2);
+    play(friendship, DeckCard(CardId::DEMESNE, true));
+    assert(friendship.player.energy == 1 && friendship.powers.size() == 2);
+    end_turn_idle(friendship);
+    assert(friendship.player.energy == 5 && friendship.hand.size() == 6);
+    assert(CardDef::has_keyword(CardId::DEMESNE, false, KEYWORD_ETHEREAL));
+
+    // Pale Blue Dot: 5 cards in the turn, itself included.
+    CombatEngine dot = make_combat(CharacterId::REGENT);
+    pad_draw_pile(dot, 20);
+    play(dot, CardId::PALE_BLUE_DOT);
+    for (int i = 0; i < 3; ++i) play(dot, CardId::DEFEND);
+    end_turn_idle(dot);
+    assert(dot.hand.size() == 5);
+    for (int i = 0; i < 5; ++i) play(dot, CardId::DEFEND);
+    end_turn_idle(dot);
+    assert(dot.hand.size() == 6);
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::FEEL_NO_PAIN, CardId::DARK_EMBRACE, CardId::DRUM_OF_BATTLE,
+                                            CardId::BARRICADE, CardId::INFERNO, CardId::CRIMSON_MANTLE, CardId::RUPTURE,
+                                            CardId::AGGRESSION, CardId::PYRE, CardId::DEMON_FORM, CardId::JUGGERNAUT,
+                                            CardId::RAGE, CardId::VICIOUS });
+    std::cout << "[PASS] Turn powers: Pyre, Demon Form, Machine Learning, Genesis, Noxious Fumes, Crimson Mantle, Inferno, Rupture, Aggression, Friendship, Demesne, Pale Blue Dot" << std::endl;
+}
+
+void test_reaction_powers() {
+    // Cards exhausted.
+    CombatEngine pain = make_combat(CharacterId::IRONCLAD);
+    pad_draw_pile(pain, 10);
+    play(pain, CardId::FEEL_NO_PAIN);
+    play(pain, DeckCard(CardId::DARK_EMBRACE, true));
+    assert(pain.player.energy == 2);
+    play(pain, CardId::IMPERVIOUS);
+    assert(pain.player.block == 33 && pain.hand.size() == 1);
+
+    // Drum of Battle pays when something exhausts it.
+    CombatEngine drum = make_combat(CharacterId::IRONCLAD);
+    pad_draw_pile(drum, 10);
+    play(drum, CardId::DRUM_OF_BATTLE);
+    assert(drum.hand.size() == 2 && drum.player.energy == 2);
+    drum.hand.clear();
+    drum.hand.push_back(CardId::TRUE_GRIT);
+    drum.hand.push_back(DeckCard(CardId::DRUM_OF_BATTLE, true));
+    drum.player.energy = 3;
+    assert(drum.play_card(0));
+    assert(drum.exhaust_pile.size() == 1 && drum.player.energy == 3 - 1 + 3);
+
+    // Block gained, Attacks played, Vulnerable applied.
+    CombatEngine juggernaut = make_combat(CharacterId::IRONCLAD);
+    pad_draw_pile(juggernaut, 10);
+    play(juggernaut, CardId::JUGGERNAUT);
+    play(juggernaut, CardId::DEFEND);
+    assert(juggernaut.enemies[0].hp == 42 - 6);
+    play(juggernaut, DeckCard(CardId::RAGE, true));
+    play(juggernaut, CardId::STRIKE);
+    assert(juggernaut.player.block == 5 + 5 && juggernaut.enemies[0].hp == 36 - 6 - 6);
+    play(juggernaut, DeckCard(CardId::VICIOUS, true));
+    play(juggernaut, CardId::BASH);
+    assert(juggernaut.hand.size() == 2);
+    end_turn_idle(juggernaut);
+    int16_t worm_hp = juggernaut.enemies[0].hp;
+    play(juggernaut, CardId::STRIKE); // Rage is over: no Block, so no Juggernaut hit either
+    assert(juggernaut.player.block == 0 && juggernaut.enemies[0].hp == worm_hp - 9);
+    std::cout << "[PASS] Ironclad powers: Feel No Pain, Dark Embrace, Drum of Battle, Juggernaut, Rage, Vicious" << std::endl;
+
+    // Cards drawn: the opening hand does not count for Speedster.
+    CombatEngine speedster = make_pack(CharacterId::SILENT);
+    pad_draw_pile(speedster, 20);
+    play(speedster, CardId::SPEEDSTER);
+    end_turn_idle(speedster);
+    assert(speedster.enemies[2].hp == 42);
+    play(speedster, CardId::BACKFLIP);
+    assert(speedster.enemies[0].hp == 14 && speedster.enemies[2].hp == 38);
+    play(speedster, DeckCard(CardId::CORROSIVE_WAVE, true));
+    play(speedster, CardId::BACKFLIP);
+    for (const Enemy& foe : speedster.enemies) assert(foe.get_status(StatusType::POISON) == 6);
+    end_turn_idle(speedster);
+    assert(speedster.powers.size() == 1); // Corrosive Wave only lasted the turn
+
+    // Envenom: only the hits that go through the Block.
+    CombatEngine envenom = make_combat(CharacterId::SILENT);
+    play(envenom, DeckCard(CardId::ENVENOM, true));
+    play(envenom, CardId::STRIKE);
+    assert(envenom.enemies[0].get_status(StatusType::POISON) == 2);
+    envenom.enemies[0].block = 20;
+    play(envenom, CardId::STRIKE);
+    assert(envenom.enemies[0].get_status(StatusType::POISON) == 2);
+
+    // Cards played. A power does not react to the card that brings it.
+    CombatEngine serpent = make_combat(CharacterId::SILENT);
+    play(serpent, CardId::SERPENT_FORM);
+    assert(serpent.enemies[0].hp == 42);
+    play(serpent, CardId::AFTERIMAGE);
+    assert(serpent.enemies[0].hp == 38 && serpent.player.block == 0);
+    play(serpent, CardId::DEFEND);
+    assert(serpent.enemies[0].hp == 34 && serpent.player.block == 1 + 5);
+
+    // Strangle follows its target, through its Block, for the turn.
+    CombatEngine strangle = make_pack(CharacterId::SILENT);
+    play(strangle, CardId::STRANGLE, 2);
+    assert(strangle.enemies[2].hp == 42 - 8);
+    strangle.enemies[2].block = 10;
+    play(strangle, CardId::DEFEND);
+    assert(strangle.enemies[2].hp == 32 && strangle.enemies[2].block == 10 && strangle.enemies[0].hp == 18);
+    end_turn_idle(strangle);
+    play(strangle, CardId::DEFEND);
+    assert(strangle.enemies[2].hp == 32);
+    assert_in_pool(CharacterId::SILENT, { CardId::ACCELERANT, CardId::SPEEDSTER, CardId::ENVENOM, CardId::SERPENT_FORM,
+                                          CardId::AFTERIMAGE, CardId::WELL_LAID_PLANS, CardId::STRANGLE,
+                                          CardId::CORROSIVE_WAVE, CardId::NOXIOUS_FUMES });
+    std::cout << "[PASS] Silent powers: Speedster, Corrosive Wave, Envenom, Serpent Form, Afterimage, Strangle" << std::endl;
+
+    // Powers played: Storm channels, Subroutine pays back.
+    CombatEngine storm = make_combat(CharacterId::DEFECT);
+    play(storm, CardId::STORM);
+    assert(storm.player.orbs.empty());
+    play(storm, CardId::SUBROUTINE);
+    assert(storm.player.orbs.size() == 1 && storm.player.energy == 2);
+    play(storm, DeckCard(CardId::STORM, true));
+    assert(storm.player.orbs.size() == 2 && storm.player.energy == 3);
+    assert(CardDef::get_cost(CardId::SUBROUTINE, true) == 0);
+
+    // Feral: the first 0-cost Attack of each turn comes back.
+    CombatEngine feral = make_combat(CharacterId::DEFECT);
+    feral.draw_pile.clear();
+    play(feral, DeckCard(CardId::FERAL, true));
+    assert(feral.player.energy == 2);
+    play(feral, CardId::GO_FOR_THE_EYES);
+    assert(count_in_hand(feral, CardId::GO_FOR_THE_EYES) == 1 && feral.discard_pile.empty());
+    assert(feral.play_card(0));
+    assert(feral.hand.empty() && feral.discard_pile.size() == 1);
+    feral.draw_pile.clear();
+    pad_draw_pile(feral, 10);
+    end_turn_idle(feral);
+    play(feral, CardId::GO_FOR_THE_EYES);
+    assert(count_in_hand(feral, CardId::GO_FOR_THE_EYES) == 1);
+    assert_in_pool(CharacterId::DEFECT, { CardId::MACHINE_LEARNING, CardId::STORM, CardId::FERAL, CardId::SUBROUTINE });
+    std::cout << "[PASS] Defect powers: Storm, Subroutine, Feral" << std::endl;
+
+    // Stars gained and spent.
+    CombatEngine stars = make_pack(CharacterId::REGENT);
+    play(stars, DeckCard(CardId::CHILD_OF_THE_STARS, true));
+    play(stars, CardId::BLACK_HOLE);
+    stars.gain_stars(3);
+    assert(stars.enemies[0].hp == 15 && stars.enemies[2].hp == 39);
+    stars.player.block = 0;
+    play(stars, CardId::CLOAK_OF_STARS);
+    assert(stars.player.block == 3 + 7 && stars.enemies[0].hp == 12 && stars.enemies[2].hp == 36);
+
+    // The Sealed Throne: a Star for each card, once it is in play.
+    CombatEngine throne = make_combat(CharacterId::REGENT);
+    throne.gain_stars(3);
+    play(throne, CardId::THE_SEALED_THRONE);
+    assert(throne.player.sovereign_stars == 0 && throne.player.energy == 2);
+    play(throne, CardId::DEFEND);
+    assert(throne.player.sovereign_stars == 1);
+    assert(CardDef::get_star_cost(CardId::THE_SEALED_THRONE, false) == 3);
+
+    // Make It So comes back from the piles on every third Skill of the turn.
+    CombatEngine so = make_combat(CharacterId::REGENT);
+    play(so, CardId::MAKE_IT_SO);
+    assert(so.enemies[0].hp == 42 - 6 && so.discard_pile.back() == CardId::MAKE_IT_SO);
+    play(so, CardId::DEFEND);
+    play(so, CardId::DEFEND);
+    assert(count_in_hand(so, CardId::MAKE_IT_SO) == 0);
+    play(so, CardId::DEFEND);
+    assert(count_in_hand(so, CardId::MAKE_IT_SO) == 1);
+
+    // Cards created.
+    CombatEngine arsenal = make_combat(CharacterId::REGENT);
+    play(arsenal, CardId::ARSENAL);
+    play(arsenal, DeckCard(CardId::PILLAR_OF_CREATION, true));
+    play(arsenal, CardId::ANGER);
+    assert(arsenal.player.get_status(StatusType::STRENGTH) == 1 && arsenal.player.block == 3);
+
+    // Monologue: Strength for the turn with each card.
+    CombatEngine monologue = make_combat(CharacterId::REGENT);
+    play(monologue, CardId::MONOLOGUE);
+    play(monologue, CardId::DEFEND);
+    play(monologue, CardId::STRIKE);
+    assert(monologue.enemies[0].hp == 42 - 8 && monologue.player.get_status(StatusType::STRENGTH) == 2);
+    end_turn_idle(monologue);
+    assert(monologue.player.get_status(StatusType::STRENGTH) == 0 && monologue.powers.empty());
+    assert(CardDef::has_keyword(CardId::MONOLOGUE, true, KEYWORD_RETAIN));
+
+    // Orbit: 1 energy back for every 4 spent after it.
+    CombatEngine orbit = make_combat(CharacterId::REGENT);
+    play(orbit, CardId::ORBIT);
+    play(orbit, CardId::BLUDGEON);
+    assert(orbit.player.energy == 0);
+    play(orbit, CardId::STRIKE);
+    assert(orbit.player.energy == 3 - 1 + 1 && orbit.powers[0].counter == 0);
+
+    // Monarch's Gaze: each hit takes Strength for the enemy's next turn.
+    CombatEngine gaze = make_combat(CharacterId::REGENT);
+    play(gaze, DeckCard(CardId::MONARCHS_GAZE, true));
+    assert(gaze.player.energy == 2);
+    play(gaze, CardId::CELESTIAL_MIGHT);
+    assert(gaze.enemies[0].get_status(StatusType::STRENGTH) == -3 && gaze.enemies[0].temp_strength_loss == 3);
+    end_turn_idle(gaze);
+    assert(gaze.enemies[0].get_status(StatusType::STRENGTH) == 0);
+    assert_in_pool(CharacterId::REGENT, { CardId::CHILD_OF_THE_STARS, CardId::GENESIS, CardId::BLACK_HOLE, CardId::MAKE_IT_SO,
+                                          CardId::PALE_BLUE_DOT, CardId::ARSENAL, CardId::MONOLOGUE, CardId::ORBIT,
+                                          CardId::PILLAR_OF_CREATION, CardId::MONARCHS_GAZE });
+    std::span<const CardId> regent_pool = RunManager::card_reward_pool(CharacterId::REGENT);
+    assert(std::find(regent_pool.begin(), regent_pool.end(), CardId::THE_SEALED_THRONE) == regent_pool.end()); // Ancient
+    std::cout << "[PASS] Regent powers: Child of the Stars, Black Hole, The Sealed Throne, Make It So, Arsenal, Pillar of Creation, Monologue, Orbit, Monarch's Gaze" << std::endl;
+
+    // Cost of the card played, Ethereal cards played and drawn.
+    CombatEngine danse = make_combat(CharacterId::NECROBINDER);
+    play(danse, DeckCard(CardId::DANSE_MACABRE, true));
+    play(danse, CardId::DEFEND);
+    assert(danse.player.block == 5);
+    play(danse, CardId::DELAY);
+    assert(danse.player.block == 5 + 11 + 6);
+    danse.player.block = 0;
+    play(danse, CardId::SPIRIT_OF_ASH);
+    play(danse, CardId::DEFILE);
+    assert(danse.player.block == 4);
+
+    CombatEngine pages = make_combat(CharacterId::NECROBINDER);
+    play(pages, DeckCard(CardId::PAGESTORM, true));
+    assert(pages.player.energy == 3);
+    pages.draw_pile.push_back(CardId::STRIKE);
+    pages.draw_pile.push_back(CardId::DEFILE);
+    pages.draw_cards(1);
+    assert(pages.hand.size() == 2 && pages.hand[0] == CardId::DEFILE && pages.hand[1] == CardId::STRIKE);
+
+    // Sleight of Flesh: each debuff hurts.
+    CombatEngine sleight = make_combat(CharacterId::NECROBINDER);
+    play(sleight, CardId::SLEIGHT_OF_FLESH);
+    play(sleight, CardId::PUTREFY);
+    assert(sleight.enemies[0].hp == 42 - 2 * 9);
+    assert_in_pool(CharacterId::NECROBINDER, { CardId::FRIENDSHIP, CardId::DANSE_MACABRE, CardId::DEMESNE,
+                                               CardId::SPIRIT_OF_ASH, CardId::PAGESTORM, CardId::SLEIGHT_OF_FLESH });
+    std::cout << "[PASS] Necrobinder powers: Danse Macabre, Spirit of Ash, Pagestorm, Sleight of Flesh" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -2055,6 +2418,9 @@ int main() {
     test_regent_stars();
     test_fatal();
     test_play_conditions();
+    test_power_registry();
+    test_turn_powers();
+    test_reaction_powers();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;

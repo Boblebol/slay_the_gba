@@ -6,6 +6,7 @@
 #include "engine/entity.h"
 #include "engine/fixed_vector.h"
 #include "engine/character.h"
+#include "engine/power.h"
 
 namespace engine {
 
@@ -104,6 +105,8 @@ public:
     bool retain_hand = false;      // the whole hand stays at the end of this turn
     bool no_draw_this_turn = false; // "you cannot draw any more cards this turn"
     uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
+    FixedVector<ActivePower, 24> powers;      // active powers, in the order they were gained
+    FixedVector<DeckCard, 24> powers_in_play; // Power cards played this combat: they stay in play
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;
 
@@ -138,6 +141,22 @@ public:
 
     // One attack hit on an enemy: Strength, Weak and Vulnerable applied. Returns the HP lost by the enemy.
     int16_t hit(Enemy& target, int16_t base);
+    // Gains a power, or adds to the one already active with the same scope and target.
+    void add_power(PowerId id, int16_t amount = 1, bool turn_only = false, int8_t target = -1);
+    // Total amount of a power, 0 when it is not active.
+    int16_t power_amount(PowerId id) const;
+    bool has_power(PowerId id) const { return power_amount(id) != 0; }
+
+    // Block from a card: Dexterity applies.
+    void gain_block(int16_t amount);
+    // Block from anything else: the exact amount.
+    void add_block(int16_t amount);
+    // Applies a status to an enemy.
+    void afflict(Enemy& target, StatusType type, int16_t amount);
+    // Damage that is not an attack: no Strength, no Vulnerable, the enemy's Block still absorbs it.
+    void damage_enemy(Enemy& target, int16_t amount);
+    void damage_all_enemies(int16_t amount);
+
     // Stars gained or spent by the Regent: every change goes through these two.
     void gain_stars(int amount);
     void spend_stars(int amount);
@@ -173,6 +192,16 @@ private:
     // Index of a living enemy picked at random; the first enemy when none is alive.
     int random_alive_enemy_index();
     void note_player_hp_lost(int16_t amount);
+    // Tells every active power about an event, in the order the powers were gained.
+    void emit(CombatEvent event, const EventInfo& info = EventInfo());
+    void react(ActivePower& power, CombatEvent event, const EventInfo& info);
+    ActivePower* find_power(PowerId id);
+    int8_t index_of(const Enemy& target) const;
+    // Moves every copy of `id` from the draw and discard piles to the hand, as long as there is room.
+    void recall_to_hand(CardId id);
+    uint8_t event_depth_ = 0;     // reactions triggering reactions
+    int16_t turn_draw_bonus_ = 0; // cards added to the opening draw by the start-of-turn powers
+    bool opening_draw_ = false;   // the turn's opening hand is being drawn
     // Triggers the scheduled effects of the start (or the end) of the turn. Returns the extra cards to draw.
     int run_delayed_effects(bool end_of_turn);
 };

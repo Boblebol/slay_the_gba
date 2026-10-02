@@ -22,9 +22,9 @@ items = [
   { name = "Vulnérable infligé par ses cartes (Heurt, Provocation)", status = "oui" },
   { name = "Copie de carte dans la Défausse (Colère)", status = "oui" },
   { name = "Dégâts égaux à l'Armure (Plaquage)", status = "oui" },
-  { name = "Épuisement de ses cartes et synergies d'Épuisement", status = "partiel", issue = 82, note = "Ses cartes s'Épuisent et comptent la pile ; les pouvoirs déclenchés par l'Épuisement (Sombre étreinte, Ignorer la douleur) manquent." },
+  { name = "Épuisement de ses cartes et synergies d'Épuisement", status = "oui" },
   { name = "Sacrifice de PV contre de la puissance (cartes « Perdez X PV »)", status = "oui" },
-  { name = "Gain de Force tour après tour (Enflammer, Forme démoniaque)", status = "non", issue = 81 },
+  { name = "Gain de Force tour après tour (Enflammer, Forme démoniaque)", status = "oui" },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
 ]
 
@@ -100,7 +100,7 @@ items = [
   { name = "Attaques de zone et attaques en plusieurs coups", status = "oui" },
   { name = "Cartes qui font piocher", status = "oui" },
   { name = "Amélioration de cartes pendant le combat", status = "oui" },
-  { name = "Cartes Pouvoir : restent en jeu jusqu'à la fin du combat", status = "partiel", issue = 80, note = "Seuls les Pouvoirs à effet immédiat sont jouables (Enflammer, Jeu de jambes)." },
+  { name = "Cartes Pouvoir : restent en jeu jusqu'à la fin du combat", status = "oui" },
   { name = "Défausse d'une carte au choix", status = "non", issue = 31 },
   { name = "Choix d'une carte parmi plusieurs (Découverte, etc.)", status = "non", issue = 72 },
   { name = "Cartes à coût X", status = "oui" },

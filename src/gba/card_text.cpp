@@ -369,6 +369,92 @@ bn::string_view base_name(engine::CardId id)
         return "Scission";
     case engine::CardId::KNOCKOUT_BLOW:
         return "Hors d'état";
+    case engine::CardId::FEEL_NO_PAIN:
+        return "Ignorer la douleur";
+    case engine::CardId::DARK_EMBRACE:
+        return "Sombre étreinte";
+    case engine::CardId::DRUM_OF_BATTLE:
+        return "Tambour de guerre";
+    case engine::CardId::BARRICADE:
+        return "Barricade";
+    case engine::CardId::INFERNO:
+        return "Brasier";
+    case engine::CardId::CRIMSON_MANTLE:
+        return "Manteau pourpre";
+    case engine::CardId::RUPTURE:
+        return "Rupture";
+    case engine::CardId::AGGRESSION:
+        return "Agression";
+    case engine::CardId::PYRE:
+        return "Bûcher";
+    case engine::CardId::DEMON_FORM:
+        return "Forme démoniaque";
+    case engine::CardId::JUGGERNAUT:
+        return "Juggernaut";
+    case engine::CardId::RAGE:
+        return "Rage";
+    case engine::CardId::VICIOUS:
+        return "Vicieux";
+    case engine::CardId::ACCELERANT:
+        return "Accélérant";
+    case engine::CardId::SPEEDSTER:
+        return "Excès de vitesse";
+    case engine::CardId::ENVENOM:
+        return "Envenimer";
+    case engine::CardId::SERPENT_FORM:
+        return "Forme du serpent";
+    case engine::CardId::AFTERIMAGE:
+        return "Image rémanente";
+    case engine::CardId::WELL_LAID_PLANS:
+        return "Préméditation";
+    case engine::CardId::STRANGLE:
+        return "Strangulation";
+    case engine::CardId::CORROSIVE_WAVE:
+        return "Vague corrosive";
+    case engine::CardId::NOXIOUS_FUMES:
+        return "Vapeurs toxiques";
+    case engine::CardId::MACHINE_LEARNING:
+        return "Machine Learning";
+    case engine::CardId::STORM:
+        return "Orage";
+    case engine::CardId::FERAL:
+        return "Sauvagerie";
+    case engine::CardId::SUBROUTINE:
+        return "Sous-programme";
+    case engine::CardId::CHILD_OF_THE_STARS:
+        return "Enfant des étoiles";
+    case engine::CardId::GENESIS:
+        return "Genèse";
+    case engine::CardId::THE_SEALED_THRONE:
+        return "Le trône scellé";
+    case engine::CardId::BLACK_HOLE:
+        return "Trou noir";
+    case engine::CardId::MAKE_IT_SO:
+        return "Ainsi soit-il";
+    case engine::CardId::PALE_BLUE_DOT:
+        return "Point bleu pâle";
+    case engine::CardId::ARSENAL:
+        return "Arsenal";
+    case engine::CardId::MONOLOGUE:
+        return "Monologue";
+    case engine::CardId::ORBIT:
+        return "Orbite";
+    case engine::CardId::PILLAR_OF_CREATION:
+        return "Pilier de la création";
+    case engine::CardId::MONARCHS_GAZE:
+        return "Regard monarchique";
+    case engine::CardId::FRIENDSHIP:
+        return "Amitié";
+    case engine::CardId::DANSE_MACABRE:
+        return "Danse Macabre";
+    case engine::CardId::DEMESNE:
+        return "Domaine";
+    case engine::CardId::SPIRIT_OF_ASH:
+        return "Esprit des cendres";
+    case engine::CardId::PAGESTORM:
+        return "Pluie de papier";
+    case engine::CardId::SLEIGHT_OF_FLESH:
+        return "Tour de chair";
     default:
         return "???";
     }
@@ -927,6 +1013,135 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::KNOCKOUT_BLOW:
         stream << "Inflige " << value << ". Si tue : +" << secondary << " ★.";
+        break;
+    case engine::CardId::FEEL_NO_PAIN:
+        stream << "Carte épuisée : gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::DARK_EMBRACE:
+        stream << "Carte épuisée : pioche " << value << " carte.";
+        break;
+    case engine::CardId::DRUM_OF_BATTLE:
+        stream << "Pioche " << value << " cartes. Si épuisée : Énergie +" << secondary << ".";
+        break;
+    case engine::CardId::BARRICADE:
+        stream << "Armure conservée d'un tour à l'autre.";
+        break;
+    case engine::CardId::INFERNO:
+        stream << "Tour : -1 PV. PV perdus : " << value << " à TOUS.";
+        break;
+    case engine::CardId::CRIMSON_MANTLE:
+        stream << "Début de tour : -1 PV, +" << value << " d'Armure.";
+        break;
+    case engine::CardId::RUPTURE:
+        stream << "PV perdus pendant votre tour : Force +" << value << ".";
+        break;
+    case engine::CardId::AGGRESSION:
+        stream << (card.upgraded ? "Inné. " : "") << "Tour : reprend 1 Attaque, améliorée.";
+        break;
+    case engine::CardId::PYRE:
+        stream << "Début de tour : Énergie +" << value << ".";
+        break;
+    case engine::CardId::DEMON_FORM:
+        stream << "Début de tour : Force +" << value << ".";
+        break;
+    case engine::CardId::JUGGERNAUT:
+        stream << "Armure gagnée : " << value << " à 1 ennemi au hasard.";
+        break;
+    case engine::CardId::RAGE:
+        stream << "Ce tour, Attaque jouée : +" << value << " d'Armure.";
+        break;
+    case engine::CardId::VICIOUS:
+        stream << "Vulnérable appliqué : pioche " << value << ".";
+        break;
+    case engine::CardId::ACCELERANT:
+        stream << "Le Poison se déclenche " << value << " fois de plus.";
+        break;
+    case engine::CardId::SPEEDSTER:
+        stream << (card.upgraded ? "Inné. " : "") << "Pioche pendant le tour : " << value << " à TOUS.";
+        break;
+    case engine::CardId::ENVENOM:
+        stream << "Attaque non bloquée : " << value << " de Poison.";
+        break;
+    case engine::CardId::SERPENT_FORM:
+        stream << "Carte jouée : " << value << " à 1 ennemi au hasard.";
+        break;
+    case engine::CardId::AFTERIMAGE:
+        stream << (card.upgraded ? "Inné. " : "") << "Carte jouée : gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::WELL_LAID_PLANS:
+        stream << "Main conservée en fin de tour.";
+        break;
+    case engine::CardId::STRANGLE:
+        stream << "Inflige " << value << ". Ce tour, par carte : -" << secondary << " PV.";
+        break;
+    case engine::CardId::CORROSIVE_WAVE:
+        stream << "Ce tour, carte piochée : " << value << " Poison à TOUS.";
+        break;
+    case engine::CardId::NOXIOUS_FUMES:
+        stream << "Début de tour : " << value << " de Poison à TOUS.";
+        break;
+    case engine::CardId::MACHINE_LEARNING:
+        stream << (card.upgraded ? "Inné. " : "") << "Début de tour : pioche " << value << " de plus.";
+        break;
+    case engine::CardId::STORM:
+        stream << "Pouvoir joué : canalise " << value << " Orbe de foudre.";
+        break;
+    case engine::CardId::FERAL:
+        stream << "Tour : 1re Attaque à 0 revient en main.";
+        break;
+    case engine::CardId::SUBROUTINE:
+        stream << "Pouvoir joué : Énergie +" << value << ".";
+        break;
+    case engine::CardId::CHILD_OF_THE_STARS:
+        stream << "★ dépensée : " << value << " d'Armure chacune.";
+        break;
+    case engine::CardId::GENESIS:
+        stream << "Début de tour : +" << value << " ★.";
+        break;
+    case engine::CardId::THE_SEALED_THRONE:
+        stream << "Carte jouée : +" << value << " ★.";
+        break;
+    case engine::CardId::BLACK_HOLE:
+        stream << "★ gagnées ou dépensées : " << value << " à TOUS.";
+        break;
+    case engine::CardId::MAKE_IT_SO:
+        stream << "Inflige " << value << ". Revient après " << secondary << " Compétences.";
+        break;
+    case engine::CardId::PALE_BLUE_DOT:
+        stream << "5 cartes jouées : pioche +" << value << " ensuite.";
+        break;
+    case engine::CardId::ARSENAL:
+        stream << (card.upgraded ? "Inné. " : "") << "Carte créée : Force +" << value << ".";
+        break;
+    case engine::CardId::MONOLOGUE:
+        stream << (card.upgraded ? "Retenue. " : "") << "Ce tour, carte jouée : Force +" << value << ".";
+        break;
+    case engine::CardId::ORBIT:
+        stream << "4 énergies dépensées : Énergie +" << value << ".";
+        break;
+    case engine::CardId::PILLAR_OF_CREATION:
+        stream << "Carte créée : gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::MONARCHS_GAZE:
+        stream << "Ennemi attaqué : Force -" << value << " ce tour.";
+        break;
+    case engine::CardId::FRIENDSHIP:
+        stream << "Force -" << secondary << ". Début de tour : Énergie +" << value << ".";
+        break;
+    case engine::CardId::DANSE_MACABRE:
+        stream << "Carte à 2 ⚡ ou plus jouée : +" << value << " d'Armure.";
+        break;
+    case engine::CardId::DEMESNE:
+        stream << "Éthéré. Tour : Énergie +" << value << ", pioche +" << secondary << ".";
+        break;
+    case engine::CardId::SPIRIT_OF_ASH:
+        stream << "Carte Éthérée jouée : gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::PAGESTORM:
+        stream << "Carte Éthérée piochée : pioche " << value << ".";
+        break;
+    case engine::CardId::SLEIGHT_OF_FLESH:
+        stream << "Malus appliqué à un ennemi : " << value << " dégâts.";
         break;
     default:
         break;
