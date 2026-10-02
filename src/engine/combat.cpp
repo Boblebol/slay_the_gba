@@ -306,6 +306,24 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 }
             }
             break;
+        case PowerId::SMOKESTACK:
+            if (event == CombatEvent::CARD_CREATED && CardDef::get(info.card.id).type == CardType::STATUS) {
+                damage_all_enemies(power.amount);
+            }
+            break;
+        case PowerId::TRASH_TO_TREASURE:
+            if (event == CombatEvent::CARD_CREATED && CardDef::get(info.card.id).type == CardType::STATUS) {
+                constexpr OrbType KINDS[] = { OrbType::LIGHTNING, OrbType::FROST, OrbType::DARK, OrbType::PLASMA };
+                for (uint8_t copy = 0; copy < power.stacks; ++copy) channel_orb(KINDS[next_random() % 4]);
+            }
+            break;
+        case PowerId::ITERATION:
+            if (turn_start) power.counter = 0;
+            if (event == CombatEvent::CARD_DRAWN && CardDef::get(info.card.id).type == CardType::STATUS && power.counter == 0) {
+                power.counter = 1;
+                draw_cards(power.amount);
+            }
+            break;
         case PowerId::FEEL_NO_PAIN:
             if (event == CombatEvent::CARD_EXHAUSTED) add_block(power.amount);
             break;
@@ -765,6 +783,8 @@ bool CombatEngine::draw_card() {
         card.cost_delta = static_cast<int8_t>(card.cost_delta - 1);
     } else if (card.id == CardId::KINGLY_PUNCH) {
         card.bonus = bump(card.bonus, CardDef::get_secondary(card.id, card.upgraded));
+    } else if (card.id == CardId::VOID_CARD) {
+        player.energy = static_cast<int8_t>(std::max(0, player.energy - CardDef::get_value(card.id, card.upgraded)));
     }
     hand.push_back(card);
     counters.cards_drawn = bump(counters.cards_drawn);
@@ -806,9 +826,21 @@ void CombatEngine::discard_from_hand(size_t index) {
     emit(CombatEvent::CARD_DISCARDED, info);
 }
 
-void CombatEngine::create_card_in_discard(DeckCard card) {
-    discard_pile.push_back(card);
+void CombatEngine::create_card(DeckCard card, Pile pile) {
+    if (pile == Pile::HAND && hand.push_back(card)) {
+        // in hand
+    } else if (pile == Pile::DRAW) {
+        if (draw_pile.push_back(card)) {
+            size_t place = next_random() % draw_pile.size();
+            for (size_t i = draw_pile.size() - 1; i > place; --i) draw_pile[i] = draw_pile[i - 1];
+            draw_pile[place] = card;
+        }
+    } else {
+        discard_pile.push_back(card);
+    }
     counters.combat_cards_created = bump(counters.combat_cards_created);
+    // Rocket Punch gets cheaper with each Status card created, until it is played.
+    if (CardDef::get(card.id).type == CardType::STATUS) change_cost_of_copies(CardId::ROCKET_PUNCH, -1);
     EventInfo info;
     info.card = card;
     emit(CombatEvent::CARD_CREATED, info);
@@ -863,6 +895,16 @@ void CombatEngine::note_player_hp_lost(int16_t amount) {
     EventInfo info;
     info.amount = amount;
     emit(CombatEvent::HP_LOST, info);
+}
+
+void CombatEngine::damage_player(int16_t amount) {
+    if (amount <= 0) return;
+    int16_t hp_before = player.hp;
+    player.take_damage(amount);
+    note_player_hp_lost(static_cast<int16_t>(hp_before - player.hp));
+    if (!player.is_alive()) {
+        state = CombatState::DEFEAT;
+    }
 }
 
 void CombatEngine::lose_hp(int16_t amount) {
@@ -1121,6 +1163,7 @@ PlayBlocker CombatEngine::play_blocker(int index) const {
     if (index < 0 || static_cast<size_t>(index) >= hand.size()) return PlayBlocker::NOT_PLAYABLE;
 
     const DeckCard& card = hand[index];
+    if (CardDef::has_keyword(card, KEYWORD_UNPLAYABLE)) return PlayBlocker::NOT_PLAYABLE;
     // Restrictions set by the cards held in hand.
     bool plays_first = CardDef::has_keyword(card, KEYWORD_PLAY_FIRST);
     for (const DeckCard& held : hand) {
@@ -1294,8 +1337,10 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
             counters.attacks_played = bump(counters.attacks_played);
         } else if (played_type == CardType::SKILL) {
             counters.skills_played = bump(counters.skills_played);
-        } else {
+        } else if (played_type == CardType::POWER) {
             counters.powers_played = bump(counters.powers_played);
+        } else {
+            counters.statuses_played = bump(counters.statuses_played);
         }
         counters.energy_spent = bump(counters.energy_spent, paid);
         counters.combat_cards_played = bump(counters.combat_cards_played);
@@ -3327,6 +3372,122 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Hang+!"sv : "Played Hang!"sv);
             break;
         }
+        case CardId::BURN:
+        case CardId::DAZED:
+        case CardId::SOOT:
+        case CardId::VOID_CARD:
+        case CardId::WOUND:
+            // Unplayable: only another card can play them, and nothing happens.
+            break;
+        case CardId::DEBRIS: {
+            set_log("Played Debris!");
+            break;
+        }
+        case CardId::SLIMED: {
+            draw_cards(base_value);
+            set_log("Played Slimed!");
+            break;
+        }
+        case CardId::FUEL: {
+            player.energy = static_cast<int8_t>(player.energy + base_value);
+            set_log(upgraded ? "Played Fuel+!"sv : "Played Fuel!"sv);
+            break;
+        }
+        case CardId::BOOST_AWAY: {
+            gain_block(base_value);
+            create_card(CardId::DAZED, Pile::DISCARD);
+            set_log(upgraded ? "Played Boost Away+!"sv : "Played Boost Away!"sv);
+            break;
+        }
+        case CardId::FLAK_CANNON: {
+            int shots = 0;
+            auto purge = [this, &shots](auto& pile) {
+                for (size_t i = pile.size(); i-- > 0;) {
+                    if (i < pile.size() && CardDef::get(pile[i].id).type == CardType::STATUS) {
+                        DeckCard status = pile[i];
+                        pile.erase(i);
+                        exhaust_card(status);
+                        ++shots;
+                    }
+                }
+            };
+            purge(hand);
+            purge(draw_pile);
+            purge(discard_pile);
+            for (; shots > 0 && has_alive_enemies(); --shots) hit(enemies[random_alive_enemy_index()], base_value);
+            set_log(upgraded ? "Played Flak Cannon+!"sv : "Played Flak Cannon!"sv);
+            break;
+        }
+        case CardId::SMOKESTACK: {
+            add_power(PowerId::SMOKESTACK, base_value);
+            set_log(upgraded ? "Played Smokestack+!"sv : "Played Smokestack!"sv);
+            break;
+        }
+        case CardId::COMPACT: {
+            gain_block(base_value);
+            for (DeckCard& held : hand) {
+                if (CardDef::get(held.id).type == CardType::STATUS) held = DeckCard(CardId::FUEL, upgraded);
+            }
+            set_log(upgraded ? "Played Compact+!"sv : "Played Compact!"sv);
+            break;
+        }
+        case CardId::GUNK_UP: {
+            for (int blow = 0; blow < secondary_value && current_target.is_alive(); ++blow) hit(current_target, base_value);
+            create_card(CardId::SLIMED, Pile::DISCARD);
+            set_log(upgraded ? "Played Gunk Up+!"sv : "Played Gunk Up!"sv);
+            break;
+        }
+        case CardId::ITERATION: {
+            add_power(PowerId::ITERATION, base_value);
+            set_log(upgraded ? "Played Iteration+!"sv : "Played Iteration!"sv);
+            break;
+        }
+        case CardId::FIGHT_THROUGH: {
+            gain_block(base_value);
+            for (int copy = 0; copy < secondary_value; ++copy) create_card(CardId::WOUND, Pile::DISCARD);
+            set_log(upgraded ? "Played Fight Through+!"sv : "Played Fight Through!"sv);
+            break;
+        }
+        case CardId::OVERCLOCK: {
+            draw_cards(base_value);
+            create_card(CardId::BURN, Pile::DISCARD);
+            set_log(upgraded ? "Played Overclock+!"sv : "Played Overclock!"sv);
+            break;
+        }
+        case CardId::ROCKET_PUNCH: {
+            hit(current_target, base_value);
+            draw_cards(secondary_value);
+            played_card.cost_delta = 0;
+            set_log(upgraded ? "Played Rocket Punch+!"sv : "Played Rocket Punch!"sv);
+            break;
+        }
+        case CardId::TRASH_TO_TREASURE: {
+            add_power(PowerId::TRASH_TO_TREASURE);
+            set_log(upgraded ? "Played Trash to Treasure+!"sv : "Played Trash to Treasure!"sv);
+            break;
+        }
+        case CardId::TURBO: {
+            player.energy = static_cast<int8_t>(player.energy + base_value);
+            create_card(CardId::VOID_CARD, Pile::DISCARD);
+            set_log(upgraded ? "Played TURBO+!"sv : "Played TURBO!"sv);
+            break;
+        }
+        case CardId::COLLISION_COURSE: {
+            hit(current_target, base_value);
+            create_card(CardId::DEBRIS, Pile::HAND);
+            set_log(upgraded ? "Played Collision Course+!"sv : "Played Collision Course!"sv);
+            break;
+        }
+        case CardId::CRASH_LANDING: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) {
+                    hit(enemies[i], base_value);
+                }
+            }
+            while (hand.size() < hand.capacity()) create_card(CardId::DEBRIS, Pile::HAND);
+            set_log(upgraded ? "Played Crash Landing+!"sv : "Played Crash Landing!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;
@@ -3350,6 +3511,16 @@ void CombatEngine::end_player_turn() {
         autoplay(top);
     }
     for (DeckCard& card : hand) card.free_this_turn = false;
+
+    // Burn hurts while it is still in hand.
+    for (size_t i = 0; i < hand.size() && player.is_alive(); ++i) {
+        if (hand[i].id == CardId::BURN) damage_player(CardDef::get_value(hand[i].id, hand[i].upgraded));
+    }
+    if (!player.is_alive()) {
+        state = CombatState::DEFEAT;
+        set_log("You were defeated!");
+        return;
+    }
 
     // Ethereal cards left in hand are exhausted first: what their exhaustion draws is discarded with the rest.
     for (size_t i = hand.size(); i-- > 0;) {

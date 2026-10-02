@@ -336,7 +336,31 @@ static const CardDef CARDS[] = {
     { CardId::BORROWED_TIME, "Borrowed Time", 1, CardType::SKILL, TargetType::SELF, 4, 1, "Gain 4 energy. Cards cost 1 more this turn.", "Borrowed Time+", 1, 6, 1, "Gain 6 energy. Cards cost 1 more this turn." },
     { CardId::THE_SCYTHE, "The Scythe", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 13, 5, "Deal 13 dmg. This card gains 5 dmg for good. Exhaust.", "The Scythe+", 2, 13, 7, "Deal 13 dmg. This card gains 7 dmg for good. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     { CardId::MELANCHOLY, "Melancholy", 3, CardType::SKILL, TargetType::SELF, 13, 0, "Gain 13 block. Costs 1 less each time someone dies.", "Melancholy+", 3, 17, 0, "Gain 17 block. Costs 1 less each time someone dies." },
-    { CardId::HANG, "Hang", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 0, "Deal 10 dmg. Doubles the Hang damage on this enemy.", "Hang+", 1, 13, 0, "Deal 13 dmg. Doubles the Hang damage on this enemy." }
+    { CardId::HANG, "Hang", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 0, "Deal 10 dmg. Doubles the Hang damage on this enemy.", "Hang+", 1, 13, 0, "Deal 13 dmg. Doubles the Hang damage on this enemy." },
+    // Status cards and the token made from them: created during a combat, never offered as a reward
+    { CardId::BURN, "Burn", 0, CardType::STATUS, TargetType::SELF, 2, 0, "Unplayable. At the end of your turn, take 2 damage if this is in your hand.", "Burn", 0, 2, 0, "Unplayable. At the end of your turn, take 2 damage if this is in your hand.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
+    { CardId::DAZED, "Dazed", 0, CardType::STATUS, TargetType::SELF, 0, 0, "Unplayable. Ethereal.", "Dazed", 0, 0, 0, "Unplayable. Ethereal.", KEYWORD_UNPLAYABLE | KEYWORD_ETHEREAL, KEYWORD_UNPLAYABLE | KEYWORD_ETHEREAL },
+    { CardId::DEBRIS, "Debris", 1, CardType::STATUS, TargetType::SELF, 0, 0, "Exhaust.", "Debris", 1, 0, 0, "Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::SLIMED, "Slimed", 1, CardType::STATUS, TargetType::SELF, 1, 0, "Draw 1 card. Exhaust.", "Slimed", 1, 1, 0, "Draw 1 card. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::SOOT, "Soot", 0, CardType::STATUS, TargetType::SELF, 0, 0, "Unplayable.", "Soot", 0, 0, 0, "Unplayable.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
+    { CardId::VOID_CARD, "Void", 0, CardType::STATUS, TargetType::SELF, 1, 0, "Unplayable. Ethereal. When you draw this card, lose 1 energy.", "Void", 0, 1, 0, "Unplayable. Ethereal. When you draw this card, lose 1 energy.", KEYWORD_UNPLAYABLE | KEYWORD_ETHEREAL, KEYWORD_UNPLAYABLE | KEYWORD_ETHEREAL },
+    { CardId::WOUND, "Wound", 0, CardType::STATUS, TargetType::SELF, 0, 0, "Unplayable.", "Wound", 0, 0, 0, "Unplayable.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
+    { CardId::FUEL, "Fuel", 0, CardType::SKILL, TargetType::SELF, 1, 0, "Gain 1 energy. Exhaust.", "Fuel+", 0, 2, 0, "Gain 2 energy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Defect: Status cards
+    { CardId::BOOST_AWAY, "Boost Away", 0, CardType::SKILL, TargetType::SELF, 6, 0, "Gain 6 block. Add a Dazed to your discard pile.", "Boost Away+", 0, 9, 0, "Gain 9 block. Add a Dazed to your discard pile." },
+    { CardId::FLAK_CANNON, "Flak Cannon", 2, CardType::ATTACK, TargetType::RANDOM_ENEMY, 8, 0, "Exhaust all your Status cards. Deal 8 dmg to a random enemy for each.", "Flak Cannon+", 2, 11, 0, "Exhaust all your Status cards. Deal 11 dmg to a random enemy for each." },
+    { CardId::SMOKESTACK, "Smokestack", 1, CardType::POWER, TargetType::SELF, 5, 0, "When you create a Status card, deal 5 dmg to all enemies.", "Smokestack+", 1, 7, 0, "When you create a Status card, deal 7 dmg to all enemies." },
+    { CardId::COMPACT, "Compact", 1, CardType::SKILL, TargetType::SELF, 6, 0, "Gain 6 block. Transform the Status cards of your hand into Fuel.", "Compact+", 1, 7, 0, "Gain 7 block. Transform the Status cards of your hand into Fuel+." },
+    { CardId::GUNK_UP, "Gunk Up", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 4, 3, "Deal 4 dmg 3 times. Add a Slimed to your discard pile.", "Gunk Up+", 1, 5, 3, "Deal 5 dmg 3 times. Add a Slimed to your discard pile." },
+    { CardId::ITERATION, "Iteration", 1, CardType::POWER, TargetType::SELF, 2, 0, "The first time you draw a Status card each turn, draw 2 cards.", "Iteration+", 1, 3, 0, "The first time you draw a Status card each turn, draw 3 cards." },
+    { CardId::FIGHT_THROUGH, "Fight Through", 1, CardType::SKILL, TargetType::SELF, 13, 2, "Gain 13 block. Add 2 Wounds to your discard pile.", "Fight Through+", 1, 17, 2, "Gain 17 block. Add 2 Wounds to your discard pile." },
+    { CardId::OVERCLOCK, "Overclock", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Draw 2 cards. Add a Burn to your discard pile.", "Overclock+", 0, 3, 0, "Draw 3 cards. Add a Burn to your discard pile." },
+    { CardId::ROCKET_PUNCH, "Rocket Punch", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 13, 1, "Deal 13 dmg. Draw 1. Costs 1 less per Status card created, until played.", "Rocket Punch+", 2, 14, 2, "Deal 14 dmg. Draw 2. Costs 1 less per Status card created, until played." },
+    { CardId::TRASH_TO_TREASURE, "Trash to Treasure", 1, CardType::POWER, TargetType::SELF, 0, 0, "When you create a Status card, channel a random orb.", "Trash to Treasure+", 0, 0, 0, "When you create a Status card, channel a random orb." },
+    { CardId::TURBO, "TURBO", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Gain 2 energy. Add a Void to your discard pile.", "TURBO+", 0, 3, 0, "Gain 3 energy. Add a Void to your discard pile." },
+    // Regent: Status cards
+    { CardId::COLLISION_COURSE, "Collision Course", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 0, "Deal 10 dmg. Add a Debris to your hand.", "Collision Course+", 0, 14, 0, "Deal 14 dmg. Add a Debris to your hand." },
+    { CardId::CRASH_LANDING, "Crash Landing", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 21, 0, "Deal 21 dmg to all enemies. Fill your hand with Debris.", "Crash Landing+", 1, 26, 0, "Deal 26 dmg to all enemies. Fill your hand with Debris." }
 };
 
 const CardDef& CardDef::get(CardId id) {

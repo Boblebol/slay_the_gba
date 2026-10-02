@@ -192,14 +192,18 @@ def build_monsters() -> None:
 # Cards
 # ---------------------------------------------------------------------------------------------
 
+NO_COST = -2  # CardArt.costs of an Unplayable card: no energy gem and no digit
+
+
 @dataclass(frozen=True)
 class CardArt:
     enum_name: str   # engine CardId name (lower case)
-    owner: str       # hero owning the card (frame colour); "hero" = the ROM's own hero
-    art: str         # art file relative to bible/images/cards/<owner>/ ; "{hero}" is substituted
-    kind: str        # attack | skill | power
-    costs: tuple[int, int]  # base cost, upgraded cost; -1 = X
+    owner: str       # hero owning the card (frame colour); "hero" = the ROM's own hero, "status" = on every ROM
+    art: str         # art file relative to bible/images/cards/<folder>/ ; "{hero}" is substituted
+    kind: str        # attack | skill | power | status
+    costs: tuple[int, int]  # base cost, upgraded cost; -1 = X, NO_COST = unplayable
     stars: tuple[int, int] = (0, 0)  # Star cost (Regent), base and upgraded; -1 = X
+    folder: str = ""  # art folder when it is not the owner's (tokens)
 
 
 # Mirrors engine::CardId order (card.h). Index 0 (NONE) is a blank card.
@@ -498,9 +502,31 @@ CARDS: list[CardArt] = [
     CardArt("the_scythe", "necrobinder", "the_scythe", "attack", (2, 2)),
     CardArt("melancholy", "necrobinder", "melancholy", "skill", (3, 3)),
     CardArt("hang", "necrobinder", "hang", "attack", (1, 1)),
+    CardArt("burn", "status", "burn", "status", (NO_COST, NO_COST)),
+    CardArt("dazed", "status", "dazed", "status", (NO_COST, NO_COST)),
+    CardArt("debris", "status", "debris", "status", (1, 1)),
+    CardArt("slimed", "status", "slimed", "status", (1, 1)),
+    CardArt("soot", "status", "soot", "status", (NO_COST, NO_COST)),
+    CardArt("void_card", "status", "void", "status", (NO_COST, NO_COST)),
+    CardArt("wound", "status", "wound", "status", (NO_COST, NO_COST)),
+    CardArt("fuel", "defect", "fuel", "skill", (0, 0), folder="token"),
+    CardArt("boost_away", "defect", "boost_away", "skill", (0, 0)),
+    CardArt("flak_cannon", "defect", "flak_cannon", "attack", (2, 2)),
+    CardArt("smokestack", "defect", "smokestack", "power", (1, 1)),
+    CardArt("compact", "defect", "compact", "skill", (1, 1)),
+    CardArt("gunk_up", "defect", "gunk_up", "attack", (1, 1)),
+    CardArt("iteration", "defect", "iteration", "power", (1, 1)),
+    CardArt("fight_through", "defect", "fight_through", "skill", (1, 1)),
+    CardArt("overclock", "defect", "overclock", "skill", (0, 0)),
+    CardArt("rocket_punch", "defect", "rocket_punch", "attack", (2, 2)),
+    CardArt("trash_to_treasure", "defect", "trash_to_treasure", "power", (1, 0)),
+    CardArt("turbo", "defect", "turbo", "skill", (0, 0)),
+    CardArt("collision_course", "regent", "collision_course", "attack", (0, 0)),
+    CardArt("crash_landing", "regent", "crash_landing", "attack", (1, 1)),
 ]
 
-FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink"}
+FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
+               "status": "grey"}
 PORTRAIT_BOX = (47, 84, 547, 464)  # transparent window inside the 598x844 frame templates
 
 # 3x5 digits baked into the mini cards' energy gem.
@@ -542,6 +568,15 @@ def load_frame(kind: str, color: str) -> Image.Image:
     one of that kind, with its border and its text panel moved by the hue, saturation and value differences
     seen between the two Skill frames."""
     template = BIBLE / "card_template"
+    if color == "grey":
+        # Status cards: the Skill shape, with its colour washed out.
+        red = Image.open(template / "frame_skill_red.webp").convert("RGBA")
+        hsv, border, panel = frame_zones(red)
+        hsv[..., 1] = np.where(border | panel, hsv[..., 1] * 0.12, hsv[..., 1])
+        hsv[..., 2] = np.where(border, np.clip(hsv[..., 2] * 0.85, 0, 255), hsv[..., 2])
+        grey = Image.fromarray(hsv.astype(np.uint8), "HSV").convert("RGBA")
+        grey.putalpha(red.getchannel("A"))
+        return grey
     path = template / f"frame_{kind}_{color}.webp"
     if path.exists():
         return Image.open(path).convert("RGBA")
@@ -559,13 +594,17 @@ def load_frame(kind: str, color: str) -> Image.Image:
     return recoloured
 
 
+def card_art_path(card: CardArt, hero: str) -> Path:
+    owner = hero if card.owner == "hero" else card.owner
+    return BIBLE / "cards" / (card.folder or owner) / (card.art.format(hero=hero) + ".webp")
+
+
 def compose_card(card: CardArt, hero: str, size: tuple[int, int]) -> Image.Image:
     owner = hero if card.owner == "hero" else card.owner
     frame = load_frame(card.kind, FRAME_COLOR[owner])
     full = Image.new("RGBA", frame.size, (0, 0, 0, 0))
     if card.art:
-        art_path = BIBLE / "cards" / owner / (card.art.format(hero=hero) + ".webp")
-        art = Image.open(art_path).convert("RGBA")
+        art = Image.open(card_art_path(card, hero)).convert("RGBA")
         x0, y0, x1, y1 = PORTRAIT_BOX
         art = art.resize((x1 - x0 + 1, y1 - y0 + 1), Image.Resampling.LANCZOS)
         full.paste(art, (x0, y0))
@@ -576,7 +615,7 @@ def compose_card(card: CardArt, hero: str, size: tuple[int, int]) -> Image.Image
 
 
 HERO_RGB = {"ironclad": (200, 48, 40), "silent": (64, 160, 72), "defect": (56, 112, 216),
-            "regent": (232, 152, 40), "necrobinder": (200, 96, 184)}
+            "regent": (232, 152, 40), "necrobinder": (200, 96, 184), "status": (120, 120, 132)}
 
 TYPE_ICONS = {
     "attack": [
@@ -599,6 +638,17 @@ TYPE_ICONS = {
         "..KBBbK..",
         "...KbK...",
         "....K....",
+        ".........",
+    ],
+    "status": [
+        ".........",
+        ".KK...KK.",
+        ".KSK.KSK.",
+        "..KSKSK..",
+        "...KSK...",
+        "..KSKSK..",
+        ".KSK.KSK.",
+        ".KK...KK.",
         ".........",
     ],
     "power": [
@@ -626,7 +676,7 @@ def compose_mini(card: CardArt, hero: str) -> Image.Image:
     d.rectangle((2, 2, 20, 29), fill=border + (255,))
     d.rectangle((3, 3, 19, 28), fill=(52, 42, 38, 255))
     if card.art:
-        art = Image.open(BIBLE / "cards" / owner / (card.art.format(hero=hero) + ".webp")).convert("RGBA")
+        art = Image.open(card_art_path(card, hero)).convert("RGBA")
         cw = int(art.height * 17 / 17)
         x0 = (art.width - cw) // 2
         art = art.crop((x0, 0, x0 + cw, art.height)).resize((17, 17), Image.Resampling.LANCZOS)
@@ -640,13 +690,18 @@ def compose_mini(card: CardArt, hero: str) -> Image.Image:
 
 
 def energy_gem(hero: str, size: int) -> Image.Image:
+    if hero == "status":
+        # No colourless gem in the dump: the Ironclad one, without its colour.
+        gem = Image.open(BIBLE / "card_template" / "energy_ironclad.webp").convert("RGBA")
+        grey = ImageEnhance.Color(gem).enhance(0.0)
+        return grey.resize((size, size), Image.Resampling.LANCZOS)
     gem = Image.open(BIBLE / "card_template" / f"energy_{hero}.webp").convert("RGBA")
     return gem.resize((size, size), Image.Resampling.LANCZOS)
 
 
 def on_cartridge(card: CardArt, hero: str) -> bool:
     """A cartridge only carries the art of its hero's cards and of the cards every hero shares."""
-    return card.owner in ("hero", hero)
+    return card.owner in ("hero", "status", hero)
 
 
 def sheet_cards(hero: str) -> list[CardArt]:
@@ -742,8 +797,9 @@ def build_cards() -> None:
             icon = icon.resize((icon.width * 2, icon.height * 2), Image.Resampling.NEAREST)
             canvas.alpha_composite(icon, (32 - icon.width // 2, 38))
             owner = hero if card.owner == "hero" else card.owner
-            gem = energy_gem(owner, 16)
-            canvas.alpha_composite(gem, (3, 0))
+            if card.costs[0] != NO_COST:
+                gem = energy_gem(owner, 16)
+                canvas.alpha_composite(gem, (3, 0))
             idx, pal = rgba_to_sprite(canvas, 15)
             save_sprite(name, [idx], pal, 64)
 
@@ -755,9 +811,10 @@ def build_cards() -> None:
                 body = compose_mini(card, hero)
                 canvas.paste(body, (5, 0), body)
                 owner = hero if card.owner == "hero" else card.owner
-                gem = energy_gem(owner, 11)
-                canvas.alpha_composite(gem, (1, 0))
-                if card.enum_name != "none":
+                if card.costs[0] != NO_COST:
+                    gem = energy_gem(owner, 11)
+                    canvas.alpha_composite(gem, (1, 0))
+                if card.enum_name != "none" and card.costs[0] != NO_COST:
                     value = card.costs[1] if upgraded else card.costs[0]
                     cost = "X" if value < 0 else str(value)
                     draw = ImageDraw.Draw(canvas)

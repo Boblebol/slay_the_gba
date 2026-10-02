@@ -33,6 +33,7 @@ struct CombatCounters {
     uint8_t attacks_played = 0;
     uint8_t skills_played = 0;
     uint8_t powers_played = 0;
+    uint8_t statuses_played = 0; // Status cards that can be played (Slimed, Debris)
     uint8_t cards_drawn = 0;     // drawn by effects, after the turn's opening draw
     uint8_t cards_discarded = 0; // discarded by effects, not by the end of the turn
     uint8_t energy_spent = 0;
@@ -50,9 +51,11 @@ struct CombatCounters {
     uint8_t combat_lightning_channeled = 0;
     uint8_t doom_applied = 0;     // this turn: times Doom was applied to an enemy
 
-    uint8_t cards_played() const { return static_cast<uint8_t>(attacks_played + skills_played + powers_played); }
+    uint8_t cards_played() const {
+        return static_cast<uint8_t>(attacks_played + skills_played + powers_played + statuses_played);
+    }
     void start_turn() {
-        attacks_played = skills_played = powers_played = 0;
+        attacks_played = skills_played = powers_played = statuses_played = 0;
         cards_drawn = cards_discarded = energy_spent = hits_dealt = 0;
         stars_gained = stars_spent = 0;
         doom_applied = 0;
@@ -96,6 +99,12 @@ enum class AfterPlay : uint8_t {
     DRAW_TOP,
     EXHAUST,
     NOWHERE // it stays where it was: played from the exhaust pile
+};
+
+enum class Pile : uint8_t {
+    HAND,
+    DRAW,
+    DISCARD
 };
 
 // A gain that outlives the combat: RunManager adds it to the card of the deck.
@@ -161,8 +170,10 @@ public:
     DeckCard exhaust_from_hand(size_t index);
     // Discards the hand card at `index` because of an effect (counted, unlike the end of turn discard).
     void discard_from_hand(size_t index);
-    // Adds a card made during the combat to the discard pile.
-    void create_card_in_discard(DeckCard card);
+    // Adds a card made during the combat to a pile: at a random place of the draw pile, and in the discard
+    // pile when the hand is full.
+    void create_card(DeckCard card, Pile pile);
+    void create_card_in_discard(DeckCard card) { create_card(card, Pile::DISCARD); }
 
     // One attack hit on an enemy: Strength, Weak and Vulnerable applied. Returns the HP lost by the enemy.
     int16_t hit(Enemy& target, int16_t base);
@@ -200,6 +211,8 @@ public:
     // Stars gained or spent by the Regent: every change goes through these two.
     void gain_stars(int amount);
     void spend_stars(int amount);
+    // Damage to the player that is not an attack (Burn): Block absorbs it.
+    void damage_player(int16_t amount);
     // The player loses HP: Block does not absorb it.
     void lose_hp(int16_t amount);
     // Strength or Dexterity until the end of the turn.
