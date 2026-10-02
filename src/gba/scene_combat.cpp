@@ -1076,6 +1076,9 @@ void CombatScene::_update_player_input()
             case engine::PlayBlocker::PLAY_LIMIT:
                 reason = "Limite atteinte";
                 break;
+            case engine::PlayBlocker::NOT_PLAYABLE:
+                reason = "Injouable";
+                break;
             default:
                 break;
             }

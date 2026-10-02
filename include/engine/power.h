@@ -74,6 +74,10 @@ enum class PowerId : uint8_t {
     SURCHARGE,          // cards cost `amount` more
     HELLRAISER,         // a "Strike" card drawn is played at once on a random enemy
     STAMPEDE,           // end of turn: a random Attack of the hand is played on a random enemy, once per stack
+    // Status cards
+    SMOKESTACK,         // Status card created: `amount` damage to every enemy
+    TRASH_TO_TREASURE,  // Status card created: channel a random orb, once per stack
+    ITERATION,          // first Status card drawn each turn: draw `amount`
     // Doom (Necrobinder)
     COUNTDOWN,          // start of turn: `amount` Doom to a random enemy
     NEUROSURGE,         // start of turn: `amount` Doom to the player

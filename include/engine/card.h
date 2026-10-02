@@ -341,6 +341,30 @@ enum class CardId : uint16_t {
     THE_SCYTHE,
     MELANCHOLY,
     HANG,
+    // Status cards and the token made from them (appended: saves store the numeric id)
+    BURN,
+    DAZED,
+    DEBRIS,
+    SLIMED,
+    SOOT,
+    VOID_CARD,
+    WOUND,
+    FUEL,
+    // Defect Status cards (appended: saves store the numeric id)
+    BOOST_AWAY,
+    FLAK_CANNON,
+    SMOKESTACK,
+    COMPACT,
+    GUNK_UP,
+    ITERATION,
+    FIGHT_THROUGH,
+    OVERCLOCK,
+    ROCKET_PUNCH,
+    TRASH_TO_TREASURE,
+    TURBO,
+    // Regent Status cards (appended: saves store the numeric id)
+    COLLISION_COURSE,
+    CRASH_LANDING,
     COUNT
 };
 
@@ -350,7 +374,7 @@ struct DeckCard {
     CardId id = CardId::NONE;
     bool upgraded = false;
     uint8_t bonus = 0; // added to this copy's base value: gained during the combat (Thrash, Rampage) or kept by the deck
-    uint8_t added_keywords = 0; // CardKeyword bits given to this copy during the combat, on top of its CardDef
+    uint8_t added_keywords = 0; // CardKeyword bits (the low eight) given to this copy during the combat, on top of its CardDef
     int8_t cost_delta = 0;      // energy cost change of this copy for the combat (Momentum Strike, Modded)
     bool free_this_turn = false; // this copy costs 0 until the end of the turn (Bullet Time)
     uint8_t deck_index = NOT_IN_DECK; // position of the card in the run's deck, for the gains that outlive the combat
@@ -363,7 +387,7 @@ struct DeckCard {
 };
 
 // Card keywords, combined as bits in CardDef::keywords.
-enum CardKeyword : uint8_t {
+enum CardKeyword : uint16_t {
     KEYWORD_EXHAUST = 1,  // goes to the exhaust pile when played
     KEYWORD_RETAIN = 2,   // stays in hand at the end of the turn
     KEYWORD_ETHEREAL = 4, // exhausted when still in hand at the end of the turn
@@ -371,7 +395,8 @@ enum CardKeyword : uint8_t {
     KEYWORD_RETURN = 16,  // once played, comes back to the hand at the start of the next turn
     KEYWORD_RETAIN_ONCE = 32, // per-copy only: stays in hand at the end of this turn, then the mark is removed
     KEYWORD_PLAY_FIRST = 64,  // while in hand, it must be played before any other card
-    KEYWORD_LIMIT_PLAYS = 128 // while in hand, no more than MAX_PLAYS_WHEN_LIMITED cards can be played each turn
+    KEYWORD_LIMIT_PLAYS = 128, // while in hand, no more than MAX_PLAYS_WHEN_LIMITED cards can be played each turn
+    KEYWORD_UNPLAYABLE = 256  // cannot be played from the hand; played by another card, it does nothing
 };
 
 constexpr uint8_t MAX_PLAYS_WHEN_LIMITED = 3;
@@ -389,7 +414,8 @@ constexpr uint8_t COST_X = 0xFF;
 enum class CardType : uint8_t {
     ATTACK,
     SKILL,
-    POWER
+    POWER,
+    STATUS // added to the piles during a combat, never part of the deck
 };
 
 enum class TargetType : uint8_t {
@@ -417,8 +443,8 @@ struct CardDef {
     std::string_view upgraded_description;
 
     // CardKeyword bits of the base and of the upgraded card: an upgrade can add or remove a keyword.
-    uint8_t keywords = 0;
-    uint8_t upgraded_keywords = 0;
+    uint16_t keywords = 0;
+    uint16_t upgraded_keywords = 0;
     // Stars spent to play the card, on top of its energy cost (Regent). COST_X: all the Stars left.
     uint8_t star_cost = 0;
     uint8_t upgraded_star_cost = 0;

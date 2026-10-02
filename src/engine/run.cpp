@@ -332,7 +332,10 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::BULK_UP, CardId::SYNCHRONIZE, CardId::ECHO_FORM,
                                               CardId::SIGNAL_BOOST, CardId::UPROAR, CardId::ADAPTIVE_STRIKE,
                                               CardId::SYNTHESIS, CardId::GENETIC_ALGORITHM, CardId::MOMENTUM_STRIKE,
-                                              CardId::CLAW, CardId::MODDED };
+                                              CardId::CLAW, CardId::MODDED, CardId::BOOST_AWAY, CardId::FLAK_CANNON,
+                                              CardId::SMOKESTACK, CardId::COMPACT, CardId::GUNK_UP,
+                                              CardId::ITERATION, CardId::FIGHT_THROUGH, CardId::OVERCLOCK,
+                                              CardId::ROCKET_PUNCH, CardId::TRASH_TO_TREASURE, CardId::TURBO };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
                                               CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
@@ -348,7 +351,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::MAKE_IT_SO, CardId::PALE_BLUE_DOT, CardId::ARSENAL,
                                               CardId::MONOLOGUE, CardId::ORBIT, CardId::PILLAR_OF_CREATION,
                                               CardId::MONARCHS_GAZE, CardId::BOMBARDMENT, CardId::I_AM_INVINCIBLE,
-                                              CardId::VOID_FORM, CardId::KINGLY_KICK, CardId::KINGLY_PUNCH };
+                                              CardId::VOID_FORM, CardId::KINGLY_KICK, CardId::KINGLY_PUNCH,
+                                              CardId::COLLISION_COURSE, CardId::CRASH_LANDING };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
@@ -461,6 +465,11 @@ std::string_view RunManager::draw_treasure_relic() {
 }
 
 void RunManager::register_relic_powers() {
+    // Blessed Antler: one more energy each turn, paid for with three Dazed shuffled into the draw pile.
+    if (has_relic("BLESSED_ANTLER")) {
+        combat.add_power(PowerId::TURN_ENERGY, 1);
+        for (int copy = 0; copy < 3; ++copy) combat.create_card(CardId::DAZED, Pile::DRAW);
+    }
     // Start of turn
     if (has_relic("CAPTAINS_WHEEL")) combat.add_power(PowerId::CAPTAINS_WHEEL, 18);
     if (has_relic("HORN_CLEAT")) combat.add_power(PowerId::HORN_CLEAT, 14);

@@ -599,6 +599,48 @@ bn::string_view base_name(engine::CardId id)
         return "Mélancolie";
     case engine::CardId::HANG:
         return "Pendaison";
+    case engine::CardId::BURN:
+        return "Brûlure";
+    case engine::CardId::DAZED:
+        return "Hébété";
+    case engine::CardId::DEBRIS:
+        return "Débris";
+    case engine::CardId::SLIMED:
+        return "Englué";
+    case engine::CardId::SOOT:
+        return "Suie";
+    case engine::CardId::VOID_CARD:
+        return "Néant";
+    case engine::CardId::WOUND:
+        return "Plaie";
+    case engine::CardId::FUEL:
+        return "Combustible";
+    case engine::CardId::BOOST_AWAY:
+        return "Boost";
+    case engine::CardId::FLAK_CANNON:
+        return "Canon anti-aérien";
+    case engine::CardId::SMOKESTACK:
+        return "Cheminée";
+    case engine::CardId::COMPACT:
+        return "Compactage";
+    case engine::CardId::GUNK_UP:
+        return "Encrassage";
+    case engine::CardId::ITERATION:
+        return "Itération";
+    case engine::CardId::FIGHT_THROUGH:
+        return "Lutte";
+    case engine::CardId::OVERCLOCK:
+        return "Overclocking";
+    case engine::CardId::ROCKET_PUNCH:
+        return "Poing roquette";
+    case engine::CardId::TRASH_TO_TREASURE:
+        return "Revalorisation";
+    case engine::CardId::TURBO:
+        return "TURBO";
+    case engine::CardId::COLLISION_COURSE:
+        return "Trajectoire de collision";
+    case engine::CardId::CRASH_LANDING:
+        return "Atterrissage forcé";
     default:
         return "???";
     }
@@ -611,7 +653,8 @@ void card_name(const engine::DeckCard& card, bn::istring& out)
     out.clear();
     out.append(base_name(card.id));
 
-    if(card.upgraded)
+    // A Status card has no upgraded version, whatever upgraded the hand it was in.
+    if(card.upgraded && engine::CardDef::get(card.id).type != engine::CardType::STATUS)
     {
         out.push_back('+');
     }
@@ -1503,6 +1546,67 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::HANG:
         stream << "Inflige " << value << ". Pendaison x2 sur cet ennemi.";
         break;
+    case engine::CardId::SOOT:
+    case engine::CardId::WOUND:
+        stream << "Injouable.";
+        break;
+    case engine::CardId::BURN:
+        stream << "Injouable. Fin de tour en main : " << value << " dégâts.";
+        break;
+    case engine::CardId::DAZED:
+        stream << "Injouable. Éthéré.";
+        break;
+    case engine::CardId::DEBRIS:
+        stream << "Épuisement.";
+        break;
+    case engine::CardId::SLIMED:
+        stream << "Pioche " << value << " carte. Épuisement.";
+        break;
+    case engine::CardId::VOID_CARD:
+        stream << "Injouable. Éthéré. Piochée : perd " << value << " ⚡.";
+        break;
+    case engine::CardId::FUEL:
+        stream << "Gagne " << value << " ⚡. Épuisement.";
+        break;
+    case engine::CardId::BOOST_AWAY:
+        stream << "Gagne " << value << " d'Armure. 1 Hébété en défausse.";
+        break;
+    case engine::CardId::FLAK_CANNON:
+        stream << "Statuts épuisés : " << value << " au hasard par carte.";
+        break;
+    case engine::CardId::SMOKESTACK:
+        stream << "Statut créé : " << value << " dégâts à TOUS.";
+        break;
+    case engine::CardId::COMPACT:
+        stream << "Armure " << value << ". Statuts en main : " << (card.upgraded ? "Combustible+." : "Combustible.");
+        break;
+    case engine::CardId::GUNK_UP:
+        stream << "Inflige " << value << " " << secondary << " fois. 1 Englué en défausse.";
+        break;
+    case engine::CardId::ITERATION:
+        stream << "1er Statut pioché du tour : pioche " << value << ".";
+        break;
+    case engine::CardId::FIGHT_THROUGH:
+        stream << "Gagne " << value << " d'Armure. " << secondary << " Plaies en défausse.";
+        break;
+    case engine::CardId::OVERCLOCK:
+        stream << "Pioche " << value << " cartes. 1 Brûlure en défausse.";
+        break;
+    case engine::CardId::ROCKET_PUNCH:
+        stream << "Inflige " << value << ". Pioche " << secondary << ". -1 ⚡ par Statut.";
+        break;
+    case engine::CardId::TRASH_TO_TREASURE:
+        stream << "Statut créé : canalise 1 Orbe au hasard.";
+        break;
+    case engine::CardId::TURBO:
+        stream << "Gagne " << value << " ⚡. 1 Néant en défausse.";
+        break;
+    case engine::CardId::COLLISION_COURSE:
+        stream << "Inflige " << value << " dégâts. 1 Débris en main.";
+        break;
+    case engine::CardId::CRASH_LANDING:
+        stream << "TOUS : " << value << ". Main remplie de Débris.";
+        break;
     default:
         break;
     }
@@ -1528,6 +1632,11 @@ bn::string_view cost_digit(uint8_t cost)
 
 bn::string_view card_cost_label(const engine::DeckCard& card)
 {
+    if(engine::CardDef::has_keyword(card, engine::KEYWORD_UNPLAYABLE))
+    {
+        return "-";
+    }
+
     return cost_digit(engine::CardDef::get_cost(card.id, card.upgraded));
 }
 
@@ -1550,6 +1659,8 @@ bn::string_view card_type_name(engine::CardType type)
         return "Attaque";
     case engine::CardType::SKILL:
         return "Compétence";
+    case engine::CardType::STATUS:
+        return "Statut";
     default:
         return "Pouvoir";
     }

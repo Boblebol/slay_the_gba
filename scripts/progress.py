@@ -146,7 +146,7 @@ def detect(pattern: str, path: Path) -> set[str]:
 
 
 # Engine card names that differ from the identifier of the same card in bible/data.
-ENGINE_CARD_ALIASES = {"POISON_STAB": "POISONED_STAB", "NULL_CARD": "NULL"}
+ENGINE_CARD_ALIASES = {"POISON_STAB": "POISONED_STAB", "NULL_CARD": "NULL", "VOID_CARD": "VOID"}
 
 
 def implemented_cards() -> set[str]:
@@ -240,12 +240,17 @@ def card_entries(cards: list[dict], pool: str) -> list[dict]:
             for c in subset]
 
 
+def engine_id(class_name: str) -> str:
+    """Identifier of a card as the engine and the dump write it: `MinionDiveBomb` is `MINION_DIVE_BOMB`."""
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", class_name).upper()
+
+
 def token_entries(card_data: dict) -> list[dict]:
     """Cards created during a combat (Shiv, Soul, Burn…): they only exist as tooltips in the dump."""
     listed = {c["className"] for c in card_data["cards"]}
     tips = [tip for key, tip in card_data["hoverTips"].items()
             if key.startswith("card:") and key.removeprefix("card:") not in listed]
-    return [{"id": tip["key"].removeprefix("card:"), "name": tip["title"],
+    return [{"id": engine_id(tip["key"].removeprefix("card:")), "name": tip["title"],
              "detail": f"{RARITY_FR.get(tip['card']['rarity'], tip['card']['rarity'])} · "
                        f"{TYPE_FR.get(tip['card']['type'], tip['card']['type'])}"}
             for tip in sorted(tips, key=lambda tip: tip["title"])]

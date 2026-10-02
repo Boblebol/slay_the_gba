@@ -3366,6 +3366,204 @@ void test_evolving_cards() {
     std::cout << "[PASS] Evolving cards: Rampage, Claw, Momentum Strike, Modded, Kingly Kick, Kingly Punch, Melancholy, Hang, Genetic Algorithm, The Scythe" << std::endl;
 }
 
+void test_status_cards() {
+    // Unplayable: refused from the hand whatever the energy.
+    CombatEngine wound = make_combat(CharacterId::IRONCLAD);
+    wound.hand.clear();
+    wound.hand.push_back(CardId::WOUND);
+    assert(!wound.can_play_card(0) && wound.play_blocker(0) == PlayBlocker::NOT_PLAYABLE);
+    assert(CardDef::get(CardId::WOUND).type == CardType::STATUS && CardDef::has_keyword(CardId::SOOT, false, KEYWORD_UNPLAYABLE));
+    assert(!CardDef::has_keyword(CardId::SLIMED, false, KEYWORD_UNPLAYABLE));
+    // Played by another card, it does nothing.
+    wound.draw_pile.push_back(CardId::WOUND);
+    play(wound, CardId::HAVOC);
+    assert(wound.enemies[0].hp == 42 && count_in(wound.exhaust_pile, CardId::WOUND) == 1);
+
+    // Dazed: Unplayable and Ethereal.
+    CombatEngine dazed = make_combat(CharacterId::DEFECT);
+    dazed.hand.clear();
+    dazed.hand.push_back(CardId::DAZED);
+    assert(!dazed.can_play_card(0));
+    end_turn_idle(dazed);
+    assert(count_in(dazed.exhaust_pile, CardId::DAZED) == 1);
+
+    // Burn: 2 damage at the end of the turn for each one in hand; Block absorbs it.
+    CombatEngine burn = make_combat(CharacterId::DEFECT);
+    int16_t hp = burn.player.hp;
+    burn.hand.clear();
+    burn.hand.push_back(CardId::BURN);
+    burn.hand.push_back(CardId::BURN);
+    end_turn_idle(burn);
+    assert(burn.player.hp == hp - 4 && count_in(burn.discard_pile, CardId::BURN) == 2);
+    burn.hand.clear();
+    burn.hand.push_back(CardId::BURN);
+    burn.player.block = 5;
+    end_turn_idle(burn);
+    assert(burn.player.hp == hp - 4);
+    burn.hand.clear();
+    burn.hand.push_back(CardId::BURN);
+    burn.player.hp = 2;
+    end_turn_idle(burn);
+    assert(burn.state == CombatState::DEFEAT);
+
+    // Void: 1 energy lost when it is drawn, never below 0.
+    CombatEngine void_card = make_combat(CharacterId::DEFECT);
+    void_card.draw_pile.push_back(CardId::VOID_CARD);
+    void_card.draw_pile.push_back(CardId::VOID_CARD);
+    assert(void_card.draw_card() && void_card.player.energy == 2);
+    void_card.player.energy = 0;
+    assert(void_card.draw_card() && void_card.player.energy == 0);
+    end_turn_idle(void_card);
+    assert(count_in(void_card.exhaust_pile, CardId::VOID_CARD) == 2);
+
+    // Slimed and Debris are played like any card, and counted as cards played.
+    CombatEngine slimed = make_combat(CharacterId::DEFECT);
+    play(slimed, CardId::SLIMED);
+    assert(slimed.player.energy == 2 && slimed.hand.size() == 1 && count_in(slimed.exhaust_pile, CardId::SLIMED) == 1);
+    assert(slimed.counters.statuses_played == 1 && slimed.counters.cards_played() == 1 && slimed.counters.skills_played == 0);
+    play(slimed, CardId::DEBRIS);
+    assert(slimed.player.energy == 2 && count_in(slimed.exhaust_pile, CardId::DEBRIS) == 1);
+
+    // Fuel: a 0-cost Skill made from Status cards.
+    play(slimed, CardId::FUEL);
+    assert(slimed.player.energy == 4 && count_in(slimed.exhaust_pile, CardId::FUEL) == 1);
+    play(slimed, DeckCard(CardId::FUEL, true));
+    assert(slimed.player.energy == 5 && CardDef::get(CardId::FUEL).type == CardType::SKILL);
+
+    // Cards made during the combat: a full hand overflows into the discard pile, the draw pile takes
+    // the card anywhere.
+    CombatEngine created = make_combat(CharacterId::DEFECT);
+    created.hand.clear();
+    created.create_card(CardId::WOUND, Pile::HAND);
+    assert(created.hand.size() == 1 && created.counters.combat_cards_created == 1);
+    while (created.hand.size() < created.hand.capacity()) created.hand.push_back(CardId::STRIKE);
+    size_t discarded = created.discard_pile.size();
+    created.create_card(CardId::WOUND, Pile::HAND);
+    assert(created.hand.size() == created.hand.capacity() && created.discard_pile.size() == discarded + 1);
+    size_t drawable = created.draw_pile.size();
+    DeckCard top = created.draw_pile.back();
+    for (int i = 0; i < 3; ++i) created.create_card(CardId::DAZED, Pile::DRAW);
+    assert(created.draw_pile.size() == drawable + 3 && count_in(created.draw_pile, CardId::DAZED) == 3);
+    assert(count_in(created.draw_pile, top.id) >= 1);
+
+    // No Status card is offered as a reward.
+    for (CharacterId hero : { CharacterId::IRONCLAD, CharacterId::SILENT, CharacterId::DEFECT, CharacterId::REGENT, CharacterId::NECROBINDER }) {
+        for (CardId id : RunManager::card_reward_pool(hero)) {
+            assert(CardDef::get(id).type != CardType::STATUS && id != CardId::FUEL);
+        }
+    }
+    std::cout << "[PASS] Status cards: Unplayable, Dazed, Burn, Void, Slimed, Debris, Fuel, creation in each pile" << std::endl;
+}
+
+void test_status_card_users() {
+    // Cards that pay for their effect with a Status card in the discard pile.
+    CombatEngine boost = make_combat(CharacterId::DEFECT);
+    play(boost, CardId::BOOST_AWAY);
+    assert(boost.player.block == 6 && count_in(boost.discard_pile, CardId::DAZED) == 1 && boost.player.energy == 3);
+    play(boost, DeckCard(CardId::FIGHT_THROUGH, true));
+    assert(boost.player.block == 6 + 17 && count_in(boost.discard_pile, CardId::WOUND) == 2);
+    play(boost, CardId::GUNK_UP);
+    assert(boost.enemies[0].hp == 42 - 12 && count_in(boost.discard_pile, CardId::SLIMED) == 1);
+    pad_draw_pile(boost, 3);
+    play(boost, DeckCard(CardId::OVERCLOCK, true));
+    assert(boost.hand.size() == 3 && count_in(boost.discard_pile, CardId::BURN) == 1);
+    play(boost, CardId::TURBO);
+    assert(boost.player.energy == 5 && count_in(boost.discard_pile, CardId::VOID_CARD) == 1);
+    assert(boost.counters.combat_cards_created == 6);
+
+    // Smokestack: damage to every enemy for each Status card created.
+    CombatEngine smokestack = make_pack(CharacterId::DEFECT);
+    play(smokestack, CardId::SMOKESTACK);
+    play(smokestack, CardId::FIGHT_THROUGH);
+    assert(smokestack.enemies[0].hp == 8 && smokestack.enemies[1].hp == 8 && smokestack.enemies[2].hp == 32);
+    // Other created cards do not count.
+    play(smokestack, CardId::ADAPTIVE_STRIKE, 2);
+    assert(smokestack.enemies[0].hp == 8 && smokestack.enemies[2].hp == 14);
+
+    // Trash to Treasure: a random orb for each Status card created.
+    CombatEngine treasure = make_combat(CharacterId::DEFECT);
+    play(treasure, CardId::TRASH_TO_TREASURE);
+    play(treasure, CardId::FIGHT_THROUGH);
+    assert(treasure.player.orbs.size() == 2 && CardDef::get_cost(CardId::TRASH_TO_TREASURE, true) == 0);
+
+    // Iteration: the first Status card drawn each turn draws more.
+    CombatEngine iteration = make_combat(CharacterId::DEFECT);
+    play(iteration, CardId::ITERATION);
+    iteration.draw_pile.push_back(CardId::WOUND);
+    iteration.draw_pile.push_back(CardId::DEFEND);
+    iteration.draw_pile.push_back(CardId::DEFEND);
+    iteration.draw_pile.push_back(CardId::WOUND);
+    assert(iteration.draw_card() && iteration.hand.size() == 3 && iteration.power_counter(PowerId::ITERATION) == 1);
+    assert(iteration.draw_card() && iteration.hand.size() == 4);
+    end_turn_idle(iteration);
+    assert(iteration.power_counter(PowerId::ITERATION) == 0);
+
+    // Rocket Punch: 1 less for each Status card created, until it is played.
+    CombatEngine rocket = make_combat(CharacterId::DEFECT);
+    rocket.discard_pile.push_back(CardId::ROCKET_PUNCH);
+    play(rocket, CardId::FIGHT_THROUGH);
+    DeckCard punch;
+    for (const DeckCard& card : rocket.discard_pile) {
+        if (card.id == CardId::ROCKET_PUNCH) punch = card;
+    }
+    assert(punch.id == CardId::ROCKET_PUNCH && rocket.effective_cost(punch) == 0);
+    pad_draw_pile(rocket, 2);
+    play(rocket, punch);
+    assert(rocket.enemies[0].hp == 42 - 13 && rocket.player.energy == 3 && rocket.hand.size() == 1);
+    assert(rocket.effective_cost(rocket.discard_pile.back()) == 2);
+
+    // Compact: the Status cards of the hand become Fuel.
+    CombatEngine compact = make_combat(CharacterId::DEFECT);
+    compact.hand.clear();
+    for (CardId id : { CardId::COMPACT, CardId::WOUND, CardId::BURN, CardId::STRIKE }) compact.hand.push_back(id);
+    assert(compact.play_card(0) && compact.player.block == 6);
+    assert(count_in(compact.hand, CardId::FUEL) == 2 && count_in(compact.hand, CardId::STRIKE) == 1 && !compact.hand[0].upgraded);
+    compact.hand.clear();
+    compact.hand.push_back(DeckCard(CardId::COMPACT, true));
+    compact.hand.push_back(CardId::DAZED);
+    assert(compact.play_card(0) && compact.hand[0] == DeckCard(CardId::FUEL, true));
+
+    // Flak Cannon: every Status card of the three piles is exhausted, one hit for each.
+    CombatEngine flak = make_combat(CharacterId::DEFECT);
+    flak.hand.clear();
+    flak.hand.push_back(CardId::FLAK_CANNON);
+    flak.hand.push_back(CardId::WOUND);
+    flak.draw_pile.push_back(CardId::DAZED);
+    flak.discard_pile.push_back(CardId::BURN);
+    assert(flak.play_card(0) && flak.enemies[0].hp == 42 - 3 * 8 && flak.counters.hits_dealt == 3);
+    assert(flak.exhaust_pile.size() == 3 && flak.hand.empty() && count_in(flak.draw_pile, CardId::DAZED) == 0);
+    play(flak, DeckCard(CardId::FLAK_CANNON, true));
+    assert(flak.enemies[0].hp == 18);
+
+    // Regent: Debris in hand.
+    CombatEngine collision = make_combat(CharacterId::REGENT);
+    play(collision, CardId::COLLISION_COURSE);
+    assert(collision.enemies[0].hp == 32 && count_in(collision.hand, CardId::DEBRIS) == 1 && collision.player.energy == 3);
+    CombatEngine crash = make_pack(CharacterId::REGENT);
+    play(crash, CardId::CRASH_LANDING);
+    assert(!crash.enemies[0].is_alive() && !crash.enemies[1].is_alive() && crash.enemies[2].hp == 21);
+    assert(crash.hand.size() == crash.hand.capacity() && count_in(crash.hand, CardId::DEBRIS) == 10);
+
+    // Blessed Antler: one more energy each turn, three Dazed in the draw pile, none left in the deck.
+    RunManager run;
+    run.start_run(CharacterId::DEFECT, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("BLESSED_ANTLER");
+    size_t deck_size = run.master_deck.size();
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 4);
+    assert(count_in(run.combat.hand, CardId::DAZED) + count_in(run.combat.draw_pile, CardId::DAZED) == 3);
+    end_turn_idle(run.combat);
+    assert(run.combat.player.energy == 4);
+    run.proceed_after_combat();
+    assert(run.master_deck.size() == deck_size);
+
+    assert_in_pool(CharacterId::DEFECT, { CardId::BOOST_AWAY, CardId::FLAK_CANNON, CardId::SMOKESTACK, CardId::COMPACT, CardId::GUNK_UP,
+                                          CardId::ITERATION, CardId::FIGHT_THROUGH, CardId::OVERCLOCK, CardId::ROCKET_PUNCH,
+                                          CardId::TRASH_TO_TREASURE, CardId::TURBO });
+    assert_in_pool(CharacterId::REGENT, { CardId::COLLISION_COURSE, CardId::CRASH_LANDING });
+    std::cout << "[PASS] Status card users: Boost Away, Fight Through, Gunk Up, Overclock, Turbo, Smokestack, Trash to Treasure, Iteration, Rocket Punch, Compact, Flak Cannon, Collision Course, Crash Landing, Blessed Antler" << std::endl;
+}
+
 void test_ascension() {
     // A0: enemies as designed.
     RunManager normal;
@@ -3460,6 +3658,8 @@ int main() {
     test_replays();
     test_cost_changes();
     test_evolving_cards();
+    test_status_cards();
+    test_status_card_users();
     test_ascension();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;

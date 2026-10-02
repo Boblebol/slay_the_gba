@@ -34,6 +34,14 @@ def test_shared_strike_and_defend_count_for_every_hero() -> None:
     assert "STRIKE" not in cards and "ABRASIVE" not in cards
 
 
+def test_cards_created_in_combat_are_matched_by_engine_identifier() -> None:
+    assert progress.engine_id("MinionDiveBomb") == "MINION_DIVE_BOMB" and progress.engine_id("Burn") == "BURN"
+    tokens = {entry["id"] for entry in progress.token_entries(progress.load("card"))}
+    assert {"BURN", "VOID", "SOVEREIGN_BLADE"} <= tokens
+    # The engine calls the Void card VOID_CARD.
+    assert "VOID" in progress.implemented_cards()
+
+
 def test_engine_names_are_mapped_to_reference_identifiers() -> None:
     cards = progress.implemented_cards()
     assert "POISONED_STAB" in cards and "POISON_STAB" not in cards

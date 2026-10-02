@@ -108,6 +108,7 @@ items = [
   { name = "Cartes jouées automatiquement (Pioche, pile d'épuisement, fin de tour)", status = "oui" },
   { name = "Coûts modifiés pendant le tour ou le combat", status = "partiel", issue = 75 },
   { name = "Cartes évolutives : bonus et coût propres à chaque exemplaire", status = "oui" },
+  { name = "Cartes Statut ajoutées à la main, la Pioche ou la Défausse", status = "oui" },
   { name = "Coup de grâce : effet quand la carte tue un ennemi", status = "oui" },
   { name = "Transformer une carte", status = "non", issue = 79 },
 ]
@@ -143,7 +144,7 @@ items = [
   { name = "Inné", status = "oui" },
   { name = "Retenue", status = "oui" },
   { name = "Ruse", status = "non", issue = 73 },
-  { name = "Injouable", status = "non", issue = 95 },
+  { name = "Injouable", status = "oui" },
   { name = "Éternel", status = "non", issue = 95 },
 ]
 
