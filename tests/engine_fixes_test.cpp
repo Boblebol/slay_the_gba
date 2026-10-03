@@ -1,7 +1,13 @@
 // Engine fixes: rules that used to break silently, one test per fix.
 #include <cassert>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <set>
+#include <sstream>
+#include <string>
 #include "engine/combat.h"
+#include "engine/relic.h"
 #include "engine/run.h"
 
 using namespace engine;
@@ -144,6 +150,72 @@ void test_power_capacity() {
     std::cout << "[PASS] Powers: 40 relic powers and 10 card powers are all kept" << std::endl;
 }
 
+// Relic ids the run gives an effect to: every `has_relic("ID")` of src/engine/run.cpp.
+std::set<std::string> implemented_relics() {
+    std::filesystem::path source = std::filesystem::path(__FILE__).parent_path().parent_path() / "src/engine/run.cpp";
+    if (!std::filesystem::exists(source)) source = "src/engine/run.cpp";
+    std::ifstream file(source);
+    assert(file.good());
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    const std::string text = buffer.str();
+    const std::string marker = "has_relic(\"";
+    std::set<std::string> ids;
+    for (size_t at = text.find(marker); at != std::string::npos; at = text.find(marker, at + 1)) {
+        size_t start = at + marker.size();
+        size_t end = text.find('"', start);
+        ids.insert(text.substr(start, end - start));
+    }
+    return ids;
+}
+
+bool is_normal_drop(RelicRarity rarity) {
+    return rarity == RelicRarity::COMMON || rarity == RelicRarity::UNCOMMON || rarity == RelicRarity::RARE ||
+           rarity == RelicRarity::SHOP;
+}
+
+void test_active_relics_list() {
+    std::set<std::string> implemented = implemented_relics();
+    assert(implemented.size() > 40);
+    std::span<const std::string_view> active = RunManager::active_relics();
+
+    // Every relic of the list has an effect and drops normally, and is listed once.
+    std::set<std::string> listed;
+    for (std::string_view id : active) {
+        const RelicData* relic = find_relic(id);
+        assert(relic && is_normal_drop(relic->rarity));
+        assert(implemented.count(std::string(id)) == 1);
+        assert(listed.insert(std::string(id)).second);
+    }
+    // Every implemented relic that drops normally is in the list.
+    for (const std::string& id : implemented) {
+        const RelicData* relic = find_relic(id);
+        assert(relic);
+        if (is_normal_drop(relic->rarity)) {
+            if (!listed.count(id)) std::cerr << "Missing from RunManager::active_relics(): " << id << std::endl;
+            assert(listed.count(id) == 1);
+        }
+    }
+    for (std::string_view id : { "HELICAL_DART", "NINJA_SCROLL", "GAMBLING_CHIP" }) assert(listed.count(std::string(id)));
+    assert(!listed.count("BLESSED_ANTLER")); // Ancient: given by its event, not by chests
+
+    // Chests keep filtering by hero: the Silent's relics only come in a Silent run.
+    for (CharacterId hero : { CharacterId::IRONCLAD, CharacterId::SILENT }) {
+        std::string_view hero_pool = get_character(hero).english_name;
+        RunManager run;
+        run.start_run(hero, 0, PaletteVariant::CLASSIC, 2024);
+        bool dart_seen = false;
+        for (int draw = 0; draw < 400; ++draw) {
+            std::string_view id = run.draw_treasure_relic();
+            const RelicData* relic = find_relic(id);
+            assert(relic && (relic->pool == "Shared" || relic->pool == hero_pool));
+            dart_seen = dart_seen || id == "HELICAL_DART";
+        }
+        assert(dart_seen == (hero == CharacterId::SILENT));
+    }
+    std::cout << "[PASS] Active relics: every implemented normal-drop relic can be drawn, and only those" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -151,6 +223,7 @@ int main() {
     test_fiend_fire_with_dark_embrace();
     test_hand_discards_with_a_draw_reaction();
     test_power_capacity();
+    test_active_relics_list();
     std::cout << "All engine fix tests passed." << std::endl;
     return 0;
 }
