@@ -226,6 +226,11 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
     const bool turn_start = event == CombatEvent::TURN_START;
     const bool card_played = event == CombatEvent::CARD_PLAYED;
     Enemy* foe = (info.enemy >= 0 && static_cast<size_t>(info.enemy) < enemies.size()) ? &enemies[info.enemy] : nullptr;
+    // Whether the card being played completes a group of `every` cards of its type this turn: `tally` does
+    // not count it yet.
+    const auto completes = [&](CardType type, uint8_t tally, uint8_t every) {
+        return card_played && CardDef::get(info.card.id).type == type && (tally + 1) % every == 0;
+    };
 
     if (turn_start) {
         power.turns = bump(power.turns);
@@ -597,6 +602,156 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             if (event == CombatEvent::CARD_DISCARDED && my_turn && has_alive_enemies()) {
                 damage_enemy(enemies[random_alive_enemy_index()], power.amount);
             }
+            break;
+        case PowerId::JOSS_PAPER:
+            if (event == CombatEvent::CARD_EXHAUSTED && ++power.counter == JOSS_PAPER_CARDS) {
+                power.counter = 0;
+                draw_cards(power.amount);
+            }
+            break;
+        case PowerId::LETTER_OPENER:
+            if (completes(CardType::SKILL, counters.skills_played, LETTER_OPENER_SKILLS)) damage_all_enemies(power.amount);
+            break;
+        case PowerId::TUNING_FORK:
+            if (card_played && CardDef::get(info.card.id).type == CardType::SKILL && ++power.counter == TUNING_FORK_SKILLS) {
+                power.counter = 0;
+                add_block(power.amount);
+            }
+            break;
+        case PowerId::KUNAI:
+            if (completes(CardType::ATTACK, counters.attacks_played, KUNAI_ATTACKS)) {
+                player.add_status(StatusType::DEXTERITY, power.amount);
+            }
+            break;
+        case PowerId::KUSARIGAMA:
+            if (completes(CardType::ATTACK, counters.attacks_played, KUSARIGAMA_ATTACKS) && has_alive_enemies()) {
+                damage_enemy(enemies[random_alive_enemy_index()], power.amount);
+            }
+            break;
+        case PowerId::MUMMIFIED_HAND:
+            if (card_played && CardDef::get(info.card.id).type == CardType::POWER) {
+                // Only a card that still costs something is worth picking.
+                FixedVector<uint8_t, 10> paid;
+                for (size_t i = 0; i < hand.size(); ++i) {
+                    int cost = effective_cost(hand[i]);
+                    if (cost > 0 && cost != COST_X && !CardDef::has_keyword(hand[i], KEYWORD_UNPLAYABLE)) {
+                        paid.push_back(static_cast<uint8_t>(i));
+                    }
+                }
+                if (!paid.empty()) hand[paid[next_random() % paid.size()]].free_this_turn = true;
+            }
+            break;
+        case PowerId::NUNCHAKU:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK && ++power.counter == NUNCHAKU_ATTACKS) {
+                power.counter = 0;
+                player.energy = static_cast<int8_t>(player.energy + power.amount);
+            }
+            break;
+        case PowerId::RAINBOW_RING:
+            if (turn_start) power.counter = 0;
+            if (card_played && power.counter == 0) {
+                // The tallies of the turn do not count the card being played yet.
+                const CardType type = CardDef::get(info.card.id).type;
+                if (counters.attacks_played + (type == CardType::ATTACK) > 0 &&
+                    counters.skills_played + (type == CardType::SKILL) > 0 &&
+                    counters.powers_played + (type == CardType::POWER) > 0) {
+                    power.counter = 1;
+                    player.add_status(StatusType::STRENGTH, power.amount);
+                    player.add_status(StatusType::DEXTERITY, power.amount);
+                }
+            }
+            break;
+        case PowerId::RIPPLE_BASIN:
+            if (event == CombatEvent::TURN_END && counters.attacks_played == 0) add_block(power.amount);
+            break;
+        case PowerId::BURNING_STICKS:
+            if (event == CombatEvent::CARD_EXHAUSTED && power.counter == 0 &&
+                CardDef::get(info.card.id).type == CardType::SKILL) {
+                power.counter = 1;
+                DeckCard copy = info.card;
+                copy.free_this_turn = false;
+                copy.deck_index = NOT_IN_DECK; // a gain on the copy does not reach the deck
+                create_card(copy, Pile::HAND);
+            }
+            break;
+        case PowerId::SHURIKEN:
+            if (completes(CardType::ATTACK, counters.attacks_played, SHURIKEN_ATTACKS)) {
+                player.add_status(StatusType::STRENGTH, power.amount);
+            }
+            break;
+        case PowerId::ORNAMENTAL_FAN:
+            if (completes(CardType::ATTACK, counters.attacks_played, ORNAMENTAL_FAN_ATTACKS)) add_block(power.amount);
+            break;
+        case PowerId::SELF_FORMING_CLAY:
+            // Counted when the HP are lost, given when the next turn starts.
+            if (turn_start) {
+                add_block(static_cast<int16_t>(power.amount * power.counter));
+                power.counter = 0;
+            } else if (event == CombatEvent::HP_LOST) {
+                power.counter = bump(power.counter);
+            }
+            break;
+        case PowerId::CHARONS_ASHES:
+            if (event == CombatEvent::CARD_EXHAUSTED) damage_all_enemies(power.amount);
+            break;
+        case PowerId::RED_SKULL: {
+            // Looked at on every event, a heal being none of them: the Strength follows the HP at the next one.
+            const int wanted = player.hp * 100 <= player.max_hp * RED_SKULL_HP_PERCENT ? power.amount : 0;
+            if (wanted != power.counter) {
+                player.add_status(StatusType::STRENGTH, static_cast<int16_t>(wanted - power.counter));
+                power.counter = static_cast<uint8_t>(wanted);
+            }
+            break;
+        }
+        case PowerId::DEMON_TONGUE:
+            // Poison takes its HP before the turn start is announced: the turn number tells the turns apart.
+            if (event == CombatEvent::HP_LOST && my_turn && player.is_alive() &&
+                power.counter != static_cast<uint8_t>(turn_number)) {
+                power.counter = static_cast<uint8_t>(turn_number);
+                player.heal(info.amount);
+            }
+            break;
+        case PowerId::BRIMSTONE:
+            if (turn_start) {
+                player.add_status(StatusType::STRENGTH, power.amount);
+                for (Enemy& enemy_hit : enemies) {
+                    if (enemy_hit.is_alive()) enemy_hit.add_status(StatusType::STRENGTH, power.stacks);
+                }
+            }
+            break;
+        case PowerId::SNECKO_SKULL:
+            // Added to the Poison just applied, without a second event: it is the same application.
+            if (event == CombatEvent::DEBUFF_APPLIED && info.status == StatusType::POISON && info.amount > 0 && foe &&
+                foe->is_alive()) {
+                foe->add_status(StatusType::POISON, power.amount);
+            }
+            break;
+        case PowerId::MINI_REGENT:
+            if (turn_start) power.counter = 0;
+            if (event == CombatEvent::STARS_SPENT && power.counter == 0) {
+                power.counter = 1;
+                player.add_status(StatusType::STRENGTH, power.amount);
+            }
+            break;
+        case PowerId::GALACTIC_DUST:
+            if (event == CombatEvent::STARS_SPENT) {
+                int spent = power.counter + info.amount;
+                add_block(static_cast<int16_t>(power.amount * (spent / GALACTIC_DUST_STARS)));
+                power.counter = static_cast<uint8_t>(spent % GALACTIC_DUST_STARS);
+            }
+            break;
+        case PowerId::LUNAR_PASTRY:
+            if (event == CombatEvent::TURN_END) gain_stars(power.amount);
+            break;
+        case PowerId::REGALITE:
+            if (turn_start) power.counter = 0;
+            if (event == CombatEvent::CARD_CREATED && power.counter == 0) {
+                power.counter = 1;
+                add_block(power.amount);
+            }
+            break;
+        case PowerId::IVORY_TILE:
+            if (card_played && info.cost >= IVORY_TILE_COST) player.energy = static_cast<int8_t>(player.energy + power.amount);
             break;
         default:
             // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
