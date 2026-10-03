@@ -209,7 +209,16 @@ enum class EnemyType : uint8_t {
     JAW_WORM,
     LOUSE,
     GREMLIN_NOB,
-    CEREMONIAL_BEAST // Act 1 boss
+    CEREMONIAL_BEAST, // Act 1 boss
+    // Named like their identifier in bible/data/monster_v0.111.0.json
+    FUZZY_WURM_CRAWLER,
+    CROSSBOW_RUBY_RAIDER,
+    BRUTE_RUBY_RAIDER,
+    ASSASSIN_RUBY_RAIDER,
+    AXE_RUBY_RAIDER,
+    CALCIFIED_CULTIST,
+    DAMP_CULTIST,
+    SEWER_CLAM
 };
 
 class Enemy : public CombatEntity {
