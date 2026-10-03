@@ -41,7 +41,8 @@ constexpr int CHOICE_BANNER_X = 36;
 constexpr int LINE1_Y = 30;
 constexpr int LINE2_Y = 41;
 constexpr int LINE_STEP = LINE2_Y - LINE1_Y;
-constexpr int BELT_HINT_Y = LINE1_Y + 4 * LINE_STEP;
+// The key line of the belt: under a three-line description, raised so the bottom edge of the screen does not cut it.
+constexpr int BELT_HINT_Y = LINE1_Y + 4 * LINE_STEP - 3;
 constexpr int TEXT_WIDTH = 224;
 constexpr int STAGE_X = 0;
 constexpr int STAGE_Y = -30;
