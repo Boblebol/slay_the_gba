@@ -13,10 +13,18 @@
 #include "bn_regular_bg_items_bg_event_mystic_altar.h"
 
 #include "bn_sprite_items_boss_ceremonial_beast.h"
+#include "bn_sprite_items_mon_assassin_ruby_raider.h"
+#include "bn_sprite_items_mon_axe_ruby_raider.h"
+#include "bn_sprite_items_mon_brute_ruby_raider.h"
+#include "bn_sprite_items_mon_calcified_cultist.h"
+#include "bn_sprite_items_mon_crossbow_ruby_raider.h"
 #include "bn_sprite_items_mon_cultist.h"
+#include "bn_sprite_items_mon_damp_cultist.h"
+#include "bn_sprite_items_mon_fuzzy_wurm_crawler.h"
 #include "bn_sprite_items_mon_gremlin_nob.h"
 #include "bn_sprite_items_mon_jaw_worm.h"
 #include "bn_sprite_items_mon_louse.h"
+#include "bn_sprite_items_mon_sewer_clam.h"
 
 #include "bn_sprite_items_hand_cards_defect.h"
 #include "bn_sprite_items_hand_cards_ironclad.h"
@@ -193,6 +201,22 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_gremlin_nob, false };
     case engine::EnemyType::CEREMONIAL_BEAST:
         return { &bn::sprite_items::boss_ceremonial_beast, true };
+    case engine::EnemyType::FUZZY_WURM_CRAWLER:
+        return { &bn::sprite_items::mon_fuzzy_wurm_crawler, false };
+    case engine::EnemyType::CROSSBOW_RUBY_RAIDER:
+        return { &bn::sprite_items::mon_crossbow_ruby_raider, false };
+    case engine::EnemyType::BRUTE_RUBY_RAIDER:
+        return { &bn::sprite_items::mon_brute_ruby_raider, false };
+    case engine::EnemyType::ASSASSIN_RUBY_RAIDER:
+        return { &bn::sprite_items::mon_assassin_ruby_raider, false };
+    case engine::EnemyType::AXE_RUBY_RAIDER:
+        return { &bn::sprite_items::mon_axe_ruby_raider, false };
+    case engine::EnemyType::CALCIFIED_CULTIST:
+        return { &bn::sprite_items::mon_calcified_cultist, false };
+    case engine::EnemyType::DAMP_CULTIST:
+        return { &bn::sprite_items::mon_damp_cultist, false };
+    case engine::EnemyType::SEWER_CLAM:
+        return { &bn::sprite_items::mon_sewer_clam, false };
     default:
         return { &bn::sprite_items::mon_cultist, false };
     }

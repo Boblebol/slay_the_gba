@@ -158,6 +158,14 @@ MONSTERS: dict[str, str] = {
     "jaw_worm": "fuzzy_wurm_crawler",
     "louse": "shrinker_beetle",
     "gremlin_nob": "gremlin_merc",
+    "fuzzy_wurm_crawler": "fuzzy_wurm_crawler",
+    "crossbow_ruby_raider": "crossbow_ruby_raider",
+    "brute_ruby_raider": "brute_ruby_raider",
+    "assassin_ruby_raider": "assassin_ruby_raider",
+    "axe_ruby_raider": "axe_ruby_raider",
+    "calcified_cultist": "calcified_cultist",
+    "damp_cultist": "damp_cultist",
+    "sewer_clam": "sewer_clam",
 }
 BOSSES: dict[str, str] = {
     "ceremonial_beast": "ceremonial_beast",
