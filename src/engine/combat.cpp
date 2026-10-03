@@ -2392,8 +2392,9 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             break;
         }
         case CardId::FIEND_FIRE: {
+            // Only the cards held now burn: a card an exhaustion draws (Dark Embrace) lands above them and stays.
             size_t burnt = hand.size();
-            while (!hand.empty()) exhaust_from_hand(hand.size() - 1);
+            for (size_t i = burnt; i-- > 0;) exhaust_from_hand(i);
             for (size_t blow = 0; blow < burnt; ++blow) {
                 hit(current_target, base_value);
             }
@@ -2445,8 +2446,9 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             break;
         }
         case CardId::CALCULATED_GAMBLE: {
+            // Only the cards held now go: a card a discard reaction draws (Gremlin Horn) lands above them and stays.
             int swapped = static_cast<int>(hand.size());
-            while (!hand.empty()) discard_from_hand(hand.size() - 1);
+            for (size_t i = hand.size(); i-- > 0;) discard_from_hand(i);
             draw_cards(swapped);
             set_log(upgraded ? "Played Calculated Gamble+!"sv : "Played Calculated Gamble!"sv);
             break;
@@ -3923,8 +3925,9 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             break;
         }
         case CardId::STORM_OF_STEEL: {
+            // Only the cards held now go: a card a discard reaction draws (Gremlin Horn) lands above them and stays.
             int thrown = static_cast<int>(hand.size());
-            while (!hand.empty()) discard_from_hand(hand.size() - 1);
+            for (size_t i = hand.size(); i-- > 0;) discard_from_hand(i);
             add_shivs(thrown, upgraded);
             set_log(upgraded ? "Played Storm of Steel+!"sv : "Played Storm of Steel!"sv);
             break;

@@ -70,6 +70,9 @@ void Enemy::init(EnemyType enemy_type) {
 }
 
 void Enemy::plan_turn(int turn_number) {
+    // Start from a blank intent: a field set by last turn's move (a Strength buff) must not leak
+    // into this one, since execute_turn() applies whatever the intent holds.
+    current_intent = EnemyIntent{};
     if (type == EnemyType::CULTIST) {
         if (turn_number == 1) {
             current_intent.type = EnemyIntentType::BUFF;
@@ -138,8 +141,6 @@ void Enemy::plan_turn(int turn_number) {
         }
     } else if (type == EnemyType::CEREMONIAL_BEAST) {
         // Opens with a roar, then alternates a heavy trample with an antler guard.
-        current_intent.status_type = StatusType::NONE;
-        current_intent.status_amount = 0;
         if (turn_number == 1) {
             current_intent.type = EnemyIntentType::BUFF;
             current_intent.base_damage = 0;

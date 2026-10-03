@@ -171,7 +171,9 @@ public:
     bool retain_hand = false;      // the whole hand stays at the end of this turn
     bool no_draw_this_turn = false; // "you cannot draw any more cards this turn"
     uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
-    FixedVector<ActivePower, 24> powers;      // active powers, in the order they were gained
+    // Active powers, in the order they were gained: every relic a run can hold plus a combat's worth of
+    // card powers (add_power drops a power silently once it is full).
+    FixedVector<ActivePower, 64> powers;
     FixedVector<DeckCard, 24> powers_in_play; // Power cards played this combat: they stay in play
     FixedVector<PermanentGain, 16> permanent_gains; // bonuses to write back to the deck after the combat
     FixedVector<CardChoice, 4> pending_choices;      // asked in order, the first one first
