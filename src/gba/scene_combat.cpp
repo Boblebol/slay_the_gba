@@ -1657,6 +1657,9 @@ void CombatScene::_refresh_choice_banner()
     case engine::ChoiceKind::TO_HAND:
         stream << "Prends en main";
         break;
+    case engine::ChoiceKind::MAKE_RETAIN:
+        stream << "Retenue";
+        break;
     default:
         stream << "Rends Éthérée";
         break;

@@ -40,6 +40,35 @@ int count_strikes(const FixedVector<DeckCard, Capacity>& pile) {
     return count;
 }
 
+// Attacks dealt by Osty (Squeeze counts them).
+bool is_osty_attack(CardId id) {
+    switch (id) {
+        case CardId::UNLEASH:
+        case CardId::POKE:
+        case CardId::SNAP:
+        case CardId::RATTLE:
+        case CardId::BONE_SHARDS:
+        case CardId::SQUEEZE:
+        case CardId::FLATTEN:
+        case CardId::HIGH_FIVE:
+        case CardId::FETCH:
+        case CardId::RIGHT_HAND_HAND:
+        case CardId::PROTECTOR:
+        case CardId::SIC_EM:
+        case CardId::SWEEPING_GAZE:
+            return true;
+        default:
+            return false;
+    }
+}
+
+template <size_t Capacity>
+int count_osty_attacks(const FixedVector<DeckCard, Capacity>& pile) {
+    int count = 0;
+    for (const DeckCard& card : pile) count += is_osty_attack(card.id);
+    return count;
+}
+
 uint8_t bump(uint8_t value, int amount = 1) {
     return static_cast<uint8_t>(std::min(255, value + amount));
 }
@@ -608,6 +637,11 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::BONE_FLUTE:
             if (event == CombatEvent::OSTY_ATTACKED) add_block(power.amount);
             break;
+        case PowerId::SENTRY_MODE:
+            if (turn_start) {
+                for (int16_t copy = 0; copy < power.amount; ++copy) create_card(CardId::SWEEPING_GAZE, Pile::HAND);
+            }
+            break;
         case PowerId::NECRO_MASTERY:
             if (event == CombatEvent::OSTY_HP_LOST) {
                 for (Enemy& other : enemies) {
@@ -786,7 +820,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         default:
             // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
             // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE,
-            // FLAME_BARRIER, REFLECT, CALCIFY.
+            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM.
             break;
     }
 }
@@ -1112,9 +1146,25 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     return lost;
 }
 
-int16_t CombatEngine::osty_attack(Enemy& target, int16_t base) {
-    if (!player.minion_alive()) return 0;
+int16_t CombatEngine::osty_hit(Enemy& target, int16_t base) {
+    const bool was_alive = target.is_alive();
     int16_t lost = hit(target, static_cast<int16_t>(base + power_amount(PowerId::CALCIFY)));
+    if (was_alive) {
+        // Sic 'Em: Summon for each hit on the enemy it marked this turn.
+        const int8_t at = index_of(target);
+        int16_t summoned = 0;
+        for (const ActivePower& power : powers) {
+            if (power.id == PowerId::SIC_EM && power.target == at) summoned = static_cast<int16_t>(summoned + power.amount);
+        }
+        if (summoned > 0) player.summon_minion(summoned, 0);
+    }
+    return lost;
+}
+
+int16_t CombatEngine::osty_attack(Enemy& target, int16_t base, int hits) {
+    if (!player.minion_alive()) return 0;
+    int16_t lost = 0;
+    for (int blow = 0; blow < hits && target.is_alive(); ++blow) lost = osty_hit(target, base);
     note_osty_attack();
     return lost;
 }
@@ -1122,7 +1172,7 @@ int16_t CombatEngine::osty_attack(Enemy& target, int16_t base) {
 void CombatEngine::osty_attack_all(int16_t base) {
     if (!player.minion_alive()) return;
     for (Enemy& target : enemies) {
-        if (target.is_alive()) hit(target, static_cast<int16_t>(base + power_amount(PowerId::CALCIFY)));
+        if (target.is_alive()) osty_hit(target, base);
     }
     note_osty_attack();
 }
@@ -1526,6 +1576,9 @@ int CombatEngine::effective_cost(const DeckCard& card) const {
         case CardId::BANSHEES_CRY:
             cost -= 2 * counters.combat_ethereal_played;
             break;
+        case CardId::FLATTEN:
+            if (counters.osty_attacks > 0) cost = 0;
+            break;
         default:
             break;
     }
@@ -1669,6 +1722,15 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         if (played_type == CardType::SKILL && counters.skills_played % CardDef::get_secondary(CardId::MAKE_IT_SO, false) == 0) {
             recall_to_hand(CardId::MAKE_IT_SO);
         }
+        // Right Hand Hand comes back from the discard pile when a card that cost 2 energy or more is played.
+        if (paid >= CardDef::get_secondary(CardId::RIGHT_HAND_HAND, false)) {
+            for (size_t i = discard_pile.size(); i-- > 0 && hand.size() < hand.capacity();) {
+                if (discard_pile[i].id == CardId::RIGHT_HAND_HAND) {
+                    hand.push_back(discard_pile[i]);
+                    discard_pile.erase(i);
+                }
+            }
+        }
         if (!player.is_alive() || !has_alive_enemies()) break;
     }
 
@@ -1738,6 +1800,8 @@ bool CombatEngine::can_be_picked(const DeckCard& card, ChoiceKind kind) const {
             return !card.upgraded && CardDef::get(card.id).type != CardType::STATUS;
         case ChoiceKind::MAKE_ETHEREAL:
             return !CardDef::has_keyword(card, KEYWORD_ETHEREAL);
+        case ChoiceKind::MAKE_RETAIN:
+            return !CardDef::has_keyword(card, KEYWORD_RETAIN);
         default:
             return true;
     }
@@ -1831,6 +1895,9 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                 case ChoiceKind::MAKE_ETHEREAL:
                     hand[index].added_keywords |= KEYWORD_ETHEREAL;
                     break;
+                case ChoiceKind::MAKE_RETAIN:
+                    hand[index].added_keywords |= KEYWORD_RETAIN;
+                    break;
                 case ChoiceKind::TO_HAND:
                     break;
             }
@@ -1844,6 +1911,10 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
         }
         if (choice.kind == ChoiceKind::MAKE_ETHEREAL) {
             pile[index].added_keywords |= KEYWORD_ETHEREAL;
+            continue;
+        }
+        if (choice.kind == ChoiceKind::MAKE_RETAIN) {
+            pile[index].added_keywords |= KEYWORD_RETAIN;
             continue;
         }
         if (choice.kind == ChoiceKind::TO_HAND && hand.size() >= hand.capacity()) continue;
@@ -4362,6 +4433,121 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::THE_SMITH: {
             forge(base_value);
             set_log(upgraded ? "Played The Smith+!"sv : "Played The Smith!"sv);
+            break;
+        }
+        case CardId::POKE: {
+            osty_attack(current_target, base_value);
+            set_log(upgraded ? "Played Poke+!"sv : "Played Poke!"sv);
+            break;
+        }
+        case CardId::SNAP: {
+            osty_attack(current_target, base_value);
+            ask_choice(CardChoice{ ChoiceKind::MAKE_RETAIN, 1 });
+            set_log(upgraded ? "Played Snap+!"sv : "Played Snap!"sv);
+            break;
+        }
+        case CardId::RATTLE: {
+            // One attack that hits once more for each attack Osty made earlier this turn.
+            osty_attack(current_target, base_value, 1 + counters.osty_attacks);
+            set_log(upgraded ? "Played Rattle+!"sv : "Played Rattle!"sv);
+            break;
+        }
+        case CardId::BONE_SHARDS: {
+            // Nothing happens when Osty is dead.
+            if (player.minion_alive()) {
+                osty_attack_all(base_value);
+                gain_block(secondary_value);
+                kill_osty();
+            }
+            set_log(upgraded ? "Played Bone Shards+!"sv : "Played Bone Shards!"sv);
+            break;
+        }
+        case CardId::SQUEEZE: {
+            // The other Osty Attacks of the hand and of the draw and discard piles: this one already left the hand.
+            const int others = count_osty_attacks(hand) + count_osty_attacks(draw_pile) + count_osty_attacks(discard_pile);
+            osty_attack(current_target, static_cast<int16_t>(base_value + secondary_value * others));
+            set_log(upgraded ? "Played Squeeze+!"sv : "Played Squeeze!"sv);
+            break;
+        }
+        case CardId::FLATTEN: {
+            osty_attack(current_target, base_value);
+            set_log(upgraded ? "Played Flatten+!"sv : "Played Flatten!"sv);
+            break;
+        }
+        case CardId::HIGH_FIVE: {
+            if (player.minion_alive()) {
+                osty_attack_all(base_value);
+                for (Enemy& foe : enemies) {
+                    if (foe.is_alive()) afflict(foe, StatusType::VULNERABLE, secondary_value);
+                }
+            }
+            set_log(upgraded ? "Played High Five+!"sv : "Played High Five!"sv);
+            break;
+        }
+        case CardId::FETCH: {
+            osty_attack(current_target, base_value);
+            // The first Fetch played this turn draws.
+            if (counters.fetches_played == 0) draw_cards(secondary_value);
+            counters.fetches_played = bump(counters.fetches_played);
+            set_log(upgraded ? "Played Fetch+!"sv : "Played Fetch!"sv);
+            break;
+        }
+        case CardId::CALCIFY: {
+            add_power(PowerId::CALCIFY, base_value);
+            set_log(upgraded ? "Played Calcify+!"sv : "Played Calcify!"sv);
+            break;
+        }
+        case CardId::RIGHT_HAND_HAND: {
+            // Its return from the discard pile is in run_card.
+            osty_attack(current_target, base_value);
+            set_log(upgraded ? "Played Right Hand Hand+!"sv : "Played Right Hand Hand!"sv);
+            break;
+        }
+        case CardId::NECRO_MASTERY: {
+            player.summon_minion(base_value, 0);
+            // What the enemies lose is what Osty lost: a second Necro Mastery adds nothing.
+            add_power(PowerId::NECRO_MASTERY);
+            set_log(upgraded ? "Played Necro Mastery+!"sv : "Played Necro Mastery!"sv);
+            break;
+        }
+        case CardId::PROTECTOR: {
+            osty_attack(current_target, static_cast<int16_t>(base_value + player.minion_max_hp));
+            set_log(upgraded ? "Played Protector+!"sv : "Played Protector!"sv);
+            break;
+        }
+        case CardId::SACRIFICE: {
+            if (player.minion_alive()) {
+                const int block = std::min(3 * player.minion_max_hp, 999);
+                kill_osty();
+                gain_block(static_cast<int16_t>(block));
+            }
+            set_log(upgraded ? "Played Sacrifice+!"sv : "Played Sacrifice!"sv);
+            break;
+        }
+        case CardId::SPUR: {
+            player.summon_minion(base_value, 0);
+            heal_osty(secondary_value);
+            set_log(upgraded ? "Played Spur+!"sv : "Played Spur!"sv);
+            break;
+        }
+        case CardId::SIC_EM: {
+            osty_attack(current_target, base_value);
+            // Bound to the enemy and gone at the end of the turn: the hit of this card came before it.
+            if (player.minion_alive() && current_target.is_alive() && target_idx >= 0 &&
+                target_idx < static_cast<int>(enemies.size())) {
+                add_power(PowerId::SIC_EM, secondary_value, true, static_cast<int8_t>(target_idx));
+            }
+            set_log(upgraded ? "Played Sic 'Em+!"sv : "Played Sic 'Em!"sv);
+            break;
+        }
+        case CardId::SENTRY_MODE: {
+            add_power(PowerId::SENTRY_MODE, base_value);
+            set_log(upgraded ? "Played Sentry Mode+!"sv : "Played Sentry Mode!"sv);
+            break;
+        }
+        case CardId::SWEEPING_GAZE: {
+            if (has_alive_enemies()) osty_attack(enemies[random_alive_enemy_index()], base_value);
+            set_log(upgraded ? "Played Sweeping Gaze+!"sv : "Played Sweeping Gaze!"sv);
             break;
         }
         default:

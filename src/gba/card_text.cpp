@@ -752,6 +752,40 @@ bn::string_view base_name(engine::CardId id)
         return "Sage à l'épée";
     case engine::CardId::THE_SMITH:
         return "Le forgeron";
+    case engine::CardId::POKE:
+        return "Chiquenaude";
+    case engine::CardId::SNAP:
+        return "Claquement de doigts";
+    case engine::CardId::RATTLE:
+        return "Cliquetis";
+    case engine::CardId::BONE_SHARDS:
+        return "Détonation osseuse";
+    case engine::CardId::SQUEEZE:
+        return "Joug";
+    case engine::CardId::FLATTEN:
+        return "Raser";
+    case engine::CardId::HIGH_FIVE:
+        return "Tope là";
+    case engine::CardId::FETCH:
+        return "Va chercher";
+    case engine::CardId::CALCIFY:
+        return "Calcification";
+    case engine::CardId::RIGHT_HAND_HAND:
+        return "Droitier";
+    case engine::CardId::NECRO_MASTERY:
+        return "Maîtrise nécro";
+    case engine::CardId::PROTECTOR:
+        return "Protecteur";
+    case engine::CardId::SACRIFICE:
+        return "Sacrifice";
+    case engine::CardId::SPUR:
+        return "Stimulation";
+    case engine::CardId::SIC_EM:
+        return "À l'attaque !";
+    case engine::CardId::SENTRY_MODE:
+        return "Sentinelle";
+    case engine::CardId::SWEEPING_GAZE:
+        return "Balayage optique";
     default:
         return "???";
     }
@@ -1888,6 +1922,57 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::THE_SMITH:
         stream << "Forge " << value << ".";
+        break;
+    case engine::CardId::POKE:
+        stream << "Titos inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::SNAP:
+        stream << "Titos inflige " << value << ". Retenue sur 1 carte.";
+        break;
+    case engine::CardId::RATTLE:
+        stream << "Titos : " << value << ", +1 fois par attaque ce tour.";
+        break;
+    case engine::CardId::BONE_SHARDS:
+        stream << "Titos périt : " << value << " à TOUS, " << secondary << " d'Armure.";
+        break;
+    case engine::CardId::SQUEEZE:
+        stream << "Titos : " << value << ", +" << secondary << " par autre Attaque Titos.";
+        break;
+    case engine::CardId::FLATTEN:
+        stream << "Titos inflige " << value << ". Coût 0 s'il a attaqué.";
+        break;
+    case engine::CardId::HIGH_FIVE:
+        stream << "Titos : " << value << " et Vulnérable " << secondary << " à TOUS.";
+        break;
+    case engine::CardId::FETCH:
+        stream << "Titos inflige " << value << ". 1re du tour : pioche " << secondary << ".";
+        break;
+    case engine::CardId::CALCIFY:
+        stream << "Attaques de Titos : +" << value << " dégâts.";
+        break;
+    case engine::CardId::RIGHT_HAND_HAND:
+        stream << "Titos : " << value << ". Carte à " << secondary << " ⚡ ou plus : revient.";
+        break;
+    case engine::CardId::NECRO_MASTERY:
+        stream << "Invoque Titos (" << value << "). Ses PV perdus : TOUS.";
+        break;
+    case engine::CardId::PROTECTOR:
+        stream << "Titos inflige " << value << " dégâts + ses PV Max.";
+        break;
+    case engine::CardId::SACRIFICE:
+        stream << "Retenue. Titos périt : Armure 3x PV Max.";
+        break;
+    case engine::CardId::SPUR:
+        stream << "Retenue. Invoque Titos (" << value << " PV). Soin " << secondary << ".";
+        break;
+    case engine::CardId::SIC_EM:
+        stream << "Titos : " << value << ". Ce tour, touché : Invoque " << secondary << ".";
+        break;
+    case engine::CardId::SENTRY_MODE:
+        stream << "Début de tour : " << value << " Balayage optique.";
+        break;
+    case engine::CardId::SWEEPING_GAZE:
+        stream << "Éthéré. Titos : " << value << " au hasard. Épuisement.";
         break;
     default:
         break;
