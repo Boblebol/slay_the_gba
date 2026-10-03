@@ -149,7 +149,11 @@ enum class PowerId : uint8_t {
     GALACTIC_DUST,     // every GALACTIC_DUST_STARS Stars spent: `amount` Block
     LUNAR_PASTRY,      // end of turn: `amount` Stars
     REGALITE,          // first card created each turn: `amount` Block
-    IVORY_TILE         // card costing IVORY_TILE_COST energy or more played: `amount` energy
+    IVORY_TILE,        // card costing IVORY_TILE_COST energy or more played: `amount` energy
+    // Damage sent back and statuses lost each turn (appended)
+    FLAME_BARRIER,     // until the next turn: each enemy attack deals `amount` damage back to the attacker
+    REFLECT,           // until the next turn: the attack damage the player's Block absorbs goes back to the attacker
+    WRAITH_FORM        // start of turn: lose `amount` Dexterity
 };
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;

@@ -707,6 +707,22 @@ bn::string_view base_name(engine::CardId id)
         return "Déterrer";
     case engine::CardId::CLEANSE:
         return "Purge";
+    case engine::CardId::STONE_ARMOR:
+        return "Armure de pierre";
+    case engine::CardId::FLAME_BARRIER:
+        return "Barrière de flammes";
+    case engine::CardId::WRAITH_FORM:
+        return "Forme spectrale";
+    case engine::CardId::BUFFER:
+        return "Tampon";
+    case engine::CardId::NEUTRON_AEGIS:
+        return "Égide à neutrons";
+    case engine::CardId::REFLECT:
+        return "Reflet miroir";
+    case engine::CardId::PATTER:
+        return "Petits pas";
+    case engine::CardId::TERRAFORMING:
+        return "Terraformation";
     default:
         return "???";
     }
@@ -1778,6 +1794,28 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::CLEANSE:
         stream << "Titos +" << value << " PV. Épuise 1 de la pioche.";
         break;
+    case engine::CardId::STONE_ARMOR:
+    case engine::CardId::NEUTRON_AEGIS:
+        stream << "Gagne " << value << " de Blindage.";
+        break;
+    case engine::CardId::FLAME_BARRIER:
+        stream << "Armure " << value << ". Attaqué : " << secondary << " dégâts en retour.";
+        break;
+    case engine::CardId::WRAITH_FORM:
+        stream << "Intangible " << value << ". Chaque tour : Dextérité -" << secondary << ".";
+        break;
+    case engine::CardId::BUFFER:
+        stream << "Annule " << value << " perte" << (value > 1 ? "s" : "") << " de PV.";
+        break;
+    case engine::CardId::REFLECT:
+        stream << "Armure " << value << ". Dégâts bloqués renvoyés.";
+        break;
+    case engine::CardId::PATTER:
+        stream << "Gagne " << value << " d'Armure. Vigueur " << secondary << ".";
+        break;
+    case engine::CardId::TERRAFORMING:
+        stream << "Gagne " << value << " de Vigueur.";
+        break;
     default:
         break;
     }
@@ -1875,7 +1913,7 @@ void status_line(const engine::CombatEntity& entity, bn::istring& out)
             stream << "Métal" << status.amount;
             break;
         case engine::StatusType::PLATED_ARMOR:
-            stream << "Plaque" << status.amount;
+            stream << "Blind" << status.amount;
             break;
         case engine::StatusType::ARTIFACT:
             stream << "Artef" << status.amount;
@@ -1888,6 +1926,27 @@ void status_line(const engine::CombatEntity& entity, bn::istring& out)
             break;
         case engine::StatusType::DOOM:
             stream << "Fatal" << status.amount;
+            break;
+        case engine::StatusType::THORNS:
+            stream << "Épine" << status.amount;
+            break;
+        case engine::StatusType::INTANGIBLE:
+            stream << "Intang" << status.amount;
+            break;
+        case engine::StatusType::BUFFER:
+            stream << "Tampon" << status.amount;
+            break;
+        case engine::StatusType::FRAIL:
+            stream << "Frag" << status.amount;
+            break;
+        case engine::StatusType::VIGOR:
+            stream << "Vig" << status.amount;
+            break;
+        case engine::StatusType::REGEN:
+            stream << "Régén" << status.amount;
+            break;
+        case engine::StatusType::CONFUSED:
+            stream << "Désor";
             break;
         default:
             break;
