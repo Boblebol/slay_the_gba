@@ -77,6 +77,7 @@ ENGINE_SOURCES  := src/engine/card.cpp \
                    src/engine/character.cpp \
                    src/engine/map.cpp \
                    src/engine/run.cpp \
+                   src/engine/encounter.cpp \
                    src/engine/shop.cpp \
                    src/engine/save_system.cpp \
                    src/engine/title_menu.cpp \
