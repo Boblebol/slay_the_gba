@@ -59,6 +59,7 @@ public:
     PaletteVariant palette = PaletteVariant::CLASSIC;
 
     EventEncounter current_event;
+    std::string_view current_encounter; // id of the encounter of the last fight entered (see encounter.h)
 
     void start_run(CharacterId char_id, uint8_t ascension = 0, PaletteVariant pal = PaletteVariant::CLASSIC, uint32_t seed = 42);
     FixedVector<int, 3> get_available_rooms() const;
@@ -118,6 +119,8 @@ public:
 private:
     uint32_t rng_state_ = 12345;
     uint32_t next_random();
+    // Monsters of a fighting room, drawn from the encounter table of the act and the floor.
+    FixedVector<EnemyType, 3> draw_encounter(RoomType room);
 };
 
 } // namespace engine
