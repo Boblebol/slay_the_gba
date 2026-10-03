@@ -28,6 +28,7 @@ void card_description(const engine::DeckCard& card, bn::istring& out);
 [[nodiscard]] bn::string_view card_type_name(engine::CardType type);
 
 // Compact status line such as "Force+2 Vuln2 Poison5".
-void status_line(const engine::CombatEntity& entity, bn::istring& out);
+// `max_width`: pixels the line may take; the statuses beyond it are replaced by a "+" mark.
+void status_line(const engine::CombatEntity& entity, bn::istring& out, int max_width);
 
 }
