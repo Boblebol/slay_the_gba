@@ -1005,6 +1005,9 @@ int CombatEngine::run_delayed_effects(bool end_of_turn) {
             case DelayedType::DAMAGE_ALL:
                 damage_all_enemies(effect.amount);
                 break;
+            case DelayedType::PICK_FROM_DRAW:
+                turn_picks_from_draw_ = bump(turn_picks_from_draw_, effect.amount);
+                break;
         }
         if (--effect.repeat == 0) {
             delayed_effects.erase(i);
@@ -1074,6 +1077,7 @@ void CombatEngine::reset_combat_state() {
     powers_in_play.clear();
     permanent_gains.clear();
     pending_choices.clear();
+    turn_picks_from_draw_ = 0;
     end_turn_requested = false;
     event_depth_ = 0;
     autoplay_depth_ = 0;
@@ -1152,9 +1156,14 @@ void CombatEngine::start_player_turn() {
     opening_draw_ = true;
     draw_cards(5 + extra_draw);
     opening_draw_ = false;
+    // Foregone Conclusion: cards of the draw pile, picked once the hand is drawn.
+    if (turn_picks_from_draw_ > 0) {
+        ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, turn_picks_from_draw_);
+        turn_picks_from_draw_ = 0;
+    }
     // Tyranny: one card of the new hand is exhausted for each card it drew.
     if (int16_t tyranny = power_amount(PowerId::TYRANNY); tyranny > 0) {
-        HandChoice choice;
+        CardChoice choice;
         choice.kind = ChoiceKind::EXHAUST;
         choice.count = static_cast<uint8_t>(tyranny);
         ask_choice(choice);
@@ -1461,28 +1470,57 @@ bool CombatEngine::can_be_picked(const DeckCard& card, ChoiceKind kind) const {
     }
 }
 
-bool CombatEngine::choice_allows(size_t hand_index) const {
-    return choice_pending() && hand_index < hand.size() && can_be_picked(hand[hand_index], pending_choices[0].kind);
+size_t CombatEngine::pile_size(Pile pile) const {
+    return pile == Pile::HAND ? hand.size() : pile == Pile::DRAW ? draw_pile.size() : discard_pile.size();
+}
+
+const DeckCard& CombatEngine::pile_card(Pile pile, size_t index) const {
+    return pile == Pile::HAND ? hand[index] : pile == Pile::DRAW ? draw_pile[index] : discard_pile[index];
+}
+
+size_t CombatEngine::choice_pool(const CardChoice& choice) const {
+    return std::min<size_t>(pile_size(choice.source), choice.pool);
+}
+
+bool CombatEngine::choice_allows(size_t index) const {
+    if (!choice_pending()) return false;
+    const CardChoice& choice = pending_choices[0];
+    return index < choice_pool(choice) && can_be_picked(pile_card(choice.source, index), choice.kind);
+}
+
+int CombatEngine::choice_pool_size() const {
+    return choice_pending() ? static_cast<int>(choice_pool(pending_choices[0])) : 0;
 }
 
 int CombatEngine::choice_size() const {
     if (!choice_pending()) return 0;
     int pickable = 0;
-    for (size_t i = 0; i < hand.size(); ++i) pickable += choice_allows(i);
+    for (size_t i = 0, pool = choice_pool(pending_choices[0]); i < pool; ++i) pickable += choice_allows(i);
     return std::min<int>(pending_choices[0].count, pickable);
 }
 
-void CombatEngine::ask_choice(const HandChoice& choice) {
-    if (!pending_choices.push_back(choice)) return; // more choices than any card combination asks for
+void CombatEngine::ask_choice(const CardChoice& choice) {
+    CardChoice asked = choice;
+    // The card that asks is not in the discard pile yet: what is there now is what can be picked.
+    if (asked.source == Pile::DISCARD) asked.pool = static_cast<uint8_t>(std::min<size_t>(discard_pile.size(), WHOLE_PILE));
+    if (!pending_choices.push_back(asked)) return; // more choices than any card combination asks for
     settle_choices();
+}
+
+void CombatEngine::ask_pile_choice(Pile source, ChoiceKind kind, uint8_t count) {
+    CardChoice choice;
+    choice.kind = kind;
+    choice.count = count;
+    choice.source = source;
+    ask_choice(choice);
 }
 
 void CombatEngine::settle_choices() {
     while (choice_pending()) {
-        const HandChoice choice = pending_choices[0];
-        FixedVector<uint8_t, 10> pickable;
-        for (size_t i = 0; i < hand.size(); ++i) {
-            if (can_be_picked(hand[i], choice.kind)) pickable.push_back(static_cast<uint8_t>(i));
+        const CardChoice choice = pending_choices[0];
+        FixedVector<uint8_t, 50> pickable;
+        for (size_t i = 0, pool = choice_pool(choice); i < pool; ++i) {
+            if (can_be_picked(pile_card(choice.source, i), choice.kind)) pickable.push_back(static_cast<uint8_t>(i));
         }
         // Something is left to decide when a card can be left out, or when picking is optional.
         if (!pickable.empty() && (choice.optional || pickable.size() > choice.count)) return;
@@ -1491,33 +1529,74 @@ void CombatEngine::settle_choices() {
     }
 }
 
-void CombatEngine::apply_choice(const HandChoice& choice, std::span<const uint8_t> hand_indices) {
-    // From the last card of the hand to the first: taking a card out does not move the ones still to take.
-    FixedVector<uint8_t, 10> picks;
-    for (uint8_t index : hand_indices) picks.push_back(index);
+void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_t> indices) {
+    // From the last card of the pile to the first: taking a card out does not move the ones still to take.
+    FixedVector<uint8_t, 50> picks;
+    for (uint8_t index : indices) picks.push_back(index);
     std::sort(picks.begin(), picks.end(), [](uint8_t a, uint8_t b) { return a > b; });
 
+    uint8_t taken_from_discard = 0;
     for (uint8_t index : picks) {
-        if (index >= hand.size()) continue;
+        if (index >= pile_size(choice.source)) continue;
+        if (choice.source == Pile::HAND) {
+            switch (choice.kind) {
+                case ChoiceKind::DISCARD:
+                    discard_from_hand(index);
+                    break;
+                case ChoiceKind::EXHAUST:
+                    exhaust_from_hand(index);
+                    break;
+                case ChoiceKind::TOP_OF_DRAW: {
+                    DeckCard card = hand[index];
+                    hand.erase(index);
+                    draw_pile.push_back(card);
+                    break;
+                }
+                case ChoiceKind::UPGRADE:
+                    hand[index].upgraded = true;
+                    break;
+                case ChoiceKind::MAKE_ETHEREAL:
+                    hand[index].added_keywords |= KEYWORD_ETHEREAL;
+                    break;
+                case ChoiceKind::TO_HAND:
+                    break;
+            }
+            continue;
+        }
+
+        FixedVector<DeckCard, 50>& pile = choice.source == Pile::DRAW ? draw_pile : discard_pile;
+        if (choice.kind == ChoiceKind::UPGRADE) {
+            pile[index].upgraded = true;
+            continue;
+        }
+        if (choice.kind == ChoiceKind::MAKE_ETHEREAL) {
+            pile[index].added_keywords |= KEYWORD_ETHEREAL;
+            continue;
+        }
+        if (choice.kind == ChoiceKind::TO_HAND && hand.size() >= hand.capacity()) continue;
+
+        DeckCard card = pile[index];
+        pile.erase(index);
+        if (choice.source == Pile::DISCARD) ++taken_from_discard;
         switch (choice.kind) {
-            case ChoiceKind::DISCARD:
-                discard_from_hand(index);
+            case ChoiceKind::TO_HAND:
+                hand.push_back(card);
                 break;
-            case ChoiceKind::EXHAUST:
-                exhaust_from_hand(index);
-                break;
-            case ChoiceKind::TOP_OF_DRAW: {
-                DeckCard card = hand[index];
-                hand.erase(index);
+            case ChoiceKind::TOP_OF_DRAW:
                 draw_pile.push_back(card);
                 break;
-            }
-            case ChoiceKind::UPGRADE:
-                hand[index].upgraded = true;
+            case ChoiceKind::EXHAUST:
+                exhaust_card(card);
                 break;
-            case ChoiceKind::MAKE_ETHEREAL:
-                hand[index].added_keywords |= KEYWORD_ETHEREAL;
+            default:
+                discard_pile.push_back(card);
                 break;
+        }
+    }
+    // The choices still waiting on the discard pile are about the same cards, fewer now.
+    for (CardChoice& waiting : pending_choices) {
+        if (waiting.source == Pile::DISCARD && waiting.pool != WHOLE_PILE) {
+            waiting.pool = static_cast<uint8_t>(std::max(0, waiting.pool - taken_from_discard));
         }
     }
 
@@ -1536,20 +1615,20 @@ void CombatEngine::apply_choice(const HandChoice& choice, std::span<const uint8_
     }
 }
 
-bool CombatEngine::resolve_choice(std::span<const uint8_t> hand_indices) {
+bool CombatEngine::resolve_choice(std::span<const uint8_t> indices) {
     if (!choice_pending()) return false;
-    const HandChoice choice = pending_choices[0];
+    const CardChoice choice = pending_choices[0];
     const size_t wanted = static_cast<size_t>(choice_size());
-    if (hand_indices.size() > wanted || (!choice.optional && hand_indices.size() != wanted)) return false;
-    for (size_t i = 0; i < hand_indices.size(); ++i) {
-        if (!choice_allows(hand_indices[i])) return false;
+    if (indices.size() > wanted || (!choice.optional && indices.size() != wanted)) return false;
+    for (size_t i = 0; i < indices.size(); ++i) {
+        if (!choice_allows(indices[i])) return false;
         for (size_t j = 0; j < i; ++j) {
-            if (hand_indices[j] == hand_indices[i]) return false;
+            if (indices[j] == indices[i]) return false;
         }
     }
 
     pending_choices.erase(0);
-    apply_choice(choice, hand_indices);
+    apply_choice(choice, indices);
     settle_choices();
     finish_play();
     return true;
@@ -1557,10 +1636,10 @@ bool CombatEngine::resolve_choice(std::span<const uint8_t> hand_indices) {
 
 void CombatEngine::resolve_choice_default() {
     if (!choice_pending()) return;
-    FixedVector<uint8_t, 10> picks;
+    FixedVector<uint8_t, 50> picks;
     if (!pending_choices[0].optional) {
         const size_t wanted = static_cast<size_t>(choice_size());
-        for (size_t i = 0; i < hand.size() && picks.size() < wanted; ++i) {
+        for (size_t i = 0, pool = choice_pool(pending_choices[0]); i < pool && picks.size() < wanted; ++i) {
             if (choice_allows(i)) picks.push_back(static_cast<uint8_t>(i));
         }
     }
@@ -1648,7 +1727,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         }
         case CardId::SURVIVOR: {
             gain_block(base_value);
-            ask_choice(HandChoice{ ChoiceKind::DISCARD, 1 });
+            ask_choice(CardChoice{ ChoiceKind::DISCARD, 1 });
             set_log(upgraded ? "Played Survivor+!"sv : "Played Survivor!"sv);
             break;
         }
@@ -2144,7 +2223,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             // The upgraded card lets the player choose the card.
             gain_block(base_value);
             if (upgraded) {
-                ask_choice(HandChoice{ ChoiceKind::EXHAUST, 1 });
+                ask_choice(CardChoice{ ChoiceKind::EXHAUST, 1 });
             } else if (!hand.empty()) {
                 exhaust_from_hand(next_random() % hand.size());
             }
@@ -3733,49 +3812,49 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
                     if (can_be_picked(held, ChoiceKind::UPGRADE)) held.upgraded = true;
                 }
             } else {
-                ask_choice(HandChoice{ ChoiceKind::UPGRADE, 1 });
+                ask_choice(CardChoice{ ChoiceKind::UPGRADE, 1 });
             }
             set_log(upgraded ? "Played Armaments+!"sv : "Played Armaments!"sv);
             break;
         }
         case CardId::BRAND: {
             lose_hp(base_value);
-            ask_choice(HandChoice{ ChoiceKind::EXHAUST, 1 });
+            ask_choice(CardChoice{ ChoiceKind::EXHAUST, 1 });
             player.add_status(StatusType::STRENGTH, secondary_value);
             set_log(upgraded ? "Played Brand+!"sv : "Played Brand!"sv);
             break;
         }
         case CardId::BURNING_PACT: {
-            ask_choice(HandChoice{ ChoiceKind::EXHAUST, 1, false, ChoiceThen::DRAW, base_value });
+            ask_choice(CardChoice{ ChoiceKind::EXHAUST, 1, false, ChoiceThen::DRAW, base_value });
             set_log(upgraded ? "Played Burning Pact+!"sv : "Played Burning Pact!"sv);
             break;
         }
         case CardId::ACROBATICS: {
             draw_cards(base_value);
-            ask_choice(HandChoice{ ChoiceKind::DISCARD, 1 });
+            ask_choice(CardChoice{ ChoiceKind::DISCARD, 1 });
             set_log(upgraded ? "Played Acrobatics+!"sv : "Played Acrobatics!"sv);
             break;
         }
         case CardId::DAGGER_THROW: {
             hit(current_target, base_value);
             draw_cards(secondary_value);
-            ask_choice(HandChoice{ ChoiceKind::DISCARD, 1 });
+            ask_choice(CardChoice{ ChoiceKind::DISCARD, 1 });
             set_log(upgraded ? "Played Dagger Throw+!"sv : "Played Dagger Throw!"sv);
             break;
         }
         case CardId::PREPARED: {
             draw_cards(base_value);
-            ask_choice(HandChoice{ ChoiceKind::DISCARD, base_value });
+            ask_choice(CardChoice{ ChoiceKind::DISCARD, base_value });
             set_log(upgraded ? "Played Prepared+!"sv : "Played Prepared!"sv);
             break;
         }
         case CardId::HIDDEN_DAGGERS: {
-            ask_choice(HandChoice{ ChoiceKind::DISCARD, base_value, false, ChoiceThen::SHIVS, secondary_value, upgraded });
+            ask_choice(CardChoice{ ChoiceKind::DISCARD, base_value, false, ChoiceThen::SHIVS, secondary_value, upgraded });
             set_log(upgraded ? "Played Hidden Daggers+!"sv : "Played Hidden Daggers!"sv);
             break;
         }
         case CardId::SCAVENGE: {
-            ask_choice(HandChoice{ ChoiceKind::EXHAUST, 1 });
+            ask_choice(CardChoice{ ChoiceKind::EXHAUST, 1 });
             schedule(DelayedType::ENERGY, base_value);
             set_log(upgraded ? "Played Scavenge+!"sv : "Played Scavenge!"sv);
             break;
@@ -3783,13 +3862,13 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::PHOTON_CUT: {
             hit(current_target, base_value);
             draw_cards(secondary_value);
-            ask_choice(HandChoice{ ChoiceKind::TOP_OF_DRAW, 1 });
+            ask_choice(CardChoice{ ChoiceKind::TOP_OF_DRAW, 1 });
             set_log(upgraded ? "Played Photon Cut+!"sv : "Played Photon Cut!"sv);
             break;
         }
         case CardId::GLIMMER: {
             draw_cards(base_value);
-            ask_choice(HandChoice{ ChoiceKind::TOP_OF_DRAW, 1 });
+            ask_choice(CardChoice{ ChoiceKind::TOP_OF_DRAW, 1 });
             set_log(upgraded ? "Played Glimmer+!"sv : "Played Glimmer!"sv);
             break;
         }
@@ -3800,7 +3879,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         }
         case CardId::SCULPTING_STRIKE: {
             hit(current_target, base_value);
-            ask_choice(HandChoice{ ChoiceKind::MAKE_ETHEREAL, 1 });
+            ask_choice(CardChoice{ ChoiceKind::MAKE_ETHEREAL, 1 });
             set_log(upgraded ? "Played Sculpting Strike+!"sv : "Played Sculpting Strike!"sv);
             break;
         }
@@ -3814,6 +3893,46 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             current_target.add_status(StatusType::ARTIFACT, static_cast<int16_t>(-current_target.get_status(StatusType::ARTIFACT)));
             afflict(current_target, StatusType::VULNERABLE, secondary_value);
             set_log(upgraded ? "Played Expose+!"sv : "Played Expose!"sv);
+            break;
+        }
+        case CardId::HEADBUTT: {
+            hit(current_target, base_value);
+            ask_pile_choice(Pile::DISCARD, ChoiceKind::TOP_OF_DRAW, 1);
+            set_log(upgraded ? "Played Headbutt+!"sv : "Played Headbutt!"sv);
+            break;
+        }
+        case CardId::HOLOGRAM: {
+            gain_block(base_value);
+            ask_pile_choice(Pile::DISCARD, ChoiceKind::TO_HAND, 1);
+            set_log(upgraded ? "Played Hologram+!"sv : "Played Hologram!"sv);
+            break;
+        }
+        case CardId::COSMIC_INDIFFERENCE: {
+            gain_block(base_value);
+            ask_pile_choice(Pile::DISCARD, ChoiceKind::TOP_OF_DRAW, 1);
+            set_log(upgraded ? "Played Cosmic Indifference+!"sv : "Played Cosmic Indifference!"sv);
+            break;
+        }
+        case CardId::FOREGONE_CONCLUSION: {
+            schedule(DelayedType::PICK_FROM_DRAW, base_value);
+            set_log(upgraded ? "Played Foregone Conclusion+!"sv : "Played Foregone Conclusion!"sv);
+            break;
+        }
+        case CardId::GRAVEBLAST: {
+            hit(current_target, base_value);
+            ask_pile_choice(Pile::DISCARD, ChoiceKind::TO_HAND, 1);
+            set_log(upgraded ? "Played Graveblast+!"sv : "Played Graveblast!"sv);
+            break;
+        }
+        case CardId::DREDGE: {
+            ask_pile_choice(Pile::DISCARD, ChoiceKind::TO_HAND, base_value);
+            set_log(upgraded ? "Played Dredge+!"sv : "Played Dredge!"sv);
+            break;
+        }
+        case CardId::CLEANSE: {
+            player.summon_minion(base_value, 0);
+            ask_pile_choice(Pile::DRAW, ChoiceKind::EXHAUST, 1);
+            set_log(upgraded ? "Played Cleanse+!"sv : "Played Cleanse!"sv);
             break;
         }
         default:

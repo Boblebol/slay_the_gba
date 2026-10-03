@@ -1,5 +1,6 @@
 #include "gba/scene_factories.h"
 
+#include <algorithm>
 #include <span>
 
 #include "bn_blending.h"
@@ -169,7 +170,12 @@ private:
     bn::vector<EnemyView, 3> _enemies;
     bn::vector<HandCardView, 10> _hand;
     bn::optional<bn::sprite_ptr> _flying_card;
-    bn::vector<uint8_t, 10> _picked; // hand cards marked for the choice the engine is asking
+    // Choice the engine is asking: marked cards (indices in the hand or in the pile the choice is about), and,
+    // for a pile, the order its cards are shown in and the first one of the ten on screen.
+    bn::vector<uint8_t, 50> _picked;
+    bn::vector<uint8_t, 50> _choice_order;
+    int _pile_offset = 0;
+    bool _pile_view = false;
     bn::optional<bn::sprite_ptr> _player_block_icon;
 
     Label _energy_label;
@@ -243,7 +249,10 @@ private:
     void _update_choice_input();
     void _resolve_choice();
     void _refresh_choice_banner();
-    [[nodiscard]] bool _is_picked(int index) const;
+    void _build_choice_views();
+    void _move_in_pile(int step);
+    [[nodiscard]] int _choice_index(int view_index) const;
+    [[nodiscard]] bool _is_picked(int view_index) const;
     void _start_card(int target);
     void _update_card_flight();
     void _start_enemy_turn();
@@ -495,7 +504,7 @@ void CombatScene::_layout_hand()
         view.sprite.set_position(view.x, view.y);
         view.sprite.set_z_order(focused ? Z_CARD_FOCUS : Z_CARD);
 
-        bool dim = interactive && (choosing ? ! _combat.choice_allows(index) : ! _combat.can_play_card(index));
+        bool dim = interactive && (choosing ? ! _combat.choice_allows(_choice_index(index)) : ! _combat.can_play_card(index));
 
         if(dim != view.dim)
         {
@@ -586,7 +595,16 @@ void CombatScene::_refresh_card_text()
     card_name(card, text);
     _line1.set(-112, LINE1_Y, text, Align::LEFT, card.upgraded ? TextColor::GREEN : TextColor::GOLD);
 
-    if(_phase == Phase::CHOICE)
+    if(_phase == Phase::CHOICE && _pile_view && _combat.choice_pending())
+    {
+        // Which pile is shown, and where the cursor is in it.
+        TextLine place;
+        bn::ostringstream place_stream(place);
+        place_stream << (_combat.pending_choices[0].source == engine::Pile::DRAW ? "Pioche " : "Défausse ")
+                     << (_pile_offset + _selected + 1) << "/" << _choice_order.size();
+        _line1_right.set(112, LINE1_Y, place, Align::RIGHT, TextColor::GRAY);
+    }
+    else if(_phase == Phase::CHOICE)
     {
         bool optional = _combat.choice_pending() && _combat.pending_choices[0].optional;
         _line1_right.set(112, LINE1_Y, optional ? "START : valider" : "A : choisir", Align::RIGHT, TextColor::GRAY);
@@ -1183,14 +1201,89 @@ void CombatScene::_enter_choice()
 {
     _phase = Phase::CHOICE;
     _picked.clear();
+    _choice_order.clear();
+    _pile_offset = 0;
+    const engine::CardChoice& choice = _combat.pending_choices[0];
+    _pile_view = choice.source != engine::Pile::HAND;
+
+    if(_pile_view)
+    {
+        // The cards of the pile take the place of the hand while the choice lasts.
+        for(int index = 0; index < _combat.choice_pool_size(); ++index)
+        {
+            _choice_order.push_back(uint8_t(index));
+        }
+
+        if(choice.source == engine::Pile::DRAW)
+        {
+            // Sorted by card: the order of the draw pile stays hidden.
+            std::sort(_choice_order.begin(), _choice_order.end(), [this](uint8_t a, uint8_t b) {
+                int id_a = int(_combat.draw_pile[a].id);
+                int id_b = int(_combat.draw_pile[b].id);
+                return id_a != id_b ? id_a < id_b : a < b;
+            });
+        }
+
+        _selected = 0;
+        _build_choice_views();
+    }
+
     _selected = bn::clamp(_selected, 0, bn::max(0, _hand.size() - 1));
     _selected_shown = -1;
     _refresh_choice_banner();
     play_sfx(Sfx::UI_OPEN);
 }
 
-bool CombatScene::_is_picked(int index) const
+void CombatScene::_build_choice_views()
 {
+    _hand.clear();
+    const bn::sprite_item& item = hero_hand_cards();
+    engine::Pile source = _combat.pending_choices[0].source;
+
+    for(int position = _pile_offset; position < _choice_order.size() && _hand.size() < _hand.max_size(); ++position)
+    {
+        const engine::DeckCard& card = _combat.pile_card(source, _choice_order[position]);
+        bn::sprite_ptr sprite = item.create_sprite(0, HAND_Y, hand_card_frame(card));
+        sprite.set_z_order(Z_CARD);
+        HandCardView view{ card, bn::move(sprite), 0, HAND_Y, 0, false };
+        _hand.push_back(bn::move(view));
+    }
+
+    _layout_hand();
+
+    for(HandCardView& view : _hand)
+    {
+        view.sprite.set_position(view.x, view.y);
+    }
+
+    _selected_shown = -1;
+}
+
+void CombatScene::_move_in_pile(int step)
+{
+    int total = _choice_order.size();
+    int position = bn::clamp(_pile_offset + _selected + step, 0, total - 1);
+
+    // The cursor left the ten cards on screen: the window moves so that it sits in the middle.
+    if(position < _pile_offset || position >= _pile_offset + _hand.max_size())
+    {
+        _pile_offset = bn::clamp(position - _hand.max_size() / 2, 0, bn::max(0, total - _hand.max_size()));
+        _selected = position - _pile_offset;
+        _build_choice_views();
+    }
+
+    _selected = position - _pile_offset;
+}
+
+int CombatScene::_choice_index(int view_index) const
+{
+    return _pile_view ? _choice_order[_pile_offset + view_index] : view_index;
+}
+
+bool CombatScene::_is_picked(int view_index) const
+{
+    int index = _choice_index(view_index);
+
     for(uint8_t picked : _picked)
     {
         if(picked == index)
@@ -1209,7 +1302,7 @@ void CombatScene::_refresh_choice_banner()
         return;
     }
 
-    const engine::HandChoice& choice = _combat.pending_choices[0];
+    const engine::CardChoice& choice = _combat.pending_choices[0];
     int wanted = _combat.choice_size();
     TextLine text;
     bn::ostringstream stream(text);
@@ -1227,6 +1320,9 @@ void CombatScene::_refresh_choice_banner()
         break;
     case engine::ChoiceKind::UPGRADE:
         stream << "Améliore";
+        break;
+    case engine::ChoiceKind::TO_HAND:
+        stream << "Prends en main";
         break;
     default:
         stream << "Rends Éthérée";
@@ -1258,6 +1354,13 @@ void CombatScene::_update_choice_input()
     {
         _phase = Phase::PLAYER;
         _banner_timer = 1;
+
+        if(_pile_view)
+        {
+            _pile_view = false;
+            _build_hand(false);
+        }
+
         _selected_shown = -1;
         return;
     }
@@ -1266,14 +1369,19 @@ void CombatScene::_update_choice_input()
     _banner_timer = bn::max(_banner_timer, 50);
     int count = _hand.size();
 
-    if(bn::keypad::left_pressed())
+    if(bn::keypad::left_pressed() || bn::keypad::right_pressed())
     {
-        _selected = (_selected + count - 1) % count;
-        play_sfx(Sfx::UI_CURSOR);
-    }
-    else if(bn::keypad::right_pressed())
-    {
-        _selected = (_selected + 1) % count;
+        int step = bn::keypad::left_pressed() ? -1 : 1;
+
+        if(_pile_view)
+        {
+            _move_in_pile(step);
+        }
+        else
+        {
+            _selected = (_selected + count + step) % count;
+        }
+
         play_sfx(Sfx::UI_CURSOR);
     }
 
@@ -1286,7 +1394,7 @@ void CombatScene::_update_choice_input()
         {
             for(int index = 0; index < _picked.size(); ++index)
             {
-                if(_picked[index] == _selected)
+                if(_picked[index] == _choice_index(_selected))
                 {
                     _picked.erase(_picked.begin() + index);
                     break;
@@ -1295,7 +1403,7 @@ void CombatScene::_update_choice_input()
 
             play_sfx(Sfx::UI_CANCEL);
         }
-        else if(! _combat.choice_allows(_selected) || _picked.size() >= wanted)
+        else if(! _combat.choice_allows(_choice_index(_selected)) || _picked.size() >= wanted)
         {
             play_sfx(Sfx::ERROR);
             _popups.spawn(_hand[_selected].x.round_integer(), HAND_FOCUS_Y - 24, "Impossible", TextColor::RED);
@@ -1303,7 +1411,7 @@ void CombatScene::_update_choice_input()
         }
         else
         {
-            _picked.push_back(uint8_t(_selected));
+            _picked.push_back(uint8_t(_choice_index(_selected)));
             play_sfx(Sfx::UI_CONFIRM);
         }
 
@@ -1337,6 +1445,7 @@ void CombatScene::_resolve_choice()
     play_sfx(Sfx::DISCARD);
 
     _picked.clear();
+    _pile_view = false;
     _build_hand(false);
     _selected_shown = -1;
 
@@ -1362,8 +1471,8 @@ void CombatScene::_resolve_choice()
     }
     else if(_combat.choice_pending())
     {
-        // Another choice follows (a card played twice asks twice).
-        _refresh_choice_banner();
+        // Another choice follows (a card played twice asks twice), maybe about another pile.
+        _enter_choice();
     }
     else
     {
@@ -1913,7 +2022,7 @@ bn::optional<SceneId> CombatScene::update()
         break;
     case Phase::PLAYER:
         // The engine waits for cards to be picked: after a card, at the start of a turn or of the combat.
-        if(_combat.choice_pending() && ! _hand.empty())
+        if(_combat.choice_pending())
         {
             _enter_choice();
             break;
