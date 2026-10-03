@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 44,7 %** — 528 faits, 54 partiels, 661 à faire (36 hors périmètre).
+**Avancement global : 45,3 %** — 536 faits, 54 partiels, 653 à faire (36 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 62 | 3 | 36 | 62,9 % |
 | [Cartes communes aux cinq éditions](#cartes) | 9 | 0 | 111 | 7,5 % |
 | [Reliques et potions](#reliques) | 56 | 33 | 232 | 22,6 % |
-| [Bestiaire](#bestiaire) | 0 | 1 | 103 | 0,5 % |
+| [Bestiaire](#bestiaire) | 8 | 1 | 95 | 8,2 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 30 | 2 | 25 | 54,4 % |
 | [Systèmes de jeu](#systemes) | 19 | 2 | 15 | 55,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **528** | **54** | **661** | **44,7 %** |
+| **Total** | **536** | **54** | **653** | **45,3 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 0,5 %
+## Bestiaire — 8,2 %
 
-### Monstres — 0,0 %
+### Monstres — 11,1 %
 
-0 fait, 0 partiel, 72 à faire.
+8 faits, 0 partiel, 64 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1232,18 +1232,18 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Limon feuillu (S) | Monstre · Acte 1 (A) | Non |  |
 | Mycoptère | Monstre · Acte 1 (A) | Non |  |
 | Oizillon | Invocation · Acte 1 (A) | Non |  |
-| Rampeluche | Monstre · Acte 1 (A) | Non |  |
-| Rôdeur Arbalétrier | Monstre · Acte 1 (A) | Non |  |
-| Rôdeur Brute | Monstre · Acte 1 (A) | Non |  |
+| Rampeluche | Monstre · Acte 1 (A) | Oui |  |
+| Rôdeur Arbalétrier | Monstre · Acte 1 (A) | Oui |  |
+| Rôdeur Brute | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur Traqueur | Monstre · Acte 1 (A) | Non |  |
-| Rôdeur assassin | Monstre · Acte 1 (A) | Non |  |
-| Rôdeur à la hache | Monstre · Acte 1 (A) | Non |  |
+| Rôdeur assassin | Monstre · Acte 1 (A) | Oui |  |
+| Rôdeur à la hache | Monstre · Acte 1 (A) | Oui |  |
 | Scarabrideur | Monstre · Acte 1 (A) | Non |  |
 | Écharneur | Monstre · Acte 1 (A) | Non |  |
 | Étrangleur | Monstre · Acte 1 (A) | Non |  |
 | Œil denté | Monstre · Acte 1 (A) | Non |  |
-| Adepte calcifié | Monstre · Acte 1 (B) | Non |  |
-| Adepte moisi | Monstre · Acte 1 (B) | Non |  |
+| Adepte calcifié | Monstre · Acte 1 (B) | Oui |  |
+| Adepte moisi | Monstre · Acte 1 (B) | Oui |  |
 | Assemblage de pugilat | Monstre · Acte 1 (B) · Acte 3 | Non |  |
 | Bombe à gaz | Monstre · Acte 1 (B) | Non |  |
 | Brouillard vivant | Monstre · Acte 1 (B) | Non |  |
@@ -1252,7 +1252,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Diablotin sournois | Monstre · Acte 1 (B) | Non |  |
 | Gros diablotin | Monstre · Acte 1 (B) | Non |  |
 | Navire hanté | Monstre · Acte 1 (B) | Non |  |
-| Palourde d'égout | Monstre · Acte 1 (B) | Non |  |
+| Palourde d'égout | Monstre · Acte 1 (B) | Oui |  |
 | Putrilimace | Monstre · Acte 1 (B) | Non |  |
 | Rat bicaudé | Monstre · Acte 1 (B) | Non |  |
 | Tisse-boue | Faible · Acte 1 (B) | Non |  |
