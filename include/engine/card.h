@@ -411,6 +411,15 @@ enum class CardId : uint16_t {
     GRAVEBLAST,
     DREDGE,
     CLEANSE,
+    // Plating, Thorns, Intangible, Buffer and Vigor, by hero (appended: saves store the numeric id)
+    STONE_ARMOR,
+    FLAME_BARRIER,
+    WRAITH_FORM,
+    BUFFER,
+    NEUTRON_AEGIS,
+    REFLECT,
+    PATTER,
+    TERRAFORMING,
     COUNT
 };
 

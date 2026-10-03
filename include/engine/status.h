@@ -13,12 +13,39 @@ enum class StatusType : uint8_t {
     DEXTERITY,    // Adds X block to skill cards
     POISON,       // Takes X direct damage each turn, decreases by 1
     METALLICIZE,  // Gains X block at end of turn
-    PLATED_ARMOR, // Gains X block at end of turn, -1 when damaged
-    ARTIFACT,     // Blocks next debuff
+    PLATED_ARMOR, // Plating: gains X block at end of turn, -1 at the start of the owner's turn
+    ARTIFACT,     // Cancels the next debuff, -1 for each one cancelled
     RITUAL,       // Gains X strength at end of turn
     FOCUS,        // Added to what the orbs do (Defect), can be negative
-    DOOM          // Whoever has at least as much Doom as HP dies at the end of its turn
+    DOOM,         // Whoever has at least as much Doom as HP dies at the end of its turn
+    // Appended: the values above keep their number
+    THORNS,       // Deals X damage to whoever hits its owner with an attack, once per hit
+    INTANGIBLE,   // Each hit and each HP loss is reduced to 1, -1 at the end of the round
+    BUFFER,       // Cancels the next HP loss, -1 for each one cancelled
+    FRAIL,        // Block from cards is reduced by 25%, -1 at the end of the round
+    VIGOR,        // Adds X damage to the next Attack, then is spent
+    REGEN,        // Heals X at the end of its owner's turn, then -1
+    CONFUSED      // Cards drawn get a random cost from 0 to 3
 };
+
+// Whether gaining `amount` of `type` harms its owner: those are the debuffs Artifact cancels.
+constexpr bool is_debuff(StatusType type, int16_t amount) {
+    switch (type) {
+        case StatusType::VULNERABLE:
+        case StatusType::WEAK:
+        case StatusType::POISON:
+        case StatusType::DOOM:
+        case StatusType::FRAIL:
+        case StatusType::CONFUSED:
+            return amount > 0;
+        case StatusType::STRENGTH:
+        case StatusType::DEXTERITY:
+        case StatusType::FOCUS:
+            return amount < 0;
+        default:
+            return false;
+    }
+}
 
 enum class OrbType : uint8_t {
     NONE = 0,
@@ -69,6 +96,13 @@ struct StatusEffect {
             case StatusType::RITUAL:       return "Ritual";
             case StatusType::FOCUS:        return "Focus";
             case StatusType::DOOM:         return "Doom";
+            case StatusType::THORNS:       return "Thorns";
+            case StatusType::INTANGIBLE:   return "Intangible";
+            case StatusType::BUFFER:       return "Buffer";
+            case StatusType::FRAIL:        return "Frail";
+            case StatusType::VIGOR:        return "Vigor";
+            case StatusType::REGEN:        return "Regen";
+            case StatusType::CONFUSED:     return "Confused";
             default:                       return "None";
         }
     }

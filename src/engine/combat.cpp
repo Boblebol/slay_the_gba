@@ -453,7 +453,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             if (turn_start) add_block(static_cast<int16_t>(power.amount * unique_orbs()));
             break;
         case PowerId::BIASED_COGNITION:
-            if (turn_start) player.add_status(StatusType::FOCUS, static_cast<int16_t>(-power.stacks));
+            if (turn_start) player.receive_status(StatusType::FOCUS, static_cast<int16_t>(-power.stacks));
             break;
         case PowerId::CONSUMING_SHADOW:
             if (event == CombatEvent::TURN_END) {
@@ -477,7 +477,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             if (turn_start && has_alive_enemies()) afflict(enemies[random_alive_enemy_index()], StatusType::DOOM, power.amount);
             break;
         case PowerId::NEUROSURGE:
-            if (turn_start) player.add_status(StatusType::DOOM, power.amount);
+            if (turn_start) player.receive_status(StatusType::DOOM, power.amount);
             break;
         case PowerId::REAPER_FORM:
             if (event == CombatEvent::UNBLOCKED_DAMAGE_DEALT && foe && foe->is_alive()) {
@@ -753,9 +753,14 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::IVORY_TILE:
             if (card_played && info.cost >= IVORY_TILE_COST) player.energy = static_cast<int8_t>(player.energy + power.amount);
             break;
+        case PowerId::WRAITH_FORM:
+            // A debuff the player gives themselves: Artifact cancels it.
+            if (turn_start) player.receive_status(StatusType::DEXTERITY, static_cast<int16_t>(-power.amount));
+            break;
         default:
             // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
-            // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE.
+            // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE,
+            // FLAME_BARRIER, REFLECT.
             break;
     }
 }
@@ -780,11 +785,10 @@ void CombatEngine::add_block(int16_t amount) {
 
 void CombatEngine::afflict(Enemy& target, StatusType type, int16_t amount) {
     if (amount == 0) return;
-    target.add_status(type, amount);
-    bool debuff = type == StatusType::VULNERABLE || type == StatusType::WEAK || type == StatusType::POISON ||
-                  type == StatusType::DOOM || (type == StatusType::STRENGTH && amount < 0);
+    // Artifact cancels the debuff: nothing was applied, nothing reacts.
+    if (!target.receive_status(type, amount)) return;
     if (type == StatusType::DOOM) counters.doom_applied = bump(counters.doom_applied);
-    if (debuff) {
+    if (is_debuff(type, amount)) {
         EventInfo info;
         info.enemy = index_of(target);
         info.status = type;
@@ -953,6 +957,12 @@ bool CombatEngine::draw_card() {
 
     DeckCard card = draw_pile.back();
     draw_pile.pop_back();
+    // Confused: the card drawn costs 0 to 3 at random, until it is drawn again. X and Unplayable cards keep theirs.
+    if (player.get_status(StatusType::CONFUSED) > 0 && !CardDef::is_x_cost(card.id, card.upgraded) &&
+        !CardDef::has_keyword(card, KEYWORD_UNPLAYABLE)) {
+        const int printed = CardDef::get_cost(card.id, card.upgraded);
+        card.cost_delta = static_cast<int8_t>(static_cast<int>(next_random() % 4) - printed);
+    }
     // Cards that change when they are drawn.
     if (card.id == CardId::KINGLY_KICK) {
         card.cost_delta = static_cast<int8_t>(card.cost_delta - 1);
@@ -1038,6 +1048,8 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
         info.amount = lost;
         emit(CombatEvent::ATTACK_HIT, info);
         if (lost > 0) emit(CombatEvent::UNBLOCKED_DAMAGE_DEALT, info);
+        // The enemy's Thorns hurt the player, once per hit.
+        damage_player(target.get_status(StatusType::THORNS));
         settle_deaths();
     }
     return lost;
@@ -1090,9 +1102,9 @@ void CombatEngine::damage_player(int16_t amount) {
 
 void CombatEngine::lose_hp(int16_t amount) {
     if (amount <= 0) return;
-    int16_t lost = std::min<int16_t>(amount, player.hp);
-    player.hp = static_cast<int16_t>(player.hp - lost);
-    note_player_hp_lost(lost);
+    int16_t hp_before = player.hp;
+    player.lose_hp(amount); // Intangible and Buffer apply
+    note_player_hp_lost(static_cast<int16_t>(hp_before - player.hp));
     if (!player.is_alive()) {
         state = CombatState::DEFEAT;
     }
@@ -1288,6 +1300,11 @@ void CombatEngine::start_player_turn() {
     player.reset_turn();
     player.block = kept_block;
     player.energy = static_cast<int8_t>(player.energy + kept_energy);
+    player.decay_plating();
+    // Flame Barrier and Reflect answered the attacks until this turn.
+    for (size_t i = powers.size(); i-- > 0;) {
+        if (powers[i].id == PowerId::FLAME_BARRIER || powers[i].id == PowerId::REFLECT) powers.erase(i);
+    }
     exhausted_this_turn = 0;
     retain_hand = false;
     no_draw_this_turn = false;
@@ -1526,6 +1543,8 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         // The counters are updated once the effect is resolved: inside the effect they still describe what
         // happened before this card ("already played this turn", "spent on other cards").
         resolve_effect(card, target_idx, x_value, after_play);
+        // Vigor goes to the first Attack played, all its hits included.
+        if (played_type == CardType::ATTACK) player.clear_status(StatusType::VIGOR);
 
         // Keep primary enemy in sync
         if (!enemies.empty()) {
@@ -2498,7 +2517,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             break;
         }
         case CardId::SHARED_FATE: {
-            player.add_status(StatusType::STRENGTH, static_cast<int16_t>(-base_value));
+            player.receive_status(StatusType::STRENGTH, static_cast<int16_t>(-base_value));
             afflict(current_target, StatusType::STRENGTH, static_cast<int16_t>(-secondary_value));
             set_log(upgraded ? "Played Shared Fate+!"sv : "Played Shared Fate!"sv);
             break;
@@ -3250,7 +3269,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             break;
         }
         case CardId::FRIENDSHIP: {
-            player.add_status(StatusType::STRENGTH, static_cast<int16_t>(-secondary_value));
+            player.receive_status(StatusType::STRENGTH, static_cast<int16_t>(-secondary_value));
             add_power(PowerId::TURN_ENERGY, base_value);
             set_log(upgraded ? "Played Friendship+!"sv : "Played Friendship!"sv);
             break;
@@ -3403,7 +3422,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
                     hit(enemies[i], base_value);
                 }
             }
-            player.add_status(StatusType::FOCUS, static_cast<int16_t>(-secondary_value));
+            player.receive_status(StatusType::FOCUS, static_cast<int16_t>(-secondary_value));
             set_log(upgraded ? "Played Hyperbeam+!"sv : "Played Hyperbeam!"sv);
             break;
         }
@@ -4093,6 +4112,50 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Cleanse+!"sv : "Played Cleanse!"sv);
             break;
         }
+        case CardId::STONE_ARMOR: {
+            player.add_status(StatusType::PLATED_ARMOR, base_value);
+            set_log(upgraded ? "Played Stone Armor+!"sv : "Played Stone Armor!"sv);
+            break;
+        }
+        case CardId::NEUTRON_AEGIS: {
+            player.add_status(StatusType::PLATED_ARMOR, base_value);
+            set_log(upgraded ? "Played Neutron Aegis+!"sv : "Played Neutron Aegis!"sv);
+            break;
+        }
+        case CardId::FLAME_BARRIER: {
+            gain_block(base_value);
+            add_power(PowerId::FLAME_BARRIER, secondary_value);
+            set_log(upgraded ? "Played Flame Barrier+!"sv : "Played Flame Barrier!"sv);
+            break;
+        }
+        case CardId::REFLECT: {
+            gain_block(base_value);
+            add_power(PowerId::REFLECT);
+            set_log(upgraded ? "Played Reflect+!"sv : "Played Reflect!"sv);
+            break;
+        }
+        case CardId::BUFFER: {
+            player.add_status(StatusType::BUFFER, base_value);
+            set_log(upgraded ? "Played Buffer+!"sv : "Played Buffer!"sv);
+            break;
+        }
+        case CardId::WRAITH_FORM: {
+            player.add_status(StatusType::INTANGIBLE, base_value);
+            add_power(PowerId::WRAITH_FORM, secondary_value);
+            set_log(upgraded ? "Played Wraith Form+!"sv : "Played Wraith Form!"sv);
+            break;
+        }
+        case CardId::PATTER: {
+            gain_block(base_value);
+            player.add_status(StatusType::VIGOR, secondary_value);
+            set_log(upgraded ? "Played Patter+!"sv : "Played Patter!"sv);
+            break;
+        }
+        case CardId::TERRAFORMING: {
+            player.add_status(StatusType::VIGOR, base_value);
+            set_log(upgraded ? "Played Terraforming+!"sv : "Played Terraforming!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;
@@ -4162,15 +4225,18 @@ void CombatEngine::end_player_turn() {
     temp_strength = 0;
     temp_dexterity = 0;
 
-    // End of turn effects: countdowns, Metallicize block, then orb passives on the first living enemy.
+    // End of turn effects: countdowns, Metallicize and Plating block, Regen, then orb passives on the first
+    // living enemy.
     run_delayed_effects(true);
     int16_t block_before = player.block;
     player.apply_metallicize_tick();
+    player.apply_plating_tick();
     if (player.block > block_before) {
         EventInfo gained;
         gained.amount = static_cast<int16_t>(player.block - block_before);
         emit(CombatEvent::BLOCK_GAINED, gained);
     }
+    player.apply_regen_tick();
     trigger_turn_passives(false);
     // Focus gained "this turn" still counts for the passives above.
     player.add_status(StatusType::FOCUS, static_cast<int16_t>(-temp_focus));
@@ -4215,7 +4281,8 @@ void CombatEngine::execute_enemy_turn() {
             const int16_t hp_before = player.hp;
             const int16_t shield_before = player.block + player.minion_hp + player.minion_block;
 
-            enemies[i].execute_turn(player);
+            enemies[i].execute_turn(player, power_amount(PowerId::FLAME_BARRIER), has_power(PowerId::REFLECT));
+            settle_deaths(); // Thorns and damage sent back can kill the attacker
 
             // Doom: an enemy with at least as much Doom as HP does not survive its turn.
             reap(enemies[i]);
@@ -4406,6 +4473,21 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         for (size_t held = hand.size(); held > 0 && !hand.empty(); --held) exhaust_from_hand(0);
         draw_cards(10);
         set_log("Glowwater Potion!");
+    } else if (potion_id == "HEART_OF_IRON") {
+        player.add_status(StatusType::PLATED_ARMOR, 7);
+        set_log("Heart of Iron!");
+    } else if (potion_id == "LIQUID_BRONZE") {
+        player.add_status(StatusType::THORNS, 3);
+        set_log("Liquid Bronze!");
+    } else if (potion_id == "GHOST_IN_A_JAR") {
+        player.add_status(StatusType::INTANGIBLE, 1);
+        set_log("Ghost in a Jar!");
+    } else if (potion_id == "LUCKY_TONIC") {
+        player.add_status(StatusType::BUFFER, 1);
+        set_log("Lucky Tonic!");
+    } else if (potion_id == "REGEN_POTION") {
+        player.add_status(StatusType::REGEN, 5);
+        set_log("Regen Potion!");
     } else {
         return false;
     }

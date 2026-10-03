@@ -124,15 +124,15 @@ items = [
   { name = "Affaibli", status = "oui" },
   { name = "Poison", status = "oui" },
   { name = "Rituel (ennemis)", status = "oui" },
-  { name = "Artéfact", status = "non", issue = 92 },
-  { name = "Fragilisé", status = "non", issue = 93 },
+  { name = "Artéfact", status = "oui", issue = 92 },
+  { name = "Fragilisé", status = "oui", issue = 93 },
   { name = "Focalisation", status = "oui" },
-  { name = "Intangible", status = "non", issue = 92 },
-  { name = "Blindage", status = "non", issue = 91 },
-  { name = "Épines", status = "non", issue = 91 },
-  { name = "Vigueur", status = "non", issue = 93 },
+  { name = "Intangible", status = "oui", issue = 92 },
+  { name = "Blindage", status = "oui", issue = 91 },
+  { name = "Épines", status = "oui", issue = 91 },
+  { name = "Vigueur", status = "oui", issue = 93 },
   { name = "Fatalité", status = "oui" },
-  { name = "Désorienté", status = "non", issue = 93 },
+  { name = "Désorienté", status = "oui", issue = 93 },
   { name = "Sables mouvants (L'Insatiable)", status = "non", issue = 245 },
 ]
 
@@ -345,6 +345,11 @@ DISTILLED_CHAOS = { status = "partiel", issue = 30, note = "Effet géré par le 
 SHIP_IN_A_BOTTLE = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
 SHACKLING_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
 GLOWWATER_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
+HEART_OF_IRON = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
+LIQUID_BRONZE = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
+GHOST_IN_A_JAR = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
+LUCKY_TONIC = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
+REGEN_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
 
 [overrides.monsters]
 CEREMONIAL_BEAST = { status = "partiel", issue = 36, note = "150 PV et trois attaques simplifiées, contre 252 PV et six attaques dans le jeu d'origine." }

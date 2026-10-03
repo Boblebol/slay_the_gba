@@ -408,7 +408,16 @@ static constexpr CardDef CARDS[] = {
     // Necrobinder: pile choices
     { CardId::GRAVEBLAST, "Graveblast", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 4, 0, "Deal 4 dmg. Put a card of your discard pile in your hand. Exhaust.", "Graveblast+", 1, 6, 0, "Deal 6 dmg. Put a card of your discard pile in your hand.", KEYWORD_EXHAUST, 0 },
     { CardId::DREDGE, "Dredge", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Put 3 cards of your discard pile in your hand. Exhaust.", "Dredge+", 1, 3, 0, "Retain. Put 3 cards of your discard pile in your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
-    { CardId::CLEANSE, "Cleanse", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Summon 3. Exhaust 1 card of your draw pile.", "Cleanse+", 1, 5, 0, "Summon 5. Exhaust 1 card of your draw pile." }
+    { CardId::CLEANSE, "Cleanse", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Summon 3. Exhaust 1 card of your draw pile.", "Cleanse+", 1, 5, 0, "Summon 5. Exhaust 1 card of your draw pile." },
+    // Plating, Thorns, Intangible, Buffer and Vigor
+    { CardId::STONE_ARMOR, "Stone Armor", 1, CardType::POWER, TargetType::SELF, 4, 0, "Gain 4 Plating.", "Stone Armor+", 1, 6, 0, "Gain 6 Plating." },
+    { CardId::FLAME_BARRIER, "Flame Barrier", 2, CardType::SKILL, TargetType::SELF, 12, 4, "Gain 12 block. Until next turn, deal 4 dmg back to each attack.", "Flame Barrier+", 2, 16, 6, "Gain 16 block. Until next turn, deal 6 dmg back to each attack." },
+    { CardId::WRAITH_FORM, "Wraith Form", 3, CardType::POWER, TargetType::SELF, 2, 1, "Gain 2 Intangible. Each turn, lose 1 Dexterity.", "Wraith Form+", 3, 3, 1, "Gain 3 Intangible. Each turn, lose 1 Dexterity." },
+    { CardId::BUFFER, "Buffer", 2, CardType::POWER, TargetType::SELF, 1, 0, "Prevent the next HP loss.", "Buffer+", 2, 2, 0, "Prevent the next 2 HP losses." },
+    { CardId::NEUTRON_AEGIS, "Neutron Aegis", 1, CardType::POWER, TargetType::SELF, 8, 0, "Gain 8 Plating.", "Neutron Aegis+", 1, 11, 0, "Gain 11 Plating." },
+    { CardId::REFLECT, "Reflect", 1, CardType::SKILL, TargetType::SELF, 15, 0, "Gain 15 block. Until next turn, blocked attack dmg goes back to the attacker.", "Reflect+", 1, 20, 0, "Gain 20 block. Until next turn, blocked attack dmg goes back to the attacker." },
+    { CardId::PATTER, "Patter", 1, CardType::SKILL, TargetType::SELF, 8, 2, "Gain 8 block. Gain 2 Vigor.", "Patter+", 1, 10, 3, "Gain 10 block. Gain 3 Vigor." },
+    { CardId::TERRAFORMING, "Terraforming", 1, CardType::SKILL, TargetType::SELF, 7, 0, "Gain 7 Vigor.", "Terraforming+", 1, 10, 0, "Gain 10 Vigor." }
 };
 
 const CardDef& CardDef::get(CardId id) {

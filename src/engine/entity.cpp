@@ -280,8 +280,9 @@ void Enemy::plan_turn(int turn_number) {
     }
 }
 
-void Enemy::execute_turn(Player& player) {
+void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
     clear_block();
+    decay_plating();
 
     // Ritual gained this turn only starts granting Strength at the end of the next one.
     int16_t ritual = get_status(StatusType::RITUAL);
@@ -298,12 +299,22 @@ void Enemy::execute_turn(Player& player) {
 
     // Execute attack if any
     if (current_intent.base_damage > 0) {
+        const int16_t block_before = player.block;
         player.take_damage_with_minion(intent_damage(player));
+        clear_status(StatusType::VIGOR); // spent on this attack
+        // The attacker gets hurt back: the player's Thorns, Flame Barrier, and the damage Reflect sends back.
+        int16_t back = static_cast<int16_t>(player.get_status(StatusType::THORNS) + damage_back);
+        if (reflect) back = static_cast<int16_t>(back + block_before - player.block);
+        take_damage(back);
     }
 
-    // End of turn status triggers (Ritual -> Strength)
+    // End of turn status triggers (Ritual -> Strength, Plating -> Block, Regen -> HP)
     if (ritual > 0) {
         add_status(StatusType::STRENGTH, ritual);
+    }
+    if (is_alive()) {
+        apply_plating_tick();
+        apply_regen_tick();
     }
 
     // Tick end-of-turn status counters (Vulnerable, Weak)
