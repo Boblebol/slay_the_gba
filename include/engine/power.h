@@ -162,7 +162,10 @@ enum class PowerId : uint8_t {
     PARRY,             // Sovereign Blade played: `amount` Block
     SEEKING_EDGE,      // Sovereign Blade hits every enemy
     SWORD_SAGE,        // Sovereign Blade is played `amount` more times
-    CONQUEROR          // this turn: Sovereign Blade deals double damage to the enemy it is bound to
+    CONQUEROR,         // this turn: Sovereign Blade deals double damage to the enemy it is bound to
+    // Osty's cards (Necrobinder) (appended)
+    SIC_EM,            // this turn: Osty hits the enemy it is bound to: summon Osty for `amount`
+    SENTRY_MODE        // start of turn: `amount` Sweeping Gaze to the hand
 };
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;

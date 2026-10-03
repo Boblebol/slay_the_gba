@@ -404,7 +404,12 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::HANG, CardId::SCULPTING_STRIKE,
                                                    CardId::GRAVEBLAST,
                                                    CardId::DREDGE,
-                                                   CardId::CLEANSE };
+                                                   CardId::CLEANSE,
+                                                   CardId::POKE, CardId::SNAP, CardId::RATTLE, CardId::BONE_SHARDS,
+                                                   CardId::SQUEEZE, CardId::FLATTEN, CardId::HIGH_FIVE, CardId::FETCH,
+                                                   CardId::CALCIFY, CardId::RIGHT_HAND_HAND, CardId::NECRO_MASTERY,
+                                                   CardId::SACRIFICE, CardId::SPUR, CardId::SIC_EM,
+                                                   CardId::SENTRY_MODE };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;
