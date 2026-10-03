@@ -126,7 +126,30 @@ enum class PowerId : uint8_t {
     METRONOME,         // METRONOME_ORBS orbs channeled in the combat: `amount` damage to every enemy, once
     EMOTION_CHIP,      // start of a turn that follows a HP loss: every orb's passive triggers
     BOOK_REPAIR_KNIFE, // enemy killed by Doom (minions excepted): heal `amount`
-    HELICAL_DART       // Shiv played: `amount` Dexterity until the end of the turn
+    HELICAL_DART,      // Shiv played: `amount` Dexterity until the end of the turn
+    JOSS_PAPER,        // every JOSS_PAPER_CARDS cards exhausted: draw `amount`
+    LETTER_OPENER,     // every LETTER_OPENER_SKILLS Skills played in a turn: `amount` damage to every enemy
+    TUNING_FORK,       // every TUNING_FORK_SKILLS Skills played: `amount` Block
+    KUNAI,             // every KUNAI_ATTACKS Attacks played in a turn: `amount` Dexterity
+    KUSARIGAMA,        // every KUSARIGAMA_ATTACKS Attacks played in a turn: `amount` damage to a random enemy
+    MUMMIFIED_HAND,    // Power played: a random card of the hand costs 0 until the end of the turn
+    NUNCHAKU,          // every NUNCHAKU_ATTACKS Attacks played: `amount` energy
+    RAINBOW_RING,      // an Attack, a Skill and a Power played in the turn: `amount` Strength and Dexterity, once a turn
+    RIPPLE_BASIN,      // end of a turn without an Attack: `amount` Block
+    BURNING_STICKS,    // first Skill exhausted: a copy of it comes to the hand
+    SHURIKEN,          // every SHURIKEN_ATTACKS Attacks played in a turn: `amount` Strength
+    ORNAMENTAL_FAN,    // every ORNAMENTAL_FAN_ATTACKS Attacks played in a turn: `amount` Block
+    SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
+    CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy
+    RED_SKULL,         // HP at RED_SKULL_HP_PERCENT % of Max HP or less: `amount` more Strength (counter = Strength given now)
+    DEMON_TONGUE,      // first HP loss of each turn: heal as much (counter = turn of the last heal)
+    BRIMSTONE,         // start of turn: `amount` Strength, and 1 Strength per stack to every enemy
+    SNECKO_SKULL,      // Poison applied: `amount` more
+    MINI_REGENT,       // first Stars spent each turn: `amount` Strength
+    GALACTIC_DUST,     // every GALACTIC_DUST_STARS Stars spent: `amount` Block
+    LUNAR_PASTRY,      // end of turn: `amount` Stars
+    REGALITE,          // first card created each turn: `amount` Block
+    IVORY_TILE         // card costing IVORY_TILE_COST energy or more played: `amount` energy
 };
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
@@ -138,6 +161,17 @@ constexpr uint8_t PARRYING_SHIELD_BLOCK = 10;
 constexpr uint8_t STONE_CALENDAR_TURN = 7;
 constexpr uint8_t METRONOME_ORBS = 7;
 constexpr uint8_t JUGGLING_ATTACK = 3;
+constexpr uint8_t JOSS_PAPER_CARDS = 5;
+constexpr uint8_t LETTER_OPENER_SKILLS = 3;
+constexpr uint8_t TUNING_FORK_SKILLS = 10;
+constexpr uint8_t KUNAI_ATTACKS = 3;
+constexpr uint8_t KUSARIGAMA_ATTACKS = 3;
+constexpr uint8_t NUNCHAKU_ATTACKS = 10;
+constexpr uint8_t SHURIKEN_ATTACKS = 3;
+constexpr uint8_t ORNAMENTAL_FAN_ATTACKS = 3;
+constexpr uint8_t RED_SKULL_HP_PERCENT = 50;
+constexpr uint8_t GALACTIC_DUST_STARS = 10;
+constexpr uint8_t IVORY_TILE_COST = 3;
 
 struct ActivePower {
     PowerId id = PowerId::NONE;
