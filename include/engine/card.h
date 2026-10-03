@@ -453,6 +453,8 @@ enum class CardId : uint16_t {
     SIC_EM,
     SENTRY_MODE,
     SWEEPING_GAZE,
+    // Soul (Necrobinder): a token, made by other cards (appended: saves store the numeric id)
+    SOUL,
     COUNT
 };
 

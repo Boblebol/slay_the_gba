@@ -450,7 +450,9 @@ static constexpr CardDef CARDS[] = {
     { CardId::SPUR, "Spur", 1, CardType::SKILL, TargetType::SELF, 3, 5, "Retain. Summon 3. Osty heals 5 HP.", "Spur+", 1, 5, 7, "Retain. Summon 5. Osty heals 7 HP.", KEYWORD_RETAIN, KEYWORD_RETAIN },
     { CardId::SIC_EM, "Sic 'Em", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 3, "Osty deals 5 dmg. Whenever Osty hits this enemy this turn, Summon 3.", "Sic 'Em+", 1, 6, 4, "Osty deals 6 dmg. Whenever Osty hits this enemy this turn, Summon 4.", 0, 0, 0, 0, PlayCondition::OSTY_ALIVE },
     { CardId::SENTRY_MODE, "Sentry Mode", 2, CardType::POWER, TargetType::SELF, 1, 0, "At the start of your turn, add 1 Sweeping Gaze to your hand.", "Sentry Mode+", 1, 1, 0, "At the start of your turn, add 1 Sweeping Gaze to your hand." },
-    { CardId::SWEEPING_GAZE, "Sweeping Gaze", 0, CardType::ATTACK, TargetType::RANDOM_ENEMY, 10, 0, "Ethereal. Osty deals 10 dmg to a random enemy. Exhaust.", "Sweeping Gaze+", 0, 10, 0, "Ethereal. Osty deals 10 dmg to a random enemy. Exhaust.", KEYWORD_ETHEREAL | KEYWORD_EXHAUST, KEYWORD_ETHEREAL | KEYWORD_EXHAUST, 0, 0, PlayCondition::OSTY_ALIVE }
+    { CardId::SWEEPING_GAZE, "Sweeping Gaze", 0, CardType::ATTACK, TargetType::RANDOM_ENEMY, 10, 0, "Ethereal. Osty deals 10 dmg to a random enemy. Exhaust.", "Sweeping Gaze+", 0, 10, 0, "Ethereal. Osty deals 10 dmg to a random enemy. Exhaust.", KEYWORD_ETHEREAL | KEYWORD_EXHAUST, KEYWORD_ETHEREAL | KEYWORD_EXHAUST, 0, 0, PlayCondition::OSTY_ALIVE },
+    // Soul (Necrobinder): a token, added to the piles by other cards.
+    { CardId::SOUL, "Soul", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Draw 2 cards. Exhaust.", "Soul+", 0, 3, 0, "Draw 3 cards. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST }
 };
 
 const CardDef& CardDef::get(CardId id) {

@@ -287,7 +287,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     68, 69, 70, 71, 72, 73, 74, 0, 0, 0, 75, 76, 77, 78, 0, 0, 0, 0, 0, 0,
     79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -599,7 +599,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 87, 0, 0, 0, 0, 0,
     0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -896,7 +896,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 63, 64, 0, 0,
     0, 0, 0, 65, 66, 0, 0, 0, 0, 0, 0, 0, 67, 68, 69, 70, 71, 72, 73, 74,
     75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -986,6 +986,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_sic_em.h"
 #include "bn_sprite_items_card_sentry_mode.h"
 #include "bn_sprite_items_card_sweeping_gaze.h"
+#include "bn_sprite_items_card_soul.h"
 
 namespace gba::card_art
 {
@@ -1155,6 +1156,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_sentry_mode;
     case engine::CardId::SWEEPING_GAZE:
         return &bn::sprite_items::card_sweeping_gaze;
+    case engine::CardId::SOUL:
+        return &bn::sprite_items::card_soul;
     default:
         return nullptr;
     }
@@ -1181,7 +1184,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 0,
     0, 0, 0, 0, 0, 61, 62, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73,
-    74, 75, 76, 77, 78, 79, 80,
+    74, 75, 76, 77, 78, 79, 80, 81,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1493,7 +1496,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 83, 84, 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 86,
     0, 87, 0, 0, 0, 0, 0, 0, 88, 89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
