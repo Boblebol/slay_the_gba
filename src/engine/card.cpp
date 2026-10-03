@@ -417,7 +417,22 @@ static constexpr CardDef CARDS[] = {
     { CardId::NEUTRON_AEGIS, "Neutron Aegis", 1, CardType::POWER, TargetType::SELF, 8, 0, "Gain 8 Plating.", "Neutron Aegis+", 1, 11, 0, "Gain 11 Plating." },
     { CardId::REFLECT, "Reflect", 1, CardType::SKILL, TargetType::SELF, 15, 0, "Gain 15 block. Until next turn, blocked attack dmg goes back to the attacker.", "Reflect+", 1, 20, 0, "Gain 20 block. Until next turn, blocked attack dmg goes back to the attacker." },
     { CardId::PATTER, "Patter", 1, CardType::SKILL, TargetType::SELF, 8, 2, "Gain 8 block. Gain 2 Vigor.", "Patter+", 1, 10, 3, "Gain 10 block. Gain 3 Vigor." },
-    { CardId::TERRAFORMING, "Terraforming", 1, CardType::SKILL, TargetType::SELF, 7, 0, "Gain 7 Vigor.", "Terraforming+", 1, 10, 0, "Gain 10 Vigor." }
+    { CardId::TERRAFORMING, "Terraforming", 1, CardType::SKILL, TargetType::SELF, 7, 0, "Gain 7 Vigor.", "Terraforming+", 1, 10, 0, "Gain 10 Vigor." },
+    // Forge and the Sovereign Blade (Regent). The Blade is a token: the first Forge of a combat makes it.
+    { CardId::SOVEREIGN_BLADE, "Sovereign Blade", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 0, "Retain. Deal 10 dmg.", "Sovereign Blade+", 2, 10, 0, "Retain. Deal 10 dmg.", KEYWORD_RETAIN, KEYWORD_RETAIN },
+    { CardId::REFINE_BLADE, "Refine Blade", 1, CardType::SKILL, TargetType::SELF, 8, 1, "Forge 8. Next turn, gain 1 energy.", "Refine Blade+", 1, 12, 1, "Forge 12. Next turn, gain 1 energy." },
+    { CardId::SPOILS_OF_BATTLE, "Spoils of Battle", 1, CardType::SKILL, TargetType::SELF, 6, 2, "Forge 6. Draw 2 cards.", "Spoils of Battle+", 1, 9, 2, "Forge 9. Draw 2 cards." },
+    { CardId::WROUGHT_IN_WAR, "Wrought in War", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 7, 7, "Deal 7 dmg. Forge 7.", "Wrought in War+", 1, 9, 9, "Deal 9 dmg. Forge 9." },
+    { CardId::BULWARK, "Bulwark", 2, CardType::SKILL, TargetType::SELF, 12, 10, "Gain 12 block. Forge 10.", "Bulwark+", 2, 15, 13, "Gain 15 block. Forge 13." },
+    { CardId::CONQUEROR, "Conqueror", 1, CardType::SKILL, TargetType::SINGLE_ENEMY, 3, 0, "Forge 3. Sovereign Blade deals double dmg to the enemy this turn.", "Conqueror+", 1, 5, 0, "Forge 5. Sovereign Blade deals double dmg to the enemy this turn." },
+    { CardId::FURNACE, "Furnace", 1, CardType::POWER, TargetType::SELF, 5, 0, "At the start of your turn, Forge 5.", "Furnace+", 1, 7, 0, "At the start of your turn, Forge 7." },
+    { CardId::PARRY, "Parry", 1, CardType::POWER, TargetType::SELF, 10, 0, "Sovereign Blade now gains 10 block.", "Parry+", 1, 14, 0, "Sovereign Blade now gains 14 block." },
+    { CardId::SUMMON_FORTH, "Summon Forth", 1, CardType::SKILL, TargetType::SELF, 8, 0, "Put Sovereign Blade into your hand from anywhere. Forge 8.", "Summon Forth+", 1, 11, 0, "Put Sovereign Blade into your hand from anywhere. Forge 11." },
+    { CardId::BEAT_INTO_SHAPE, "Beat Into Shape", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 5, "Deal 5 dmg. Forge 5, and 5 more for every other time you hit the enemy this turn.", "Beat Into Shape+", 1, 7, 7, "Deal 7 dmg. Forge 7, and 7 more for every other time you hit the enemy this turn." },
+    { CardId::BIG_BANG, "Big Bang", 0, CardType::SKILL, TargetType::SELF, 5, 1, "Draw 1 card. Gain 1 energy and 1 Star. Forge 5. Exhaust.", "Big Bang+", 0, 5, 1, "Innate. Draw 1 card. Gain 1 energy and 1 Star. Forge 5. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_INNATE },
+    { CardId::SEEKING_EDGE, "Seeking Edge", 1, CardType::POWER, TargetType::SELF, 7, 0, "Forge 7. Sovereign Blade now deals dmg to ALL enemies.", "Seeking Edge+", 1, 11, 0, "Forge 11. Sovereign Blade now deals dmg to ALL enemies." },
+    { CardId::SWORD_SAGE, "Sword Sage", 2, CardType::POWER, TargetType::SELF, 1, 0, "Sovereign Blade is played 1 more time.", "Sword Sage+", 1, 1, 0, "Sovereign Blade is played 1 more time." },
+    { CardId::THE_SMITH, "The Smith", 1, CardType::SKILL, TargetType::SELF, 30, 0, "4 Stars. Forge 30.", "The Smith+", 1, 40, 0, "4 Stars. Forge 40.", 0, 0, 4, 4 }
 };
 
 const CardDef& CardDef::get(CardId id) {

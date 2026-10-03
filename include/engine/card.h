@@ -420,6 +420,21 @@ enum class CardId : uint16_t {
     REFLECT,
     PATTER,
     TERRAFORMING,
+    // Forge and the Sovereign Blade (Regent) (appended: saves store the numeric id)
+    SOVEREIGN_BLADE,
+    REFINE_BLADE,
+    SPOILS_OF_BATTLE,
+    WROUGHT_IN_WAR,
+    BULWARK,
+    CONQUEROR,
+    FURNACE,
+    PARRY,
+    SUMMON_FORTH,
+    BEAT_INTO_SHAPE,
+    BIG_BANG,
+    SEEKING_EDGE,
+    SWORD_SAGE,
+    THE_SMITH,
     COUNT
 };
 

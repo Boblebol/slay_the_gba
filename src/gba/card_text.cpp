@@ -724,6 +724,34 @@ bn::string_view base_name(engine::CardId id)
         return "Petits pas";
     case engine::CardId::TERRAFORMING:
         return "Terraformation";
+    case engine::CardId::SOVEREIGN_BLADE:
+        return "Lame souveraine";
+    case engine::CardId::REFINE_BLADE:
+        return "Lame lustrée";
+    case engine::CardId::SPOILS_OF_BATTLE:
+        return "Butin de guerre";
+    case engine::CardId::WROUGHT_IN_WAR:
+        return "Forgé par la guerre";
+    case engine::CardId::BULWARK:
+        return "Rempart";
+    case engine::CardId::CONQUEROR:
+        return "Conquérant";
+    case engine::CardId::FURNACE:
+        return "Fournaise";
+    case engine::CardId::PARRY:
+        return "Parade";
+    case engine::CardId::SUMMON_FORTH:
+        return "L'union fait la forge";
+    case engine::CardId::BEAT_INTO_SHAPE:
+        return "Châtiment";
+    case engine::CardId::BIG_BANG:
+        return "Big Bang";
+    case engine::CardId::SEEKING_EDGE:
+        return "Lame chercheuse";
+    case engine::CardId::SWORD_SAGE:
+        return "Sage à l'épée";
+    case engine::CardId::THE_SMITH:
+        return "Le forgeron";
     default:
         return "???";
     }
@@ -1816,6 +1844,48 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::TERRAFORMING:
         stream << "Gagne " << value << " de Vigueur.";
+        break;
+    case engine::CardId::SOVEREIGN_BLADE:
+        stream << "Retenue. Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::REFINE_BLADE:
+        stream << "Forge " << value << ". Tour suivant : Énergie +" << secondary << ".";
+        break;
+    case engine::CardId::SPOILS_OF_BATTLE:
+        stream << "Forge " << value << ". Pioche " << secondary << " cartes.";
+        break;
+    case engine::CardId::WROUGHT_IN_WAR:
+        stream << "Inflige " << value << " dégâts. Forge " << secondary << ".";
+        break;
+    case engine::CardId::BULWARK:
+        stream << "Gagne " << value << " d'Armure. Forge " << secondary << ".";
+        break;
+    case engine::CardId::CONQUEROR:
+        stream << "Forge " << value << ". Ce tour : Lame x2 sur l'ennemi.";
+        break;
+    case engine::CardId::FURNACE:
+        stream << "Début de tour : Forge " << value << ".";
+        break;
+    case engine::CardId::PARRY:
+        stream << "Lame souveraine donne " << value << " d'Armure.";
+        break;
+    case engine::CardId::SUMMON_FORTH:
+        stream << "Lame souveraine en main. Forge " << value << ".";
+        break;
+    case engine::CardId::BEAT_INTO_SHAPE:
+        stream << "Inflige " << value << ". Forge " << secondary << ", +" << secondary << " par coup reçu.";
+        break;
+    case engine::CardId::BIG_BANG:
+        stream << (card.upgraded ? "Inné. " : "") << "Pioche " << secondary << ". 1⚡, 1★. Forge " << value << "." << (card.upgraded ? " Épuis." : " Épuisement.");
+        break;
+    case engine::CardId::SEEKING_EDGE:
+        stream << "Forge " << value << ". Lame souveraine touche TOUS.";
+        break;
+    case engine::CardId::SWORD_SAGE:
+        stream << "Lame souveraine : jouée " << value << " fois de plus.";
+        break;
+    case engine::CardId::THE_SMITH:
+        stream << "Forge " << value << ".";
         break;
     default:
         break;
