@@ -90,6 +90,9 @@ enum class PowerId : uint8_t {
     REAPER_FORM,        // unblocked attack damage: as much Doom
     OBLIVION,           // card played: `amount` Doom to the enemy it is bound to
     SHROUD,             // Doom applied: `amount` Block
+    // Souls (Necrobinder)
+    HAUNT,              // Soul played: a random enemy loses `amount` HP
+    DEVOUR_LIFE,        // Soul played: summon Osty for `amount`
     // Attacks played
     JUGGLING,           // the JUGGLING_ATTACK-th Attack played each turn: a copy of it comes to the hand
     // Relics, registered by RunManager when the fight starts. `turns` is then the number of the turn.

@@ -77,7 +77,7 @@ items = [
   { name = "Invoquer Titos : ses PV s'additionnent et il encaisse les coups à la place du héros", status = "oui" },
   { name = "Attaques de Titos (Déchaînement proportionnel à ses PV), PV Max, soin et mort", status = "oui" },
   { name = "Fatalité : l'ennemi périt quand elle atteint ses PV", status = "oui" },
-  { name = "Âmes ajoutées à la Pioche", status = "non", issue = 106, note = "Le moteur ne tient qu'un compteur sans effet." },
+  { name = "Âmes ajoutées à la Pioche", status = "partiel", issue = 106, note = "Création d'Âmes, Hanter, Dévoration de vie et décompte des Âmes épuisées prêts dans le moteur ; il manque la carte Âme elle-même, remplacée d'ici là par un compteur." },
   { name = "Cartes Éthérées", status = "oui" },
   { name = "PV de Titos affichés en combat", status = "oui" },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },

@@ -79,7 +79,7 @@ Accessible à tout moment en navigation (et via le menu en combat) par la touche
     - *La Silencieuse* : `POISON ENNEMI: 7`
     - *Le Défectueux* : `ORBES: [⚡ Foudre] [❄️ Glace] [🌑 Dark]` (3 emplacements)
     - *Le Régent* : `ÉTOILES SOUVERAINES: ⭐⭐⭐ (3/5)`
-    - *La Nécrolieuse* : `ÂMES: 4 | OSTY LE MINION: 12 PV [Intercepte]`
+    - *La Nécrolieuse* : `TITOS 12/12` (PV et PV Max du familier ; les Âmes sont des cartes, elles n'ont pas de jauge)
 
 ```
 ┌────────────────────────────────────────────────────────┐

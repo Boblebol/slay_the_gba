@@ -183,7 +183,7 @@ public:
     uint8_t sovereign_stars = 0;
 
     // Necrobinder Souls & Minion (Osty)
-    uint8_t souls = 0;
+    uint8_t souls = 0; // stands in for the Soul cards until they exist: Souls made this combat (see SOUL_CARD)
     int16_t minion_hp = 0;
     int16_t minion_block = 0;
     int16_t minion_max_hp = 0; // Osty's Max HP for this combat: 0 while he is dead

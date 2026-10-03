@@ -385,6 +385,15 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 victim.hp = std::max<int16_t>(0, static_cast<int16_t>(victim.hp - power.amount));
             }
             break;
+        case PowerId::HAUNT:
+            // HP loss: the enemy's Block does not absorb it.
+            if (card_played && is_soul(info.card.id) && has_alive_enemies()) {
+                enemies[random_alive_enemy_index()].lose_hp(power.amount);
+            }
+            break;
+        case PowerId::DEVOUR_LIFE:
+            if (card_played && is_soul(info.card.id)) player.summon_minion(power.amount, 0);
+            break;
         case PowerId::CORROSIVE_WAVE:
             if (event == CombatEvent::CARD_DRAWN && !info.opening_draw) {
                 for (Enemy& enemy_hit : enemies) {
@@ -1052,6 +1061,22 @@ void CombatEngine::add_shivs(int count, bool upgraded, Enchantment enchantment) 
     DeckCard shiv(CardId::SHIV, upgraded);
     shiv.enchantment = enchantment;
     for (int copy = 0; copy < count; ++copy) create_card(shiv, Pile::HAND);
+}
+
+void CombatEngine::add_souls(int count, Pile pile, bool upgraded) {
+    for (int copy = 0; copy < count; ++copy) {
+        if (SOUL_CARD == CardId::NONE) {
+            player.add_souls(1); // no Soul card yet: the Soul is only counted
+        } else {
+            create_card(DeckCard(SOUL_CARD, upgraded), pile);
+        }
+    }
+}
+
+int CombatEngine::exhausted_souls() const {
+    int count = 0;
+    for (const DeckCard& card : exhaust_pile) count += is_soul(card.id);
+    return count;
 }
 
 void CombatEngine::forge(int amount) {
