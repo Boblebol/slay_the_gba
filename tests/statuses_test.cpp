@@ -355,6 +355,22 @@ void test_confused() {
     std::cout << "[PASS] Confused: cards drawn cost 0 to 3 at random, X and Unplayable cards excepted" << std::endl;
 }
 
+// An entity holds every status at the same time: none is dropped for lack of room.
+void test_every_status_at_once() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    const int last = static_cast<int>(StatusType::CONFUSED);
+    for (int type = 1; type <= last; ++type) {
+        combat.player.add_status(static_cast<StatusType>(type), 2);
+        combat.enemies[0].add_status(static_cast<StatusType>(type), 2);
+    }
+    assert(combat.player.statuses.size() == static_cast<size_t>(last));
+    for (int type = 1; type <= last; ++type) {
+        assert(combat.player.get_status(static_cast<StatusType>(type)) == 2);
+        assert(combat.enemies[0].get_status(static_cast<StatusType>(type)) == 2);
+    }
+    std::cout << "[PASS] Statuses: an entity holds every status at once" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -368,6 +384,7 @@ int main() {
     test_vigor();
     test_regen();
     test_confused();
+    test_every_status_at_once();
     std::cout << "All status tests passed." << std::endl;
     return 0;
 }

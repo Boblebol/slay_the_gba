@@ -7,7 +7,9 @@
 
 namespace engine {
 
-constexpr size_t MAX_STATUSES = 10;
+// One slot per StatusType: an entity can then hold every status at once, and none is dropped.
+constexpr size_t MAX_STATUSES = 18;
+static_assert(MAX_STATUSES >= static_cast<size_t>(StatusType::CONFUSED), "a status added to StatusType needs its slot");
 
 class CombatEntity {
 public:
@@ -22,7 +24,7 @@ public:
         for (size_t i = 0; i < statuses.size(); ++i) {
             if (statuses[i].type == type) {
                 statuses[i].amount += amount;
-                // A spent status frees its slot (only MAX_STATUSES fit).
+                // A spent status frees its slot.
                 if (statuses[i].amount == 0) statuses.erase(i);
                 return;
             }
