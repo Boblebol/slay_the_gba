@@ -130,7 +130,7 @@ flowchart TD
         RE_B["Bonus cumulatif d'attaque et de défense royale"]
     end
     subgraph P5 ["💀 La Nécrolieuse / Necrobinder"]
-        NE_S["Âmes (0 à 99)"]
+        NE_S["Âmes : cartes à 0E créées en combat (Piochez 2 cartes, Épuisement)"]
         NE_M["Invocation de Titos (Minion protecteur qui intercepte les dégâts)"]
     end
 ```
@@ -159,7 +159,10 @@ flowchart TD
   - Chaque étoile active ajoute `+1` dégât à toutes les attaques et `+1` armure aux compétences.
 
 ### 5. 💀 La Nécrolieuse (*Necrobinder*)
-* **Âmes** (*Souls*, 0 à 99) : Jauge récoltée lors des blessures infligées aux ennemis.
+* **Âmes** (*Souls*) : ce n'est pas une jauge mais une carte créée en combat, comme les Surins de la Silencieuse.
+  - **Âme** : Compétence à 0 Énergie, « Piochez 2 cartes. Épuisement. » (`bible/data`, infobulle `card:Soul`). L'**Âme+** pioche 3 cartes : valeur du jeu d'origine, `bible/data` ne décrit que la version de base.
+  - Des cartes (Exaction, Fossoyeur, Capture spirituelle, Césure, Oraison), la relique *Masque funéraire* et la potion *Goules en bouteille* ajoutent des Âmes à la Pioche, à la Main ou à la Défausse.
+  - *Hanter* et *Dévoration de vie* réagissent à chaque Âme jouée ; *Tempête d'âmes* compte les Âmes de la pile d'épuisement.
 * **Familier Minion (Titos, *Osty* en VO)** :
   - Possède ses propres PV et son propre blocage (`minion_hp`, `minion_block`).
   - **Interception des dégâts** : Lorsque l'héroïne subit une attaque, son Armure absorbe d'abord les dégâts ; Titos encaisse ensuite ce qui passe, à la place des PV de la Nécrolieuse. S'il meurt, le reste du coup touche l'héroïne.
