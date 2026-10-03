@@ -6,6 +6,7 @@
 #include <cassert>
 #include <iostream>
 #include "engine/combat.h"
+#include "engine/run.h"
 
 using namespace engine;
 
@@ -204,6 +205,31 @@ void test_devour_life_summons_when_a_soul_is_played() {
     assert(upgraded.player.minion_hp == 2);
 }
 
+void test_funerary_mask_adds_three_souls_to_the_draw_pile() {
+    RunManager run;
+    run.start_run(CharacterId::NECROBINDER, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("FUNERARY_MASK");
+    const size_t deck = run.master_deck.size();
+    run.map.nodes[0].type = RoomType::MONSTER;
+    run.enter_room(0);
+    // Shuffled in before the first hand: the three Souls are in the draw pile or already drawn.
+    assert(souls_in(run.combat.draw_pile) + souls_in(run.combat.hand) == 3);
+    assert(run.combat.draw_pile.size() + run.combat.hand.size() == deck + 3);
+    // Each combat, and the deck of the run does not keep them.
+    run.map.nodes[0].type = RoomType::MONSTER;
+    run.enter_room(0);
+    assert(souls_in(run.combat.draw_pile) + souls_in(run.combat.hand) == 3 && run.master_deck.size() == deck);
+    bool drops = false;
+    for (std::string_view id : RunManager::active_relics()) drops = drops || id == "FUNERARY_MASK";
+    assert(drops);
+}
+
+void test_pot_of_ghouls_adds_two_souls_to_the_hand() {
+    CombatEngine combat = make_fight();
+    assert(combat.use_potion("POT_OF_GHOULS"));
+    assert(combat.hand.size() == 2 && souls_in(combat.hand) == 2 && souls_in(combat.hand, true) == 0);
+}
+
 } // namespace
 
 int main() {
@@ -223,6 +249,8 @@ int main() {
     test_exhausted_souls_are_counted();
     test_haunt_makes_a_random_enemy_lose_hp();
     test_devour_life_summons_when_a_soul_is_played();
+    test_funerary_mask_adds_three_souls_to_the_draw_pile();
+    test_pot_of_ghouls_adds_two_souls_to_the_hand();
     std::cout << "[PASS] Souls: the card, the three piles, the exhaust count, Haunt and Devour Life" << std::endl;
     return 0;
 }

@@ -603,6 +603,7 @@ CARDS: list[CardArt] = [
     CardArt("sic_em", "necrobinder", "sic_em", "attack", (1, 1)),
     CardArt("sentry_mode", "necrobinder", "sentry_mode", "power", (2, 1)),
     CardArt("sweeping_gaze", "necrobinder", "sweeping_gaze", "attack", (0, 0), folder="token"),
+    CardArt("soul", "necrobinder", "soul", "skill", (0, 0), folder="token"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

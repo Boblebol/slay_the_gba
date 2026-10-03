@@ -4550,6 +4550,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Sweeping Gaze+!"sv : "Played Sweeping Gaze!"sv);
             break;
         }
+        case CardId::SOUL: {
+            draw_cards(base_value);
+            set_log(upgraded ? "Played Soul+!"sv : "Played Soul!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;
@@ -4884,6 +4889,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "KINGS_COURAGE") {
         forge(15);
         set_log("King's Courage!");
+    } else if (potion_id == "POT_OF_GHOULS") {
+        add_souls(2, Pile::HAND);
+        set_log("Pot of Ghouls!");
     } else if (potion_id == "REGEN_POTION") {
         player.add_status(StatusType::REGEN, 5);
         set_log("Regen Potion!");
