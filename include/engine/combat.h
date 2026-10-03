@@ -42,6 +42,7 @@ struct CombatCounters {
     uint8_t hits_dealt = 0;      // attack hits on enemies
     uint8_t stars_gained = 0;
     uint8_t stars_spent = 0;
+    uint8_t osty_attacks = 0;    // attacks of Osty, one for an attack on every enemy
     int16_t hp_lost = 0;
     // This combat
     uint8_t combat_cards_played = 0;
@@ -60,6 +61,7 @@ struct CombatCounters {
         attacks_played = skills_played = powers_played = statuses_played = shivs_played = 0;
         cards_drawn = cards_discarded = energy_spent = hits_dealt = 0;
         stars_gained = stars_spent = 0;
+        osty_attacks = 0;
         doom_applied = 0;
         hp_lost = 0;
     }
@@ -251,6 +253,18 @@ public:
     // Kills the enemy when its Doom has reached its HP.
     void reap(Enemy& target);
 
+    // Osty (Necrobinder). He is summoned with Player::summon_minion; what he does and what happens to him goes
+    // through these, so that the powers hear about it.
+    // "Osty deals `base` damage": one attack hit with Strength, Weak and Vulnerable applied, like the player's.
+    // Nothing happens when he is dead. Returns the HP lost by the enemy.
+    int16_t osty_attack(Enemy& target, int16_t base);
+    // The same on every living enemy: it counts as one attack.
+    void osty_attack_all(int16_t base);
+    // Osty recovers HP, up to his Max HP. Nothing happens when he is dead.
+    void heal_osty(int16_t amount);
+    // Osty dies ("Osty dies", or the hit that brings his HP to 0). The HP he had left count as lost.
+    void kill_osty();
+
     // Stars gained or spent by the Regent: every change goes through these two.
     void gain_stars(int amount);
     void spend_stars(int amount);
@@ -316,6 +330,8 @@ private:
     // Index of a living enemy picked at random; the first enemy when none is alive.
     int random_alive_enemy_index();
     void note_player_hp_lost(int16_t amount);
+    void note_osty_attack();
+    void note_osty_hp_lost(int16_t amount);
     // Tells every active power about an event, in the order the powers were gained.
     void emit(CombatEvent event, const EventInfo& info = EventInfo());
     void react(ActivePower& power, CombatEvent event, const EventInfo& info);

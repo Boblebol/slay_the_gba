@@ -75,7 +75,7 @@ section = "necrobinder"
 title = "Mécaniques"
 items = [
   { name = "Invoquer Titos : ses PV s'additionnent et il encaisse les coups à la place du héros", status = "oui" },
-  { name = "Attaques de Titos (Déchaînement proportionnel à ses PV)", status = "non", issue = 104 },
+  { name = "Attaques de Titos (Déchaînement proportionnel à ses PV), PV Max, soin et mort", status = "oui" },
   { name = "Fatalité : l'ennemi périt quand elle atteint ses PV", status = "oui" },
   { name = "Âmes ajoutées à la Pioche", status = "non", issue = 106, note = "Le moteur ne tient qu'un compteur sans effet." },
   { name = "Cartes Éthérées", status = "oui" },
@@ -308,8 +308,6 @@ items = [
 # ---------------------------------------------------------------------------------------------------------
 
 [overrides.cards]
-UNLEASH = { status = "partiel", issue = 34, note = "Dégâts fixes : ne tient pas compte des PV de Titos." }
-BODYGUARD = { status = "partiel", issue = 34, note = "Invoque pour 1 et donne de l'Armure, au lieu d'invoquer pour 5." }
 
 [overrides.potions]
 

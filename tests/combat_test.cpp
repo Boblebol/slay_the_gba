@@ -457,17 +457,19 @@ void test_regent_commons() {
 void test_necrobinder() {
     CombatEngine combat = make_combat(CharacterId::NECROBINDER);
     combat.enemies[0].add_status(StatusType::VULNERABLE, 1);
+    combat.player.summon_minion(2);
     play(combat, CardId::UNLEASH);
-    assert(combat.enemies[0].hp == 42 - 12); // Vulnerable now applies to Unleash too
+    assert(combat.enemies[0].hp == 42 - 12); // Osty deals 6 + his 2 HP, and Vulnerable applies to Unleash too
 
-    // Bodyguard: Osty soaks the hit first, then the block, then the Necrobinder.
+    // Bodyguard summons for 5: Osty soaks the hit first, then the block, then the Necrobinder.
     CombatEngine guard = make_combat(CharacterId::NECROBINDER);
     play(guard, CardId::BODYGUARD);
-    assert(guard.player.block == 7 && guard.player.minion_hp == 1);
+    assert(guard.player.block == 0 && guard.player.minion_hp == 5);
+    guard.player.block = 4;
     guard.end_player_turn();
     assert(guard.player.minion_hp == 0);
-    assert(guard.player.hp == 65 - (11 - 1 - 7));
-    std::cout << "[PASS] Necrobinder: Unleash + Vulnerable, Bodyguard block and Osty absorbing damage" << std::endl;
+    assert(guard.player.hp == 65 - (11 - 5 - 4));
+    std::cout << "[PASS] Necrobinder: Unleash + Vulnerable, Bodyguard summon and Osty absorbing damage" << std::endl;
 }
 
 // Enters the first map room after forcing its type, like a player walking into it.

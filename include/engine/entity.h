@@ -186,6 +186,7 @@ public:
     uint8_t souls = 0;
     int16_t minion_hp = 0;
     int16_t minion_block = 0;
+    int16_t minion_max_hp = 0; // Osty's Max HP for this combat: 0 while he is dead
 
     void init() {
         max_hp = 80;
@@ -200,6 +201,7 @@ public:
         souls = 0;
         minion_hp = 0;
         minion_block = 0;
+        minion_max_hp = 0;
     }
 
     void reset_turn() {
@@ -220,10 +222,12 @@ public:
             }
             if (minion_hp >= amount) {
                 minion_hp -= amount;
+                if (minion_hp == 0) minion_max_hp = 0; // Osty dies
                 return 0;
             } else {
                 amount -= minion_hp;
                 minion_hp = 0;
+                minion_max_hp = 0; // Osty dies: what is left of the hit goes on to the player
             }
         }
         return take_damage(amount);
@@ -231,7 +235,13 @@ public:
 
     void add_stars(uint8_t count);
     void add_souls(uint8_t count);
+    // Summon `m_hp`: Osty comes with that many HP, or gains as many HP and Max HP when he is already alive.
     void summon_minion(int16_t m_hp, int16_t m_block = 0);
+    bool minion_alive() const { return minion_hp > 0; }
+    // Osty recovers HP, up to his Max HP. Nothing happens when he is dead. Returns the HP recovered.
+    int16_t heal_minion(int16_t amount);
+    // Osty dies: his HP, Max HP and Block are gone. Returns the HP he had left.
+    int16_t kill_minion();
 };
 
 // Attack damage as in Slay the Spire: (base + Strength + Vigor), x0.75 when the attacker is Weak, x1.5 when the

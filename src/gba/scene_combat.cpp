@@ -718,8 +718,9 @@ void CombatScene::_refresh_hud()
         resource_stream << "★ " << resource;
         break;
     case engine::CharacterId::NECROBINDER:
-        resource = player.minion_hp * 100 + player.souls;
-        resource_stream << "Titos " << player.minion_hp << " PV";
+        // Both numbers are part of what is shown, as for the orbs.
+        resource = player.minion_hp * 1024 + player.minion_max_hp;
+        resource_stream << "Titos " << player.minion_hp << "/" << player.minion_max_hp;
         break;
     default:
         break;

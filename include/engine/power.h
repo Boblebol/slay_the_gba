@@ -122,6 +122,9 @@ enum class PowerId : uint8_t {
     TOUGH_BANDAGES,    // card discarded during the turn: `amount` Block
     TINGSHA,           // card discarded during the turn: `amount` damage to a random enemy
     TURN_SUMMON,       // start of turn: summon Osty for `amount` (Bound Phylactery)
+    BONE_FLUTE,        // Osty attacks: `amount` Block
+    CALCIFY,           // Osty's attacks deal `amount` more damage
+    NECRO_MASTERY,     // Osty loses HP: every enemy loses as much
     GOLD_PLATED_CABLES, // the oldest orb's passive triggers once more
     METRONOME,         // METRONOME_ORBS orbs channeled in the combat: `amount` damage to every enemy, once
     EMOTION_CHIP,      // start of a turn that follows a HP loss: every orb's passive triggers
@@ -202,6 +205,8 @@ enum class CombatEvent : uint8_t {
     UNBLOCKED_DAMAGE_DEALT, // that hit went through the enemy's Block; `enemy`, `amount`
     DEBUFF_APPLIED,         // to an enemy; `enemy`, `status`, `amount`
     ENEMY_KILLED,           // whatever killed it; `enemy`
+    OSTY_ATTACKED,          // once per attack of Osty, however many enemies it hits
+    OSTY_HP_LOST,           // to an enemy's attack or because he was made to die; `amount`
     DRAW_PILE_SHUFFLED,
     STARS_GAINED,           // `amount`
     STARS_SPENT             // `amount`
