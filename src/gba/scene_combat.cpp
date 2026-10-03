@@ -14,6 +14,8 @@
 #include "bn_sprite_items_fx_burst.h"
 #include "bn_sprite_items_fx_slash.h"
 
+#include "engine/potion.h"
+
 #include "gba/assets.h"
 #include "gba/audio.h"
 #include "gba/card_text.h"
@@ -38,6 +40,10 @@ constexpr int HAND_PICKED_Y = 50;
 constexpr int CHOICE_BANNER_X = 36;
 constexpr int LINE1_Y = 30;
 constexpr int LINE2_Y = 41;
+constexpr int LINE_STEP = LINE2_Y - LINE1_Y;
+// The key line of the belt: under a three-line description, raised so the bottom edge of the screen does not cut it.
+constexpr int BELT_HINT_Y = LINE1_Y + 4 * LINE_STEP - 3;
+constexpr int TEXT_WIDTH = 224;
 constexpr int STAGE_X = 0;
 constexpr int STAGE_Y = -30;
 
@@ -111,6 +117,7 @@ private:
         INTRO,
         PLAYER,
         TARGET,
+        POTIONS,
         CHOICE,
         CARD_FLIGHT,
         ENEMY_TURN,
@@ -190,6 +197,10 @@ private:
     Label _banner;
     Label _player_status;
     Label _player_block_label;
+    // Potion belt: two more description lines and the key reminder under them.
+    Label _line3;
+    Label _line4;
+    Label _belt_hint;
 
     PopupPool _popups;
     FxPool _fx;
@@ -206,6 +217,11 @@ private:
     int _banner_timer = 0;
     int _banner_x = 0;
     bool _victory = false;
+
+    // Potion belt: the potion under the cursor, the one shown, and the one waiting for its target (-1: none).
+    int _potion = 0;
+    int _belt_shown = -1;
+    int _aimed_potion = -1;
 
     // Card flight
     engine::DeckCard _flying;
@@ -245,6 +261,12 @@ private:
     void _update_intro();
     void _update_player_input();
     void _update_target_input();
+    void _open_belt();
+    void _close_belt();
+    void _clear_belt_text();
+    void _refresh_belt();
+    void _update_belt_input();
+    void _drink_potion(int index, int target);
     void _enter_choice();
     void _update_choice_input();
     void _resolve_choice();
@@ -532,8 +554,15 @@ void CombatScene::_refresh_card_text()
         stream << "Cible : " << bn::string_view(enemy.name.data(), enemy.name.size());
         _line1.set(-112, LINE1_Y, text, Align::LEFT, TextColor::GOLD);
         _line1_right.set(112, LINE1_Y, "◄ ► changer", Align::RIGHT, TextColor::GRAY);
-        _line2.set(-112, LINE2_Y, "A : attaquer   B : annuler", Align::LEFT, TextColor::WHITE);
+        _line2.set(-112, LINE2_Y, _aimed_potion >= 0 ? "A : lancer   B : retour" : "A : attaquer   B : annuler",
+                   Align::LEFT, TextColor::WHITE);
         _selected_shown = -1;
+        return;
+    }
+
+    if(_phase == Phase::POTIONS)
+    {
+        _refresh_belt();
         return;
     }
 
@@ -745,17 +774,34 @@ void CombatScene::_refresh_hud()
     }
 
     bool interactive = _phase == Phase::PLAYER;
+    // Key reminders on the right of line 1. With a potion in the belt, its key joins the START one when the card
+    // name leaves room for both.
+    constexpr bn::string_view REMINDER = "START : fin du tour";
+    constexpr bn::string_view BELT_REMINDER = "L : potions   START : fin du tour";
+    constexpr bn::string_view BELT_ONLY = "L : potions";
+    bool belt = ! _ctx.run.potions.empty();
 
     if(interactive && ! _any_playable())
     {
-        _hint_label.set(112, LINE1_Y, "START : fin du tour", Align::RIGHT, TextColor::GOLD);
+        // Line 1 holds the name of the selected card, or "Main vide".
+        int name_width = text_width("Main vide");
+
+        if(_selected >= 0 && _selected < int(_combat.hand.size()))
+        {
+            TextLine name;
+            card_name(_combat.hand[_selected], name);
+            name_width = text_width(name);
+        }
+
+        bool both = belt && name_width + text_width(BELT_REMINDER) + 4 <= TEXT_WIDTH;
+        _hint_label.set(112, LINE1_Y, both ? BELT_REMINDER : REMINDER, Align::RIGHT, TextColor::GOLD);
         _hint_label.set_visible((_ctx.frame / 16) % 2 == 0);
     }
     else if(interactive && ! _hand.empty())
     {
         // The mini card shows the printed cost: a cost changed by the combat is written here instead.
-        constexpr bn::string_view REMINDER = "START : fin du tour";
         TextLine cost;
+        bn::string_view reminder = REMINDER;
         bool room = true;
 
         if(_selected >= 0 && _selected < int(_combat.hand.size()))
@@ -770,16 +816,33 @@ void CombatScene::_refresh_hud()
             }
             else
             {
-                // The reminder gives way to a card name that would run into it.
+                // The reminder gives way to a card name that would run into it: the shorter ones are tried.
                 TextLine name;
                 card_name(card, name);
-                room = text_width(name) + text_width(REMINDER) + 4 <= 224;
+                int name_width = text_width(name) + 4;
+
+                if(belt && name_width + text_width(BELT_REMINDER) <= TEXT_WIDTH)
+                {
+                    reminder = BELT_REMINDER;
+                }
+                else if(name_width + text_width(REMINDER) <= TEXT_WIDTH)
+                {
+                    reminder = REMINDER;
+                }
+                else if(belt && name_width + text_width(BELT_ONLY) <= TEXT_WIDTH)
+                {
+                    reminder = BELT_ONLY;
+                }
+                else
+                {
+                    room = false;
+                }
             }
         }
 
         if(cost.empty())
         {
-            _hint_label.set(112, LINE1_Y, REMINDER, Align::RIGHT, TextColor::GRAY);
+            _hint_label.set(112, LINE1_Y, reminder, Align::RIGHT, TextColor::GRAY);
         }
         else
         {
@@ -1111,6 +1174,21 @@ void CombatScene::_update_player_input()
         return;
     }
 
+    if(bn::keypad::l_pressed())
+    {
+        if(_ctx.run.potions.empty())
+        {
+            play_sfx(Sfx::ERROR);
+            _popups.spawn(0, HAND_FOCUS_Y - 24, "Aucune potion", TextColor::RED);
+        }
+        else
+        {
+            _open_belt();
+        }
+
+        return;
+    }
+
     if(bn::keypad::start_pressed() || bn::keypad::r_pressed())
     {
         play_sfx(Sfx::DISCARD);
@@ -1189,11 +1267,263 @@ void CombatScene::_update_target_input()
     if(bn::keypad::b_pressed())
     {
         play_sfx(Sfx::UI_CANCEL);
-        _phase = Phase::PLAYER;
+
+        if(_aimed_potion >= 0)
+        {
+            // Back to the belt, on the potion that was being aimed.
+            _potion = _aimed_potion;
+            _aimed_potion = -1;
+            _belt_shown = -1;
+            _phase = Phase::POTIONS;
+        }
+        else
+        {
+            _phase = Phase::PLAYER;
+        }
     }
     else if(bn::keypad::a_pressed())
     {
-        _start_card(_target);
+        if(_aimed_potion >= 0)
+        {
+            _drink_potion(_aimed_potion, _target);
+        }
+        else
+        {
+            _start_card(_target);
+        }
+    }
+}
+
+void CombatScene::_open_belt()
+{
+    _phase = Phase::POTIONS;
+    _potion = bn::clamp(_potion, 0, int(_ctx.run.potions.size()) - 1);
+    _aimed_potion = -1;
+    _belt_shown = -1;
+
+    // The hand leaves the screen while the belt is open: its sprites make room for the belt's text.
+    _hand.clear();
+    _hint_label.clear();
+    play_sfx(Sfx::UI_OPEN);
+}
+
+void CombatScene::_close_belt()
+{
+    _phase = Phase::PLAYER;
+    _aimed_potion = -1;
+    _clear_belt_text();
+    _build_hand(false);
+    _selected_shown = -1;
+}
+
+void CombatScene::_clear_belt_text()
+{
+    _line3.clear();
+    _line4.clear();
+    _belt_hint.clear();
+    _belt_shown = -1;
+}
+
+void CombatScene::_refresh_belt()
+{
+    const engine::RunManager& run = _ctx.run;
+    int count = int(run.potions.size());
+
+    if(_potion == _belt_shown || count == 0)
+    {
+        return;
+    }
+
+    _belt_shown = _potion;
+    std::string_view id = run.potions[_potion];
+    const engine::PotionData* potion = engine::find_potion(id);
+    bn::string_view name(id.data(), int(id.size()));
+
+    if(potion)
+    {
+        name = bn::string_view(potion->name.data(), int(potion->name.size()));
+    }
+
+    _line1.set(-112, LINE1_Y, name, Align::LEFT, TextColor::GOLD);
+
+    if(count > 1)
+    {
+        TextLine place;
+        bn::ostringstream stream(place);
+        stream << "◄ " << (_potion + 1) << "/" << count << " ►";
+        _line1_right.set(112, LINE1_Y, place, Align::RIGHT, TextColor::GRAY);
+    }
+    else
+    {
+        _line1_right.clear();
+    }
+
+    // The description of the potion, on up to three lines.
+    bn::vector<TextLine, 3> lines;
+
+    if(potion)
+    {
+        wrap_text(bn::string_view(potion->description.data(), int(potion->description.size())), TEXT_WIDTH, lines);
+    }
+
+    Label* rows[] = { &_line2, &_line3, &_line4 };
+
+    for(int row = 0; row < 3; ++row)
+    {
+        if(row < lines.size())
+        {
+            rows[row]->set(-112, LINE2_Y + row * LINE_STEP, lines[row], Align::LEFT, TextColor::WHITE);
+        }
+        else
+        {
+            rows[row]->clear();
+        }
+    }
+
+    _belt_hint.set(-112, BELT_HINT_Y, "A : boire   B : fermer", Align::LEFT, TextColor::GRAY);
+}
+
+void CombatScene::_update_belt_input()
+{
+    int count = int(_ctx.run.potions.size());
+
+    if(count == 0)
+    {
+        _close_belt();
+        return;
+    }
+
+    if(bn::keypad::left_pressed() || bn::keypad::up_pressed())
+    {
+        if(count > 1)
+        {
+            _potion = (_potion + count - 1) % count;
+            play_sfx(Sfx::UI_CURSOR);
+        }
+    }
+    else if(bn::keypad::right_pressed() || bn::keypad::down_pressed())
+    {
+        if(count > 1)
+        {
+            _potion = (_potion + 1) % count;
+            play_sfx(Sfx::UI_CURSOR);
+        }
+    }
+
+    if(bn::keypad::b_pressed() || bn::keypad::l_pressed())
+    {
+        play_sfx(Sfx::UI_CANCEL);
+        _close_belt();
+        return;
+    }
+
+    if(! bn::keypad::a_pressed())
+    {
+        return;
+    }
+
+    const engine::PotionData* potion = engine::find_potion(_ctx.run.potions[_potion]);
+
+    if(potion && potion->target == "AnyEnemy" && _combat.count_alive_enemies() > 1)
+    {
+        // Thrown at one enemy: the target cursor of the cards picks it.
+        play_sfx(Sfx::UI_CONFIRM);
+        _aimed_potion = _potion;
+        _clear_belt_text();
+        _phase = Phase::TARGET;
+
+        if(_target < 0 || ! _combat.enemies[_target].is_alive())
+        {
+            _target = _combat.get_first_alive_enemy_index();
+        }
+
+        return;
+    }
+
+    _drink_potion(_potion, _combat.get_first_alive_enemy_index());
+}
+
+void CombatScene::_drink_potion(int index, int target)
+{
+    engine::RunManager& run = _ctx.run;
+    const engine::PotionData* potion = engine::find_potion(run.potions[index]);
+    bool hostile = potion && (potion->target == "AnyEnemy" || potion->target == "AllEnemies");
+    _aimed_potion = -1;
+    _snapshot();
+
+    if(! run.use_potion(index, target))
+    {
+        // The engine does not resolve this potion yet: it stays in the belt.
+        play_sfx(Sfx::ERROR);
+        _potion = index;
+        _phase = Phase::POTIONS;
+        _belt_shown = -1;
+        _refresh_belt();
+        _belt_hint.set(-112, BELT_HINT_Y, "Potion pas encore utilisable", Align::LEFT, TextColor::RED);
+        return;
+    }
+
+    // A potion thrown without damage (Weak, Poison...) has no impact sound of its own.
+    bool hit = false;
+
+    for(int enemy = 0; enemy < int(_combat.enemies.size()); ++enemy)
+    {
+        hit = hit || _snap_hp[enemy] != _combat.enemies[enemy].hp || _snap_block[enemy] != _combat.enemies[enemy].block;
+    }
+
+    if(hostile && ! hit)
+    {
+        play_sfx(Sfx::DEBUFF);
+    }
+
+    _resolve_diffs(hostile);
+
+    if(potion)
+    {
+        _set_banner(bn::string_view(potion->name.data(), int(potion->name.size())), TextColor::GOLD);
+    }
+
+    // Same refresh as after a card: the potion may have drawn, exhausted or upgraded cards.
+    _clear_belt_text();
+    _potion = bn::clamp(index, 0, bn::max(0, int(run.potions.size()) - 1));
+    _phase = Phase::PLAYER;
+    _build_hand(false);
+    _selected_shown = -1;
+
+    for(int enemy = 0; enemy < _enemies.size(); ++enemy)
+    {
+        _refresh_enemy_hud(enemy);
+    }
+
+    if(_combat.state == engine::CombatState::VICTORY)
+    {
+        _victory = true;
+        _phase = Phase::END_BANNER;
+        _timer = 0;
+    }
+    else if(_combat.state == engine::CombatState::DEFEAT)
+    {
+        // A card played by the potion cost the player's last HP.
+        _player_death = DEATH_FRAMES;
+        _victory = false;
+        _phase = Phase::END_BANNER;
+        _timer = 0;
+    }
+    else if(_combat.choice_pending())
+    {
+        _enter_choice();
+    }
+    else
+    {
+        if(_target < 0 || ! _combat.enemies[_target].is_alive())
+        {
+            _target = bn::max(0, _combat.get_first_alive_enemy_index());
+        }
+
+        if(_combat.end_turn_requested)
+        {
+            _start_enemy_turn();
+        }
     }
 }
 
@@ -2037,6 +2367,9 @@ bn::optional<SceneId> CombatScene::update()
         break;
     case Phase::TARGET:
         _update_target_input();
+        break;
+    case Phase::POTIONS:
+        _update_belt_input();
         break;
     case Phase::CHOICE:
         _update_choice_input();

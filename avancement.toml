@@ -224,7 +224,7 @@ section = "systemes"
 title = "Potions"
 items = [
   { name = "Ceinture de 3 potions", status = "oui" },
-  { name = "Boire une potion en combat sur GBA", status = "non", issue = 30, note = "Le moteur sait appliquer quatre potions, sans interface sur GBA." },
+  { name = "Boire une potion en combat sur GBA", status = "oui", note = "Touche L pendant son tour : ceinture, cible pour les potions lancées sur un ennemi." },
 ]
 
 [[category]]
@@ -312,44 +312,6 @@ UNLEASH = { status = "partiel", issue = 34, note = "Dégâts fixes : ne tient pa
 BODYGUARD = { status = "partiel", issue = 34, note = "Invoque pour 1 et donne de l'Armure, au lieu d'invoquer pour 5." }
 
 [overrides.potions]
-FIRE_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-BLOCK_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-ENERGY_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-BLOOD_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-CUNNING_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-EXPLOSIVE_AMPOULE = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-WEAK_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-SWIFT_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-DEXTERITY_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-STRENGTH_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-POISON_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-VULNERABLE_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-STAR_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-FOCUS_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-FLEX_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-SPEED_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-POTION_OF_DOOM = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-BLESSING_OF_THE_FORGE = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-FORTIFIER = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-FYSH_OIL = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-BONE_BREW = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-POTION_OF_BINDING = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-CURE_ALL = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-CLARITY = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-RADIANT_TINCTURE = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-POTION_OF_CAPACITY = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-MAZALETHS_GIFT = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-ESSENCE_OF_DARKNESS = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-BOTTLED_POTENTIAL = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-DISTILLED_CHAOS = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-SHIP_IN_A_BOTTLE = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-SHACKLING_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-GLOWWATER_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-HEART_OF_IRON = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-LIQUID_BRONZE = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-GHOST_IN_A_JAR = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-LUCKY_TONIC = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
-REGEN_POTION = { status = "partiel", issue = 30, note = "Effet géré par le moteur, pas encore utilisable sur GBA." }
 
 [overrides.monsters]
 CEREMONIAL_BEAST = { status = "partiel", issue = 36, note = "150 PV et trois attaques simplifiées, contre 252 PV et six attaques dans le jeu d'origine." }
