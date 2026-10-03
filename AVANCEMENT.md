@@ -4,11 +4,11 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 48,8 %** — 595 faits, 22 partiels, 626 à faire (36 hors périmètre).
+**Avancement global : 50,1 %** — 612 faits, 22 partiels, 609 à faire (36 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
-Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Fuel, Metallicize, Shiv, Slimed, Soot, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
+Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Fuel, Metallicize, Shiv, Slimed, Soot, Sovereign Blade, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
 
 ## Synthèse
 
@@ -17,16 +17,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Soldat de Fer](#ironclad) | 93 | 1 | 8 | 91,7 % |
 | [La Silencieuse](#silent) | 83 | 1 | 17 | 82,7 % |
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
-| [Le Régent](#regent) | 71 | 1 | 28 | 71,5 % |
+| [Le Régent](#regent) | 86 | 1 | 13 | 86,5 % |
 | [La Nécrolieuse](#necrobinder) | 62 | 3 | 36 | 62,9 % |
-| [Cartes communes aux cinq éditions](#cartes) | 9 | 0 | 111 | 7,5 % |
-| [Reliques et potions](#reliques) | 99 | 0 | 222 | 30,8 % |
+| [Cartes communes aux cinq éditions](#cartes) | 10 | 0 | 110 | 8,3 % |
+| [Reliques et potions](#reliques) | 100 | 0 | 221 | 31,2 % |
 | [Bestiaire](#bestiaire) | 8 | 1 | 95 | 8,2 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 37 | 2 | 18 | 66,7 % |
 | [Systèmes de jeu](#systemes) | 20 | 3 | 13 | 59,7 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **595** | **22** | **626** | **48,8 %** |
+| **Total** | **612** | **22** | **609** | **50,1 %** |
 
 <a id="ironclad"></a>
 
@@ -427,11 +427,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regent"></a>
 
-## Le Régent — 71,5 %
+## Le Régent — 86,5 %
 
-### Cartes — 73,3 %
+### Cartes — 88,4 %
 
-63 faits, 0 partiel, 23 à faire (5 hors périmètre).
+76 faits, 0 partiel, 10 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -440,17 +440,17 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Frappe | Base · Attaque | Oui |  |
 | Vénération | Base · Compétence | Oui |  |
 | Broyer | Commune · Attaque | Oui |  |
-| Butin de guerre | Commune · Compétence | Non |  |
+| Butin de guerre | Commune · Compétence | Oui |  |
 | Cache secrète | Commune · Compétence | Oui |  |
 | Courant pailleté | Commune · Compétence | Oui |  |
 | Croissant de lance | Commune · Attaque | Oui |  |
 | Entaille photonique | Commune · Attaque | Oui |  |
-| Forgé par la guerre | Commune · Attaque | Non |  |
+| Forgé par la guerre | Commune · Attaque | Oui |  |
 | Frappe solaire | Commune · Attaque | Oui |  |
 | HORS DE MA VUE ! | Commune · Compétence | Non |  |
 | Hiérarchie | Commune · Compétence | Oui |  |
 | Indifférence cosmique | Commune · Compétence | Oui |  |
-| Lame lustrée | Commune · Compétence | Non |  |
+| Lame lustrée | Commune · Compétence | Oui |  |
 | Luminosité | Commune · Compétence | Oui |  |
 | Lumière rassemblée | Commune · Compétence | Oui |  |
 | Manteau d'étoiles | Commune · Compétence | Oui |  |
@@ -462,7 +462,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Alignement | Peu commune · Compétence | Oui |  |
 | Autorité manifeste | Peu commune · Compétence | Non |  |
 | CHARGEZ !! | Peu commune · Compétence | Non |  |
-| Conquérant | Peu commune · Compétence | Non |  |
+| Conquérant | Peu commune · Compétence | Oui |  |
 | Constellation | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Convergence | Peu commune · Compétence | Oui |  |
 | Coup de pied royal | Peu commune · Attaque | Oui |  |
@@ -472,17 +472,17 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Dévastation | Peu commune · Attaque | Oui |  |
 | Enfant des étoiles | Peu commune · Pouvoir | Oui |  |
 | Esquisse | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
-| Fournaise | Peu commune · Pouvoir | Non |  |
+| Fournaise | Peu commune · Pouvoir | Oui |  |
 | Frappe rayonnante | Peu commune · Attaque | Oui |  |
 | Hors d'état | Peu commune · Attaque | Oui |  |
 | Hégémonie | Peu commune · Attaque | Oui |  |
-| L'union fait la forge | Peu commune · Compétence | Non |  |
+| L'union fait la forge | Peu commune · Compétence | Oui |  |
 | Largesse | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Lueur | Peu commune · Compétence | Oui |  |
 | Monologue | Peu commune · Compétence | Oui |  |
 | Mur de particules | Peu commune · Compétence | Oui |  |
 | Orbite | Peu commune · Pouvoir | Oui |  |
-| Parade | Peu commune · Pouvoir | Non |  |
+| Parade | Peu commune · Pouvoir | Oui |  |
 | Pari royal | Peu commune · Compétence | Oui |  |
 | Pilier de la création | Peu commune · Pouvoir | Oui |  |
 | Point bleu pâle | Peu commune · Pouvoir | Oui |  |
@@ -491,7 +491,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Quasar | Peu commune · Compétence | Non |  |
 | Rayonnement | Peu commune · Attaque | Oui |  |
 | Reflet miroir | Peu commune · Compétence | Oui |  |
-| Rempart | Peu commune · Compétence | Non |  |
+| Rempart | Peu commune · Compétence | Oui |  |
 | Résonance | Peu commune · Compétence | Oui |  |
 | Spectre visible | Peu commune · Pouvoir | Non |  |
 | Supermassif | Peu commune · Attaque | Oui |  |
@@ -500,10 +500,10 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Ainsi soit-il | Rare · Attaque | Oui |  |
 | Arsenal | Rare · Pouvoir | Oui |  |
 | Atterrissage forcé | Rare · Attaque | Oui |  |
-| Big Bang | Rare · Compétence | Non |  |
+| Big Bang | Rare · Compétence | Oui |  |
 | Bombardement | Rare · Attaque | Oui |  |
 | Cadeau joyeux | Rare · Compétence | Non |  |
-| Châtiment | Rare · Attaque | Non |  |
+| Châtiment | Rare · Attaque | Oui |  |
 | Comète | Rare · Attaque | Oui |  |
 | Couru d'avance | Rare · Compétence | Oui |  |
 | Foreuse céleste | Rare · Attaque | Oui |  |
@@ -513,28 +513,28 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Grandes décisions | Rare · Compétence | Non |  |
 | Je suis invincible | Rare · Compétence | Oui |  |
 | L'heure du marteau | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
-| Lame chercheuse | Rare · Pouvoir | Non |  |
-| Le forgeron | Rare · Compétence | Non |  |
+| Lame chercheuse | Rare · Pouvoir | Oui |  |
+| Le forgeron | Rare · Compétence | Oui |  |
 | Leçon | Rare · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Marteau d'héritage | Rare · Attaque | Non |  |
 | Pléiades | Rare · Attaque | Oui |  |
 | Regard monarchique | Rare · Pouvoir | Oui |  |
 | Royalties | Rare · Pouvoir | Non |  |
-| Sage à l'épée | Rare · Pouvoir | Non |  |
+| Sage à l'épée | Rare · Pouvoir | Oui |  |
 | Tyran | Rare · Pouvoir | Oui |  |
 | Égide à neutrons | Rare · Pouvoir | Oui |  |
 | Étoile mourante | Rare · Attaque | Oui |  |
 | Le trône scellé | Ancienne · Pouvoir | Oui |  |
 | Pluie de météores | Ancienne · Attaque | Oui |  |
 
-### Reliques — 62,5 %
+### Reliques — 75,0 %
 
-5 faits, 0 partiel, 3 à faire.
+6 faits, 0 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Droit divin | Départ | Oui |  |
-| Manuel d'escrime | Commune | Non |  |
+| Manuel d'escrime | Commune | Oui |  |
 | Poussière galactique | Peu commune | Oui |  |
 | Royalithe | Peu commune | Oui |  |
 | Mini Régent | Rare | Oui |  |
@@ -542,15 +542,15 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Pâtisserie lunaire | Rare | Oui |  |
 | Sbire de Vitruve | Boutique | Non |  |
 
-### Mécaniques — 58,3 %
+### Mécaniques — 75,0 %
 
-3 faits, 1 partiel, 2 à faire.
+4 faits, 1 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Étoiles : seconde ressource gagnée par les cartes |  | Oui |  |
 | Cartes à coût en Étoiles |  | Oui |  |
-| Forger la Lame souveraine |  | Non | [#102](https://github.com/Boblebol/slay_the_gba/issues/102) |
+| Forger la Lame souveraine |  | Oui | [#102](https://github.com/Boblebol/slay_the_gba/issues/102) |
 | Sbires (Frappe de sbire, Sbire en piqué) |  | Non | [#103](https://github.com/Boblebol/slay_the_gba/issues/103) |
 | Compteur d'Étoiles affiché en combat |  | Oui |  |
 | Animations du héros (repos, attaque, dégâts, garde) |  | Partiel | Flottement au repos, secousse et fondu de mort ; pas de poses dessinées. [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
@@ -688,7 +688,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 7,5 %
+## Cartes communes aux cinq éditions — 8,3 %
 
 ### Cartes incolores — 0,0 %
 
@@ -833,9 +833,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Rhabdomancie | Quête · Quête | Non |  |
 | Œuf d'oizodon | Quête · Quête | Non |  |
 
-### Cartes créées en combat et statuts — 52,9 %
+### Cartes créées en combat et statuts — 58,8 %
 
-9 faits, 0 partiel, 8 à faire.
+10 faits, 0 partiel, 7 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -846,7 +846,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Englué | Statut · Statut | Oui |  |
 | Frappe de sbire | Créée en combat · Attaque | Non |  |
 | Hébété | Statut · Statut | Oui |  |
-| Lame souveraine | Créée en combat · Attaque | Non |  |
+| Lame souveraine | Créée en combat · Attaque | Oui |  |
 | Néant | Statut · Statut | Oui |  |
 | Plaie | Statut · Statut | Oui |  |
 | Rocher gigantesque | Créée en combat · Attaque | Non |  |
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 30,8 %
+## Reliques et potions — 31,2 %
 
 ### Reliques partagées — 49,6 %
 
@@ -1140,9 +1140,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Œil de geckobra | Ancienne | Oui |  |
 | Œil de verre | Ancienne | Non |  |
 
-### Potions — 60,3 %
+### Potions — 61,9 %
 
-38 faits, 0 partiel, 25 à faire.
+39 faits, 0 partiel, 24 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1168,7 +1168,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Potion sanguine | Commune | Oui |  |
 | Bronze liquide | Peu commune | Oui |  |
 | Bénédiction de la forge | Peu commune | Oui |  |
-| Courage du roi | Peu commune | Non |  |
+| Courage du roi | Peu commune | Oui |  |
 | Cœur de fer | Peu commune | Oui |  |
 | Duplicateur | Peu commune | Non |  |
 | Décoction du parieur | Peu commune | Non |  |
