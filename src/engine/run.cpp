@@ -443,7 +443,8 @@ bool RunManager::has_relic(std::string_view relic_id) const {
 }
 
 std::span<const std::string_view> RunManager::active_relics() {
-    // Shop relics are in the list too: chests give them until the GBA shop sells relics (#184).
+    // Every implemented relic that drops normally (Common, Uncommon, Rare, Shop); Starter, Boss, Event and Ancient
+    // relics come from elsewhere. Shop relics are in the list too: chests give them until the GBA shop sells relics (#184).
     static constexpr std::string_view ACTIVE_RELICS[] = {
         "VAJRA", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK", "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
         "STONE_CRACKER", "PANTOGRAPH", "SLING_OF_COURAGE",
@@ -453,10 +454,18 @@ std::span<const std::string_view> RunManager::active_relics() {
         "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP",
         // Combat events
         "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
-        "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA",
+        "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA", "GAMBLING_CHIP", "HELICAL_DART", "NINJA_SCROLL",
         // Defect and Necrobinder
         "DATA_DISK", "SYMBIOTIC_VIRUS", "GOLD_PLATED_CABLES", "METRONOME", "RUNIC_CAPACITOR", "POWER_CELL", "EMOTION_CHIP",
-        "BOOK_REPAIR_KNIFE"
+        "BOOK_REPAIR_KNIFE",
+        // On the combat hooks (#299)
+        "BAG_OF_PREPARATION", "BURNING_STICKS", "INTIMIDATING_HELMET", "JOSS_PAPER", "KUNAI", "KUSARIGAMA", "LETTER_OPENER",
+        "MEAT_ON_THE_BONE", "MUMMIFIED_HAND", "NUNCHAKU", "ORNAMENTAL_FAN", "RAINBOW_RING", "RIPPLE_BASIN", "SHURIKEN",
+        "TUNING_FORK", "VEXING_PUZZLEBOX",
+        "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
+        "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
+        "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE",                     // Regent
+        "BIG_HAT", "IVORY_TILE"                                                          // Necrobinder
     };
     return ACTIVE_RELICS;
 }

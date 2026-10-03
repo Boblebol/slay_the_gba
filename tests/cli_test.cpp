@@ -561,6 +561,10 @@ int main() {
     for (std::string_view id : chest_relics) assert(find_relic(id) != nullptr);
     assert(!can_hold("TINGSHA") && can_hold("HAPPY_FLOWER")); // Tingsha belongs to the Silent
     assert(can_hold(chest_run.relics[1]) && chest_run.last_treasure_relic == chest_run.relics[1]);
+    // The first two relics of the shop are owned whatever the seed draws; the chests must then skip them.
+    for (std::string_view owned : { "VAJRA", "ANCHOR" }) {
+        if (!chest_run.has_relic(owned)) chest_run.add_relic(owned);
+    }
     while (chest_run.relics.size() < chest_run.relics.capacity()) {
         std::string_view relic_id = chest_run.draw_treasure_relic();
         assert(can_hold(relic_id) && !chest_run.has_relic(relic_id));
