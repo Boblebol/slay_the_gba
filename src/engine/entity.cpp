@@ -28,6 +28,38 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Cerf Auguste";
         max_hp = 150;
         hp = 150;
+    } else if (type == EnemyType::FUZZY_WURM_CRAWLER) {
+        name = "Rampeluche";
+        max_hp = 55;
+        hp = 55;
+    } else if (type == EnemyType::CROSSBOW_RUBY_RAIDER) {
+        name = "Rôdeur Arbalétrier";
+        max_hp = 18;
+        hp = 18;
+    } else if (type == EnemyType::BRUTE_RUBY_RAIDER) {
+        name = "Rôdeur Brute";
+        max_hp = 30;
+        hp = 30;
+    } else if (type == EnemyType::ASSASSIN_RUBY_RAIDER) {
+        name = "Rôdeur assassin";
+        max_hp = 18;
+        hp = 18;
+    } else if (type == EnemyType::AXE_RUBY_RAIDER) {
+        name = "Rôdeur à la hache";
+        max_hp = 20;
+        hp = 20;
+    } else if (type == EnemyType::CALCIFIED_CULTIST) {
+        name = "Adepte calcifié";
+        max_hp = 38;
+        hp = 38;
+    } else if (type == EnemyType::DAMP_CULTIST) {
+        name = "Adepte moisi";
+        max_hp = 51;
+        hp = 51;
+    } else if (type == EnemyType::SEWER_CLAM) {
+        name = "Palourde d'égout";
+        max_hp = 56;
+        hp = 56;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -125,6 +157,124 @@ void Enemy::plan_turn(int turn_number) {
             current_intent.base_damage = 7;
             current_intent.block = 12;
             current_intent.description = "Ramure (7 dmg, 12 blk)";
+        }
+    } else if (type == EnemyType::FUZZY_WURM_CRAWLER) {
+        // Acid Goop, Inhale, Acid Goop, and again.
+        current_intent.block = 0;
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        if (turn_number % 3 == 2) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.base_damage = 0;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 7;
+            current_intent.description = "Inspiration (+7 Force)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 4;
+            current_intent.description = "Acide visqueux (4 dmg)";
+        }
+    } else if (type == EnemyType::CROSSBOW_RUBY_RAIDER) {
+        // Reloads, then fires.
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        if (turn_number % 2 == 1) {
+            current_intent.type = EnemyIntentType::DEFEND;
+            current_intent.base_damage = 0;
+            current_intent.block = 3;
+            current_intent.description = "Rechargement (3 blk)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 14;
+            current_intent.block = 0;
+            current_intent.description = "Feu ! (14 dmg)";
+        }
+    } else if (type == EnemyType::BRUTE_RUBY_RAIDER) {
+        // Beats, then roars.
+        current_intent.block = 0;
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        if (turn_number % 2 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 7;
+            current_intent.description = "Rouer (7 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.base_damage = 0;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 3;
+            current_intent.description = "Rugissement (+3 Force)";
+        }
+    } else if (type == EnemyType::ASSASSIN_RUBY_RAIDER) {
+        // Killshot every turn.
+        current_intent.type = EnemyIntentType::ATTACK;
+        current_intent.base_damage = 10;
+        current_intent.block = 0;
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        current_intent.description = "Tir meurtrier (10 dmg)";
+    } else if (type == EnemyType::AXE_RUBY_RAIDER) {
+        // Two Swings, then a Big Swing.
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        if (turn_number % 3 == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 12;
+            current_intent.block = 0;
+            current_intent.description = "Balancier (12 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = 5;
+            current_intent.block = 5;
+            current_intent.description = "Swing (5 dmg, 5 blk)";
+        }
+    } else if (type == EnemyType::CALCIFIED_CULTIST) {
+        // Incantation once, then Dark Strike for the rest of the fight.
+        current_intent.block = 0;
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.base_damage = 0;
+            current_intent.status_type = StatusType::RITUAL;
+            current_intent.status_amount = 2;
+            current_intent.description = "Incantation (+2 Rituel)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 9;
+            current_intent.description = "Frappe ténébreuse (9 dmg)";
+        }
+    } else if (type == EnemyType::DAMP_CULTIST) {
+        // Incantation once, then Dark Strike for the rest of the fight.
+        current_intent.block = 0;
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.base_damage = 0;
+            current_intent.status_type = StatusType::RITUAL;
+            current_intent.status_amount = 5;
+            current_intent.description = "Incantation (+5 Rituel)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 1;
+            current_intent.description = "Frappe ténébreuse (1 dmg)";
+        }
+    } else if (type == EnemyType::SEWER_CLAM) {
+        // Jet, then Pressurize.
+        current_intent.block = 0;
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        if (turn_number % 2 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 10;
+            current_intent.description = "Jet (10 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.base_damage = 0;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 4;
+            current_intent.description = "Pressurisation (+4 Force)";
         }
     }
 }
