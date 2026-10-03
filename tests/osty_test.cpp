@@ -65,13 +65,14 @@ void test_summon_gives_hp_and_max_hp() {
 }
 
 void test_osty_takes_the_hits() {
-    // The whole attack lands on Osty: neither the player's Block nor their HP is touched.
+    // The player's Block absorbs the attack first, Osty takes the rest: the player's HP is not touched.
     CombatEngine soak = make_fight();
     soak.player.summon_minion(15);
     soak.player.block = 5;
     int16_t hp = soak.player.hp;
     end_turn(soak, 11);
-    assert(soak.player.minion_hp == 4 && soak.player.minion_max_hp == 15);
+    assert(soak.player.block == 0);
+    assert(soak.player.minion_hp == 9 && soak.player.minion_max_hp == 15);
     assert(soak.player.hp == hp);
     assert(soak.last_enemy_actions.size() == 1);
     assert(soak.last_enemy_actions[0].damage_blocked == 11 && soak.last_enemy_actions[0].damage_to_player == 0);
@@ -89,7 +90,7 @@ void test_osty_takes_the_hits() {
     burn.damage_player(4);
     burn.lose_hp(3);
     assert(burn.player.minion_hp == 10 && burn.player.hp == hp - 7);
-    std::cout << "[PASS] Osty takes the enemies' attacks before the player's Block and HP" << std::endl;
+    std::cout << "[PASS] Osty takes what the player's Block lets through of the enemies' attacks" << std::endl;
 }
 
 void test_osty_dies() {
