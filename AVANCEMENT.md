@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 40,6 %** — 491 faits, 26 partiels, 725 à faire (36 hors périmètre).
+**Avancement global : 41,2 %** — 499 faits, 26 partiels, 718 à faire (36 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -14,27 +14,27 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
-| [Soldat de Fer](#ironclad) | 85 | 1 | 16 | 83,8 % |
+| [Soldat de Fer](#ironclad) | 86 | 1 | 15 | 84,8 % |
 | [La Silencieuse](#silent) | 80 | 1 | 20 | 79,7 % |
-| [Le Défectueux](#defect) | 96 | 1 | 8 | 91,9 % |
-| [Le Régent](#regent) | 61 | 1 | 38 | 61,5 % |
-| [La Nécrolieuse](#necrobinder) | 57 | 3 | 41 | 57,9 % |
+| [Le Défectueux](#defect) | 97 | 1 | 7 | 92,9 % |
+| [Le Régent](#regent) | 63 | 1 | 36 | 63,5 % |
+| [La Nécrolieuse](#necrobinder) | 60 | 3 | 38 | 60,9 % |
 | [Cartes communes aux cinq éditions](#cartes) | 9 | 0 | 111 | 7,5 % |
 | [Reliques et potions](#reliques) | 40 | 5 | 276 | 13,2 % |
 | [Bestiaire](#bestiaire) | 0 | 1 | 103 | 0,5 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 29 | 2 | 25 | 53,6 % |
+| [Règles de combat](#regles) | 30 | 2 | 25 | 54,4 % |
 | [Systèmes de jeu](#systemes) | 19 | 2 | 15 | 55,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **491** | **26** | **725** | **40,6 %** |
+| **Total** | **499** | **26** | **718** | **41,2 %** |
 
 <a id="ironclad"></a>
 
-## Soldat de Fer — 83,8 %
+## Soldat de Fer — 84,8 %
 
-### Cartes — 89,5 %
+### Cartes — 90,7 %
 
-77 faits, 0 partiel, 9 à faire (4 hors périmètre).
+78 faits, 0 partiel, 8 à faire (4 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -43,7 +43,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Heurt | Base · Attaque | Oui |  |
 | Armement | Commune · Compétence | Oui |  |
 | Colère | Commune · Attaque | Oui |  |
-| Coup de boule | Commune · Attaque | Non |  |
+| Coup de boule | Commune · Attaque | Oui |  |
 | Coup de tonnerre | Commune · Attaque | Oui |  |
 | Frappe du pommeau | Commune · Attaque | Oui |  |
 | Frappe jumelée | Commune · Attaque | Oui |  |
@@ -292,11 +292,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="defect"></a>
 
-## Le Défectueux — 91,9 %
+## Le Défectueux — 92,9 %
 
-### Cartes — 91,9 %
+### Cartes — 93,0 %
 
-79 faits, 0 partiel, 7 à faire (5 hors périmètre).
+80 faits, 0 partiel, 6 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -315,7 +315,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Frappe dynamique | Commune · Attaque | Oui |  |
 | Frappe focalisée | Commune · Attaque | Oui |  |
 | Griffure | Commune · Attaque | Oui |  |
-| Hologramme | Commune · Compétence | Non |  |
+| Hologramme | Commune · Compétence | Oui |  |
 | Paratonnerre | Commune · Compétence | Oui |  |
 | Piles de recharge | Commune · Compétence | Oui |  |
 | Rayon cellulaire | Commune · Attaque | Oui |  |
@@ -427,11 +427,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regent"></a>
 
-## Le Régent — 61,5 %
+## Le Régent — 63,5 %
 
-### Cartes — 66,3 %
+### Cartes — 68,6 %
 
-57 faits, 0 partiel, 29 à faire (5 hors périmètre).
+59 faits, 0 partiel, 27 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -449,7 +449,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Frappe solaire | Commune · Attaque | Oui |  |
 | HORS DE MA VUE ! | Commune · Compétence | Non |  |
 | Hiérarchie | Commune · Compétence | Oui |  |
-| Indifférence cosmique | Commune · Compétence | Non |  |
+| Indifférence cosmique | Commune · Compétence | Oui |  |
 | Lame lustrée | Commune · Compétence | Non |  |
 | Luminosité | Commune · Compétence | Oui |  |
 | Lumière rassemblée | Commune · Compétence | Oui |  |
@@ -505,7 +505,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Cadeau joyeux | Rare · Compétence | Non |  |
 | Châtiment | Rare · Attaque | Non |  |
 | Comète | Rare · Attaque | Oui |  |
-| Couru d'avance | Rare · Compétence | Non |  |
+| Couru d'avance | Rare · Compétence | Oui |  |
 | Foreuse céleste | Rare · Attaque | Oui |  |
 | Forme du néant | Rare · Pouvoir | Oui |  |
 | GARDES !!! | Rare · Compétence | Non |  |
@@ -557,11 +557,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 57,9 %
+## La Nécrolieuse — 60,9 %
 
-### Cartes — 60,5 %
+### Cartes — 64,0 %
 
-51 faits, 2 partiels, 33 à faire (5 hors périmètre).
+54 faits, 2 partiels, 30 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -575,7 +575,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Claquement de doigts | Commune · Attaque | Non |  |
 | Drain de puissance | Commune · Attaque | Oui |  |
 | Défi | Commune · Compétence | Oui |  |
-| Déflagration tombale | Commune · Attaque | Non |  |
+| Déflagration tombale | Commune · Attaque | Oui |  |
 | Exaction | Commune · Attaque | Non |  |
 | Feu follet | Commune · Compétence | Oui |  |
 | Fossoyeur | Commune · Compétence | Non |  |
@@ -600,7 +600,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Décomposition | Peu commune · Compétence | Oui |  |
 | Décompte | Peu commune · Pouvoir | Oui |  |
 | Délai | Peu commune · Compétence | Oui |  |
-| Déterrer | Peu commune · Compétence | Non |  |
+| Déterrer | Peu commune · Compétence | Oui |  |
 | Détonation osseuse | Peu commune · Attaque | Non |  |
 | Enfers | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Enterrer | Peu commune · Attaque | Oui |  |
@@ -614,7 +614,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Perce-voile | Peu commune · Attaque | Oui |  |
 | Pluie de papier | Peu commune · Pouvoir | Oui |  |
 | Porte-mort | Peu commune · Compétence | Oui |  |
-| Purge | Peu commune · Compétence | Non |  |
+| Purge | Peu commune · Compétence | Oui |  |
 | Putréfaction | Peu commune · Compétence | Oui |  |
 | Six pieds sous terre | Peu commune · Attaque | Oui |  |
 | Stimulation | Peu commune · Compétence | Non |  |
@@ -1424,11 +1424,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regles"></a>
 
-## Règles de combat — 53,6 %
+## Règles de combat — 54,4 %
 
-### Déroulement du combat — 85,0 %
+### Déroulement du combat — 85,7 %
 
-16 faits, 2 partiels, 2 à faire.
+17 faits, 2 partiels, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1443,7 +1443,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Amélioration de cartes pendant le combat |  | Oui |  |
 | Cartes Pouvoir : restent en jeu jusqu'à la fin du combat |  | Oui |  |
 | Choix de cartes en main (défausser, épuiser, améliorer, remettre sur la Pioche) |  | Oui |  |
-| Choix d'une carte parmi plusieurs (Découverte, etc.) |  | Non | [#72](https://github.com/Boblebol/slay_the_gba/issues/72) |
+| Choix de cartes dans la Pioche ou la Défausse |  | Oui |  |
+| Choix d'une carte parmi 3 propositions (Découverte, etc.) |  | Non | [#72](https://github.com/Boblebol/slay_the_gba/issues/72) |
 | Cartes à coût X |  | Oui |  |
 | Écho : rejouer une carte |  | Partiel | [#86](https://github.com/Boblebol/slay_the_gba/issues/86) |
 | Cartes jouées automatiquement (Pioche, pile d'épuisement, fin de tour) |  | Oui |  |
