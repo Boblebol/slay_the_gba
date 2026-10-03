@@ -2,6 +2,7 @@
 #include <cassert>
 #include <iostream>
 #include "engine/combat.h"
+#include "engine/run.h"
 
 using namespace engine;
 
@@ -12,6 +13,15 @@ CombatEngine make_combat(CharacterId hero, EnemyType enemy_type = EnemyType::JAW
     CombatEngine combat;
     combat.start_combat(enemy_type, hero);
     return combat;
+}
+
+// Puts `card` alone in hand with full energy and plays it.
+void play(CombatEngine& combat, DeckCard card, int target = -1) {
+    combat.hand.clear();
+    combat.hand.push_back(card);
+    combat.player.energy = combat.player.max_energy;
+    bool played = combat.play_card(0, target);
+    assert(played);
 }
 
 int count_in(const FixedVector<DeckCard, 10>& pile, CardId id) {
@@ -109,12 +119,38 @@ void test_hand_discards_with_a_draw_reaction() {
     std::cout << "[PASS] Storm of Steel, Calculated Gamble: a card drawn while the hand is discarded stays in hand" << std::endl;
 }
 
+void test_power_capacity() {
+    // 40 relic powers registered the way RunManager does it, then 10 Power cards played: none is dropped.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.enemies[0].max_hp = 999;
+    combat.enemies[0].hp = 999;
+    combat.powers.clear();
+    const uint8_t first = static_cast<uint8_t>(PowerId::CAPTAINS_WHEEL); // the relics come last in PowerId
+    for (uint8_t i = 0; i < 40; ++i) combat.add_power(static_cast<PowerId>(first + i), 1);
+    assert(combat.powers.size() == 40);
+
+    const CardId cards[] = { CardId::FEEL_NO_PAIN, CardId::DARK_EMBRACE, CardId::RUPTURE, CardId::PYRE, CardId::JUGGERNAUT,
+                             CardId::VICIOUS, CardId::ACCELERANT, CardId::ENVENOM, CardId::AFTERIMAGE, CardId::NOXIOUS_FUMES };
+    for (CardId card : cards) play(combat, card, 0);
+    assert(combat.powers.size() == 50);
+    for (uint8_t i = 0; i < 40; ++i) assert(combat.has_power(static_cast<PowerId>(first + i)));
+    for (PowerId id : { PowerId::FEEL_NO_PAIN, PowerId::DARK_EMBRACE, PowerId::RUPTURE, PowerId::TURN_ENERGY,
+                        PowerId::JUGGERNAUT, PowerId::VICIOUS, PowerId::ACCELERANT, PowerId::ENVENOM, PowerId::AFTERIMAGE,
+                        PowerId::TURN_POISON_ALL }) {
+        assert(combat.has_power(id));
+    }
+    // A full run of relics plus a combat of card powers fits.
+    assert(combat.powers.capacity() >= RunManager{}.relics.capacity() + 39);
+    std::cout << "[PASS] Powers: 40 relic powers and 10 card powers are all kept" << std::endl;
+}
+
 } // namespace
 
 int main() {
     test_enemy_buff_does_not_leak();
     test_fiend_fire_with_dark_embrace();
     test_hand_discards_with_a_draw_reaction();
+    test_power_capacity();
     std::cout << "All engine fix tests passed." << std::endl;
     return 0;
 }
