@@ -32,6 +32,8 @@ constexpr int PLAYER_X = -76;
 constexpr int PLAYER_Y = -14;
 constexpr int BAR_Y = 19;
 constexpr int STATUS_Y = 9;
+// Half the screen for a status line: the player's and a lone enemy's then never overlap.
+constexpr int STATUS_WIDTH = 112;
 constexpr int HAND_Y = 64;
 constexpr int HAND_FOCUS_Y = 57;
 constexpr int HAND_PICKED_Y = 50;
@@ -736,7 +738,7 @@ void CombatScene::_refresh_hud()
     }
 
     TextLine status;
-    status_line(player, status);
+    status_line(player, status, STATUS_WIDTH);
 
     if(status != _player_status_text)
     {
@@ -846,7 +848,7 @@ void CombatScene::_refresh_enemy_hud(int index)
     view.intent_label.set_visible(view.intent_visible);
 
     TextLine status;
-    status_line(enemy, status);
+    status_line(enemy, status, STATUS_WIDTH);
 
     if(status != view.status_text)
     {

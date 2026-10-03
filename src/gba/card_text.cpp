@@ -1,4 +1,5 @@
 #include "gba/card_text.h"
+#include "gba/text.h"
 
 #include "bn_algorithm.h"
 #include "bn_sstream.h"
@@ -1875,8 +1876,12 @@ bn::string_view card_type_name(engine::CardType type)
     }
 }
 
-void status_line(const engine::CombatEntity& entity, bn::istring& out)
+void status_line(const engine::CombatEntity& entity, bn::istring& out, int max_width)
 {
+    // Room one status takes at most, in bytes: a space, an accented label, a sign and the amount.
+    constexpr int STATUS_BYTES = 16;
+    constexpr bn::string_view MORE = " +";
+
     out.clear();
     bn::ostringstream stream(out);
 
@@ -1885,6 +1890,15 @@ void status_line(const engine::CombatEntity& entity, bn::istring& out)
         if(status.amount == 0)
         {
             continue;
+        }
+
+        // The statuses that do not fit, in the string or on screen, are replaced by a "+" mark.
+        const int size_before = out.size();
+
+        if(size_before + STATUS_BYTES + MORE.size() > out.max_size())
+        {
+            stream << MORE;
+            break;
         }
 
         if(! out.empty())
@@ -1949,6 +1963,13 @@ void status_line(const engine::CombatEntity& entity, bn::istring& out)
             stream << "Désor";
             break;
         default:
+            break;
+        }
+
+        if(size_before > 0 && text_width(out) + text_width(MORE) > max_width)
+        {
+            out.shrink(size_before);
+            stream << MORE;
             break;
         }
     }
