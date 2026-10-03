@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 45,3 %** — 536 faits, 54 partiels, 653 à faire (36 hors périmètre).
+**Avancement global : 45,3 %** — 536 faits, 55 partiels, 652 à faire (36 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -24,9 +24,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Bestiaire](#bestiaire) | 8 | 1 | 95 | 8,2 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 30 | 2 | 25 | 54,4 % |
-| [Systèmes de jeu](#systemes) | 19 | 2 | 15 | 55,6 % |
+| [Systèmes de jeu](#systemes) | 19 | 3 | 14 | 56,9 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **536** | **54** | **653** | **45,3 %** |
+| **Total** | **536** | **55** | **652** | **45,3 %** |
 
 <a id="ironclad"></a>
 
@@ -1513,18 +1513,18 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 55,6 %
+## Systèmes de jeu — 56,9 %
 
-### La Tour — 42,9 %
+### La Tour — 50,0 %
 
-3 faits, 0 partiel, 4 à faire.
+3 faits, 1 partiel, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Carte procédurale à embranchements (16 étages) |  | Oui | [#24](https://github.com/Boblebol/slay_the_gba/issues/24) |
 | Trois actes enchaînés, soin entre les actes |  | Oui |  |
 | Salles : monstre, élite, boss, repos, trésor, boutique, évènement |  | Oui |  |
-| Rencontres propres à chaque acte (81 rencontres du jeu d'origine) |  | Non | Trois groupes fixes de monstres, identiques dans les trois actes. [#225](https://github.com/Boblebol/slay_the_gba/issues/225) |
+| Rencontres propres à chaque acte (81 rencontres du jeu d'origine) |  | Partiel | Tables par acte et par salle (faible, normale, élite, boss), acte 1 en variante A ou B : 5 rencontres d'origine jouables, les anciens groupes ailleurs. [#225](https://github.com/Boblebol/slay_the_gba/issues/225) |
 | Un boss différent par acte |  | Non | [#36](https://github.com/Boblebol/slay_the_gba/issues/36) |
 | Neow en début de partie |  | Non | [#6](https://github.com/Boblebol/slay_the_gba/issues/6) |
 | Bénédiction d'un Ancien entre les actes |  | Non | La phase existe dans le moteur mais elle est sautée. [#261](https://github.com/Boblebol/slay_the_gba/issues/261) |
