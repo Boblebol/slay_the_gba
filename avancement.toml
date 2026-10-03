@@ -64,7 +64,7 @@ title = "Mécaniques"
 items = [
   { name = "Étoiles : seconde ressource gagnée par les cartes", status = "oui" },
   { name = "Cartes à coût en Étoiles", status = "oui" },
-  { name = "Forger la Lame souveraine", status = "non", issue = 102 },
+  { name = "Forger la Lame souveraine", status = "oui", issue = 102 },
   { name = "Sbires (Frappe de sbire, Sbire en piqué)", status = "non", issue = 103 },
   { name = "Compteur d'Étoiles affiché en combat", status = "oui" },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
