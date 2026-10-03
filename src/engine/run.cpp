@@ -1,5 +1,6 @@
 #include "engine/run.h"
 #include "engine/relic.h"
+#include "engine/encounter.h"
 #include <algorithm>
 
 namespace engine {
@@ -36,6 +37,7 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     current_act = 1;
     current_floor = 1;
     current_node_index = -1;
+    current_encounter = {};
     rng_state_ = seed ? seed : 12345;
 
     const auto& cdef = get_character(character);
@@ -87,6 +89,34 @@ FixedVector<int, 3> RunManager::get_available_rooms() const {
     return map.get_next_nodes(current_node_index);
 }
 
+FixedVector<EnemyType, 3> RunManager::draw_encounter(RoomType room) {
+    std::span<const Encounter> table = encounter_table(act_zone(current_act, map_seed),
+                                                       encounter_tier(room, current_floor));
+    // A list of one draws nothing, as the rooms with a single choice did before the tables.
+    const Encounter& encounter = table.size() == 1 ? table[0] : table[next_random() % table.size()];
+    current_encounter = encounter.id;
+
+    FixedVector<EnemyType, 3> monsters;
+    if (encounter.random_pool.empty()) {
+        for (uint8_t i = 0; i < encounter.count && i < 3; ++i) {
+            monsters.push_back(encounter.monsters[i]);
+        }
+        return monsters;
+    }
+
+    // Different monsters drawn from the pool: the first steps of a Fisher-Yates shuffle.
+    FixedVector<EnemyType, 8> pool;
+    for (EnemyType type : encounter.random_pool) {
+        pool.push_back(type);
+    }
+    for (size_t i = 0; i < encounter.count && i < pool.size(); ++i) {
+        size_t pick = i + next_random() % (pool.size() - i);
+        std::swap(pool[i], pool[pick]);
+        monsters.push_back(pool[i]);
+    }
+    return monsters;
+}
+
 void RunManager::enter_room(int node_index) {
     current_node_index = node_index;
     const auto& node = map.nodes[node_index];
@@ -97,28 +127,7 @@ void RunManager::enter_room(int node_index) {
         case RoomType::ELITE:
         case RoomType::BOSS: {
             phase = RunPhase::IN_COMBAT;
-            FixedVector<EnemyType, 3> etypes;
-            if (node.type == RoomType::BOSS) {
-                etypes.push_back(EnemyType::CEREMONIAL_BEAST);
-            } else if (node.type == RoomType::ELITE) {
-                etypes.push_back(EnemyType::GREMLIN_NOB);
-            } else if (current_floor > 3) {
-                switch (next_random() % 3) {
-                    case 0:
-                        etypes.push_back(EnemyType::CULTIST);
-                        etypes.push_back(EnemyType::LOUSE);
-                        break;
-                    case 1:
-                        etypes.push_back(EnemyType::JAW_WORM);
-                        break;
-                    default:
-                        etypes.push_back(EnemyType::LOUSE);
-                        etypes.push_back(EnemyType::LOUSE);
-                        break;
-                }
-            } else {
-                etypes.push_back(EnemyType::CULTIST);
-            }
+            FixedVector<EnemyType, 3> etypes = draw_encounter(node.type);
 
             // Start combat with current HP and master deck
             combat.start_combat_multi(etypes, character);
