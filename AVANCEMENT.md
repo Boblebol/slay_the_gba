@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 41,2 %** — 499 faits, 26 partiels, 718 à faire (36 hors périmètre).
+**Avancement global : 44,7 %** — 528 faits, 54 partiels, 661 à faire (36 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -14,23 +14,23 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
-| [Soldat de Fer](#ironclad) | 86 | 1 | 15 | 84,8 % |
-| [La Silencieuse](#silent) | 80 | 1 | 20 | 79,7 % |
+| [Soldat de Fer](#ironclad) | 91 | 1 | 10 | 89,7 % |
+| [La Silencieuse](#silent) | 82 | 1 | 18 | 81,7 % |
 | [Le Défectueux](#defect) | 97 | 1 | 7 | 92,9 % |
-| [Le Régent](#regent) | 63 | 1 | 36 | 63,5 % |
-| [La Nécrolieuse](#necrobinder) | 60 | 3 | 38 | 60,9 % |
+| [Le Régent](#regent) | 67 | 1 | 32 | 67,5 % |
+| [La Nécrolieuse](#necrobinder) | 62 | 3 | 36 | 62,9 % |
 | [Cartes communes aux cinq éditions](#cartes) | 9 | 0 | 111 | 7,5 % |
-| [Reliques et potions](#reliques) | 40 | 5 | 276 | 13,2 % |
+| [Reliques et potions](#reliques) | 56 | 33 | 232 | 22,6 % |
 | [Bestiaire](#bestiaire) | 0 | 1 | 103 | 0,5 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 30 | 2 | 25 | 54,4 % |
 | [Systèmes de jeu](#systemes) | 19 | 2 | 15 | 55,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **499** | **26** | **718** | **41,2 %** |
+| **Total** | **528** | **54** | **661** | **44,7 %** |
 
 <a id="ironclad"></a>
 
-## Soldat de Fer — 84,8 %
+## Soldat de Fer — 89,7 %
 
 ### Cartes — 90,7 %
 
@@ -129,20 +129,20 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Briser | Ancienne · Attaque | Oui |  |
 | Corruption | Ancienne · Pouvoir | Oui |  |
 
-### Reliques — 12,5 %
+### Reliques — 75,0 %
 
-1 fait, 0 partiel, 7 à faire.
+6 faits, 0 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Sang ardent | Départ | Oui |  |
-| Crâne rouge | Commune | Non |  |
-| Argile autoformante | Peu commune | Non |  |
+| Crâne rouge | Commune | Oui |  |
+| Argile autoformante | Peu commune | Oui |  |
 | Krapo en papier | Peu commune | Non |  |
 | Casque délabré | Rare | Non |  |
-| Cendres de Charon | Rare | Non |  |
-| Langue du Démon | Rare | Non |  |
-| Soufre | Boutique | Non |  |
+| Cendres de Charon | Rare | Oui |  |
+| Langue du Démon | Rare | Oui |  |
+| Soufre | Boutique | Oui |  |
 
 ### Mécaniques — 93,8 %
 
@@ -161,7 +161,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="silent"></a>
 
-## La Silencieuse — 79,7 %
+## La Silencieuse — 81,7 %
 
 ### Cartes — 82,6 %
 
@@ -261,15 +261,15 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Forme spectrale | Ancienne · Pouvoir | Non |  |
 | Répression | Ancienne · Attaque | Oui |  |
 
-### Reliques — 62,5 %
+### Reliques — 87,5 %
 
-5 faits, 0 partiel, 3 à faire.
+7 faits, 0 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Anneau du serpent | Départ | Oui |  |
-| Crâne de geckobra | Commune | Non |  |
-| Entonnoir torsadé | Peu commune | Non |  |
+| Crâne de geckobra | Commune | Oui |  |
+| Entonnoir torsadé | Peu commune | Oui |  |
 | Tingsha | Peu commune | Oui |  |
 | Bandages résistants | Rare | Oui |  |
 | Fléchette hélicoïdale | Rare | Oui |  |
@@ -427,7 +427,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regent"></a>
 
-## Le Régent — 63,5 %
+## Le Régent — 67,5 %
 
 ### Cartes — 68,6 %
 
@@ -527,19 +527,19 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Le trône scellé | Ancienne · Pouvoir | Oui |  |
 | Pluie de météores | Ancienne · Attaque | Oui |  |
 
-### Reliques — 12,5 %
+### Reliques — 62,5 %
 
-1 fait, 0 partiel, 7 à faire.
+5 faits, 0 partiel, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Droit divin | Départ | Oui |  |
 | Manuel d'escrime | Commune | Non |  |
-| Poussière galactique | Peu commune | Non |  |
-| Royalithe | Peu commune | Non |  |
-| Mini Régent | Rare | Non |  |
+| Poussière galactique | Peu commune | Oui |  |
+| Royalithe | Peu commune | Oui |  |
+| Mini Régent | Rare | Oui |  |
 | Pâte orange | Rare | Non |  |
-| Pâtisserie lunaire | Rare | Non |  |
+| Pâtisserie lunaire | Rare | Oui |  |
 | Sbire de Vitruve | Boutique | Non |  |
 
 ### Mécaniques — 58,3 %
@@ -557,7 +557,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 60,9 %
+## La Nécrolieuse — 62,9 %
 
 ### Cartes — 64,0 %
 
@@ -657,9 +657,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Grimoire interdit | Ancienne · Pouvoir | Non |  |
 | Protecteur | Ancienne · Attaque | Non |  |
 
-### Reliques — 25,0 %
+### Reliques — 50,0 %
 
-2 faits, 0 partiel, 6 à faire.
+4 faits, 0 partiel, 4 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -667,9 +667,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Flûte d'os | Commune | Non |  |
 | Couteau à reliure | Peu commune | Oui |  |
 | Masque funéraire | Peu commune | Non |  |
-| Grand chapeau | Rare | Non |  |
+| Grand chapeau | Rare | Oui |  |
 | Marque-page | Rare | Non |  |
-| Tuile en ivoire | Rare | Non |  |
+| Tuile en ivoire | Rare | Oui |  |
 | Sceau immortel | Boutique | Non |  |
 
 ### Mécaniques — 64,3 %
@@ -859,11 +859,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 13,2 %
+## Reliques et potions — 22,6 %
 
-### Reliques partagées — 33,3 %
+### Reliques partagées — 47,0 %
 
-39 faits, 0 partiel, 78 à faire.
+55 faits, 0 partiel, 62 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -887,14 +887,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Puzzle centenaire | Commune | Oui |  |
 | Pétard de fête | Commune | Oui |  |
 | Sac de billes | Commune | Oui |  |
-| Sacoche de préparatifs | Commune | Non |  |
+| Sacoche de préparatifs | Commune | Oui |  |
 | Service à thé vénérable | Commune | Non |  |
 | Ticket restaurant | Commune | Non |  |
 | Vajra | Commune | Oui |  |
 | Écailles de bronze | Commune | Non |  |
 | Akabeko | Peu commune | Non |  |
-| Bassinet à remous | Peu commune | Non |  |
-| Billet funéraire | Peu commune | Non |  |
+| Bassinet à remous | Peu commune | Oui |  |
+| Billet funéraire | Peu commune | Oui |  |
 | Bonbon durable | Peu commune | Non |  |
 | Bouclier de parade | Peu commune | Oui |  |
 | Brassard | Peu commune | Non |  |
@@ -903,14 +903,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Canon miniature | Peu commune | Non |  |
 | Chapeau melon | Peu commune | Non |  |
 | Corne de diablotin | Peu commune | Oui |  |
-| Coupe-papier | Peu commune | Non |  |
+| Coupe-papier | Peu commune | Oui |  |
 | Crapaud pétrifié | Peu commune | Non |  |
-| Diapason | Peu commune | Non |  |
+| Diapason | Peu commune | Oui |  |
 | Fard pétillant | Peu commune | Oui |  |
-| Kusarigama | Peu commune | Non |  |
+| Kusarigama | Peu commune | Oui |  |
 | Marteau-piqueur | Peu commune | Oui |  |
 | Minuscule boîte aux lettres | Peu commune | Non |  |
-| Nunchaku | Peu commune | Non |  |
+| Nunchaku | Peu commune | Oui |  |
 | Orichalque | Peu commune | Oui |  |
 | Pantographe | Peu commune | Oui |  |
 | Pergélisol | Peu commune | Oui |  |
@@ -921,33 +921,33 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Poisson chanceux | Peu commune | Non |  |
 | Sablier de mercure | Peu commune | Oui |  |
 | Taquet d'amarrage | Peu commune | Oui |  |
-| Éventail décoratif | Peu commune | Non |  |
-| Anneau arc-en-ciel | Rare | Non |  |
+| Éventail décoratif | Peu commune | Oui |  |
+| Anneau arc-en-ciel | Rare | Oui |  |
 | Barre de capitaine | Rare | Oui |  |
 | Boucle de cape | Rare | Oui |  |
 | Calendrier de pierre | Rare | Oui |  |
-| Casque intimidant | Rare | Non |  |
-| Casse-tête vexant | Rare | Non |  |
+| Casque intimidant | Rare | Oui |  |
+| Casse-tête vexant | Rare | Oui |  |
 | Chandelier | Rare | Oui |  |
 | Crème glacée | Rare | Oui |  |
 | Dent de rasoir | Rare | Oui |  |
 | Girya | Rare | Non |  |
 | Jeton de casino | Rare | Oui |  |
-| Kunai | Rare | Non |  |
+| Kunai | Rare | Oui |  |
 | L'Art de la guerre | Rare | Oui |  |
 | Lampe inquiétante | Rare | Non |  |
 | Le Coursier | Rare | Non |  |
-| Main momifiée | Rare | Non |  |
+| Main momifiée | Rare | Oui |  |
 | Mangue | Rare | Non |  |
 | Montre à gousset | Rare | Oui |  |
 | Moulin à prières | Rare | Non |  |
-| Os à viande | Rare | Non |  |
+| Os à viande | Rare | Oui |  |
 | Pelle | Rare | Non |  |
 | Pince robuste | Rare | Oui |  |
 | Pion | Rare | Oui |  |
 | Pièce antique | Rare | Non |  |
 | Queue de lézard | Rare | Oui |  |
-| Shuriken | Rare | Non |  |
+| Shuriken | Rare | Oui |  |
 | Soufflet | Rare | Oui |  |
 | Statue de bête blanche | Rare | Non |  |
 | Tige de tungstène | Rare | Non |  |
@@ -961,7 +961,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Boucle de ceinture | Boutique | Non |  |
 | Boîte à outils | Boutique | Non |  |
 | Briquet mystique | Boutique | Non |  |
-| Bâtonnets enflammés | Boutique | Non |  |
+| Bâtonnets enflammés | Boutique | Oui |  |
 | Carte de fidélité | Boutique | Non |  |
 | Chaudron | Boutique | Non |  |
 | Composé X | Boutique | Non |  |
@@ -1140,58 +1140,58 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Œil de geckobra | Ancienne | Non |  |
 | Œil de verre | Ancienne | Non |  |
 
-### Potions — 4,0 %
+### Potions — 26,2 %
 
-0 fait, 5 partiels, 58 à faire.
+0 fait, 33 partiels, 30 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Ampoule explosive | Commune | Non |  |
-| Potion d'affaiblissement | Commune | Non |  |
+| Ampoule explosive | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Potion d'affaiblissement | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Potion d'armure | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Potion d'attaque | Commune | Non |  |
 | Potion d'énergie | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
-| Potion d'étoiles | Commune | Non |  |
+| Potion d'étoiles | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Potion de compétence | Commune | Non |  |
-| Potion de célérité | Commune | Non |  |
-| Potion de dextérité | Commune | Non |  |
-| Potion de focalisation | Commune | Non |  |
-| Potion de force | Commune | Non |  |
-| Potion de poison | Commune | Non |  |
+| Potion de célérité | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Potion de dextérité | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Potion de focalisation | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Potion de force | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Potion de poison | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Potion de pouvoir | Commune | Non |  |
-| Potion de vantardise | Commune | Non |  |
-| Potion de vitesse | Commune | Non |  |
-| Potion de vulnérabilité | Commune | Non |  |
+| Potion de vantardise | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Potion de vitesse | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Potion de vulnérabilité | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Potion incendiaire | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Potion incolore | Commune | Non |  |
-| Potion macabre | Commune | Non |  |
+| Potion macabre | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Potion sanguine | Commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Bronze liquide | Peu commune | Non |  |
-| Bénédiction de la forge | Peu commune | Non |  |
+| Bénédiction de la forge | Peu commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Courage du roi | Peu commune | Non |  |
 | Cœur de fer | Peu commune | Non |  |
 | Duplicateur | Peu commune | Non |  |
 | Décoction du parieur | Peu commune | Non |  |
 | Eau cendrée | Peu commune | Non |  |
-| Extrait de lucidité | Peu commune | Non |  |
-| Fortifiant | Peu commune | Non |  |
+| Extrait de lucidité | Peu commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Fortifiant | Peu commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Goutte de folie | Peu commune | Non |  |
-| Huile de poissâme | Peu commune | Non |  |
-| Infusion osseuse | Peu commune | Non |  |
-| Lampée de radiance | Peu commune | Non |  |
+| Huile de poissâme | Peu commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Infusion osseuse | Peu commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Lampée de radiance | Peu commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Potion de ruse | Peu commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Potion de régénération | Peu commune | Non |  |
-| Potion de stockage | Peu commune | Non |  |
-| Potion paralysante | Peu commune | Non |  |
+| Potion de stockage | Peu commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Potion paralysante | Peu commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Poudre funeste | Peu commune | Non |  |
-| Remède universel | Peu commune | Non |  |
+| Remède universel | Peu commune | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Sérum de stabilité | Peu commune | Non |  |
 | Acide orobique | Rare | Non |  |
-| Chaos distillé | Rare | Non |  |
+| Chaos distillé | Rare | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Concoction cosmique | Rare | Non |  |
-| Don de Mazaleth | Rare | Non |  |
+| Don de Mazaleth | Rare | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Décoction entropique | Rare | Non |  |
-| Essence ténébreuse | Rare | Non |  |
+| Essence ténébreuse | Rare | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Fantôme dans un bocal | Rare | Non |  |
 | Fée en bouteille | Rare | Non |  |
 | Goules en bouteille | Rare | Non |  |
@@ -1199,16 +1199,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Huile de geckobra | Rare | Non |  |
 | Jus de coléoptère | Rare | Non |  |
 | Jus de fruits | Rare | Non |  |
-| Navire en bouteille | Rare | Non |  |
+| Navire en bouteille | Rare | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Philtre chanceux | Rare | Non |  |
-| Potentiel en bouteille | Rare | Non |  |
-| Potion d'entrave | Rare | Non |  |
+| Potentiel en bouteille | Rare | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
+| Potion d'entrave | Rare | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 | Potion de géantification | Rare | Non |  |
 | Ragoût militaire | Rare | Non |  |
 | Souvenirs liquides | Rare | Non |  |
 | Ambre gris | Évènement | Non |  |
 | Potion infecte | Évènement | Non |  |
-| Potion luminescente | Évènement | Non |  |
+| Potion luminescente | Évènement | Partiel | Effet géré par le moteur, pas encore utilisable sur GBA. [#30](https://github.com/Boblebol/slay_the_gba/issues/30) |
 
 <a id="bestiaire"></a>
 
