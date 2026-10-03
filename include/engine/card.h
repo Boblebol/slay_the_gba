@@ -400,6 +400,17 @@ enum class CardId : uint16_t {
     JUGGLING,
     // Silent cards on existing mechanics, second batch (appended: saves store the numeric id)
     EXPOSE,
+    // Ironclad pile choices (appended: saves store the numeric id)
+    HEADBUTT,
+    // Defect pile choices (appended: saves store the numeric id)
+    HOLOGRAM,
+    // Regent pile choices (appended: saves store the numeric id)
+    COSMIC_INDIFFERENCE,
+    FOREGONE_CONCLUSION,
+    // Necrobinder pile choices (appended: saves store the numeric id)
+    GRAVEBLAST,
+    DREDGE,
+    CLEANSE,
     COUNT
 };
 

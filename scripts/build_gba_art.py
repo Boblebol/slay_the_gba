@@ -549,6 +549,13 @@ CARDS: list[CardArt] = [
     CardArt("sculpting_strike", "necrobinder", "sculpting_strike", "attack", (1, 1)),
     CardArt("juggling", "ironclad", "juggling", "power", (1, 1)),
     CardArt("expose", "silent", "expose", "skill", (0, 0)),
+    CardArt("headbutt", "ironclad", "headbutt", "attack", (1, 1)),
+    CardArt("hologram", "defect", "hologram", "skill", (1, 1)),
+    CardArt("cosmic_indifference", "regent", "cosmic_indifference", "skill", (1, 1)),
+    CardArt("foregone_conclusion", "regent", "foregone_conclusion", "skill", (1, 1)),
+    CardArt("graveblast", "necrobinder", "graveblast", "attack", (1, 1)),
+    CardArt("dredge", "necrobinder", "dredge", "skill", (1, 1)),
+    CardArt("cleanse", "necrobinder", "cleanse", "skill", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

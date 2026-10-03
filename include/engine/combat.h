@@ -73,7 +73,8 @@ enum class DelayedType : uint8_t {
     STARS,             // start of turn
     SUMMON,            // start of turn
     CHANNEL_LIGHTNING, // start of turn
-    DAMAGE_ALL         // end of turn: damage to every enemy, not modified by Strength (countdown cards)
+    DAMAGE_ALL,        // end of turn: damage to every enemy, not modified by Strength (countdown cards)
+    PICK_FROM_DRAW     // start of turn, once the hand is drawn: `amount` cards of the draw pile, picked, go to the hand
 };
 
 struct DelayedEffect {
@@ -95,11 +96,18 @@ enum class PlayBlocker : uint8_t {
     CHOICE        // cards of the hand must be picked first (CombatEngine::pending_choices)
 };
 
-// What happens to the hand cards the player picks.
+enum class Pile : uint8_t {
+    HAND,
+    DRAW,
+    DISCARD
+};
+
+// What happens to the cards the player picks.
 enum class ChoiceKind : uint8_t {
     DISCARD,
     EXHAUST,
     TOP_OF_DRAW,  // put on top of the draw pile
+    TO_HAND,      // from the draw or the discard pile; a card stays where it is when the hand is full
     UPGRADE,      // for the rest of the combat
     MAKE_ETHEREAL // the copy gains Ethereal
 };
@@ -112,14 +120,20 @@ enum class ChoiceThen : uint8_t {
     SHIVS          // add `amount` Shivs to the hand, upgraded when `upgraded`
 };
 
-// Cards of the hand the player has to pick before the combat goes on.
-struct HandChoice {
+constexpr uint8_t WHOLE_PILE = 0xFF;
+
+// Cards the player has to pick, in the hand or in a pile, before the combat goes on.
+struct CardChoice {
     ChoiceKind kind = ChoiceKind::DISCARD;
     uint8_t count = 1;     // cards to pick; all the cards that can be picked when there are fewer
     bool optional = false; // fewer cards, or none, can be picked ("any number of cards")
     ChoiceThen then = ChoiceThen::NONE;
     uint8_t amount = 0;
     bool upgraded = false;
+    Pile source = Pile::HAND; // where the cards are picked
+    // Cards of the source the choice is about, from its first one. Set by ask_choice for the discard pile:
+    // the card that asks goes there once played, and cannot pick itself.
+    uint8_t pool = WHOLE_PILE;
 };
 
 // Where a card goes once it has been played.
@@ -129,12 +143,6 @@ enum class AfterPlay : uint8_t {
     DRAW_TOP,
     EXHAUST,
     NOWHERE // it stays where it was: played from the exhaust pile
-};
-
-enum class Pile : uint8_t {
-    HAND,
-    DRAW,
-    DISCARD
 };
 
 // A gain that outlives the combat: RunManager adds it to the card of the deck.
@@ -166,7 +174,7 @@ public:
     FixedVector<ActivePower, 24> powers;      // active powers, in the order they were gained
     FixedVector<DeckCard, 24> powers_in_play; // Power cards played this combat: they stay in play
     FixedVector<PermanentGain, 16> permanent_gains; // bonuses to write back to the deck after the combat
-    FixedVector<HandChoice, 4> pending_choices;      // asked in order, the first one first
+    FixedVector<CardChoice, 4> pending_choices;      // asked in order, the first one first
     bool end_turn_requested = false; // a card ended the turn (Void Form): the caller ends it once the card is resolved
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;
@@ -255,18 +263,25 @@ public:
     // Schedules an effect: see DelayedEffect.
     void schedule(DelayedType type, int16_t amount, uint8_t delay = 1, uint8_t repeat = 1);
     
-    // Asks the player to pick cards of the hand. Nothing is asked when there is nothing to decide: every card
+    // Asks the player to pick cards of the hand or of a pile. Nothing is asked when there is nothing to decide: every card
     // that can be picked is, at once. Otherwise the choice waits in `pending_choices`, and no card can be
     // played until it is resolved.
-    void ask_choice(const HandChoice& choice);
+    void ask_choice(const CardChoice& choice);
+    // Same, for cards picked in the draw or the discard pile.
+    void ask_pile_choice(Pile source, ChoiceKind kind, uint8_t count = 1);
+    // Cards of a pile, as the choices index them.
+    size_t pile_size(Pile pile) const;
+    const DeckCard& pile_card(Pile pile, size_t index) const;
     bool choice_pending() const { return !pending_choices.empty(); }
-    // Whether the hand card can be picked for the choice being asked.
-    bool choice_allows(size_t hand_index) const;
+    // Whether the card at `index` of the choice's source can be picked for the choice being asked.
+    bool choice_allows(size_t index) const;
     // Number of cards the choice being asked expects: fewer than its count when the hand is short.
     int choice_size() const;
-    // Applies the choice being asked to the picked hand cards. False, and nothing happens, when the picks
+    // Number of cards of its source the choice being asked is about: indices 0 to this number can be shown.
+    int choice_pool_size() const;
+    // Applies the choice being asked to the picked cards of its source. False, and nothing happens, when the picks
     // do not answer it (wrong number, same card twice, card that cannot be picked).
-    bool resolve_choice(std::span<const uint8_t> hand_indices);
+    bool resolve_choice(std::span<const uint8_t> indices);
     // Answers the choice being asked without the player: the first cards that can be picked, none when
     // the choice is optional.
     void resolve_choice_default();
@@ -319,7 +334,9 @@ private:
     // Adds `amount` to the bonus of every copy of `id` in the piles.
     void boost_copies(CardId id, int amount);
     bool can_be_picked(const DeckCard& card, ChoiceKind kind) const;
-    void apply_choice(const HandChoice& choice, std::span<const uint8_t> hand_indices);
+    void apply_choice(const CardChoice& choice, std::span<const uint8_t> indices);
+    // Number of cards of its source the choice is about.
+    size_t choice_pool(const CardChoice& choice) const;
     // Answers, without asking, the choices that leave nothing to decide.
     void settle_choices();
     void change_cost_of_copies(CardId id, int delta);
@@ -331,6 +348,7 @@ private:
     uint8_t alive_mask_ = 0;      // enemies known to be alive, one bit each
     uint8_t event_depth_ = 0;     // reactions triggering reactions
     int16_t turn_draw_bonus_ = 0; // cards added to the opening draw by the start-of-turn powers
+    uint8_t turn_picks_from_draw_ = 0; // cards to pick in the draw pile once the hand is drawn (Foregone Conclusion)
     bool opening_draw_ = false;   // the turn's opening hand is being drawn
     bool lost_hp_last_turn_ = false; // HP lost between the previous turn start and this one
     // Orb passives of the start (Plasma) or of the end (the others) of the turn.

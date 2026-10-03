@@ -693,6 +693,20 @@ bn::string_view base_name(engine::CardId id)
         return "Jonglage";
     case engine::CardId::EXPOSE:
         return "Point faible";
+    case engine::CardId::HEADBUTT:
+        return "Coup de boule";
+    case engine::CardId::HOLOGRAM:
+        return "Hologramme";
+    case engine::CardId::COSMIC_INDIFFERENCE:
+        return "Indifférence cosmique";
+    case engine::CardId::FOREGONE_CONCLUSION:
+        return "Couru d'avance";
+    case engine::CardId::GRAVEBLAST:
+        return "Déflagration tombale";
+    case engine::CardId::DREDGE:
+        return "Déterrer";
+    case engine::CardId::CLEANSE:
+        return "Purge";
     default:
         return "???";
     }
@@ -1742,6 +1756,27 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::EXPOSE:
         stream << "Armure, Artéf. à 0. Vulnérable " << secondary << ". Épuis.";
+        break;
+    case engine::CardId::HEADBUTT:
+        stream << "Inflige " << value << ". 1 défaussée sur la pioche.";
+        break;
+    case engine::CardId::HOLOGRAM:
+        stream << "Armure " << value << ". 1 défaussée en main." << (card.upgraded ? "" : " Épuis.");
+        break;
+    case engine::CardId::COSMIC_INDIFFERENCE:
+        stream << "Armure " << value << ". 1 défaussée sur la pioche.";
+        break;
+    case engine::CardId::FOREGONE_CONCLUSION:
+        stream << "Tour suivant : " << value << " cartes de la pioche.";
+        break;
+    case engine::CardId::GRAVEBLAST:
+        stream << "Inflige " << value << ". 1 défaussée en main." << (card.upgraded ? "" : " Épuis.");
+        break;
+    case engine::CardId::DREDGE:
+        stream << (card.upgraded ? "Retenue. " : "") << value << " défaussées en main. Épuis.";
+        break;
+    case engine::CardId::CLEANSE:
+        stream << "Titos +" << value << " PV. Épuise 1 de la pioche.";
         break;
     default:
         break;

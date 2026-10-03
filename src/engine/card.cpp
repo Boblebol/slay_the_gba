@@ -397,7 +397,18 @@ static constexpr CardDef CARDS[] = {
     // Ironclad: cards on the card-played event
     { CardId::JUGGLING, "Juggling", 1, CardType::POWER, TargetType::SELF, 0, 0, "The 3rd Attack you play each turn is copied into your hand.", "Juggling+", 1, 0, 0, "The 3rd Attack you play each turn is copied into your hand.", 0, KEYWORD_INNATE },
     // Silent: cards on existing mechanics, second batch
-    { CardId::EXPOSE, "Expose", 0, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 2, "Remove all Artifact and Block from the enemy. Apply 2 Vulnerable. Exhaust.", "Expose+", 0, 0, 3, "Remove all Artifact and Block from the enemy. Apply 3 Vulnerable. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST }
+    { CardId::EXPOSE, "Expose", 0, CardType::SKILL, TargetType::SINGLE_ENEMY, 0, 2, "Remove all Artifact and Block from the enemy. Apply 2 Vulnerable. Exhaust.", "Expose+", 0, 0, 3, "Remove all Artifact and Block from the enemy. Apply 3 Vulnerable. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Ironclad: pile choices
+    { CardId::HEADBUTT, "Headbutt", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 0, "Deal 9 dmg. Put a card of your discard pile on top of your draw pile.", "Headbutt+", 1, 12, 0, "Deal 12 dmg. Put a card of your discard pile on top of your draw pile." },
+    // Defect: pile choices
+    { CardId::HOLOGRAM, "Hologram", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Gain 3 block. Put a card of your discard pile in your hand. Exhaust.", "Hologram+", 1, 5, 0, "Gain 5 block. Put a card of your discard pile in your hand.", KEYWORD_EXHAUST, 0 },
+    // Regent: pile choices
+    { CardId::COSMIC_INDIFFERENCE, "Cosmic Indifference", 1, CardType::SKILL, TargetType::SELF, 6, 0, "Gain 6 block. Put a card of your discard pile on top of your draw pile.", "Cosmic Indifference+", 1, 9, 0, "Gain 9 block. Put a card of your discard pile on top of your draw pile." },
+    { CardId::FOREGONE_CONCLUSION, "Foregone Conclusion", 1, CardType::SKILL, TargetType::SELF, 2, 0, "Next turn, put 2 cards of your draw pile in your hand.", "Foregone Conclusion+", 1, 3, 0, "Next turn, put 3 cards of your draw pile in your hand." },
+    // Necrobinder: pile choices
+    { CardId::GRAVEBLAST, "Graveblast", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 4, 0, "Deal 4 dmg. Put a card of your discard pile in your hand. Exhaust.", "Graveblast+", 1, 6, 0, "Deal 6 dmg. Put a card of your discard pile in your hand.", KEYWORD_EXHAUST, 0 },
+    { CardId::DREDGE, "Dredge", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Put 3 cards of your discard pile in your hand. Exhaust.", "Dredge+", 1, 3, 0, "Retain. Put 3 cards of your discard pile in your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    { CardId::CLEANSE, "Cleanse", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Summon 3. Exhaust 1 card of your draw pile.", "Cleanse+", 1, 5, 0, "Summon 5. Exhaust 1 card of your draw pile." }
 };
 
 const CardDef& CardDef::get(CardId id) {

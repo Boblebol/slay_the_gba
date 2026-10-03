@@ -282,7 +282,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 57, 58, 59, 60, 61,
     62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 64, 65, 66, 67,
     68, 69, 70, 71, 72, 73, 74, 0, 0, 0, 75, 76, 77, 78, 0, 0, 0, 0, 0, 0,
-    79,
+    79, 0, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -379,6 +379,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_trash_to_treasure.h"
 #include "bn_sprite_items_card_turbo.h"
 #include "bn_sprite_items_card_scavenge.h"
+#include "bn_sprite_items_card_hologram.h"
 
 namespace gba::card_art
 {
@@ -562,6 +563,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_turbo;
     case engine::CardId::SCAVENGE:
         return &bn::sprite_items::card_scavenge;
+    case engine::CardId::HOLOGRAM:
+        return &bn::sprite_items::card_hologram;
     default:
         return nullptr;
     }
@@ -586,7 +589,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     66, 67, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 68, 69, 70, 71, 72, 73,
     74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 87, 0, 0, 0, 0, 0,
-    0,
+    0, 0, 88, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -660,6 +663,8 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_photon_cut.h"
 #include "bn_sprite_items_card_glimmer.h"
 #include "bn_sprite_items_card_tyranny.h"
+#include "bn_sprite_items_card_cosmic_indifference.h"
+#include "bn_sprite_items_card_foregone_conclusion.h"
 
 namespace gba::card_art
 {
@@ -797,6 +802,10 @@ namespace gba::card_art
         return &bn::sprite_items::card_glimmer;
     case engine::CardId::TYRANNY:
         return &bn::sprite_items::card_tyranny;
+    case engine::CardId::COSMIC_INDIFFERENCE:
+        return &bn::sprite_items::card_cosmic_indifference;
+    case engine::CardId::FOREGONE_CONCLUSION:
+        return &bn::sprite_items::card_foregone_conclusion;
     default:
         return nullptr;
     }
@@ -821,7 +830,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 48, 49, 50, 51, 52, 0, 0, 0, 0, 0, 0, 0, 53, 54, 55, 56, 57, 58,
     59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 61, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 63, 64, 0, 0,
-    0,
+    0, 0, 0, 65, 66, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -891,6 +900,9 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_void_card.h"
 #include "bn_sprite_items_card_wound.h"
 #include "bn_sprite_items_card_sculpting_strike.h"
+#include "bn_sprite_items_card_graveblast.h"
+#include "bn_sprite_items_card_dredge.h"
+#include "bn_sprite_items_card_cleanse.h"
 
 namespace gba::card_art
 {
@@ -1020,6 +1032,12 @@ namespace gba::card_art
         return &bn::sprite_items::card_wound;
     case engine::CardId::SCULPTING_STRIKE:
         return &bn::sprite_items::card_sculpting_strike;
+    case engine::CardId::GRAVEBLAST:
+        return &bn::sprite_items::card_graveblast;
+    case engine::CardId::DREDGE:
+        return &bn::sprite_items::card_dredge;
+    case engine::CardId::CLEANSE:
+        return &bn::sprite_items::card_cleanse;
     default:
         return nullptr;
     }
@@ -1044,7 +1062,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58,
     59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60, 0,
-    0,
+    0, 0, 0, 0, 0, 61, 62, 63,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1140,6 +1158,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_brand.h"
 #include "bn_sprite_items_card_burning_pact.h"
 #include "bn_sprite_items_card_juggling.h"
+#include "bn_sprite_items_card_headbutt.h"
 
 namespace gba::card_art
 {
@@ -1321,6 +1340,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_burning_pact;
     case engine::CardId::JUGGLING:
         return &bn::sprite_items::card_juggling;
+    case engine::CardId::HEADBUTT:
+        return &bn::sprite_items::card_headbutt;
     default:
         return nullptr;
     }
@@ -1345,7 +1366,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 76, 77, 78, 79, 80, 81,
     82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 83, 84, 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 86,
-    0,
+    0, 87, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
