@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 50,1 %** — 612 faits, 22 partiels, 609 à faire (36 hors périmètre).
+**Avancement global : 50,4 %** — 617 faits, 20 partiels, 606 à faire (36 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -18,15 +18,15 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Silencieuse](#silent) | 83 | 1 | 17 | 82,7 % |
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
 | [Le Régent](#regent) | 86 | 1 | 13 | 86,5 % |
-| [La Nécrolieuse](#necrobinder) | 62 | 3 | 36 | 62,9 % |
+| [La Nécrolieuse](#necrobinder) | 66 | 1 | 34 | 65,8 % |
 | [Cartes communes aux cinq éditions](#cartes) | 10 | 0 | 110 | 8,3 % |
-| [Reliques et potions](#reliques) | 100 | 0 | 221 | 31,2 % |
+| [Reliques et potions](#reliques) | 101 | 0 | 220 | 31,5 % |
 | [Bestiaire](#bestiaire) | 8 | 1 | 95 | 8,2 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 37 | 2 | 18 | 66,7 % |
 | [Systèmes de jeu](#systemes) | 20 | 3 | 13 | 59,7 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **612** | **22** | **609** | **50,1 %** |
+| **Total** | **617** | **20** | **606** | **50,4 %** |
 
 <a id="ironclad"></a>
 
@@ -557,18 +557,18 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 62,9 %
+## La Nécrolieuse — 65,8 %
 
-### Cartes — 64,0 %
+### Cartes — 65,1 %
 
-54 faits, 2 partiels, 30 à faire (5 hors périmètre).
+56 faits, 0 partiel, 30 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Déchaînement | Base · Attaque | Partiel | Dégâts fixes : ne tient pas compte des PV de Titos. [#34](https://github.com/Boblebol/slay_the_gba/issues/34) |
+| Déchaînement | Base · Attaque | Oui |  |
 | Défense | Base · Compétence | Oui |  |
 | Frappe | Base · Attaque | Oui |  |
-| Garde du corps | Base · Compétence | Partiel | Invoque pour 1 et donne de l'Armure, au lieu d'invoquer pour 5. [#34](https://github.com/Boblebol/slay_the_gba/issues/34) |
+| Garde du corps | Base · Compétence | Oui |  |
 | Adjuration | Commune · Compétence | Oui |  |
 | Anti-pulsation | Commune · Compétence | Oui |  |
 | Chiquenaude | Commune · Attaque | Non |  |
@@ -657,14 +657,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Grimoire interdit | Ancienne · Pouvoir | Non |  |
 | Protecteur | Ancienne · Attaque | Non |  |
 
-### Reliques — 50,0 %
+### Reliques — 62,5 %
 
-4 faits, 0 partiel, 4 à faire.
+5 faits, 0 partiel, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Phylactère enchaîné | Départ | Oui |  |
-| Flûte d'os | Commune | Non |  |
+| Flûte d'os | Commune | Oui |  |
 | Couteau à reliure | Peu commune | Oui |  |
 | Masque funéraire | Peu commune | Non |  |
 | Grand chapeau | Rare | Oui |  |
@@ -672,14 +672,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tuile en ivoire | Rare | Oui |  |
 | Sceau immortel | Boutique | Non |  |
 
-### Mécaniques — 64,3 %
+### Mécaniques — 78,6 %
 
-4 faits, 1 partiel, 2 à faire.
+5 faits, 1 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Invoquer Titos : ses PV s'additionnent et il encaisse les coups à la place du héros |  | Oui |  |
-| Attaques de Titos (Déchaînement proportionnel à ses PV) |  | Non | [#104](https://github.com/Boblebol/slay_the_gba/issues/104) |
+| Attaques de Titos (Déchaînement proportionnel à ses PV), PV Max, soin et mort |  | Oui |  |
 | Fatalité : l'ennemi périt quand elle atteint ses PV |  | Oui |  |
 | Âmes ajoutées à la Pioche |  | Non | Le moteur ne tient qu'un compteur sans effet. [#106](https://github.com/Boblebol/slay_the_gba/issues/106) |
 | Cartes Éthérées |  | Oui |  |
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 31,2 %
+## Reliques et potions — 31,5 %
 
 ### Reliques partagées — 49,6 %
 
@@ -985,16 +985,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Lentille de Fresnel | Évènement | Non |  |
 | Diadème | Secours | Non |  |
 
-### Reliques d'évènement — 2,6 %
+### Reliques d'évènement — 5,1 %
 
-1 fait, 0 partiel, 38 à faire.
+2 faits, 0 partiel, 37 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Anneau du dragon | Départ | Non |  |
 | Destin divin | Départ | Non |  |
 | Noyau infusé | Départ | Non |  |
-| Phylactère déchaîné | Départ | Non |  |
+| Phylactère déchaîné | Départ | Oui |  |
 | Sang noir | Départ | Non |  |
 | Amulette sombrepierre | Évènement | Non |  |
 | Ancre ??? | Évènement | Non |  |
