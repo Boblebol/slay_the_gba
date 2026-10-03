@@ -44,6 +44,7 @@ struct CombatCounters {
     uint8_t stars_gained = 0;
     uint8_t stars_spent = 0;
     uint8_t osty_attacks = 0;    // attacks of Osty, one for an attack on every enemy
+    uint8_t fetches_played = 0;  // times Fetch was played
     int16_t hp_lost = 0;
     // This combat
     uint8_t combat_cards_played = 0;
@@ -64,6 +65,7 @@ struct CombatCounters {
         hits_on_enemy[0] = hits_on_enemy[1] = hits_on_enemy[2] = 0;
         stars_gained = stars_spent = 0;
         osty_attacks = 0;
+        fetches_played = 0;
         doom_applied = 0;
         hp_lost = 0;
     }
@@ -113,7 +115,8 @@ enum class ChoiceKind : uint8_t {
     TOP_OF_DRAW,  // put on top of the draw pile
     TO_HAND,      // from the draw or the discard pile; a card stays where it is when the hand is full
     UPGRADE,      // for the rest of the combat
-    MAKE_ETHEREAL // the copy gains Ethereal
+    MAKE_ETHEREAL, // the copy gains Ethereal
+    MAKE_RETAIN   // the copy gains Retain
 };
 
 // What follows once the cards are picked: the part of a card's text that comes after its choice.
@@ -262,8 +265,9 @@ public:
     // Osty (Necrobinder). He is summoned with Player::summon_minion; what he does and what happens to him goes
     // through these, so that the powers hear about it.
     // "Osty deals `base` damage": one attack hit with Strength, Weak and Vulnerable applied, like the player's.
-    // Nothing happens when he is dead. Returns the HP lost by the enemy.
-    int16_t osty_attack(Enemy& target, int16_t base);
+    // Nothing happens when he is dead. Returns the HP lost by the enemy. With `hits`, the attack hits that many
+    // times, as long as the enemy is alive: it is still one attack, and the HP lost are those of the last hit.
+    int16_t osty_attack(Enemy& target, int16_t base, int hits = 1);
     // The same on every living enemy: it counts as one attack.
     void osty_attack_all(int16_t base);
     // Osty recovers HP, up to his Max HP. Nothing happens when he is dead.
@@ -336,6 +340,8 @@ private:
     // Index of a living enemy picked at random; the first enemy when none is alive.
     int random_alive_enemy_index();
     void note_player_hp_lost(int16_t amount);
+    // One hit of an attack of Osty: Calcify, and Sic 'Em on the enemy it is bound to.
+    int16_t osty_hit(Enemy& target, int16_t base);
     void note_osty_attack();
     void note_osty_hp_lost(int16_t amount);
     // Tells every active power about an event, in the order the powers were gained.

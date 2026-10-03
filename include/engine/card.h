@@ -435,6 +435,24 @@ enum class CardId : uint16_t {
     SEEKING_EDGE,
     SWORD_SAGE,
     THE_SMITH,
+    // Osty's cards (Necrobinder) (appended: saves store the numeric id)
+    POKE,
+    SNAP,
+    RATTLE,
+    BONE_SHARDS,
+    SQUEEZE,
+    FLATTEN,
+    HIGH_FIVE,
+    FETCH,
+    CALCIFY,
+    RIGHT_HAND_HAND,
+    NECRO_MASTERY,
+    PROTECTOR,
+    SACRIFICE,
+    SPUR,
+    SIC_EM,
+    SENTRY_MODE,
+    SWEEPING_GAZE,
     COUNT
 };
 
