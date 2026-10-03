@@ -4266,6 +4266,14 @@ void CombatEngine::execute_enemy_turn() {
 bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     if (state != CombatState::PLAYER_TURN) return false;
 
+    // The enemy a potion is thrown at: the first living one when the target given is not a living enemy.
+    auto aimed_enemy = [this, &target_index]() -> Enemy& {
+        if (target_index < 0 || target_index >= static_cast<int>(enemies.size()) || !enemies[target_index].is_alive()) {
+            target_index = get_first_alive_enemy_index();
+        }
+        return enemies[target_index];
+    };
+
     if (potion_id == "FIRE_POTION") {
         if (target_index < 0 || target_index >= static_cast<int>(enemies.size()) || !enemies[target_index].is_alive()) {
             target_index = get_first_alive_enemy_index();
@@ -4284,6 +4292,117 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "CUNNING_POTION") {
         add_shivs(3, true);
         set_log("Cunning Potion!");
+    } else if (potion_id == "EXPLOSIVE_AMPOULE") {
+        damage_all_enemies(10);
+        set_log("Explosive Ampoule!");
+    } else if (potion_id == "WEAK_POTION") {
+        afflict(aimed_enemy(), StatusType::WEAK, 3);
+        set_log("Weak Potion!");
+    } else if (potion_id == "SWIFT_POTION") {
+        draw_cards(3);
+        set_log("Swift Potion!");
+    } else if (potion_id == "DEXTERITY_POTION") {
+        player.add_status(StatusType::DEXTERITY, 2);
+        set_log("Dexterity Potion!");
+    } else if (potion_id == "STRENGTH_POTION") {
+        player.add_status(StatusType::STRENGTH, 2);
+        set_log("Strength Potion!");
+    } else if (potion_id == "POISON_POTION") {
+        afflict(aimed_enemy(), StatusType::POISON, 6);
+        set_log("Poison Potion!");
+    } else if (potion_id == "VULNERABLE_POTION") {
+        afflict(aimed_enemy(), StatusType::VULNERABLE, 3);
+        set_log("Vulnerable Potion!");
+    } else if (potion_id == "STAR_POTION") {
+        gain_stars(3);
+        set_log("Star Potion!");
+    } else if (potion_id == "FOCUS_POTION") {
+        player.add_status(StatusType::FOCUS, 2);
+        set_log("Focus Potion!");
+    } else if (potion_id == "FLEX_POTION") {
+        gain_temporary(StatusType::STRENGTH, 5); // lost at the end of the turn
+        set_log("Flex Potion!");
+    } else if (potion_id == "SPEED_POTION") {
+        gain_temporary(StatusType::DEXTERITY, 5); // lost at the end of the turn
+        set_log("Speed Potion!");
+    } else if (potion_id == "POTION_OF_DOOM") {
+        afflict(aimed_enemy(), StatusType::DOOM, 33);
+        set_log("Potion of Doom!");
+    } else if (potion_id == "BLESSING_OF_THE_FORGE") {
+        for (DeckCard& held : hand) {
+            if (can_be_picked(held, ChoiceKind::UPGRADE)) held.upgraded = true;
+        }
+        set_log("Blessing of the Forge!");
+    } else if (potion_id == "FORTIFIER") {
+        add_block(static_cast<int16_t>(player.block * 2)); // tripled: twice what is there is added
+        set_log("Fortifier!");
+    } else if (potion_id == "FYSH_OIL") {
+        player.add_status(StatusType::STRENGTH, 1);
+        player.add_status(StatusType::DEXTERITY, 1);
+        set_log("Fysh Oil!");
+    } else if (potion_id == "BONE_BREW") {
+        player.summon_minion(15, 0);
+        set_log("Bone Brew!");
+    } else if (potion_id == "POTION_OF_BINDING") {
+        for (Enemy& foe : enemies) {
+            if (!foe.is_alive()) continue;
+            afflict(foe, StatusType::WEAK, 1);
+            afflict(foe, StatusType::VULNERABLE, 1);
+        }
+        set_log("Potion of Binding!");
+    } else if (potion_id == "CURE_ALL") {
+        player.energy = static_cast<int8_t>(player.energy + 1);
+        draw_cards(2);
+        set_log("Cure All!");
+    } else if (potion_id == "CLARITY") {
+        draw_cards(1);
+        schedule(DelayedType::DRAW, 1, 1, 3);
+        set_log("Clarity!");
+    } else if (potion_id == "RADIANT_TINCTURE") {
+        player.energy = static_cast<int8_t>(player.energy + 1);
+        schedule(DelayedType::ENERGY, 1, 1, 3);
+        set_log("Radiant Tincture!");
+    } else if (potion_id == "POTION_OF_CAPACITY") {
+        change_orb_slots(2);
+        set_log("Potion of Capacity!");
+    } else if (potion_id == "MAZALETHS_GIFT") {
+        // Ritual 1: the Strength it gives at the end of a turn is first used on the next one, which is when
+        // TURN_STRENGTH gives it.
+        add_power(PowerId::TURN_STRENGTH, 1);
+        set_log("Mazaleth's Gift!");
+    } else if (potion_id == "ESSENCE_OF_DARKNESS") {
+        for (uint8_t slot = 0; slot < player.orb_slots; ++slot) channel_orb(OrbType::DARK);
+        set_log("Essence of Darkness!");
+    } else if (potion_id == "BOTTLED_POTENTIAL") {
+        // The hand joins the draw pile, then the discard pile is shuffled into it. Exhausted cards stay out.
+        while (!hand.empty() && draw_pile.push_back(hand.back())) hand.pop_back();
+        shuffle_discard_into_draw();
+        draw_cards(5);
+        set_log("Bottled Potential!");
+    } else if (potion_id == "DISTILLED_CHAOS") {
+        for (int round = 3; round > 0; --round) {
+            if (draw_pile.empty()) shuffle_discard_into_draw();
+            if (draw_pile.empty()) break;
+            DeckCard top = draw_pile.back();
+            draw_pile.pop_back();
+            autoplay(top, -1, AfterPlay::DISCARD);
+        }
+        settle_deaths();
+        set_log("Distilled Chaos!");
+    } else if (potion_id == "SHIP_IN_A_BOTTLE") {
+        add_block(10);
+        schedule(DelayedType::BLOCK, 10);
+        set_log("Ship in a Bottle!");
+    } else if (potion_id == "SHACKLING_POTION") {
+        for (Enemy& foe : enemies) {
+            if (foe.is_alive()) sap_strength(foe, 7);
+        }
+        set_log("Shackling Potion!");
+    } else if (potion_id == "GLOWWATER_POTION") {
+        // Only the cards held when the potion is drunk: what their exhaustion draws comes after them and stays.
+        for (size_t held = hand.size(); held > 0 && !hand.empty(); --held) exhaust_from_hand(0);
+        draw_cards(10);
+        set_log("Glowwater Potion!");
     } else {
         return false;
     }
@@ -4293,7 +4412,11 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         enemy = enemies[0];
     }
 
-    if (!has_alive_enemies()) {
+    if (!player.is_alive()) {
+        // A card played by Distilled Chaos can cost the player's last HP.
+        state = CombatState::DEFEAT;
+        set_log("You were defeated!");
+    } else if (!has_alive_enemies()) {
         state = CombatState::VICTORY;
         set_log("Victory!");
     } else if (selected_target_index < 0 || selected_target_index >= static_cast<int>(enemies.size()) ||
