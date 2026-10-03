@@ -1,5 +1,6 @@
 #include "engine/run.h"
 #include "engine/relic.h"
+#include "engine/encounter.h"
 #include <algorithm>
 
 namespace engine {
@@ -36,6 +37,7 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     current_act = 1;
     current_floor = 1;
     current_node_index = -1;
+    current_encounter = {};
     rng_state_ = seed ? seed : 12345;
 
     const auto& cdef = get_character(character);
@@ -87,6 +89,34 @@ FixedVector<int, 3> RunManager::get_available_rooms() const {
     return map.get_next_nodes(current_node_index);
 }
 
+FixedVector<EnemyType, 3> RunManager::draw_encounter(RoomType room) {
+    std::span<const Encounter> table = encounter_table(act_zone(current_act, map_seed),
+                                                       encounter_tier(room, current_floor));
+    // A list of one draws nothing, as the rooms with a single choice did before the tables.
+    const Encounter& encounter = table.size() == 1 ? table[0] : table[next_random() % table.size()];
+    current_encounter = encounter.id;
+
+    FixedVector<EnemyType, 3> monsters;
+    if (encounter.random_pool.empty()) {
+        for (uint8_t i = 0; i < encounter.count && i < 3; ++i) {
+            monsters.push_back(encounter.monsters[i]);
+        }
+        return monsters;
+    }
+
+    // Different monsters drawn from the pool: the first steps of a Fisher-Yates shuffle.
+    FixedVector<EnemyType, 8> pool;
+    for (EnemyType type : encounter.random_pool) {
+        pool.push_back(type);
+    }
+    for (size_t i = 0; i < encounter.count && i < pool.size(); ++i) {
+        size_t pick = i + next_random() % (pool.size() - i);
+        std::swap(pool[i], pool[pick]);
+        monsters.push_back(pool[i]);
+    }
+    return monsters;
+}
+
 void RunManager::enter_room(int node_index) {
     current_node_index = node_index;
     const auto& node = map.nodes[node_index];
@@ -97,28 +127,7 @@ void RunManager::enter_room(int node_index) {
         case RoomType::ELITE:
         case RoomType::BOSS: {
             phase = RunPhase::IN_COMBAT;
-            FixedVector<EnemyType, 3> etypes;
-            if (node.type == RoomType::BOSS) {
-                etypes.push_back(EnemyType::CEREMONIAL_BEAST);
-            } else if (node.type == RoomType::ELITE) {
-                etypes.push_back(EnemyType::GREMLIN_NOB);
-            } else if (current_floor > 3) {
-                switch (next_random() % 3) {
-                    case 0:
-                        etypes.push_back(EnemyType::CULTIST);
-                        etypes.push_back(EnemyType::LOUSE);
-                        break;
-                    case 1:
-                        etypes.push_back(EnemyType::JAW_WORM);
-                        break;
-                    default:
-                        etypes.push_back(EnemyType::LOUSE);
-                        etypes.push_back(EnemyType::LOUSE);
-                        break;
-                }
-            } else {
-                etypes.push_back(EnemyType::CULTIST);
-            }
+            FixedVector<EnemyType, 3> etypes = draw_encounter(node.type);
 
             // Start combat with current HP and master deck
             combat.start_combat_multi(etypes, character);
@@ -299,7 +308,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                 CardId::MIDNIGHT, CardId::STOMP, CardId::RAMPAGE, CardId::ARMAMENTS,
                                                 CardId::BRAND, CardId::BURNING_PACT,
                                                 CardId::JUGGLING,
-                                                CardId::HEADBUTT };
+                                                CardId::HEADBUTT,
+                                                CardId::STONE_ARMOR, CardId::FLAME_BARRIER };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
@@ -346,7 +356,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::ITERATION, CardId::FIGHT_THROUGH, CardId::OVERCLOCK,
                                               CardId::ROCKET_PUNCH, CardId::TRASH_TO_TREASURE, CardId::TURBO,
                                               CardId::SCAVENGE,
-                                              CardId::HOLOGRAM };
+                                              CardId::HOLOGRAM,
+                                              CardId::BUFFER };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
                                               CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
@@ -366,7 +377,9 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::COLLISION_COURSE, CardId::CRASH_LANDING, CardId::PHOTON_CUT,
                                               CardId::GLIMMER, CardId::TYRANNY,
                                               CardId::COSMIC_INDIFFERENCE,
-                                              CardId::FOREGONE_CONCLUSION };
+                                              CardId::FOREGONE_CONCLUSION,
+                                              CardId::NEUTRON_AEGIS, CardId::REFLECT, CardId::PATTER,
+                                              CardId::TERRAFORMING };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
@@ -465,7 +478,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE",                     // Regent
-        "BIG_HAT", "IVORY_TILE"                                                          // Necrobinder
+        "BIG_HAT", "IVORY_TILE",                                                         // Necrobinder
+        // Statuses given at the start of the combat (#91, #93)
+        "BRONZE_SCALES", "GORGET", "AKABEKO"
     };
     return ACTIVE_RELICS;
 }
@@ -562,6 +577,12 @@ void RunManager::register_relic_powers() {
     if (has_relic("LUNAR_PASTRY")) combat.add_power(PowerId::LUNAR_PASTRY, 1);
     if (has_relic("REGALITE")) combat.add_power(PowerId::REGALITE, 4);
     if (has_relic("IVORY_TILE")) combat.add_power(PowerId::IVORY_TILE, 1);
+    // Confused from the start: the opening hand already gets random costs.
+    if (has_relic("FAKE_SNECKO_EYE")) combat.player.add_status(StatusType::CONFUSED, 1);
+    if (has_relic("SNECKO_EYE")) {
+        combat.add_power(PowerId::TURN_DRAW, 2);
+        combat.player.add_status(StatusType::CONFUSED, 1);
+    }
 }
 
 void RunManager::apply_combat_start_relics() {
@@ -569,6 +590,11 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("VAJRA")) {
         combat.player.add_status(StatusType::STRENGTH, 1);
     }
+    // Statuses to start the combat with. Given once the first turn has started, so that Plating does not lose a
+    // point before it has given any Block.
+    if (has_relic("BRONZE_SCALES")) combat.player.add_status(StatusType::THORNS, 3);
+    if (has_relic("GORGET")) combat.player.add_status(StatusType::PLATED_ARMOR, 4);
+    if (has_relic("AKABEKO")) combat.player.add_status(StatusType::VIGOR, 8);
     // Ring of the Snake (Silent): draw 2 additional cards on the first turn.
     if (has_relic("RING_OF_THE_SNAKE")) {
         combat.draw_cards(2);

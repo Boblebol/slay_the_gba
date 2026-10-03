@@ -39,10 +39,27 @@ public:
         return 0;
     }
 
+    // A status given by an effect: Artifact cancels a debuff, and is used up doing so. False when it did.
+    bool receive_status(StatusType type, int16_t amount) {
+        if (is_debuff(type, amount) && get_status(StatusType::ARTIFACT) > 0) {
+            add_status(StatusType::ARTIFACT, -1);
+            return false;
+        }
+        add_status(type, amount);
+        return true;
+    }
+
+    // Removes the whole amount of a status.
+    void clear_status(StatusType type) {
+        add_status(type, static_cast<int16_t>(-get_status(type)));
+    }
+
     void tick_end_of_turn_statuses() {
-        // Decrease vulnerable, weak by 1
+        // Decrease Vulnerable, Weak, Frail and Intangible by 1
         for (size_t i = 0; i < statuses.size();) {
-            if (statuses[i].type == StatusType::VULNERABLE || statuses[i].type == StatusType::WEAK) {
+            const StatusType type = statuses[i].type;
+            if (type == StatusType::VULNERABLE || type == StatusType::WEAK || type == StatusType::FRAIL ||
+                type == StatusType::INTANGIBLE) {
                 statuses[i].amount -= 1;
                 if (statuses[i].amount <= 0) {
                     statuses.erase(i);
@@ -57,23 +74,40 @@ public:
         block = 0;
     }
 
+    // Block from a card: Dexterity is added, then Frail takes a quarter away (rounded down).
     void gain_block(int16_t amount) {
         if (amount > 0) {
             int16_t dex = get_status(StatusType::DEXTERITY);
             int16_t total = amount + dex;
+            if (total > 0 && get_status(StatusType::FRAIL) > 0) {
+                total = static_cast<int16_t>(total * 3 / 4);
+            }
             if (total > 0) {
                 block += total;
             }
         }
     }
 
+    // HP loss that Block does not absorb: Intangible reduces it to 1, Buffer cancels it. Returns the loss that went
+    // through, which can be more than the HP that was left.
+    int16_t lose_hp(int16_t amount) {
+        if (amount <= 0) return 0;
+        if (amount > 1 && get_status(StatusType::INTANGIBLE) > 0) amount = 1;
+        if (get_status(StatusType::BUFFER) > 0) {
+            add_status(StatusType::BUFFER, -1);
+            return 0;
+        }
+        hp = static_cast<int16_t>(hp - amount);
+        if (hp < 0) hp = 0;
+        return amount;
+    }
+
     int16_t apply_poison_tick() {
         int16_t p = get_status(StatusType::POISON);
         if (p > 0) {
-            hp -= p;
-            if (hp < 0) hp = 0;
+            int16_t lost = lose_hp(p);
             add_status(StatusType::POISON, -1);
-            return p;
+            return lost;
         }
         return 0;
     }
@@ -85,9 +119,33 @@ public:
         }
     }
 
+    // End of its owner's turn: Plating gives its Block. It goes down at the start of the turn (decay_plating).
+    void apply_plating_tick() {
+        int16_t plating = get_status(StatusType::PLATED_ARMOR);
+        if (plating > 0) {
+            block = static_cast<int16_t>(block + plating);
+        }
+    }
+
+    void decay_plating() {
+        if (get_status(StatusType::PLATED_ARMOR) > 0) add_status(StatusType::PLATED_ARMOR, -1);
+    }
+
+    // End of its owner's turn: Regen heals, then goes down by 1. Returns the HP healed.
+    int16_t apply_regen_tick() {
+        int16_t regen = get_status(StatusType::REGEN);
+        if (regen <= 0) return 0;
+        int16_t before = hp;
+        heal(regen);
+        add_status(StatusType::REGEN, -1);
+        return static_cast<int16_t>(hp - before);
+    }
+
     // Returns damage inflicted to HP
     int16_t take_damage(int16_t amount) {
         if (amount <= 0) return 0;
+        // Intangible: whatever the hit, 1 damage at most, which Block can still absorb.
+        if (amount > 1 && get_status(StatusType::INTANGIBLE) > 0) amount = 1;
 
         int16_t unblocked = amount;
         if (block > 0) {
@@ -100,11 +158,7 @@ public:
             }
         }
 
-        if (unblocked > 0) {
-            hp -= unblocked;
-            if (hp < 0) hp = 0;
-        }
-        return unblocked;
+        return lose_hp(unblocked);
     }
 
     void heal(int16_t amount) {
@@ -178,14 +232,16 @@ public:
     void summon_minion(int16_t m_hp, int16_t m_block = 0);
 };
 
-// Attack damage as in Slay the Spire: (base + Strength), x0.75 when the attacker is Weak, x1.5 when the target
-// is Vulnerable, rounded down once at the end.
+// Attack damage as in Slay the Spire: (base + Strength + Vigor), x0.75 when the attacker is Weak, x1.5 when the
+// target is Vulnerable, rounded down once at the end, and 1 at most against an Intangible target.
 inline int16_t attack_damage(int16_t base, const CombatEntity& attacker, const CombatEntity& target) {
-    int32_t damage = base + attacker.get_status(StatusType::STRENGTH);
+    int32_t damage = base + attacker.get_status(StatusType::STRENGTH) + attacker.get_status(StatusType::VIGOR);
     if (damage <= 0) return 0;
     damage *= attacker.get_status(StatusType::WEAK) > 0 ? 3 : 4;
     damage *= target.get_status(StatusType::VULNERABLE) > 0 ? 3 : 2;
-    return static_cast<int16_t>(damage / 8);
+    damage /= 8;
+    if (damage > 1 && target.get_status(StatusType::INTANGIBLE) > 0) damage = 1;
+    return static_cast<int16_t>(damage);
 }
 
 enum class EnemyIntentType : uint8_t {
@@ -235,7 +291,9 @@ public:
     // Damage the current intent would deal to `target` right now (0 when it does not attack).
     int16_t intent_damage(const CombatEntity& target) const;
     void plan_turn(int turn_number);
-    void execute_turn(Player& player);
+    // Plays the current intent. An attack is answered by the player's Thorns, plus `damage_back` (Flame Barrier),
+    // plus the damage their Block absorbed when `reflect` is set (Reflect).
+    void execute_turn(Player& player, int16_t damage_back = 0, bool reflect = false);
 };
 
 } // namespace engine

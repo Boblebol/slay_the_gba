@@ -564,6 +564,14 @@ CARDS: list[CardArt] = [
     CardArt("graveblast", "necrobinder", "graveblast", "attack", (1, 1)),
     CardArt("dredge", "necrobinder", "dredge", "skill", (1, 1)),
     CardArt("cleanse", "necrobinder", "cleanse", "skill", (1, 1)),
+    CardArt("stone_armor", "ironclad", "stone_armor", "power", (1, 1)),
+    CardArt("flame_barrier", "ironclad", "flame_barrier", "skill", (2, 2)),
+    CardArt("wraith_form", "silent", "wraith_form", "power", (3, 3)),
+    CardArt("buffer", "defect", "buffer", "power", (2, 2)),
+    CardArt("neutron_aegis", "regent", "neutron_aegis", "power", (1, 1)),
+    CardArt("reflect", "regent", "reflect", "skill", (1, 1)),
+    CardArt("patter", "regent", "patter", "skill", (1, 1)),
+    CardArt("terraforming", "regent", "terraforming", "skill", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
