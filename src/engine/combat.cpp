@@ -317,6 +317,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::INFINITE_BLADES:
             if (turn_start) add_shivs(power.amount);
             break;
+        case PowerId::FURNACE:
+            if (turn_start) forge(power.amount);
+            break;
+        case PowerId::PARRY:
+            if (card_played && info.card.id == CardId::SOVEREIGN_BLADE) add_block(power.amount);
+            break;
         case PowerId::HELICAL_DART:
             if (card_played && info.card.id == CardId::SHIV) gain_temporary(StatusType::DEXTERITY, static_cast<int8_t>(power.amount));
             break;
@@ -1048,8 +1054,23 @@ void CombatEngine::add_shivs(int count, bool upgraded, Enchantment enchantment) 
     for (int copy = 0; copy < count; ++copy) create_card(shiv, Pile::HAND);
 }
 
+void CombatEngine::forge(int amount) {
+    if (amount <= 0) return;
+    if (!blade_forged_) {
+        blade_forged_ = true;
+        create_card(CardId::SOVEREIGN_BLADE, Pile::HAND);
+    }
+    forged = static_cast<int16_t>(std::min(forged + amount, 9999));
+    // The damage is kept by each copy, like the other gains of a combat: the text of the card shows it.
+    boost_copies(CardId::SOVEREIGN_BLADE, amount);
+    for (DeckCard& card : returning_cards) {
+        if (card.id == CardId::SOVEREIGN_BLADE) card.bonus = bump(card.bonus, amount);
+    }
+}
+
 int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     counters.hits_dealt = bump(counters.hits_dealt);
+    if (int8_t at = index_of(target); at >= 0 && at < 3) counters.hits_on_enemy[at] = bump(counters.hits_on_enemy[at]);
     bool was_alive = target.is_alive();
     int16_t lost = target.take_damage(attack_damage(base, player, target));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
@@ -1298,6 +1319,8 @@ void CombatEngine::reset_combat_state() {
     temp_strength = 0;
     temp_dexterity = 0;
     temp_focus = 0;
+    forged = 0;
+    blade_forged_ = false;
     alive_mask_ = 0;
     for (size_t i = 0; i < enemies.size(); ++i) {
         if (enemies[i].is_alive()) alive_mask_ = static_cast<uint8_t>(alive_mask_ | (1u << i));
@@ -1507,6 +1530,8 @@ int CombatEngine::consume_play_modifiers(const DeckCard& card) {
     if (type == CardType::ATTACK && use_one(PowerId::REPLAY_ATTACK)) ++extra;
     if (type == CardType::SKILL && use_one(PowerId::REPLAY_SKILL)) ++extra;
     if (type == CardType::POWER && use_one(PowerId::REPLAY_POWER)) ++extra;
+    // Sword Sage: Replay on the Sovereign Blade, every time it is played.
+    if (card.id == CardId::SOVEREIGN_BLADE) extra += power_amount(PowerId::SWORD_SAGE);
     ActivePower* echo = find_power(PowerId::ECHO_FORM);
     if (echo && echo->counter < echo->amount) {
         ++echo->counter;
@@ -4204,6 +4229,116 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Terraforming+!"sv : "Played Terraforming!"sv);
             break;
         }
+        case CardId::SOVEREIGN_BLADE: {
+            const int16_t damage = static_cast<int16_t>(base_value + played_card.bonus);
+            // Seeking Edge: every enemy instead of the one aimed at.
+            const bool all = has_power(PowerId::SEEKING_EDGE);
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                Enemy& foe = enemies[i];
+                if (!foe.is_alive() || (!all && &foe != &current_target)) continue;
+                bool doubled = false;
+                for (const ActivePower& power : powers) {
+                    if (power.id == PowerId::CONQUEROR && power.target == static_cast<int8_t>(i)) doubled = true;
+                }
+                // Conqueror doubles the damage once Strength and Vigor are added: hit() adds them once, so
+                // they are added here once more.
+                const int16_t dealt = doubled
+                    ? static_cast<int16_t>(2 * damage + player.get_status(StatusType::STRENGTH) + player.get_status(StatusType::VIGOR))
+                    : damage;
+                hit(foe, dealt);
+            }
+            set_log(upgraded ? "Played Sovereign Blade+!"sv : "Played Sovereign Blade!"sv);
+            break;
+        }
+        case CardId::REFINE_BLADE: {
+            forge(base_value);
+            schedule(DelayedType::ENERGY, secondary_value);
+            set_log(upgraded ? "Played Refine Blade+!"sv : "Played Refine Blade!"sv);
+            break;
+        }
+        case CardId::SPOILS_OF_BATTLE: {
+            forge(base_value);
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Spoils of Battle+!"sv : "Played Spoils of Battle!"sv);
+            break;
+        }
+        case CardId::WROUGHT_IN_WAR: {
+            hit(current_target, base_value);
+            forge(secondary_value);
+            set_log(upgraded ? "Played Wrought in War+!"sv : "Played Wrought in War!"sv);
+            break;
+        }
+        case CardId::BULWARK: {
+            gain_block(base_value);
+            forge(secondary_value);
+            set_log(upgraded ? "Played Bulwark+!"sv : "Played Bulwark!"sv);
+            break;
+        }
+        case CardId::CONQUEROR: {
+            forge(base_value);
+            // Bound to the enemy and gone at the end of the turn; a second one on the same enemy adds nothing.
+            if (target_idx >= 0 && target_idx < static_cast<int>(enemies.size())) {
+                add_power(PowerId::CONQUEROR, 1, true, static_cast<int8_t>(target_idx));
+            }
+            set_log(upgraded ? "Played Conqueror+!"sv : "Played Conqueror!"sv);
+            break;
+        }
+        case CardId::FURNACE: {
+            add_power(PowerId::FURNACE, base_value);
+            set_log(upgraded ? "Played Furnace+!"sv : "Played Furnace!"sv);
+            break;
+        }
+        case CardId::PARRY: {
+            add_power(PowerId::PARRY, base_value);
+            set_log(upgraded ? "Played Parry+!"sv : "Played Parry!"sv);
+            break;
+        }
+        case CardId::SUMMON_FORTH: {
+            // From anywhere: the draw and discard piles, and the exhaust pile.
+            recall_to_hand(CardId::SOVEREIGN_BLADE);
+            for (size_t i = exhaust_pile.size(); i-- > 0 && hand.size() < hand.capacity();) {
+                if (exhaust_pile[i].id == CardId::SOVEREIGN_BLADE) {
+                    hand.push_back(exhaust_pile[i]);
+                    exhaust_pile.erase(i);
+                }
+            }
+            forge(base_value);
+            set_log(upgraded ? "Played Summon Forth+!"sv : "Played Summon Forth!"sv);
+            break;
+        }
+        case CardId::BEAT_INTO_SHAPE: {
+            // The hits the enemy took this turn before this one, whatever card dealt them.
+            const bool aimed = target_idx >= 0 && target_idx < 3;
+            const int earlier_hits = aimed ? counters.hits_on_enemy[target_idx] : 0;
+            hit(current_target, base_value);
+            forge(secondary_value * (1 + earlier_hits));
+            set_log(upgraded ? "Played Beat Into Shape+!"sv : "Played Beat Into Shape!"sv);
+            break;
+        }
+        case CardId::BIG_BANG: {
+            draw_cards(secondary_value);
+            player.energy = static_cast<int8_t>(player.energy + secondary_value);
+            gain_stars(secondary_value);
+            forge(base_value);
+            set_log(upgraded ? "Played Big Bang+!"sv : "Played Big Bang!"sv);
+            break;
+        }
+        case CardId::SEEKING_EDGE: {
+            forge(base_value);
+            add_power(PowerId::SEEKING_EDGE);
+            set_log(upgraded ? "Played Seeking Edge+!"sv : "Played Seeking Edge!"sv);
+            break;
+        }
+        case CardId::SWORD_SAGE: {
+            add_power(PowerId::SWORD_SAGE, base_value);
+            set_log(upgraded ? "Played Sword Sage+!"sv : "Played Sword Sage!"sv);
+            break;
+        }
+        case CardId::THE_SMITH: {
+            forge(base_value);
+            set_log(upgraded ? "Played The Smith+!"sv : "Played The Smith!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;
@@ -4535,6 +4670,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "LUCKY_TONIC") {
         player.add_status(StatusType::BUFFER, 1);
         set_log("Lucky Tonic!");
+    } else if (potion_id == "KINGS_COURAGE") {
+        forge(15);
+        set_log("King's Courage!");
     } else if (potion_id == "REGEN_POTION") {
         player.add_status(StatusType::REGEN, 5);
         set_log("Regen Potion!");

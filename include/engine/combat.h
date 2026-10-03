@@ -40,6 +40,7 @@ struct CombatCounters {
     uint8_t cards_discarded = 0; // discarded by effects, not by the end of the turn
     uint8_t energy_spent = 0;
     uint8_t hits_dealt = 0;      // attack hits on enemies
+    uint8_t hits_on_enemy[3] = {}; // the same, for each enemy of CombatEngine::enemies
     uint8_t stars_gained = 0;
     uint8_t stars_spent = 0;
     uint8_t osty_attacks = 0;    // attacks of Osty, one for an attack on every enemy
@@ -60,6 +61,7 @@ struct CombatCounters {
     void start_turn() {
         attacks_played = skills_played = powers_played = statuses_played = shivs_played = 0;
         cards_drawn = cards_discarded = energy_spent = hits_dealt = 0;
+        hits_on_enemy[0] = hits_on_enemy[1] = hits_on_enemy[2] = 0;
         stars_gained = stars_spent = 0;
         osty_attacks = 0;
         doom_applied = 0;
@@ -183,6 +185,7 @@ public:
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;
     int8_t temp_focus = 0;
+    int16_t forged = 0;            // total Forged this combat: what the Sovereign Blade gained on top of its damage
 
     FixedVector<EnemyActionRecord, 3> last_enemy_actions;
 
@@ -219,6 +222,9 @@ public:
     void create_card_in_discard(DeckCard card) { create_card(card, Pile::DISCARD); }
     // Adds Shivs to the hand (Silent).
     void add_shivs(int count, bool upgraded = false, Enchantment enchantment = Enchantment::NONE);
+    // Forge (Regent): the first Forge of the combat adds Sovereign Blade to the hand, and every Forge adds
+    // `amount` to the damage of every Sovereign Blade, wherever it is, for the rest of the combat.
+    void forge(int amount);
 
     // One attack hit on an enemy: Strength, Weak and Vulnerable applied. Returns the HP lost by the enemy.
     int16_t hit(Enemy& target, int16_t base);
@@ -369,6 +375,7 @@ private:
     uint8_t turn_picks_from_draw_ = 0; // cards to pick in the draw pile once the hand is drawn (Foregone Conclusion)
     bool opening_draw_ = false;   // the turn's opening hand is being drawn
     bool lost_hp_last_turn_ = false; // HP lost between the previous turn start and this one
+    bool blade_forged_ = false;   // the combat's first Forge has made the Sovereign Blade
     // Orb passives of the start (Plasma) or of the end (the others) of the turn.
     void trigger_turn_passives(bool turn_start);
     // Triggers the scheduled effects of the start (or the end) of the turn. Returns the extra cards to draw.

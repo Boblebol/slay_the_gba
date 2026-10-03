@@ -379,7 +379,12 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::COSMIC_INDIFFERENCE,
                                               CardId::FOREGONE_CONCLUSION,
                                               CardId::NEUTRON_AEGIS, CardId::REFLECT, CardId::PATTER,
-                                              CardId::TERRAFORMING };
+                                              CardId::TERRAFORMING,
+                                              CardId::REFINE_BLADE, CardId::SPOILS_OF_BATTLE,
+                                              CardId::WROUGHT_IN_WAR, CardId::BULWARK, CardId::CONQUEROR,
+                                              CardId::FURNACE, CardId::PARRY, CardId::SUMMON_FORTH,
+                                              CardId::BEAT_INTO_SHAPE, CardId::BIG_BANG, CardId::SEEKING_EDGE,
+                                              CardId::SWORD_SAGE, CardId::THE_SMITH };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
@@ -477,7 +482,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE",                     // Regent
+        "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE",                                                         // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
         "BRONZE_SCALES", "GORGET", "AKABEKO"
@@ -638,6 +643,10 @@ void RunManager::apply_combat_start_relics() {
         for (int n = 0; n < 2 && !ethereal.empty(); ++n) {
             combat.create_card(ethereal[next_random() % ethereal.size()], Pile::HAND);
         }
+    }
+    // Fencing Manual (Regent): Forge 10.
+    if (has_relic("FENCING_MANUAL")) {
+        combat.forge(10);
     }
     // Divine Right (Regent): 3 Stars.
     if (has_relic("DIVINE_RIGHT")) {
