@@ -786,8 +786,10 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     switch(card.id)
     {
     case engine::CardId::STRIKE:
-    case engine::CardId::UNLEASH:
         stream << "Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::UNLEASH:
+        stream << "Titos inflige " << value << " dégâts + ses PV.";
         break;
     case engine::CardId::DEFEND:
         stream << "Gagne " << value << " d'Armure.";
@@ -832,7 +834,7 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Gagne " << secondary << " Étoiles.";
         break;
     case engine::CardId::BODYGUARD:
-        stream << "Gagne " << value << " d'Armure. Invoque Titos.";
+        stream << "Invoque Titos (" << secondary << " PV).";
         break;
     case engine::CardId::TWIN_STRIKE:
         stream << "Inflige " << value << " dégâts " << secondary << " fois.";

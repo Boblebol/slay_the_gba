@@ -25,8 +25,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::FALLING_STAR, "Falling Star", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 1, "2 Stars. Deal 8 dmg. Apply 1 Weak and 1 Vuln.", "Falling Star+", 0, 12, 1, "2 Stars. Deal 12 dmg. Apply 1 Weak and 1 Vuln.", 0, 0, 2, 2 },
     { CardId::VENERATE, "Venerate", 1, CardType::SKILL, TargetType::SELF, 0, 2, "Gain 2 Stars.", "Venerate+", 1, 0, 3, "Gain 3 Stars." },
     // Necrobinder
-    { CardId::UNLEASH, "Unleash", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 0, "Deal 8 necrotic dmg.", "Unleash+", 1, 12, 0, "Deal 12 necrotic dmg." },
-    { CardId::BODYGUARD, "Bodyguard", 1, CardType::SKILL, TargetType::SELF, 7, 1, "Gain 7 block. Summon 1 minion.", "Bodyguard+", 1, 10, 1, "Gain 10 block. Summon 1 minion." },
+    { CardId::UNLEASH, "Unleash", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 0, "Osty deals 6 dmg, plus his current HP.", "Unleash+", 1, 9, 0, "Osty deals 9 dmg, plus his current HP.", 0, 0, 0, 0, PlayCondition::OSTY_ALIVE },
+    { CardId::BODYGUARD, "Bodyguard", 1, CardType::SKILL, TargetType::SELF, 0, 5, "Summon 5.", "Bodyguard+", 1, 0, 7, "Summon 7." },
     // Ironclad commons
     { CardId::TWIN_STRIKE, "Twin Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 2, "Deal 5 dmg twice.", "Twin Strike+", 1, 7, 2, "Deal 7 dmg twice." },
     { CardId::POMMEL_STRIKE, "Pommel Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 1, "Deal 9 dmg. Draw 1 card.", "Pommel Strike+", 1, 10, 2, "Deal 10 dmg. Draw 2 cards." },

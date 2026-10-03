@@ -335,8 +335,26 @@ void Player::add_souls(uint8_t count) {
 }
 
 void Player::summon_minion(int16_t m_hp, int16_t m_block) {
-    minion_hp += m_hp;
+    if (m_hp > 0) {
+        minion_hp += m_hp;
+        minion_max_hp += m_hp;
+    }
     minion_block += m_block;
+}
+
+int16_t Player::heal_minion(int16_t amount) {
+    if (amount <= 0 || !minion_alive()) return 0;
+    int16_t before = minion_hp;
+    minion_hp = std::min<int16_t>(minion_max_hp, static_cast<int16_t>(minion_hp + amount));
+    return static_cast<int16_t>(minion_hp - before);
+}
+
+int16_t Player::kill_minion() {
+    int16_t left = minion_hp;
+    minion_hp = 0;
+    minion_max_hp = 0;
+    minion_block = 0;
+    return left;
 }
 
 } // namespace engine

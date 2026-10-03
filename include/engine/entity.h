@@ -186,6 +186,7 @@ public:
     uint8_t souls = 0;
     int16_t minion_hp = 0;
     int16_t minion_block = 0;
+    int16_t minion_max_hp = 0; // Osty's Max HP for this combat: 0 while he is dead
 
     void init() {
         max_hp = 80;
@@ -200,6 +201,7 @@ public:
         souls = 0;
         minion_hp = 0;
         minion_block = 0;
+        minion_max_hp = 0;
     }
 
     void reset_turn() {
@@ -207,31 +209,41 @@ public:
         energy = max_energy;
     }
 
+    // An enemy's attack: the player's Block absorbs it first, as in the original game, then Osty takes what is
+    // left in the player's place, and what Osty could not take is lost by the player.
     int16_t take_damage_with_minion(int16_t amount) {
-        if (minion_hp > 0) {
-            if (minion_block > 0) {
-                if (minion_block >= amount) {
-                    minion_block -= amount;
-                    return 0;
-                } else {
-                    amount -= minion_block;
-                    minion_block = 0;
-                }
-            }
-            if (minion_hp >= amount) {
-                minion_hp -= amount;
-                return 0;
-            } else {
-                amount -= minion_hp;
-                minion_hp = 0;
+        if (amount <= 0) return 0;
+        if (amount > 1 && get_status(StatusType::INTANGIBLE) > 0) amount = 1;
+
+        const int16_t blocked = std::min(block, amount);
+        block = static_cast<int16_t>(block - blocked);
+        amount = static_cast<int16_t>(amount - blocked);
+
+        if (minion_hp > 0 && amount > 0) {
+            const int16_t shielded = std::min(minion_block, amount);
+            minion_block = static_cast<int16_t>(minion_block - shielded);
+            amount = static_cast<int16_t>(amount - shielded);
+
+            const int16_t taken = std::min(minion_hp, amount);
+            minion_hp = static_cast<int16_t>(minion_hp - taken);
+            amount = static_cast<int16_t>(amount - taken);
+            if (minion_hp == 0) {
+                minion_max_hp = 0; // Osty dies: what is left of the hit goes on to the player
+                minion_block = 0;
             }
         }
-        return take_damage(amount);
+        return lose_hp(amount);
     }
 
     void add_stars(uint8_t count);
     void add_souls(uint8_t count);
+    // Summon `m_hp`: Osty comes with that many HP, or gains as many HP and Max HP when he is already alive.
     void summon_minion(int16_t m_hp, int16_t m_block = 0);
+    bool minion_alive() const { return minion_hp > 0; }
+    // Osty recovers HP, up to his Max HP. Nothing happens when he is dead. Returns the HP recovered.
+    int16_t heal_minion(int16_t amount);
+    // Osty dies: his HP, Max HP and Block are gone. Returns the HP he had left.
+    int16_t kill_minion();
 };
 
 // Attack damage as in Slay the Spire: (base + Strength + Vigor), x0.75 when the attacker is Weak, x1.5 when the

@@ -475,7 +475,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA", "GAMBLING_CHIP", "HELICAL_DART", "NINJA_SCROLL",
         // Defect and Necrobinder
         "DATA_DISK", "SYMBIOTIC_VIRUS", "GOLD_PLATED_CABLES", "METRONOME", "RUNIC_CAPACITOR", "POWER_CELL", "EMOTION_CHIP",
-        "BOOK_REPAIR_KNIFE",
+        "BOOK_REPAIR_KNIFE", "BONE_FLUTE",
         // On the combat hooks (#299)
         "BAG_OF_PREPARATION", "BURNING_STICKS", "INTIMIDATING_HELMET", "JOSS_PAPER", "KUNAI", "KUSARIGAMA", "LETTER_OPENER",
         "MEAT_ON_THE_BONE", "MUMMIFIED_HAND", "NUNCHAKU", "ORNAMENTAL_FAN", "RAINBOW_RING", "RIPPLE_BASIN", "SHURIKEN",
@@ -550,6 +550,12 @@ void RunManager::register_relic_powers() {
     if (has_relic("TINGSHA")) combat.add_power(PowerId::TINGSHA, 3);
     // Hero relics
     if (has_relic("BOUND_PHYLACTERY")) combat.add_power(PowerId::TURN_SUMMON, 1);
+    // Phylactery Unbound: Osty is there from the start of the combat, and grows faster.
+    if (has_relic("PHYLACTERY_UNBOUND")) {
+        combat.player.summon_minion(5);
+        combat.add_power(PowerId::TURN_SUMMON, 2);
+    }
+    if (has_relic("BONE_FLUTE")) combat.add_power(PowerId::BONE_FLUTE, 2);
     if (has_relic("GOLD_PLATED_CABLES")) combat.add_power(PowerId::GOLD_PLATED_CABLES);
     if (has_relic("METRONOME")) combat.add_power(PowerId::METRONOME, 30);
     if (has_relic("EMOTION_CHIP")) combat.add_power(PowerId::EMOTION_CHIP);

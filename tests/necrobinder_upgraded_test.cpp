@@ -302,28 +302,27 @@ void test_upgraded_powers() {
 }
 
 void test_upgraded_starter_cards() {
-    // The starter deck holds the other two cards without a tested upgrade. Their upgrade does something, but the
-    // engine and bible/data/card_v0.111.0.json disagree on what (see the pull request), so only what both agree on
-    // is asserted: the cost does not change, and the upgraded card does more than the base one.
+    // The other two cards of the starter deck, as in bible/data/card_v0.111.0.json since #104.
     assert_same_cost(CardId::UNLEASH, 1);
     assert_same_cost(CardId::BODYGUARD, 1);
 
-    int16_t unleash_damage[2] = {};
+    // Unleash: Osty deals 6 -> 9 damage, plus his current HP.
     for (bool upgraded : { false, true }) {
         CombatEngine unleash = make_dummy_fight();
+        unleash.player.summon_minion(4);
         play(unleash, DeckCard(CardId::UNLEASH, upgraded));
         assert(unleash.player.energy == 2);
-        unleash_damage[upgraded] = static_cast<int16_t>(300 - unleash.enemies[0].hp);
+        assert(unleash.enemies[0].hp == 300 - ((upgraded ? 9 : 6) + 4));
     }
-    assert(unleash_damage[0] > 0 && unleash_damage[1] > unleash_damage[0]);
 
+    // Bodyguard: Summon 5 -> 7.
     for (bool upgraded : { false, true }) {
         CombatEngine bodyguard = make_combat(CharacterId::NECROBINDER);
         play(bodyguard, DeckCard(CardId::BODYGUARD, upgraded));
-        assert(bodyguard.player.minion_hp > 0);
+        assert(bodyguard.player.minion_hp == (upgraded ? 7 : 5) && bodyguard.player.block == 0);
         assert(bodyguard.player.energy == 2);
     }
-    std::cout << "[PASS] Upgraded starter cards: Unleash and Bodyguard keep their cost and the upgrade adds power" << std::endl;
+    std::cout << "[PASS] Upgraded starter cards: Unleash 6 -> 9 plus Osty's HP, Bodyguard summons 5 -> 7" << std::endl;
 }
 
 } // namespace

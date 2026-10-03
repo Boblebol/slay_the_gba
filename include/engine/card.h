@@ -484,7 +484,8 @@ constexpr uint8_t MAX_PLAYS_WHEN_LIMITED = 3;
 enum class PlayCondition : uint8_t {
     NONE,
     DRAW_PILE_EMPTY,
-    HAND_ALL_ATTACKS // every card in hand, itself included, is an Attack
+    HAND_ALL_ATTACKS, // every card in hand, itself included, is an Attack
+    OSTY_ALIVE        // "Osty deals N damage": he cannot attack while he is dead
 };
 
 // CardDef::cost of an X card: it spends all the remaining energy and X is the amount spent.

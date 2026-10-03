@@ -162,8 +162,8 @@ flowchart TD
 * **Âmes** (*Souls*, 0 à 99) : Jauge récoltée lors des blessures infligées aux ennemis.
 * **Familier Minion (Titos, *Osty* en VO)** :
   - Possède ses propres PV et son propre blocage (`minion_hp`, `minion_block`).
-  - **Interception des dégâts** : Lorsque l'héroïne subit une attaque, Titos encaisse les coups en premier, protégeant les PV de la Nécrolieuse.
-  - **Riposte automatique** : Titos inflige 3 dégâts à l'ennemi à chaque fin de tour du joueur.
+  - **Interception des dégâts** : Lorsque l'héroïne subit une attaque, son Armure absorbe d'abord les dégâts ; Titos encaisse ensuite ce qui passe, à la place des PV de la Nécrolieuse. S'il meurt, le reste du coup touche l'héroïne.
+  - Titos n'attaque pas de lui-même : il frappe quand une carte le lui demande (Déchaînement, par exemple).
 
 ---
 

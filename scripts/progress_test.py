@@ -56,7 +56,8 @@ def test_statuses_follow_the_engine_and_the_overrides() -> None:
     result = progress.compute()
     assert find(result.section("ironclad"), "Cartes", "BASH").status == DONE
     assert find(result.section("ironclad"), "Reliques", "BURNING_BLOOD").status == DONE
-    assert find(result.section("necrobinder"), "Cartes", "UNLEASH").status == PARTIAL  # avancement.toml override
+    assert find(result.section("necrobinder"), "Cartes", "UNLEASH").status == DONE
+    assert find(result.section("bestiaire"), "Boss", "CEREMONIAL_BEAST").status == PARTIAL  # avancement.toml override
     assert find(result.section("silent"), "Cartes", "ABRASIVE").status == TODO
     assert find(result.section("ironclad"), "Cartes", "BLAZE").status == EXCLUDED  # co-op card
     assert 0 < result.tally.percent < 100

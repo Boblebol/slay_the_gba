@@ -596,6 +596,17 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::TURN_SUMMON:
             if (turn_start) player.summon_minion(power.amount, 0);
             break;
+        case PowerId::BONE_FLUTE:
+            if (event == CombatEvent::OSTY_ATTACKED) add_block(power.amount);
+            break;
+        case PowerId::NECRO_MASTERY:
+            if (event == CombatEvent::OSTY_HP_LOST) {
+                for (Enemy& other : enemies) {
+                    if (other.is_alive()) other.lose_hp(info.amount);
+                }
+                settle_deaths();
+            }
+            break;
         case PowerId::EMOTION_CHIP:
             if (turn_start && lost_hp_last_turn_) {
                 for (size_t slot = 0; slot < player.orbs.size(); ++slot) trigger_orb_passive(slot);
@@ -766,7 +777,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         default:
             // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
             // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE,
-            // FLAME_BARRIER, REFLECT.
+            // FLAME_BARRIER, REFLECT, CALCIFY.
             break;
     }
 }
@@ -1074,6 +1085,42 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
         settle_deaths();
     }
     return lost;
+}
+
+int16_t CombatEngine::osty_attack(Enemy& target, int16_t base) {
+    if (!player.minion_alive()) return 0;
+    int16_t lost = hit(target, static_cast<int16_t>(base + power_amount(PowerId::CALCIFY)));
+    note_osty_attack();
+    return lost;
+}
+
+void CombatEngine::osty_attack_all(int16_t base) {
+    if (!player.minion_alive()) return;
+    for (Enemy& target : enemies) {
+        if (target.is_alive()) hit(target, static_cast<int16_t>(base + power_amount(PowerId::CALCIFY)));
+    }
+    note_osty_attack();
+}
+
+void CombatEngine::heal_osty(int16_t amount) {
+    player.heal_minion(amount);
+}
+
+void CombatEngine::kill_osty() {
+    if (!player.minion_alive()) return;
+    note_osty_hp_lost(player.kill_minion());
+}
+
+void CombatEngine::note_osty_attack() {
+    counters.osty_attacks = bump(counters.osty_attacks);
+    emit(CombatEvent::OSTY_ATTACKED);
+}
+
+void CombatEngine::note_osty_hp_lost(int16_t amount) {
+    if (amount <= 0) return;
+    EventInfo info;
+    info.amount = amount;
+    emit(CombatEvent::OSTY_HP_LOST, info);
 }
 
 void CombatEngine::gain_stars(int amount) {
@@ -1391,6 +1438,8 @@ bool CombatEngine::play_condition_met(PlayCondition condition) const {
                 if (CardDef::get(card.id).type != CardType::ATTACK) return false;
             }
             return true;
+        case PlayCondition::OSTY_ALIVE:
+            return player.minion_alive();
         default:
             return true;
     }
@@ -1964,13 +2013,12 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             break;
         }
         case CardId::UNLEASH: {
-            hit(current_target, base_value);
-            player.souls += secondary_value;
+            // Osty deals the card's damage plus his current HP.
+            osty_attack(current_target, static_cast<int16_t>(base_value + player.minion_hp));
             set_log(upgraded ? "Cast Unleash+!"sv : "Cast Unleash!"sv);
             break;
         }
         case CardId::BODYGUARD: {
-            gain_block(base_value);
             player.summon_minion(secondary_value, 0);
             set_log(upgraded ? "Summoned Osty (Bodyguard+)!"sv : "Summoned Osty (Bodyguard)!"sv);
             break;
@@ -4415,8 +4463,10 @@ void CombatEngine::execute_enemy_turn() {
             record.intent_type = enemies[i].current_intent.type;
             const int16_t hp_before = player.hp;
             const int16_t shield_before = player.block + player.minion_hp + player.minion_block;
+            const int16_t osty_hp_before = player.minion_hp;
 
             enemies[i].execute_turn(player, power_amount(PowerId::FLAME_BARRIER), has_power(PowerId::REFLECT));
+            note_osty_hp_lost(static_cast<int16_t>(osty_hp_before - player.minion_hp));
             settle_deaths(); // Thorns and damage sent back can kill the attacker
 
             // Doom: an enemy with at least as much Doom as HP does not survive its turn.
