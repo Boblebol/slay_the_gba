@@ -77,7 +77,7 @@ items = [
   { name = "Invoquer Titos : ses PV s'additionnent et il encaisse les coups à la place du héros", status = "oui" },
   { name = "Attaques de Titos (Déchaînement proportionnel à ses PV), PV Max, soin et mort", status = "oui" },
   { name = "Fatalité : l'ennemi périt quand elle atteint ses PV", status = "oui" },
-  { name = "Âmes ajoutées à la Pioche", status = "partiel", issue = 106, note = "Création d'Âmes, Hanter, Dévoration de vie et décompte des Âmes épuisées prêts dans le moteur ; il manque la carte Âme elle-même, remplacée d'ici là par un compteur." },
+  { name = "Âmes ajoutées à la Pioche", status = "oui" },
   { name = "Cartes Éthérées", status = "oui" },
   { name = "PV de Titos affichés en combat", status = "oui" },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
@@ -206,9 +206,9 @@ items = [
   { name = "Une carte parmi trois, tirées au hasard dans les cartes du héros", status = "oui", issue = 35 },
   { name = "Or après chaque combat", status = "oui" },
   { name = "Coffre : or et relique jamais en double", status = "oui" },
-  { name = "Potion en récompense de combat", status = "non", issue = 185 },
-  { name = "Relique après un élite", status = "non", issue = 184 },
-  { name = "Relique de boss", status = "non", issue = 184 },
+  { name = "Potion en récompense de combat", status = "oui", note = "40 % des combats, tirée par rareté parmi les potions que le moteur résout. Ceinture pleine : en jeter une ou la laisser." },
+  { name = "Relique après un élite", status = "oui", note = "Tirée par rareté, jamais en double, jamais celle d'un autre héros." },
+  { name = "Relique de boss", status = "partiel", issue = 184, note = "Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. Les reliques d'Ancien du jeu d'origine restent à faire." },
   { name = "Cartes rares et peu communes selon la salle", status = "non", issue = 67 },
 ]
 
@@ -227,10 +227,10 @@ title = "Marchand"
 items = [
   { name = "Achat de cartes", status = "oui" },
   { name = "Retrait d'une carte, à coût croissant", status = "oui" },
-  { name = "Achat de reliques", status = "partiel", issue = 184, note = "Géré par le moteur, absent de la boutique sur GBA." },
-  { name = "Achat de potions", status = "partiel", issue = 185, note = "Géré par le moteur, absent de la boutique sur GBA." },
-  { name = "Inventaire tiré au hasard à chaque visite", status = "non", issue = 270, note = "Trois cartes fixes par héros." },
-  { name = "Prix selon la rareté, carte en solde", status = "non", issue = 270 },
+  { name = "Achat de reliques", status = "oui", note = "Rayon des reliques, touches L et R : deux reliques tirées par rareté et une relique du marchand." },
+  { name = "Achat de potions", status = "oui", note = "Rayon des potions, touches L et R. Ceinture pleine : la potion achetée en remplace une." },
+  { name = "Inventaire tiré au hasard à chaque visite", status = "partiel", issue = 270, note = "Reliques et potions tirées au hasard ; trois cartes fixes par héros." },
+  { name = "Prix selon la rareté, carte en solde", status = "partiel", issue = 270, note = "Reliques et potions au prix de leur rareté, à 5 % près ; cartes à prix fixe, sans solde." },
 ]
 
 [[category]]

@@ -4013,6 +4013,9 @@ void test_ascension() {
     enter_room_of_type(rested, RoomType::BOSS);
     rested.combat.player.hp = 30;
     rested.proceed_after_combat();
+    // The heal comes with the rewards of the boss; the next act opens once they are taken or skipped.
+    assert(rested.current_act == 1 && rested.hp == 80 && rested.phase == RunPhase::REWARD_SCREEN);
+    rested.skip_card_rewards();
     assert(rested.current_act == 2 && rested.hp == 80);
 
     RunManager tired;

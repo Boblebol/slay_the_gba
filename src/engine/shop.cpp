@@ -1,10 +1,13 @@
 #include "engine/shop.h"
 #include "engine/run.h"
+#include "engine/potion.h"
+#include "engine/relic.h"
+#include "engine/rewards.h"
 
 namespace engine {
 
-void ShopInventory::generate(CharacterId char_id, uint32_t seed, uint8_t previous_removals) {
-    (void)seed;
+void ShopInventory::generate(CharacterId char_id, uint32_t seed, uint8_t previous_removals,
+                             std::span<const std::string_view> owned_relics) {
     cards.clear();
     relics.clear();
     potions.clear();
@@ -40,14 +43,29 @@ void ShopInventory::generate(CharacterId char_id, uint32_t seed, uint8_t previou
             break;
     }
 
-    // 3 Relics
-    relics.push_back({ "VAJRA", 160, false });
-    relics.push_back({ "ANCHOR", 150, false });
-    relics.push_back({ "SLING_OF_COURAGE", 150, false });
+    // The stock of relics and potions has its own stream, seeded by the draw the run made for this visit.
+    RewardRng rng(seed);
 
-    // 2 Potions
-    potions.push_back({ "FIRE_POTION", 50, false });
-    potions.push_back({ "BLOCK_POTION", 50, false });
+    // 3 relics the hero does not own: two drawn by rarity, and one of the merchant's own (Shop rarity).
+    FixedVector<std::string_view, 3> stocked_relics;
+    for (int slot = 0; slot < 3; ++slot) {
+        RelicSource source = slot == 2 ? RelicSource::SHOP : RelicSource::ELITE;
+        std::string_view id = draw_relic(rng, char_id, source, owned_relics,
+                                         std::span<const std::string_view>(stocked_relics.begin(), stocked_relics.size()));
+        if (id.empty()) break;
+        stocked_relics.push_back(id);
+        relics.push_back({ id, vary_price(rng, relic_base_price(find_relic(id)->rarity)), false });
+    }
+
+    // 3 different potions the engine resolves, drawn by rarity.
+    FixedVector<std::string_view, 3> stocked_potions;
+    for (int slot = 0; slot < 3; ++slot) {
+        std::string_view id = draw_potion(rng, char_id,
+                                          std::span<const std::string_view>(stocked_potions.begin(), stocked_potions.size()));
+        if (id.empty()) break;
+        stocked_potions.push_back(id);
+        potions.push_back({ id, vary_price(rng, potion_base_price(find_potion(id)->rarity)), false });
+    }
 }
 
 bool ShopInventory::buy_card(RunManager& run, int index) {
@@ -65,6 +83,7 @@ bool ShopInventory::buy_relic(RunManager& run, int index) {
     if (index < 0 || static_cast<size_t>(index) >= relics.size()) return false;
     auto& item = relics[index];
     if (item.purchased || run.gold < item.cost) return false;
+    if (run.has_relic(item.relic_id) || run.relics.size() >= run.relics.capacity()) return false;
 
     run.gold -= item.cost;
     item.purchased = true;
@@ -72,15 +91,20 @@ bool ShopInventory::buy_relic(RunManager& run, int index) {
     return true;
 }
 
-bool ShopInventory::buy_potion(RunManager& run, int index) {
+bool ShopInventory::buy_potion(RunManager& run, int index, int replace_index) {
     if (index < 0 || static_cast<size_t>(index) >= potions.size()) return false;
     auto& item = potions[index];
     if (item.purchased || run.gold < item.cost) return false;
-    if (run.potions.size() >= run.potions.capacity()) return false;
+    bool full = run.potions.size() >= run.potions.capacity();
+    if (full && (replace_index < 0 || static_cast<size_t>(replace_index) >= run.potions.size())) return false;
 
     run.gold -= item.cost;
     item.purchased = true;
-    run.potions.push_back(item.potion_id);
+    if (full) {
+        run.potions[replace_index] = item.potion_id;
+    } else {
+        run.potions.push_back(item.potion_id);
+    }
     return true;
 }
 

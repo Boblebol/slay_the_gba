@@ -317,6 +317,19 @@ int main() {
         } else if (run.phase == RunPhase::REWARD_SCREEN) {
             std::cout << "\n🎁 RÉCOMPENSES DE FIN DE COMBAT !\n";
             std::cout << "  Vous recevez : " << run.gold_reward << " Pièces d'or 💰\n";
+            // The relic and the potion of the fight are taken when there is room for them.
+            if (!run.relic_reward.empty()) {
+                std::string_view relic_id = run.relic_reward;
+                if (run.take_relic_reward()) std::cout << "  Relique obtenue : " << relic_id << "\n";
+            }
+            if (!run.potion_reward.empty()) {
+                std::string_view potion_id = run.potion_reward;
+                if (run.take_potion_reward()) {
+                    std::cout << "  Potion rangée : " << potion_id << "\n";
+                } else {
+                    std::cout << "  Ceinture pleine, potion laissée : " << potion_id << "\n";
+                }
+            }
             std::cout << "  Choisissez 1 Carte à ajouter à votre deck :\n";
             for (size_t i = 0; i < run.current_card_rewards.size(); ++i) {
                 CardId cid = run.current_card_rewards[i].id;

@@ -182,8 +182,7 @@ public:
     // Regent Stars: a second resource, kept from one turn to the next
     uint8_t sovereign_stars = 0;
 
-    // Necrobinder Souls & Minion (Osty)
-    uint8_t souls = 0; // stands in for the Soul cards until they exist: Souls made this combat (see SOUL_CARD)
+    // Necrobinder Minion (Osty)
     int16_t minion_hp = 0;
     int16_t minion_block = 0;
     int16_t minion_max_hp = 0; // Osty's Max HP for this combat: 0 while he is dead
@@ -198,7 +197,6 @@ public:
         orbs.clear();
         orb_slots = STARTING_ORB_SLOTS;
         sovereign_stars = 0;
-        souls = 0;
         minion_hp = 0;
         minion_block = 0;
         minion_max_hp = 0;
@@ -236,7 +234,6 @@ public:
     }
 
     void add_stars(uint8_t count);
-    void add_souls(uint8_t count);
     // Summon `m_hp`: Osty comes with that many HP, or gains as many HP and Max HP when he is already alive.
     void summon_minion(int16_t m_hp, int16_t m_block = 0);
     bool minion_alive() const { return minion_hp > 0; }
