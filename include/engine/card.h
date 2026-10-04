@@ -453,6 +453,22 @@ enum class CardId : uint16_t {
     SIC_EM,
     SENTRY_MODE,
     SWEEPING_GAZE,
+    // Ironclad cards made, transformed and percent modifiers (appended: saves store the numeric id)
+    INFERNAL_BLADE,
+    STOKE,
+    PRIMAL_FORCE,
+    GIANT_ROCK,
+    COLOSSUS,
+    CRUELTY,
+    UNMOVABLE,
+    // Silent cards made and percent modifiers (appended: saves store the numeric id)
+    NIGHTMARE,
+    SHADOW_STEP,
+    SHADOWMELD,
+    TRACKING,
+    // Defect cards made (appended: saves store the numeric id)
+    WHITE_NOISE,
+    CREATIVE_AI,
     COUNT
 };
 

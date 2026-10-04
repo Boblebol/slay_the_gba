@@ -450,7 +450,23 @@ static constexpr CardDef CARDS[] = {
     { CardId::SPUR, "Spur", 1, CardType::SKILL, TargetType::SELF, 3, 5, "Retain. Summon 3. Osty heals 5 HP.", "Spur+", 1, 5, 7, "Retain. Summon 5. Osty heals 7 HP.", KEYWORD_RETAIN, KEYWORD_RETAIN },
     { CardId::SIC_EM, "Sic 'Em", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 3, "Osty deals 5 dmg. Whenever Osty hits this enemy this turn, Summon 3.", "Sic 'Em+", 1, 6, 4, "Osty deals 6 dmg. Whenever Osty hits this enemy this turn, Summon 4.", 0, 0, 0, 0, PlayCondition::OSTY_ALIVE },
     { CardId::SENTRY_MODE, "Sentry Mode", 2, CardType::POWER, TargetType::SELF, 1, 0, "At the start of your turn, add 1 Sweeping Gaze to your hand.", "Sentry Mode+", 1, 1, 0, "At the start of your turn, add 1 Sweeping Gaze to your hand." },
-    { CardId::SWEEPING_GAZE, "Sweeping Gaze", 0, CardType::ATTACK, TargetType::RANDOM_ENEMY, 10, 0, "Ethereal. Osty deals 10 dmg to a random enemy. Exhaust.", "Sweeping Gaze+", 0, 10, 0, "Ethereal. Osty deals 10 dmg to a random enemy. Exhaust.", KEYWORD_ETHEREAL | KEYWORD_EXHAUST, KEYWORD_ETHEREAL | KEYWORD_EXHAUST, 0, 0, PlayCondition::OSTY_ALIVE }
+    { CardId::SWEEPING_GAZE, "Sweeping Gaze", 0, CardType::ATTACK, TargetType::RANDOM_ENEMY, 10, 0, "Ethereal. Osty deals 10 dmg to a random enemy. Exhaust.", "Sweeping Gaze+", 0, 10, 0, "Ethereal. Osty deals 10 dmg to a random enemy. Exhaust.", KEYWORD_ETHEREAL | KEYWORD_EXHAUST, KEYWORD_ETHEREAL | KEYWORD_EXHAUST, 0, 0, PlayCondition::OSTY_ALIVE },
+    // Ironclad cards made, transformed and percent modifiers. Giant Rock is a token: Primal Force makes it.
+    { CardId::INFERNAL_BLADE, "Infernal Blade", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Add a random Attack to your hand. It costs 0 this turn. Exhaust.", "Infernal Blade+", 0, 0, 0, "Add a random Attack to your hand. It costs 0 this turn. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::STOKE, "Stoke", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Exhaust your hand. Add a random card to your hand for each card exhausted.", "Stoke+", 1, 0, 0, "Exhaust your hand. Add a random upgraded card to your hand for each card exhausted." },
+    { CardId::PRIMAL_FORCE, "Primal Force", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Transform the Attacks of your hand into Giant Rock.", "Primal Force+", 0, 0, 0, "Transform the Attacks of your hand into Giant Rock+." },
+    { CardId::GIANT_ROCK, "Giant Rock", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 20, 0, "Deal 20 dmg.", "Giant Rock+", 1, 25, 0, "Deal 25 dmg." },
+    { CardId::COLOSSUS, "Colossus", 1, CardType::SKILL, TargetType::SELF, 4, 50, "Gain 4 block. Vulnerable enemies deal 50% less dmg to you this turn.", "Colossus+", 1, 7, 50, "Gain 7 block. Vulnerable enemies deal 50% less dmg to you this turn." },
+    { CardId::CRUELTY, "Cruelty", 1, CardType::POWER, TargetType::SELF, 25, 0, "Vulnerable enemies take 25% more dmg.", "Cruelty+", 1, 50, 0, "Vulnerable enemies take 50% more dmg." },
+    { CardId::UNMOVABLE, "Unmovable", 2, CardType::POWER, TargetType::SELF, 0, 0, "The first time a card gives you block each turn, double it.", "Unmovable+", 1, 0, 0, "The first time a card gives you block each turn, double it." },
+    // Silent cards made and percent modifiers
+    { CardId::NIGHTMARE, "Nightmare", 3, CardType::SKILL, TargetType::SELF, 3, 0, "Choose a card. Next turn, add 3 copies of it to your hand. Exhaust.", "Nightmare+", 2, 3, 0, "Choose a card. Next turn, add 3 copies of it to your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::SHADOW_STEP, "Shadow Step", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Discard your hand. Next turn, Attacks deal double dmg.", "Shadow Step+", 0, 0, 0, "Discard your hand. Next turn, Attacks deal double dmg." },
+    { CardId::SHADOWMELD, "Shadowmeld", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Double the block you gain this turn.", "Shadowmeld+", 0, 0, 0, "Double the block you gain this turn." },
+    { CardId::TRACKING, "Tracking", 2, CardType::POWER, TargetType::SELF, 50, 0, "Weak enemies take 50% more dmg from Attacks.", "Tracking+", 1, 50, 0, "Weak enemies take 50% more dmg from Attacks." },
+    // Defect cards made
+    { CardId::WHITE_NOISE, "White Noise", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Add a random Power to your hand. It costs 0 this turn. Exhaust.", "White Noise+", 0, 0, 0, "Add a random Power to your hand. It costs 0 this turn. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::CREATIVE_AI, "Creative AI", 3, CardType::POWER, TargetType::SELF, 1, 0, "At the start of your turn, add a random Power to your hand.", "Creative AI+", 2, 1, 0, "At the start of your turn, add a random Power to your hand." }
 };
 
 const CardDef& CardDef::get(CardId id) {

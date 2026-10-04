@@ -131,6 +131,7 @@ void RunManager::enter_room(int node_index) {
 
             // Start combat with current HP and master deck
             combat.start_combat_multi(etypes, character);
+            combat.card_pool = card_reward_pool(character); // what "a random card" is drawn from
             combat.player.hp = hp;
             combat.player.max_hp = max_hp;
 
@@ -309,7 +310,9 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                 CardId::BRAND, CardId::BURNING_PACT,
                                                 CardId::JUGGLING,
                                                 CardId::HEADBUTT,
-                                                CardId::STONE_ARMOR, CardId::FLAME_BARRIER };
+                                                CardId::STONE_ARMOR, CardId::FLAME_BARRIER,
+                                                CardId::INFERNAL_BLADE, CardId::STOKE, CardId::PRIMAL_FORCE,
+                                                CardId::COLOSSUS, CardId::CRUELTY, CardId::UNMOVABLE };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
@@ -331,7 +334,9 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::FAN_OF_KNIVES, CardId::PHANTOM_BLADES, CardId::ACCURACY,
                                               CardId::UP_MY_SLEEVE, CardId::KNIFE_TRAP, CardId::ACROBATICS,
                                               CardId::DAGGER_THROW, CardId::PREPARED, CardId::HIDDEN_DAGGERS,
-                                              CardId::EXPOSE };
+                                              CardId::EXPOSE,
+                                              CardId::NIGHTMARE, CardId::SHADOW_STEP, CardId::SHADOWMELD,
+                                              CardId::TRACKING };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
                                               CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
                                               CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,
@@ -357,7 +362,8 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::ROCKET_PUNCH, CardId::TRASH_TO_TREASURE, CardId::TURBO,
                                               CardId::SCAVENGE,
                                               CardId::HOLOGRAM,
-                                              CardId::BUFFER };
+                                              CardId::BUFFER,
+                                              CardId::WHITE_NOISE, CardId::CREATIVE_AI };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
                                               CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,

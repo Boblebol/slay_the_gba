@@ -168,7 +168,15 @@ enum class PowerId : uint8_t {
     CONQUEROR,         // this turn: Sovereign Blade deals double damage to the enemy it is bound to
     // Osty's cards (Necrobinder) (appended)
     SIC_EM,            // this turn: Osty hits the enemy it is bound to: summon Osty for `amount`
-    SENTRY_MODE        // start of turn: `amount` Sweeping Gaze to the hand
+    SENTRY_MODE,       // start of turn: `amount` Sweeping Gaze to the hand
+    // Cards made and percent modifiers (appended)
+    CREATIVE_AI,       // start of turn: `amount` random Powers to the hand
+    CRUELTY,           // Vulnerable enemies take `amount` % more attack damage
+    TRACKING,          // Weak enemies take `amount` % more attack damage
+    COLOSSUS,          // until the next turn: the attacks of Vulnerable enemies deal `amount` % less damage
+    DOUBLE_DAMAGE,     // this turn: Attacks deal double damage
+    SHADOWMELD,        // this turn: the Block gained is doubled, once per stack
+    UNMOVABLE          // the first `amount` times a card gives Block each turn, it gives double
 };
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;

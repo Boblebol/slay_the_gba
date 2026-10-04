@@ -786,6 +786,32 @@ bn::string_view base_name(engine::CardId id)
         return "Sentinelle";
     case engine::CardId::SWEEPING_GAZE:
         return "Balayage optique";
+    case engine::CardId::INFERNAL_BLADE:
+        return "Lame infernale";
+    case engine::CardId::STOKE:
+        return "Attiser les flammes";
+    case engine::CardId::PRIMAL_FORCE:
+        return "Force primitive";
+    case engine::CardId::GIANT_ROCK:
+        return "Rocher gigantesque";
+    case engine::CardId::COLOSSUS:
+        return "Colosse";
+    case engine::CardId::CRUELTY:
+        return "Cruauté";
+    case engine::CardId::UNMOVABLE:
+        return "Inflexible";
+    case engine::CardId::NIGHTMARE:
+        return "Cauchemar";
+    case engine::CardId::SHADOW_STEP:
+        return "Pas de l'ombre";
+    case engine::CardId::SHADOWMELD:
+        return "Camouflage";
+    case engine::CardId::TRACKING:
+        return "Pistage";
+    case engine::CardId::WHITE_NOISE:
+        return "Bruit blanc";
+    case engine::CardId::CREATIVE_AI:
+        return "IA créative";
     default:
         return "???";
     }
@@ -1973,6 +1999,45 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SWEEPING_GAZE:
         stream << "Éthéré. Titos : " << value << " au hasard. Épuisement.";
+        break;
+    case engine::CardId::INFERNAL_BLADE:
+        stream << "Attaque au hasard à 0 ce tour. Épuis.";
+        break;
+    case engine::CardId::STOKE:
+        stream << "Main épuisée : 1 carte " << (card.upgraded ? "améliorée" : "au hasard") << " chacune.";
+        break;
+    case engine::CardId::PRIMAL_FORCE:
+        stream << "Attaques en main : " << (card.upgraded ? "Rocher gigantesque+." : "Rocher gigantesque.");
+        break;
+    case engine::CardId::GIANT_ROCK:
+        stream << "Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::COLOSSUS:
+        stream << "Armure " << value << ". -" << secondary << " % des ennemis Vulnérables.";
+        break;
+    case engine::CardId::CRUELTY:
+        stream << "Ennemis Vulnérables : +" << value << " % de dégâts.";
+        break;
+    case engine::CardId::UNMOVABLE:
+        stream << "1re Armure d'une carte par tour : doublée.";
+        break;
+    case engine::CardId::NIGHTMARE:
+        stream << "Copie 1 carte x" << value << " au tour suivant. Épuis.";
+        break;
+    case engine::CardId::SHADOW_STEP:
+        stream << "Défausse tout. Tour suivant : Attaques x2.";
+        break;
+    case engine::CardId::SHADOWMELD:
+        stream << "Ce tour : Armure gagnée doublée.";
+        break;
+    case engine::CardId::TRACKING:
+        stream << "Ennemis Affaiblis : +" << value << " % des Attaques.";
+        break;
+    case engine::CardId::WHITE_NOISE:
+        stream << "Pouvoir au hasard à 0 ce tour. Épuis.";
+        break;
+    case engine::CardId::CREATIVE_AI:
+        stream << "Début de tour : " << value << " Pouvoir au hasard.";
         break;
     default:
         break;

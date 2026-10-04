@@ -80,7 +80,8 @@ enum class DelayedType : uint8_t {
     SUMMON,            // start of turn
     CHANNEL_LIGHTNING, // start of turn
     DAMAGE_ALL,        // end of turn: damage to every enemy, not modified by Strength (countdown cards)
-    PICK_FROM_DRAW     // start of turn, once the hand is drawn: `amount` cards of the draw pile, picked, go to the hand
+    PICK_FROM_DRAW,    // start of turn, once the hand is drawn: `amount` cards of the draw pile, picked, go to the hand
+    DOUBLE_DAMAGE      // start of turn: Attacks deal double damage for that turn
 };
 
 struct DelayedEffect {
@@ -116,7 +117,8 @@ enum class ChoiceKind : uint8_t {
     TO_HAND,      // from the draw or the discard pile; a card stays where it is when the hand is full
     UPGRADE,      // for the rest of the combat
     MAKE_ETHEREAL, // the copy gains Ethereal
-    MAKE_RETAIN   // the copy gains Retain
+    MAKE_RETAIN,  // the copy gains Retain
+    COPY_NEXT_TURN // `amount` copies of the card come to the hand at the start of the next turn; it stays in hand
 };
 
 // What follows once the cards are picked: the part of a card's text that comes after its choice.
@@ -128,6 +130,20 @@ enum class ChoiceThen : uint8_t {
 };
 
 constexpr uint8_t WHOLE_PILE = 0xFF;
+
+// Which cards "a random card" can be.
+enum class CardFilter : uint8_t {
+    ANY,
+    ATTACK,
+    SKILL,
+    POWER
+};
+
+// Copies of a card that come to the hand at the start of the next turn (Nightmare).
+struct PendingCopies {
+    DeckCard card;
+    uint8_t count = 0;
+};
 
 // The Soul (Necrobinder) is a card, not a gauge: a token that costs 0, "Draw 2 cards. Exhaust." (3 cards once
 // upgraded), which other cards add to the piles. This is its id. It stays CardId::NONE until the card is in
@@ -190,6 +206,10 @@ public:
     FixedVector<DeckCard, 24> powers_in_play; // Power cards played this combat: they stay in play
     FixedVector<PermanentGain, 16> permanent_gains; // bonuses to write back to the deck after the combat
     FixedVector<CardChoice, 4> pending_choices;      // asked in order, the first one first
+    FixedVector<PendingCopies, 4> pending_copies;    // made at the start of the next turn
+    // Cards "a random card" is drawn from: the pool of the hero. The combat does not know the run, so whoever
+    // starts the fight gives it (RunManager: the hero's reward pool). Empty, no random card can be made.
+    std::span<const CardId> card_pool;
     bool end_turn_requested = false; // a card ended the turn (Void Form): the caller ends it once the card is resolved
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;
@@ -229,6 +249,16 @@ public:
     // pile when the hand is full.
     void create_card(DeckCard card, Pile pile);
     void create_card_in_discard(DeckCard card) { create_card(card, Pile::DISCARD); }
+    // A random card of `card_pool` that passes the filter and is not `except`. CardId::NONE when there is none.
+    CardId random_card(CardFilter filter = CardFilter::ANY, CardId except = CardId::NONE);
+    // Adds a random card of `card_pool` to a pile, as a card made during the combat. With `free_this_turn` it
+    // costs 0 until the end of the turn, as long as it reached the hand. False when no card passes the filter.
+    bool create_random_card(CardFilter filter, Pile pile, bool upgraded = false, bool free_this_turn = false);
+    // Transform: the card becomes `into` for the rest of the combat, wherever it is. Nothing of the old card is
+    // kept, and the deck of the run still holds the original. It is not a card made: nothing reacts.
+    void transform_card(DeckCard& card, DeckCard into);
+    // Transforms the card into a random other card of `card_pool`. False, and the card stays, when there is none.
+    bool transform_card_random(DeckCard& card);
     // Adds Shivs to the hand (Silent).
     void add_shivs(int count, bool upgraded = false, Enchantment enchantment = Enchantment::NONE);
     // Forge (Regent): the first Forge of the combat adds Sovereign Blade to the hand, and every Forge adds
@@ -245,9 +275,9 @@ public:
     // The power's own tally (see ActivePower::counter), 0 when it is not active.
     uint8_t power_counter(PowerId id) const;
 
-    // Block from a card: Dexterity applies.
+    // Block from a card: Dexterity applies, then the percent modifiers (Shadowmeld, Unmovable).
     void gain_block(int16_t amount);
-    // Block from anything else: the exact amount.
+    // Block from anything else: the exact amount, doubled by Shadowmeld like every Block gained that turn.
     void add_block(int16_t amount);
     // Applies a status to an enemy.
     void afflict(Enemy& target, StatusType type, int16_t amount);
@@ -382,6 +412,10 @@ private:
     // Answers, without asking, the choices that leave nothing to decide.
     void settle_choices();
     void change_cost_of_copies(CardId id, int delta);
+    // Brings the player's percent modifiers in step with the active powers: called whenever one comes or goes.
+    void sync_modifiers();
+    // 100 times 2 for each Shadowmeld active this turn.
+    int16_t block_percent() const;
     uint8_t autoplay_depth_ = 0;
     // Orb value once Focus is applied, never negative.
     int16_t with_focus(int16_t base) const;

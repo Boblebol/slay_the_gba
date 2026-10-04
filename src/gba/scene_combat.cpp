@@ -1660,6 +1660,9 @@ void CombatScene::_refresh_choice_banner()
     case engine::ChoiceKind::MAKE_RETAIN:
         stream << "Retenue";
         break;
+    case engine::ChoiceKind::COPY_NEXT_TURN:
+        stream << "Copie";
+        break;
     default:
         stream << "Rends Éthérée";
         break;

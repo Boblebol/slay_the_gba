@@ -184,6 +184,7 @@ void CombatEngine::add_power(PowerId id, int16_t amount, bool turn_only, int8_t 
         if (power.id == id && power.turn_only == turn_only && power.target == target) {
             power.amount = static_cast<int16_t>(power.amount + amount);
             power.stacks = bump(power.stacks);
+            sync_modifiers();
             return;
         }
     }
@@ -194,6 +195,25 @@ void CombatEngine::add_power(PowerId id, int16_t amount, bool turn_only, int8_t 
     power.turn_only = turn_only;
     power.target = target;
     powers.push_back(power);
+    sync_modifiers();
+}
+
+void CombatEngine::sync_modifiers() {
+    DamageModifiers modifiers;
+    // Cruelty adds to what Vulnerable does, Tracking is a factor of its own on a Weak enemy.
+    modifiers.vulnerable = static_cast<int16_t>(modifiers.vulnerable + power_amount(PowerId::CRUELTY));
+    modifiers.dealt_to_weak = static_cast<int16_t>(modifiers.dealt_to_weak + power_amount(PowerId::TRACKING));
+    modifiers.taken_from_vulnerable = static_cast<int16_t>(std::max(0, 100 - power_amount(PowerId::COLOSSUS)));
+    if (has_power(PowerId::DOUBLE_DAMAGE)) modifiers.dealt = 200;
+    player.modifiers = modifiers;
+}
+
+int16_t CombatEngine::block_percent() const {
+    int percent = 100;
+    for (const ActivePower& power : powers) {
+        if (power.id == PowerId::SHADOWMELD) percent <<= std::min<int>(power.stacks, 6);
+    }
+    return static_cast<int16_t>(std::min(percent, 6400));
 }
 
 int16_t CombatEngine::power_amount(PowerId id) const {
@@ -817,7 +837,16 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             // A debuff the player gives themselves: Artifact cancels it.
             if (turn_start) player.receive_status(StatusType::DEXTERITY, static_cast<int16_t>(-power.amount));
             break;
+        case PowerId::CREATIVE_AI:
+            if (turn_start) {
+                for (int16_t copy = 0; copy < power.amount; ++copy) create_random_card(CardFilter::POWER, Pile::HAND);
+            }
+            break;
+        case PowerId::UNMOVABLE:
+            if (turn_start) power.counter = 0;
+            break;
         default:
+            // CRUELTY, TRACKING, COLOSSUS and DOUBLE_DAMAGE are read by sync_modifiers, SHADOWMELD by block_percent.
             // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
             // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE,
             // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM.
@@ -827,8 +856,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
 
 void CombatEngine::gain_block(int16_t amount) {
     int16_t before = player.block;
-    player.gain_block(amount);
+    // Unmovable: the first Block a card gives each turn is doubled, and a gain of nothing does not use it up.
+    ActivePower* unmovable = find_power(PowerId::UNMOVABLE);
+    const bool doubled = unmovable && unmovable->counter < unmovable->amount;
+    player.gain_block(amount, static_cast<int16_t>(block_percent() * (doubled ? 2 : 1)));
     if (player.block > before) {
+        if (doubled) unmovable->counter = bump(unmovable->counter);
         EventInfo info;
         info.amount = static_cast<int16_t>(player.block - before);
         emit(CombatEvent::BLOCK_GAINED, info);
@@ -837,7 +870,8 @@ void CombatEngine::gain_block(int16_t amount) {
 
 void CombatEngine::add_block(int16_t amount) {
     if (amount <= 0) return;
-    player.block = static_cast<int16_t>(player.block + amount);
+    amount = static_cast<int16_t>(std::min<int32_t>(int32_t{ amount } * block_percent() / 100, INT16_MAX));
+    player.block = static_cast<int16_t>(std::min<int32_t>(int32_t{ player.block } + amount, INT16_MAX));
     EventInfo info;
     info.amount = amount;
     emit(CombatEvent::BLOCK_GAINED, info);
@@ -1091,6 +1125,49 @@ void CombatEngine::create_card(DeckCard card, Pile pile) {
     emit(CombatEvent::CARD_CREATED, info);
 }
 
+CardId CombatEngine::random_card(CardFilter filter, CardId except) {
+    const auto passes = [filter, except](CardId id) {
+        if (id == except || id == CardId::NONE) return false;
+        const CardType type = CardDef::get(id).type;
+        switch (filter) {
+            case CardFilter::ATTACK: return type == CardType::ATTACK;
+            case CardFilter::SKILL: return type == CardType::SKILL;
+            case CardFilter::POWER: return type == CardType::POWER;
+            default: return true;
+        }
+    };
+    uint32_t candidates = 0;
+    for (CardId id : card_pool) candidates += passes(id);
+    if (candidates == 0) return CardId::NONE;
+    uint32_t pick = next_random() % candidates;
+    for (CardId id : card_pool) {
+        if (passes(id) && pick-- == 0) return id;
+    }
+    return CardId::NONE;
+}
+
+bool CombatEngine::create_random_card(CardFilter filter, Pile pile, bool upgraded, bool free_this_turn) {
+    const CardId id = random_card(filter);
+    if (id == CardId::NONE) return false;
+    DeckCard card(id, upgraded);
+    // A card that overflows to the discard pile is not in hand this turn: it keeps its cost.
+    card.free_this_turn = free_this_turn && pile == Pile::HAND && hand.size() < hand.capacity();
+    create_card(card, pile);
+    return true;
+}
+
+void CombatEngine::transform_card(DeckCard& card, DeckCard into) {
+    into.deck_index = NOT_IN_DECK; // what the new card gains does not reach the card of the deck
+    card = into;
+}
+
+bool CombatEngine::transform_card_random(DeckCard& card) {
+    const CardId id = random_card(CardFilter::ANY, card.id);
+    if (id == CardId::NONE) return false;
+    transform_card(card, DeckCard(id));
+    return true;
+}
+
 void CombatEngine::add_shivs(int count, bool upgraded, Enchantment enchantment) {
     DeckCard shiv(CardId::SHIV, upgraded);
     shiv.enchantment = enchantment;
@@ -1318,6 +1395,9 @@ int CombatEngine::run_delayed_effects(bool end_of_turn) {
             case DelayedType::PICK_FROM_DRAW:
                 turn_picks_from_draw_ = bump(turn_picks_from_draw_, effect.amount);
                 break;
+            case DelayedType::DOUBLE_DAMAGE:
+                add_power(PowerId::DOUBLE_DAMAGE, 1, true);
+                break;
         }
         if (--effect.repeat == 0) {
             delayed_effects.erase(i);
@@ -1387,6 +1467,8 @@ void CombatEngine::reset_combat_state() {
     powers_in_play.clear();
     permanent_gains.clear();
     pending_choices.clear();
+    pending_copies.clear();
+    sync_modifiers();
     turn_picks_from_draw_ = 0;
     end_turn_requested = false;
     event_depth_ = 0;
@@ -1450,6 +1532,11 @@ void CombatEngine::start_player_turn() {
     for (size_t i = powers.size(); i-- > 0;) {
         if (powers[i].id == PowerId::FLAME_BARRIER || powers[i].id == PowerId::REFLECT) powers.erase(i);
     }
+    // So did Colossus.
+    for (size_t i = powers.size(); i-- > 0;) {
+        if (powers[i].id == PowerId::COLOSSUS) powers.erase(i);
+    }
+    sync_modifiers();
     exhausted_this_turn = 0;
     retain_hand = false;
     no_draw_this_turn = false;
@@ -1469,6 +1556,11 @@ void CombatEngine::start_player_turn() {
         if (!hand.push_back(card)) discard_pile.push_back(card);
     }
     returning_cards.clear();
+    // Nightmare: the copies of the card picked last turn, before the draw too.
+    for (const PendingCopies& copies : pending_copies) {
+        for (uint8_t copy = 0; copy < copies.count; ++copy) create_card(copies.card, Pile::HAND);
+    }
+    pending_copies.clear();
 
     opening_draw_ = true;
     draw_cards(5 + extra_draw);
@@ -1898,11 +1990,21 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                 case ChoiceKind::MAKE_RETAIN:
                     hand[index].added_keywords |= KEYWORD_RETAIN;
                     break;
+                case ChoiceKind::COPY_NEXT_TURN: {
+                    PendingCopies copies;
+                    copies.card = hand[index];
+                    copies.card.free_this_turn = false;
+                    copies.card.deck_index = NOT_IN_DECK; // a gain on a copy does not reach the deck
+                    copies.count = choice.amount;
+                    pending_copies.push_back(copies);
+                    break;
+                }
                 case ChoiceKind::TO_HAND:
                     break;
             }
             continue;
         }
+        if (choice.kind == ChoiceKind::COPY_NEXT_TURN) continue; // asked on the hand only
 
         FixedVector<DeckCard, 50>& pile = choice.source == Pile::DRAW ? draw_pile : discard_pile;
         if (choice.kind == ChoiceKind::UPGRADE) {
@@ -4007,7 +4109,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::COMPACT: {
             gain_block(base_value);
             for (DeckCard& held : hand) {
-                if (CardDef::get(held.id).type == CardType::STATUS) held = DeckCard(CardId::FUEL, upgraded);
+                if (CardDef::get(held.id).type == CardType::STATUS) transform_card(held, DeckCard(CardId::FUEL, upgraded));
             }
             set_log(upgraded ? "Played Compact+!"sv : "Played Compact!"sv);
             break;
@@ -4550,6 +4652,86 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Sweeping Gaze+!"sv : "Played Sweeping Gaze!"sv);
             break;
         }
+        case CardId::INFERNAL_BLADE: {
+            create_random_card(CardFilter::ATTACK, Pile::HAND, false, true);
+            set_log(upgraded ? "Played Infernal Blade+!"sv : "Played Infernal Blade!"sv);
+            break;
+        }
+        case CardId::STOKE: {
+            // Only the cards held now burn: a card an exhaustion draws (Dark Embrace) lands above them and stays.
+            size_t burnt = hand.size();
+            for (size_t i = burnt; i-- > 0;) exhaust_from_hand(i);
+            for (size_t made = 0; made < burnt; ++made) create_random_card(CardFilter::ANY, Pile::HAND, upgraded);
+            set_log(upgraded ? "Played Stoke+!"sv : "Played Stoke!"sv);
+            break;
+        }
+        case CardId::PRIMAL_FORCE: {
+            for (DeckCard& held : hand) {
+                if (CardDef::get(held.id).type == CardType::ATTACK) transform_card(held, DeckCard(CardId::GIANT_ROCK, upgraded));
+            }
+            set_log(upgraded ? "Played Primal Force+!"sv : "Played Primal Force!"sv);
+            break;
+        }
+        case CardId::GIANT_ROCK: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Giant Rock+!"sv : "Played Giant Rock!"sv);
+            break;
+        }
+        case CardId::COLOSSUS: {
+            gain_block(base_value);
+            // Until the next turn, when the enemies have attacked; a second one adds nothing.
+            if (!has_power(PowerId::COLOSSUS)) add_power(PowerId::COLOSSUS, secondary_value);
+            set_log(upgraded ? "Played Colossus+!"sv : "Played Colossus!"sv);
+            break;
+        }
+        case CardId::CRUELTY: {
+            add_power(PowerId::CRUELTY, base_value);
+            set_log(upgraded ? "Played Cruelty+!"sv : "Played Cruelty!"sv);
+            break;
+        }
+        case CardId::UNMOVABLE: {
+            add_power(PowerId::UNMOVABLE);
+            set_log(upgraded ? "Played Unmovable+!"sv : "Played Unmovable!"sv);
+            break;
+        }
+        case CardId::NIGHTMARE: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::COPY_NEXT_TURN;
+            choice.amount = base_value;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Nightmare+!"sv : "Played Nightmare!"sv);
+            break;
+        }
+        case CardId::SHADOW_STEP: {
+            // Only the cards held now go: a card a discard reaction draws lands above them and stays.
+            for (size_t i = hand.size(); i-- > 0;) discard_from_hand(i);
+            // One turn of double damage for each Shadow Step: a second one this turn doubles the turn after.
+            uint8_t delay = 1;
+            for (const DelayedEffect& effect : delayed_effects) delay += effect.type == DelayedType::DOUBLE_DAMAGE;
+            schedule(DelayedType::DOUBLE_DAMAGE, 1, delay);
+            set_log(upgraded ? "Played Shadow Step+!"sv : "Played Shadow Step!"sv);
+            break;
+        }
+        case CardId::SHADOWMELD: {
+            add_power(PowerId::SHADOWMELD, 1, true);
+            set_log(upgraded ? "Played Shadowmeld+!"sv : "Played Shadowmeld!"sv);
+            break;
+        }
+        case CardId::TRACKING: {
+            add_power(PowerId::TRACKING, base_value);
+            set_log(upgraded ? "Played Tracking+!"sv : "Played Tracking!"sv);
+            break;
+        }
+        case CardId::WHITE_NOISE: {
+            create_random_card(CardFilter::POWER, Pile::HAND, false, true);
+            set_log(upgraded ? "Played White Noise+!"sv : "Played White Noise!"sv);
+            break;
+        }
+        case CardId::CREATIVE_AI: {
+            add_power(PowerId::CREATIVE_AI, base_value);
+            set_log(upgraded ? "Played Creative AI+!"sv : "Played Creative AI!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;
@@ -4612,6 +4794,7 @@ void CombatEngine::end_player_turn() {
     for (size_t i = powers.size(); i-- > 0;) {
         if (powers[i].turn_only) powers.erase(i);
     }
+    sync_modifiers();
 
     // Strength and Dexterity gained "until the end of the turn" go away.
     player.add_status(StatusType::STRENGTH, static_cast<int16_t>(-temp_strength));

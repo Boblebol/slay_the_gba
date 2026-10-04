@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <numeric>
 #include <string_view>
 #include "engine/status.h"
 #include "engine/fixed_vector.h"
@@ -11,11 +12,23 @@ namespace engine {
 constexpr size_t MAX_STATUSES = 18;
 static_assert(MAX_STATUSES >= static_cast<size_t>(StatusType::CONFUSED), "a status added to StatusType needs its slot");
 
+// Percent modifiers of the attack damage an entity deals and takes: 100 changes nothing. CombatEngine keeps
+// the player's in step with the active powers (CombatEngine::sync_modifiers).
+struct DamageModifiers {
+    int16_t dealt = 100;                 // its attacks (Shadow Step: 200)
+    int16_t taken = 100;                 // the attacks it takes
+    int16_t weak = 75;                   // its attacks while it is Weak
+    int16_t vulnerable = 150;            // its attacks on a Vulnerable target (Cruelty: 175, 200)
+    int16_t dealt_to_weak = 100;         // its attacks on a Weak target (Tracking: 150)
+    int16_t taken_from_vulnerable = 100; // the attacks it takes from a Vulnerable attacker (Colossus: 50)
+};
+
 class CombatEntity {
 public:
     int16_t hp = 0;
     int16_t max_hp = 0;
     int16_t block = 0;
+    DamageModifiers modifiers;
     FixedVector<StatusEffect, MAX_STATUSES> statuses;
 
     bool is_alive() const { return hp > 0; }
@@ -76,16 +89,17 @@ public:
         block = 0;
     }
 
-    // Block from a card: Dexterity is added, then Frail takes a quarter away (rounded down).
-    void gain_block(int16_t amount) {
+    // Block from a card: Dexterity is added, then Frail takes a quarter away and `percent` applies (200 doubles
+    // the Block gained), rounded down once at the end.
+    void gain_block(int16_t amount, int16_t percent = 100) {
         if (amount > 0) {
             int16_t dex = get_status(StatusType::DEXTERITY);
-            int16_t total = amount + dex;
-            if (total > 0 && get_status(StatusType::FRAIL) > 0) {
-                total = static_cast<int16_t>(total * 3 / 4);
+            int32_t total = amount + dex;
+            if (total > 0) {
+                total = total * (get_status(StatusType::FRAIL) > 0 ? 3 : 4) * std::max<int32_t>(percent, 0) / 400;
             }
             if (total > 0) {
-                block += total;
+                block = static_cast<int16_t>(std::min<int32_t>(block + total, INT16_MAX));
             }
         }
     }
@@ -247,15 +261,33 @@ public:
 };
 
 // Attack damage as in Slay the Spire: (base + Strength + Vigor), x0.75 when the attacker is Weak, x1.5 when the
-// target is Vulnerable, rounded down once at the end, and 1 at most against an Intangible target.
+// target is Vulnerable, then the percent modifiers of both sides, rounded down once at the end, and 1 at most
+// against an Intangible target.
 inline int16_t attack_damage(int16_t base, const CombatEntity& attacker, const CombatEntity& target) {
     int32_t damage = base + attacker.get_status(StatusType::STRENGTH) + attacker.get_status(StatusType::VIGOR);
     if (damage <= 0) return 0;
-    damage *= attacker.get_status(StatusType::WEAK) > 0 ? 3 : 4;
-    damage *= target.get_status(StatusType::VULNERABLE) > 0 ? 3 : 2;
-    damage /= 8;
+    // Every factor is multiplied in before the single division. A percent is reduced first (150 % is 3/2), which
+    // keeps the product small: the 64-bit division is not worth its cost on the GBA.
+    int32_t divisor = 1;
+    const auto scale = [&damage, &divisor](int16_t percent) {
+        const int32_t factor = std::max<int32_t>(percent, 0);
+        const int32_t common = std::gcd(factor, int32_t{ 100 });
+        damage *= factor / common;
+        divisor *= 100 / common;
+    };
+    const bool attacker_weak = attacker.get_status(StatusType::WEAK) > 0;
+    const bool attacker_vulnerable = attacker.get_status(StatusType::VULNERABLE) > 0;
+    const bool target_weak = target.get_status(StatusType::WEAK) > 0;
+    const bool target_vulnerable = target.get_status(StatusType::VULNERABLE) > 0;
+    if (attacker_weak) scale(attacker.modifiers.weak);
+    if (target_vulnerable) scale(attacker.modifiers.vulnerable);
+    if (target_weak) scale(attacker.modifiers.dealt_to_weak);
+    if (attacker_vulnerable) scale(target.modifiers.taken_from_vulnerable);
+    scale(attacker.modifiers.dealt);
+    scale(target.modifiers.taken);
+    damage /= divisor;
     if (damage > 1 && target.get_status(StatusType::INTANGIBLE) > 0) damage = 1;
-    return static_cast<int16_t>(damage);
+    return static_cast<int16_t>(std::min<int32_t>(damage, INT16_MAX));
 }
 
 enum class EnemyIntentType : uint8_t {

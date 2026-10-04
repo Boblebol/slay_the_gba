@@ -111,7 +111,9 @@ items = [
   { name = "Cartes évolutives : bonus et coût propres à chaque exemplaire", status = "oui" },
   { name = "Cartes Statut ajoutées à la main, la Pioche ou la Défausse", status = "oui" },
   { name = "Coup de grâce : effet quand la carte tue un ennemi", status = "oui" },
-  { name = "Transformer une carte", status = "non", issue = 79 },
+  { name = "Transformer une carte", status = "oui", issue = 79 },
+  { name = "Cartes créées en combat : copies et cartes aléatoires du héros", status = "partiel", issue = 77, note = "Carte donnée, copie d'une carte choisie, carte aléatoire du pool du héros filtrée par type, évènement « carte créée ». Manquent le tirage par rareté, le pool Incolore et la copie de la dernière carte jouée." },
+  { name = "Modificateurs de dégâts et d'Armure en pourcentage", status = "oui", issue = 89 },
 ]
 
 [[category]]
