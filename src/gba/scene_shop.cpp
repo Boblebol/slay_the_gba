@@ -13,6 +13,7 @@
 #include "gba/card_text.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
+#include "gba/loot_text.h"
 #include "gba/text.h"
 #include "gba/widgets.h"
 
@@ -27,6 +28,17 @@ constexpr int PRICE_Y = 0;
 constexpr int CARD_X[] = { -72, 0, 72 };
 constexpr int REMOVE_ITEM = 3;
 constexpr int LEAVE_ITEM = 4;
+// Shelves of the merchant, changed with L and R. Relics and potions are lists of names and prices where the
+// cards stand, with the text of the one under the cursor below.
+constexpr int PAGE_CARDS = 0;
+constexpr int PAGE_RELICS = 1;
+constexpr int PAGE_POTIONS = 2;
+constexpr int PAGE_COUNT = 3;
+constexpr int ROW_Y = -50;
+constexpr int ROW_STEP = 12;
+constexpr int ROW_TEXT_Y = -8;
+constexpr int ROW_TEXT_STEP = 10;
+constexpr int ROW_TEXT_WIDTH = 224;
 
 class ShopScene final : public Scene
 {
@@ -47,7 +59,6 @@ public:
             _card_y[index] = CARD_Y;
         }
 
-        _title.set(0, -72, "MARCHAND", Align::CENTER, TextColor::GOLD);
         _refresh_all();
     }
 
@@ -79,9 +90,37 @@ public:
             return bn::nullopt;
         }
 
+        if(_replacing)
+        {
+            _update_replacing();
+            return bn::nullopt;
+        }
+
+        if(bn::keypad::l_pressed() || bn::keypad::r_pressed())
+        {
+            play_sfx(Sfx::UI_CURSOR);
+            _change_page(bn::keypad::r_pressed() ? 1 : -1);
+        }
+
         int card_count = _cards.size();
 
-        if(_cursor < REMOVE_ITEM)
+        if(_cursor < REMOVE_ITEM && _page != PAGE_CARDS)
+        {
+            // A list: up and down, then the services under it.
+            if(bn::keypad::up_pressed() && _cursor > 0)
+            {
+                play_sfx(Sfx::UI_CURSOR);
+                --_cursor;
+                _refresh_all();
+            }
+            else if(bn::keypad::down_pressed())
+            {
+                play_sfx(Sfx::UI_CURSOR);
+                _cursor = _cursor + 1 < _page_size(_page) ? _cursor + 1 : REMOVE_ITEM;
+                _refresh_all();
+            }
+        }
+        else if(_cursor < REMOVE_ITEM)
         {
             if(bn::keypad::left_pressed())
             {
@@ -105,7 +144,7 @@ public:
         else if(bn::keypad::up_pressed())
         {
             play_sfx(Sfx::UI_CURSOR);
-            _cursor = _cursor == LEAVE_ITEM ? REMOVE_ITEM : 1;
+            _cursor = _cursor == LEAVE_ITEM ? REMOVE_ITEM : (_page == PAGE_CARDS ? 1 : _page_size(_page) - 1);
             _refresh_all();
         }
         else if(bn::keypad::down_pressed() && _cursor == REMOVE_ITEM)
@@ -154,9 +193,225 @@ private:
     int _timer = 0;
     int _cursor = 0;
     bool _picking = false;
+    bn::vector<Label, 3> _rows;
+    bn::vector<Label, 4> _row_text;
+    int _page = PAGE_CARDS;
+    // Full belt: the potion bought takes the place of one of the belt, chosen in the list.
+    bool _replacing = false;
+    int _belt_cursor = 0;
+
+    [[nodiscard]] int _page_size(int page) const
+    {
+        return page == PAGE_CARDS ? _cards.size()
+                                  : int(page == PAGE_RELICS ? _shop.relics.size() : _shop.potions.size());
+    }
+
+    void _change_page(int step)
+    {
+        // An empty shelf is skipped.
+        int page = _page;
+
+        do
+        {
+            page = (page + PAGE_COUNT + step) % PAGE_COUNT;
+        }
+        while(page != _page && _page_size(page) == 0);
+
+        if(page == _page)
+        {
+            return;
+        }
+
+        // A card still flying away is gone for good.
+        for(int index = 0; index < _cards.size(); ++index)
+        {
+            _sold_timer[index] = 0;
+        }
+
+        _page = page;
+
+        if(_cursor < REMOVE_ITEM)
+        {
+            _cursor = 0;
+        }
+
+        _refresh_all();
+    }
+
+    void _update_replacing()
+    {
+        engine::RunManager& run = _ctx.run;
+        int count = int(run.potions.size());
+
+        if(bn::keypad::up_pressed() || bn::keypad::down_pressed())
+        {
+            play_sfx(Sfx::UI_CURSOR);
+            _belt_cursor = (_belt_cursor + (bn::keypad::down_pressed() ? 1 : count - 1)) % count;
+            _refresh_all();
+        }
+        else if(bn::keypad::b_pressed())
+        {
+            play_sfx(Sfx::UI_CANCEL);
+            _replacing = false;
+            _refresh_all();
+        }
+        else if(bn::keypad::a_pressed())
+        {
+            int cost = _shop.potions[_cursor].cost;
+
+            if(run.buy_shop_potion(_cursor, _belt_cursor))
+            {
+                _spawn_price(0, ROW_Y + _cursor * ROW_STEP - 10, cost);
+                play_sfx(Sfx::GOLD);
+            }
+
+            _replacing = false;
+            _refresh_all();
+        }
+    }
+
+    void _spawn_price(int x, int y, int cost)
+    {
+        bn::string<16> text;
+        bn::ostringstream stream(text);
+        stream << '-' << cost << " Or";
+        _popups.spawn(x, y, text, TextColor::GOLD);
+    }
+
+    // Buys the relic or the potion under the cursor.
+    void _confirm_row()
+    {
+        engine::RunManager& run = _ctx.run;
+        int y = ROW_Y + _cursor * ROW_STEP - 10;
+
+        if(_page == PAGE_RELICS)
+        {
+            const engine::ShopRelic& item = _shop.relics[_cursor];
+
+            if(item.purchased)
+            {
+                return;
+            }
+
+            if(run.buy_shop_relic(_cursor))
+            {
+                _spawn_price(0, y, item.cost);
+                play_sfx(Sfx::RELIC);
+            }
+            else
+            {
+                _popups.spawn(0, y, run.gold < item.cost ? "Pas assez d'or" : "Plus de place", TextColor::RED);
+                play_sfx(Sfx::ERROR);
+            }
+        }
+        else
+        {
+            const engine::ShopPotion& item = _shop.potions[_cursor];
+
+            if(item.purchased)
+            {
+                return;
+            }
+
+            if(run.gold < item.cost)
+            {
+                _popups.spawn(0, y, "Pas assez d'or", TextColor::RED);
+                play_sfx(Sfx::ERROR);
+            }
+            else if(run.buy_shop_potion(_cursor))
+            {
+                _spawn_price(0, y, item.cost);
+                play_sfx(Sfx::GOLD);
+            }
+            else
+            {
+                // Full belt: one potion has to go.
+                play_sfx(Sfx::UI_OPEN);
+                _replacing = true;
+                _belt_cursor = 0;
+            }
+        }
+
+        _refresh_all();
+    }
+
+    // Names and prices of the shelf, or the belt when a potion has to make room, and the text of the row under
+    // the cursor.
+    void _refresh_rows()
+    {
+        const engine::RunManager& run = _ctx.run;
+        bn::string_view description;
+
+        if(_replacing)
+        {
+            for(int index = 0; index < int(run.potions.size()); ++index)
+            {
+                bool focused = index == _belt_cursor;
+                TextLine row;
+                bn::ostringstream stream(row);
+                stream << (focused ? "► " : "  ") << potion_name(run.potions[index]);
+                _rows.emplace_back().set(-112, ROW_Y + index * ROW_STEP, row, Align::LEFT,
+                                         focused ? TextColor::GOLD : TextColor::WHITE);
+            }
+
+            description = potion_description(run.potions[_belt_cursor]);
+        }
+        else
+        {
+            for(int index = 0; index < _page_size(_page); ++index)
+            {
+                bool relic = _page == PAGE_RELICS;
+                std::string_view id = relic ? _shop.relics[index].relic_id : _shop.potions[index].potion_id;
+                int cost = relic ? _shop.relics[index].cost : _shop.potions[index].cost;
+                bool purchased = relic ? _shop.relics[index].purchased : _shop.potions[index].purchased;
+                bool focused = index == _cursor;
+                TextLine row;
+                bn::ostringstream stream(row);
+                stream << (focused ? "► " : "  ") << (relic ? relic_name(id) : potion_name(id));
+                _rows.emplace_back().set(-112, ROW_Y + index * ROW_STEP, row, Align::LEFT,
+                                         purchased ? TextColor::GRAY
+                                                   : (focused ? TextColor::GOLD : TextColor::WHITE));
+                bn::string<16> price;
+                bn::ostringstream price_stream(price);
+
+                if(purchased)
+                {
+                    price_stream << "Vendu";
+                }
+                else
+                {
+                    price_stream << cost << " Or";
+                }
+
+                _prices.emplace_back().set(112, ROW_Y + index * ROW_STEP, price, Align::RIGHT,
+                                           purchased ? TextColor::GRAY
+                                                     : (run.gold >= cost ? TextColor::GOLD : TextColor::RED));
+
+                if(focused)
+                {
+                    description = relic ? relic_description(id) : potion_description(id);
+                }
+            }
+        }
+
+        bn::vector<TextLine, 4> lines;
+        wrap_text(description, ROW_TEXT_WIDTH, lines);
+
+        for(int index = 0; index < lines.size(); ++index)
+        {
+            _row_text.emplace_back().set(-112, ROW_TEXT_Y + index * ROW_TEXT_STEP, lines[index], Align::LEFT,
+                                         TextColor::WHITE);
+        }
+    }
 
     bn::optional<SceneId> _confirm()
     {
+        if(_cursor < REMOVE_ITEM && _page != PAGE_CARDS)
+        {
+            _confirm_row();
+            return bn::nullopt;
+        }
+
         if(_cursor < REMOVE_ITEM)
         {
             engine::ShopCard& item = _shop.cards[_cursor];
@@ -212,7 +467,7 @@ private:
 
     void _animate_cards()
     {
-        for(int index = 0; index < _cards.size(); ++index)
+        for(int index = 0; index < _cards.size() && _page == PAGE_CARDS; ++index)
         {
             bn::sprite_ptr& card = _cards[index];
 
@@ -246,10 +501,29 @@ private:
         bn::ostringstream gold_stream(gold);
         gold_stream << _ctx.run.gold;
         _gold.set(-96, -72, gold, Align::LEFT, TextColor::GOLD);
+        _title.set(0, -72,
+                   _replacing ? "Jeter quelle potion ?"
+                              : (_page == PAGE_CARDS ? "◄ L   CARTES   R ►"
+                                                     : (_page == PAGE_RELICS ? "◄ L   RELIQUES   R ►"
+                                                                             : "◄ L   POTIONS   R ►")),
+                   Align::CENTER, TextColor::GOLD);
 
         _prices.clear();
+        _rows.clear();
+        _row_text.clear();
 
         for(int index = 0; index < _cards.size(); ++index)
+        {
+            // The cards only stand on their own shelf; a card just bought finishes flying away.
+            _cards[index].set_visible(_page == PAGE_CARDS && (! _shop.cards[index].purchased || _sold_timer[index] > 0));
+        }
+
+        if(_page != PAGE_CARDS)
+        {
+            _refresh_rows();
+        }
+
+        for(int index = 0; index < _cards.size() && _page == PAGE_CARDS; ++index)
         {
             const engine::ShopCard& item = _shop.cards[index];
             bn::string<16> price;
@@ -269,7 +543,17 @@ private:
             _prices.emplace_back().set(CARD_X[index], PRICE_Y, price, Align::CENTER, color);
         }
 
-        if(_cursor < REMOVE_ITEM && _cursor < _cards.size())
+        if(_replacing)
+        {
+            _info.clear();
+            _desc.set(-112, 39, "A Remplacer   B Retour", Align::LEFT, TextColor::GRAY);
+        }
+        else if(_cursor < REMOVE_ITEM && _page != PAGE_CARDS)
+        {
+            _info.clear();
+            _desc.set(-112, 39, "A Acheter   L R Changer de rayon", Align::LEFT, TextColor::GRAY);
+        }
+        else if(_cursor < REMOVE_ITEM && _cursor < _cards.size())
         {
             const engine::DeckCard& card = _shop.cards[_cursor].card;
             TextLine text;
@@ -304,7 +588,17 @@ private:
     {
         for(int index = 0; index < _cards.size(); ++index)
         {
-            _cards[index].set_visible(visible && ! _shop.cards[index].purchased);
+            _cards[index].set_visible(visible && _page == PAGE_CARDS && ! _shop.cards[index].purchased);
+        }
+
+        for(Label& label : _rows)
+        {
+            label.set_visible(visible);
+        }
+
+        for(Label& label : _row_text)
+        {
+            label.set_visible(visible);
         }
 
         for(Label& label : _prices)
