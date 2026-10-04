@@ -450,10 +450,12 @@ int main() {
     RunManager anchor_run;
     anchor_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
     anchor_run.gold = 150;
+    // The stock of the merchant is drawn at random: the Anchor is put on its shelf by hand.
     ShopInventory anchor_shop;
     anchor_shop.generate(CharacterId::IRONCLAD, 1);
-    assert(anchor_shop.relics[1].relic_id == "ANCHOR");
-    assert(anchor_shop.buy_relic(anchor_run, 1));
+    anchor_shop.relics.clear();
+    anchor_shop.relics.push_back({ "ANCHOR", 150, false });
+    assert(anchor_shop.buy_relic(anchor_run, 0));
     assert(anchor_run.has_relic("ANCHOR"));
     anchor_run.enter_room(anchor_run.get_available_rooms()[0]);
     assert(anchor_run.combat.player.block == 10);
@@ -504,7 +506,9 @@ int main() {
 
     ShopInventory sling_shop;
     sling_shop.generate(CharacterId::IRONCLAD, 1);
-    assert(sling_shop.relics.size() == 3 && sling_shop.relics[2].relic_id == "SLING_OF_COURAGE");
+    // The third relic of the merchant is one of its own (Shop rarity), as the Sling of Courage is.
+    assert(sling_shop.relics.size() == 3 && find_relic(sling_shop.relics[2].relic_id)->rarity == RelicRarity::SHOP);
+    assert(find_relic("SLING_OF_COURAGE")->rarity == RelicRarity::SHOP);
     std::cout << "[PASS] Combat-start relics: Oddly Smooth Stone, Lantern, Blood Vial, Red Mask, Bag of Marbles, "
                  "Festive Popper, Sling of Courage, Pantograph, Stone Cracker" << std::endl;
 
@@ -561,21 +565,20 @@ int main() {
     for (std::string_view id : chest_relics) assert(find_relic(id) != nullptr);
     assert(!can_hold("TINGSHA") && can_hold("HAPPY_FLOWER")); // Tingsha belongs to the Silent
     assert(can_hold(chest_run.relics[1]) && chest_run.last_treasure_relic == chest_run.relics[1]);
-    // The first two relics of the shop are owned whatever the seed draws; the chests must then skip them.
-    for (std::string_view owned : { "VAJRA", "ANCHOR" }) {
-        if (!chest_run.has_relic(owned)) chest_run.add_relic(owned);
-    }
     while (chest_run.relics.size() < chest_run.relics.capacity()) {
         std::string_view relic_id = chest_run.draw_treasure_relic();
         assert(can_hold(relic_id) && !chest_run.has_relic(relic_id));
         chest_run.add_relic(relic_id);
     }
 
-    // The merchant shows relics the hero already owns as sold out.
+    // The merchant never stocks a relic the hero already owns.
     chest_run.open_shop();
-    assert(chest_run.current_shop.relics[0].purchased && chest_run.current_shop.relics[1].purchased);
+    for (const ShopRelic& item : chest_run.current_shop.relics) assert(!chest_run.has_relic(item.relic_id));
     potion_run.open_shop();
-    assert(!potion_run.current_shop.relics[0].purchased && !potion_run.current_shop.relics[1].purchased);
+    assert(potion_run.current_shop.relics.size() == 3);
+    for (const ShopRelic& item : potion_run.current_shop.relics) {
+        assert(!item.purchased && !potion_run.has_relic(item.relic_id));
+    }
     std::cout << "[PASS] Relics: chests and the shop never give a relic twice" << std::endl;
 
     // Card rewards: distinct cards drawn at random from the hero's pool.

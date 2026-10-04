@@ -698,11 +698,16 @@ void test_end_of_combat() {
         run.combat.player.max_hp = 75;
         run.proceed_after_combat();
         assert(run.max_hp == 75 && run.hp == 75); // every lost HP comes back between acts
+        // The boss has rewards of its own; the next act opens once they are taken or skipped.
+        assert(run.phase == RunPhase::REWARD_SCREEN && run.current_act == act);
+        assert(run.gold_reward >= 95 && run.gold_reward <= 105 && !run.relic_reward.empty());
+        const int16_t boss_gold = run.gold_reward;
+        run.skip_card_rewards();
         assert(run.phase == RunPhase::ANCIENT_BLESSING);
         assert(run.current_act == act + 1 && run.current_floor == 1 && run.current_node_index == -1);
         assert(!run.is_run_completed());
         assert(run.map.nodes.size() >= 2 && run.map.boss_node_index >= 0);
-        assert(run.gold == 123);
+        assert(run.gold == 123 + boss_gold);
         // The new map is the one the saved seed gives back.
         MapGraph again;
         again.generate(run.current_act, run.map_seed, run.ascension_level);
@@ -718,6 +723,8 @@ void test_end_of_combat() {
         run.combat.player.max_hp = 80;
         run.proceed_after_combat();
         assert(run.hp == 40 + (80 - 40) * 3 / 4);
+        assert(run.phase == RunPhase::REWARD_SCREEN && run.current_act == 1);
+        run.pick_card_reward(0);
         assert(run.phase == RunPhase::ANCIENT_BLESSING && run.current_act == 2);
     }
 
