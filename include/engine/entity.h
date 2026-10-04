@@ -262,8 +262,24 @@ enum class EnemyIntentType : uint8_t {
     ATTACK,
     BUFF,
     DEFEND,
-    ATTACK_DEFEND
+    ATTACK_DEFEND,
+    // Appended: the values above keep their number
+    ATTACK_BUFF,   // attacks, then gives itself a status
+    ATTACK_DEBUFF, // attacks, then gives the player a debuff or Status cards
+    DEBUFF,        // gives the player a debuff
+    STATUS,        // adds Status cards to the player's piles
+    STUN,          // skips its turn
+    HEAL,          // recovers HP
+    ESCAPE         // leaves the fight
 };
+
+// Whether a move of this kind hits the player.
+constexpr bool intent_attacks(EnemyIntentType type) {
+    return type == EnemyIntentType::ATTACK || type == EnemyIntentType::ATTACK_DEFEND ||
+           type == EnemyIntentType::ATTACK_BUFF || type == EnemyIntentType::ATTACK_DEBUFF;
+}
+
+enum class CardId : uint16_t; // engine/card.h
 
 struct EnemyIntent {
     EnemyIntentType type = EnemyIntentType::ATTACK;
@@ -272,6 +288,21 @@ struct EnemyIntent {
     StatusType status_type = StatusType::NONE;
     int16_t status_amount = 0;
     std::string_view description = "";
+    // What a move does to the player beyond one hit.
+    uint8_t hits = 1;                              // times `base_damage` is dealt
+    StatusType player_status = StatusType::NONE;   // given to the player after the attack
+    int8_t player_status_amount = 0;
+    CardId card{};                                 // Status card added to the player's piles, `card_count` times
+    uint8_t card_count = 0;
+    bool card_to_draw_pile = false;                // at a random place of the draw pile instead of the discard pile
+    int16_t heal = 0;                              // HP the enemy recovers
+};
+
+// Where a monster stands in its group: some patterns start on a different move for each place.
+enum class EnemyRank : uint8_t {
+    ALONE,
+    FRONT, // first of several
+    BACK
 };
 
 enum class EnemyType : uint8_t {
@@ -288,7 +319,29 @@ enum class EnemyType : uint8_t {
     AXE_RUBY_RAIDER,
     CALCIFIED_CULTIST,
     DAMP_CULTIST,
-    SEWER_CLAM
+    SEWER_CLAM,
+    // Played from the move tables of entity.cpp (MONSTERS)
+    CUBEX_CONSTRUCT,
+    INKLET,
+    NIBBIT,
+    SNAPPING_JAXFRUIT,
+    TWIG_SLIME_M,
+    LEAF_SLIME_M,
+    FLYCONID,
+    TRACKER_RUBY_RAIDER,
+    MAWLER,
+    TOADPOLE,
+    SLUDGE_SPINNER,
+    PUNCH_CONSTRUCT,
+    GREMLIN_MERC,
+    HAUNTED_SHIP,
+    CORPSE_SLUG,
+    FOSSIL_STALKER,
+    SEAPUNK,
+    BYRDONIS,        // elite
+    BYGONE_EFFIGY,   // elite
+    SKULKING_COLONY, // elite
+    TERROR_EEL       // elite
 };
 
 class Enemy : public CombatEntity {
@@ -300,11 +353,24 @@ public:
     int16_t temp_strength_loss = 0; // Strength taken away until the end of this enemy's turn
     bool minion = false; // summoned by another enemy: killing it triggers no Fatal effect
     uint8_t hang_marks = 0; // Hang cards already played on this enemy: each one doubles the next
+    // Where a monster of the move tables is in its pattern.
+    uint8_t move_step = 0;      // step the next plan_turn() plays
+    uint8_t last_move = 0xFF;   // move of the current intent, 0xFF before the first one
+    uint8_t used_moves = 0;     // one bit per move already announced, for the moves used only once
+    bool phase_changed = false; // its HP threshold has been passed
+    bool escaped = false;       // left the fight: it is gone without having been killed
 
-    void init(EnemyType enemy_type);
-    // Damage the current intent would deal to `target` right now (0 when it does not attack).
+    // `rank` and `roll` only matter to the monsters of the move tables: the place in the group, and the random
+    // number that picks the first move of those that open with a drawn one (see opens_with_draw()).
+    void init(EnemyType enemy_type, EnemyRank rank = EnemyRank::ALONE, uint32_t roll = 0);
+    // Whether the first move of this monster is drawn at random.
+    [[nodiscard]] static bool opens_with_draw(EnemyType enemy_type, EnemyRank rank = EnemyRank::ALONE);
+    // Whether the next plan_turn() draws its move at random, and so needs a `roll`.
+    [[nodiscard]] bool wants_roll() const;
+    // Damage one hit of the current intent would deal to `target` right now (0 when it does not attack). The
+    // intent deals it `current_intent.hits` times.
     int16_t intent_damage(const CombatEntity& target) const;
-    void plan_turn(int turn_number);
+    void plan_turn(int turn_number, uint32_t roll = 0);
     // Plays the current intent. An attack is answered by the player's Thorns, plus `damage_back` (Flame Barrier),
     // plus the damage their Block absorbed when `reflect` is set (Reflect).
     void execute_turn(Player& player, int16_t damage_back = 0, bool reflect = false);

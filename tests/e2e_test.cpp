@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include "engine/character.h"
+#include "engine/encounter.h"
 #include "engine/map.h"
 #include "engine/run.h"
 #include "engine/shop.h"
@@ -90,7 +91,13 @@ int main() {
     bool entered_route = nav.select_current_route();
     assert(entered_route);
     assert(run.phase == RunPhase::IN_COMBAT);
-    assert(run.combat.enemy.type == EnemyType::CULTIST);
+    // The first floor draws a weak encounter of the act's zone.
+    bool weak_encounter = false;
+    for (const Encounter& encounter : encounter_table(act_zone(run.current_act, run.map_seed), EncounterTier::WEAK)) {
+        weak_encounter = weak_encounter || encounter.id == run.current_encounter;
+    }
+    assert(weak_encounter);
+    assert(run.combat.enemy.type == run.combat.enemies[0].type);
     std::cout << "[E2E Step 8] Map Navigation verified: Floor scrolled, Deck viewed, and Floor 1 entered.\n";
 
     // 9. Combat: Pokémon-style Battle UI (4-way menu, CARDS submenu, animations)
@@ -124,7 +131,7 @@ int main() {
     }
     run.proceed_after_combat();
     assert(run.phase == RunPhase::REWARD_SCREEN);
-    std::cout << "[E2E Step 9] Cultist defeated via Pokémon Battle Menu! Burning Blood healed 6 HP. Reward Screen active.\n";
+    std::cout << "[E2E Step 9] First fight won via Pokémon Battle Menu! Burning Blood healed 6 HP. Reward Screen active.\n";
 
     // Collect Rewards: Pick Card 0 (Iron Wave) and Gold
     int old_gold = run.gold;

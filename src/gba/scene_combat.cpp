@@ -885,15 +885,33 @@ void CombatScene::_refresh_enemy_hud(int index)
     switch(intent.type)
     {
     case engine::EnemyIntentType::ATTACK:
+    case engine::EnemyIntentType::ATTACK_DEFEND:
+    case engine::EnemyIntentType::ATTACK_BUFF:
+    case engine::EnemyIntentType::ATTACK_DEBUFF:
+        // Damage of one hit, "N×M" for M hits, and "+" when the move does something more than attack.
         icon = Icon::ATTACK;
         stream << damage;
-        break;
-    case engine::EnemyIntentType::ATTACK_DEFEND:
-        icon = Icon::ATTACK;
-        stream << damage << "+";
+
+        if(intent.hits > 1)
+        {
+            stream << "×" << int(intent.hits);
+        }
+
+        if(intent.type != engine::EnemyIntentType::ATTACK)
+        {
+            stream << "+";
+        }
         break;
     case engine::EnemyIntentType::DEFEND:
         icon = Icon::DEFEND;
+        break;
+    case engine::EnemyIntentType::DEBUFF:
+    case engine::EnemyIntentType::STATUS:
+        icon = Icon::DEBUFF;
+        break;
+    case engine::EnemyIntentType::STUN:
+    case engine::EnemyIntentType::ESCAPE:
+        icon = Icon::UNKNOWN;
         break;
     default:
         icon = Icon::BUFF;
@@ -2043,8 +2061,7 @@ void CombatScene::_update_enemy_turn()
         {
             bn::string<16> text;
             bn::ostringstream stream(text);
-            bool attacked = record.intent_type == engine::EnemyIntentType::ATTACK ||
-                            record.intent_type == engine::EnemyIntentType::ATTACK_DEFEND;
+            bool attacked = engine::intent_attacks(record.intent_type);
 
             if(record.damage_to_player > 0)
             {

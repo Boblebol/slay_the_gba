@@ -36,6 +36,27 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::CALCIFIED_CULTIST: return "CALCIFIED_CULTIST";
         case EnemyType::DAMP_CULTIST: return "DAMP_CULTIST";
         case EnemyType::SEWER_CLAM: return "SEWER_CLAM";
+        case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
+        case EnemyType::INKLET: return "INKLET";
+        case EnemyType::NIBBIT: return "NIBBIT";
+        case EnemyType::SNAPPING_JAXFRUIT: return "SNAPPING_JAXFRUIT";
+        case EnemyType::TWIG_SLIME_M: return "TWIG_SLIME_M";
+        case EnemyType::LEAF_SLIME_M: return "LEAF_SLIME_M";
+        case EnemyType::FLYCONID: return "FLYCONID";
+        case EnemyType::TRACKER_RUBY_RAIDER: return "TRACKER_RUBY_RAIDER";
+        case EnemyType::MAWLER: return "MAWLER";
+        case EnemyType::TOADPOLE: return "TOADPOLE";
+        case EnemyType::SLUDGE_SPINNER: return "SLUDGE_SPINNER";
+        case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
+        case EnemyType::GREMLIN_MERC: return "GREMLIN_MERC";
+        case EnemyType::HAUNTED_SHIP: return "HAUNTED_SHIP";
+        case EnemyType::CORPSE_SLUG: return "CORPSE_SLUG";
+        case EnemyType::FOSSIL_STALKER: return "FOSSIL_STALKER";
+        case EnemyType::SEAPUNK: return "SEAPUNK";
+        case EnemyType::BYRDONIS: return "BYRDONIS";
+        case EnemyType::BYGONE_EFFIGY: return "BYGONE_EFFIGY";
+        case EnemyType::SKULKING_COLONY: return "SKULKING_COLONY";
+        case EnemyType::TERROR_EEL: return "TERROR_EEL";
     }
     return {};
 }
@@ -149,30 +170,63 @@ void test_tables_use_existing_monsters_with_a_sprite() {
 
 void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::WEAK)) ==
-           std::set<std::string_view>{ "FuzzyWurmCrawlerWeak" });
+           (std::set<std::string_view>{ "FuzzyWurmCrawlerWeak", "NibbitsWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
-           std::set<std::string_view>{ "RubyRaidersNormal" });
+           (std::set<std::string_view>{ "RubyRaidersNormal", "CubexConstructNormal", "InkletsNormal",
+                                        "NibbitsNormal", "SlimesNormal", "FlyconidNormal",
+                                        "SnappingJaxfruitNormal", "MawlerNormal" }));
+    assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "BygoneEffigyElite", "ByrdonisElite" }));
+    assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
+           (std::set<std::string_view>{ "ToadpolesWeak", "SludgeSpinnerWeak", "CorpseSlugsWeak", "SeapunkWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal" }));
+           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "PunchConstructNormal",
+                                        "GremlinMercNormal", "HauntedShipNormal", "CorpseSlugsNormal",
+                                        "FossilStalkerNormal", "SeapunkNormal" }));
+    assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "SkulkingColonyElite", "TerrorEelElite" }));
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
-        assert(ids_of(encounter_table(zone, EncounterTier::ELITE)) ==
-               std::set<std::string_view>{ "LegacyGremlinNob" });
     }
     // The groups the game had before, where the reference has nothing the engine can play yet.
-    assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
-           std::set<std::string_view>{ "LegacyCultist" });
     for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
         assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
         assert(ids_of(encounter_table(zone, EncounterTier::NORMAL)) ==
                (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
+        assert(ids_of(encounter_table(zone, EncounterTier::ELITE)) ==
+               std::set<std::string_view>{ "LegacyGremlinNob" });
     }
 
-    // The ruby raiders: three of the four raiders in the engine.
+    // Each reference encounter holds the monsters the reference lists, in its order.
+    const std::string reference = read_file("bible/data/monster_v0.111.0.json");
+    for (ActZone zone : { ActZone::ACT1A, ActZone::ACT1B }) {
+        for (EncounterTier tier : { EncounterTier::WEAK, EncounterTier::NORMAL, EncounterTier::ELITE }) {
+            for (const Encounter& encounter : encounter_table(zone, tier)) {
+                if (!encounter.random_pool.empty()) continue;
+                // "id": "X", "type": ..., "act": ..., "monsters": [ "A", "B" ]
+                size_t at = reference.find("\"id\": \"" + std::string(encounter.id) + "\"");
+                assert(at != std::string::npos);
+                size_t open = reference.find('[', at);
+                size_t close = reference.find(']', open);
+                std::string listed = reference.substr(open, close - open);
+                std::string expected;
+                for (uint8_t i = 0; i < encounter.count; ++i) {
+                    expected += "\"" + std::string(enemy_identifier(encounter.monsters[i])) + "\"";
+                }
+                std::string found;
+                for (char c : listed) {
+                    if (c != ' ' && c != '\n' && c != ',' && c != '[') found += c;
+                }
+                assert(found == expected);
+            }
+        }
+    }
+
+    // The ruby raiders: three of the five raiders.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
                                               "RubyRaidersNormal");
-    assert(raiders.count == 3 && raiders.random_pool.size() == 4);
+    assert(raiders.count == 3 && raiders.random_pool.size() == 5);
 
     // Every monster of the engine can be met.
     std::set<EnemyType> met;
@@ -214,6 +268,7 @@ void test_rooms_meet_every_encounter() {
         std::set<ActZone> zones_met;
         std::set<std::string_view> met[4][4];
         std::set<std::set<EnemyType>> raider_groups;
+        std::set<EnemyType> raiders_met;
         for (uint32_t seed = 1; seed <= SEEDS; ++seed) {
             for (EncounterTier tier : TIERS) {
                 RunManager run = make_run(seed, act);
@@ -231,6 +286,7 @@ void test_rooms_meet_every_encounter() {
                     std::set<EnemyType> group;
                     for (size_t i = 0; i < run.combat.enemies.size(); ++i) group.insert(run.combat.enemies[i].type);
                     raider_groups.insert(group);
+                    raiders_met.insert(group.begin(), group.end());
                 }
             }
         }
@@ -241,7 +297,8 @@ void test_rooms_meet_every_encounter() {
         }
         if (act == 1) {
             assert(zones_met == (std::set<ActZone>{ ActZone::ACT1A, ActZone::ACT1B }));
-            assert(raider_groups.size() == 4); // every trio of the four raiders
+            assert(raiders_met.size() == 5);   // every raider is met
+            assert(raider_groups.size() >= 4); // in different trios
         } else {
             assert(zones_met.size() == 1);
         }
@@ -284,14 +341,16 @@ void test_same_seed_same_fights() {
         assert(first.size() >= 10);
         assert(first == fights_of(seed));
     }
-    // A run of Act 1 (A): weak fights on the first floors, ruby raiders after them.
+    // A run of Act 1 (A): weak fights on the first floors, normal ones after them, then an elite and the boss.
     uint32_t seed = 99;
     assert(act_zone(1, make_run(seed, 1).map_seed) == ActZone::ACT1A);
     std::vector<std::string> fights = fights_of(seed);
+    auto id_of = [](const std::string& fight) { return std::string_view(fight).substr(0, fight.find(' ')); };
     for (size_t floor = 1; floor <= fights.size() - 2; ++floor) {
-        std::string_view expected = floor <= WEAK_ENCOUNTER_FLOORS ? "FuzzyWurmCrawlerWeak" : "RubyRaidersNormal";
-        assert(std::string_view(fights[floor - 1]).starts_with(expected));
+        EncounterTier tier = floor <= WEAK_ENCOUNTER_FLOORS ? EncounterTier::WEAK : EncounterTier::NORMAL;
+        assert(contains(encounter_table(ActZone::ACT1A, tier), id_of(fights[floor - 1])));
     }
+    assert(contains(encounter_table(ActZone::ACT1A, EncounterTier::ELITE), id_of(fights[fights.size() - 2])));
     assert(fights[fights.size() - 1] == "CeremonialBeastBoss CEREMONIAL_BEAST");
     std::cout << "[PASS] Encounter tables: the same seed gives the same fights" << std::endl;
 }

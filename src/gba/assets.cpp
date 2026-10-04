@@ -16,15 +16,36 @@
 #include "bn_sprite_items_mon_assassin_ruby_raider.h"
 #include "bn_sprite_items_mon_axe_ruby_raider.h"
 #include "bn_sprite_items_mon_brute_ruby_raider.h"
+#include "bn_sprite_items_mon_bygone_effigy.h"
+#include "bn_sprite_items_mon_byrdonis.h"
 #include "bn_sprite_items_mon_calcified_cultist.h"
+#include "bn_sprite_items_mon_corpse_slug.h"
 #include "bn_sprite_items_mon_crossbow_ruby_raider.h"
+#include "bn_sprite_items_mon_cubex_construct.h"
 #include "bn_sprite_items_mon_cultist.h"
 #include "bn_sprite_items_mon_damp_cultist.h"
+#include "bn_sprite_items_mon_flyconid.h"
+#include "bn_sprite_items_mon_fossil_stalker.h"
 #include "bn_sprite_items_mon_fuzzy_wurm_crawler.h"
+#include "bn_sprite_items_mon_gremlin_merc.h"
 #include "bn_sprite_items_mon_gremlin_nob.h"
+#include "bn_sprite_items_mon_haunted_ship.h"
+#include "bn_sprite_items_mon_inklet.h"
 #include "bn_sprite_items_mon_jaw_worm.h"
+#include "bn_sprite_items_mon_leaf_slime_m.h"
 #include "bn_sprite_items_mon_louse.h"
+#include "bn_sprite_items_mon_mawler.h"
+#include "bn_sprite_items_mon_nibbit.h"
+#include "bn_sprite_items_mon_punch_construct.h"
+#include "bn_sprite_items_mon_seapunk.h"
 #include "bn_sprite_items_mon_sewer_clam.h"
+#include "bn_sprite_items_mon_skulking_colony.h"
+#include "bn_sprite_items_mon_sludge_spinner.h"
+#include "bn_sprite_items_mon_snapping_jaxfruit.h"
+#include "bn_sprite_items_mon_terror_eel.h"
+#include "bn_sprite_items_mon_toadpole.h"
+#include "bn_sprite_items_mon_tracker_ruby_raider.h"
+#include "bn_sprite_items_mon_twig_slime_m.h"
 
 #include "bn_sprite_items_hand_cards_defect.h"
 #include "bn_sprite_items_hand_cards_ironclad.h"
@@ -217,6 +238,48 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_damp_cultist, false };
     case engine::EnemyType::SEWER_CLAM:
         return { &bn::sprite_items::mon_sewer_clam, false };
+    case engine::EnemyType::CUBEX_CONSTRUCT:
+        return { &bn::sprite_items::mon_cubex_construct, false };
+    case engine::EnemyType::INKLET:
+        return { &bn::sprite_items::mon_inklet, false };
+    case engine::EnemyType::NIBBIT:
+        return { &bn::sprite_items::mon_nibbit, false };
+    case engine::EnemyType::SNAPPING_JAXFRUIT:
+        return { &bn::sprite_items::mon_snapping_jaxfruit, false };
+    case engine::EnemyType::TWIG_SLIME_M:
+        return { &bn::sprite_items::mon_twig_slime_m, false };
+    case engine::EnemyType::LEAF_SLIME_M:
+        return { &bn::sprite_items::mon_leaf_slime_m, false };
+    case engine::EnemyType::FLYCONID:
+        return { &bn::sprite_items::mon_flyconid, false };
+    case engine::EnemyType::TRACKER_RUBY_RAIDER:
+        return { &bn::sprite_items::mon_tracker_ruby_raider, false };
+    case engine::EnemyType::MAWLER:
+        return { &bn::sprite_items::mon_mawler, false };
+    case engine::EnemyType::TOADPOLE:
+        return { &bn::sprite_items::mon_toadpole, false };
+    case engine::EnemyType::SLUDGE_SPINNER:
+        return { &bn::sprite_items::mon_sludge_spinner, false };
+    case engine::EnemyType::PUNCH_CONSTRUCT:
+        return { &bn::sprite_items::mon_punch_construct, false };
+    case engine::EnemyType::GREMLIN_MERC:
+        return { &bn::sprite_items::mon_gremlin_merc, false };
+    case engine::EnemyType::HAUNTED_SHIP:
+        return { &bn::sprite_items::mon_haunted_ship, false };
+    case engine::EnemyType::CORPSE_SLUG:
+        return { &bn::sprite_items::mon_corpse_slug, false };
+    case engine::EnemyType::FOSSIL_STALKER:
+        return { &bn::sprite_items::mon_fossil_stalker, false };
+    case engine::EnemyType::SEAPUNK:
+        return { &bn::sprite_items::mon_seapunk, false };
+    case engine::EnemyType::BYRDONIS:
+        return { &bn::sprite_items::mon_byrdonis, false };
+    case engine::EnemyType::BYGONE_EFFIGY:
+        return { &bn::sprite_items::mon_bygone_effigy, false };
+    case engine::EnemyType::SKULKING_COLONY:
+        return { &bn::sprite_items::mon_skulking_colony, false };
+    case engine::EnemyType::TERROR_EEL:
+        return { &bn::sprite_items::mon_terror_eel, false };
     default:
         return { &bn::sprite_items::mon_cultist, false };
     }

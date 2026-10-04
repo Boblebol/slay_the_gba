@@ -3967,24 +3967,34 @@ void test_pile_choices() {
 }
 
 void test_ascension() {
+    // HP the monster has before any Ascension bonus, whichever encounter the room drew.
+    auto designed_hp = [](const Enemy& met) {
+        Enemy plain;
+        plain.init(met.type);
+        return plain.max_hp;
+    };
+
     // A0: enemies as designed.
     RunManager normal;
     normal.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(normal, RoomType::ELITE);
-    assert(normal.combat.enemies[0].max_hp == 82 && normal.combat.enemies[0].damage_percent == 100);
+    const Enemy& elite = normal.combat.enemies[0];
+    assert(elite.max_hp == designed_hp(elite) && elite.damage_percent == 100);
 
     // A3: elites hit 20 % harder but keep their HP until A8.
     RunManager a3;
     a3.start_run(CharacterId::IRONCLAD, 3, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(a3, RoomType::ELITE);
-    assert(a3.combat.enemies[0].max_hp == 82 && a3.combat.enemies[0].damage_percent == 120);
+    const Enemy& elite_a3 = a3.combat.enemies[0];
+    assert(elite_a3.max_hp == designed_hp(elite_a3) && elite_a3.damage_percent == 120);
 
     // A10: every room is tougher; the intent shown is the damage really dealt (Chomp 11 x 1.2 = 13).
     RunManager a10;
     a10.start_run(CharacterId::IRONCLAD, 10, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(a10, RoomType::MONSTER);
     const Enemy& cultist = a10.combat.enemies[0];
-    assert(cultist.max_hp == 50 * 115 / 100 && cultist.hp == cultist.max_hp && cultist.damage_percent == 120);
+    assert(cultist.max_hp == designed_hp(cultist) * 115 / 100 && cultist.hp == cultist.max_hp &&
+           cultist.damage_percent == 120);
 
     CombatEngine fight = make_combat(CharacterId::IRONCLAD);
     fight.enemies[0].damage_percent = 120;

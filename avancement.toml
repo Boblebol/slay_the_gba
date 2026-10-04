@@ -138,6 +138,20 @@ items = [
 
 [[category]]
 section = "regles"
+title = "Coups des ennemis"
+items = [
+  { name = "Attaques ennemies en plusieurs coups", status = "oui", issue = 218 },
+  { name = "Schémas d'intentions : séquences, tirages pondérés sans répétition, phases", status = "partiel", issue = 218, note = "Séquences et boucles, tirages (sans répétition, une fois par combat), seconde phase sous un seuil de PV, premier coup selon la place dans le groupe ; pas de phase déclenchée par la mort d'un allié." },
+  { name = "Effets néfastes infligés au joueur par les ennemis", status = "oui", issue = 219 },
+  { name = "Cartes Statut ajoutées au deck du joueur par les ennemis", status = "oui", issue = 220 },
+  { name = "Invocations ennemies", status = "non", issue = 221 },
+  { name = "Intentions spéciales : étourdi, soin, fuite", status = "partiel", issue = 222, note = "Jouées par le moteur ; la fuite ne retire pas la récompense et ces intentions n'ont pas d'icône propre sur GBA." },
+  { name = "Pouvoirs propres aux ennemis", status = "non", issue = 223 },
+  { name = "Plus de 3 ennemis par combat", status = "non", issue = 224 },
+]
+
+[[category]]
+section = "regles"
 title = "Mots-clés de cartes"
 items = [
   { name = "Épuisement", status = "oui" },
@@ -179,7 +193,7 @@ items = [
   { name = "Carte procédurale à embranchements (16 étages)", status = "oui", issue = 24 },
   { name = "Trois actes enchaînés, soin entre les actes", status = "oui" },
   { name = "Salles : monstre, élite, boss, repos, trésor, boutique, évènement", status = "oui" },
-  { name = "Rencontres propres à chaque acte (81 rencontres du jeu d'origine)", status = "partiel", issue = 225, note = "Tables par acte et par salle (faible, normale, élite, boss), acte 1 en variante A ou B : 5 rencontres d'origine jouables, les anciens groupes ailleurs." },
+  { name = "Rencontres propres à chaque acte (81 rencontres du jeu d'origine)", status = "partiel", issue = 225, note = "Tables par acte et par salle (faible, normale, élite, boss), acte 1 en variante A ou B : 27 rencontres d'origine jouables à l'acte 1 (faibles, normales, élites), les anciens groupes ailleurs." },
   { name = "Un boss différent par acte", status = "non", issue = 36 },
   { name = "Neow en début de partie", status = "non", issue = 6 },
   { name = "Bénédiction d'un Ancien entre les actes", status = "non", issue = 261, note = "La phase existe dans le moteur mais elle est sautée." },

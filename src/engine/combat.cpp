@@ -1350,7 +1350,10 @@ void CombatEngine::start_combat_multi(FixedVector<EnemyType, 3> enemy_types, Cha
     enemies.clear();
     for (size_t i = 0; i < enemy_types.size(); ++i) {
         Enemy e;
-        e.init(enemy_types[i]);
+        // Some patterns start on a different move for the first monster of a group and for the ones behind it,
+        // and some open with a move drawn at random: only those take a number from the generator.
+        const EnemyRank rank = enemy_types.size() == 1 ? EnemyRank::ALONE : (i == 0 ? EnemyRank::FRONT : EnemyRank::BACK);
+        e.init(enemy_types[i], rank, Enemy::opens_with_draw(enemy_types[i], rank) ? next_random() : 0);
         enemies.push_back(e);
     }
     if (enemies.empty()) {
@@ -4662,6 +4665,9 @@ void CombatEngine::end_player_turn() {
 
 void CombatEngine::execute_enemy_turn() {
     last_enemy_actions.clear();
+    // Weak, Vulnerable and Frail the enemies give the player this round, one bit per StatusType: they do not
+    // wear off at the end of this same round.
+    uint32_t fresh_debuffs = 0;
     for (size_t i = 0; i < enemies.size(); ++i) {
         // Poison hits at the start of the poisoned enemy's turn and can kill it before it acts.
         for (int16_t tick = power_amount(PowerId::ACCELERANT); tick >= 0 && enemies[i].is_alive(); --tick) {
@@ -4676,8 +4682,25 @@ void CombatEngine::execute_enemy_turn() {
             const int16_t shield_before = player.block + player.minion_hp + player.minion_block;
             const int16_t osty_hp_before = player.minion_hp;
 
+            const EnemyIntent intent = enemies[i].current_intent;
+            const int16_t debuff_before = player.get_status(intent.player_status);
             enemies[i].execute_turn(player, power_amount(PowerId::FLAME_BARRIER), has_power(PowerId::REFLECT));
             note_osty_hp_lost(static_cast<int16_t>(osty_hp_before - player.minion_hp));
+            if (player.get_status(intent.player_status) > debuff_before) {
+                fresh_debuffs |= 1u << static_cast<uint8_t>(intent.player_status);
+            }
+            if (enemies[i].is_alive()) {
+                // Status cards the move adds to the player's piles.
+                for (uint8_t copy = 0; copy < intent.card_count; ++copy) {
+                    create_card(intent.card, intent.card_to_draw_pile ? Pile::DRAW : Pile::DISCARD);
+                }
+                // Escape: the monster is gone without having been killed, so nothing reacts to a death.
+                if (intent.type == EnemyIntentType::ESCAPE) {
+                    enemies[i].escaped = true;
+                    enemies[i].hp = 0;
+                    alive_mask_ = static_cast<uint8_t>(alive_mask_ & ~(1u << i));
+                }
+            }
             settle_deaths(); // Thorns and damage sent back can kill the attacker
 
             // Doom: an enemy with at least as much Doom as HP does not survive its turn.
@@ -4715,12 +4738,16 @@ void CombatEngine::execute_enemy_turn() {
 
     // Player debuffs (Weak, Vulnerable) wear off at the end of the round, after the enemies acted.
     player.tick_end_of_turn_statuses();
+    constexpr StatusType WEARING_OFF[] = { StatusType::VULNERABLE, StatusType::WEAK, StatusType::FRAIL };
+    for (StatusType type : WEARING_OFF) {
+        if (fresh_debuffs >> static_cast<uint8_t>(type) & 1) player.add_status(type, 1);
+    }
 
     // Plan next intents for all alive enemies
     turn_number++;
     for (size_t i = 0; i < enemies.size(); ++i) {
         if (enemies[i].is_alive()) {
-            enemies[i].plan_turn(turn_number);
+            enemies[i].plan_turn(turn_number, enemies[i].wants_roll() ? next_random() : 0);
         }
     }
 
