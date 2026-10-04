@@ -9,6 +9,7 @@
 #include "engine/event_manager.h"
 #include "engine/potion.h"
 #include "engine/relic.h"
+#include "engine/rewards.h"
 #include "engine/run.h"
 
 using namespace engine;
@@ -352,9 +353,17 @@ void test_relics_and_potions() {
         EventResult result = apply(run, choice_of({ { .type = EventOutcomeType::GAIN_POTION, .item = "BLOCK_POTION" } }));
         assert(run.potions.size() == 1 && run.potions[0] == "BLOCK_POTION");
         assert(result.effects[0].name == find_potion("BLOCK_POTION")->name);
-        // Without an id, a Fire Potion.
+        // Without an id, a random potion among the ones the hero can use.
+        std::set<std::string_view> seen;
+        for (uint32_t seed = 0; seed < 200; ++seed) {
+            RunManager other = fresh_run(42, CharacterId::REGENT);
+            apply(other, choice_of({ { .type = EventOutcomeType::GAIN_POTION } }), seed);
+            assert(other.potions.size() == 1 && potion_fits_hero(other.potions[0], CharacterId::REGENT));
+            seen.insert(other.potions[0]);
+        }
+        assert(seen.size() > 10);
         apply(run, choice_of({ { .type = EventOutcomeType::GAIN_POTION } }));
-        assert(run.potions.size() == 2 && run.potions[1] == "FIRE_POTION");
+        assert(run.potions.size() == 2);
         // A full belt loses the potion.
         apply(run, choice_of({ { .type = EventOutcomeType::GAIN_POTION } }));
         result = apply(run, choice_of({ { .type = EventOutcomeType::GAIN_POTION } }));

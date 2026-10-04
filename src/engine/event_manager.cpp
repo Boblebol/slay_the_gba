@@ -1,6 +1,7 @@
 #include "engine/event_manager.h"
 #include "engine/potion.h"
 #include "engine/relic.h"
+#include "engine/rewards.h"
 #include "engine/run.h"
 #include <algorithm>
 
@@ -305,8 +306,14 @@ bool EventManager::apply_choice(RunManager& run, const EventChoice& choice, char
                 break;
             }
             case EventOutcomeType::GAIN_POTION: {
-                std::string_view id = outcome.item.empty() ? "FIRE_POTION"sv : outcome.item;
                 if (run.potions.size() >= run.potions.capacity()) break;
+                std::string_view id = outcome.item;
+                if (id.empty()) {
+                    // The draw of the fight rewards: by rarity, among the potions this hero can use.
+                    RewardRng potion_rng(rng.next());
+                    id = draw_potion(potion_rng, run.character);
+                }
+                if (id.empty()) break;
                 run.potions.push_back(id);
                 const PotionData* potion = find_potion(id);
                 report(result, outcome.type, 1, potion ? potion->name : id);

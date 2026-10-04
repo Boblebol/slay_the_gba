@@ -34,8 +34,7 @@ enum class EventOutcomeType : uint8_t {
     GAIN_MAX_HP,    // HP rise by the same amount
     LOSE_MAX_HP,    // never below 1, HP follow
     GAIN_RELIC,     // `item`, or a random relic with an implemented effect when `item` is empty
-    GAIN_POTION,    // `item` (a Fire Potion when empty: the engine has no pool of potions to draw from yet);
-                    // lost when the belt is full
+    GAIN_POTION,    // `item`, or a random potion the hero can use when `item` is empty; lost when the belt is full
     GAIN_CARD,      // `card`, or a random card of the hero's reward pool when `card` is NONE
     REMOVE_CARD,    // `value` cards
     UPGRADE_CARD,   // `value` cards among the ones not upgraded yet
