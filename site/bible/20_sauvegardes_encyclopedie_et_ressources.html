@@ -225,7 +225,7 @@
         RE_B[&quot;Bonus cumulatif d'attaque et de défense royale&quot;]
     end
     subgraph P5 [&quot;💀 La Nécrolieuse / Necrobinder&quot;]
-        NE_S[&quot;Âmes (0 à 99)&quot;]
+        NE_S[&quot;Âmes : cartes à 0E créées en combat (Piochez 2 cartes, Épuisement)&quot;]
         NE_M[&quot;Invocation de Titos (Minion protecteur qui intercepte les dégâts)&quot;]
     end
 </code></pre>
@@ -258,7 +258,10 @@
 </ul>
 <h3 id="5-la-necrolieuse-necrobinder">5. 💀 La Nécrolieuse (<em>Necrobinder</em>)</h3>
 <ul>
-<li><strong>Âmes</strong> (<em>Souls</em>, 0 à 99) : Jauge récoltée lors des blessures infligées aux ennemis.</li>
+<li><strong>Âmes</strong> (<em>Souls</em>) : ce n'est pas une jauge mais une carte créée en combat, comme les Surins de la Silencieuse.</li>
+<li><strong>Âme</strong> : Compétence à 0 Énergie, « Piochez 2 cartes. Épuisement. » (<code>bible/data</code>, infobulle <code>card:Soul</code>). L'<strong>Âme+</strong> pioche 3 cartes : valeur du jeu d'origine, <code>bible/data</code> ne décrit que la version de base.</li>
+<li>Des cartes (Exaction, Fossoyeur, Capture spirituelle, Césure, Oraison), la relique <em>Masque funéraire</em> et la potion <em>Goules en bouteille</em> ajoutent des Âmes à la Pioche, à la Main ou à la Défausse.</li>
+<li><em>Hanter</em> et <em>Dévoration de vie</em> réagissent à chaque Âme jouée ; <em>Tempête d'âmes</em> compte les Âmes de la pile d'épuisement.</li>
 <li><strong>Familier Minion (Titos, <em>Osty</em> en VO)</strong> :</li>
 <li>Possède ses propres PV et son propre blocage (<code>minion_hp</code>, <code>minion_block</code>).</li>
 <li><strong>Interception des dégâts</strong> : Lorsque l'héroïne subit une attaque, son Armure absorbe d'abord les dégâts ; Titos encaisse ensuite ce qui passe, à la place des PV de la Nécrolieuse. S'il meurt, le reste du coup touche l'héroïne.</li>
