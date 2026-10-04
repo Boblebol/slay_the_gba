@@ -269,16 +269,36 @@ void RunManager::leave_shop() {
 }
 
 void RunManager::trigger_event() {
-    current_event = EventManager::get_encounter_for_floor(current_floor, next_random());
+    // The event comes from the act, its map and the floor (see EventManager::pick). The draw is kept so the
+    // run's random sequence stays where it was when this value picked the event.
+    next_random();
+    current_event = &EventManager::pick(map, current_act, map_seed, current_floor);
 }
 
-bool RunManager::choose_event_choice(int choice_index, char* out_msg, size_t max_len) {
-    if (choice_index >= 0 && static_cast<size_t>(choice_index) < current_event.choices.size()) {
-        EventManager::apply_choice(*this, current_event.choices[choice_index], out_msg, max_len);
+bool RunManager::choose_event_choice(int choice_index, char* out_msg, size_t max_len, EventResult* result) {
+    if (current_event && choice_index >= 0 && static_cast<size_t>(choice_index) < current_event->choices.size()) {
+        // Random outcomes come from a stream of the room and the choice: same seed, same result.
+        const uint32_t seed = map_seed ^ (static_cast<uint32_t>(current_act) << 24) ^
+                              (static_cast<uint32_t>(current_floor) << 16) ^ static_cast<uint32_t>(choice_index + 1);
         phase = RunPhase::MAP_NAVIGATION;
-        return true;
+        if (EventManager::apply_choice(*this, current_event->choices[choice_index], out_msg, max_len, result, seed)) {
+            return true;
+        }
+        phase = RunPhase::EVENT;
     }
     return false;
+}
+
+bool RunManager::start_event_fight(RoomType room) {
+    if (current_node_index < 0 || static_cast<size_t>(current_node_index) >= map.nodes.size()) return false;
+    // The room becomes a fighting room for the time enter_room sets the fight up, then is an event room
+    // again: after the fight, the rewards are the ones of any room that is not the boss.
+    MapNode& node = map.nodes[current_node_index];
+    const RoomType kept = node.type;
+    node.type = room == RoomType::ELITE ? RoomType::ELITE : RoomType::MONSTER;
+    enter_room(current_node_index);
+    node.type = kept;
+    return phase == RunPhase::IN_COMBAT;
 }
 
 std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {

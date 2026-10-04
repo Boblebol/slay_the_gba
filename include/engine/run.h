@@ -58,14 +58,18 @@ public:
     uint8_t card_removals_count = 0;
     PaletteVariant palette = PaletteVariant::CLASSIC;
 
-    EventEncounter current_event;
+    const EventEncounter* current_event = nullptr; // event of the last event room entered, in the ROM table
     std::string_view current_encounter; // id of the encounter of the last fight entered (see encounter.h)
 
     void start_run(CharacterId char_id, uint8_t ascension = 0, PaletteVariant pal = PaletteVariant::CLASSIC, uint32_t seed = 42);
     FixedVector<int, 3> get_available_rooms() const;
     void enter_room(int node_index);
     void trigger_event();
-    bool choose_event_choice(int choice_index, char* out_msg = nullptr, size_t max_len = 0);
+    // False, and the run stays in the event, when the choice does not exist or its condition is not met.
+    bool choose_event_choice(int choice_index, char* out_msg = nullptr, size_t max_len = 0,
+                             EventResult* result = nullptr);
+    // Starts a fight of the current act in the room the hero is in: the fight an event choice leads to.
+    bool start_event_fight(RoomType room);
 
     // Campfire actions
     void rest_at_campfire();

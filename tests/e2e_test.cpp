@@ -137,7 +137,7 @@ int main() {
               << run.master_deck.size() << " cards.\n";
 
     // 10b. Floor 3: Pokémon-style Mystery Event Encounter
-    EventEncounter ev = EventManager::get_encounter_for_floor(3, 42);
+    const EventEncounter& ev = *EventManager::find("COLOSSAL_FLOWER"); // the event (42 + 3) % 4 picked before the table
     assert(!ev.title.empty());
     assert(ev.choices.size() >= 2);
     char ev_msg[128];

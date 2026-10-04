@@ -341,22 +341,25 @@ int main() {
             }
         } else if (run.phase == RunPhase::EVENT) {
             std::cout << "\n======================================================\n";
-            std::cout << "  ❓ ÉVÉNEMENT MYSTÈRE — " << run.current_event.title << "\n";
+            std::cout << "  ❓ ÉVÉNEMENT MYSTÈRE — " << run.current_event->title << "\n";
             std::cout << "------------------------------------------------------\n";
-            std::cout << "  « " << run.current_event.dialogue << " »\n";
+            std::cout << "  « " << run.current_event->dialogue << " »\n";
             std::cout << "------------------------------------------------------\n";
-            for (size_t i = 0; i < run.current_event.choices.size(); ++i) {
-                std::cout << "    [" << (i + 1) << "] " << run.current_event.choices[i].label 
-                          << " (" << run.current_event.choices[i].cost_benefit << ")\n";
+            for (size_t i = 0; i < run.current_event->choices.size(); ++i) {
+                std::cout << "    [" << (i + 1) << "] " << run.current_event->choices[i].label 
+                          << " (" << run.current_event->choices[i].cost_benefit << ")\n";
             }
-            std::cout << "Votre décision [1-" << run.current_event.choices.size() << "]: ";
+            std::cout << "Votre décision [1-" << run.current_event->choices.size() << "]: ";
             std::string ev_choice;
             if (std::cin >> ev_choice) {
                 try {
                     int c_idx = std::stoi(ev_choice) - 1;
                     char msg[128];
-                    run.choose_event_choice(c_idx, msg, sizeof(msg));
-                    std::cout << "\n💬 " << msg << "\n";
+                    if (run.choose_event_choice(c_idx, msg, sizeof(msg))) {
+                        std::cout << "\n💬 " << msg << "\n";
+                    } else {
+                        std::cout << "\n💬 Ce choix n'est pas possible.\n";
+                    }
                 } catch (...) {
                     run.phase = RunPhase::MAP_NAVIGATION;
                 }

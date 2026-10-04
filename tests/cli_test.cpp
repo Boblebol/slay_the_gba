@@ -899,7 +899,7 @@ int main() {
     // Test Event Manager: Encounters, Choices & Outcomes
     RunManager ev_run;
     ev_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 42);
-    EventEncounter enc = EventManager::get_encounter_for_floor(3, 42);
+    const EventEncounter& enc = *EventManager::find("COLOSSAL_FLOWER"); // the event (42 + 3) % 4 picked before the table
     assert(!enc.title.empty());
     assert(enc.choices.size() >= 2);
 

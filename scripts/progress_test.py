@@ -47,6 +47,16 @@ def test_engine_names_are_mapped_to_reference_identifiers() -> None:
     assert "POISONED_STAB" in cards and "POISON_STAB" not in cards
 
 
+def test_events_are_read_from_the_data_table() -> None:
+    events = progress.implemented_events()
+    assert {"ABYSSAL_BATHS", "BATTLEWORN_DUMMY", "COLOSSAL_FLOWER"} <= events
+    # Only event ids: neither the relics and potions the outcomes name, nor an id quoted in a comment.
+    assert "VAJRA" not in events and all(event == event.upper() for event in events)
+    result = progress.compute()
+    assert find(result.section("rencontres"), "Évènements", "ABYSSAL_BATHS").status == PARTIAL  # avancement.toml
+    assert find(result.section("rencontres"), "Évènements", "AROMA_OF_CHAOS").status == TODO
+
+
 def test_detection_fails_loudly_when_the_engine_changes() -> None:
     with pytest.raises(SystemExit):
         progress.detect(r"no_such_engine_construct (\w+)", progress.ENGINE / "combat.cpp")

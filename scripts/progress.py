@@ -177,7 +177,8 @@ def implemented_monsters() -> set[str]:
 
 
 def implemented_events() -> set[str]:
-    return detect(r'enc\.id = "(\w+)"', ENGINE / "event_manager.cpp")
+    """Events of the data table: one `.id = "X"` line per event of EVENT_TABLE."""
+    return detect(r'\.id = "(\w+)"', ENGINE / "event_manager.cpp")
 
 
 # ---------------------------------------------------------------------------------------------

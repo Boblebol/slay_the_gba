@@ -284,36 +284,30 @@ struct EventRun {
     }
 };
 
-// The encounter picked by (floor + seed) % 4: floor 0 and seed 0..3 reach the four events.
-EventEncounter encounter(std::string_view id) {
-    for (uint32_t seed = 0; seed < 4; ++seed) {
-        EventEncounter enc = EventManager::get_encounter_for_floor(0, seed);
-        if (enc.id == id) return enc;
-    }
-    assert(false && "unknown event");
-    return {};
+// An event of the table (include/engine/event_manager.h). tests/events_test.cpp covers the table itself.
+const EventEncounter& encounter(std::string_view id) {
+    const EventEncounter* enc = EventManager::find(id);
+    assert(enc && "unknown event");
+    return *enc;
 }
 
 void test_event_choices() {
-    // The four events are the four residues of (seed + floor) % 4, each with 3 choices.
+    // The four events the game had before the table are in it, each with 3 choices.
     std::set<std::string_view> ids;
-    for (uint32_t seed = 0; seed < 4; ++seed) {
-        EventEncounter enc = EventManager::get_encounter_for_floor(0, seed);
-        assert(enc.choices.size() == 3 && !enc.title.empty() && !enc.dialogue.empty());
+    for (const EventEncounter& enc : EventManager::all()) {
+        assert(!enc.title.empty() && !enc.dialogue.empty());
         ids.insert(enc.id);
         for (const EventChoice& choice : enc.choices) {
             assert(!choice.label.empty() && !choice.cost_benefit.empty() && !choice.result_message.empty());
         }
-        // Same inputs, same event; the floor shifts the pick like the seed does.
-        assert(EventManager::get_encounter_for_floor(0, seed).id == enc.id);
-        assert(EventManager::get_encounter_for_floor(4, seed).id == enc.id);
-        assert(EventManager::get_encounter_for_floor(1, seed + 3).id == enc.id);
     }
-    assert(ids.size() == 4);
+    for (std::string_view id : { "BATTLEWORN_DUMMY", "COLOSSAL_FLOWER", "ABYSSAL_BATHS", "MYSTIC_ALTAR" }) {
+        assert(ids.count(id) == 1 && encounter(id).choices.size() == 3);
+    }
 
     // Battleworn Dummy: "6 damage, gain 60 gold" / "upgrade a card" / nothing.
     {
-        EventEncounter enc = encounter("BATTLEWORN_DUMMY");
+        const EventEncounter& enc = encounter("BATTLEWORN_DUMMY");
         EventRun fight;
         fight.apply(enc.choices[0]);
         assert(fight.run.hp == 40 - 6 && fight.run.gold == 100 + 60);
@@ -334,7 +328,7 @@ void test_event_choices() {
 
     // Colossal Flower: "recover 20 HP" / "10 damage, get Vajra" / nothing.
     {
-        EventEncounter enc = encounter("COLOSSAL_FLOWER");
+        const EventEncounter& enc = encounter("COLOSSAL_FLOWER");
         EventRun drink;
         drink.apply(enc.choices[0]);
         assert(drink.run.hp == 40 + 20 && drink.run.gold == 100);
@@ -358,7 +352,7 @@ void test_event_choices() {
 
     // Mystic Altar: "7 HP for 90 gold" / "upgrade a card" / nothing.
     {
-        EventEncounter enc = encounter("MYSTIC_ALTAR");
+        const EventEncounter& enc = encounter("MYSTIC_ALTAR");
         EventRun blood;
         blood.apply(enc.choices[0]);
         assert(blood.run.hp == 40 - 7 && blood.run.gold == 100 + 90);
@@ -374,7 +368,7 @@ void test_event_choices() {
 
     // Abyssal Baths: "recover 25 HP, costs 35 gold" / "gain 80 gold, 8 burn damage" / nothing.
     {
-        EventEncounter enc = encounter("ABYSSAL_BATHS");
+        const EventEncounter& enc = encounter("ABYSSAL_BATHS");
         EventRun bath;
         bath.apply(enc.choices[0]);
         assert(bath.run.hp == 40 + 25);
@@ -390,7 +384,7 @@ void test_event_choices() {
 
     // Damage never kills: the run stays at 1 HP at the lowest.
     {
-        EventEncounter enc = encounter("COLOSSAL_FLOWER");
+        const EventEncounter& enc = encounter("COLOSSAL_FLOWER");
         EventRun frail;
         frail.run.hp = 4;
         frail.apply(enc.choices[1]);
@@ -399,7 +393,7 @@ void test_event_choices() {
 
     // Upgrading with a deck that is already fully upgraded changes nothing and says so.
     {
-        EventEncounter enc = encounter("MYSTIC_ALTAR");
+        const EventEncounter& enc = encounter("MYSTIC_ALTAR");
         EventRun done;
         for (size_t i = 0; i < done.run.master_deck.size(); ++i) done.run.master_deck[i].upgraded = true;
         char message[256];
@@ -413,9 +407,7 @@ void test_event_choices() {
         EventChoice gift;
         gift.label = "Take the vial";
         gift.cost_benefit = "Get a potion.";
-        gift.outcome_type = EventOutcomeType::POTION;
-        gift.value = 0;
-        gift.extra_id = "BLOCK_POTION";
+        gift.outcomes = { { .type = EventOutcomeType::GAIN_POTION, .item = "BLOCK_POTION" } };
         gift.result_message = "You pocket the vial.";
         EventRun run;
         run.apply(gift);
@@ -432,7 +424,7 @@ void test_event_choices() {
         RunManager run;
         run.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 8);
         run.gold = 50;
-        run.current_event = encounter("MYSTIC_ALTAR");
+        run.current_event = &encounter("MYSTIC_ALTAR");
         run.phase = RunPhase::EVENT;
         char message[128];
         assert(run.choose_event_choice(0, message, sizeof(message)));
