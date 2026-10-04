@@ -4,11 +4,11 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 50,4 %** — 617 faits, 20 partiels, 606 à faire (36 hors périmètre).
+**Avancement global : 51,8 %** — 634 faits, 20 partiels, 589 à faire (36 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
-Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Fuel, Metallicize, Shiv, Slimed, Soot, Sovereign Blade, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
+Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Fuel, Metallicize, Shiv, Slimed, Soot, Sovereign Blade, Sweeping Gaze, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
 
 ## Synthèse
 
@@ -18,15 +18,15 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Silencieuse](#silent) | 83 | 1 | 17 | 82,7 % |
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
 | [Le Régent](#regent) | 86 | 1 | 13 | 86,5 % |
-| [La Nécrolieuse](#necrobinder) | 66 | 1 | 34 | 65,8 % |
-| [Cartes communes aux cinq éditions](#cartes) | 10 | 0 | 110 | 8,3 % |
+| [La Nécrolieuse](#necrobinder) | 82 | 1 | 18 | 81,7 % |
+| [Cartes communes aux cinq éditions](#cartes) | 11 | 0 | 109 | 9,2 % |
 | [Reliques et potions](#reliques) | 101 | 0 | 220 | 31,5 % |
 | [Bestiaire](#bestiaire) | 8 | 1 | 95 | 8,2 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 37 | 2 | 18 | 66,7 % |
 | [Systèmes de jeu](#systemes) | 20 | 3 | 13 | 59,7 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **617** | **20** | **606** | **50,4 %** |
+| **Total** | **634** | **20** | **589** | **51,8 %** |
 
 <a id="ironclad"></a>
 
@@ -557,11 +557,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 65,8 %
+## La Nécrolieuse — 81,7 %
 
-### Cartes — 65,1 %
+### Cartes — 83,7 %
 
-56 faits, 0 partiel, 30 à faire (5 hors périmètre).
+72 faits, 0 partiel, 14 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -571,8 +571,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Garde du corps | Base · Compétence | Oui |  |
 | Adjuration | Commune · Compétence | Oui |  |
 | Anti-pulsation | Commune · Compétence | Oui |  |
-| Chiquenaude | Commune · Attaque | Non |  |
-| Claquement de doigts | Commune · Attaque | Non |  |
+| Chiquenaude | Commune · Attaque | Oui |  |
+| Claquement de doigts | Commune · Attaque | Oui |  |
 | Drain de puissance | Commune · Attaque | Oui |  |
 | Défi | Commune · Compétence | Oui |  |
 | Déflagration tombale | Commune · Attaque | Oui |  |
@@ -584,24 +584,24 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Moisson | Commune · Attaque | Oui |  |
 | Pestilence | Commune · Compétence | Oui |  |
 | Profanation | Commune · Attaque | Oui |  |
-| Raser | Commune · Attaque | Non |  |
+| Raser | Commune · Attaque | Oui |  |
 | Râblure | Commune · Compétence | Oui |  |
 | Semence | Commune · Attaque | Oui |  |
 | Terreur | Commune · Attaque | Oui |  |
 | Vie après la mort | Commune · Compétence | Oui |  |
 | Amitié | Peu commune · Pouvoir | Oui |  |
 | Amoindrissement | Peu commune · Attaque | Non |  |
-| Calcification | Peu commune · Pouvoir | Non |  |
+| Calcification | Peu commune · Pouvoir | Oui |  |
 | Capture spirituelle | Peu commune · Compétence | Non |  |
-| Cliquetis | Peu commune · Attaque | Non |  |
+| Cliquetis | Peu commune · Attaque | Oui |  |
 | Césure | Peu commune · Attaque | Non |  |
 | Danse Macabre | Peu commune · Pouvoir | Oui |  |
-| Droitier | Peu commune · Attaque | Non |  |
+| Droitier | Peu commune · Attaque | Oui |  |
 | Décomposition | Peu commune · Compétence | Oui |  |
 | Décompte | Peu commune · Pouvoir | Oui |  |
 | Délai | Peu commune · Compétence | Oui |  |
 | Déterrer | Peu commune · Compétence | Oui |  |
-| Détonation osseuse | Peu commune · Attaque | Non |  |
+| Détonation osseuse | Peu commune · Attaque | Oui |  |
 | Enfers | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Enterrer | Peu commune · Attaque | Oui |  |
 | Hanter | Peu commune · Pouvoir | Non |  |
@@ -617,15 +617,15 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Purge | Peu commune · Compétence | Oui |  |
 | Putréfaction | Peu commune · Compétence | Oui |  |
 | Six pieds sous terre | Peu commune · Attaque | Oui |  |
-| Stimulation | Peu commune · Compétence | Non |  |
+| Stimulation | Peu commune · Compétence | Oui |  |
 | Sursis | Peu commune · Compétence | Oui |  |
-| Tope là | Peu commune · Attaque | Non |  |
+| Tope là | Peu commune · Attaque | Oui |  |
 | Toucher atrophiant | Peu commune · Compétence | Oui |  |
 | Tour de chair | Peu commune · Pouvoir | Oui |  |
-| Va chercher | Peu commune · Attaque | Non |  |
+| Va chercher | Peu commune · Attaque | Oui |  |
 | Voile | Peu commune · Pouvoir | Oui |  |
 | À l'agonie | Peu commune · Compétence | Oui |  |
-| À l'attaque ! | Peu commune · Attaque | Non |  |
+| À l'attaque ! | Peu commune · Attaque | Oui |  |
 | Âme sœur | Peu commune · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Appel du néant | Rare · Pouvoir | Non |  |
 | Cacophonie | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
@@ -638,24 +638,24 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Fin des temps | Rare · Compétence | Oui |  |
 | Forme de la Faucheuse | Rare · Pouvoir | Oui |  |
 | Influx neuronal | Rare · Pouvoir | Oui |  |
-| Joug | Rare · Attaque | Non |  |
+| Joug | Rare · Attaque | Oui |  |
 | L'heure est venue | Rare · Attaque | Oui |  |
 | La faux | Rare · Attaque | Oui |  |
-| Maîtrise nécrologique | Rare · Pouvoir | Non |  |
+| Maîtrise nécrologique | Rare · Pouvoir | Oui |  |
 | Misère | Rare · Attaque | Oui |  |
 | Mort-vivant | Rare · Compétence | Oui |  |
 | Oblitération | Rare · Compétence | Oui |  |
 | Pendaison | Rare · Attaque | Oui |  |
 | Réanimation | Rare · Compétence | Oui |  |
-| Sacrifice | Rare · Compétence | Non |  |
-| Sentinelle | Rare · Pouvoir | Non |  |
+| Sacrifice | Rare · Compétence | Oui |  |
+| Sentinelle | Rare · Pouvoir | Oui |  |
 | Séance | Rare · Compétence | Non |  |
 | Tempête d'âmes | Rare · Attaque | Non |  |
 | Transfiguration | Rare · Compétence | Non |  |
 | Vision de l'au-delà | Rare · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Éradication | Rare · Attaque | Oui |  |
 | Grimoire interdit | Ancienne · Pouvoir | Non |  |
-| Protecteur | Ancienne · Attaque | Non |  |
+| Protecteur | Ancienne · Attaque | Oui |  |
 
 ### Reliques — 62,5 %
 
@@ -688,7 +688,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 8,3 %
+## Cartes communes aux cinq éditions — 9,2 %
 
 ### Cartes incolores — 0,0 %
 
@@ -833,13 +833,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Rhabdomancie | Quête · Quête | Non |  |
 | Œuf d'oizodon | Quête · Quête | Non |  |
 
-### Cartes créées en combat et statuts — 58,8 %
+### Cartes créées en combat et statuts — 64,7 %
 
-10 faits, 0 partiel, 7 à faire.
+11 faits, 0 partiel, 6 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Balayage optique | Créée en combat · Attaque | Non |  |
+| Balayage optique | Créée en combat · Attaque | Oui |  |
 | Brûlure | Statut · Statut | Oui |  |
 | Combustible | Créée en combat · Compétence | Oui |  |
 | Débris | Statut · Statut | Oui |  |
