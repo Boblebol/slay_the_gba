@@ -1,6 +1,7 @@
 #include "engine/run.h"
 #include "engine/relic.h"
 #include "engine/encounter.h"
+#include "engine/rewards.h"
 #include <algorithm>
 
 namespace engine {
@@ -230,7 +231,8 @@ bool RunManager::remove_card_from_deck(int deck_index) {
 }
 
 void RunManager::open_shop() {
-    current_shop.generate(character, next_random(), card_removals_count);
+    current_shop.generate(character, next_random(), card_removals_count,
+                          std::span<const std::string_view>(relics.begin(), relics.size()));
     // Relics already owned are shown as sold out: a relic is never bought twice.
     for (size_t i = 0; i < current_shop.relics.size(); ++i) {
         if (has_relic(current_shop.relics[i].relic_id)) {
@@ -248,8 +250,8 @@ bool RunManager::buy_shop_relic(int index) {
     return current_shop.buy_relic(*this, index);
 }
 
-bool RunManager::buy_shop_potion(int index) {
-    return current_shop.buy_potion(*this, index);
+bool RunManager::buy_shop_potion(int index, int replace_index) {
+    return current_shop.buy_potion(*this, index, replace_index);
 }
 
 bool RunManager::use_potion(int index, int target_index) {
@@ -429,7 +431,11 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::SQUEEZE, CardId::FLATTEN, CardId::HIGH_FIVE, CardId::FETCH,
                                                    CardId::CALCIFY, CardId::RIGHT_HAND_HAND, CardId::NECRO_MASTERY,
                                                    CardId::SACRIFICE, CardId::SPUR, CardId::SIC_EM,
-                                                   CardId::SENTRY_MODE };
+                                                   CardId::SENTRY_MODE,
+                                                   CardId::REAVE, CardId::GRAVE_WARDEN, CardId::CAPTURE_SPIRIT,
+                                                   CardId::SEVERANCE, CardId::DIRGE, CardId::HAUNT,
+                                                   CardId::DEVOUR_LIFE, CardId::SOUL_STORM,
+                                                   CardId::GLIMPSE_BEYOND };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;
@@ -440,7 +446,18 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
     }
 }
 
+uint32_t RunManager::reward_seed() const {
+    return map_seed ^ (current_act * 0x9E3779B1u) ^ (current_floor * 0x85EBCA6Bu) ^
+           (static_cast<uint32_t>(current_node_index + 1) * 0xC2B2AE35u);
+}
+
 void RunManager::generate_rewards() {
+    RoomType room = current_node_index >= 0 ? map.nodes[current_node_index].type : RoomType::MONSTER;
+    // Potions, relics and what a boss gives are drawn from the stream of the room, so the run's own sequence
+    // is the one it was before fights gave them.
+    RewardRng rng(reward_seed());
+    bool boss = room == RoomType::BOSS;
+
     // Offer distinct cards drawn at random from the hero's pool.
     current_card_rewards.clear();
     FixedVector<CardId, 128> candidates;
@@ -448,28 +465,72 @@ void RunManager::generate_rewards() {
         candidates.push_back(id);
     }
     while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
-        size_t pick = next_random() % candidates.size();
+        size_t pick = (boss ? rng.next() : next_random()) % candidates.size();
         current_card_rewards.push_back(DeckCard(candidates[pick], false));
         candidates.erase(pick);
     }
 
-    gold_reward = 15 + static_cast<int16_t>(next_random() % 15);
+    // A boss gives 95 to 105 gold.
+    gold_reward = boss ? static_cast<int16_t>(95 + rng.below(11)) : 15 + static_cast<int16_t>(next_random() % 15);
+
+    // A potion the hero can use, in 40 % of the fights.
+    potion_reward = {};
+    if (rng.below(100) < POTION_REWARD_CHANCE) {
+        potion_reward = draw_potion(rng, character);
+    }
+
+    // A relic after an elite and after a boss, as long as there is room for one more.
+    relic_reward = {};
+    if ((room == RoomType::ELITE || boss) && relics.size() < relics.capacity()) {
+        relic_reward = draw_relic(rng, character, boss ? RelicSource::BOSS : RelicSource::ELITE,
+                                  std::span<const std::string_view>(relics.begin(), relics.size()));
+    }
     phase = RunPhase::REWARD_SCREEN;
+}
+
+bool RunManager::take_potion_reward(int replace_index) {
+    if (phase != RunPhase::REWARD_SCREEN || potion_reward.empty()) return false;
+    if (potions.size() < potions.capacity()) {
+        potions.push_back(potion_reward);
+    } else if (replace_index >= 0 && static_cast<size_t>(replace_index) < potions.size()) {
+        potions[replace_index] = potion_reward;
+    } else {
+        return false;
+    }
+    potion_reward = {};
+    return true;
+}
+
+bool RunManager::take_relic_reward() {
+    if (phase != RunPhase::REWARD_SCREEN || relic_reward.empty()) return false;
+    if (has_relic(relic_reward) || relics.size() >= relics.capacity()) return false;
+    add_relic(relic_reward);
+    relic_reward = {};
+    return true;
+}
+
+void RunManager::finish_rewards() {
+    gold += gold_reward;
+    gold_reward = 0;
+    potion_reward = {};
+    relic_reward = {};
+    // The boss of act 1 or 2: its rewards are taken, the next act opens.
+    if (current_node_index >= 0 && map.nodes[current_node_index].type == RoomType::BOSS && current_act < 3) {
+        advance_act();
+    } else {
+        phase = RunPhase::MAP_NAVIGATION;
+    }
 }
 
 void RunManager::pick_card_reward(int reward_index) {
     if (reward_index >= 0 && static_cast<size_t>(reward_index) < current_card_rewards.size()) {
         master_deck.push_back(current_card_rewards[reward_index]);
     }
-    gold += gold_reward;
-    gold_reward = 0;
-    phase = RunPhase::MAP_NAVIGATION;
+    finish_rewards();
 }
 
 void RunManager::skip_card_rewards() {
-    gold += gold_reward;
-    gold_reward = 0;
-    phase = RunPhase::MAP_NAVIGATION;
+    finish_rewards();
 }
 
 void RunManager::add_relic(std::string_view relic_id) {
@@ -487,7 +548,7 @@ bool RunManager::has_relic(std::string_view relic_id) const {
 
 std::span<const std::string_view> RunManager::active_relics() {
     // Every implemented relic that drops normally (Common, Uncommon, Rare, Shop); Starter, Boss, Event and Ancient
-    // relics come from elsewhere. Shop relics are in the list too: chests give them until the GBA shop sells relics (#184).
+    // relics come from elsewhere. Shop relics are in the list too: only the merchant gives them.
     static constexpr std::string_view ACTIVE_RELICS[] = {
         "VAJRA", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK", "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
         "STONE_CRACKER", "PANTOGRAPH", "SLING_OF_COURAGE",
@@ -508,7 +569,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
-        "BIG_HAT", "IVORY_TILE",                                                         // Necrobinder
+        "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
         "BRONZE_SCALES", "GORGET", "AKABEKO"
     };
@@ -516,11 +577,13 @@ std::span<const std::string_view> RunManager::active_relics() {
 }
 
 std::string_view RunManager::draw_treasure_relic() {
-    // A relic with an implemented effect, shared or of this hero, never one already owned.
+    // A relic with an implemented effect, shared or of this hero, never one already owned, never one of the
+    // merchant's own.
     std::string_view hero_pool = get_character(character).english_name;
     auto is_candidate = [&](std::string_view id) {
         const RelicData* relic = find_relic(id);
-        return relic && (relic->pool == "Shared" || relic->pool == hero_pool) && !has_relic(id);
+        return relic && relic->rarity != RelicRarity::SHOP && (relic->pool == "Shared" || relic->pool == hero_pool) &&
+               !has_relic(id);
     };
     uint32_t count = 0;
     for (std::string_view id : active_relics()) {
@@ -581,6 +644,8 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::TURN_SUMMON, 2);
     }
     if (has_relic("BONE_FLUTE")) combat.add_power(PowerId::BONE_FLUTE, 2);
+    // Funerary Mask (Necrobinder): 3 Souls shuffled into the draw pile before the first hand is drawn.
+    if (has_relic("FUNERARY_MASK")) combat.add_souls(3);
     if (has_relic("GOLD_PLATED_CABLES")) combat.add_power(PowerId::GOLD_PLATED_CABLES);
     if (has_relic("METRONOME")) combat.add_power(PowerId::METRONOME, 30);
     if (has_relic("EMOTION_CHIP")) combat.add_power(PowerId::EMOTION_CHIP);
@@ -790,7 +855,8 @@ void RunManager::proceed_after_combat() {
             // Between acts the hero recovers every lost HP, only 75 % of them from Ascension 5.
             int16_t missing = max_hp - hp;
             hp += ascension_level >= 5 ? static_cast<int16_t>(missing * 3 / 4) : missing;
-            advance_act();
+            // The next act opens once the rewards of the boss are taken (see finish_rewards).
+            generate_rewards();
         } else {
             phase = RunPhase::VICTORY_ACT;
         }

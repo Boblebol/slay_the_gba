@@ -53,6 +53,9 @@ public:
     CombatEngine combat;
     FixedVector<DeckCard, 3> current_card_rewards;
     int16_t gold_reward = 0;
+    // Potion and relic offered on the reward screen, empty when the fight gave none or once taken.
+    std::string_view potion_reward;
+    std::string_view relic_reward;
 
     ShopInventory current_shop;
     uint8_t card_removals_count = 0;
@@ -81,7 +84,8 @@ public:
     void open_shop();
     bool buy_shop_card(int index);
     bool buy_shop_relic(int index);
-    bool buy_shop_potion(int index);
+    // With a full belt, `replace_index` is the potion of the belt thrown away to make room.
+    bool buy_shop_potion(int index, int replace_index = -1);
     // Drinks the potion at `index` of the belt in the current combat and removes it from the belt.
     bool use_potion(int index, int target_index = -1);
     bool remove_card_at_shop(int deck_index);
@@ -93,6 +97,11 @@ public:
     static std::span<const CardId> card_reward_pool(CharacterId char_id);
     void pick_card_reward(int reward_index);
     void skip_card_rewards();
+    // Takes the potion of the reward screen. With a full belt, `replace_index` is the potion thrown away to make
+    // room; without it the potion stays on offer.
+    bool take_potion_reward(int replace_index = -1);
+    // Takes the relic of the reward screen.
+    bool take_relic_reward();
     void add_relic(std::string_view relic_id);
     bool has_relic(std::string_view relic_id) const;
     std::string_view draw_treasure_relic();
@@ -125,6 +134,10 @@ private:
     uint32_t next_random();
     // Monsters of a fighting room, drawn from the encounter table of the act and the floor.
     FixedVector<EnemyType, 3> draw_encounter(RoomType room);
+    // Seed of the reward stream of the current room (see RewardRng).
+    uint32_t reward_seed() const;
+    // Leaves the reward screen: the gold is paid, and a boss opens the next act.
+    void finish_rewards();
 };
 
 } // namespace engine

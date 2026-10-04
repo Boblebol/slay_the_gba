@@ -12,6 +12,7 @@
 #include "gba/card_text.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
+#include "gba/loot_text.h"
 #include "gba/text.h"
 #include "gba/widgets.h"
 
@@ -23,6 +24,13 @@ namespace
 
 constexpr int CARD_Y = 0;
 constexpr int CARD_X[] = { -72, 0, 72 };
+// Loot step, before the cards: one row per relic or potion, then what the row under the cursor does.
+constexpr int LOOT_ROW_Y = -22;
+constexpr int LOOT_ROW_STEP = 12;
+constexpr int LOOT_KIND_Y = 24;
+constexpr int LOOT_TEXT_Y = 36;
+constexpr int LOOT_TEXT_STEP = 10;
+constexpr int LOOT_TEXT_WIDTH = 224;
 
 class RewardsScene final : public Scene
 {
@@ -47,13 +55,44 @@ public:
         bn::ostringstream stream(gold);
         stream << '+' << run.gold_reward << " Or";
         _gold.set(-20, -56, gold, Align::LEFT, TextColor::GOLD);
-        _hint.set(116, -40, "START Passer", Align::RIGHT, TextColor::GRAY);
-        _prompt.set(-116, -40, "Choisissez une carte", Align::LEFT, TextColor::WHITE);
-        _refresh_text();
+
+        // The relic and the potion of the fight are taken or left before the cards are dealt.
+        if(! run.relic_reward.empty())
+        {
+            _loot.push_back(Loot::RELIC);
+        }
+
+        if(! run.potion_reward.empty())
+        {
+            _loot.push_back(Loot::POTION);
+        }
+
+        if(_loot.empty())
+        {
+            _open_cards();
+        }
+        else
+        {
+            _step = Step::LOOT;
+            _refresh_loot();
+        }
     }
 
     [[nodiscard]] bn::optional<SceneId> update() final
     {
+        if(_step != Step::CARDS)
+        {
+            // The cards wait above the screen until the loot is dealt with.
+            _popups.update();
+            _update_loot();
+            return bn::nullopt;
+        }
+
+        if(_chosen < 0)
+        {
+            _popups.update(); // lets the popups of the loot step finish
+        }
+
         ++_timer;
         int count = _cards.size();
 
@@ -82,7 +121,7 @@ public:
             {
                 _ctx.run.skip_card_rewards();
                 play_sfx(Sfx::GOLD);
-                return SceneId::MAP;
+                return _leave();
             }
         }
 
@@ -139,7 +178,7 @@ public:
 
             if(_exit_timer > 34)
             {
-                return SceneId::MAP;
+                return _leave();
             }
         }
 
@@ -147,6 +186,19 @@ public:
     }
 
 private:
+    enum class Step : uint8_t
+    {
+        LOOT,     // relic and potion of the fight
+        REPLACE,  // full belt: which potion makes room for the new one
+        CARDS
+    };
+
+    enum class Loot : uint8_t
+    {
+        RELIC,
+        POTION
+    };
+
     GameContext& _ctx;
     bn::regular_bg_ptr _bg;
     bn::sprite_ptr _gold_icon;
@@ -162,6 +214,203 @@ private:
     int _selected = 1;
     int _chosen = -1;
     int _exit_timer = 0;
+    Step _step = Step::CARDS;
+    bn::vector<Loot, 2> _loot;
+    bn::vector<Label, 3> _rows;
+    Label _loot_kind;
+    bn::vector<Label, 4> _loot_text;
+    int _loot_cursor = 0;
+    int _belt_cursor = 0;
+
+    // Leaving the screen after a boss opens the next act, announced on its map.
+    [[nodiscard]] SceneId _leave()
+    {
+        engine::RunManager& run = _ctx.run;
+
+        if(run.phase == engine::RunPhase::ANCIENT_BLESSING)
+        {
+            run.phase = engine::RunPhase::MAP_NAVIGATION;
+            _ctx.nav.reset_to_player_floor();
+            _ctx.map_toast.clear();
+            bn::ostringstream stream(_ctx.map_toast);
+            stream << "ACTE " << int(run.current_act) << " : l'ascension continue !";
+        }
+
+        return SceneId::MAP;
+    }
+
+    void _open_cards()
+    {
+        _step = Step::CARDS;
+        _timer = 0;
+        _rows.clear();
+        _loot_kind.clear();
+        _loot_text.clear();
+        _hint.set(116, -40, "START Passer", Align::RIGHT, TextColor::GRAY);
+        _prompt.set(-116, -40, "Choisissez une carte", Align::LEFT, TextColor::WHITE);
+        _refresh_text();
+    }
+
+    void _update_loot()
+    {
+        engine::RunManager& run = _ctx.run;
+
+        if(_step == Step::REPLACE)
+        {
+            int count = int(run.potions.size());
+
+            if(bn::keypad::up_pressed() || bn::keypad::down_pressed())
+            {
+                play_sfx(Sfx::UI_CURSOR);
+                _belt_cursor = (_belt_cursor + (bn::keypad::down_pressed() ? 1 : count - 1)) % count;
+                _refresh_loot();
+            }
+            else if(bn::keypad::b_pressed())
+            {
+                play_sfx(Sfx::UI_CANCEL);
+                _step = Step::LOOT;
+                _refresh_loot();
+            }
+            else if(bn::keypad::a_pressed() && run.take_potion_reward(_belt_cursor))
+            {
+                play_sfx(Sfx::UI_CONFIRM);
+                _popups.spawn(0, 12, "Potion remplacée", TextColor::GREEN);
+                _loot_taken();
+            }
+
+            return;
+        }
+
+        int count = _loot.size();
+
+        if(bn::keypad::up_pressed() || bn::keypad::down_pressed())
+        {
+            if(count > 1)
+            {
+                play_sfx(Sfx::UI_CURSOR);
+                _loot_cursor = (_loot_cursor + 1) % count;
+                _refresh_loot();
+            }
+        }
+        else if(bn::keypad::a_pressed())
+        {
+            if(_loot[_loot_cursor] == Loot::RELIC)
+            {
+                if(run.take_relic_reward())
+                {
+                    play_sfx(Sfx::RELIC);
+                    _popups.spawn(0, 12, "Relique obtenue !", TextColor::GREEN);
+                    _loot_taken();
+                }
+                else
+                {
+                    play_sfx(Sfx::ERROR);
+                }
+            }
+            else if(run.take_potion_reward())
+            {
+                play_sfx(Sfx::UI_CONFIRM);
+                _popups.spawn(0, 12, "Potion rangée", TextColor::GREEN);
+                _loot_taken();
+            }
+            else
+            {
+                // Full belt: one potion has to go.
+                play_sfx(Sfx::UI_OPEN);
+                _step = Step::REPLACE;
+                _belt_cursor = 0;
+                _refresh_loot();
+            }
+        }
+        else if(bn::keypad::start_pressed())
+        {
+            // What is not taken is left behind.
+            play_sfx(Sfx::UI_CONFIRM);
+            _open_cards();
+        }
+    }
+
+    void _loot_taken()
+    {
+        _loot.erase(_loot.begin() + _loot_cursor);
+        _loot_cursor = 0;
+
+        if(_loot.empty())
+        {
+            _open_cards();
+        }
+        else
+        {
+            _step = Step::LOOT;
+            _refresh_loot();
+        }
+    }
+
+    void _refresh_loot()
+    {
+        const engine::RunManager& run = _ctx.run;
+        bn::string_view kind;
+        bn::string_view description;
+        _rows.clear();
+
+        if(_step == Step::REPLACE)
+        {
+            _prompt.set(-116, -40, "Jeter quelle potion ?", Align::LEFT, TextColor::WHITE);
+            _hint.set(116, -40, "B Retour", Align::RIGHT, TextColor::GRAY);
+
+            for(int index = 0; index < int(run.potions.size()); ++index)
+            {
+                bool focused = index == _belt_cursor;
+                TextLine row;
+                bn::ostringstream stream(row);
+                stream << (focused ? "► " : "  ") << potion_name(run.potions[index]);
+                _rows.emplace_back().set(-112, LOOT_ROW_Y + index * LOOT_ROW_STEP, row, Align::LEFT,
+                                         focused ? TextColor::GOLD : TextColor::WHITE);
+            }
+
+            kind = "Dans la ceinture";
+            description = potion_description(run.potions[_belt_cursor]);
+        }
+        else
+        {
+            _prompt.set(-116, -40, "A Prendre", Align::LEFT, TextColor::WHITE);
+            _hint.set(116, -40, "START Continuer", Align::RIGHT, TextColor::GRAY);
+
+            for(int index = 0; index < _loot.size(); ++index)
+            {
+                bool focused = index == _loot_cursor;
+                bool relic = _loot[index] == Loot::RELIC;
+                TextLine row;
+                bn::ostringstream stream(row);
+                stream << (focused ? "► " : "  ") << (relic ? "Relique : " : "Potion : ")
+                       << (relic ? relic_name(run.relic_reward) : potion_name(run.potion_reward));
+                _rows.emplace_back().set(-112, LOOT_ROW_Y + index * LOOT_ROW_STEP, row, Align::LEFT,
+                                         focused ? TextColor::GOLD : TextColor::WHITE);
+            }
+
+            if(_loot[_loot_cursor] == Loot::RELIC)
+            {
+                kind = relic_kind(run.relic_reward);
+                description = relic_description(run.relic_reward);
+            }
+            else
+            {
+                kind = potion_kind(run.potion_reward);
+                description = potion_description(run.potion_reward);
+            }
+        }
+
+        _loot_kind.set(0, LOOT_KIND_Y, kind, Align::CENTER, TextColor::GOLD);
+        bn::vector<TextLine, 4> lines;
+        wrap_text(description, LOOT_TEXT_WIDTH, lines);
+        _loot_text.clear();
+
+        for(int index = 0; index < lines.size(); ++index)
+        {
+            _loot_text.emplace_back().set(0, LOOT_TEXT_Y + index * LOOT_TEXT_STEP, lines[index], Align::CENTER,
+                                          TextColor::WHITE);
+        }
+    }
 
     void _refresh_text()
     {

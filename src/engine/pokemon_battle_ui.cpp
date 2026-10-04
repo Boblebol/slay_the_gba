@@ -292,10 +292,8 @@ void PokemonBattleUI::get_hero_resource_label(const Player& player, CharacterId 
             append_int(out_buf, pos, max_len, static_cast<int>(player.sovereign_stars));
             break;
         case CharacterId::NECROBINDER:
-            append_lit(out_buf, pos, max_len, "AMES: ");
-            append_int(out_buf, pos, max_len, static_cast<int>(player.souls));
             if (player.minion_hp > 0) {
-                append_lit(out_buf, pos, max_len, " | OSTY: ");
+                append_lit(out_buf, pos, max_len, "OSTY: ");
                 append_int(out_buf, pos, max_len, player.minion_hp);
                 append_lit(out_buf, pos, max_len, " PV");
             }
