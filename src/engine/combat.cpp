@@ -1098,13 +1098,7 @@ void CombatEngine::add_shivs(int count, bool upgraded, Enchantment enchantment) 
 }
 
 void CombatEngine::add_souls(int count, Pile pile, bool upgraded) {
-    for (int copy = 0; copy < count; ++copy) {
-        if (SOUL_CARD == CardId::NONE) {
-            player.add_souls(1); // no Soul card yet: the Soul is only counted
-        } else {
-            create_card(DeckCard(SOUL_CARD, upgraded), pile);
-        }
-    }
+    for (int copy = 0; copy < count; ++copy) create_card(DeckCard(SOUL_CARD, upgraded), pile);
 }
 
 int CombatEngine::exhausted_souls() const {
@@ -4550,6 +4544,67 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Sweeping Gaze+!"sv : "Played Sweeping Gaze!"sv);
             break;
         }
+        case CardId::SOUL: {
+            draw_cards(base_value);
+            set_log(upgraded ? "Played Soul+!"sv : "Played Soul!"sv);
+            break;
+        }
+        case CardId::REAVE: {
+            hit(current_target, base_value);
+            // Reave+ adds a Soul+.
+            add_souls(secondary_value, Pile::DRAW, upgraded);
+            set_log(upgraded ? "Played Reave+!"sv : "Played Reave!"sv);
+            break;
+        }
+        case CardId::GRAVE_WARDEN: {
+            gain_block(base_value);
+            add_souls(secondary_value);
+            set_log(upgraded ? "Played Grave Warden+!"sv : "Played Grave Warden!"sv);
+            break;
+        }
+        case CardId::CAPTURE_SPIRIT: {
+            // HP loss: the enemy's Block does not absorb it.
+            current_target.lose_hp(base_value);
+            add_souls(secondary_value);
+            set_log(upgraded ? "Played Capture Spirit+!"sv : "Played Capture Spirit!"sv);
+            break;
+        }
+        case CardId::SEVERANCE: {
+            hit(current_target, base_value);
+            add_souls(secondary_value, Pile::DRAW);
+            add_souls(secondary_value, Pile::HAND);
+            add_souls(secondary_value, Pile::DISCARD);
+            set_log(upgraded ? "Played Severance+!"sv : "Played Severance!"sv);
+            break;
+        }
+        case CardId::DIRGE: {
+            // X separate Summons, then X Souls (Souls+ once upgraded).
+            for (int round = 0; round < x_value; ++round) player.summon_minion(base_value, 0);
+            add_souls(x_value, Pile::DRAW, upgraded);
+            set_log(upgraded ? "Played Dirge+!"sv : "Played Dirge!"sv);
+            break;
+        }
+        case CardId::HAUNT: {
+            add_power(PowerId::HAUNT, base_value);
+            set_log(upgraded ? "Played Haunt+!"sv : "Played Haunt!"sv);
+            break;
+        }
+        case CardId::DEVOUR_LIFE: {
+            add_power(PowerId::DEVOUR_LIFE, base_value);
+            set_log(upgraded ? "Played Devour Life+!"sv : "Played Devour Life!"sv);
+            break;
+        }
+        case CardId::SOUL_STORM: {
+            hit(current_target, static_cast<int16_t>(base_value + secondary_value * exhausted_souls()));
+            set_log(upgraded ? "Played Soul Storm+!"sv : "Played Soul Storm!"sv);
+            break;
+        }
+        case CardId::GLIMPSE_BEYOND: {
+            // "ALL players": there is one player.
+            add_souls(base_value);
+            set_log(upgraded ? "Played Glimpse Beyond+!"sv : "Played Glimpse Beyond!"sv);
+            break;
+        }
         default:
             set_log("Played card!");
             break;
@@ -4884,6 +4939,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "KINGS_COURAGE") {
         forge(15);
         set_log("King's Courage!");
+    } else if (potion_id == "POT_OF_GHOULS") {
+        add_souls(2, Pile::HAND);
+        set_log("Pot of Ghouls!");
     } else if (potion_id == "REGEN_POTION") {
         player.add_status(StatusType::REGEN, 5);
         set_log("Regen Potion!");

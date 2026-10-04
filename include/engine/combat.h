@@ -130,10 +130,9 @@ enum class ChoiceThen : uint8_t {
 constexpr uint8_t WHOLE_PILE = 0xFF;
 
 // The Soul (Necrobinder) is a card, not a gauge: a token that costs 0, "Draw 2 cards. Exhaust." (3 cards once
-// upgraded), which other cards add to the piles. This is its id. It stays CardId::NONE until the card is in
-// the card table: until then no Soul can be made, and CombatEngine::add_souls only counts them (Player::souls).
-constexpr CardId SOUL_CARD = CardId::NONE;
-constexpr bool is_soul(CardId id) { return SOUL_CARD != CardId::NONE && id == SOUL_CARD; }
+// upgraded), which other cards add to the piles. This is its id.
+constexpr CardId SOUL_CARD = CardId::SOUL;
+constexpr bool is_soul(CardId id) { return id == SOUL_CARD; }
 
 // Cards the player has to pick, in the hand or in a pile, before the combat goes on.
 struct CardChoice {
@@ -282,7 +281,7 @@ public:
     void kill_osty();
 
     // Souls (Necrobinder). Adds `count` Souls to a pile, as cards made during the combat: at random places of
-    // the draw pile, and in the discard pile when the hand is full. See SOUL_CARD for what happens meanwhile.
+    // the draw pile, and in the discard pile when the hand is full.
     void add_souls(int count, Pile pile = Pile::DRAW, bool upgraded = false);
     // "For each Soul in your Exhaust Pile": a Soul is exhausted when it is played.
     int exhausted_souls() const;

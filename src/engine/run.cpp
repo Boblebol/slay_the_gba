@@ -409,7 +409,11 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::SQUEEZE, CardId::FLATTEN, CardId::HIGH_FIVE, CardId::FETCH,
                                                    CardId::CALCIFY, CardId::RIGHT_HAND_HAND, CardId::NECRO_MASTERY,
                                                    CardId::SACRIFICE, CardId::SPUR, CardId::SIC_EM,
-                                                   CardId::SENTRY_MODE };
+                                                   CardId::SENTRY_MODE,
+                                                   CardId::REAVE, CardId::GRAVE_WARDEN, CardId::CAPTURE_SPIRIT,
+                                                   CardId::SEVERANCE, CardId::DIRGE, CardId::HAUNT,
+                                                   CardId::DEVOUR_LIFE, CardId::SOUL_STORM,
+                                                   CardId::GLIMPSE_BEYOND };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;
@@ -488,7 +492,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
-        "BIG_HAT", "IVORY_TILE",                                                         // Necrobinder
+        "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
         "BRONZE_SCALES", "GORGET", "AKABEKO"
     };
@@ -561,6 +565,8 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::TURN_SUMMON, 2);
     }
     if (has_relic("BONE_FLUTE")) combat.add_power(PowerId::BONE_FLUTE, 2);
+    // Funerary Mask (Necrobinder): 3 Souls shuffled into the draw pile before the first hand is drawn.
+    if (has_relic("FUNERARY_MASK")) combat.add_souls(3);
     if (has_relic("GOLD_PLATED_CABLES")) combat.add_power(PowerId::GOLD_PLATED_CABLES);
     if (has_relic("METRONOME")) combat.add_power(PowerId::METRONOME, 30);
     if (has_relic("EMOTION_CHIP")) combat.add_power(PowerId::EMOTION_CHIP);

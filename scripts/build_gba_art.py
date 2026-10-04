@@ -603,6 +603,16 @@ CARDS: list[CardArt] = [
     CardArt("sic_em", "necrobinder", "sic_em", "attack", (1, 1)),
     CardArt("sentry_mode", "necrobinder", "sentry_mode", "power", (2, 1)),
     CardArt("sweeping_gaze", "necrobinder", "sweeping_gaze", "attack", (0, 0), folder="token"),
+    CardArt("soul", "necrobinder", "soul", "skill", (0, 0), folder="token"),
+    CardArt("reave", "necrobinder", "reave", "attack", (1, 1)),
+    CardArt("grave_warden", "necrobinder", "grave_warden", "skill", (1, 1)),
+    CardArt("capture_spirit", "necrobinder", "capture_spirit", "skill", (1, 1)),
+    CardArt("severance", "necrobinder", "severance", "attack", (2, 2)),
+    CardArt("dirge", "necrobinder", "dirge", "skill", (-1, -1)),
+    CardArt("haunt", "necrobinder", "haunt", "power", (1, 1)),
+    CardArt("devour_life", "necrobinder", "devour_life", "power", (1, 1)),
+    CardArt("soul_storm", "necrobinder", "soul_storm", "attack", (1, 1)),
+    CardArt("glimpse_beyond", "necrobinder", "glimpse_beyond", "skill", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
