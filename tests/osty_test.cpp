@@ -296,8 +296,10 @@ void test_phylactery_relics() {
     assert(bound.combat.player.minion_hp == 1 && bound.combat.player.minion_max_hp == 1);
     end_turn(bound.combat, 0);
     assert(bound.combat.player.minion_hp == 2 && bound.combat.player.minion_max_hp == 2);
-    // Hurt, he still gains 1 HP and 1 Max HP.
-    end_turn(bound.combat, 1);
+    // Hurt, he still gains 1 HP and 1 Max HP. The room can hold several monsters: only the first one hits.
+    for (Enemy& foe : bound.combat.enemies) set_attack(foe, 0);
+    set_attack(bound.combat.enemies[0], 1);
+    bound.combat.end_player_turn();
     assert(bound.combat.player.minion_hp == 2 && bound.combat.player.minion_max_hp == 3);
     // Killed during the enemies' turn, a new Osty is there at the start of the next one.
     end_turn(bound.combat, 30);
