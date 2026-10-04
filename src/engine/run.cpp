@@ -409,7 +409,11 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::SQUEEZE, CardId::FLATTEN, CardId::HIGH_FIVE, CardId::FETCH,
                                                    CardId::CALCIFY, CardId::RIGHT_HAND_HAND, CardId::NECRO_MASTERY,
                                                    CardId::SACRIFICE, CardId::SPUR, CardId::SIC_EM,
-                                                   CardId::SENTRY_MODE };
+                                                   CardId::SENTRY_MODE,
+                                                   CardId::REAVE, CardId::GRAVE_WARDEN, CardId::CAPTURE_SPIRIT,
+                                                   CardId::SEVERANCE, CardId::DIRGE, CardId::HAUNT,
+                                                   CardId::DEVOUR_LIFE, CardId::SOUL_STORM,
+                                                   CardId::GLIMPSE_BEYOND };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;

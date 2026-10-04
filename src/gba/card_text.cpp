@@ -788,6 +788,24 @@ bn::string_view base_name(engine::CardId id)
         return "Balayage optique";
     case engine::CardId::SOUL:
         return "Âme";
+    case engine::CardId::REAVE:
+        return "Exaction";
+    case engine::CardId::GRAVE_WARDEN:
+        return "Fossoyeur";
+    case engine::CardId::CAPTURE_SPIRIT:
+        return "Capture spirituelle";
+    case engine::CardId::SEVERANCE:
+        return "Césure";
+    case engine::CardId::DIRGE:
+        return "Oraison";
+    case engine::CardId::HAUNT:
+        return "Hanter";
+    case engine::CardId::DEVOUR_LIFE:
+        return "Dévoration de vie";
+    case engine::CardId::SOUL_STORM:
+        return "Tempête d'âmes";
+    case engine::CardId::GLIMPSE_BEYOND:
+        return "Vision de l'au-delà";
     default:
         return "???";
     }
@@ -1978,6 +1996,33 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SOUL:
         stream << "Pioche " << value << " cartes. Épuisement.";
+        break;
+    case engine::CardId::REAVE:
+        stream << "Inflige " << value << " dégâts. Pioche : " << (card.upgraded ? "1 Âme+." : "1 Âme.");
+        break;
+    case engine::CardId::GRAVE_WARDEN:
+        stream << "Gagne " << value << " d'Armure. Pioche : 1 Âme.";
+        break;
+    case engine::CardId::CAPTURE_SPIRIT:
+        stream << "L'ennemi perd " << value << " PV. Pioche : " << secondary << " Âmes.";
+        break;
+    case engine::CardId::SEVERANCE:
+        stream << "Inflige " << value << ". Âme : Pioche, Main, Défausse.";
+        break;
+    case engine::CardId::DIRGE:
+        stream << "Invoque " << value << " X fois. " << (card.upgraded ? "X Âmes+" : "X Âmes") << ". Épuisement.";
+        break;
+    case engine::CardId::HAUNT:
+        stream << "Âme jouée : ennemi au hasard, -" << value << " PV.";
+        break;
+    case engine::CardId::DEVOUR_LIFE:
+        stream << "Âme jouée : Invoque Titos (" << value << " PV).";
+        break;
+    case engine::CardId::SOUL_STORM:
+        stream << "Inflige " << value << ", +" << secondary << " par Âme Épuisée.";
+        break;
+    case engine::CardId::GLIMPSE_BEYOND:
+        stream << "Ajoute " << value << " Âmes à la Pioche. Épuisement.";
         break;
     default:
         break;

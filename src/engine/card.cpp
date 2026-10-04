@@ -452,7 +452,17 @@ static constexpr CardDef CARDS[] = {
     { CardId::SENTRY_MODE, "Sentry Mode", 2, CardType::POWER, TargetType::SELF, 1, 0, "At the start of your turn, add 1 Sweeping Gaze to your hand.", "Sentry Mode+", 1, 1, 0, "At the start of your turn, add 1 Sweeping Gaze to your hand." },
     { CardId::SWEEPING_GAZE, "Sweeping Gaze", 0, CardType::ATTACK, TargetType::RANDOM_ENEMY, 10, 0, "Ethereal. Osty deals 10 dmg to a random enemy. Exhaust.", "Sweeping Gaze+", 0, 10, 0, "Ethereal. Osty deals 10 dmg to a random enemy. Exhaust.", KEYWORD_ETHEREAL | KEYWORD_EXHAUST, KEYWORD_ETHEREAL | KEYWORD_EXHAUST, 0, 0, PlayCondition::OSTY_ALIVE },
     // Soul (Necrobinder): a token, added to the piles by other cards.
-    { CardId::SOUL, "Soul", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Draw 2 cards. Exhaust.", "Soul+", 0, 3, 0, "Draw 3 cards. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST }
+    { CardId::SOUL, "Soul", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Draw 2 cards. Exhaust.", "Soul+", 0, 3, 0, "Draw 3 cards. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Souls cards (Necrobinder)
+    { CardId::REAVE, "Reave", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 1, "Deal 10 dmg. Add a Soul into your draw pile.", "Reave+", 1, 13, 1, "Deal 13 dmg. Add a Soul+ into your draw pile." },
+    { CardId::GRAVE_WARDEN, "Grave Warden", 1, CardType::SKILL, TargetType::SELF, 8, 1, "Gain 8 block. Add a Soul into your draw pile.", "Grave Warden+", 1, 11, 1, "Gain 11 block. Add a Soul into your draw pile." },
+    { CardId::CAPTURE_SPIRIT, "Capture Spirit", 1, CardType::SKILL, TargetType::SINGLE_ENEMY, 3, 3, "Enemy loses 3 HP. Add 3 Souls into your draw pile.", "Capture Spirit+", 1, 4, 4, "Enemy loses 4 HP. Add 4 Souls into your draw pile." },
+    { CardId::SEVERANCE, "Severance", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 13, 1, "Deal 13 dmg. Add a Soul into your draw pile, hand and discard pile.", "Severance+", 2, 18, 1, "Deal 18 dmg. Add a Soul into your draw pile, hand and discard pile." },
+    { CardId::DIRGE, "Dirge", COST_X, CardType::SKILL, TargetType::SELF, 3, 0, "Summon 3 X times. Add X Souls into your draw pile. Exhaust.", "Dirge+", COST_X, 4, 0, "Summon 4 X times. Add X Souls+ into your draw pile. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::HAUNT, "Haunt", 1, CardType::POWER, TargetType::SELF, 7, 0, "Whenever you play a Soul, a random enemy loses 7 HP.", "Haunt+", 1, 9, 0, "Whenever you play a Soul, a random enemy loses 9 HP." },
+    { CardId::DEVOUR_LIFE, "Devour Life", 1, CardType::POWER, TargetType::SELF, 1, 0, "Whenever you play a Soul, Summon 1.", "Devour Life+", 1, 2, 0, "Whenever you play a Soul, Summon 2." },
+    { CardId::SOUL_STORM, "Soul Storm", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 4, "Deal 9 dmg, +4 for each Soul in your exhaust pile.", "Soul Storm+", 1, 9, 6, "Deal 9 dmg, +6 for each Soul in your exhaust pile." },
+    { CardId::GLIMPSE_BEYOND, "Glimpse Beyond", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Add 3 Souls into your draw pile. Exhaust.", "Glimpse Beyond+", 1, 4, 0, "Add 4 Souls into your draw pile. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST }
 };
 
 const CardDef& CardDef::get(CardId id) {

@@ -1,8 +1,6 @@
 // Souls of the Necrobinder (#106). In bible/data a Soul is a card, not a gauge: a token that costs 0, "Draw 2
 // cards. Exhaust.", which other cards add to the draw pile, the hand or the discard pile. One case per rule.
-//
-// The card itself is engine::SOUL_CARD. While it is CardId::NONE (the card is not in the card table yet), the
-// cases that need a Soul to be drawn or played are skipped and say so; the others run either way.
+// Then the cards, the relic and the potion that make Souls or count them (#154), with the numbers of bible/data.
 #include <cassert>
 #include <iostream>
 #include "engine/combat.h"
@@ -11,8 +9,6 @@
 using namespace engine;
 
 namespace {
-
-constexpr bool SOUL_EXISTS = SOUL_CARD != CardId::NONE;
 
 // A Necrobinder against `count` enemies with 100 HP each, hand emptied: the draw pile holds the starter deck.
 CombatEngine make_fight(int count = 1) {
@@ -52,32 +48,24 @@ int total_hp(const CombatEngine& combat) {
     return total;
 }
 
-// ---- Rules that hold with or without the card -------------------------------------------------------------
+// ---- Souls are cards ----------------------------------------------------------------------------------------
 
 void test_a_combat_starts_without_souls() {
     CombatEngine combat = make_fight();
-    assert(combat.player.souls == 0);
     assert(souls_in(combat.draw_pile) == 0 && souls_in(combat.hand) == 0 && souls_in(combat.discard_pile) == 0);
     assert(combat.exhausted_souls() == 0);
     assert(!is_soul(CardId::NONE) && !is_soul(CardId::STRIKE));
 }
 
-void test_adding_souls_makes_cards_or_counts_them() {
+void test_adding_souls_makes_cards() {
     CombatEngine combat = make_fight();
     const size_t before = combat.draw_pile.size();
+    // "Add 3 Souls into your Draw Pile": three more cards.
     combat.add_souls(3);
-    if (SOUL_EXISTS) {
-        // "Add 3 Souls into your Draw Pile": three more cards, and nothing is counted on the side.
-        assert(combat.draw_pile.size() == before + 3 && souls_in(combat.draw_pile) == 3 && combat.player.souls == 0);
-    } else {
-        // Stand-in: the piles are left alone, the Souls are counted, 99 at most.
-        assert(combat.draw_pile.size() == before && combat.player.souls == 3);
-        combat.add_souls(200, Pile::HAND);
-        assert(combat.player.souls == 99 && combat.hand.empty());
-    }
+    assert(combat.draw_pile.size() == before + 3 && souls_in(combat.draw_pile) == 3);
     combat.add_souls(0);
     combat.add_souls(-2);
-    assert(combat.draw_pile.size() == before + (SOUL_EXISTS ? 3 : 0));
+    assert(combat.draw_pile.size() == before + 3);
 }
 
 void test_other_cards_are_not_souls() {
@@ -230,18 +218,178 @@ void test_pot_of_ghouls_adds_two_souls_to_the_hand() {
     assert(combat.hand.size() == 2 && souls_in(combat.hand) == 2 && souls_in(combat.hand, true) == 0);
 }
 
+// ---- Cards that make Souls or count them (#154) -------------------------------------------------------------
+
+// Plays `card` with `energy` and returns what it cost.
+int play_with_energy(CombatEngine& combat, DeckCard card, int target = -1, int energy = 3) {
+    combat.player.energy = static_cast<int8_t>(energy);
+    play(combat, card, target);
+    return energy - combat.player.energy;
+}
+
+void test_reave_deals_damage_and_adds_a_soul() {
+    CombatEngine combat = make_fight();
+    const size_t deck = combat.draw_pile.size();
+    assert(play_with_energy(combat, CardId::REAVE, 0) == 1);
+    assert(combat.enemies[0].hp == 90);
+    assert(combat.draw_pile.size() == deck + 1 && souls_in(combat.draw_pile) == 1 && souls_in(combat.draw_pile, true) == 0);
+    assert(combat.discard_pile.size() == 1 && combat.hand.empty());
+    // Reave+: 13 damage and a Soul+.
+    CombatEngine upgraded = make_fight();
+    play_with_energy(upgraded, DeckCard(CardId::REAVE, true), 0);
+    assert(upgraded.enemies[0].hp == 87);
+    assert(souls_in(upgraded.draw_pile) == 1 && souls_in(upgraded.draw_pile, true) == 1);
+}
+
+void test_grave_warden_gains_block_and_adds_a_soul() {
+    CombatEngine combat = make_fight();
+    assert(play_with_energy(combat, CardId::GRAVE_WARDEN) == 1);
+    assert(combat.player.block == 8 && souls_in(combat.draw_pile) == 1);
+    // Grave Warden+: 11 Block, and the Soul is not upgraded.
+    CombatEngine upgraded = make_fight();
+    play_with_energy(upgraded, DeckCard(CardId::GRAVE_WARDEN, true));
+    assert(upgraded.player.block == 11);
+    assert(souls_in(upgraded.draw_pile) == 1 && souls_in(upgraded.draw_pile, true) == 0);
+}
+
+void test_capture_spirit_makes_the_enemy_lose_hp_and_adds_souls() {
+    CombatEngine combat = make_fight(2);
+    for (Enemy& foe : combat.enemies) foe.block = 20;
+    assert(CardDef::get(CardId::CAPTURE_SPIRIT).type == CardType::SKILL);
+    assert(play_with_energy(combat, CardId::CAPTURE_SPIRIT, 1) == 1);
+    // An HP loss on the chosen enemy: its Block is untouched.
+    assert(combat.enemies[1].hp == 97 && combat.enemies[1].block == 20 && combat.enemies[0].hp == 100);
+    assert(souls_in(combat.draw_pile) == 3);
+    // Capture Spirit+: 4 HP and 4 Souls.
+    CombatEngine upgraded = make_fight();
+    play_with_energy(upgraded, DeckCard(CardId::CAPTURE_SPIRIT, true), 0);
+    assert(upgraded.enemies[0].hp == 96 && souls_in(upgraded.draw_pile) == 4 && souls_in(upgraded.draw_pile, true) == 0);
+    // The HP loss can kill.
+    CombatEngine last = make_fight();
+    last.enemies[0].hp = 3;
+    play_with_energy(last, CardId::CAPTURE_SPIRIT, 0);
+    assert(!last.enemies[0].is_alive() && last.state == CombatState::VICTORY);
+}
+
+void test_severance_adds_a_soul_to_each_pile() {
+    CombatEngine combat = make_fight();
+    assert(play_with_energy(combat, CardId::SEVERANCE, 0) == 2);
+    assert(combat.enemies[0].hp == 87);
+    assert(souls_in(combat.draw_pile) == 1 && souls_in(combat.hand) == 1 && souls_in(combat.discard_pile) == 1);
+    // Severance itself and the Soul are in the discard pile.
+    assert(combat.hand.size() == 1 && combat.discard_pile.size() == 2);
+    // Severance+: 18 damage, the Souls are not upgraded.
+    CombatEngine upgraded = make_fight();
+    play_with_energy(upgraded, DeckCard(CardId::SEVERANCE, true), 0);
+    assert(upgraded.enemies[0].hp == 82);
+    assert(souls_in(upgraded.draw_pile) == 1 && souls_in(upgraded.hand) == 1 && souls_in(upgraded.discard_pile) == 1);
+    assert(souls_in(upgraded.draw_pile, true) + souls_in(upgraded.hand, true) + souls_in(upgraded.discard_pile, true) == 0);
+}
+
+void test_dirge_summons_and_adds_souls_x_times() {
+    CombatEngine combat = make_fight();
+    assert(CardDef::is_x_cost(CardId::DIRGE, false) && CardDef::is_x_cost(CardId::DIRGE, true));
+    // X = 3: Summon 3 three times, 3 Souls, all the energy spent, and Dirge is exhausted.
+    assert(play_with_energy(combat, CardId::DIRGE) == 3);
+    assert(combat.player.minion_hp == 9 && combat.player.minion_max_hp == 9);
+    assert(souls_in(combat.draw_pile) == 3 && souls_in(combat.draw_pile, true) == 0);
+    assert(combat.exhaust_pile.size() == 1 && combat.discard_pile.empty() && combat.exhausted_souls() == 0);
+    // Dirge+ with X = 2: Summon 4 twice, 2 Souls+.
+    CombatEngine upgraded = make_fight();
+    assert(play_with_energy(upgraded, DeckCard(CardId::DIRGE, true), -1, 2) == 2);
+    assert(upgraded.player.minion_hp == 8);
+    assert(souls_in(upgraded.draw_pile) == 2 && souls_in(upgraded.draw_pile, true) == 2);
+    // X = 0: played for nothing.
+    CombatEngine empty = make_fight();
+    assert(play_with_energy(empty, CardId::DIRGE, -1, 0) == 0);
+    assert(!empty.player.minion_alive() && souls_in(empty.draw_pile) == 0 && empty.exhaust_pile.size() == 1);
+}
+
+void test_haunt_card_gives_the_power() {
+    CombatEngine combat = make_fight();
+    assert(CardDef::get(CardId::HAUNT).type == CardType::POWER);
+    assert(play_with_energy(combat, CardId::HAUNT) == 1);
+    assert(combat.enemies[0].hp == 100);
+    play(combat, SOUL_CARD);
+    assert(combat.enemies[0].hp == 93);
+    // Haunt+ is 9, on top of the first one.
+    play_with_energy(combat, DeckCard(CardId::HAUNT, true));
+    play(combat, SOUL_CARD);
+    assert(combat.enemies[0].hp == 77);
+    // A power card is neither discarded nor exhausted: only the two Souls are in the exhaust pile.
+    assert(combat.discard_pile.empty() && combat.exhaust_pile.size() == 2 && combat.exhausted_souls() == 2);
+}
+
+void test_devour_life_card_gives_the_power() {
+    CombatEngine combat = make_fight();
+    assert(CardDef::get(CardId::DEVOUR_LIFE).type == CardType::POWER);
+    assert(play_with_energy(combat, CardId::DEVOUR_LIFE) == 1);
+    assert(!combat.player.minion_alive());
+    play(combat, SOUL_CARD);
+    assert(combat.player.minion_hp == 1);
+    // Devour Life+ summons 2, on top of the first one.
+    play_with_energy(combat, DeckCard(CardId::DEVOUR_LIFE, true));
+    play(combat, SOUL_CARD);
+    assert(combat.player.minion_hp == 4 && combat.player.minion_max_hp == 4);
+}
+
+void test_soul_storm_counts_the_exhausted_souls() {
+    CombatEngine combat = make_fight();
+    assert(play_with_energy(combat, CardId::SOUL_STORM, 0) == 1);
+    assert(combat.enemies[0].hp == 91);
+    // Two Souls played, one exhausted unplayed, one still in the draw pile: 9 + 4 x 3.
+    combat.draw_pile.clear();
+    play(combat, SOUL_CARD);
+    play(combat, DeckCard(SOUL_CARD, true));
+    combat.exhaust_card(SOUL_CARD);
+    combat.exhaust_card(CardId::DEFEND);
+    combat.add_souls(1);
+    play_with_energy(combat, CardId::SOUL_STORM, 0);
+    assert(combat.enemies[0].hp == 91 - 21);
+    // Soul Storm+: 9 + 6 x 3.
+    play_with_energy(combat, DeckCard(CardId::SOUL_STORM, true), 0);
+    assert(combat.enemies[0].hp == 91 - 21 - 27);
+    // One attack: Strength is added once, not once per Soul.
+    combat.player.add_status(StatusType::STRENGTH, 2);
+    play_with_energy(combat, CardId::SOUL_STORM, 0);
+    assert(combat.enemies[0].hp == 91 - 21 - 27 - 23);
+}
+
+void test_glimpse_beyond_adds_souls_and_is_exhausted() {
+    CombatEngine combat = make_fight();
+    assert(play_with_energy(combat, CardId::GLIMPSE_BEYOND) == 1);
+    assert(souls_in(combat.draw_pile) == 3 && souls_in(combat.draw_pile, true) == 0);
+    assert(combat.exhaust_pile.size() == 1 && combat.discard_pile.empty());
+    // Glimpse Beyond+: 4 Souls.
+    CombatEngine upgraded = make_fight();
+    play_with_energy(upgraded, DeckCard(CardId::GLIMPSE_BEYOND, true));
+    assert(souls_in(upgraded.draw_pile) == 4 && upgraded.exhaust_pile.size() == 1);
+}
+
+void test_souls_cards_are_offered_to_the_necrobinder_only() {
+    constexpr CardId SOULS_CARDS[] = { CardId::REAVE, CardId::GRAVE_WARDEN, CardId::CAPTURE_SPIRIT,
+                                       CardId::SEVERANCE, CardId::DIRGE, CardId::HAUNT, CardId::DEVOUR_LIFE,
+                                       CardId::SOUL_STORM, CardId::GLIMPSE_BEYOND };
+    auto offers = [](CharacterId hero, CardId wanted) {
+        for (CardId id : RunManager::card_reward_pool(hero)) {
+            if (id == wanted) return true;
+        }
+        return false;
+    };
+    for (CardId id : SOULS_CARDS) {
+        assert(offers(CharacterId::NECROBINDER, id));
+        assert(!offers(CharacterId::IRONCLAD, id) && !offers(CharacterId::SILENT, id));
+    }
+    // The Soul is a token: no reward offers it.
+    assert(!offers(CharacterId::NECROBINDER, SOUL_CARD));
+}
+
 } // namespace
 
 int main() {
     test_a_combat_starts_without_souls();
-    test_adding_souls_makes_cards_or_counts_them();
+    test_adding_souls_makes_cards();
     test_other_cards_are_not_souls();
-    std::cout << "[PASS] Souls: none at the start, add_souls, other cards are not Souls" << std::endl;
-
-    if (!SOUL_EXISTS) {
-        std::cout << "[SKIP] Souls: 7 cases need the Soul card (engine::SOUL_CARD is CardId::NONE)" << std::endl;
-        return 0;
-    }
     test_soul_costs_nothing_draws_two_and_is_exhausted();
     test_upgraded_soul_draws_three();
     test_souls_go_to_the_pile_they_are_added_to();
@@ -252,5 +400,18 @@ int main() {
     test_funerary_mask_adds_three_souls_to_the_draw_pile();
     test_pot_of_ghouls_adds_two_souls_to_the_hand();
     std::cout << "[PASS] Souls: the card, the three piles, the exhaust count, Haunt and Devour Life" << std::endl;
+
+    test_reave_deals_damage_and_adds_a_soul();
+    test_grave_warden_gains_block_and_adds_a_soul();
+    test_capture_spirit_makes_the_enemy_lose_hp_and_adds_souls();
+    test_severance_adds_a_soul_to_each_pile();
+    test_dirge_summons_and_adds_souls_x_times();
+    test_haunt_card_gives_the_power();
+    test_devour_life_card_gives_the_power();
+    test_soul_storm_counts_the_exhausted_souls();
+    test_glimpse_beyond_adds_souls_and_is_exhausted();
+    test_souls_cards_are_offered_to_the_necrobinder_only();
+    std::cout << "[PASS] Souls cards: Reave, Grave Warden, Capture Spirit, Severance, Dirge, Haunt, Devour Life, "
+                 "Soul Storm, Glimpse Beyond" << std::endl;
     return 0;
 }

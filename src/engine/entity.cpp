@@ -330,10 +330,6 @@ void Player::add_stars(uint8_t count) {
     sovereign_stars = (sovereign_stars + count > 99) ? 99 : (sovereign_stars + count);
 }
 
-void Player::add_souls(uint8_t count) {
-    souls = (souls + count > 99) ? 99 : (souls + count);
-}
-
 void Player::summon_minion(int16_t m_hp, int16_t m_block) {
     if (m_hp > 0) {
         minion_hp += m_hp;

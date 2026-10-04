@@ -455,6 +455,16 @@ enum class CardId : uint16_t {
     SWEEPING_GAZE,
     // Soul (Necrobinder): a token, made by other cards (appended: saves store the numeric id)
     SOUL,
+    // Souls cards (Necrobinder) (appended: saves store the numeric id)
+    REAVE,
+    GRAVE_WARDEN,
+    CAPTURE_SPIRIT,
+    SEVERANCE,
+    DIRGE,
+    HAUNT,
+    DEVOUR_LIFE,
+    SOUL_STORM,
+    GLIMPSE_BEYOND,
     COUNT
 };
 
