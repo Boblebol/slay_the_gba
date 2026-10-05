@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 52,8 %** — 647 faits, 20 partiels, 577 à faire (35 hors périmètre).
+**Avancement global : 53,2 %** — 651 faits, 21 partiels, 572 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -24,9 +24,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Bestiaire](#bestiaire) | 8 | 1 | 95 | 8,2 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 37 | 2 | 18 | 66,7 % |
-| [Systèmes de jeu](#systemes) | 20 | 3 | 13 | 59,7 % |
+| [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **647** | **20** | **577** | **52,8 %** |
+| **Total** | **651** | **21** | **572** | **53,2 %** |
 
 <a id="ironclad"></a>
 
@@ -1513,7 +1513,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 59,7 %
+## Systèmes de jeu — 72,2 %
 
 ### La Tour — 50,0 %
 
@@ -1529,18 +1529,18 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Neow en début de partie |  | Non | [#6](https://github.com/Boblebol/slay_the_gba/issues/6) |
 | Bénédiction d'un Ancien entre les actes |  | Non | La phase existe dans le moteur mais elle est sautée. [#261](https://github.com/Boblebol/slay_the_gba/issues/261) |
 
-### Récompenses — 42,9 %
+### Récompenses — 78,6 %
 
-3 faits, 0 partiel, 4 à faire.
+5 faits, 1 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Une carte parmi trois, tirées au hasard dans les cartes du héros |  | Oui | [#35](https://github.com/Boblebol/slay_the_gba/issues/35) |
 | Or après chaque combat |  | Oui |  |
 | Coffre : or et relique jamais en double |  | Oui |  |
-| Potion en récompense de combat |  | Non | [#185](https://github.com/Boblebol/slay_the_gba/issues/185) |
-| Relique après un élite |  | Non | [#184](https://github.com/Boblebol/slay_the_gba/issues/184) |
-| Relique de boss |  | Non | [#184](https://github.com/Boblebol/slay_the_gba/issues/184) |
+| Potion en récompense de combat |  | Oui | 40 % des combats, tirée par rareté parmi les potions que le moteur résout. Ceinture pleine : en jeter une ou la laisser. |
+| Relique après un élite |  | Oui | Tirée par rareté, jamais en double, jamais celle d'un autre héros. |
+| Relique de boss |  | Partiel | Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. Les reliques d'Ancien du jeu d'origine restent à faire. [#184](https://github.com/Boblebol/slay_the_gba/issues/184) |
 | Cartes rares et peu communes selon la salle |  | Non | [#67](https://github.com/Boblebol/slay_the_gba/issues/67) |
 
 ### Feu de camp — 66,7 %
@@ -1553,18 +1553,18 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Forge : améliorer une carte, avec aperçu |  | Oui |  |
 | Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon) |  | Non | [#271](https://github.com/Boblebol/slay_the_gba/issues/271) |
 
-### Marchand — 50,0 %
+### Marchand — 83,3 %
 
-2 faits, 2 partiels, 2 à faire.
+4 faits, 2 partiels, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Achat de cartes |  | Oui |  |
 | Retrait d'une carte, à coût croissant |  | Oui |  |
-| Achat de reliques |  | Partiel | Géré par le moteur, absent de la boutique sur GBA. [#184](https://github.com/Boblebol/slay_the_gba/issues/184) |
-| Achat de potions |  | Partiel | Géré par le moteur, absent de la boutique sur GBA. [#185](https://github.com/Boblebol/slay_the_gba/issues/185) |
-| Inventaire tiré au hasard à chaque visite |  | Non | Trois cartes fixes par héros. [#270](https://github.com/Boblebol/slay_the_gba/issues/270) |
-| Prix selon la rareté, carte en solde |  | Non | [#270](https://github.com/Boblebol/slay_the_gba/issues/270) |
+| Achat de reliques |  | Oui | Rayon des reliques, touches L et R : deux reliques tirées par rareté et une relique du marchand. |
+| Achat de potions |  | Oui | Rayon des potions, touches L et R. Ceinture pleine : la potion achetée en remplace une. |
+| Inventaire tiré au hasard à chaque visite |  | Partiel | Reliques et potions tirées au hasard ; trois cartes fixes par héros. [#270](https://github.com/Boblebol/slay_the_gba/issues/270) |
+| Prix selon la rareté, carte en solde |  | Partiel | Reliques et potions au prix de leur rareté, à 5 % près ; cartes à prix fixe, sans solde. [#270](https://github.com/Boblebol/slay_the_gba/issues/270) |
 
 ### Potions — 100,0 %
 
