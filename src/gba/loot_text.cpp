@@ -43,6 +43,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "EMOTION_CHIP", "Si vous avez perdu des PV lors du tour précédent, déclenchez la capacité passive de chacun de vos Orbes au début de votre tour." },
     { "FENCING_MANUAL", "Au début de chaque combat, Forgez 10." },
     { "FESTIVE_POPPER", "Au début de chaque combat, infligez 9 dégâts à TOUS les ennemis." },
+    { "FUNERARY_MASK", "Au début de chaque combat, ajoutez 3 Âmes à votre Pioche." },
     { "GALACTIC_DUST", "Chaque fois que vous dépensez 10 ★, gagnez 10 d'Armure." },
     { "GAMBLING_CHIP", "Au début de chaque combat, défaussez autant de cartes que vous souhaitez, puis piochez-en le même nombre." },
     { "GAME_PIECE", "Chaque fois que vous jouez un Pouvoir, piochez 1 carte." },
