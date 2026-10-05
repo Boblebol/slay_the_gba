@@ -168,7 +168,7 @@ void RunManager::enter_room(int node_index) {
                 foe.hp = foe.max_hp;
                 foe.damage_percent = damage_percent;
             }
-            combat.enemy = combat.enemies[0];
+            combat.plan_enemies(); // the moves follow the Ascension values just given
 
             // Replace combat piles with current master deck
             combat.draw_pile.clear();

@@ -1354,10 +1354,10 @@ void CombatEngine::start_combat_multi(FixedVector<EnemyType, 3> enemy_types, Cha
         e.init(EnemyType::CULTIST);
         enemies.push_back(e);
     }
-    enemy = enemies[0];
     selected_target_index = 0;
 
     turn_number = 1;
+    plan_enemies();
     selected_card_index = 0;
     init_starter_deck(character);
     state = CombatState::PLAYER_TURN;
@@ -1369,6 +1369,23 @@ void CombatEngine::start_combat_multi(FixedVector<EnemyType, 3> enemy_types, Cha
 void CombatEngine::open_first_turn() {
     reset_combat_state();
     begin_first_turn();
+}
+
+void CombatEngine::plan_enemies() {
+    uint8_t alive = 0;
+    for (const Enemy& foe : enemies) alive += foe.is_alive();
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        Enemy& foe = enemies[i];
+        if (!foe.is_alive()) continue;
+        // A fight starts every pattern again, each monster drawing from a stream of its own: the draws of the
+        // monsters never move the sequence that shuffles the piles.
+        if (turn_number == 1) foe.reset_pattern(rng_state_ ^ (0x9E3779B1u * static_cast<uint32_t>(i + 1)));
+        PlanContext context;
+        context.allies = static_cast<uint8_t>(alive - 1);
+        context.slot = static_cast<uint8_t>(i);
+        foe.plan_turn(turn_number, context);
+    }
+    if (!enemies.empty()) enemy = enemies[0];
 }
 
 void CombatEngine::reset_combat_state() {
@@ -4786,11 +4803,7 @@ void CombatEngine::execute_enemy_turn() {
 
     // Plan next intents for all alive enemies
     turn_number++;
-    for (size_t i = 0; i < enemies.size(); ++i) {
-        if (enemies[i].is_alive()) {
-            enemies[i].plan_turn(turn_number);
-        }
-    }
+    plan_enemies();
 
     // Start player turn again
     start_player_turn();

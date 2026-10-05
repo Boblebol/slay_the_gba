@@ -892,6 +892,10 @@ void CombatScene::_refresh_enemy_hud(int index)
         icon = Icon::ATTACK;
         stream << damage << "+";
         break;
+    case engine::EnemyIntentType::ATTACK_BUFF:
+        icon = Icon::ATTACK;
+        stream << damage << "▲";
+        break;
     case engine::EnemyIntentType::ATTACK_DEBUFF:
         icon = Icon::ATTACK;
         stream << damage << "▼";
@@ -2052,7 +2056,8 @@ void CombatScene::_update_enemy_turn()
             bn::ostringstream stream(text);
             bool attacked = record.intent_type == engine::EnemyIntentType::ATTACK ||
                             record.intent_type == engine::EnemyIntentType::ATTACK_DEFEND ||
-                            record.intent_type == engine::EnemyIntentType::ATTACK_DEBUFF;
+                            record.intent_type == engine::EnemyIntentType::ATTACK_DEBUFF ||
+                            record.intent_type == engine::EnemyIntentType::ATTACK_BUFF;
 
             if(record.damage_to_player > 0)
             {
@@ -2085,9 +2090,10 @@ void CombatScene::_update_enemy_turn()
                 }
             }
 
-            if(record.intent_type == engine::EnemyIntentType::BUFF)
+            if(record.intent_type == engine::EnemyIntentType::BUFF ||
+               record.intent_type == engine::EnemyIntentType::ATTACK_BUFF)
             {
-                _popups.spawn(view.x, _body_y(view) - 6, "Force ▲", TextColor::GOLD);
+                _popups.spawn(view.x, _body_y(view) - 6, "Force ▲", TextColor::GOLD, attacked ? 8 : 0);
                 _fx.spawn(bn::sprite_items::fx_burst, view.x, _body_y(view), FX_BUFF, 4, 4);
                 play_sfx(Sfx::BUFF);
             }
