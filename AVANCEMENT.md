@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 53,2 %** — 651 faits, 21 partiels, 572 à faire (35 hors périmètre).
+**Avancement global : 53,4 %** — 654 faits, 20 partiels, 570 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -15,18 +15,18 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
 | [Soldat de Fer](#ironclad) | 93 | 1 | 8 | 91,7 % |
-| [La Silencieuse](#silent) | 83 | 1 | 17 | 82,7 % |
+| [La Silencieuse](#silent) | 84 | 1 | 16 | 83,7 % |
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
 | [Le Régent](#regent) | 86 | 1 | 13 | 86,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
 | [Cartes communes aux cinq éditions](#cartes) | 12 | 0 | 108 | 10,0 % |
-| [Reliques et potions](#reliques) | 102 | 0 | 219 | 31,8 % |
+| [Reliques et potions](#reliques) | 103 | 0 | 218 | 32,1 % |
 | [Bestiaire](#bestiaire) | 8 | 1 | 95 | 8,2 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 37 | 2 | 18 | 66,7 % |
+| [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **651** | **21** | **572** | **53,2 %** |
+| **Total** | **654** | **20** | **570** | **53,4 %** |
 
 <a id="ironclad"></a>
 
@@ -161,7 +161,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="silent"></a>
 
-## La Silencieuse — 82,7 %
+## La Silencieuse — 83,7 %
 
 ### Cartes — 83,7 %
 
@@ -276,16 +276,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Grû en papier | Rare | Non |  |
 | Parchemin de ninja | Boutique | Oui |  |
 
-### Mécaniques — 64,3 %
+### Mécaniques — 78,6 %
 
-4 faits, 1 partiel, 2 à faire.
+5 faits, 1 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Poison : dégâts au début du tour ennemi, traverse l'Armure, diminue de 1 |  | Oui |  |
 | Affaibli infligé par ses cartes (Neutralisation, Coup bas) |  | Oui |  |
 | Pioche supplémentaire (Salto arrière) |  | Oui |  |
-| Défausse au choix (Survivant, Acrobaties) |  | Non | [#31](https://github.com/Boblebol/slay_the_gba/issues/31) |
+| Défausse au choix (Survivant, Acrobaties) |  | Oui |  |
 | Surins : attaques à 0 énergie créées en combat |  | Oui |  |
 | Ruse : carte jouée gratuitement quand elle est défaussée |  | Non | [#73](https://github.com/Boblebol/slay_the_gba/issues/73) |
 | Animations du héros (repos, attaque, dégâts, garde) |  | Partiel | Flottement au repos, secousse et fondu de mort ; pas de poses dessinées. [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 31,8 %
+## Reliques et potions — 32,1 %
 
 ### Reliques partagées — 49,6 %
 
@@ -1140,9 +1140,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Œil de geckobra | Ancienne | Oui |  |
 | Œil de verre | Ancienne | Non |  |
 
-### Potions — 63,5 %
+### Potions — 65,1 %
 
-40 faits, 0 partiel, 23 à faire.
+41 faits, 0 partiel, 22 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1171,7 +1171,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Courage du roi | Peu commune | Oui |  |
 | Cœur de fer | Peu commune | Oui |  |
 | Duplicateur | Peu commune | Non |  |
-| Décoction du parieur | Peu commune | Non |  |
+| Décoction du parieur | Peu commune | Oui |  |
 | Eau cendrée | Peu commune | Non |  |
 | Extrait de lucidité | Peu commune | Oui |  |
 | Fortifiant | Peu commune | Oui |  |
@@ -1424,11 +1424,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regles"></a>
 
-## Règles de combat — 66,7 %
+## Règles de combat — 67,5 %
 
-### Déroulement du combat — 85,7 %
+### Déroulement du combat — 88,1 %
 
-17 faits, 2 partiels, 2 à faire.
+18 faits, 1 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1448,7 +1448,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Cartes à coût X |  | Oui |  |
 | Écho : rejouer une carte |  | Partiel | [#86](https://github.com/Boblebol/slay_the_gba/issues/86) |
 | Cartes jouées automatiquement (Pioche, pile d'épuisement, fin de tour) |  | Oui |  |
-| Coûts modifiés pendant le tour ou le combat |  | Partiel | [#75](https://github.com/Boblebol/slay_the_gba/issues/75) |
+| Coûts modifiés pendant le tour ou le combat |  | Oui |  |
 | Cartes évolutives : bonus et coût propres à chaque exemplaire |  | Oui |  |
 | Cartes Statut ajoutées à la main, la Pioche ou la Défausse |  | Oui |  |
 | Coup de grâce : effet quand la carte tue un ennemi |  | Oui |  |
