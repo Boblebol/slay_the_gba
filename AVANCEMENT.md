@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 53,5 %** — 656 faits, 20 partiels, 568 à faire (35 hors périmètre).
+**Avancement global : 53,6 %** — 657 faits, 20 partiels, 567 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 86 | 1 | 13 | 86,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
 | [Cartes communes aux cinq éditions](#cartes) | 12 | 0 | 108 | 10,0 % |
-| [Reliques et potions](#reliques) | 105 | 0 | 216 | 32,7 % |
+| [Reliques et potions](#reliques) | 106 | 0 | 215 | 33,0 % |
 | [Bestiaire](#bestiaire) | 8 | 1 | 95 | 8,2 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **656** | **20** | **568** | **53,5 %** |
+| **Total** | **657** | **20** | **567** | **53,6 %** |
 
 <a id="ironclad"></a>
 
@@ -859,11 +859,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 32,7 %
+## Reliques et potions — 33,0 %
 
-### Reliques partagées — 49,6 %
+### Reliques partagées — 50,4 %
 
-58 faits, 0 partiel, 59 à faire.
+59 faits, 0 partiel, 58 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -873,7 +873,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Ceinture à potions | Commune | Non |  |
 | Fiole de sang | Commune | Oui |  |
 | Fleur joyeuse | Commune | Oui |  |
-| Fraise | Commune | Non |  |
+| Fraise | Commune | Oui |  |
 | Gorgerette | Commune | Oui |  |
 | Lanterne | Commune | Oui |  |
 | Livre des cinq anneaux | Commune | Non |  |
