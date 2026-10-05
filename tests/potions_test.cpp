@@ -16,7 +16,8 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "VULNERABLE_POTION", "STAR_POTION", "FOCUS_POTION", "FLEX_POTION", "SPEED_POTION", "POTION_OF_DOOM",
     "BLESSING_OF_THE_FORGE", "FORTIFIER", "FYSH_OIL", "BONE_BREW", "POTION_OF_BINDING", "CURE_ALL", "CLARITY",
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
-    "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION",
+    "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
+    "POWDERED_DEMISE", "DUPLICATOR",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -512,6 +513,188 @@ void test_glowwater_potion() {
     std::cout << "[PASS] Glowwater Potion: hand exhausted, 10 cards drawn" << std::endl;
 }
 
+void test_gamblers_brew() {
+    // Discard any number of cards, then draw that many.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.hand.size() == 5 && combat.draw_pile.size() == 5);
+    assert(combat.use_potion("GAMBLERS_BREW"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].kind == ChoiceKind::DISCARD);
+    assert(combat.pending_choices[0].optional);
+    assert(combat.pending_choices[0].then == ChoiceThen::DRAW_PER_CARD);
+    assert(combat.choice_size() == 5);
+    assert(std::string_view(combat.combat_log) == "Gambler's Brew!");
+
+    // Pick 2 cards to discard: 2 are discarded, 2 are drawn.
+    uint8_t picks[] = { 1, 3 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending());
+    assert(combat.hand.size() == 5);
+    assert(combat.discard_pile.size() == 2);
+    assert(combat.draw_pile.size() == 3);
+    assert(combat.counters.cards_drawn == 2);
+
+    // Discarding no cards: hand stays intact.
+    CombatEngine keep = make_combat(CharacterId::IRONCLAD);
+    assert(keep.use_potion("GAMBLERS_BREW"));
+    assert(keep.choice_pending());
+    keep.resolve_choice_default();
+    assert(!keep.choice_pending());
+    assert(keep.hand.size() == 5);
+    assert(keep.discard_pile.empty());
+    assert(keep.draw_pile.size() == 5);
+
+    // Discarding the entire hand.
+    CombatEngine all = make_combat(CharacterId::IRONCLAD);
+    pad_draw_pile(all, 5);
+    assert(all.use_potion("GAMBLERS_BREW"));
+    uint8_t all_picks[] = { 0, 1, 2, 3, 4 };
+    assert(all.resolve_choice(all_picks));
+    assert(all.hand.size() == 5);
+    assert(all.discard_pile.size() == 5);
+    assert(all.draw_pile.size() == 5);
+
+    // Empty hand: nothing discarded, nothing drawn, no choice asked.
+    CombatEngine empty = make_combat(CharacterId::IRONCLAD);
+    empty.hand.clear();
+    assert(empty.use_potion("GAMBLERS_BREW"));
+    assert(!empty.choice_pending());
+    assert(empty.hand.empty());
+    assert(empty.discard_pile.empty());
+
+    std::cout << "[PASS] Gambler's Brew: discard any number of cards, draw that many" << std::endl;
+}
+
+void test_powdered_demise() {
+    // Basic effect: Jaw Worm (42 HP) loses 9 HP at the end of each of its turns.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.enemies[0].hp == 42);
+    assert(combat.use_potion("POWDERED_DEMISE"));
+    assert(std::string_view(combat.combat_log) == "Powdered Demise!");
+    assert(combat.enemies[0].hp == 42); // no immediate damage
+
+    // Turn 1 end: loses 9 HP.
+    end_turn_idle(combat);
+    assert(combat.enemies[0].hp == 42 - 9);
+
+    // Turn 2 end: loses 9 HP again.
+    end_turn_idle(combat);
+    assert(combat.enemies[0].hp == 42 - 18);
+
+    // HP loss is not absorbed by Block.
+    make_enemy_idle(combat.enemies[0]);
+    combat.enemies[0].current_intent.block = 15;
+    combat.end_player_turn();
+    assert(combat.enemies[0].hp == 42 - 27);
+    assert(combat.enemies[0].block == 15);
+
+    // Multi-enemy: targeting a specific enemy (e.g. enemy 1 in a pack).
+    CombatEngine pack = make_pack(CharacterId::IRONCLAD);
+    assert(pack.use_potion("POWDERED_DEMISE", 1));
+    end_turn_idle(pack);
+    assert(pack.enemies[0].hp == 18);      // untouched
+    assert(pack.enemies[1].hp == 18 - 9);  // targeted
+    assert(pack.enemies[2].hp == 42);      // untouched
+
+    // Stacking: using two Powdered Demise on the same enemy.
+    CombatEngine stacked = make_combat(CharacterId::IRONCLAD);
+    assert(stacked.use_potion("POWDERED_DEMISE"));
+    assert(stacked.use_potion("POWDERED_DEMISE"));
+    end_turn_idle(stacked);
+    assert(stacked.enemies[0].hp == 42 - 18);
+
+    // Lethal: kills the enemy at the end of its turn and achieves victory.
+    CombatEngine lethal = make_combat(CharacterId::IRONCLAD);
+    lethal.enemies[0].hp = 5;
+    assert(lethal.use_potion("POWDERED_DEMISE"));
+    end_turn_idle(lethal);
+    assert(lethal.enemies[0].hp == 0 && lethal.state == CombatState::VICTORY);
+
+    // Buffer cancels the HP loss.
+    CombatEngine buffed = make_combat(CharacterId::IRONCLAD);
+    buffed.enemies[0].add_status(StatusType::BUFFER, 1);
+    assert(buffed.use_potion("POWDERED_DEMISE"));
+    end_turn_idle(buffed);
+    assert(buffed.enemies[0].hp == 42 && buffed.enemies[0].get_status(StatusType::BUFFER) == 0);
+
+    // Intangible reduces the HP loss to 1.
+    CombatEngine intang = make_combat(CharacterId::IRONCLAD);
+    intang.enemies[0].add_status(StatusType::INTANGIBLE, 2);
+    assert(intang.use_potion("POWDERED_DEMISE"));
+    end_turn_idle(intang);
+    assert(intang.enemies[0].hp == 41);
+
+    std::cout << "[PASS] Powdered Demise: enemy loses 9 HP at the end of each of its turns" << std::endl;
+}
+
+void test_duplicator() {
+    // Basic effect: next card (Attack) is played twice.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.use_potion("DUPLICATOR"));
+    assert(std::string_view(combat.combat_log) == "Duplicator!");
+    assert(combat.has_power(PowerId::DUPLICATION));
+    assert(combat.power_amount(PowerId::DUPLICATION) == 1);
+
+    // Play Strike: 6 * 2 = 12 damage, 1 energy spent, goes to discard once.
+    play(combat, CardId::STRIKE);
+    assert(combat.enemies[0].hp == 42 - 12);
+    assert(combat.player.energy == combat.player.max_energy - 1);
+    assert(combat.discard_pile.size() == 1 && combat.discard_pile[0].id == CardId::STRIKE);
+    assert(!combat.has_power(PowerId::DUPLICATION));
+
+    // Next Strike is played only once (Duplication was consumed).
+    play(combat, CardId::STRIKE);
+    assert(combat.enemies[0].hp == 42 - 18);
+
+    // Skill duplication: next Skill gives double block.
+    CombatEngine skill_combat = make_combat(CharacterId::IRONCLAD);
+    assert(skill_combat.use_potion("DUPLICATOR"));
+    play(skill_combat, CardId::DEFEND);
+    assert(skill_combat.player.block == 10);
+    assert(!skill_combat.has_power(PowerId::DUPLICATION));
+
+    // Power duplication: next Power is applied twice and stays in play once.
+    CombatEngine power_combat = make_combat(CharacterId::IRONCLAD);
+    assert(power_combat.use_potion("DUPLICATOR"));
+    play(power_combat, CardId::INFLAME);
+    assert(power_combat.player.get_status(StatusType::STRENGTH) == 4);
+    assert(power_combat.powers_in_play.size() == 1);
+    assert(!power_combat.has_power(PowerId::DUPLICATION));
+
+    // Expires at the end of the turn if no card is played.
+    CombatEngine expire_combat = make_combat(CharacterId::IRONCLAD);
+    assert(expire_combat.use_potion("DUPLICATOR"));
+    assert(expire_combat.has_power(PowerId::DUPLICATION));
+    end_turn_idle(expire_combat);
+    assert(!expire_combat.has_power(PowerId::DUPLICATION));
+    play(expire_combat, CardId::STRIKE);
+    assert(expire_combat.enemies[0].hp == 42 - 6);
+
+    // Stacking: two Duplicator potions duplicate the next 2 cards.
+    CombatEngine stacked = make_combat(CharacterId::IRONCLAD);
+    assert(stacked.use_potion("DUPLICATOR"));
+    assert(stacked.use_potion("DUPLICATOR"));
+    assert(stacked.power_amount(PowerId::DUPLICATION) == 2);
+    play(stacked, CardId::STRIKE);
+    assert(stacked.enemies[0].hp == 42 - 12);
+    assert(stacked.power_amount(PowerId::DUPLICATION) == 1);
+    play(stacked, CardId::DEFEND);
+    assert(stacked.player.block == 10);
+    assert(!stacked.has_power(PowerId::DUPLICATION));
+    play(stacked, CardId::STRIKE);
+    assert(stacked.enemies[0].hp == 42 - 18);
+
+    // Target consistency: pack combat, target specific enemy.
+    CombatEngine pack = make_pack(CharacterId::IRONCLAD);
+    assert(pack.use_potion("DUPLICATOR"));
+    play(pack, CardId::STRIKE, 1);
+    assert(pack.enemies[0].hp == 18);     // untouched
+    assert(pack.enemies[1].hp == 18 - 12); // hit twice
+    assert(pack.enemies[2].hp == 42);     // untouched
+
+    std::cout << "[PASS] Duplicator: next card this turn is played an extra time" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -580,6 +763,9 @@ int main() {
     test_ship_in_a_bottle();
     test_shackling_potion();
     test_glowwater_potion();
+    test_gamblers_brew();
+    test_powdered_demise();
+    test_duplicator();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;

@@ -820,7 +820,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         default:
             // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
             // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE,
-            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM.
+            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM, DEMISE, DUPLICATION.
             break;
     }
 }
@@ -1599,6 +1599,7 @@ int CombatEngine::consume_play_modifiers(const DeckCard& card) {
     if (CardDef::has_keyword(card, KEYWORD_ETHEREAL)) use_one(PowerId::FREE_ETHEREAL);
 
     int extra = 0;
+    if (use_one(PowerId::DUPLICATION)) ++extra;
     if (type == CardType::ATTACK && use_one(PowerId::REPLAY_ATTACK)) ++extra;
     if (type == CardType::SKILL && use_one(PowerId::REPLAY_SKILL)) ++extra;
     if (type == CardType::POWER && use_one(PowerId::REPLAY_POWER)) ++extra;
@@ -4738,6 +4739,14 @@ void CombatEngine::execute_enemy_turn() {
             // Doom: an enemy with at least as much Doom as HP does not survive its turn.
             reap(enemies[i]);
 
+            // Demise: enemy loses HP at the end of each of its turns.
+            for (const ActivePower& p : powers) {
+                if (p.id == PowerId::DEMISE && p.target == static_cast<int8_t>(i) && enemies[i].is_alive()) {
+                    enemies[i].lose_hp(p.amount);
+                    settle_deaths();
+                }
+            }
+
             // The Strength it lost "until the end of its turn" comes back.
             afflict(enemies[i], StatusType::STRENGTH, enemies[i].temp_strength_loss);
             enemies[i].temp_strength_loss = 0;
@@ -4861,6 +4870,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         player.add_status(StatusType::STRENGTH, 1);
         player.add_status(StatusType::DEXTERITY, 1);
         set_log("Fysh Oil!");
+    } else if (potion_id == "GAMBLERS_BREW") {
+        ask_choice(CardChoice{ ChoiceKind::DISCARD, 10, true, ChoiceThen::DRAW_PER_CARD });
+        set_log("Gambler's Brew!");
     } else if (potion_id == "BONE_BREW") {
         player.summon_minion(15, 0);
         set_log("Bone Brew!");
@@ -4945,6 +4957,15 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "REGEN_POTION") {
         player.add_status(StatusType::REGEN, 5);
         set_log("Regen Potion!");
+    } else if (potion_id == "POWDERED_DEMISE") {
+        aimed_enemy();
+        if (target_index >= 0 && static_cast<size_t>(target_index) < enemies.size()) {
+            add_power(PowerId::DEMISE, 9, false, static_cast<int8_t>(target_index));
+        }
+        set_log("Powdered Demise!");
+    } else if (potion_id == "DUPLICATOR") {
+        add_power(PowerId::DUPLICATION, 1, true);
+        set_log("Duplicator!");
     } else {
         return false;
     }
