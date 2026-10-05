@@ -17,7 +17,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "BLESSING_OF_THE_FORGE", "FORTIFIER", "FYSH_OIL", "BONE_BREW", "POTION_OF_BINDING", "CURE_ALL", "CLARITY",
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
-    "POWDERED_DEMISE",
+    "POWDERED_DEMISE", "DUPLICATOR",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -627,6 +627,74 @@ void test_powdered_demise() {
     std::cout << "[PASS] Powdered Demise: enemy loses 9 HP at the end of each of its turns" << std::endl;
 }
 
+void test_duplicator() {
+    // Basic effect: next card (Attack) is played twice.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.use_potion("DUPLICATOR"));
+    assert(std::string_view(combat.combat_log) == "Duplicator!");
+    assert(combat.has_power(PowerId::DUPLICATION));
+    assert(combat.power_amount(PowerId::DUPLICATION) == 1);
+
+    // Play Strike: 6 * 2 = 12 damage, 1 energy spent, goes to discard once.
+    play(combat, CardId::STRIKE);
+    assert(combat.enemies[0].hp == 42 - 12);
+    assert(combat.player.energy == combat.player.max_energy - 1);
+    assert(combat.discard_pile.size() == 1 && combat.discard_pile[0].id == CardId::STRIKE);
+    assert(!combat.has_power(PowerId::DUPLICATION));
+
+    // Next Strike is played only once (Duplication was consumed).
+    play(combat, CardId::STRIKE);
+    assert(combat.enemies[0].hp == 42 - 18);
+
+    // Skill duplication: next Skill gives double block.
+    CombatEngine skill_combat = make_combat(CharacterId::IRONCLAD);
+    assert(skill_combat.use_potion("DUPLICATOR"));
+    play(skill_combat, CardId::DEFEND);
+    assert(skill_combat.player.block == 10);
+    assert(!skill_combat.has_power(PowerId::DUPLICATION));
+
+    // Power duplication: next Power is applied twice and stays in play once.
+    CombatEngine power_combat = make_combat(CharacterId::IRONCLAD);
+    assert(power_combat.use_potion("DUPLICATOR"));
+    play(power_combat, CardId::INFLAME);
+    assert(power_combat.player.get_status(StatusType::STRENGTH) == 4);
+    assert(power_combat.powers_in_play.size() == 1);
+    assert(!power_combat.has_power(PowerId::DUPLICATION));
+
+    // Expires at the end of the turn if no card is played.
+    CombatEngine expire_combat = make_combat(CharacterId::IRONCLAD);
+    assert(expire_combat.use_potion("DUPLICATOR"));
+    assert(expire_combat.has_power(PowerId::DUPLICATION));
+    end_turn_idle(expire_combat);
+    assert(!expire_combat.has_power(PowerId::DUPLICATION));
+    play(expire_combat, CardId::STRIKE);
+    assert(expire_combat.enemies[0].hp == 42 - 6);
+
+    // Stacking: two Duplicator potions duplicate the next 2 cards.
+    CombatEngine stacked = make_combat(CharacterId::IRONCLAD);
+    assert(stacked.use_potion("DUPLICATOR"));
+    assert(stacked.use_potion("DUPLICATOR"));
+    assert(stacked.power_amount(PowerId::DUPLICATION) == 2);
+    play(stacked, CardId::STRIKE);
+    assert(stacked.enemies[0].hp == 42 - 12);
+    assert(stacked.power_amount(PowerId::DUPLICATION) == 1);
+    play(stacked, CardId::DEFEND);
+    assert(stacked.player.block == 10);
+    assert(!stacked.has_power(PowerId::DUPLICATION));
+    play(stacked, CardId::STRIKE);
+    assert(stacked.enemies[0].hp == 42 - 18);
+
+    // Target consistency: pack combat, target specific enemy.
+    CombatEngine pack = make_pack(CharacterId::IRONCLAD);
+    assert(pack.use_potion("DUPLICATOR"));
+    play(pack, CardId::STRIKE, 1);
+    assert(pack.enemies[0].hp == 18);     // untouched
+    assert(pack.enemies[1].hp == 18 - 12); // hit twice
+    assert(pack.enemies[2].hp == 42);     // untouched
+
+    std::cout << "[PASS] Duplicator: next card this turn is played an extra time" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -697,6 +765,7 @@ int main() {
     test_glowwater_potion();
     test_gamblers_brew();
     test_powdered_demise();
+    test_duplicator();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;
