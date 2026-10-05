@@ -76,6 +76,9 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     // Starting relic
     relics.clear();
     relics.push_back(cdef.starting_relic_id);
+    potions.clear();
+    potion_slots = BASE_POTION_SLOTS;
+    deck_choice = {};
 
     // Generate Act 1 Map
     map_seed = next_random();
@@ -470,7 +473,7 @@ void RunManager::generate_rewards() {
 
 bool RunManager::take_potion_reward(int replace_index) {
     if (phase != RunPhase::REWARD_SCREEN || potion_reward.empty()) return false;
-    if (potions.size() < potions.capacity()) {
+    if (!potion_belt_full()) {
         potions.push_back(potion_reward);
     } else if (replace_index >= 0 && static_cast<size_t>(replace_index) < potions.size()) {
         potions[replace_index] = potion_reward;
@@ -514,9 +517,156 @@ void RunManager::skip_card_rewards() {
 }
 
 void RunManager::add_relic(std::string_view relic_id) {
-    if (relics.size() < relics.capacity()) {
-        relics.push_back(relic_id);
+    if (relics.push_back(relic_id)) {
+        on_relic_obtained(relic_id);
     }
+}
+
+void RunManager::on_relic_obtained(std::string_view relic_id) {
+    // The relic is already stored: `has_relic` is true for it here.
+    if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
+}
+
+void RunManager::gain_max_hp(int16_t amount) {
+    if (amount <= 0) return;
+    max_hp = static_cast<int16_t>(std::min<int>(999, max_hp + amount));
+    heal(amount);
+}
+
+void RunManager::heal(int16_t amount) {
+    if (amount <= 0) return;
+    hp = static_cast<int16_t>(std::min<int>(max_hp, hp + amount));
+}
+
+void RunManager::gain_gold(int16_t amount) {
+    if (amount <= 0) return;
+    gold = static_cast<int16_t>(std::min<int>(9999, gold + amount));
+}
+
+int RunManager::upgrade_random_cards(int count) {
+    return upgrade_random_cards(count, true, CardType::ATTACK);
+}
+
+int RunManager::upgrade_random_cards(int count, CardType type) {
+    return upgrade_random_cards(count, false, type);
+}
+
+int RunManager::upgrade_random_cards(int count, bool any_type, CardType type) {
+    int upgraded = 0;
+    for (; upgraded < count; ++upgraded) {
+        FixedVector<uint8_t, 50> candidates;
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            const DeckCard& card = master_deck[i];
+            if (!card.upgraded && (any_type || CardDef::get(card.id).type == type)) {
+                candidates.push_back(static_cast<uint8_t>(i));
+            }
+        }
+        if (candidates.empty()) break;
+        master_deck[candidates[next_random() % candidates.size()]].upgraded = true;
+    }
+    return upgraded;
+}
+
+bool RunManager::add_card_to_deck(DeckCard card) {
+    return master_deck.push_back(card);
+}
+
+bool RunManager::transform_card_in_deck(int deck_index, bool upgraded) {
+    if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
+    std::span<const CardId> pool = card_reward_pool(character);
+    CardId old_id = master_deck[deck_index].id;
+    size_t candidates = 0;
+    for (CardId id : pool) {
+        if (id != old_id) ++candidates;
+    }
+    if (candidates == 0) return false;
+
+    size_t pick = next_random() % candidates;
+    for (CardId id : pool) {
+        if (id != old_id && pick-- == 0) {
+            master_deck[deck_index] = DeckCard(id, upgraded);
+            return true;
+        }
+    }
+    return false;
+}
+
+int RunManager::gain_random_relics(int count) {
+    int gained = 0;
+    while (gained < count && relics.size() < relics.capacity()) {
+        std::string_view id = draw_treasure_relic();
+        if (id.empty()) break;
+        add_relic(id);
+        ++gained;
+    }
+    return gained;
+}
+
+int RunManager::gain_random_potions(int count) {
+    RewardRng rng(next_random());
+    int gained = 0;
+    while (gained < count && !potion_belt_full()) {
+        std::string_view id = draw_potion(rng, character);
+        if (id.empty()) break;
+        potions.push_back(id);
+        ++gained;
+    }
+    return gained;
+}
+
+void RunManager::add_potion_slots(int count) {
+    if (count <= 0) return;
+    potion_slots = static_cast<uint8_t>(std::min<int>(MAX_POTION_SLOTS, potion_slots + count));
+}
+
+void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool optional, bool upgrade_result) {
+    deck_choice = {};
+    if (kind == DeckChoiceKind::NONE || count <= 0) return;
+    deck_choice.kind = kind;
+    int candidates = 0;
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (deck_choice_allows(static_cast<int>(i))) ++candidates;
+    }
+    if (candidates == 0) {
+        deck_choice = {};
+        return;
+    }
+    deck_choice.remaining = static_cast<uint8_t>(std::min(count, candidates));
+    deck_choice.optional = optional;
+    deck_choice.upgrade_result = upgrade_result;
+}
+
+bool RunManager::deck_choice_allows(int deck_index) const {
+    if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
+    switch (deck_choice.kind) {
+        case DeckChoiceKind::UPGRADE: return !master_deck[deck_index].upgraded;
+        case DeckChoiceKind::REMOVE:
+        case DeckChoiceKind::TRANSFORM: return true;
+        default: return false;
+    }
+}
+
+bool RunManager::resolve_deck_choice(int deck_index) {
+    if (!deck_choice_allows(deck_index)) return false;
+    bool done = false;
+    switch (deck_choice.kind) {
+        case DeckChoiceKind::UPGRADE: done = upgrade_card_in_deck(deck_index); break;
+        case DeckChoiceKind::REMOVE: done = remove_card_from_deck(deck_index); break;
+        case DeckChoiceKind::TRANSFORM: done = transform_card_in_deck(deck_index, deck_choice.upgrade_result); break;
+        default: break;
+    }
+    if (!done) return false;
+
+    // The cards left may not allow as many picks as asked (deck emptied, everything upgraded).
+    DeckChoice next = deck_choice;
+    request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result);
+    return true;
+}
+
+bool RunManager::skip_deck_choice() {
+    if (!has_deck_choice() || !deck_choice.optional) return false;
+    deck_choice = {};
+    return true;
 }
 
 bool RunManager::has_relic(std::string_view relic_id) const {
@@ -530,7 +680,7 @@ std::span<const std::string_view> RunManager::active_relics() {
     // Every implemented relic that drops normally (Common, Uncommon, Rare, Shop); Starter, Boss, Event and Ancient
     // relics come from elsewhere. Shop relics are in the list too: only the merchant gives them.
     static constexpr std::string_view ACTIVE_RELICS[] = {
-        "VAJRA", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK", "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
+        "VAJRA", "STRAWBERRY", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK", "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
         "STONE_CRACKER", "PANTOGRAPH", "SLING_OF_COURAGE",
         // Start and end of turn
         "CAPTAINS_WHEEL", "HORN_CLEAT", "CANDELABRA", "CHANDELIER", "SPARKLING_ROUGE", "HAPPY_FLOWER", "PENDULUM", "BREAD",

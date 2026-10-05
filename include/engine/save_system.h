@@ -43,7 +43,8 @@ struct InRunSaveData {
     char relics[25][24];
 
     uint8_t potion_count = 0;
-    char potions[3][24];
+    uint8_t potion_slots = BASE_POTION_SLOTS;
+    char potions[MAX_POTION_SLOTS][24];
 };
 
 struct SaveProfile {
@@ -111,10 +112,11 @@ public:
 // The save is written alternately into two banks so a power loss during a write never destroys the
 // previous good copy. Each bank starts with a header holding a checksum of its payload.
 constexpr size_t SAVE_BANK_SIZE = 16 * 1024;
-// Version 4 stores card ids on 16 bits, which moves every field after the deck.
-constexpr uint16_t SAVE_FORMAT_VERSION = 4;
+// Version 4 stores card ids on 16 bits, which moves every field after the deck. Version 5 stores the size of
+// the potion belt and up to MAX_POTION_SLOTS potions, which makes every profile longer.
+constexpr uint16_t SAVE_FORMAT_VERSION = 5;
 // Oldest layout still readable. A cartridge saved with an older one starts again from the defaults.
-constexpr uint16_t SAVE_MIN_FORMAT_VERSION = 4;
+constexpr uint16_t SAVE_MIN_FORMAT_VERSION = 5;
 
 class SaveManager {
 public:

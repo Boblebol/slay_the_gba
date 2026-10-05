@@ -24,6 +24,25 @@ enum class RunPhase : uint8_t {
     GAME_OVER
 };
 
+// What the player is asked to do with cards of the deck, outside a combat (a relic just obtained).
+enum class DeckChoiceKind : uint8_t {
+    NONE,
+    UPGRADE,
+    REMOVE,
+    TRANSFORM
+};
+
+struct DeckChoice {
+    DeckChoiceKind kind = DeckChoiceKind::NONE;
+    uint8_t remaining = 0;  // cards still to choose
+    bool optional = false;  // "up to N": the choice can be left before the last card
+    bool upgrade_result = false; // TRANSFORM only: the new card comes upgraded
+};
+
+// Slots of the potion belt: at the start of a run, and the most relics can bring it to.
+constexpr uint8_t BASE_POTION_SLOTS = 3;
+constexpr uint8_t MAX_POTION_SLOTS = 8;
+
 struct AscensionModifier {
     uint8_t level;
     std::string_view title;
@@ -42,7 +61,10 @@ public:
 
     FixedVector<DeckCard, 50> master_deck;
     FixedVector<std::string_view, 25> relics;
-    FixedVector<std::string_view, 3> potions;
+    FixedVector<std::string_view, MAX_POTION_SLOTS> potions;
+    uint8_t potion_slots = BASE_POTION_SLOTS; // size of the belt: `potions` never holds more
+    // Cards of the deck the player still has to choose. The room is left once it is resolved.
+    DeckChoice deck_choice;
     std::string_view last_treasure_relic; // relic found in the last chest, empty when it held none
 
     MapGraph map;
@@ -98,8 +120,40 @@ public:
     bool take_potion_reward(int replace_index = -1);
     // Takes the relic of the reward screen.
     bool take_relic_reward();
+    // Stores the relic, then resolves what it does when obtained.
     void add_relic(std::string_view relic_id);
     bool has_relic(std::string_view relic_id) const;
+
+    // Effects a relic has when obtained. Each one is also usable on its own.
+    // Raises the maximum HP, and the current HP by as much.
+    void gain_max_hp(int16_t amount);
+    void heal(int16_t amount);
+    void gain_gold(int16_t amount);
+    // Upgrades up to `count` cards drawn at random among the ones not upgraded yet, of `type` only when given.
+    // Returns how many were upgraded.
+    int upgrade_random_cards(int count);
+    int upgrade_random_cards(int count, CardType type);
+    // Adds a card (a curse like any other) to the deck. False when the deck is full.
+    bool add_card_to_deck(DeckCard card);
+    // Replaces the card by another one of the hero's reward pool, drawn at random and never the same card.
+    bool transform_card_in_deck(int deck_index, bool upgraded = false);
+    // Obtains up to `count` relics drawn like the ones of a chest. Returns how many were obtained.
+    int gain_random_relics(int count);
+    // Fills up to `count` free slots of the belt with random potions. Returns how many were obtained.
+    int gain_random_potions(int count);
+    void add_potion_slots(int count);
+    [[nodiscard]] bool potion_belt_full() const { return potions.size() >= potion_slots; }
+
+    // Asks the player for `count` cards of the deck to upgrade, remove or transform. Nothing is asked when no
+    // card of the deck fits.
+    void request_deck_choice(DeckChoiceKind kind, int count, bool optional = false, bool upgrade_result = false);
+    [[nodiscard]] bool has_deck_choice() const { return deck_choice.kind != DeckChoiceKind::NONE; }
+    // True when the card at `deck_index` can be picked for the choice in progress.
+    [[nodiscard]] bool deck_choice_allows(int deck_index) const;
+    // Applies the choice in progress to the card. The choice ends with its last card, or when no card fits.
+    bool resolve_deck_choice(int deck_index);
+    // Leaves an optional choice. False when the choice has to be made.
+    bool skip_deck_choice();
     std::string_view draw_treasure_relic();
     // Relics with an implemented effect: the ones a chest can hold.
     static std::span<const std::string_view> active_relics();
@@ -134,6 +188,9 @@ private:
     uint32_t reward_seed() const;
     // Leaves the reward screen: the gold is paid, and a boss opens the next act.
     void finish_rewards();
+    // What a relic does when obtained.
+    void on_relic_obtained(std::string_view relic_id);
+    int upgrade_random_cards(int count, bool any_type, CardType type);
 };
 
 } // namespace engine

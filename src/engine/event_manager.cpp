@@ -189,7 +189,7 @@ bool EventManager::apply_choice(RunManager& run, const EventChoice& choice, char
             break;
         }
         case EventOutcomeType::POTION: {
-            if (run.potions.size() < run.potions.capacity()) {
+            if (!run.potion_belt_full()) {
                 run.potions.push_back(choice.extra_id.empty() ? "FIRE_POTION" : choice.extra_id);
             }
             safe_copy(out_msg, max_len, choice.result_message);

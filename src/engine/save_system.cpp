@@ -263,7 +263,8 @@ void SaveManager::autosave_run(const RunManager& run) {
 
     // Potions
     r.potion_count = static_cast<uint8_t>(run.potions.size());
-    for (size_t i = 0; i < run.potions.size() && i < 3; ++i) {
+    r.potion_slots = run.potion_slots;
+    for (size_t i = 0; i < run.potions.size() && i < MAX_POTION_SLOTS; ++i) {
         size_t len = std::min<size_t>(run.potions[i].size(), 23);
         std::memcpy(r.potions[i], run.potions[i].data(), len);
         r.potions[i][len] = '\0';
@@ -312,7 +313,8 @@ bool SaveManager::restore_run(RunManager& run) {
 
     // Restore Potions
     run.potions.clear();
-    for (uint8_t i = 0; i < r.potion_count && i < 3; ++i) {
+    run.potion_slots = std::clamp<uint8_t>(r.potion_slots, BASE_POTION_SLOTS, MAX_POTION_SLOTS);
+    for (uint8_t i = 0; i < r.potion_count && i < run.potion_slots; ++i) {
         std::string_view id = find_static_potion_id(stored_id(r.potions[i]));
         if (!id.empty()) run.potions.push_back(id);
     }

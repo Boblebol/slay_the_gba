@@ -15,6 +15,7 @@ enum class SceneId : uint8_t
     TITLE,
     MAP,
     DECK,
+    DECK_CHOICE, // cards of the deck the run asks for (see engine::DeckChoice)
     COMBAT,
     REWARDS,
     EVENT,
@@ -39,6 +40,7 @@ struct GameContext
     engine::MapNavigator nav{ run };
     engine::PaletteVariant palette = engine::PaletteVariant::CLASSIC;
     SceneId deck_return = SceneId::MAP;
+    SceneId deck_choice_return = SceneId::MAP; // scene to come back to once the deck choice is made
     Transition transition = Transition::FADE;
     bool combat_resume = false;     // returning from the deck viewer: skip the combat intro
     bn::string<64> map_toast;       // message shown when the map scene opens (treasure, act change...)
@@ -55,6 +57,9 @@ public:
 };
 
 [[nodiscard]] bn::unique_ptr<Scene> create_scene(SceneId id, GameContext& context);
+
+// Scene to open next when the run asks for cards of the deck: the choice first, then `back`.
+[[nodiscard]] SceneId scene_after_deck_choice(GameContext& context, SceneId back);
 
 // Scene to open for the room the run just entered (combat, event, shop...).
 [[nodiscard]] SceneId scene_for_run_phase(GameContext& context);

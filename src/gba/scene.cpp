@@ -18,6 +18,8 @@ bn::unique_ptr<Scene> create_scene(SceneId id, GameContext& context)
         return make_map_scene(context);
     case SceneId::DECK:
         return make_deck_scene(context);
+    case SceneId::DECK_CHOICE:
+        return make_deck_choice_scene(context);
     case SceneId::COMBAT:
         return make_combat_scene(context);
     case SceneId::REWARDS:
@@ -35,6 +37,18 @@ bn::unique_ptr<Scene> create_scene(SceneId id, GameContext& context)
     default:
         return make_title_scene(context);
     }
+}
+
+SceneId scene_after_deck_choice(GameContext& context, SceneId back)
+{
+    if(! context.run.has_deck_choice())
+    {
+        return back;
+    }
+
+    context.deck_choice_return = back;
+    context.transition = Transition::QUICK;
+    return SceneId::DECK_CHOICE;
 }
 
 SceneId scene_for_run_phase(GameContext& context)
@@ -69,7 +83,7 @@ SceneId scene_for_run_phase(GameContext& context)
         {
             stream << "Coffre : +50 Or";
         }
-        return SceneId::MAP;
+        return scene_after_deck_choice(context, SceneId::MAP);
     }
     default:
         return SceneId::MAP;

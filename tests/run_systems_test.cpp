@@ -422,9 +422,9 @@ void test_event_choices() {
         assert(run.run.potions.size() == 1 && run.run.potions[0] == "BLOCK_POTION");
         assert(run.run.hp == 40 && run.run.gold == 100);
         // With a full belt the potion is lost, not stacked.
-        while (run.run.potions.size() < run.run.potions.capacity()) run.run.potions.push_back("FIRE_POTION");
+        while (!run.run.potion_belt_full()) run.run.potions.push_back("FIRE_POTION");
         run.apply(gift);
-        assert(run.run.potions.size() == run.run.potions.capacity());
+        assert(run.run.potions.size() == BASE_POTION_SLOTS);
     }
 
     // Through the run: the choice is applied to the run and the phase goes back to the map.
@@ -501,6 +501,7 @@ void round_trip(const RunManager& saved) {
     assert(loaded.map_seed == saved.map_seed && loaded.rng_state() == saved.rng_state());
     assert(loaded.current_node_index == saved.current_node_index);
     assert(loaded.card_removals_count == saved.card_removals_count);
+    assert(loaded.potion_slots == saved.potion_slots);
 
     assert(loaded.master_deck.size() == saved.master_deck.size());
     for (size_t i = 0; i < saved.master_deck.size(); ++i) {
@@ -577,7 +578,7 @@ void test_save_extremes() {
         store.reset_to_defaults();
     }
 
-    // Everything at its limit at once: 50 cards at +255, 25 relics and 3 potions.
+    // Everything at its limit at once: 50 cards at +255, 25 relics and a belt of 8 potions.
     {
         RunManager run;
         run.start_run(CharacterId::DEFECT, 9, PaletteVariant::SHADOW, 99);
@@ -591,9 +592,10 @@ void test_save_extremes() {
         std::span<const RelicData> relics = get_all_relics();
         for (size_t i = 0; run.relics.size() < run.relics.capacity(); ++i) run.relics.push_back(relics[i].id);
         run.potions.clear();
+        run.add_potion_slots(MAX_POTION_SLOTS);
         std::span<const PotionData> potions = get_all_potions();
-        for (size_t i = 0; run.potions.size() < run.potions.capacity(); ++i) run.potions.push_back(potions[i].id);
-        assert(run.relics.size() == 25 && run.potions.size() == 3);
+        for (size_t i = 0; !run.potion_belt_full(); ++i) run.potions.push_back(potions[i].id);
+        assert(run.relics.size() == 25 && run.potions.size() == MAX_POTION_SLOTS);
         run.gold = 9999;
         round_trip(run);
     }
