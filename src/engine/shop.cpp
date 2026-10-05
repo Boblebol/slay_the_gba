@@ -95,7 +95,7 @@ bool ShopInventory::buy_potion(RunManager& run, int index, int replace_index) {
     if (index < 0 || static_cast<size_t>(index) >= potions.size()) return false;
     auto& item = potions[index];
     if (item.purchased || run.gold < item.cost) return false;
-    bool full = run.potions.size() >= run.potions.capacity();
+    bool full = run.potion_belt_full();
     if (full && (replace_index < 0 || static_cast<size_t>(replace_index) >= run.potions.size())) return false;
 
     run.gold -= item.cost;

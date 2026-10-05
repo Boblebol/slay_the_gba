@@ -518,6 +518,51 @@ void test_relics_in_a_run() {
 
 } // namespace
 
+void test_strawberry() {
+    // Obtained: 7 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("STRAWBERRY");
+    assert(run.has_relic("STRAWBERRY"));
+    assert(run.max_hp == max_hp + 7 && run.hp == 57);
+
+    // Any other relic leaves the HP alone.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("STRAWBERRY"));
+    assert(plain.max_hp == max_hp && plain.hp == 50);
+
+    // The effect is paid once, when the relic comes in: not at each fight, and not when a full bag refuses it.
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.max_hp == max_hp + 7 && run.combat.player.max_hp == max_hp + 7);
+    RunManager full;
+    full.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    while (full.relics.size() < full.relics.capacity()) full.relics.push_back("CIRCLET");
+    full.add_relic("STRAWBERRY");
+    assert(!full.has_relic("STRAWBERRY") && full.max_hp == max_hp);
+
+    // A chest can hold it, and gives its HP on the spot.
+    bool found = false;
+    for (uint32_t seed = 1; seed < 400 && !found; ++seed) {
+        RunManager chest;
+        chest.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, seed);
+        int16_t before = chest.max_hp;
+        enter_room_of_type(chest, RoomType::TREASURE);
+        if (chest.last_treasure_relic == "STRAWBERRY") {
+            found = true;
+            assert(chest.max_hp == before + 7);
+        } else {
+            assert(chest.max_hp == before);
+        }
+    }
+    assert(found);
+    std::cout << "[PASS] Strawberry: +7 Max HP when obtained, once, from a chest too" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -528,6 +573,7 @@ int main() {
     test_poison_and_star_relics();
     test_combat_start_relics();
     test_relics_in_a_run();
+    test_strawberry();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

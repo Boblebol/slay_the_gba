@@ -80,6 +80,12 @@ public:
 
     [[nodiscard]] bn::optional<SceneId> update() final
     {
+        // The relic just taken asks for cards of the deck: the rewards come back once they are chosen.
+        if(_ctx.run.has_deck_choice())
+        {
+            return scene_after_deck_choice(_ctx, SceneId::REWARDS);
+        }
+
         if(_step != Step::CARDS)
         {
             // The cards wait above the screen until the loot is dealt with.
@@ -358,13 +364,17 @@ private:
             _prompt.set(-116, -40, "Jeter quelle potion ?", Align::LEFT, TextColor::WHITE);
             _hint.set(116, -40, "B Retour", Align::RIGHT, TextColor::GRAY);
 
-            for(int index = 0; index < int(run.potions.size()); ++index)
+            // Three rows at most: the list follows the cursor along a longer belt.
+            int count = int(run.potions.size());
+            int first = bn::clamp(_belt_cursor - 1, 0, bn::max(0, count - _rows.max_size()));
+
+            for(int index = first; index < count && ! _rows.full(); ++index)
             {
                 bool focused = index == _belt_cursor;
                 TextLine row;
                 bn::ostringstream stream(row);
                 stream << (focused ? "► " : "  ") << potion_name(run.potions[index]);
-                _rows.emplace_back().set(-112, LOOT_ROW_Y + index * LOOT_ROW_STEP, row, Align::LEFT,
+                _rows.emplace_back().set(-112, LOOT_ROW_Y + (index - first) * LOOT_ROW_STEP, row, Align::LEFT,
                                          focused ? TextColor::GOLD : TextColor::WHITE);
             }
 

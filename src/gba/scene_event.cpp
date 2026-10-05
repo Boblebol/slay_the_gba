@@ -190,7 +190,7 @@ public:
                 }
                 else
                 {
-                    return _ctx.run.hp <= 0 ? SceneId::GAME_OVER : SceneId::MAP;
+                    return _ctx.run.hp <= 0 ? SceneId::GAME_OVER : scene_after_deck_choice(_ctx, SceneId::MAP);
                 }
             }
             break;

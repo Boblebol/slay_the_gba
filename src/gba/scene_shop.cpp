@@ -67,6 +67,12 @@ public:
         ++_timer;
         _popups.update();
 
+        // The relic just bought asks for cards of the deck: the shop comes back once they are chosen.
+        if(_ctx.run.has_deck_choice())
+        {
+            return scene_after_deck_choice(_ctx, SceneId::SHOP);
+        }
+
         if(_picking)
         {
             _picker.update(_ctx.frame);
@@ -344,13 +350,17 @@ private:
 
         if(_replacing)
         {
-            for(int index = 0; index < int(run.potions.size()); ++index)
+            // Three rows at most: the list follows the cursor along a longer belt.
+            int count = int(run.potions.size());
+            int first = bn::clamp(_belt_cursor - 1, 0, bn::max(0, count - _rows.max_size()));
+
+            for(int index = first; index < count && ! _rows.full(); ++index)
             {
                 bool focused = index == _belt_cursor;
                 TextLine row;
                 bn::ostringstream stream(row);
                 stream << (focused ? "► " : "  ") << potion_name(run.potions[index]);
-                _rows.emplace_back().set(-112, ROW_Y + index * ROW_STEP, row, Align::LEFT,
+                _rows.emplace_back().set(-112, ROW_Y + (index - first) * ROW_STEP, row, Align::LEFT,
                                          focused ? TextColor::GOLD : TextColor::WHITE);
             }
 
