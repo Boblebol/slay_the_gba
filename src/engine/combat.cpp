@@ -820,7 +820,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         default:
             // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
             // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE,
-            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM, DEMISE.
+            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM, DEMISE, DUPLICATION.
             break;
     }
 }
@@ -1599,6 +1599,7 @@ int CombatEngine::consume_play_modifiers(const DeckCard& card) {
     if (CardDef::has_keyword(card, KEYWORD_ETHEREAL)) use_one(PowerId::FREE_ETHEREAL);
 
     int extra = 0;
+    if (use_one(PowerId::DUPLICATION)) ++extra;
     if (type == CardType::ATTACK && use_one(PowerId::REPLAY_ATTACK)) ++extra;
     if (type == CardType::SKILL && use_one(PowerId::REPLAY_SKILL)) ++extra;
     if (type == CardType::POWER && use_one(PowerId::REPLAY_POWER)) ++extra;
@@ -4962,6 +4963,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
             add_power(PowerId::DEMISE, 9, false, static_cast<int8_t>(target_index));
         }
         set_log("Powdered Demise!");
+    } else if (potion_id == "DUPLICATOR") {
+        add_power(PowerId::DUPLICATION, 1, true);
+        set_log("Duplicator!");
     } else {
         return false;
     }

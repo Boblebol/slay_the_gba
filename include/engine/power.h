@@ -170,7 +170,8 @@ enum class PowerId : uint8_t {
     SIC_EM,            // this turn: Osty hits the enemy it is bound to: summon Osty for `amount`
     SENTRY_MODE,       // start of turn: `amount` Sweeping Gaze to the hand
     // Potions (appended)
-    DEMISE             // end of enemy turn: the enemy it is bound to loses `amount` HP
+    DEMISE,            // end of enemy turn: the enemy it is bound to loses `amount` HP
+    DUPLICATION        // this turn: the next `amount` cards are played once more
 };
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
