@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <span>
 #include <string_view>
 #include "engine/status.h"
 #include "engine/fixed_vector.h"
@@ -270,8 +271,9 @@ enum class EnemyIntentType : uint8_t {
     BUFF,
     DEFEND,
     ATTACK_DEFEND,
-    DEBUFF,       // only harms the player with statuses
-    ATTACK_DEBUFF // attacks, then harms the player with statuses
+    DEBUFF,        // only harms the player with statuses
+    ATTACK_DEBUFF, // attacks, then harms the player with statuses
+    ATTACK_BUFF    // attacks, then gives itself a status
 };
 
 // A status an enemy move gives the player: Weak, Vulnerable or Frail (amount > 0), or Strength or Dexterity
@@ -315,8 +317,25 @@ enum class EnemyType : uint8_t {
     CALCIFIED_CULTIST,
     DAMP_CULTIST,
     SEWER_CLAM,
-    THE_FORGOTTEN
+    THE_FORGOTTEN,
+    LIVING_SHIELD
 };
+
+// What a monster sees of the fight when it chooses its next move.
+struct PlanContext {
+    uint8_t allies = 0; // other enemies still alive
+    uint8_t slot = 0;   // its place among the enemies, 0 for the first
+};
+
+// A move a monster may draw at random. Its chance is `weight` out of the weights of the moves it may draw
+// this turn; unless `can_repeat`, the move it just played is left out of the draw.
+struct MoveOption {
+    uint8_t move;
+    uint8_t weight = 1;
+    bool can_repeat = false;
+};
+
+constexpr uint8_t NO_MOVE = 0xFF;
 
 class Enemy : public CombatEntity {
 public:
@@ -334,16 +353,33 @@ public:
     // Debuffs of the last move played: what the player received, NONE for the ones Artifact cancelled.
     IntentDebuff last_debuffs[MAX_INTENT_DEBUFFS];
 
+    // Intent pattern. A phase is a part of the pattern entered when its condition is met (alone, hurt,
+    // triggered) and never left for an earlier one; `phase_turn` counts the turns planned in it, from 1.
+    uint8_t phase = 0;
+    uint8_t phase_turn = 0;
+    uint8_t last_move = NO_MOVE; // move of the last plan, for the draws that cannot repeat it
+    uint32_t move_seed = 1;      // random stream of its own draws, set by the fight
+
     void init(EnemyType enemy_type);
     // HP the reference gives this monster at Ascension, 0 for the monsters that follow the percentages of the run.
     int16_t ascension_hp() const;
     // Ascension of a monster with its own values (ascension_hp() > 0): its Ascension HP and/or damage.
+    // The intent is planned again by the fight (CombatEngine::plan_enemies).
     void ascend(bool more_hp, bool more_damage);
+    // Forgets the pattern followed so far: back to the first phase, with `seed` for the random draws.
+    void reset_pattern(uint32_t seed);
+    // Moves to `next` when the monster is in an earlier phase. True when the phase changed.
+    bool enter_phase(uint8_t next);
+    // Draws a move among `options` by weight, leaving out the last move played unless it can repeat, and
+    // remembers it. When the rule leaves no move, the last one is played again. NO_MOVE for an empty list.
+    uint8_t draw_move(std::span<const MoveOption> options);
+    // Remembers a move chosen without a draw, so the next draw cannot repeat it.
+    uint8_t use_move(uint8_t move) { return last_move = move; }
     // Gives back to the player what this enemy stole. Called when it dies.
     void return_stolen(Player& player);
     // Damage the current intent would deal to `target` right now (0 when it does not attack).
     int16_t intent_damage(const CombatEntity& target) const;
-    void plan_turn(int turn_number);
+    void plan_turn(int turn_number, const PlanContext& context = {});
     // Plays the current intent. An attack is answered by the player's Thorns, plus `damage_back` (Flame Barrier),
     // plus the damage their Block absorbed when `reflect` is set (Reflect).
     void execute_turn(Player& player, int16_t damage_back = 0, bool reflect = false);

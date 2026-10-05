@@ -37,6 +37,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::DAMP_CULTIST: return "DAMP_CULTIST";
         case EnemyType::SEWER_CLAM: return "SEWER_CLAM";
         case EnemyType::THE_FORGOTTEN: return "THE_FORGOTTEN";
+        case EnemyType::LIVING_SHIELD: return "LIVING_SHIELD";
     }
     return {};
 }
@@ -185,8 +186,9 @@ void test_reference_encounters() {
         }
     }
     // Except the ones whose only reference encounter needs a monster the engine does not have yet: the
-    // Forgotten is only met with the Lost (TheLostAndForgottenNormal).
-    const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN };
+    // Forgotten is only met with the Lost (TheLostAndForgottenNormal), the Living Shield with the Turret Operator
+    // (TurretOperatorWeak).
+    const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));

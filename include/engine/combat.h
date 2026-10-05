@@ -213,6 +213,9 @@ public:
     // Opens the fight once the draw pile is ready: clears the combat state, then starts the first turn.
     void open_first_turn();
     // The two halves of open_first_turn, for whoever registers powers (relics) between them.
+    // Plans the next move of every living enemy, with what each one sees of the fight. On the first turn the
+    // patterns start again.
+    void plan_enemies();
     void reset_combat_state();
     // Puts the Innate cards on top of the draw pile and starts the first turn.
     void begin_first_turn();

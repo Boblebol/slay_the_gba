@@ -3,6 +3,7 @@
 #include <cassert>
 #include <initializer_list>
 #include <iostream>
+#include <map>
 #include <string_view>
 #include "engine/combat.h"
 #include "engine/run.h"
@@ -61,6 +62,7 @@ constexpr EnemyIntentType BUFF = EnemyIntentType::BUFF;
 constexpr EnemyIntentType DEFEND = EnemyIntentType::DEFEND;
 constexpr EnemyIntentType ATTACK_DEFEND = EnemyIntentType::ATTACK_DEFEND;
 constexpr EnemyIntentType DEBUFF = EnemyIntentType::DEBUFF;
+constexpr EnemyIntentType ATTACK_BUFF = EnemyIntentType::ATTACK_BUFF;
 
 void test_fuzzy_wurm_crawler() {
     // Acid Goop 4, Inhale (+7 Strength), Acid Goop 4, and again.
@@ -361,6 +363,7 @@ void test_the_forgotten_ascension() {
         run.combat.start_combat_multi(pack, run.character);
         Enemy& foe = run.combat.enemies[0];
         foe.ascend(run.get_enemy_hp_multiplier() > 100, run.get_enemy_damage_multiplier() > 100);
+        run.combat.plan_enemies();
         return run;
     };
     struct Level {
@@ -387,6 +390,164 @@ void test_the_forgotten_ascension() {
     std::cout << "[PASS] The Forgotten: Ascension gives 111 HP and Dread 15" << std::endl;
 }
 
+void test_living_shield() {
+    // Alone: one Shield Slam 6, then Smash (16 damage, then +3 Strength) until the end.
+    check_monster(EnemyType::LIVING_SHIELD, "Bouclier vivant", 55, {
+        { ATTACK, 6, 0, 0 },
+        { ATTACK_BUFF, 16, 0, 3 },
+        { ATTACK_BUFF, 19, 0, 6 },
+        { ATTACK_BUFF, 22, 0, 9 },
+    });
+    std::cout << "[PASS] Living Shield: 55 HP, Shield Slam 6, then alone Smash 16 and +3 Strength each turn" << std::endl;
+}
+
+// A fight against `types`, the player never playing a card.
+CombatEngine make_pack(std::initializer_list<EnemyType> types) {
+    CombatEngine combat;
+    FixedVector<EnemyType, 3> pack;
+    for (EnemyType type : types) pack.push_back(type);
+    combat.start_combat_multi(pack, CharacterId::IRONCLAD);
+    return combat;
+}
+
+void pass_turn(CombatEngine& combat) {
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.state == CombatState::PLAYER_TURN);
+}
+
+void test_phase_with_entry_condition() {
+    // With someone to protect, the Living Shield stays in its first phase: Shield Slam, turn after turn.
+    CombatEngine combat = make_pack({ EnemyType::LIVING_SHIELD, EnemyType::SEWER_CLAM });
+    Enemy& shield = combat.enemies[0];
+    for (int turn = 1; turn <= 4; ++turn) {
+        assert(shield.phase == 0 && shield.phase_turn == turn);
+        assert(shield.current_intent.type == ATTACK && shield.current_intent.base_damage == 6);
+        pass_turn(combat);
+    }
+    assert(shield.get_status(StatusType::STRENGTH) == 0);
+
+    // Its ally dies during the player's turn: the move already announced is played, and the next plan enters the
+    // second phase, where the turns are counted from 1 again.
+    combat.enemies[1].hp = 0;
+    assert(shield.current_intent.type == ATTACK && shield.intent_damage(combat.player) == 6);
+    pass_turn(combat);
+    assert(combat.player.max_hp - combat.player.hp == 6);
+    assert(shield.phase == 1 && shield.phase_turn == 1);
+    assert(shield.current_intent.type == ATTACK_BUFF && shield.intent_damage(combat.player) == 16);
+    pass_turn(combat);
+    assert(combat.player.max_hp - combat.player.hp == 16 && shield.get_status(StatusType::STRENGTH) == 3);
+    assert(shield.phase == 1 && shield.phase_turn == 2 && shield.intent_damage(combat.player) == 19);
+
+    // A phase is never left for an earlier one, nor entered twice.
+    assert(!shield.enter_phase(0) && !shield.enter_phase(1) && shield.phase == 1 && shield.phase_turn == 2);
+    assert(shield.enter_phase(2) && shield.phase == 2 && shield.phase_turn == 0);
+
+    // The place of each monster and the allies it has left are what it is given to decide.
+    CombatEngine trio = make_pack({ EnemyType::LIVING_SHIELD, EnemyType::LIVING_SHIELD, EnemyType::LIVING_SHIELD });
+    trio.enemies[0].hp = 0;
+    pass_turn(trio);
+    assert(trio.enemies[1].phase == 0 && trio.enemies[2].phase == 0); // one ally each
+    trio.enemies[2].hp = 0;
+    pass_turn(trio);
+    assert(trio.enemies[1].phase == 1);
+
+    // A new fight starts the pattern again.
+    combat.start_combat(EnemyType::LIVING_SHIELD, CharacterId::IRONCLAD);
+    assert(combat.enemies[0].phase == 0 && combat.enemies[0].phase_turn == 1 && combat.enemies[0].last_move == NO_MOVE);
+    std::cout << "[PASS] Intent phases: entered when the condition is met at planning, never left, reset by a new fight"
+              << std::endl;
+}
+
+void test_weighted_draw_without_repetition() {
+    enum Move : uint8_t { BITE, GROWL, LEAP };
+    const MoveOption options[] = { { BITE, 6 }, { GROWL, 3 }, { LEAP, 1 } };
+
+    // Never the same move twice in a row, and each move drawn in proportion to its weight among the ones allowed.
+    Enemy enemy;
+    enemy.init(EnemyType::SEWER_CLAM);
+    enemy.reset_pattern(2024);
+    std::map<uint8_t, int> drawn;
+    std::map<uint8_t, int> after_bite;
+    uint8_t previous = NO_MOVE;
+    const int draws = 30000;
+    for (int i = 0; i < draws; ++i) {
+        uint8_t move = enemy.draw_move(options);
+        assert(move == BITE || move == GROWL || move == LEAP);
+        assert(move != previous && enemy.last_move == move);
+        if (previous == BITE) ++after_bite[move];
+        ++drawn[move];
+        previous = move;
+    }
+    // After a Bite only Growl (3) and Leap (1) are left: three quarters, one quarter.
+    int bites = after_bite[GROWL] + after_bite[LEAP];
+    assert(bites > 10000);
+    assert(after_bite[GROWL] * 100 / bites >= 72 && after_bite[GROWL] * 100 / bites <= 78);
+    assert(drawn[BITE] > drawn[GROWL] && drawn[GROWL] > drawn[LEAP] && drawn[LEAP] > 0);
+
+    // A move that can repeat follows its weight alone: 6 out of 10.
+    const MoveOption repeating[] = { { BITE, 6, true }, { GROWL, 3, true }, { LEAP, 1, true } };
+    enemy.reset_pattern(7);
+    int bite_count = 0;
+    int repeats = 0;
+    previous = NO_MOVE;
+    for (int i = 0; i < draws; ++i) {
+        uint8_t move = enemy.draw_move(repeating);
+        bite_count += move == BITE;
+        repeats += move == previous;
+        previous = move;
+    }
+    assert(bite_count * 100 / draws >= 58 && bite_count * 100 / draws <= 62 && repeats > 0);
+
+    // A scripted move counts as the last one played: the draw that follows leaves it out.
+    const MoveOption two[] = { { BITE, 200 }, { GROWL, 1 } };
+    for (uint32_t seed = 1; seed < 50; ++seed) {
+        enemy.reset_pattern(seed);
+        enemy.use_move(BITE);
+        assert(enemy.draw_move(two) == GROWL);
+    }
+    // Nothing else to play: the move is played again. No option at all: no move.
+    const MoveOption only[] = { { LEAP, 1 } };
+    enemy.reset_pattern(3);
+    assert(enemy.draw_move(only) == LEAP && enemy.draw_move(only) == LEAP);
+    assert(enemy.draw_move({}) == NO_MOVE);
+
+    // Same seed, same moves; and in a fight each monster gets a stream of its own, without touching the shuffles.
+    Enemy first;
+    first.init(EnemyType::SEWER_CLAM);
+    Enemy second = first;
+    first.reset_pattern(99);
+    second.reset_pattern(99);
+    for (int i = 0; i < 50; ++i) assert(first.draw_move(options) == second.draw_move(options));
+    CombatEngine pack = make_pack({ EnemyType::SEWER_CLAM, EnemyType::SEWER_CLAM });
+    assert(pack.enemies[0].move_seed != pack.enemies[1].move_seed);
+    std::cout << "[PASS] Move draws: by weight, never twice in a row unless allowed, one stream per monster" << std::endl;
+}
+
+void test_living_shield_ascension() {
+    Enemy shield;
+    shield.init(EnemyType::LIVING_SHIELD);
+    assert(shield.ascension_hp() == 65);
+    struct Level {
+        bool more_hp;
+        bool more_damage;
+        int hp;
+        int smash;
+    };
+    for (const Level& level : { Level{ false, false, 55, 16 }, Level{ true, false, 65, 16 }, Level{ false, true, 55, 18 },
+                                Level{ true, true, 65, 18 } }) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LIVING_SHIELD);
+        Enemy& foe = combat.enemies[0];
+        foe.ascend(level.more_hp, level.more_damage);
+        combat.plan_enemies();
+        assert(foe.hp == level.hp && foe.max_hp == level.hp);
+        assert(foe.intent_damage(combat.player) == 6); // Shield Slam has no Ascension value
+        pass_turn(combat);
+        assert(foe.current_intent.type == ATTACK_BUFF && foe.intent_damage(combat.player) == level.smash);
+    }
+    std::cout << "[PASS] Living Shield: Ascension gives 65 HP and Smash 18" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -405,6 +566,10 @@ int main() {
     test_debuff_and_artifact();
     test_the_forgotten();
     test_the_forgotten_ascension();
+    test_living_shield();
+    test_phase_with_entry_condition();
+    test_weighted_draw_without_repetition();
+    test_living_shield_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

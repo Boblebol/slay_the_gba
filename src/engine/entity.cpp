@@ -11,6 +11,7 @@ void Enemy::init(EnemyType enemy_type) {
     stolen = {};
     ascended_damage = false;
     for (IntentDebuff& debuff : last_debuffs) debuff = {};
+    reset_pattern(1);
 
     if (type == EnemyType::CULTIST) {
         name = "Cultist";
@@ -68,6 +69,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "L'Oublié";
         max_hp = 106;
         hp = 106;
+    } else if (type == EnemyType::LIVING_SHIELD) {
+        name = "Bouclier vivant";
+        max_hp = 55;
+        hp = 55;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -80,6 +85,7 @@ void Enemy::init(EnemyType enemy_type) {
 int16_t Enemy::ascension_hp() const {
     switch (type) {
         case EnemyType::THE_FORGOTTEN: return 111;
+        case EnemyType::LIVING_SHIELD: return 65;
         default: return 0;
     }
 }
@@ -90,7 +96,44 @@ void Enemy::ascend(bool more_hp, bool more_damage) {
         hp = max_hp;
     }
     ascended_damage = more_damage;
+    reset_pattern(move_seed);
     plan_turn(1);
+}
+
+void Enemy::reset_pattern(uint32_t seed) {
+    phase = 0;
+    phase_turn = 0;
+    last_move = NO_MOVE;
+    move_seed = seed ? seed : 1;
+}
+
+bool Enemy::enter_phase(uint8_t next) {
+    if (next <= phase) return false;
+    phase = next;
+    phase_turn = 0;
+    return true;
+}
+
+uint8_t Enemy::draw_move(std::span<const MoveOption> options) {
+    if (options.empty()) return NO_MOVE;
+    auto allowed = [this](const MoveOption& option) { return option.can_repeat || option.move != last_move; };
+    uint32_t total = 0;
+    for (const MoveOption& option : options) {
+        if (allowed(option)) total += option.weight;
+    }
+    // The only move left is the one just played: it is played again, and no number is drawn.
+    if (total == 0) return last_move;
+
+    move_seed ^= move_seed << 13;
+    move_seed ^= move_seed >> 17;
+    move_seed ^= move_seed << 5;
+    uint32_t pick = move_seed % total;
+    for (const MoveOption& option : options) {
+        if (!allowed(option)) continue;
+        if (pick < option.weight) return use_move(option.move);
+        pick -= option.weight;
+    }
+    return last_move;
 }
 
 void Enemy::return_stolen(Player& player) {
@@ -100,10 +143,11 @@ void Enemy::return_stolen(Player& player) {
     stolen = {};
 }
 
-void Enemy::plan_turn(int turn_number) {
+void Enemy::plan_turn(int turn_number, const PlanContext& context) {
     // Start from a blank intent: a field set by last turn's move (a Strength buff) must not leak
     // into this one, since execute_turn() applies whatever the intent holds.
     current_intent = EnemyIntent{};
+    if (phase_turn < UINT8_MAX) ++phase_turn;
     if (type == EnemyType::CULTIST) {
         if (turn_number == 1) {
             current_intent.type = EnemyIntentType::BUFF;
@@ -326,6 +370,20 @@ void Enemy::plan_turn(int turn_number) {
             current_intent.damage_status = StatusType::DEXTERITY;
             current_intent.description = "Angoisse (13 dmg + Dex)";
         }
+    } else if (type == EnemyType::LIVING_SHIELD) {
+        // Shield Slam while it has someone to protect; once alone, Smash until the end.
+        if (turn_number > 1 && context.allies == 0 && enter_phase(1)) phase_turn = 1;
+        if (phase == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 6;
+            current_intent.description = "Heurt de bouclier (6 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = ascended_damage ? 18 : 16;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 3;
+            current_intent.description = "Fracas (16 dmg, +3 Force)";
+        }
     }
 }
 
@@ -341,8 +399,9 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
         gain_block(current_intent.block);
     }
 
-    // Apply status buff to self if any
-    if (current_intent.status_type != StatusType::NONE && current_intent.status_amount > 0) {
+    // Apply status buff to self if any. A move that also attacks hits first (see below).
+    const bool buff_after_attack = current_intent.type == EnemyIntentType::ATTACK_BUFF;
+    if (!buff_after_attack && current_intent.status_type != StatusType::NONE && current_intent.status_amount > 0) {
         add_status(current_intent.status_type, current_intent.status_amount);
     }
 
@@ -355,6 +414,10 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
         int16_t back = static_cast<int16_t>(player.get_status(StatusType::THORNS) + damage_back);
         if (reflect) back = static_cast<int16_t>(back + block_before - player.block);
         take_damage(back);
+    }
+
+    if (buff_after_attack && is_alive() && current_intent.status_amount > 0) {
+        add_status(current_intent.status_type, current_intent.status_amount);
     }
 
     // Statuses given to the player. They reach a player the attack left alive.
