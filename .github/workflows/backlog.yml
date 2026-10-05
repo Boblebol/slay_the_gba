@@ -10,8 +10,10 @@ permissions:
   issues: write
   contents: read
 
+# One group per issue: with a single group, GitHub keeps one waiting run and cancels the others, so closing
+# several issues in a row lost events.
 concurrency:
-  group: backlog
+  group: backlog-${{ github.event.issue.number }}
   cancel-in-progress: false
 
 jobs:
