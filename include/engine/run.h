@@ -39,6 +39,35 @@ struct DeckChoice {
     bool upgrade_result = false; // TRANSFORM only: the new card comes upgraded
 };
 
+// Moments of a run, outside the fights, a relic can act on. Each one is a private `on_...` method of RunManager.
+enum class RunHook : uint8_t {
+    ROOM_ENTERED,      // any room, before it is resolved
+    RESTED,            // the Rest action of a campfire
+    SHOP_OPENED,       // the stock of the merchant is drawn
+    COMBAT_WON,        // a fight is over, before its rewards are drawn
+    REWARDS_GENERATED, // the rewards of a fight are drawn, before they are shown
+    CARD_ADDED,        // a card joins the deck (reward, merchant, event, relic)
+    GOLD_GAINED,       // gold is received (never when it is spent)
+    COUNT
+};
+
+// What can be done at a campfire. Rest and Smith are always there, the others are given by a relic.
+enum class CampfireAction : uint8_t {
+    REST,
+    SMITH,
+    DIG,  // Shovel
+    LIFT, // Girya
+    COOK  // Meat Cleaver
+};
+
+// A number a relic keeps from room to room ("every 3 combats", "3 times max"), saved with the run.
+struct RelicCounter {
+    std::string_view relic_id;
+    uint8_t value = 0;
+};
+
+constexpr size_t MAX_RELIC_COUNTERS = 8;
+
 // Slots of the potion belt: at the start of a run, and the most relics can bring it to.
 constexpr uint8_t BASE_POTION_SLOTS = 3;
 constexpr uint8_t MAX_POTION_SLOTS = 8;
@@ -65,6 +94,9 @@ public:
     uint8_t potion_slots = BASE_POTION_SLOTS; // size of the belt: `potions` never holds more
     // Cards of the deck the player still has to choose. The room is left once it is resolved.
     DeckChoice deck_choice;
+    FixedVector<RelicCounter, MAX_RELIC_COUNTERS> relic_counters;
+    // How many times each hook ran since the start of the run: read by the tests and the debug tools.
+    uint16_t hook_runs[static_cast<size_t>(RunHook::COUNT)] = {};
     std::string_view last_treasure_relic; // relic found in the last chest, empty when it held none
 
     MapGraph map;
@@ -93,6 +125,8 @@ public:
     bool choose_event_choice(int choice_index, char* out_msg = nullptr, size_t max_len = 0);
 
     // Campfire actions
+    // Rest, Smith, then the actions the relics of the run give, in the order of the menu.
+    [[nodiscard]] FixedVector<CampfireAction, 5> campfire_actions() const;
     void rest_at_campfire();
     bool can_rest() const;
     bool smith_at_campfire(int card_index);
@@ -144,6 +178,14 @@ public:
     void add_potion_slots(int count);
     [[nodiscard]] bool potion_belt_full() const { return potions.size() >= potion_slots; }
 
+    // Counter of a relic: 0 until it is first written.
+    [[nodiscard]] uint8_t relic_counter(std::string_view relic_id) const;
+    // False when the run already keeps MAX_RELIC_COUNTERS counters.
+    bool set_relic_counter(std::string_view relic_id, uint8_t value);
+    // Adds 1 to the counter. On every `every`-th call it goes back to 0 and the result is true.
+    bool tick_relic_counter(std::string_view relic_id, uint8_t every);
+    [[nodiscard]] uint16_t hook_count(RunHook hook) const { return hook_runs[static_cast<size_t>(hook)]; }
+
     // Asks the player for `count` cards of the deck to upgrade, remove or transform. Nothing is asked when no
     // card of the deck fits.
     void request_deck_choice(DeckChoiceKind kind, int count, bool optional = false, bool upgrade_result = false);
@@ -190,6 +232,16 @@ private:
     void finish_rewards();
     // What a relic does when obtained.
     void on_relic_obtained(std::string_view relic_id);
+    // Hooks of the relics that act outside the fights (see RunHook). A relic is added to the hook of its
+    // trigger with a literal `has_relic("ID")`.
+    void on_room_entered(RoomType room);
+    void on_rested();
+    void on_shop_opened();
+    void on_combat_won(RoomType room);
+    void on_rewards_generated(RoomType room);
+    void on_card_added(DeckCard& card);
+    void on_gold_gained(int16_t amount);
+    void count_hook(RunHook hook);
     int upgrade_random_cards(int count, bool any_type, CardType type);
 };
 

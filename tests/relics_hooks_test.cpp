@@ -563,6 +563,72 @@ void test_strawberry() {
     std::cout << "[PASS] Strawberry: +7 Max HP when obtained, once, from a chest too" << std::endl;
 }
 
+void test_membership_card() {
+    // Without the card, the prices are the ones the stock is drawn with.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.open_shop();
+    ShopInventory drawn;
+    drawn.generate(CharacterId::IRONCLAD, 4242, 0);
+    assert(!plain.has_relic("MEMBERSHIP_CARD") && plain.current_shop.card_removal_cost == 75);
+    assert(plain.current_shop.cards[0].cost == drawn.cards[0].cost);
+
+    // With it, the same shelves at half price. The stock is drawn again from the seed the run used for the visit
+    // (its next random number), with the same relics owned.
+    RunManager member;
+    member.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    member.add_relic("MEMBERSHIP_CARD");
+    uint32_t seed = member.rng_state();
+    seed ^= seed << 13;
+    seed ^= seed >> 17;
+    seed ^= seed << 5;
+    ShopInventory full;
+    full.generate(CharacterId::IRONCLAD, seed, 0, std::span<const std::string_view>(member.relics.begin(), member.relics.size()));
+    member.open_shop();
+    assert(member.has_relic("MEMBERSHIP_CARD"));
+
+    auto half = [](int16_t cost) { return static_cast<int16_t>((cost + 1) / 2); };
+    const ShopInventory& cheap = member.current_shop;
+    assert(full.cards.size() == cheap.cards.size() && full.relics.size() == cheap.relics.size() &&
+           full.potions.size() == cheap.potions.size());
+    for (size_t i = 0; i < full.cards.size(); ++i) {
+        assert(full.cards[i].card.id == cheap.cards[i].card.id && cheap.cards[i].cost == half(full.cards[i].cost));
+    }
+    for (size_t i = 0; i < full.relics.size(); ++i) {
+        assert(full.relics[i].relic_id == cheap.relics[i].relic_id && cheap.relics[i].cost == half(full.relics[i].cost));
+    }
+    for (size_t i = 0; i < full.potions.size(); ++i) {
+        assert(full.potions[i].potion_id == cheap.potions[i].potion_id &&
+               cheap.potions[i].cost == half(full.potions[i].cost));
+    }
+    assert(full.card_removal_cost == 75 && cheap.card_removal_cost == 38);
+
+    // The price paid is the lowered one.
+    member.gold = 500;
+    int16_t price = cheap.cards[0].cost;
+    assert(member.buy_shop_card(0) && member.gold == 500 - price);
+    assert(member.remove_card_at_shop(0) && member.gold == 500 - price - 38);
+
+    // Bought from the merchant himself: full price for the card, half price for what is left on the shelves.
+    RunManager buyer;
+    buyer.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    buyer.gold = 999;
+    buyer.open_shop();
+    buyer.current_shop.relics[2] = ShopRelic{ "MEMBERSHIP_CARD", 100, false };
+    int16_t card_cost = buyer.current_shop.cards[0].cost;
+    assert(buyer.buy_shop_relic(2) && buyer.gold == 899);
+    assert(buyer.current_shop.cards[0].cost == half(card_cost) && buyer.current_shop.card_removal_cost == 38);
+
+    // Obtained away from the merchant, it changes nothing until the next visit.
+    RunManager later;
+    later.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    later.open_shop();
+    later.leave_shop();
+    later.add_relic("MEMBERSHIP_CARD");
+    assert(later.current_shop.cards[0].cost == drawn.cards[0].cost && later.current_shop.card_removal_cost == 75);
+    std::cout << "[PASS] Membership Card: every price halved, removal included, at once when bought in the shop" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -574,6 +640,7 @@ int main() {
     test_combat_start_relics();
     test_relics_in_a_run();
     test_strawberry();
+    test_membership_card();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

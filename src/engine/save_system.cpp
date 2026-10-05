@@ -272,6 +272,16 @@ void SaveManager::autosave_run(const RunManager& run) {
         discover_potion_by_id(run.potions[i]);
     }
 
+    // Relic counters
+    r.relic_counter_count = static_cast<uint8_t>(run.relic_counters.size());
+    for (size_t i = 0; i < run.relic_counters.size() && i < MAX_RELIC_COUNTERS; ++i) {
+        const RelicCounter& counter = run.relic_counters[i];
+        size_t len = std::min<size_t>(counter.relic_id.size(), 23);
+        std::memcpy(r.relic_counter_ids[i], counter.relic_id.data(), len);
+        r.relic_counter_ids[i][len] = '\0';
+        r.relic_counter_values[i] = counter.value;
+    }
+
     commit_to_storage();
 }
 
@@ -317,6 +327,13 @@ bool SaveManager::restore_run(RunManager& run) {
     for (uint8_t i = 0; i < r.potion_count && i < run.potion_slots; ++i) {
         std::string_view id = find_static_potion_id(stored_id(r.potions[i]));
         if (!id.empty()) run.potions.push_back(id);
+    }
+
+    // Restore relic counters
+    run.relic_counters.clear();
+    for (uint8_t i = 0; i < r.relic_counter_count && i < MAX_RELIC_COUNTERS; ++i) {
+        std::string_view id = find_static_relic_id(stored_id(r.relic_counter_ids[i]), character);
+        if (!id.empty()) run.relic_counters.push_back(RelicCounter{ id, r.relic_counter_values[i] });
     }
 
     return true;

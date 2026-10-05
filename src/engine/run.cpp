@@ -8,6 +8,20 @@ namespace engine {
 
 namespace {
 
+// Campfire actions given by a relic, in the order of the menu.
+struct CampfireRelic {
+    std::string_view relic_id;
+    CampfireAction action;
+};
+
+constexpr CampfireRelic CAMPFIRE_RELICS[] = {
+    { "SHOVEL", CampfireAction::DIG },
+    { "GIRYA", CampfireAction::LIFT },
+    { "MEAT_CLEAVER", CampfireAction::COOK }
+};
+
+constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+
 constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 0, "Normal", "Difficulté standard de l'Ascension." },
     { 1, "Élites Renforcés", "Les monstres Élites apparaissent plus fréquemment sur la carte." },
@@ -79,6 +93,8 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     potions.clear();
     potion_slots = BASE_POTION_SLOTS;
     deck_choice = {};
+    relic_counters.clear();
+    for (uint16_t& runs : hook_runs) runs = 0;
 
     // Generate Act 1 Map
     map_seed = next_random();
@@ -125,6 +141,7 @@ void RunManager::enter_room(int node_index) {
     current_node_index = node_index;
     const auto& node = map.nodes[node_index];
     current_floor = node.floor + 1;
+    on_room_entered(node.type);
 
     switch (node.type) {
         case RoomType::MONSTER:
@@ -168,7 +185,7 @@ void RunManager::enter_room(int node_index) {
             phase = RunPhase::CAMPFIRE;
             break;
         case RoomType::TREASURE: {
-            gold += 50;
+            gain_gold(50);
             last_treasure_relic = draw_treasure_relic();
             if (!last_treasure_relic.empty()) {
                 add_relic(last_treasure_relic);
@@ -188,11 +205,22 @@ void RunManager::enter_room(int node_index) {
     }
 }
 
+FixedVector<CampfireAction, 5> RunManager::campfire_actions() const {
+    FixedVector<CampfireAction, 5> actions;
+    actions.push_back(CampfireAction::REST);
+    actions.push_back(CampfireAction::SMITH);
+    for (const CampfireRelic& entry : CAMPFIRE_RELICS) {
+        if (has_relic(entry.relic_id)) actions.push_back(entry.action);
+    }
+    return actions;
+}
+
 void RunManager::rest_at_campfire() {
     if (can_rest()) {
         int16_t heal_amount = max_hp * 3 / 10;
         hp = std::min<int16_t>(max_hp, hp + heal_amount);
     }
+    on_rested();
     phase = RunPhase::MAP_NAVIGATION;
 }
 
@@ -243,6 +271,7 @@ void RunManager::open_shop() {
         }
     }
     phase = RunPhase::SHOP;
+    on_shop_opened();
 }
 
 bool RunManager::buy_shop_card(int index) {
@@ -468,6 +497,7 @@ void RunManager::generate_rewards() {
         relic_reward = draw_relic(rng, character, boss ? RelicSource::BOSS : RelicSource::ELITE,
                                   std::span<const std::string_view>(relics.begin(), relics.size()));
     }
+    on_rewards_generated(room);
     phase = RunPhase::REWARD_SCREEN;
 }
 
@@ -493,7 +523,7 @@ bool RunManager::take_relic_reward() {
 }
 
 void RunManager::finish_rewards() {
-    gold += gold_reward;
+    gain_gold(gold_reward);
     gold_reward = 0;
     potion_reward = {};
     relic_reward = {};
@@ -507,7 +537,7 @@ void RunManager::finish_rewards() {
 
 void RunManager::pick_card_reward(int reward_index) {
     if (reward_index >= 0 && static_cast<size_t>(reward_index) < current_card_rewards.size()) {
-        master_deck.push_back(current_card_rewards[reward_index]);
+        add_card_to_deck(current_card_rewards[reward_index]);
     }
     finish_rewards();
 }
@@ -525,6 +555,65 @@ void RunManager::add_relic(std::string_view relic_id) {
 void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
+    // Bought from the merchant himself, the card lowers what is still on his shelves.
+    if (relic_id == "MEMBERSHIP_CARD" && phase == RunPhase::SHOP) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
+}
+
+void RunManager::count_hook(RunHook hook) {
+    uint16_t& runs = hook_runs[static_cast<size_t>(hook)];
+    if (runs < UINT16_MAX) ++runs;
+}
+
+void RunManager::on_room_entered(RoomType) {
+    count_hook(RunHook::ROOM_ENTERED);
+}
+
+void RunManager::on_rested() {
+    count_hook(RunHook::RESTED);
+}
+
+void RunManager::on_shop_opened() {
+    count_hook(RunHook::SHOP_OPENED);
+    if (has_relic("MEMBERSHIP_CARD")) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
+}
+
+void RunManager::on_combat_won(RoomType) {
+    count_hook(RunHook::COMBAT_WON);
+}
+
+void RunManager::on_rewards_generated(RoomType) {
+    count_hook(RunHook::REWARDS_GENERATED);
+}
+
+void RunManager::on_card_added(DeckCard&) {
+    count_hook(RunHook::CARD_ADDED);
+}
+
+void RunManager::on_gold_gained(int16_t) {
+    count_hook(RunHook::GOLD_GAINED);
+}
+
+uint8_t RunManager::relic_counter(std::string_view relic_id) const {
+    for (const RelicCounter& counter : relic_counters) {
+        if (counter.relic_id == relic_id) return counter.value;
+    }
+    return 0;
+}
+
+bool RunManager::set_relic_counter(std::string_view relic_id, uint8_t value) {
+    for (RelicCounter& counter : relic_counters) {
+        if (counter.relic_id == relic_id) {
+            counter.value = value;
+            return true;
+        }
+    }
+    return relic_counters.push_back(RelicCounter{ relic_id, value });
+}
+
+bool RunManager::tick_relic_counter(std::string_view relic_id, uint8_t every) {
+    uint8_t next = static_cast<uint8_t>(relic_counter(relic_id) + 1);
+    bool reached = every > 0 && next >= every;
+    return set_relic_counter(relic_id, reached ? 0 : next) && reached;
 }
 
 void RunManager::gain_max_hp(int16_t amount) {
@@ -541,6 +630,7 @@ void RunManager::heal(int16_t amount) {
 void RunManager::gain_gold(int16_t amount) {
     if (amount <= 0) return;
     gold = static_cast<int16_t>(std::min<int>(9999, gold + amount));
+    on_gold_gained(amount);
 }
 
 int RunManager::upgrade_random_cards(int count) {
@@ -568,6 +658,8 @@ int RunManager::upgrade_random_cards(int count, bool any_type, CardType type) {
 }
 
 bool RunManager::add_card_to_deck(DeckCard card) {
+    if (master_deck.size() >= master_deck.capacity()) return false;
+    on_card_added(card);
     return master_deck.push_back(card);
 }
 
@@ -685,7 +777,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Start and end of turn
         "CAPTAINS_WHEEL", "HORN_CLEAT", "CANDELABRA", "CHANDELIER", "SPARKLING_ROUGE", "HAPPY_FLOWER", "PENDULUM", "BREAD",
         "MERCURY_HOURGLASS", "CLOAK_CLASP", "POCKETWATCH", "PARRYING_SHIELD", "STONE_CALENDAR", "ART_OF_WAR", "ORICHALCUM",
-        "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP",
+        "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP", "MEMBERSHIP_CARD",
         // Combat events
         "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
         "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA", "GAMBLING_CHIP", "HELICAL_DART", "NINJA_SCROLL",
@@ -979,6 +1071,8 @@ void RunManager::proceed_after_combat() {
     if (has_relic("MEAT_ON_THE_BONE") && hp * 2 <= max_hp) {
         hp = std::min<int16_t>(max_hp, hp + 12);
     }
+
+    on_combat_won(map.nodes[current_node_index].type);
 
     if (map.nodes[current_node_index].type == RoomType::BOSS) {
         if (current_act < 3) {

@@ -64,6 +64,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "LIZARD_TAIL", "Lorsque vos PV sont réduits à 0, récupérez 50 % de vos PV max (ne fonctionne qu'une fois)." },
     { "LUNAR_PASTRY", "À la fin de votre tour, gagnez 1 ★." },
     { "MEAT_ON_THE_BONE", "Si vous avez 50% ou moins de vos PV Max à la fin d'un combat, récupérez 12 PV." },
+    { "MEMBERSHIP_CARD", "50% de remise sur tous les produits !" },
     { "MERCURY_HOURGLASS", "Au début de votre tour, infligez 3 dégâts à TOUS les ennemis." },
     { "METRONOME", "La première fois que vous Canalisez 7 Orbes dans un combat, infligez 30 dégâts à TOUS les ennemis." },
     { "MINI_REGENT", "La première fois que vous dépensez des ★ chaque tour, gagnez 1 de Force." },

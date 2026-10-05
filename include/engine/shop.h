@@ -45,6 +45,9 @@ public:
     // With a full belt, `replace_index` is the potion of the belt thrown away to make room.
     bool buy_potion(RunManager& run, int index, int replace_index = -1);
     bool remove_card(RunManager& run, int deck_index);
+    // Lowers every price still to pay by `percent`, rounded to the nearest gold: cards, relics, potions and
+    // the card removal.
+    void apply_discount(int percent);
 };
 
 } // namespace engine
