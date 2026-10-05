@@ -16,7 +16,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "VULNERABLE_POTION", "STAR_POTION", "FOCUS_POTION", "FLEX_POTION", "SPEED_POTION", "POTION_OF_DOOM",
     "BLESSING_OF_THE_FORGE", "FORTIFIER", "FYSH_OIL", "BONE_BREW", "POTION_OF_BINDING", "CURE_ALL", "CLARITY",
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
-    "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION",
+    "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -512,6 +512,58 @@ void test_glowwater_potion() {
     std::cout << "[PASS] Glowwater Potion: hand exhausted, 10 cards drawn" << std::endl;
 }
 
+void test_gamblers_brew() {
+    // Discard any number of cards, then draw that many.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.hand.size() == 5 && combat.draw_pile.size() == 5);
+    assert(combat.use_potion("GAMBLERS_BREW"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].kind == ChoiceKind::DISCARD);
+    assert(combat.pending_choices[0].optional);
+    assert(combat.pending_choices[0].then == ChoiceThen::DRAW_PER_CARD);
+    assert(combat.choice_size() == 5);
+    assert(std::string_view(combat.combat_log) == "Gambler's Brew!");
+
+    // Pick 2 cards to discard: 2 are discarded, 2 are drawn.
+    uint8_t picks[] = { 1, 3 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending());
+    assert(combat.hand.size() == 5);
+    assert(combat.discard_pile.size() == 2);
+    assert(combat.draw_pile.size() == 3);
+    assert(combat.counters.cards_drawn == 2);
+
+    // Discarding no cards: hand stays intact.
+    CombatEngine keep = make_combat(CharacterId::IRONCLAD);
+    assert(keep.use_potion("GAMBLERS_BREW"));
+    assert(keep.choice_pending());
+    keep.resolve_choice_default();
+    assert(!keep.choice_pending());
+    assert(keep.hand.size() == 5);
+    assert(keep.discard_pile.empty());
+    assert(keep.draw_pile.size() == 5);
+
+    // Discarding the entire hand.
+    CombatEngine all = make_combat(CharacterId::IRONCLAD);
+    pad_draw_pile(all, 5);
+    assert(all.use_potion("GAMBLERS_BREW"));
+    uint8_t all_picks[] = { 0, 1, 2, 3, 4 };
+    assert(all.resolve_choice(all_picks));
+    assert(all.hand.size() == 5);
+    assert(all.discard_pile.size() == 5);
+    assert(all.draw_pile.size() == 5);
+
+    // Empty hand: nothing discarded, nothing drawn, no choice asked.
+    CombatEngine empty = make_combat(CharacterId::IRONCLAD);
+    empty.hand.clear();
+    assert(empty.use_potion("GAMBLERS_BREW"));
+    assert(!empty.choice_pending());
+    assert(empty.hand.empty());
+    assert(empty.discard_pile.empty());
+
+    std::cout << "[PASS] Gambler's Brew: discard any number of cards, draw that many" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -580,6 +632,7 @@ int main() {
     test_ship_in_a_bottle();
     test_shackling_potion();
     test_glowwater_potion();
+    test_gamblers_brew();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;

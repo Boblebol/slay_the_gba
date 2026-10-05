@@ -4861,6 +4861,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         player.add_status(StatusType::STRENGTH, 1);
         player.add_status(StatusType::DEXTERITY, 1);
         set_log("Fysh Oil!");
+    } else if (potion_id == "GAMBLERS_BREW") {
+        ask_choice(CardChoice{ ChoiceKind::DISCARD, 10, true, ChoiceThen::DRAW_PER_CARD });
+        set_log("Gambler's Brew!");
     } else if (potion_id == "BONE_BREW") {
         player.summon_minion(15, 0);
         set_log("Bone Brew!");
