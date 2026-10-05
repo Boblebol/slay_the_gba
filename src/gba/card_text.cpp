@@ -788,6 +788,8 @@ bn::string_view base_name(engine::CardId id)
         return "Balayage optique";
     case engine::CardId::SOUL:
         return "Âme";
+    case engine::CardId::LUMINESCE:
+        return "Éclat";
     case engine::CardId::REAVE:
         return "Exaction";
     case engine::CardId::GRAVE_WARDEN:
@@ -1993,6 +1995,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SWEEPING_GAZE:
         stream << "Éthéré. Titos : " << value << " au hasard. Épuisement.";
+        break;
+    case engine::CardId::LUMINESCE:
+        stream << "Retenue. Énergie +" << value << ". Épuisement.";
         break;
     case engine::CardId::SOUL:
         stream << "Pioche " << value << " cartes. Épuisement.";

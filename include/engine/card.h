@@ -465,6 +465,8 @@ enum class CardId : uint16_t {
     DEVOUR_LIFE,
     SOUL_STORM,
     GLIMPSE_BEYOND,
+    // Luminesce: a token, made by other cards (appended: saves store the numeric id)
+    LUMINESCE,
     COUNT
 };
 
