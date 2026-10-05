@@ -22,9 +22,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 WORK = ROOT / "tools" / "mgba"
 PACKAGE = WORK / "mgba"  # the importable `mgba` package, with the library next to it
-MGBA_VERSION = "0.10.3"
+# Third-party sources, compiled and run on the developer's machine and on the CI: each one is pinned to a
+# commit, checked after the download, so a moved tag or branch cannot change what gets built.
+MGBA_REPO = "https://github.com/mgba-emu/mgba.git"
+MGBA_TAG, MGBA_COMMIT = "0.10.3", "1c61b54208ca6266129d0f2394c04bd8c44f98c5"
 BINDINGS_REPO = "https://github.com/hanzi/libmgba-py.git"
-BINDINGS_COMMIT = "0.2.0-2"
+BINDINGS_TAG, BINDINGS_COMMIT = "0.2.0-2", "524f63b1f2cd77d640c1c38d19617be8909829c6"
 
 # The library only: no window, no video encoder, no scripting. The bindings are generated from the headers of
 # this very build, so both always agree on what exists.
@@ -54,9 +57,15 @@ def run(*command: str | Path, cwd: Path | None = None) -> None:
     subprocess.run([str(part) for part in command], cwd=cwd, check=True)
 
 
-def clone(url: str, ref: str, target: Path) -> None:
+def clone(url: str, tag: str, commit: str, target: Path) -> None:
+    """Downloads `tag` of `url` and refuses anything but the expected `commit`."""
     if not target.exists():
-        run("git", "clone", "--quiet", "--depth", "1", "--branch", ref, url, target)
+        run("git", "clone", "--quiet", "--depth", "1", "--branch", tag, url, target)
+    head = subprocess.run(["git", "-C", str(target), "rev-parse", "HEAD"], check=True, capture_output=True,
+                          text=True).stdout.strip()
+    if head != commit:
+        raise SystemExit(f"setup_headless_mgba: {target.name} is at {head}, expected {commit} ({url} {tag}); "
+                         f"nothing was built. Delete {target} if the pin was changed on purpose.")
 
 
 def library_file(build: Path) -> Path:
@@ -73,8 +82,8 @@ def main() -> None:
     WORK.mkdir(parents=True, exist_ok=True)
     bindings, source = WORK / "libmgba-py", WORK / "libmgba-py" / "mgba-src"
     build = source / "build"
-    clone(BINDINGS_REPO, BINDINGS_COMMIT, bindings)
-    clone("https://github.com/mgba-emu/mgba.git", MGBA_VERSION, source)
+    clone(BINDINGS_REPO, BINDINGS_TAG, BINDINGS_COMMIT, bindings)
+    clone(MGBA_REPO, MGBA_TAG, MGBA_COMMIT, source)
 
     run("cmake", "-S", source, "-B", build, *CMAKE_OPTIONS)
     run("cmake", "--build", build, "--parallel")
