@@ -1,4 +1,5 @@
 #include "engine/entity.h"
+#include <algorithm>
 
 namespace engine {
 
@@ -7,6 +8,9 @@ void Enemy::init(EnemyType enemy_type) {
     statuses.clear();
     block = 0;
     damage_percent = 100;
+    stolen = {};
+    ascended_damage = false;
+    for (IntentDebuff& debuff : last_debuffs) debuff = {};
 
     if (type == EnemyType::CULTIST) {
         name = "Cultist";
@@ -60,6 +64,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Palourde d'égout";
         max_hp = 56;
         hp = 56;
+    } else if (type == EnemyType::THE_FORGOTTEN) {
+        name = "L'Oublié";
+        max_hp = 106;
+        hp = 106;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -67,6 +75,29 @@ void Enemy::init(EnemyType enemy_type) {
     }
 
     plan_turn(1);
+}
+
+int16_t Enemy::ascension_hp() const {
+    switch (type) {
+        case EnemyType::THE_FORGOTTEN: return 111;
+        default: return 0;
+    }
+}
+
+void Enemy::ascend(bool more_hp, bool more_damage) {
+    if (more_hp && ascension_hp() > 0) {
+        max_hp = ascension_hp();
+        hp = max_hp;
+    }
+    ascended_damage = more_damage;
+    plan_turn(1);
+}
+
+void Enemy::return_stolen(Player& player) {
+    if (stolen.type != StatusType::NONE && stolen.amount != 0) {
+        player.add_status(stolen.type, static_cast<int16_t>(-stolen.amount));
+    }
+    stolen = {};
 }
 
 void Enemy::plan_turn(int turn_number) {
@@ -277,6 +308,24 @@ void Enemy::plan_turn(int turn_number) {
             current_intent.status_amount = 4;
             current_intent.description = "Pressurisation (+4 Force)";
         }
+    } else if (type == EnemyType::THE_FORGOTTEN) {
+        // Miasma, then Dread, and again.
+        if (turn_number % 2 == 1) {
+            // Takes 2 Dexterity from the player and keeps it for itself.
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.block = 8;
+            current_intent.status_type = StatusType::DEXTERITY;
+            current_intent.status_amount = 2;
+            current_intent.debuffs[0] = { StatusType::DEXTERITY, -2 };
+            current_intent.steals = true;
+            current_intent.description = "Miasme (8 blk, -2 Dex)";
+        } else {
+            // Hits harder with each point of Dexterity it holds.
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 15 : 13;
+            current_intent.damage_status = StatusType::DEXTERITY;
+            current_intent.description = "Angoisse (13 dmg + Dex)";
+        }
     }
 }
 
@@ -308,6 +357,20 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
         take_damage(back);
     }
 
+    // Statuses given to the player. They reach a player the attack left alive.
+    for (size_t i = 0; i < MAX_INTENT_DEBUFFS; ++i) {
+        const IntentDebuff& debuff = current_intent.debuffs[i];
+        last_debuffs[i] = {};
+        if (debuff.type == StatusType::NONE || debuff.amount == 0 || !player.is_alive()) continue;
+        if (!player.receive_status(debuff.type, debuff.amount)) continue; // cancelled by Artifact
+        last_debuffs[i] = debuff;
+        player.fresh_debuffs |= CombatEntity::fresh_bit(debuff.type);
+        if (current_intent.steals) {
+            stolen.type = debuff.type;
+            stolen.amount = static_cast<int16_t>(stolen.amount + debuff.amount);
+        }
+    }
+
     // End of turn status triggers (Ritual -> Strength, Plating -> Block, Regen -> HP)
     if (ritual > 0) {
         add_status(StatusType::STRENGTH, ritual);
@@ -323,7 +386,11 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
 
 int16_t Enemy::intent_damage(const CombatEntity& target) const {
     if (current_intent.base_damage <= 0) return 0;
-    return attack_damage(static_cast<int16_t>(current_intent.base_damage * damage_percent / 100), *this, target);
+    int16_t base = static_cast<int16_t>(current_intent.base_damage * damage_percent / 100);
+    if (current_intent.damage_status != StatusType::NONE) {
+        base = static_cast<int16_t>(std::max(0, base + get_status(current_intent.damage_status)));
+    }
+    return attack_damage(base, *this, target);
 }
 
 void Player::add_stars(uint8_t count) {

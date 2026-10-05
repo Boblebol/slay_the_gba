@@ -26,6 +26,9 @@ struct EnemyActionRecord {
     int16_t damage_blocked = 0;   // Absorbed by the player's block or minion
     int16_t block_gained = 0;
     int16_t player_hp_after = 0;
+    // Statuses the move gave the player (NONE for one Artifact cancelled), and whether it tried to give any.
+    IntentDebuff debuffs[MAX_INTENT_DEBUFFS];
+    bool debuff_attempted = false;
 };
 
 // Tallies read by card effects. The turn ones restart with each player turn, the combat ones with the fight.

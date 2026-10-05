@@ -25,6 +25,7 @@
 #include "bn_sprite_items_mon_jaw_worm.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_sewer_clam.h"
+#include "bn_sprite_items_mon_the_forgotten.h"
 
 #include "bn_sprite_items_hand_cards_defect.h"
 #include "bn_sprite_items_hand_cards_ironclad.h"
@@ -217,6 +218,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_damp_cultist, false };
     case engine::EnemyType::SEWER_CLAM:
         return { &bn::sprite_items::mon_sewer_clam, false };
+    case engine::EnemyType::THE_FORGOTTEN:
+        return { &bn::sprite_items::mon_the_forgotten, false };
     default:
         return { &bn::sprite_items::mon_cultist, false };
     }

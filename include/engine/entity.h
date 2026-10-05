@@ -17,6 +17,9 @@ public:
     int16_t max_hp = 0;
     int16_t block = 0;
     FixedVector<StatusEffect, MAX_STATUSES> statuses;
+    // Vulnerable, Weak and Frail received during the enemies' turn (one bit each): they are not worn down by the
+    // end of that same round, or a debuff of 1 turn would be gone before it did anything.
+    uint8_t fresh_debuffs = 0;
 
     bool is_alive() const { return hp > 0; }
 
@@ -56,12 +59,19 @@ public:
         add_status(type, static_cast<int16_t>(-get_status(type)));
     }
 
+    // Bit of `fresh_debuffs` for a status that wears off each round, 0 for the others.
+    static constexpr uint8_t fresh_bit(StatusType type) {
+        return type == StatusType::VULNERABLE ? 1 : (type == StatusType::WEAK ? 2 : (type == StatusType::FRAIL ? 4 : 0));
+    }
+
     void tick_end_of_turn_statuses() {
         // Decrease Vulnerable, Weak, Frail and Intangible by 1
+        const uint8_t fresh = fresh_debuffs;
+        fresh_debuffs = 0;
         for (size_t i = 0; i < statuses.size();) {
             const StatusType type = statuses[i].type;
-            if (type == StatusType::VULNERABLE || type == StatusType::WEAK || type == StatusType::FRAIL ||
-                type == StatusType::INTANGIBLE) {
+            if ((type == StatusType::VULNERABLE || type == StatusType::WEAK || type == StatusType::FRAIL ||
+                 type == StatusType::INTANGIBLE) && !(fresh & fresh_bit(type))) {
                 statuses[i].amount -= 1;
                 if (statuses[i].amount <= 0) {
                     statuses.erase(i);
@@ -259,8 +269,19 @@ enum class EnemyIntentType : uint8_t {
     ATTACK,
     BUFF,
     DEFEND,
-    ATTACK_DEFEND
+    ATTACK_DEFEND,
+    DEBUFF,       // only harms the player with statuses
+    ATTACK_DEBUFF // attacks, then harms the player with statuses
 };
+
+// A status an enemy move gives the player: Weak, Vulnerable or Frail (amount > 0), or Strength or Dexterity
+// taken away (amount < 0).
+struct IntentDebuff {
+    StatusType type = StatusType::NONE;
+    int16_t amount = 0;
+};
+
+constexpr size_t MAX_INTENT_DEBUFFS = 2;
 
 struct EnemyIntent {
     EnemyIntentType type = EnemyIntentType::ATTACK;
@@ -269,6 +290,14 @@ struct EnemyIntent {
     StatusType status_type = StatusType::NONE;
     int16_t status_amount = 0;
     std::string_view description = "";
+    // Statuses given to the player, after the attack if the move has one. Artifact cancels each of them.
+    IntentDebuff debuffs[MAX_INTENT_DEBUFFS];
+    // The enemy keeps count of what its debuffs took from the player and gives it back when it dies.
+    bool steals = false;
+    // Status of the enemy whose amount is added to the damage of the attack (the Forgotten's Dexterity).
+    StatusType damage_status = StatusType::NONE;
+
+    constexpr bool debuffs_player() const { return debuffs[0].type != StatusType::NONE; }
 };
 
 enum class EnemyType : uint8_t {
@@ -285,7 +314,8 @@ enum class EnemyType : uint8_t {
     AXE_RUBY_RAIDER,
     CALCIFIED_CULTIST,
     DAMP_CULTIST,
-    SEWER_CLAM
+    SEWER_CLAM,
+    THE_FORGOTTEN
 };
 
 class Enemy : public CombatEntity {
@@ -297,8 +327,20 @@ public:
     int16_t temp_strength_loss = 0; // Strength taken away until the end of this enemy's turn
     bool minion = false; // summoned by another enemy: killing it triggers no Fatal effect
     uint8_t hang_marks = 0; // Hang cards already played on this enemy: each one doubles the next
+    // What its moves stole from the player (a negative amount of Strength or Dexterity), given back when it dies.
+    IntentDebuff stolen;
+    // Its attacks use the damage the reference gives for Ascension (see ascend).
+    bool ascended_damage = false;
+    // Debuffs of the last move played: what the player received, NONE for the ones Artifact cancelled.
+    IntentDebuff last_debuffs[MAX_INTENT_DEBUFFS];
 
     void init(EnemyType enemy_type);
+    // HP the reference gives this monster at Ascension, 0 for the monsters that follow the percentages of the run.
+    int16_t ascension_hp() const;
+    // Ascension of a monster with its own values (ascension_hp() > 0): its Ascension HP and/or damage.
+    void ascend(bool more_hp, bool more_damage);
+    // Gives back to the player what this enemy stole. Called when it dies.
+    void return_stolen(Player& player);
     // Damage the current intent would deal to `target` right now (0 when it does not attack).
     int16_t intent_damage(const CombatEntity& target) const;
     void plan_turn(int turn_number);

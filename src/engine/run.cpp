@@ -157,10 +157,16 @@ void RunManager::enter_room(int node_index) {
 
             // Ascension: tougher and harder-hitting enemies depending on the room.
             int16_t hp_percent = get_enemy_hp_multiplier(node.type);
+            int16_t damage_percent = get_enemy_damage_multiplier(node.type);
             for (Enemy& foe : combat.enemies) {
+                if (foe.ascension_hp() > 0) {
+                    // A monster with its own Ascension values takes them instead of the percentages.
+                    foe.ascend(hp_percent > 100, damage_percent > 100);
+                    continue;
+                }
                 foe.max_hp = static_cast<int16_t>(foe.max_hp * hp_percent / 100);
                 foe.hp = foe.max_hp;
-                foe.damage_percent = get_enemy_damage_multiplier(node.type);
+                foe.damage_percent = damage_percent;
             }
             combat.enemy = combat.enemies[0];
 

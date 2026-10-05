@@ -36,6 +36,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::CALCIFIED_CULTIST: return "CALCIFIED_CULTIST";
         case EnemyType::DAMP_CULTIST: return "DAMP_CULTIST";
         case EnemyType::SEWER_CLAM: return "SEWER_CLAM";
+        case EnemyType::THE_FORGOTTEN: return "THE_FORGOTTEN";
     }
     return {};
 }
@@ -183,8 +184,12 @@ void test_reference_encounters() {
             }
         }
     }
+    // Except the ones whose only reference encounter needs a monster the engine does not have yet: the
+    // Forgotten is only met with the Lost (TheLostAndForgottenNormal).
+    const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
-        assert(met.count(static_cast<EnemyType>(i)) == 1);
+        EnemyType type = static_cast<EnemyType>(i);
+        assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));
     }
     std::cout << "[PASS] Encounter tables: the reference encounters, the legacy groups elsewhere" << std::endl;
 }
