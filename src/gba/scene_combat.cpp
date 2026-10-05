@@ -892,6 +892,13 @@ void CombatScene::_refresh_enemy_hud(int index)
         icon = Icon::ATTACK;
         stream << damage << "+";
         break;
+    case engine::EnemyIntentType::ATTACK_DEBUFF:
+        icon = Icon::ATTACK;
+        stream << damage << "▼";
+        break;
+    case engine::EnemyIntentType::DEBUFF:
+        icon = Icon::DEBUFF;
+        break;
     case engine::EnemyIntentType::DEFEND:
         icon = Icon::DEFEND;
         break;
@@ -2044,7 +2051,8 @@ void CombatScene::_update_enemy_turn()
             bn::string<16> text;
             bn::ostringstream stream(text);
             bool attacked = record.intent_type == engine::EnemyIntentType::ATTACK ||
-                            record.intent_type == engine::EnemyIntentType::ATTACK_DEFEND;
+                            record.intent_type == engine::EnemyIntentType::ATTACK_DEFEND ||
+                            record.intent_type == engine::EnemyIntentType::ATTACK_DEBUFF;
 
             if(record.damage_to_player > 0)
             {
@@ -2082,6 +2090,58 @@ void CombatScene::_update_enemy_turn()
                 _popups.spawn(view.x, _body_y(view) - 6, "Force ▲", TextColor::GOLD);
                 _fx.spawn(bn::sprite_items::fx_burst, view.x, _body_y(view), FX_BUFF, 4, 4);
                 play_sfx(Sfx::BUFF);
+            }
+
+            if(record.debuff_attempted)
+            {
+                // What the move did to the hero, one popup per status; nothing landed when Artifact took it all.
+                int landed = 0;
+
+                for(const engine::IntentDebuff& debuff : record.debuffs)
+                {
+                    if(debuff.type == engine::StatusType::NONE)
+                    {
+                        continue;
+                    }
+
+                    text.clear();
+
+                    switch(debuff.type)
+                    {
+                    case engine::StatusType::WEAK:
+                        stream << "Faible " << debuff.amount;
+                        break;
+                    case engine::StatusType::VULNERABLE:
+                        stream << "Vuln " << debuff.amount;
+                        break;
+                    case engine::StatusType::FRAIL:
+                        stream << "Fragile " << debuff.amount;
+                        break;
+                    case engine::StatusType::STRENGTH:
+                        stream << "Force " << debuff.amount;
+                        break;
+                    case engine::StatusType::DEXTERITY:
+                        stream << "Dex " << debuff.amount;
+                        break;
+                    default:
+                        stream << "Affaibli";
+                        break;
+                    }
+
+                    _popups.spawn(PLAYER_X + 8, PLAYER_Y - 22 - landed * 10, text, TextColor::PURPLE,
+                                  (attacked ? 8 : 0) + landed * 6);
+                    ++landed;
+                }
+
+                if(landed == 0)
+                {
+                    _popups.spawn(PLAYER_X + 8, PLAYER_Y - 22, "Annulé", TextColor::GRAY, attacked ? 8 : 0);
+                }
+                else
+                {
+                    _fx.spawn(bn::sprite_items::fx_burst, PLAYER_X, PLAYER_Y, FX_BUFF, 4, 4);
+                    play_sfx(Sfx::DEBUFF);
+                }
             }
 
             _player_bar.set(record.player_hp_after, _combat.player.max_hp);

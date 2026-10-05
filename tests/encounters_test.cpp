@@ -36,6 +36,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::CALCIFIED_CULTIST: return "CALCIFIED_CULTIST";
         case EnemyType::DAMP_CULTIST: return "DAMP_CULTIST";
         case EnemyType::SEWER_CLAM: return "SEWER_CLAM";
+        case EnemyType::THE_FORGOTTEN: return "THE_FORGOTTEN";
     }
     return {};
 }

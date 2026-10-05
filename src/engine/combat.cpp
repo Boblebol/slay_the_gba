@@ -216,6 +216,8 @@ void CombatEngine::settle_deaths() {
         uint8_t bit = static_cast<uint8_t>(1u << i);
         if ((alive_mask_ & bit) && !enemies[i].is_alive()) {
             alive_mask_ = static_cast<uint8_t>(alive_mask_ & ~bit);
+            // What it stole from the player comes back.
+            enemies[i].return_stolen(player);
             // Melancholy gets cheaper each time someone dies.
             change_cost_of_copies(CardId::MELANCHOLY, -1);
             EventInfo info;
@@ -4728,6 +4730,7 @@ void CombatEngine::execute_enemy_turn() {
             EnemyActionRecord record;
             record.enemy_index = static_cast<int8_t>(i);
             record.intent_type = enemies[i].current_intent.type;
+            record.debuff_attempted = enemies[i].current_intent.debuffs_player();
             const int16_t hp_before = player.hp;
             const int16_t shield_before = player.block + player.minion_hp + player.minion_block;
             const int16_t osty_hp_before = player.minion_hp;
@@ -4756,6 +4759,7 @@ void CombatEngine::execute_enemy_turn() {
             record.damage_blocked = shield_before - (player.block + player.minion_hp + player.minion_block);
             record.block_gained = enemies[i].block; // execute_turn() clears block before gaining it
             record.player_hp_after = player.hp;
+            for (size_t slot = 0; slot < MAX_INTENT_DEBUFFS; ++slot) record.debuffs[slot] = enemies[i].last_debuffs[slot];
             last_enemy_actions.push_back(record);
 
             if (!player.is_alive()) {
