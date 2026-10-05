@@ -25,8 +25,10 @@ namespace
 
 constexpr int OPTION_Y = 34;
 constexpr int OPTION_STEP = 16;
-// With the actions relics add, the menu starts higher and its rows are closer.
+// With the actions relics add, the frame shows three closer rows that follow the cursor.
+constexpr int LONG_OPTION_Y = 30;
 constexpr int LONG_OPTION_STEP = 12;
+constexpr int LONG_OPTION_ROWS = 3;
 
 class CampfireScene final : public Scene
 {
@@ -158,7 +160,7 @@ private:
     Label _title;
     Label _hp;
     Label _hint;
-    bn::vector<Label, 5> _options;
+    bn::vector<Label, LONG_OPTION_ROWS> _options;
     PopupPool _popups;
     Stage _stage = Stage::MENU;
     int _timer = 0;
@@ -197,10 +199,12 @@ private:
     {
         _options.clear();
         int count = int(_actions.size());
-        int step = count > 2 ? LONG_OPTION_STEP : OPTION_STEP;
-        int top = OPTION_Y - (count - 2) * LONG_OPTION_STEP;
+        bool is_long = count > 2;
+        int step = is_long ? LONG_OPTION_STEP : OPTION_STEP;
+        int top = is_long ? LONG_OPTION_Y : OPTION_Y;
+        int first = is_long ? bn::clamp(_cursor - 1, 0, count - LONG_OPTION_ROWS) : 0;
 
-        for(int index = 0; index < count; ++index)
+        for(int index = first; index < count && ! _options.full(); ++index)
         {
             TextLine line;
             bn::ostringstream stream(line);
@@ -225,7 +229,7 @@ private:
                 break;
             }
 
-            _options.emplace_back().set(-100, top + index * step, line, Align::LEFT,
+            _options.emplace_back().set(-100, top + (index - first) * step, line, Align::LEFT,
                                         _cursor == index ? TextColor::GOLD : TextColor::WHITE);
         }
 
