@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 53,6 %** — 657 faits, 20 partiels, 567 à faire (35 hors périmètre).
+**Avancement global : 53,7 %** — 658 faits, 20 partiels, 566 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 86 | 1 | 13 | 86,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
 | [Cartes communes aux cinq éditions](#cartes) | 12 | 0 | 108 | 10,0 % |
-| [Reliques et potions](#reliques) | 106 | 0 | 215 | 33,0 % |
+| [Reliques et potions](#reliques) | 107 | 0 | 214 | 33,3 % |
 | [Bestiaire](#bestiaire) | 8 | 1 | 95 | 8,2 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **657** | **20** | **567** | **53,6 %** |
+| **Total** | **658** | **20** | **566** | **53,7 %** |
 
 <a id="ironclad"></a>
 
@@ -859,11 +859,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 33,0 %
+## Reliques et potions — 33,3 %
 
-### Reliques partagées — 50,4 %
+### Reliques partagées — 51,3 %
 
-59 faits, 0 partiel, 58 à faire.
+60 faits, 0 partiel, 57 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -962,7 +962,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Boîte à outils | Boutique | Non |  |
 | Briquet mystique | Boutique | Non |  |
 | Bâtonnets enflammés | Boutique | Oui |  |
-| Carte de fidélité | Boutique | Non |  |
+| Carte de fidélité | Boutique | Oui |  |
 | Chaudron | Boutique | Non |  |
 | Composé X | Boutique | Non |  |
 | Fronde du courage | Boutique | Oui |  |
