@@ -75,7 +75,7 @@ bool ShopInventory::buy_card(RunManager& run, int index) {
 
     run.gold -= item.cost;
     item.purchased = true;
-    run.master_deck.push_back(item.card);
+    run.add_card_to_deck(item.card);
     return true;
 }
 
@@ -106,6 +106,16 @@ bool ShopInventory::buy_potion(RunManager& run, int index, int replace_index) {
         run.potions.push_back(item.potion_id);
     }
     return true;
+}
+
+void ShopInventory::apply_discount(int percent) {
+    auto lowered = [percent](int16_t cost) {
+        return static_cast<int16_t>((cost * (100 - percent) + 50) / 100);
+    };
+    for (ShopCard& item : cards) item.cost = lowered(item.cost);
+    for (ShopRelic& item : relics) item.cost = lowered(item.cost);
+    for (ShopPotion& item : potions) item.cost = lowered(item.cost);
+    card_removal_cost = lowered(card_removal_cost);
 }
 
 bool ShopInventory::remove_card(RunManager& run, int deck_index) {

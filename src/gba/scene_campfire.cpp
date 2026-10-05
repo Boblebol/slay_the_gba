@@ -24,6 +24,11 @@ namespace
 {
 
 constexpr int OPTION_Y = 34;
+constexpr int OPTION_STEP = 16;
+// With the actions relics add, the frame shows three closer rows that follow the cursor.
+constexpr int LONG_OPTION_Y = 30;
+constexpr int LONG_OPTION_STEP = 12;
+constexpr int LONG_OPTION_ROWS = 3;
 
 class CampfireScene final : public Scene
 {
@@ -32,7 +37,8 @@ public:
         _ctx(context),
         _bg(bn::regular_bg_items::bg_campfire.create_bg(BG_ORIGIN_X, BG_ORIGIN_Y)),
         _heart(create_icon(Icon::HEART, -104, -58)),
-        _picker(CardPickerLayout{ 60, -74, -30, -30, -58, 142 })
+        _picker(CardPickerLayout{ 60, -74, -30, -30, -58, 142 }),
+        _actions(context.run.campfire_actions())
     {
         _title.set(0, -72, "FEU DE CAMP", Align::CENTER, TextColor::GOLD);
         _refresh_hp();
@@ -56,12 +62,15 @@ public:
             if(bn::keypad::up_pressed() || bn::keypad::down_pressed())
             {
                 play_sfx(Sfx::UI_CURSOR);
-                _cursor = 1 - _cursor;
+                int count = int(_actions.size());
+                _cursor = (_cursor + (bn::keypad::down_pressed() ? 1 : count - 1)) % count;
                 _refresh_options();
             }
             else if(bn::keypad::a_pressed())
             {
-                if(_cursor == 0)
+                engine::CampfireAction action = _actions[_cursor];
+
+                if(action == engine::CampfireAction::REST)
                 {
                     int before = _ctx.run.hp;
                     _ctx.run.rest_at_campfire();
@@ -74,6 +83,12 @@ public:
                     _stage = Stage::DONE;
                     _done_timer = 0;
                     _clear_options();
+                }
+                else if(action != engine::CampfireAction::SMITH)
+                {
+                    // An action the engine does not resolve yet.
+                    _popups.spawn(0, 10, "Indisponible", TextColor::GRAY);
+                    play_sfx(Sfx::ERROR);
                 }
                 else if(_ctx.run.can_smith())
                 {
@@ -140,11 +155,12 @@ private:
     bn::regular_bg_ptr _bg;
     bn::sprite_ptr _heart;
     CardPicker _picker;
+    engine::FixedVector<engine::CampfireAction, 5> _actions;
     bn::random _random;
     Label _title;
     Label _hp;
     Label _hint;
-    bn::vector<Label, 2> _options;
+    bn::vector<Label, LONG_OPTION_ROWS> _options;
     PopupPool _popups;
     Stage _stage = Stage::MENU;
     int _timer = 0;
@@ -182,18 +198,41 @@ private:
     void _refresh_options()
     {
         _options.clear();
-        int heal = _ctx.run.max_hp * 3 / 10;
-        bn::string<48> rest;
-        bn::ostringstream stream(rest);
-        stream << (_cursor == 0 ? "► " : "  ") << "Se reposer : +" << heal << " PV";
-        _options.emplace_back().set(-100, OPTION_Y, rest, Align::LEFT, _cursor == 0 ? TextColor::GOLD : TextColor::WHITE);
+        int count = int(_actions.size());
+        bool is_long = count > 2;
+        int step = is_long ? LONG_OPTION_STEP : OPTION_STEP;
+        int top = is_long ? LONG_OPTION_Y : OPTION_Y;
+        int first = is_long ? bn::clamp(_cursor - 1, 0, count - LONG_OPTION_ROWS) : 0;
 
-        TextLine forge;
-        forge.append(_cursor == 1 ? "► " : "  ");
-        forge.append(hero_campfire_upgrade());
-        forge.append(" : améliorer une carte");
-        _options.emplace_back().set(-100, OPTION_Y + 16, forge, Align::LEFT,
-                                    _cursor == 1 ? TextColor::GOLD : TextColor::WHITE);
+        for(int index = first; index < count && ! _options.full(); ++index)
+        {
+            TextLine line;
+            bn::ostringstream stream(line);
+            stream << (_cursor == index ? "► " : "  ");
+
+            switch(_actions[index])
+            {
+            case engine::CampfireAction::REST:
+                stream << "Se reposer : +" << (_ctx.run.max_hp * 3 / 10) << " PV";
+                break;
+            case engine::CampfireAction::SMITH:
+                stream << hero_campfire_upgrade() << " : améliorer une carte";
+                break;
+            case engine::CampfireAction::DIG:
+                stream << "Fouiller : obtenir une relique";
+                break;
+            case engine::CampfireAction::LIFT:
+                stream << "Soulever : gagner de la Force";
+                break;
+            default:
+                stream << "Cuisiner : retirer 2 cartes";
+                break;
+            }
+
+            _options.emplace_back().set(-100, top + (index - first) * step, line, Align::LEFT,
+                                        _cursor == index ? TextColor::GOLD : TextColor::WHITE);
+        }
+
         _hint.set(0, 72, "▲▼ Choisir   A Valider", Align::CENTER, TextColor::GRAY);
     }
 

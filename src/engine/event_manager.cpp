@@ -160,7 +160,11 @@ bool EventManager::apply_choice(RunManager& run, const EventChoice& choice, char
             } else if (choice.value == 90) {
                 run.hp = std::max<int16_t>(1, run.hp - 7);
             }
-            run.gold += choice.value;
+            if (choice.value > 0) {
+                run.gain_gold(choice.value);
+            } else {
+                run.gold += choice.value;
+            }
             safe_copy(out_msg, max_len, choice.result_message);
             break;
         }
