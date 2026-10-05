@@ -17,6 +17,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "BLESSING_OF_THE_FORGE", "FORTIFIER", "FYSH_OIL", "BONE_BREW", "POTION_OF_BINDING", "CURE_ALL", "CLARITY",
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
+    "POWDERED_DEMISE",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -564,6 +565,68 @@ void test_gamblers_brew() {
     std::cout << "[PASS] Gambler's Brew: discard any number of cards, draw that many" << std::endl;
 }
 
+void test_powdered_demise() {
+    // Basic effect: Jaw Worm (42 HP) loses 9 HP at the end of each of its turns.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.enemies[0].hp == 42);
+    assert(combat.use_potion("POWDERED_DEMISE"));
+    assert(std::string_view(combat.combat_log) == "Powdered Demise!");
+    assert(combat.enemies[0].hp == 42); // no immediate damage
+
+    // Turn 1 end: loses 9 HP.
+    end_turn_idle(combat);
+    assert(combat.enemies[0].hp == 42 - 9);
+
+    // Turn 2 end: loses 9 HP again.
+    end_turn_idle(combat);
+    assert(combat.enemies[0].hp == 42 - 18);
+
+    // HP loss is not absorbed by Block.
+    make_enemy_idle(combat.enemies[0]);
+    combat.enemies[0].current_intent.block = 15;
+    combat.end_player_turn();
+    assert(combat.enemies[0].hp == 42 - 27);
+    assert(combat.enemies[0].block == 15);
+
+    // Multi-enemy: targeting a specific enemy (e.g. enemy 1 in a pack).
+    CombatEngine pack = make_pack(CharacterId::IRONCLAD);
+    assert(pack.use_potion("POWDERED_DEMISE", 1));
+    end_turn_idle(pack);
+    assert(pack.enemies[0].hp == 18);      // untouched
+    assert(pack.enemies[1].hp == 18 - 9);  // targeted
+    assert(pack.enemies[2].hp == 42);      // untouched
+
+    // Stacking: using two Powdered Demise on the same enemy.
+    CombatEngine stacked = make_combat(CharacterId::IRONCLAD);
+    assert(stacked.use_potion("POWDERED_DEMISE"));
+    assert(stacked.use_potion("POWDERED_DEMISE"));
+    end_turn_idle(stacked);
+    assert(stacked.enemies[0].hp == 42 - 18);
+
+    // Lethal: kills the enemy at the end of its turn and achieves victory.
+    CombatEngine lethal = make_combat(CharacterId::IRONCLAD);
+    lethal.enemies[0].hp = 5;
+    assert(lethal.use_potion("POWDERED_DEMISE"));
+    end_turn_idle(lethal);
+    assert(lethal.enemies[0].hp == 0 && lethal.state == CombatState::VICTORY);
+
+    // Buffer cancels the HP loss.
+    CombatEngine buffed = make_combat(CharacterId::IRONCLAD);
+    buffed.enemies[0].add_status(StatusType::BUFFER, 1);
+    assert(buffed.use_potion("POWDERED_DEMISE"));
+    end_turn_idle(buffed);
+    assert(buffed.enemies[0].hp == 42 && buffed.enemies[0].get_status(StatusType::BUFFER) == 0);
+
+    // Intangible reduces the HP loss to 1.
+    CombatEngine intang = make_combat(CharacterId::IRONCLAD);
+    intang.enemies[0].add_status(StatusType::INTANGIBLE, 2);
+    assert(intang.use_potion("POWDERED_DEMISE"));
+    end_turn_idle(intang);
+    assert(intang.enemies[0].hp == 41);
+
+    std::cout << "[PASS] Powdered Demise: enemy loses 9 HP at the end of each of its turns" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -633,6 +696,7 @@ int main() {
     test_shackling_potion();
     test_glowwater_potion();
     test_gamblers_brew();
+    test_powdered_demise();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;

@@ -32,6 +32,7 @@ constexpr ActivePotion ACTIVE_POTIONS[] = {
     { "POTION_OF_CAPACITY", false, CharacterId::DEFECT },
     { "POTION_OF_DOOM" },
     { "POT_OF_GHOULS", false, CharacterId::NECROBINDER },
+    { "POWDERED_DEMISE" },
     { "RADIANT_TINCTURE" }, { "REGEN_POTION" }, { "SHACKLING_POTION" },
     { "SHIP_IN_A_BOTTLE" }, { "SPEED_POTION" },
     { "STAR_POTION", false, CharacterId::REGENT },
