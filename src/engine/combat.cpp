@@ -820,7 +820,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         default:
             // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
             // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE,
-            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM.
+            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM, DEMISE.
             break;
     }
 }
@@ -4738,6 +4738,14 @@ void CombatEngine::execute_enemy_turn() {
             // Doom: an enemy with at least as much Doom as HP does not survive its turn.
             reap(enemies[i]);
 
+            // Demise: enemy loses HP at the end of each of its turns.
+            for (const ActivePower& p : powers) {
+                if (p.id == PowerId::DEMISE && p.target == static_cast<int8_t>(i) && enemies[i].is_alive()) {
+                    enemies[i].lose_hp(p.amount);
+                    settle_deaths();
+                }
+            }
+
             // The Strength it lost "until the end of its turn" comes back.
             afflict(enemies[i], StatusType::STRENGTH, enemies[i].temp_strength_loss);
             enemies[i].temp_strength_loss = 0;
@@ -4948,6 +4956,12 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "REGEN_POTION") {
         player.add_status(StatusType::REGEN, 5);
         set_log("Regen Potion!");
+    } else if (potion_id == "POWDERED_DEMISE") {
+        aimed_enemy();
+        if (target_index >= 0 && static_cast<size_t>(target_index) < enemies.size()) {
+            add_power(PowerId::DEMISE, 9, false, static_cast<int8_t>(target_index));
+        }
+        set_log("Powdered Demise!");
     } else {
         return false;
     }
