@@ -2128,14 +2128,15 @@ void CombatScene::_update_enemy_turn()
                         break;
                     }
 
-                    _popups.spawn(PLAYER_X + 8, PLAYER_Y - 22 - landed * 10, text, TextColor::PURPLE,
-                                  (attacked ? 8 : 0) + landed * 6);
+                    // One after the other at the same place: stacked, they would climb over the counters.
+                    _popups.spawn(PLAYER_X + 8, PLAYER_Y - 10, text, TextColor::PURPLE,
+                                  (attacked ? 12 : 0) + landed * 14);
                     ++landed;
                 }
 
                 if(landed == 0)
                 {
-                    _popups.spawn(PLAYER_X + 8, PLAYER_Y - 22, "Annulé", TextColor::GRAY, attacked ? 8 : 0);
+                    _popups.spawn(PLAYER_X + 8, PLAYER_Y - 10, "Annulé", TextColor::GRAY, attacked ? 12 : 0);
                 }
                 else
                 {
