@@ -30,3 +30,11 @@ jobs:
       # A cartridge can build and still hang at boot: static data that fills the internal RAM leaves no stack.
       - name: ROM leaves room for its stack
         run: uv run scripts/check_rom_memory.py ironclad
+      # The same cartridge, run without a window: it must draw a screen and react to the buttons. Not blocking
+      # yet: the emulator build is new on the CI. Remove continue-on-error once it has been green for a while.
+      - name: Headless emulator
+        continue-on-error: true
+        run: uv run scripts/setup_headless_mgba.py
+      - name: Cartridge boots and reads the buttons
+        continue-on-error: true
+        run: uv run --with pytest --with pillow --with cffi pytest scripts/gba_headless_test.py

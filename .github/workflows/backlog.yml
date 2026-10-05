@@ -1,0 +1,25 @@
+# When an issue is closed: the issues it was blocking become `statut:prêt`, and its parent is closed once all
+# its sub-issues are.
+name: Backlog
+
+on:
+  issues:
+    types: [closed]
+
+permissions:
+  issues: write
+  contents: read
+
+concurrency:
+  group: backlog
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/backlog_sync.py ${{ github.event.issue.number }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}

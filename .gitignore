@@ -29,3 +29,6 @@ dist/
 
 # Python
 __pycache__/
+
+# Headless emulator built by scripts/setup_headless_mgba.py
+tools/mgba/
