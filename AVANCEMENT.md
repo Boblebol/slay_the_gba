@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 54,1 %** — 663 faits, 20 partiels, 561 à faire (35 hors périmètre).
+**Avancement global : 54,2 %** — 664 faits, 20 partiels, 560 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -17,7 +17,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Soldat de Fer](#ironclad) | 93 | 1 | 8 | 91,7 % |
 | [La Silencieuse](#silent) | 84 | 1 | 16 | 83,7 % |
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
-| [Le Régent](#regent) | 86 | 1 | 13 | 86,5 % |
+| [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
 | [Cartes communes aux cinq éditions](#cartes) | 12 | 0 | 108 | 10,0 % |
 | [Reliques et potions](#reliques) | 107 | 0 | 214 | 33,3 % |
@@ -26,7 +26,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **663** | **20** | **561** | **54,1 %** |
+| **Total** | **664** | **20** | **560** | **54,2 %** |
 
 <a id="ironclad"></a>
 
@@ -427,11 +427,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regent"></a>
 
-## Le Régent — 86,5 %
+## Le Régent — 87,5 %
 
-### Cartes — 88,4 %
+### Cartes — 89,5 %
 
-76 faits, 0 partiel, 10 à faire (5 hors périmètre).
+77 faits, 0 partiel, 9 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -460,7 +460,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Trajectoire de collision | Commune · Attaque | Oui |  |
 | Étoile directrice | Commune · Attaque | Oui |  |
 | Alignement | Peu commune · Compétence | Oui |  |
-| Autorité manifeste | Peu commune · Compétence | Non |  |
+| Autorité manifeste | Peu commune · Compétence | Oui |  |
 | CHARGEZ !! | Peu commune · Compétence | Non |  |
 | Conquérant | Peu commune · Compétence | Oui |  |
 | Constellation | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
