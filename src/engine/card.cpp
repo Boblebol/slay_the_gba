@@ -1,4 +1,5 @@
 #include "engine/card.h"
+#include "engine/card_meta.h"
 
 namespace engine {
 
@@ -462,7 +463,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::HAUNT, "Haunt", 1, CardType::POWER, TargetType::SELF, 7, 0, "Whenever you play a Soul, a random enemy loses 7 HP.", "Haunt+", 1, 9, 0, "Whenever you play a Soul, a random enemy loses 9 HP." },
     { CardId::DEVOUR_LIFE, "Devour Life", 1, CardType::POWER, TargetType::SELF, 1, 0, "Whenever you play a Soul, Summon 1.", "Devour Life+", 1, 2, 0, "Whenever you play a Soul, Summon 2." },
     { CardId::SOUL_STORM, "Soul Storm", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 4, "Deal 9 dmg, +4 for each Soul in your exhaust pile.", "Soul Storm+", 1, 9, 6, "Deal 9 dmg, +6 for each Soul in your exhaust pile." },
-    { CardId::GLIMPSE_BEYOND, "Glimpse Beyond", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Add 3 Souls into your draw pile. Exhaust.", "Glimpse Beyond+", 1, 4, 0, "Add 4 Souls into your draw pile. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST }
+    { CardId::GLIMPSE_BEYOND, "Glimpse Beyond", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Add 3 Souls into your draw pile. Exhaust.", "Glimpse Beyond+", 1, 4, 0, "Add 4 Souls into your draw pile. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::MANIFEST_AUTHORITY, "Manifest Authority", 1, CardType::SKILL, TargetType::SELF, 7, 1, "Gain 7 block. Add 1 random Colorless card into your hand.", "Manifest Authority+", 1, 8, 1, "Gain 8 block. Add 1 random Upgraded Colorless card into your hand." },
 };
 
 const CardDef& CardDef::get(CardId id) {
@@ -471,6 +473,14 @@ const CardDef& CardDef::get(CardId id) {
         return CARDS[0];
     }
     return CARDS[index];
+}
+
+static_assert(sizeof(CARD_META) / sizeof(CARD_META[0]) == static_cast<size_t>(CardId::COUNT),
+              "card_meta.h is out of date: run `uv run scripts/build_card_meta.py`");
+
+const CardMeta& card_meta(CardId id) {
+    uint16_t index = static_cast<uint16_t>(id);
+    return CARD_META[index < static_cast<uint16_t>(CardId::COUNT) ? index : 0];
 }
 
 } // namespace engine

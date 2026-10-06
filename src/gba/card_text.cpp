@@ -806,6 +806,8 @@ bn::string_view base_name(engine::CardId id)
         return "Tempête d'âmes";
     case engine::CardId::GLIMPSE_BEYOND:
         return "Vision de l'au-delà";
+    case engine::CardId::MANIFEST_AUTHORITY:
+        return "Autorité manifeste";
     default:
         return "???";
     }
@@ -2023,6 +2025,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::GLIMPSE_BEYOND:
         stream << "Ajoute " << value << " Âmes à la Pioche. Épuisement.";
+        break;
+    case engine::CardId::MANIFEST_AUTHORITY:
+        stream << "Gagne " << value << " d'Armure. 1 Incolore" << (card.upgraded ? "+" : "") << " en Main.";
         break;
     default:
         break;

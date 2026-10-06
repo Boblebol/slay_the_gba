@@ -37,6 +37,21 @@ struct EnemyActionRecord {
     bool escaped = false; // it left the fight with this move
 };
 
+// Which cards an effect may draw at random. A field left at its default does not filter.
+struct CardFilter {
+    CardPool pool = CardPool::NONE;       // NONE: the pool of the hero of the fight
+    CardRarity rarity = CardRarity::NONE; // NONE: Common, Uncommon or Rare
+    bool any_type = true;
+    CardType type = CardType::ATTACK;     // read when `any_type` is false
+
+    constexpr CardFilter() = default;
+    constexpr CardFilter(CardPool p) : pool(p) {}
+    constexpr CardFilter(CardType t) : any_type(false), type(t) {}
+    constexpr CardFilter(CardPool p, CardType t) : pool(p), any_type(false), type(t) {}
+    constexpr CardFilter(CardRarity r) : rarity(r) {}
+    constexpr CardFilter(CardPool p, CardRarity r) : pool(p), rarity(r) {}
+};
+
 // Tallies read by card effects. The turn ones restart with each player turn, the combat ones with the fight.
 struct CombatCounters {
     // This turn
@@ -240,6 +255,14 @@ public:
     void discard_from_hand(size_t index);
     // Adds a card made during the combat to a pile: at a random place of the draw pile, and in the discard
     // pile when the hand is full.
+    // Whether `id` is a card `filter` lets an effect draw: of the pool and rarity asked, never a Basic, Ancient
+    // or Event card, a Curse, a Status card or a token. Every card of the engine has its effect, so every card
+    // that fits can be drawn.
+    [[nodiscard]] bool card_fits(CardId id, const CardFilter& filter) const;
+    // A card drawn at random among the ones that fit, with the fight's random generator. NONE when none fits.
+    CardId random_card(const CardFilter& filter = {});
+    // Creates such a card in `pile`. False when no card fits.
+    bool create_random_card(const CardFilter& filter, Pile pile, bool upgraded = false);
     // `by_player` is false for a card an enemy puts in the player's piles: nothing of the player reacts to it
     // as to a card they created.
     void create_card(DeckCard card, Pile pile, bool by_player = true);
