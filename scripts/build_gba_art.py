@@ -168,6 +168,7 @@ MONSTERS: dict[str, str] = {
     "sewer_clam": "sewer_clam",
     "the_forgotten": "the_forgotten",
     "living_shield": "living_shield",
+    "fat_gremlin": "fat_gremlin",
 }
 BOSSES: dict[str, str] = {
     "ceremonial_beast": "ceremonial_beast",
@@ -1106,10 +1107,65 @@ ICON_GOLD = [
     "................",
     "................",
 ]
+ICON_STUN = [
+    "................",
+    ".......KK.......",
+    "......KYYK......",
+    "......KYYK......",
+    "..KKKKKYYKKKKK..",
+    "..KYYYYWYYYYyK..",
+    "...KYYWYYYYyK...",
+    "....KYYYYYyK....",
+    "....KYYYYYyK....",
+    "...KYYYyyYYyK...",
+    "...KYYyKKyYyK...",
+    "..KYyKK..KKyyK..",
+    "..KKK......KKK..",
+    "................",
+    "................",
+    "................",
+]
+ICON_HEAL = [
+    "................",
+    "................",
+    "......KKKK......",
+    "......KGGK......",
+    "......KWGK......",
+    "..KKKKKGGKKKKK..",
+    "..KGWGGGGGGGgK..",
+    "..KGGGGGGGGggK..",
+    "..KKKKKGGKKKKK..",
+    "......KGgK......",
+    "......KGgK......",
+    "......KggK......",
+    "......KKKK......",
+    "................",
+    "................",
+    "................",
+]
+ICON_ESCAPE = [
+    "................",
+    "................",
+    ".........KK.....",
+    ".........KWK....",
+    ".........KWSK...",
+    "..KKKKKKKKWSSK..",
+    "..KWWWWWWWWSSSK.",
+    "..KSSSSSSSSSSsK.",
+    "..KKKKKKKKSSsK..",
+    ".........KSsK...",
+    ".........KsK....",
+    ".........KK.....",
+    "................",
+    "................",
+    "................",
+    "................",
+]
 
 
 def build_ui() -> None:
-    icons = [ICON_ATTACK, ICON_DEFEND, ICON_BUFF, ICON_DEBUFF, ICON_UNKNOWN, ICON_TARGET, ICON_HEART, ICON_GOLD]
+    icons = [ICON_ATTACK, ICON_DEFEND, ICON_BUFF, ICON_DEBUFF, ICON_UNKNOWN, ICON_TARGET, ICON_HEART, ICON_GOLD,
+             ICON_STUN, ICON_HEAL, ICON_ESCAPE]
     imgs = [pixel_art(rows, UI_COLORS) for rows in icons]
     palette = [K, W, (176, 184, 200), (104, 112, 136), (248, 200, 64), (184, 120, 40), (232, 56, 48),
                (144, 24, 32), (72, 144, 232), (40, 72, 152), (88, 216, 96), (40, 128, 56), (184, 96, 232),

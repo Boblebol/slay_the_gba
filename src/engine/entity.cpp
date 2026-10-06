@@ -10,6 +10,9 @@ void Enemy::init(EnemyType enemy_type) {
     damage_percent = 100;
     stolen = {};
     ascended_damage = false;
+    escaped = false;
+    last_heal = 0;
+    hp_bonus = 0;
     for (IntentDebuff& debuff : last_debuffs) debuff = {};
     reset_pattern(1);
 
@@ -73,6 +76,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Bouclier vivant";
         max_hp = 55;
         hp = 55;
+    } else if (type == EnemyType::FAT_GREMLIN) {
+        name = "Gros diablotin";
+        max_hp = 13;
+        hp = 13;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -82,17 +89,43 @@ void Enemy::init(EnemyType enemy_type) {
     plan_turn(1);
 }
 
+uint8_t Enemy::hp_spread() const {
+    switch (type) {
+        case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
+        default: return 0;
+    }
+}
+
+void Enemy::roll_hp(uint32_t seed) {
+    if (hp_spread() == 0) return;
+    // A few rounds of mixing: seeds that differ by little must not give the same HP.
+    seed ^= seed >> 16;
+    seed *= 0x7FEB352Du;
+    seed ^= seed >> 15;
+    max_hp = static_cast<int16_t>(max_hp - hp_bonus);
+    hp_bonus = static_cast<uint8_t>(seed % (hp_spread() + 1u));
+    max_hp = static_cast<int16_t>(max_hp + hp_bonus);
+    hp = max_hp;
+}
+
+void Enemy::stun() {
+    current_intent = EnemyIntent{};
+    current_intent.type = EnemyIntentType::STUN;
+    current_intent.description = "Étourdi";
+}
+
 int16_t Enemy::ascension_hp() const {
     switch (type) {
         case EnemyType::THE_FORGOTTEN: return 111;
         case EnemyType::LIVING_SHIELD: return 65;
+        case EnemyType::FAT_GREMLIN: return 14;
         default: return 0;
     }
 }
 
 void Enemy::ascend(bool more_hp, bool more_damage) {
     if (more_hp && ascension_hp() > 0) {
-        max_hp = ascension_hp();
+        max_hp = static_cast<int16_t>(ascension_hp() + hp_bonus);
         hp = max_hp;
     }
     ascended_damage = more_damage;
@@ -384,12 +417,22 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_amount = 3;
             current_intent.description = "Fracas (16 dmg, +3 Force)";
         }
+    } else if (type == EnemyType::FAT_GREMLIN) {
+        // Wakes up dazed, then runs away.
+        if (turn_number == 1) {
+            stun();
+            current_intent.description = "Éveil (étourdi)";
+        } else {
+            current_intent.type = EnemyIntentType::ESCAPE;
+            current_intent.description = "Fuite";
+        }
     }
 }
 
 void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
     clear_block();
     decay_plating();
+    last_heal = 0;
 
     // Ritual gained this turn only starts granting Strength at the end of the next one.
     int16_t ritual = get_status(StatusType::RITUAL);
@@ -420,6 +463,11 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
         add_status(current_intent.status_type, current_intent.status_amount);
     }
 
+    if (current_intent.heal > 0 && is_alive()) {
+        last_heal = static_cast<int16_t>(std::min<int>(current_intent.heal, max_hp - hp));
+        hp = static_cast<int16_t>(hp + last_heal);
+    }
+
     // Statuses given to the player. They reach a player the attack left alive.
     for (size_t i = 0; i < MAX_INTENT_DEBUFFS; ++i) {
         const IntentDebuff& debuff = current_intent.debuffs[i];
@@ -445,6 +493,13 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
 
     // Tick end-of-turn status counters (Vulnerable, Weak)
     tick_end_of_turn_statuses();
+
+    // Gone: nothing can reach it any more, and it was not killed.
+    if (current_intent.type == EnemyIntentType::ESCAPE && is_alive()) {
+        escaped = true;
+        hp = 0;
+        block = 0;
+    }
 }
 
 int16_t Enemy::intent_damage(const CombatEntity& target) const {

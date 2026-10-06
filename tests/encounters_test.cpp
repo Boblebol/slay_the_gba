@@ -38,6 +38,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::SEWER_CLAM: return "SEWER_CLAM";
         case EnemyType::THE_FORGOTTEN: return "THE_FORGOTTEN";
         case EnemyType::LIVING_SHIELD: return "LIVING_SHIELD";
+        case EnemyType::FAT_GREMLIN: return "FAT_GREMLIN";
     }
     return {};
 }
@@ -187,8 +188,9 @@ void test_reference_encounters() {
     }
     // Except the ones whose only reference encounter needs a monster the engine does not have yet: the
     // Forgotten is only met with the Lost (TheLostAndForgottenNormal), the Living Shield with the Turret Operator
-    // (TurretOperatorWeak).
-    const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD };
+    // (TurretOperatorWeak), the Fat Gremlin with the Gremlin Merc (GremlinMercNormal).
+    const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
+                                                          EnemyType::FAT_GREMLIN };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));

@@ -63,6 +63,8 @@ constexpr EnemyIntentType DEFEND = EnemyIntentType::DEFEND;
 constexpr EnemyIntentType ATTACK_DEFEND = EnemyIntentType::ATTACK_DEFEND;
 constexpr EnemyIntentType DEBUFF = EnemyIntentType::DEBUFF;
 constexpr EnemyIntentType ATTACK_BUFF = EnemyIntentType::ATTACK_BUFF;
+constexpr EnemyIntentType STUN = EnemyIntentType::STUN;
+constexpr EnemyIntentType ESCAPE = EnemyIntentType::ESCAPE;
 
 void test_fuzzy_wurm_crawler() {
     // Acid Goop 4, Inhale (+7 Strength), Acid Goop 4, and again.
@@ -548,6 +550,221 @@ void test_living_shield_ascension() {
     std::cout << "[PASS] Living Shield: Ascension gives 65 HP and Smash 18" << std::endl;
 }
 
+void test_stun_intent() {
+    // A stunned monster loses its turn: no damage, no Block, no status, and its pattern goes on the turn after.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SEWER_CLAM);
+    Enemy& clam = combat.enemies[0];
+    assert(clam.current_intent.type == ATTACK && clam.intent_damage(combat.player) == 10);
+    clam.stun();
+    assert(clam.current_intent.type == STUN && clam.intent_damage(combat.player) == 0);
+    assert(!clam.current_intent.debuffs_player());
+    combat.end_player_turn();
+    assert(combat.state == CombatState::PLAYER_TURN);
+    assert(combat.player.hp == combat.player.max_hp && clam.block == 0 && clam.statuses.empty() && clam.hp == 56);
+    assert(combat.last_enemy_actions[0].intent_type == STUN && combat.last_enemy_actions[0].damage_to_player == 0);
+    // Turn 2 of the Clam: Pressurize, as if nothing had happened.
+    assert(clam.current_intent.type == BUFF);
+
+    // The statuses of a stunned monster still wear off, and its Block still falls.
+    clam.add_status(StatusType::VULNERABLE, 1);
+    clam.block = 7;
+    clam.stun();
+    combat.end_player_turn();
+    assert(clam.get_status(StatusType::VULNERABLE) == 0 && clam.block == 0);
+    std::cout << "[PASS] Stun intent: the monster loses its turn, then follows its pattern again" << std::endl;
+}
+
+void test_heal_intent() {
+    // The monster gives itself HP back, never above its maximum, and the record of the turn says how many.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SEWER_CLAM);
+    Enemy& clam = combat.enemies[0];
+    clam.hp = 20;
+    clam.current_intent = EnemyIntent{};
+    clam.current_intent.type = EnemyIntentType::HEAL;
+    clam.current_intent.heal = 30;
+    combat.end_player_turn();
+    assert(clam.hp == 50 && combat.last_enemy_actions[0].healed == 30);
+    assert(combat.player.hp == combat.player.max_hp);
+
+    clam.current_intent = EnemyIntent{};
+    clam.current_intent.type = EnemyIntentType::HEAL;
+    clam.current_intent.heal = 30;
+    combat.end_player_turn();
+    assert(clam.hp == 56 && clam.max_hp == 56 && combat.last_enemy_actions[0].healed == 6);
+
+    // With an attack (Ponder: 11 damage and 30 HP): it hits, then heals. The next move heals nothing.
+    clam.hp = 10;
+    clam.current_intent = EnemyIntent{};
+    clam.current_intent.type = EnemyIntentType::ATTACK;
+    clam.current_intent.base_damage = 11;
+    clam.current_intent.heal = 30;
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 11 && clam.hp == 40);
+    assert(combat.last_enemy_actions[0].healed == 30);
+    combat.end_player_turn();
+    assert(clam.hp == 40 && combat.last_enemy_actions[0].healed == 0);
+
+    // A monster killed by what its attack sent back (Thorns) is not healed.
+    CombatEngine thorns = make_combat(CharacterId::IRONCLAD, EnemyType::SEWER_CLAM);
+    thorns.player.add_status(StatusType::THORNS, 5);
+    thorns.enemies[0].hp = 3;
+    thorns.enemies[0].current_intent.heal = 30;
+    thorns.end_player_turn();
+    assert(!thorns.enemies[0].is_alive() && thorns.state == CombatState::VICTORY);
+    std::cout << "[PASS] Heal intent: HP given back up to the maximum, alone or after an attack" << std::endl;
+}
+
+void test_escape_intent() {
+    // A monster that runs away is out of the fight without being killed: nothing reacts to a death.
+    CombatEngine combat = make_pack({ EnemyType::SEWER_CLAM, EnemyType::FAT_GREMLIN });
+    combat.add_power(PowerId::GREMLIN_HORN, 1); // 1 energy and 1 card for each enemy killed
+    Enemy& gremlin = combat.enemies[1];
+    assert(gremlin.current_intent.type == STUN);
+    pass_turn(combat);
+    assert(gremlin.current_intent.type == ESCAPE && gremlin.is_alive() && !gremlin.escaped);
+    size_t hand = combat.hand.size();
+    pass_turn(combat);
+    assert(gremlin.escaped && !gremlin.is_alive() && gremlin.block == 0);
+    assert(combat.last_enemy_actions[1].escaped && !combat.last_enemy_actions[0].escaped);
+    assert(combat.player.energy == combat.player.max_energy && combat.hand.size() == hand); // no kill reward
+    assert(combat.enemies[0].is_alive() && !combat.every_enemy_escaped());
+    // The fight goes on against the others, and the one that left plans nothing more.
+    assert(combat.state == CombatState::PLAYER_TURN && combat.enemies[0].is_alive());
+    pass_turn(combat);
+    assert(gremlin.escaped && gremlin.hp == 0);
+
+    // A thief that runs away keeps what it stole.
+    CombatEngine thief = make_combat(CharacterId::IRONCLAD, EnemyType::THE_FORGOTTEN);
+    thief.end_player_turn();
+    assert(thief.player.get_status(StatusType::DEXTERITY) == -2);
+    thief.enemies[0].current_intent = EnemyIntent{};
+    thief.enemies[0].current_intent.type = ESCAPE;
+    thief.end_player_turn();
+    assert(thief.enemies[0].escaped && thief.player.get_status(StatusType::DEXTERITY) == -2);
+    assert(thief.state == CombatState::VICTORY && thief.every_enemy_escaped());
+
+    // Killed before it leaves, it is a kill like any other.
+    CombatEngine killed = make_combat(CharacterId::IRONCLAD, EnemyType::FAT_GREMLIN);
+    killed.enemies[0].hp = 1;
+    killed.hand.clear();
+    killed.hand.push_back(CardId::STRIKE);
+    killed.player.energy = killed.player.max_energy;
+    bool played = killed.play_card(0, 0);
+    assert(played && killed.state == CombatState::VICTORY);
+    assert(!killed.enemies[0].escaped && !killed.every_enemy_escaped());
+    std::cout << "[PASS] Escape intent: out of the fight, not a kill, keeps what it stole" << std::endl;
+}
+
+void test_escape_gives_no_reward() {
+    auto fight = [](std::initializer_list<EnemyType> types) {
+        RunManager run;
+        run.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 777);
+        run.map.nodes[0].type = RoomType::MONSTER;
+        run.enter_room(0);
+        FixedVector<EnemyType, 3> pack;
+        for (EnemyType type : types) pack.push_back(type);
+        run.combat.start_combat_multi(pack, run.character);
+        return run;
+    };
+
+    // Every enemy ran away: the fight ends, back to the map with no gold, no card and nothing counted as won.
+    RunManager fled = fight({ EnemyType::FAT_GREMLIN });
+    int16_t gold = fled.gold;
+    size_t deck = fled.master_deck.size();
+    fled.combat.end_player_turn();
+    fled.combat.player.hp = 33;
+    fled.combat.end_player_turn();
+    assert(fled.combat.state == CombatState::VICTORY && fled.combat.every_enemy_escaped());
+    fled.proceed_after_combat();
+    assert(fled.phase == RunPhase::MAP_NAVIGATION);
+    assert(fled.gold == gold && fled.gold_reward == 0 && fled.master_deck.size() == deck);
+    assert(fled.hook_count(RunHook::COMBAT_WON) == 0 && fled.hook_count(RunHook::REWARDS_GENERATED) == 0);
+    assert(fled.hp == 33); // what the fight cost is kept
+
+    // One enemy killed, the other gone: the fight is won and gives its rewards.
+    RunManager won = fight({ EnemyType::SEWER_CLAM, EnemyType::FAT_GREMLIN });
+    won.combat.end_player_turn();
+    won.combat.player.hp = won.combat.player.max_hp;
+    won.combat.end_player_turn();
+    assert(won.combat.enemies[1].escaped && won.combat.state == CombatState::PLAYER_TURN);
+    won.combat.enemies[0].hp = 1;
+    won.combat.hand.clear();
+    won.combat.hand.push_back(CardId::STRIKE);
+    won.combat.player.energy = won.combat.player.max_energy;
+    bool played = won.combat.play_card(0, 0);
+    assert(played && won.combat.state == CombatState::VICTORY && !won.combat.every_enemy_escaped());
+    won.proceed_after_combat();
+    assert(won.phase == RunPhase::REWARD_SCREEN && won.gold_reward > 0);
+    assert(won.hook_count(RunHook::COMBAT_WON) == 1);
+    std::cout << "[PASS] Escape intent: no reward when every enemy ran away, the usual ones when one was killed"
+              << std::endl;
+}
+
+void test_fat_gremlin() {
+    // Spawned (stunned), then Flee. Its HP are drawn between 13 and 17 at the start of the fight.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FAT_GREMLIN);
+    Enemy& gremlin = combat.enemies[0];
+    assert(gremlin.type == EnemyType::FAT_GREMLIN && gremlin.name == "Gros diablotin");
+    assert(gremlin.hp >= 13 && gremlin.hp <= 17 && gremlin.max_hp == gremlin.hp && gremlin.max_hp == 13 + gremlin.hp_bonus);
+    assert(gremlin.block == 0 && gremlin.statuses.empty());
+
+    assert(combat.turn_number == 1 && gremlin.current_intent.type == STUN && gremlin.intent_damage(combat.player) == 0);
+    int16_t hp = gremlin.hp;
+    combat.end_player_turn();
+    assert(combat.state == CombatState::PLAYER_TURN && combat.player.hp == combat.player.max_hp);
+    assert(gremlin.hp == hp && gremlin.block == 0 && gremlin.statuses.empty());
+
+    assert(combat.turn_number == 2 && gremlin.current_intent.type == ESCAPE && gremlin.intent_damage(combat.player) == 0);
+    combat.end_player_turn();
+    assert(gremlin.escaped && combat.player.hp == combat.player.max_hp);
+    assert(combat.state == CombatState::VICTORY && combat.every_enemy_escaped());
+
+    // Kept in the fight by a stun, it tries to flee again: Flee loops.
+    CombatEngine held = make_pack({ EnemyType::FAT_GREMLIN, EnemyType::SEWER_CLAM });
+    pass_turn(held);
+    for (int turn = 0; turn < 3; ++turn) {
+        assert(held.enemies[0].current_intent.type == ESCAPE);
+        held.enemies[0].stun();
+        pass_turn(held);
+        assert(!held.enemies[0].escaped && held.enemies[0].is_alive());
+    }
+
+    // Every HP of the range is met over the fights of a run, and a monster with fixed HP never moves.
+    bool seen[5] = {};
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 2024);
+    for (int i = 0; i < 300; ++i) {
+        FixedVector<EnemyType, 3> pack;
+        pack.push_back(EnemyType::FAT_GREMLIN);
+        pack.push_back(EnemyType::SEWER_CLAM);
+        run.combat.start_combat_multi(pack, run.character);
+        seen[run.combat.enemies[0].hp - 13] = true;
+        assert(run.combat.enemies[1].hp == 56 && run.combat.enemies[1].hp_bonus == 0);
+        run.combat.end_player_turn(); // the shuffles move the fight's random sequence on
+    }
+    for (bool hit : seen) assert(hit);
+    std::cout << "[PASS] Fat Gremlin: 13 to 17 HP, Spawned (stunned), then Flee" << std::endl;
+}
+
+void test_fat_gremlin_ascension() {
+    // 14 to 18 HP at Ascension, on the same draw; it has no attack to raise.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FAT_GREMLIN);
+        Enemy& gremlin = combat.enemies[0];
+        gremlin.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = gremlin.hp;
+        assert(gremlin.ascension_hp() == 14 && gremlin.hp_spread() == 4);
+        gremlin.ascend(false, true);
+        assert(gremlin.hp == base);
+        gremlin.ascend(true, true);
+        combat.plan_enemies();
+        assert(gremlin.hp == base + 1 && gremlin.max_hp == base + 1 && gremlin.hp >= 14 && gremlin.hp <= 18);
+        assert(gremlin.current_intent.type == STUN);
+    }
+    std::cout << "[PASS] Fat Gremlin: Ascension gives 14 to 18 HP" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -570,6 +787,12 @@ int main() {
     test_phase_with_entry_condition();
     test_weighted_draw_without_repetition();
     test_living_shield_ascension();
+    test_stun_intent();
+    test_heal_intent();
+    test_escape_intent();
+    test_escape_gives_no_reward();
+    test_fat_gremlin();
+    test_fat_gremlin_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

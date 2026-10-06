@@ -101,6 +101,13 @@ bool CombatEngine::has_alive_enemies() const {
     return false;
 }
 
+bool CombatEngine::every_enemy_escaped() const {
+    for (const Enemy& foe : enemies) {
+        if (!foe.escaped) return false;
+    }
+    return !enemies.empty();
+}
+
 int CombatEngine::count_alive_enemies() const {
     int count = 0;
     for (size_t i = 0; i < enemies.size(); ++i) {
@@ -216,6 +223,8 @@ void CombatEngine::settle_deaths() {
         uint8_t bit = static_cast<uint8_t>(1u << i);
         if ((alive_mask_ & bit) && !enemies[i].is_alive()) {
             alive_mask_ = static_cast<uint8_t>(alive_mask_ & ~bit);
+            // An enemy that ran away is not a kill: it keeps what it stole and nothing reacts to its death.
+            if (enemies[i].escaped) continue;
             // What it stole from the player comes back.
             enemies[i].return_stolen(player);
             // Melancholy gets cheaper each time someone dies.
@@ -1347,6 +1356,7 @@ void CombatEngine::start_combat_multi(FixedVector<EnemyType, 3> enemy_types, Cha
     for (size_t i = 0; i < enemy_types.size(); ++i) {
         Enemy e;
         e.init(enemy_types[i]);
+        e.roll_hp(rng_state_ ^ (0x85EBCA6Bu * static_cast<uint32_t>(i + 1)));
         enemies.push_back(e);
     }
     if (enemies.empty()) {
@@ -4776,6 +4786,8 @@ void CombatEngine::execute_enemy_turn() {
             record.damage_blocked = shield_before - (player.block + player.minion_hp + player.minion_block);
             record.block_gained = enemies[i].block; // execute_turn() clears block before gaining it
             record.player_hp_after = player.hp;
+            record.healed = enemies[i].last_heal;
+            record.escaped = enemies[i].escaped;
             for (size_t slot = 0; slot < MAX_INTENT_DEBUFFS; ++slot) record.debuffs[slot] = enemies[i].last_debuffs[slot];
             last_enemy_actions.push_back(record);
 

@@ -24,6 +24,7 @@
 #include "bn_sprite_items_mon_gremlin_nob.h"
 #include "bn_sprite_items_mon_jaw_worm.h"
 #include "bn_sprite_items_mon_louse.h"
+#include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
 #include "bn_sprite_items_mon_sewer_clam.h"
 #include "bn_sprite_items_mon_the_forgotten.h"
@@ -219,6 +220,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_damp_cultist, false };
     case engine::EnemyType::SEWER_CLAM:
         return { &bn::sprite_items::mon_sewer_clam, false };
+    case engine::EnemyType::FAT_GREMLIN:
+        return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:
         return { &bn::sprite_items::mon_living_shield, false };
     case engine::EnemyType::THE_FORGOTTEN:
