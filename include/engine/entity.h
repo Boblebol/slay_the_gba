@@ -273,7 +273,10 @@ enum class EnemyIntentType : uint8_t {
     ATTACK_DEFEND,
     DEBUFF,        // only harms the player with statuses
     ATTACK_DEBUFF, // attacks, then harms the player with statuses
-    ATTACK_BUFF    // attacks, then gives itself a status
+    ATTACK_BUFF,   // attacks, then gives itself a status
+    STUN,          // loses its turn
+    HEAL,          // only heals itself
+    ESCAPE         // leaves the fight: it is not killed and gives nothing
 };
 
 // A status an enemy move gives the player: Weak, Vulnerable or Frail (amount > 0), or Strength or Dexterity
@@ -292,6 +295,8 @@ struct EnemyIntent {
     StatusType status_type = StatusType::NONE;
     int16_t status_amount = 0;
     std::string_view description = "";
+    // HP the enemy gives itself back, after the attack if the move has one. Never above its maximum.
+    int16_t heal = 0;
     // Statuses given to the player, after the attack if the move has one. Artifact cancels each of them.
     IntentDebuff debuffs[MAX_INTENT_DEBUFFS];
     // The enemy keeps count of what its debuffs took from the player and gives it back when it dies.
@@ -318,7 +323,8 @@ enum class EnemyType : uint8_t {
     DAMP_CULTIST,
     SEWER_CLAM,
     THE_FORGOTTEN,
-    LIVING_SHIELD
+    LIVING_SHIELD,
+    FAT_GREMLIN
 };
 
 // What a monster sees of the fight when it chooses its next move.
@@ -353,6 +359,12 @@ public:
     // Debuffs of the last move played: what the player received, NONE for the ones Artifact cancelled.
     IntentDebuff last_debuffs[MAX_INTENT_DEBUFFS];
 
+    // It left the fight (ESCAPE): out like a dead enemy (0 HP), but it was not killed.
+    bool escaped = false;
+    int16_t last_heal = 0; // HP its last move gave it back
+    // HP drawn at the start of the fight on top of its lowest HP, for the monsters whose HP vary (see hp_spread).
+    uint8_t hp_bonus = 0;
+
     // Intent pattern. A phase is a part of the pattern entered when its condition is met (alone, hurt,
     // triggered) and never left for an earlier one; `phase_turn` counts the turns planned in it, from 1.
     uint8_t phase = 0;
@@ -361,6 +373,12 @@ public:
     uint32_t move_seed = 1;      // random stream of its own draws, set by the fight
 
     void init(EnemyType enemy_type);
+    // How far above its lowest HP this monster can start (0 for most): the Fat Gremlin has 13 to 17 HP.
+    uint8_t hp_spread() const;
+    // Draws its starting HP in that range from `seed`. Does nothing for a monster whose HP do not vary.
+    void roll_hp(uint32_t seed);
+    // Makes it lose its next turn: its intent becomes STUN.
+    void stun();
     // HP the reference gives this monster at Ascension, 0 for the monsters that follow the percentages of the run.
     int16_t ascension_hp() const;
     // Ascension of a monster with its own values (ascension_hp() > 0): its Ascension HP and/or damage.

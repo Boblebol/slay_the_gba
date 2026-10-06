@@ -1078,6 +1078,12 @@ void RunManager::proceed_after_combat() {
         hp = std::min<int16_t>(max_hp, hp + 12);
     }
 
+    // Every enemy ran away: the fight is over, but there is nothing to take.
+    if (combat.every_enemy_escaped()) {
+        phase = RunPhase::MAP_NAVIGATION;
+        return;
+    }
+
     on_combat_won(map.nodes[current_node_index].type);
 
     if (map.nodes[current_node_index].type == RoomType::BOSS) {

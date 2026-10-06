@@ -903,6 +903,15 @@ void CombatScene::_refresh_enemy_hud(int index)
     case engine::EnemyIntentType::DEBUFF:
         icon = Icon::DEBUFF;
         break;
+    case engine::EnemyIntentType::STUN:
+        icon = Icon::STUN;
+        break;
+    case engine::EnemyIntentType::HEAL:
+        icon = Icon::HEAL;
+        break;
+    case engine::EnemyIntentType::ESCAPE:
+        icon = Icon::ESCAPE;
+        break;
     case engine::EnemyIntentType::DEFEND:
         icon = Icon::DEFEND;
         break;
@@ -2098,6 +2107,25 @@ void CombatScene::_update_enemy_turn()
                 play_sfx(Sfx::BUFF);
             }
 
+            if(record.healed > 0)
+            {
+                text.clear();
+                stream << '+' << record.healed << " PV";
+                _popups.spawn(view.x, _body_y(view) - 6, text, TextColor::GREEN, attacked ? 8 : 0);
+                play_sfx(Sfx::HEAL);
+            }
+
+            if(record.intent_type == engine::EnemyIntentType::STUN)
+            {
+                _popups.spawn(view.x, _body_y(view) - 6, "Étourdi", TextColor::GRAY);
+            }
+
+            if(record.escaped)
+            {
+                _popups.spawn(view.x, _body_y(view) - 6, "Fuite !", TextColor::GRAY);
+                play_sfx(Sfx::UI_CANCEL);
+            }
+
             if(record.debuff_attempted)
             {
                 // What the move did to the hero, one popup per status; nothing landed when Artifact took it all.
@@ -2181,7 +2209,11 @@ void CombatScene::_update_enemy_turn()
             if(! enemy.is_alive() && ! _enemies[index].gone && _enemies[index].death == 0)
             {
                 _enemies[index].death = DEATH_FRAMES;
-                play_sfx(Sfx::ENEMY_DEATH);
+
+                if(! enemy.escaped)
+                {
+                    play_sfx(Sfx::ENEMY_DEATH);
+                }
 
                 for(bn::sprite_ptr& part : _enemies[index].parts)
                 {
@@ -2239,7 +2271,16 @@ bn::optional<SceneId> CombatScene::_update_end_banner()
 
     if(_timer == 26)
     {
-        _set_banner(_victory ? "VICTOIRE !" : "DÉFAITE...", _victory ? TextColor::GOLD : TextColor::RED);
+        if(_victory && _combat.every_enemy_escaped())
+        {
+            // Nobody was beaten: no reward follows.
+            _set_banner("ILS ONT FUI...", TextColor::GRAY);
+        }
+        else
+        {
+            _set_banner(_victory ? "VICTOIRE !" : "DÉFAITE...", _victory ? TextColor::GOLD : TextColor::RED);
+        }
+
         _banner_timer = 120;
         _hand.clear();
     }
@@ -2260,6 +2301,12 @@ bn::optional<SceneId> CombatScene::_update_end_banner()
     if(run.phase == engine::RunPhase::VICTORY_ACT)
     {
         return SceneId::VICTORY;
+    }
+
+    if(run.phase == engine::RunPhase::MAP_NAVIGATION)
+    {
+        // The enemies ran away: straight back to the map.
+        return SceneId::MAP;
     }
 
     if(run.phase == engine::RunPhase::ANCIENT_BLESSING)

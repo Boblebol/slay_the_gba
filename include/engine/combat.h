@@ -29,6 +29,8 @@ struct EnemyActionRecord {
     // Statuses the move gave the player (NONE for one Artifact cancelled), and whether it tried to give any.
     IntentDebuff debuffs[MAX_INTENT_DEBUFFS];
     bool debuff_attempted = false;
+    int16_t healed = 0;   // HP the enemy gave itself back
+    bool escaped = false; // it left the fight with this move
 };
 
 // Tallies read by card effects. The turn ones restart with each player turn, the combat ones with the fight.
@@ -216,6 +218,8 @@ public:
     // Plans the next move of every living enemy, with what each one sees of the fight. On the first turn the
     // patterns start again.
     void plan_enemies();
+    // True when every enemy of the fight ran away: nothing was killed, so nothing is won.
+    [[nodiscard]] bool every_enemy_escaped() const;
     void reset_combat_state();
     // Puts the Innate cards on top of the draw pile and starts the first turn.
     void begin_first_turn();
