@@ -935,6 +935,10 @@ void CombatScene::_refresh_enemy_hud(int index)
     case engine::EnemyIntentType::ESCAPE:
         icon = Icon::ESCAPE;
         break;
+    case engine::EnemyIntentType::STATUS:
+        icon = Icon::STATUS;
+        stream << int(intent.status_cards);
+        break;
     case engine::EnemyIntentType::DEFEND:
         icon = Icon::DEFEND;
         break;
@@ -2135,6 +2139,18 @@ void CombatScene::_update_enemy_turn()
                 _popups.spawn(view.x, _body_y(view) - 6, "Force ▲", TextColor::GOLD, attacked ? 8 : 0);
                 _fx.spawn(bn::sprite_items::fx_burst, view.x, _body_y(view), FX_BUFF, 4, 4);
                 play_sfx(Sfx::BUFF);
+            }
+
+            if(record.cards_added_count > 0)
+            {
+                // "+3 Hébété": the cards the move slipped into the hero's piles.
+                TextLine card;
+                card_name(engine::DeckCard(record.cards_added), card);
+                TextLine added;
+                bn::ostringstream added_stream(added);
+                added_stream << '+' << int(record.cards_added_count) << ' ' << card;
+                _popups.spawn(PLAYER_X + 8, PLAYER_Y - 10, added, TextColor::PURPLE, attacked ? 12 : 0);
+                play_sfx(Sfx::DEBUFF);
             }
 
             if(record.healed > 0)

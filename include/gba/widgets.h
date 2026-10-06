@@ -106,7 +106,8 @@ enum class Icon : uint8_t
     GOLD,
     STUN,
     HEAL,
-    ESCAPE
+    ESCAPE,
+    STATUS
 };
 
 [[nodiscard]] bn::sprite_ptr create_icon(Icon icon, int x, int y);

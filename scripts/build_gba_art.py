@@ -170,6 +170,7 @@ MONSTERS: dict[str, str] = {
     "living_shield": "living_shield",
     "fat_gremlin": "fat_gremlin",
     "vine_shambler": "vine_shambler",
+    "eye_with_teeth": "eye_with_teeth",
 }
 BOSSES: dict[str, str] = {
     "ceremonial_beast": "ceremonial_beast",
@@ -1162,11 +1163,29 @@ ICON_ESCAPE = [
     "................",
     "................",
 ]
+ICON_STATUS = [
+    "................",
+    "....KKKKKKKK....",
+    "...KSSSSSSSSK...",
+    "...KSWWWWWWsK...",
+    "...KSWPPPPWsK...",
+    "...KSWPppPWsK...",
+    "...KSWPppPWsK...",
+    "...KSWPPPPWsK...",
+    "...KSWWWWWWsK...",
+    "...KSWssssWsK...",
+    "...KSWWWWWWsK...",
+    "...KSssssssK....",
+    "....KKKKKKKK....",
+    "................",
+    "................",
+    "................",
+]
 
 
 def build_ui() -> None:
     icons = [ICON_ATTACK, ICON_DEFEND, ICON_BUFF, ICON_DEBUFF, ICON_UNKNOWN, ICON_TARGET, ICON_HEART, ICON_GOLD,
-             ICON_STUN, ICON_HEAL, ICON_ESCAPE]
+             ICON_STUN, ICON_HEAL, ICON_ESCAPE, ICON_STATUS]
     imgs = [pixel_art(rows, UI_COLORS) for rows in icons]
     palette = [K, W, (176, 184, 200), (104, 112, 136), (248, 200, 64), (184, 120, 40), (232, 56, 48),
                (144, 24, 32), (72, 144, 232), (40, 72, 152), (88, 216, 96), (40, 128, 56), (184, 96, 232),

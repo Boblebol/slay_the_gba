@@ -66,6 +66,7 @@ constexpr EnemyIntentType ATTACK_BUFF = EnemyIntentType::ATTACK_BUFF;
 constexpr EnemyIntentType STUN = EnemyIntentType::STUN;
 constexpr EnemyIntentType ESCAPE = EnemyIntentType::ESCAPE;
 constexpr EnemyIntentType ATTACK_DEBUFF = EnemyIntentType::ATTACK_DEBUFF;
+constexpr EnemyIntentType STATUS = EnemyIntentType::STATUS;
 
 void test_fuzzy_wurm_crawler() {
     // Acid Goop 4, Inhale (+7 Strength), Acid Goop 4, and again.
@@ -1011,6 +1012,138 @@ void test_vine_shambler_ascension() {
     std::cout << "[PASS] Vine Shambler: Ascension gives 64 HP, Swipe 7x2, Grasping Vines 9, Chomp 18" << std::endl;
 }
 
+int count_in(const FixedVector<DeckCard, 50>& pile, CardId id) {
+    int count = 0;
+    for (const DeckCard& card : pile) count += card.id == id;
+    return count;
+}
+
+// A Clam whose next move puts `count` copies of `card` in `pile`.
+CombatEngine make_card_giver(CardId card, uint8_t count, Pile pile, EnemyIntentType type = EnemyIntentType::STATUS,
+                             int16_t damage = 0) {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SEWER_CLAM);
+    Enemy& enemy = combat.enemies[0];
+    enemy.current_intent = EnemyIntent{};
+    enemy.current_intent.type = type;
+    enemy.current_intent.base_damage = damage;
+    enemy.current_intent.status_card = card;
+    enemy.current_intent.status_cards = count;
+    enemy.current_intent.status_pile = pile;
+    return combat;
+}
+
+void test_status_intent() {
+    // N cards into the pile the move names. The move is over before the player's turn starts, so the cards of
+    // the discard pile wait there, and the ones of the draw pile can be drawn at once.
+    CombatEngine discard = make_card_giver(CardId::SLIMED, 2, Pile::DISCARD);
+    assert(discard.enemies[0].current_intent.gives_cards() && discard.enemies[0].intent_damage(discard.player) == 0);
+    size_t cards = discard.draw_pile.size() + discard.hand.size() + discard.discard_pile.size();
+    discard.end_player_turn();
+    assert(discard.state == CombatState::PLAYER_TURN && discard.player.hp == discard.player.max_hp);
+    assert(count_in(discard.discard_pile, CardId::SLIMED) == 2);
+    assert(discard.draw_pile.size() + discard.hand.size() + discard.discard_pile.size() == cards + 2);
+    const EnemyActionRecord& record = discard.last_enemy_actions[0];
+    assert(record.intent_type == STATUS && record.cards_added == CardId::SLIMED && record.cards_added_count == 2);
+
+    CombatEngine draw = make_card_giver(CardId::BURN, 4, Pile::DRAW);
+    cards = draw.draw_pile.size() + draw.hand.size() + draw.discard_pile.size();
+    draw.end_player_turn();
+    int in_hand = 0;
+    for (const DeckCard& card : draw.hand) in_hand += card.id == CardId::BURN;
+    assert(count_in(draw.draw_pile, CardId::BURN) + in_hand == 4 && count_in(draw.discard_pile, CardId::BURN) == 0);
+    assert(draw.draw_pile.size() + draw.hand.size() + draw.discard_pile.size() == cards + 4);
+
+    // Into the hand: there for the turn that starts.
+    CombatEngine hand = make_card_giver(CardId::WOUND, 1, Pile::HAND);
+    hand.end_player_turn();
+    assert(hand.last_enemy_actions[0].cards_added_count == 1);
+
+    // A move without cards announces none and adds none.
+    CombatEngine plain = make_combat(CharacterId::IRONCLAD, EnemyType::SEWER_CLAM);
+    assert(!plain.enemies[0].current_intent.gives_cards());
+    plain.end_player_turn();
+    assert(plain.last_enemy_actions[0].cards_added_count == 0 && plain.last_enemy_actions[0].cards_added == CardId::NONE);
+
+    // With an attack (Dismember: 26 damage and 3 Wounds): the hit, then the cards.
+    CombatEngine struck = make_card_giver(CardId::WOUND, 3, Pile::DISCARD, ATTACK, 26);
+    struck.end_player_turn();
+    assert(struck.player.max_hp - struck.player.hp == 26 && count_in(struck.discard_pile, CardId::WOUND) == 3);
+
+    // A pile that is full takes no more, and the record counts what went in.
+    CombatEngine full = make_card_giver(CardId::DAZED, 5, Pile::DISCARD);
+    full.hand.clear(); // nothing of the hand joins the discard pile at the end of the turn
+    while (full.discard_pile.size() < full.discard_pile.capacity() - 2) full.discard_pile.push_back(CardId::STRIKE);
+    full.draw_pile.clear();
+    for (int i = 0; i < 10; ++i) full.draw_pile.push_back(CardId::DEFEND);
+    full.end_player_turn();
+    assert(full.last_enemy_actions[0].cards_added_count == 2);
+    std::cout << "[PASS] Status intent: N cards into the discard pile, the draw pile or the hand, alone or after an attack"
+              << std::endl;
+}
+
+void test_status_cards_are_not_the_players() {
+    // Cards an enemy adds are not cards the player created: Arsenal (a card created: Strength) stays silent, and
+    // the tally of cards created does not move. The same card created by the player counts.
+    CombatEngine combat = make_card_giver(CardId::DAZED, 3, Pile::DISCARD);
+    combat.add_power(PowerId::ARSENAL, 1);
+    combat.end_player_turn();
+    assert(count_in(combat.discard_pile, CardId::DAZED) == 3);
+    assert(combat.player.get_status(StatusType::STRENGTH) == 0 && combat.counters.combat_cards_created == 0);
+    combat.create_card(CardId::DAZED, Pile::DISCARD);
+    assert(combat.player.get_status(StatusType::STRENGTH) == 1 && combat.counters.combat_cards_created == 1);
+
+    // Once in the piles they are cards like the others: a Dazed drawn is Unplayable and leaves at the end of the turn.
+    CombatEngine drawn = make_card_giver(CardId::DAZED, 1, Pile::HAND);
+    drawn.end_player_turn();
+    int index = -1;
+    for (size_t i = 0; i < drawn.hand.size(); ++i) {
+        if (drawn.hand[i].id == CardId::DAZED) index = static_cast<int>(i);
+    }
+    assert(index >= 0 && !drawn.can_play_card(index));
+    drawn.enemies[0].current_intent = EnemyIntent{};
+    drawn.enemies[0].current_intent.type = DEFEND;
+    drawn.end_player_turn();
+    assert(count_in(drawn.exhaust_pile, CardId::DAZED) == 1); // Ethereal
+    std::cout << "[PASS] Status intent: the cards are not counted as created by the player" << std::endl;
+}
+
+void test_eye_with_teeth() {
+    // Distract every turn: 3 Dazed into the discard pile.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::EYE_WITH_TEETH);
+    Enemy& eye = combat.enemies[0];
+    assert(eye.type == EnemyType::EYE_WITH_TEETH && eye.name == "Œil denté" && eye.hp == 6 && eye.max_hp == 6);
+    assert(eye.block == 0 && eye.statuses.empty());
+    // The discard pile is counted with the Dazed already drawn back and exhausted, so count every pile.
+    auto dazed_everywhere = [&combat]() {
+        int count = count_in(combat.draw_pile, CardId::DAZED) + count_in(combat.discard_pile, CardId::DAZED) +
+                    count_in(combat.exhaust_pile, CardId::DAZED);
+        for (const DeckCard& card : combat.hand) count += card.id == CardId::DAZED;
+        return count;
+    };
+    for (int turn = 1; turn <= 4; ++turn) {
+        assert(combat.turn_number == turn);
+        assert(eye.current_intent.type == STATUS && eye.intent_damage(combat.player) == 0);
+        assert(eye.current_intent.status_card == CardId::DAZED && eye.current_intent.status_cards == 3 &&
+               eye.current_intent.status_pile == Pile::DISCARD);
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN && combat.player.hp == combat.player.max_hp);
+        assert(dazed_everywhere() == 3 * turn);
+        assert(combat.last_enemy_actions[0].cards_added == CardId::DAZED && combat.last_enemy_actions[0].cards_added_count == 3);
+        assert(eye.block == 0 && eye.statuses.empty() && eye.hp == 6);
+    }
+
+    // The reference gives it no Ascension value: it follows the percentages of the run, like the first monsters.
+    assert(eye.ascension_hp() == 0 && eye.hp_spread() == 0);
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 9, PaletteVariant::CLASSIC, 777);
+    run.map.nodes[0].type = RoomType::MONSTER;
+    run.enter_room(0);
+    Enemy scaled;
+    scaled.init(EnemyType::EYE_WITH_TEETH);
+    assert(scaled.max_hp * run.get_enemy_hp_multiplier() / 100 == 6); // 6 HP + 15 %, rounded down
+    std::cout << "[PASS] Eye With Teeth: 6 HP, Distract (3 Dazed into the discard pile) every turn" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1046,6 +1179,9 @@ int main() {
     test_multi_hit_attack();
     test_vine_shambler();
     test_vine_shambler_ascension();
+    test_status_intent();
+    test_status_cards_are_not_the_players();
+    test_eye_with_teeth();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
