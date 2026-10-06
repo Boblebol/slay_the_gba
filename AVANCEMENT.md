@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 53,9 %** — 660 faits, 20 partiels, 564 à faire (35 hors périmètre).
+**Avancement global : 53,9 %** — 661 faits, 20 partiels, 563 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
 | [Cartes communes aux cinq éditions](#cartes) | 12 | 0 | 108 | 10,0 % |
 | [Reliques et potions](#reliques) | 107 | 0 | 214 | 33,3 % |
-| [Bestiaire](#bestiaire) | 10 | 1 | 93 | 10,1 % |
+| [Bestiaire](#bestiaire) | 11 | 1 | 92 | 11,1 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **660** | **20** | **564** | **53,9 %** |
+| **Total** | **661** | **20** | **563** | **53,9 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 10,1 %
+## Bestiaire — 11,1 %
 
-### Monstres — 13,9 %
+### Monstres — 15,3 %
 
-10 faits, 0 partiel, 62 à faire.
+11 faits, 0 partiel, 61 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1250,7 +1250,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Crapautard | Faible · Acte 1 (B) | Non |  |
 | Diablotin mercenaire | Monstre · Acte 1 (B) | Non |  |
 | Diablotin sournois | Monstre · Acte 1 (B) | Non |  |
-| Gros diablotin | Monstre · Acte 1 (B) | Non |  |
+| Gros diablotin | Monstre · Acte 1 (B) | Oui |  |
 | Navire hanté | Monstre · Acte 1 (B) | Non |  |
 | Palourde d'égout | Monstre · Acte 1 (B) | Oui |  |
 | Putrilimace | Monstre · Acte 1 (B) | Non |  |
