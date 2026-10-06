@@ -172,14 +172,30 @@ MONSTERS: dict[str, str] = {
     "vine_shambler": "vine_shambler",
     "eye_with_teeth": "eye_with_teeth",
 }
+# Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
+# a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
+TRANSLUCENT_MONSTERS = {"eye_with_teeth"}
 BOSSES: dict[str, str] = {
     "ceremonial_beast": "ceremonial_beast",
 }
 
 
+def solid_art(img: Image.Image) -> Image.Image:
+    """Translucent art over a dark body, opaque wherever the artist drew something."""
+    img = img.convert("RGBA")
+    alpha = img.getchannel("A")
+    body = Image.new("RGBA", img.size, (28, 40, 36, 255))
+    body.alpha_composite(img)
+    body.putalpha(alpha.point(lambda a: 255 if a >= 45 else 0))
+    return body
+
+
 def build_monsters() -> None:
     for name, src in MONSTERS.items():
-        art = fit_art(Image.open(BIBLE / "monsters" / f"{src}.webp"), (62, 62))
+        source = Image.open(BIBLE / "monsters" / f"{src}.webp")
+        if name in TRANSLUCENT_MONSTERS:
+            source = solid_art(source)
+        art = fit_art(source, (62, 62))
         canvas = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
         canvas.paste(art, (1, 1), art)
         idx, pal = rgba_to_sprite(canvas, 15, outline=False)
