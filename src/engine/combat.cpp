@@ -1136,7 +1136,7 @@ void CombatEngine::discard_from_hand(size_t index) {
     emit(CombatEvent::CARD_DISCARDED, info);
 }
 
-void CombatEngine::create_card(DeckCard card, Pile pile) {
+void CombatEngine::create_card(DeckCard card, Pile pile, bool by_player) {
     if (pile == Pile::HAND && hand.push_back(card)) {
         // in hand
     } else if (pile == Pile::DRAW) {
@@ -1148,6 +1148,7 @@ void CombatEngine::create_card(DeckCard card, Pile pile) {
     } else {
         discard_pile.push_back(card);
     }
+    if (!by_player) return;
     counters.combat_cards_created = bump(counters.combat_cards_created);
     // Rocket Punch gets cheaper with each Status card created, until it is played.
     if (CardDef::get(card.id).type == CardType::STATUS) change_cost_of_copies(CardId::ROCKET_PUNCH, -1);
@@ -4829,6 +4830,17 @@ void CombatEngine::execute_enemy_turn() {
                 } else if (afflict_player(played.power, played.power_amount, played.power_turn_only)) {
                     record.power = played.power;
                 }
+            }
+            // The cards of the move, for a player still standing. A full pile takes no more (a full hand sends
+            // the card to the discard pile).
+            if (played.gives_cards() && player.is_alive()) {
+                const size_t before = draw_pile.size() + hand.size() + discard_pile.size();
+                for (uint8_t n = 0; n < played.status_cards; ++n) {
+                    create_card(played.status_card, played.status_pile, false);
+                }
+                record.cards_added = played.status_card;
+                record.cards_added_count =
+                    static_cast<uint8_t>(draw_pile.size() + hand.size() + discard_pile.size() - before);
             }
             record.hits = played.hits;
             record.debuff_attempted = record.debuff_attempted || (played.power_on_player && played.power != PowerId::NONE);

@@ -170,15 +170,32 @@ MONSTERS: dict[str, str] = {
     "living_shield": "living_shield",
     "fat_gremlin": "fat_gremlin",
     "vine_shambler": "vine_shambler",
+    "eye_with_teeth": "eye_with_teeth",
 }
+# Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
+# a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
+TRANSLUCENT_MONSTERS = {"eye_with_teeth"}
 BOSSES: dict[str, str] = {
     "ceremonial_beast": "ceremonial_beast",
 }
 
 
+def solid_art(img: Image.Image) -> Image.Image:
+    """Translucent art over a dark body, opaque wherever the artist drew something."""
+    img = img.convert("RGBA")
+    alpha = img.getchannel("A")
+    body = Image.new("RGBA", img.size, (28, 40, 36, 255))
+    body.alpha_composite(img)
+    body.putalpha(alpha.point(lambda a: 255 if a >= 45 else 0))
+    return body
+
+
 def build_monsters() -> None:
     for name, src in MONSTERS.items():
-        art = fit_art(Image.open(BIBLE / "monsters" / f"{src}.webp"), (62, 62))
+        source = Image.open(BIBLE / "monsters" / f"{src}.webp")
+        if name in TRANSLUCENT_MONSTERS:
+            source = solid_art(source)
+        art = fit_art(source, (62, 62))
         canvas = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
         canvas.paste(art, (1, 1), art)
         idx, pal = rgba_to_sprite(canvas, 15, outline=False)
@@ -1162,11 +1179,29 @@ ICON_ESCAPE = [
     "................",
     "................",
 ]
+ICON_STATUS = [
+    "................",
+    "....KKKKKKKK....",
+    "...KSSSSSSSSK...",
+    "...KSWWWWWWsK...",
+    "...KSWPPPPWsK...",
+    "...KSWPppPWsK...",
+    "...KSWPppPWsK...",
+    "...KSWPPPPWsK...",
+    "...KSWWWWWWsK...",
+    "...KSWssssWsK...",
+    "...KSWWWWWWsK...",
+    "...KSssssssK....",
+    "....KKKKKKKK....",
+    "................",
+    "................",
+    "................",
+]
 
 
 def build_ui() -> None:
     icons = [ICON_ATTACK, ICON_DEFEND, ICON_BUFF, ICON_DEBUFF, ICON_UNKNOWN, ICON_TARGET, ICON_HEART, ICON_GOLD,
-             ICON_STUN, ICON_HEAL, ICON_ESCAPE]
+             ICON_STUN, ICON_HEAL, ICON_ESCAPE, ICON_STATUS]
     imgs = [pixel_art(rows, UI_COLORS) for rows in icons]
     palette = [K, W, (176, 184, 200), (104, 112, 136), (248, 200, 64), (184, 120, 40), (232, 56, 48),
                (144, 24, 32), (72, 144, 232), (40, 72, 152), (88, 216, 96), (40, 128, 56), (184, 96, 232),

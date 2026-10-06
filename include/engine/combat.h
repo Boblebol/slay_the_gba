@@ -29,6 +29,8 @@ struct EnemyActionRecord {
     // Statuses the move gave the player (NONE for one Artifact cancelled), and whether it tried to give any.
     IntentDebuff debuffs[MAX_INTENT_DEBUFFS];
     bool debuff_attempted = false;
+    CardId cards_added = CardId::NONE; // card the move put in the player's piles, and how many of it
+    uint8_t cards_added_count = 0;
     PowerId power = PowerId::NONE; // power the move put on the player, NONE when it gave none or Artifact cancelled it
     uint8_t hits = 1;     // hits of its attack
     int16_t healed = 0;   // HP the enemy gave itself back
@@ -107,12 +109,6 @@ enum class PlayBlocker : uint8_t {
     PLAY_FIRST,   // another card in hand must be played first
     PLAY_LIMIT,   // a card in hand caps the number of cards played this turn
     CHOICE        // cards of the hand must be picked first (CombatEngine::pending_choices)
-};
-
-enum class Pile : uint8_t {
-    HAND,
-    DRAW,
-    DISCARD
 };
 
 // What happens to the cards the player picks.
@@ -244,7 +240,9 @@ public:
     void discard_from_hand(size_t index);
     // Adds a card made during the combat to a pile: at a random place of the draw pile, and in the discard
     // pile when the hand is full.
-    void create_card(DeckCard card, Pile pile);
+    // `by_player` is false for a card an enemy puts in the player's piles: nothing of the player reacts to it
+    // as to a card they created.
+    void create_card(DeckCard card, Pile pile, bool by_player = true);
     void create_card_in_discard(DeckCard card) { create_card(card, Pile::DISCARD); }
     // Adds Shivs to the hand (Silent).
     void add_shivs(int count, bool upgraded = false, Enchantment enchantment = Enchantment::NONE);

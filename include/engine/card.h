@@ -468,6 +468,13 @@ enum class CardId : uint16_t {
     COUNT
 };
 
+// Where a card created during a fight goes.
+enum class Pile : uint8_t {
+    HAND,
+    DRAW, // at a random place
+    DISCARD
+};
+
 constexpr uint8_t NOT_IN_DECK = 0xFF;
 
 // What an enchantment adds to one copy of a card.

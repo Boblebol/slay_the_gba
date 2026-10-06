@@ -5,6 +5,7 @@
 #include <string_view>
 #include "engine/status.h"
 #include "engine/power.h"
+#include "engine/card.h"
 #include "engine/fixed_vector.h"
 
 namespace engine {
@@ -277,7 +278,8 @@ enum class EnemyIntentType : uint8_t {
     ATTACK_BUFF,   // attacks, then gives itself a status
     STUN,          // loses its turn
     HEAL,          // only heals itself
-    ESCAPE         // leaves the fight: it is not killed and gives nothing
+    ESCAPE,        // leaves the fight: it is not killed and gives nothing
+    STATUS         // only puts cards in the player's piles
 };
 
 // A status an enemy move gives the player: Weak, Vulnerable or Frail (amount > 0), or Strength or Dexterity
@@ -296,6 +298,10 @@ struct EnemyIntent {
     StatusType status_type = StatusType::NONE;
     int16_t status_amount = 0;
     std::string_view description = "";
+    // Cards put in one of the player's piles (Status cards mostly), after the attack if the move has one.
+    CardId status_card = CardId::NONE;
+    uint8_t status_cards = 0;
+    Pile status_pile = Pile::DISCARD;
     // Times the attack hits. Each hit goes through Block and is answered by Thorns on its own.
     uint8_t hits = 1;
     // Power the move grants once played: to the enemy itself, or to the player (`power_on_player`).
@@ -313,6 +319,7 @@ struct EnemyIntent {
     StatusType damage_status = StatusType::NONE;
 
     constexpr bool debuffs_player() const { return debuffs[0].type != StatusType::NONE; }
+    constexpr bool gives_cards() const { return status_card != CardId::NONE && status_cards > 0; }
 };
 
 enum class EnemyType : uint8_t {
@@ -333,7 +340,8 @@ enum class EnemyType : uint8_t {
     THE_FORGOTTEN,
     LIVING_SHIELD,
     FAT_GREMLIN,
-    VINE_SHAMBLER
+    VINE_SHAMBLER,
+    EYE_WITH_TEETH
 };
 
 // What a monster sees of the fight when it chooses its next move.

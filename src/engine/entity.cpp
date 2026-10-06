@@ -84,6 +84,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Bourbelianes";
         max_hp = 61;
         hp = 61;
+    } else if (type == EnemyType::EYE_WITH_TEETH) {
+        name = "Œil denté";
+        max_hp = 6;
+        hp = 6;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -451,6 +455,13 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = ascended_damage ? 18 : 16;
             current_intent.description = "Croc (16 dmg)";
         }
+    } else if (type == EnemyType::EYE_WITH_TEETH) {
+        // Distract, every turn.
+        current_intent.type = EnemyIntentType::STATUS;
+        current_intent.status_card = CardId::DAZED;
+        current_intent.status_cards = 3;
+        current_intent.status_pile = Pile::DISCARD;
+        current_intent.description = "Distraction (3 Hébété)";
     }
 }
 
