@@ -1136,6 +1136,44 @@ void CombatEngine::discard_from_hand(size_t index) {
     emit(CombatEvent::CARD_DISCARDED, info);
 }
 
+bool CombatEngine::card_fits(CardId id, const CardFilter& filter) const {
+    if (id == CardId::NONE || id >= CardId::COUNT) return false;
+    const CardMeta& meta = card_meta(id);
+    // The heroes follow each other in the same order in CharacterId and in CardPool.
+    const CardPool hero_pool = static_cast<CardPool>(static_cast<uint8_t>(current_character) + 1);
+    if (meta.pool != (filter.pool == CardPool::NONE ? hero_pool : filter.pool)) return false;
+    if (filter.rarity == CardRarity::NONE) {
+        if (meta.rarity != CardRarity::COMMON && meta.rarity != CardRarity::UNCOMMON && meta.rarity != CardRarity::RARE) {
+            return false;
+        }
+    } else if (meta.rarity != filter.rarity) {
+        return false;
+    }
+    return filter.any_type || CardDef::get(id).type == filter.type;
+}
+
+CardId CombatEngine::random_card(const CardFilter& filter) {
+    uint16_t count = 0;
+    for (uint16_t i = 1; i < static_cast<uint16_t>(CardId::COUNT); ++i) {
+        if (card_fits(static_cast<CardId>(i), filter)) ++count;
+    }
+    // No number is drawn for nothing: the sequence of the fight only moves when a card comes out.
+    if (count == 0) return CardId::NONE;
+
+    uint16_t pick = static_cast<uint16_t>((next_random() >> 8) % count);
+    for (uint16_t i = 1; i < static_cast<uint16_t>(CardId::COUNT); ++i) {
+        if (card_fits(static_cast<CardId>(i), filter) && pick-- == 0) return static_cast<CardId>(i);
+    }
+    return CardId::NONE;
+}
+
+bool CombatEngine::create_random_card(const CardFilter& filter, Pile pile, bool upgraded) {
+    CardId id = random_card(filter);
+    if (id == CardId::NONE) return false;
+    create_card(DeckCard(id, upgraded), pile);
+    return true;
+}
+
 void CombatEngine::create_card(DeckCard card, Pile pile, bool by_player) {
     if (pile == Pile::HAND && hand.push_back(card)) {
         // in hand
@@ -4689,6 +4727,14 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             // "ALL players": there is one player.
             add_souls(base_value);
             set_log(upgraded ? "Played Glimpse Beyond+!"sv : "Played Glimpse Beyond!"sv);
+            break;
+        }
+        case CardId::MANIFEST_AUTHORITY: {
+            gain_block(base_value);
+            for (uint8_t i = 0; i < secondary_value; ++i) {
+                create_random_card(CardPool::COLORLESS, Pile::HAND, upgraded);
+            }
+            set_log(upgraded ? "Played Manifest Authority+!"sv : "Played Manifest Authority!"sv);
             break;
         }
         default:

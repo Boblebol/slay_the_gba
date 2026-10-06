@@ -465,6 +465,7 @@ enum class CardId : uint16_t {
     DEVOUR_LIFE,
     SOUL_STORM,
     GLIMPSE_BEYOND,
+    MANIFEST_AUTHORITY,
     COUNT
 };
 
@@ -604,5 +605,39 @@ struct CardDef {
         return upgraded ? c.upgraded_description : c.description;
     }
 };
+
+// Rarity and pool of a card in the reference (bible/data), for the effects that draw a card at random.
+enum class CardRarity : uint8_t {
+    NONE, // not a card of the reference: Status cards, tokens (Shiv, Soul, Sovereign Blade)
+    BASIC,
+    COMMON,
+    UNCOMMON,
+    RARE,
+    ANCIENT,
+    EVENT,
+    CURSE,
+    QUEST
+};
+
+enum class CardPool : uint8_t {
+    NONE,
+    IRONCLAD,
+    SILENT,
+    DEFECT,
+    REGENT,
+    NECROBINDER,
+    COLORLESS,
+    EVENT,
+    CURSE,
+    QUEST
+};
+
+struct CardMeta {
+    CardRarity rarity = CardRarity::NONE;
+    CardPool pool = CardPool::NONE;
+};
+
+// Generated table (include/engine/card_meta.h, by scripts/build_card_meta.py): one entry per CardId.
+const CardMeta& card_meta(CardId id);
 
 } // namespace engine
