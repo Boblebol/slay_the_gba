@@ -4,6 +4,7 @@
 #include "bn_string_view.h"
 
 #include "engine/card.h"
+#include "engine/combat.h"
 #include "engine/entity.h"
 
 namespace gba
@@ -30,5 +31,13 @@ void card_description(const engine::DeckCard& card, bn::istring& out);
 // Compact status line such as "Force+2 Vuln2 Poison5".
 // `max_width`: pixels the line may take; the statuses beyond it are replaced by a "+" mark.
 void status_line(const engine::CombatEntity& entity, bn::istring& out, int max_width);
+
+// Short name of a power of the enemies, as shown in a status line; empty for the other powers.
+[[nodiscard]] bn::string_view enemy_power_label(engine::PowerId id);
+// What that power does, on one line of the text box.
+[[nodiscard]] bn::string_view enemy_power_description(engine::PowerId id);
+// Adds to a status line the powers of the enemies the player holds (`holder` -1) or an enemy holds, while
+// they fit in `max_width`.
+void append_enemy_powers(const engine::CombatEngine& combat, int holder, bn::istring& out, int max_width);
 
 }

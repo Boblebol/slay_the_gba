@@ -2182,4 +2182,70 @@ void status_line(const engine::CombatEntity& entity, bn::istring& out, int max_w
     }
 }
 
+bn::string_view enemy_power_label(engine::PowerId id)
+{
+    switch(id)
+    {
+    case engine::PowerId::TANGLED:
+        return "Paraly";
+    case engine::PowerId::TENDER:
+        return "Décomp";
+    case engine::PowerId::PERSONAL_HIVE:
+        return "Ruche";
+    default:
+        return "";
+    }
+}
+
+bn::string_view enemy_power_description(engine::PowerId id)
+{
+    switch(id)
+    {
+    case engine::PowerId::TANGLED:
+        return "Paralysie : Attaques +1 ● ce tour.";
+    case engine::PowerId::TENDER:
+        return "Décomp. : chaque carte, -1 Force/Dex.";
+    case engine::PowerId::PERSONAL_HIVE:
+        return "Ruche : frappée, Hébété en Pioche.";
+    default:
+        return "";
+    }
+}
+
+void append_enemy_powers(const engine::CombatEngine& combat, int holder, bn::istring& out, int max_width)
+{
+    bn::ostringstream stream(out);
+
+    for(const engine::ActivePower& power : combat.powers)
+    {
+        bn::string_view label = enemy_power_label(power.id);
+
+        if(label.empty() || power.holder != holder)
+        {
+            continue;
+        }
+
+        const int size_before = out.size();
+
+        // Room for a space, the label and its amount.
+        if(size_before + label.size() + 8 > out.max_size())
+        {
+            break;
+        }
+
+        if(! out.empty())
+        {
+            stream << ' ';
+        }
+
+        stream << label << power.amount;
+
+        if(size_before > 0 && text_width(out) > max_width)
+        {
+            out.shrink(size_before);
+            break;
+        }
+    }
+}
+
 }

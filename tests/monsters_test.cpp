@@ -65,6 +65,7 @@ constexpr EnemyIntentType DEBUFF = EnemyIntentType::DEBUFF;
 constexpr EnemyIntentType ATTACK_BUFF = EnemyIntentType::ATTACK_BUFF;
 constexpr EnemyIntentType STUN = EnemyIntentType::STUN;
 constexpr EnemyIntentType ESCAPE = EnemyIntentType::ESCAPE;
+constexpr EnemyIntentType ATTACK_DEBUFF = EnemyIntentType::ATTACK_DEBUFF;
 
 void test_fuzzy_wurm_crawler() {
     // Acid Goop 4, Inhale (+7 Strength), Acid Goop 4, and again.
@@ -765,6 +766,251 @@ void test_fat_gremlin_ascension() {
     std::cout << "[PASS] Fat Gremlin: Ascension gives 14 to 18 HP" << std::endl;
 }
 
+// Puts `card` alone in hand with full energy and plays it on the first enemy.
+bool play_alone(CombatEngine& combat, DeckCard card) {
+    combat.hand.clear();
+    combat.hand.push_back(card);
+    combat.player.energy = combat.player.max_energy;
+    return combat.play_card(0, 0);
+}
+
+const ActivePower* held_power(const CombatEngine& combat, int holder, PowerId id) {
+    for (const ActivePower& power : combat.powers) {
+        if (power.id == id && power.holder == holder) return &power;
+    }
+    return nullptr;
+}
+
+void test_enemy_power_holder() {
+    // A power held by an enemy: its own amount, apart from the player's powers and from the other enemies'.
+    CombatEngine combat = make_pack({ EnemyType::SEWER_CLAM, EnemyType::SEWER_CLAM });
+    combat.add_enemy_power(0, PowerId::PERSONAL_HIVE, 1);
+    combat.add_enemy_power(0, PowerId::PERSONAL_HIVE, 2);
+    combat.add_enemy_power(1, PowerId::PERSONAL_HIVE, 5);
+    assert(combat.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 3);
+    assert(combat.enemy_power_amount(1, PowerId::PERSONAL_HIVE) == 5);
+    assert(combat.enemy_power_amount(0, PowerId::TANGLED) == 0 && combat.powers.size() == 2);
+    assert(held_power(combat, 0, PowerId::PERSONAL_HIVE)->stacks == 2 && !held_power(combat, -1, PowerId::PERSONAL_HIVE));
+    // Nothing for an enemy that does not exist, nor for a dead one.
+    combat.add_enemy_power(7, PowerId::PERSONAL_HIVE, 1);
+    combat.add_enemy_power(-1, PowerId::PERSONAL_HIVE, 1);
+    assert(combat.powers.size() == 2);
+
+    // The power leaves with its holder, killed or gone; the other enemy keeps its own.
+    combat.enemies[0].hp = 1;
+    assert(play_alone(combat, CardId::STRIKE));
+    assert(!combat.enemies[0].is_alive());
+    assert(combat.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 0 && combat.enemy_power_amount(1, PowerId::PERSONAL_HIVE) == 5);
+    combat.add_enemy_power(0, PowerId::PERSONAL_HIVE, 1);
+    assert(combat.powers.size() == 1);
+    combat.enemies[1].current_intent = EnemyIntent{};
+    combat.enemies[1].current_intent.type = ESCAPE;
+    combat.end_player_turn();
+    assert(combat.enemies[1].escaped && combat.powers.empty());
+
+    // A move can give its user a power: it holds it once the move is played.
+    CombatEngine giver = make_combat(CharacterId::IRONCLAD, EnemyType::SEWER_CLAM);
+    giver.enemies[0].current_intent = EnemyIntent{};
+    giver.enemies[0].current_intent.type = BUFF;
+    giver.enemies[0].current_intent.power = PowerId::PERSONAL_HIVE;
+    giver.enemies[0].current_intent.power_amount = 2;
+    assert(giver.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 0);
+    giver.end_player_turn();
+    assert(giver.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 2 && giver.last_enemy_actions[0].power == PowerId::NONE);
+
+    // A new fight starts without the powers of the last one.
+    giver.start_combat(EnemyType::SEWER_CLAM, CharacterId::IRONCLAD);
+    giver.reset_combat_state();
+    assert(giver.powers.empty());
+    std::cout << "[PASS] Enemy powers: held by one enemy, given by a move, gone with their holder" << std::endl;
+}
+
+void test_enemy_power_turn_hook() {
+    // Start of the holder's turn: the power counts the turns its holder started, and only those.
+    CombatEngine combat = make_pack({ EnemyType::SEWER_CLAM, EnemyType::SEWER_CLAM });
+    combat.add_enemy_power(1, PowerId::PERSONAL_HIVE, 1);
+    combat.add_power(PowerId::RAGE, 3); // a power of the player, next to it
+    assert(held_power(combat, 1, PowerId::PERSONAL_HIVE)->turns == 0);
+    for (int turn = 1; turn <= 3; ++turn) {
+        pass_turn(combat);
+        assert(held_power(combat, 1, PowerId::PERSONAL_HIVE)->turns == turn);
+        // The player's power counts the player's turns, as before.
+        assert(held_power(combat, -1, PowerId::RAGE)->turns == turn);
+    }
+    // A stunned holder still starts its turn; a dead one starts none.
+    combat.enemies[1].stun();
+    pass_turn(combat);
+    assert(held_power(combat, 1, PowerId::PERSONAL_HIVE)->turns == 4);
+    std::cout << "[PASS] Enemy powers: the start of the holder's turn is heard, and counted" << std::endl;
+}
+
+void test_enemy_power_hit_hook() {
+    // Hit received (Personal Hive): unblocked attack damage on the holder puts Dazed in the player's draw pile.
+    CombatEngine combat = make_pack({ EnemyType::SEWER_CLAM, EnemyType::SEWER_CLAM });
+    combat.add_enemy_power(0, PowerId::PERSONAL_HIVE, 2);
+    auto dazed = [&combat]() {
+        int count = 0;
+        for (const DeckCard& card : combat.draw_pile) count += card.id == CardId::DAZED;
+        return count;
+    };
+    assert(dazed() == 0);
+    assert(play_alone(combat, CardId::STRIKE));
+    assert(dazed() == 2);
+    // The other enemy holds nothing: hitting it adds nothing.
+    combat.hand.clear();
+    combat.hand.push_back(CardId::STRIKE);
+    combat.player.energy = combat.player.max_energy;
+    bool played = combat.play_card(0, 1);
+    assert(played && dazed() == 2);
+    // A hit its Block absorbs entirely is not damage taken.
+    combat.enemies[0].block = 50;
+    assert(play_alone(combat, CardId::STRIKE));
+    assert(dazed() == 2);
+    // The blow that kills the holder is not answered: its powers are silent once it is out.
+    combat.enemies[0].block = 0;
+    combat.enemies[0].hp = 1;
+    assert(play_alone(combat, CardId::STRIKE));
+    assert(dazed() == 2 && !combat.enemies[0].is_alive());
+    assert(combat.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 0);
+    std::cout << "[PASS] Enemy powers: a hit received by the holder is heard (Personal Hive)" << std::endl;
+}
+
+void test_enemy_power_card_hook() {
+    // Card played by the player (Tender): each card costs 1 Strength and 1 Dexterity until the end of the turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SEWER_CLAM);
+    assert(combat.afflict_player(PowerId::TENDER, 1, false));
+    assert(play_alone(combat, CardId::DEFEND));
+    assert(combat.player.get_status(StatusType::STRENGTH) == -1 && combat.player.get_status(StatusType::DEXTERITY) == -1);
+    int16_t hp = combat.enemies[0].hp;
+    assert(play_alone(combat, CardId::STRIKE)); // the second card: 6 - 2 Strength
+    assert(hp - combat.enemies[0].hp == 4);
+    assert(combat.player.get_status(StatusType::STRENGTH) == -2);
+    // The loss ends with the turn; the power stays.
+    pass_turn(combat);
+    assert(combat.player.get_status(StatusType::STRENGTH) == 0 && combat.player.get_status(StatusType::DEXTERITY) == 0);
+    assert(combat.has_power(PowerId::TENDER));
+
+    // Artifact cancels a power an enemy puts on the player, and is used up.
+    CombatEngine guarded = make_combat(CharacterId::IRONCLAD, EnemyType::SEWER_CLAM);
+    guarded.player.add_status(StatusType::ARTIFACT, 1);
+    assert(!guarded.afflict_player(PowerId::TENDER, 1, false));
+    assert(!guarded.has_power(PowerId::TENDER) && guarded.player.get_status(StatusType::ARTIFACT) == 0);
+    assert(guarded.afflict_player(PowerId::TENDER, 1, false));
+    assert(!guarded.afflict_player(PowerId::NONE, 1, false) && !guarded.afflict_player(PowerId::TANGLED, 0, true));
+    std::cout << "[PASS] Enemy powers: a card played by the player is heard (Tender); Artifact cancels them" << std::endl;
+}
+
+void test_multi_hit_attack() {
+    // Each hit goes through Block on its own and is answered by Thorns on its own.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SEWER_CLAM);
+    Enemy& clam = combat.enemies[0];
+    clam.current_intent = EnemyIntent{};
+    clam.current_intent.type = ATTACK;
+    clam.current_intent.base_damage = 6;
+    clam.current_intent.hits = 3;
+    assert(clam.intent_damage(combat.player) == 6);
+    combat.player.block = 8;
+    combat.player.add_status(StatusType::THORNS, 2);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 18 - 8);
+    assert(clam.hp == 56 - 3 * 2);
+    assert(combat.last_enemy_actions[0].hits == 3 && combat.last_enemy_actions[0].damage_to_player == 10);
+
+    // Strength is added to every hit, and the hits stop when the attacker dies of what comes back.
+    CombatEngine strong = make_combat(CharacterId::IRONCLAD, EnemyType::SEWER_CLAM);
+    Enemy& foe = strong.enemies[0];
+    foe.add_status(StatusType::STRENGTH, 2);
+    foe.current_intent = EnemyIntent{};
+    foe.current_intent.type = ATTACK;
+    foe.current_intent.base_damage = 5;
+    foe.current_intent.hits = 4;
+    foe.hp = 5;
+    strong.player.add_status(StatusType::THORNS, 3);
+    strong.end_player_turn();
+    assert(!foe.is_alive() && strong.player.max_hp - strong.player.hp == 2 * 7);
+    std::cout << "[PASS] Multi-hit attacks: each hit on its own against Block and Thorns" << std::endl;
+}
+
+void test_vine_shambler() {
+    // Swipe 6x2, Grasping Vines 8 and Tangled, Chomp 16, and again.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::VINE_SHAMBLER);
+    Enemy& shambler = combat.enemies[0];
+    assert(shambler.name == "Bourbelianes" && shambler.hp == 61 && shambler.max_hp == 61);
+    assert(shambler.block == 0 && shambler.statuses.empty());
+    struct Turn {
+        EnemyIntentType intent;
+        int damage; // of one hit
+        int hits;
+        bool tangled; // the player is Tangled on the turn that follows
+    };
+    int turn_number = 1;
+    for (const Turn& turn : { Turn{ ATTACK, 6, 2, false }, Turn{ ATTACK_DEBUFF, 8, 1, true }, Turn{ ATTACK, 16, 1, false },
+                              Turn{ ATTACK, 6, 2, false }, Turn{ ATTACK_DEBUFF, 8, 1, true }, Turn{ ATTACK, 16, 1, false } }) {
+        assert(combat.turn_number == turn_number++);
+        assert(shambler.current_intent.type == turn.intent && shambler.current_intent.hits == turn.hits);
+        assert(shambler.intent_damage(combat.player) == turn.damage);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == turn.damage * turn.hits);
+        assert(combat.has_power(PowerId::TANGLED) == turn.tangled);
+        assert(combat.last_enemy_actions[0].power == (turn.tangled ? PowerId::TANGLED : PowerId::NONE));
+        assert(shambler.block == 0 && shambler.statuses.empty() && shambler.hp == 61);
+    }
+
+    // Tangled: Attacks cost 1 more energy this turn, the other cards do not; it is gone the turn after.
+    CombatEngine tangled = make_combat(CharacterId::IRONCLAD, EnemyType::VINE_SHAMBLER);
+    pass_turn(tangled);
+    assert(tangled.effective_cost(DeckCard(CardId::STRIKE)) == 1 && tangled.effective_cost(DeckCard(CardId::BASH)) == 2);
+    pass_turn(tangled);
+    assert(tangled.has_power(PowerId::TANGLED) && tangled.power_amount(PowerId::TANGLED) == 1);
+    assert(tangled.effective_cost(DeckCard(CardId::STRIKE)) == 2 && tangled.effective_cost(DeckCard(CardId::BASH)) == 3);
+    assert(tangled.effective_cost(DeckCard(CardId::DEFEND)) == 1);
+    // Three energy: one Strike at 2, and not enough left for a second.
+    tangled.hand.clear();
+    tangled.hand.push_back(CardId::STRIKE);
+    tangled.hand.push_back(CardId::STRIKE);
+    tangled.player.energy = 3;
+    bool first = tangled.play_card(0, 0);
+    assert(first && tangled.player.energy == 1 && !tangled.can_play_card(0));
+    pass_turn(tangled);
+    assert(!tangled.has_power(PowerId::TANGLED) && tangled.effective_cost(DeckCard(CardId::STRIKE)) == 1);
+
+    // Artifact keeps the vines off.
+    CombatEngine guarded = make_combat(CharacterId::IRONCLAD, EnemyType::VINE_SHAMBLER);
+    pass_turn(guarded);
+    guarded.player.add_status(StatusType::ARTIFACT, 1);
+    pass_turn(guarded);
+    assert(!guarded.has_power(PowerId::TANGLED) && guarded.player.get_status(StatusType::ARTIFACT) == 0);
+    assert(guarded.last_enemy_actions[0].power == PowerId::NONE && guarded.last_enemy_actions[0].debuff_attempted);
+    std::cout << "[PASS] Vine Shambler: 61 HP, Swipe 6x2, Grasping Vines 8 and Tangled, Chomp 16, loop" << std::endl;
+}
+
+void test_vine_shambler_ascension() {
+    struct Level {
+        bool more_hp;
+        bool more_damage;
+        int hp;
+        int swipe;
+        int vines;
+        int chomp;
+    };
+    for (const Level& level : { Level{ false, false, 61, 6, 8, 16 }, Level{ true, false, 64, 6, 8, 16 },
+                                Level{ false, true, 61, 7, 9, 18 }, Level{ true, true, 64, 7, 9, 18 } }) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::VINE_SHAMBLER);
+        Enemy& foe = combat.enemies[0];
+        foe.ascend(level.more_hp, level.more_damage);
+        combat.plan_enemies();
+        assert(foe.hp == level.hp && foe.max_hp == level.hp && foe.damage_percent == 100);
+        assert(foe.intent_damage(combat.player) == level.swipe && foe.current_intent.hits == 2);
+        pass_turn(combat);
+        assert(foe.intent_damage(combat.player) == level.vines);
+        pass_turn(combat);
+        assert(foe.intent_damage(combat.player) == level.chomp);
+    }
+    std::cout << "[PASS] Vine Shambler: Ascension gives 64 HP, Swipe 7x2, Grasping Vines 9, Chomp 18" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -793,6 +1039,13 @@ int main() {
     test_escape_gives_no_reward();
     test_fat_gremlin();
     test_fat_gremlin_ascension();
+    test_enemy_power_holder();
+    test_enemy_power_turn_hook();
+    test_enemy_power_hit_hook();
+    test_enemy_power_card_hook();
+    test_multi_hit_attack();
+    test_vine_shambler();
+    test_vine_shambler_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

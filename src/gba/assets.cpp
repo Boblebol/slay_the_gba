@@ -28,6 +28,7 @@
 #include "bn_sprite_items_mon_living_shield.h"
 #include "bn_sprite_items_mon_sewer_clam.h"
 #include "bn_sprite_items_mon_the_forgotten.h"
+#include "bn_sprite_items_mon_vine_shambler.h"
 
 #include "bn_sprite_items_hand_cards_defect.h"
 #include "bn_sprite_items_hand_cards_ironclad.h"
@@ -224,6 +225,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:
         return { &bn::sprite_items::mon_living_shield, false };
+    case engine::EnemyType::VINE_SHAMBLER:
+        return { &bn::sprite_items::mon_vine_shambler, false };
     case engine::EnemyType::THE_FORGOTTEN:
         return { &bn::sprite_items::mon_the_forgotten, false };
     default:

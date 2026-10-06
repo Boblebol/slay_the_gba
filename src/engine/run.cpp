@@ -113,7 +113,9 @@ FixedVector<EnemyType, 3> RunManager::draw_encounter(RoomType room) {
     std::span<const Encounter> table = encounter_table(act_zone(current_act, map_seed),
                                                        encounter_tier(room, current_floor));
     // A list of one draws nothing, as the rooms with a single choice did before the tables.
-    const Encounter& encounter = table.size() == 1 ? table[0] : table[next_random() % table.size()];
+    // The high bits: the low ones of two draws in a row are too alike, and would tie the monsters drawn
+    // from a pool to the encounter picked.
+    const Encounter& encounter = table.size() == 1 ? table[0] : table[(next_random() >> 16) % table.size()];
     current_encounter = encounter.id;
 
     FixedVector<EnemyType, 3> monsters;

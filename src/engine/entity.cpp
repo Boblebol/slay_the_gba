@@ -80,6 +80,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Gros diablotin";
         max_hp = 13;
         hp = 13;
+    } else if (type == EnemyType::VINE_SHAMBLER) {
+        name = "Bourbelianes";
+        max_hp = 61;
+        hp = 61;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -119,6 +123,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::THE_FORGOTTEN: return 111;
         case EnemyType::LIVING_SHIELD: return 65;
         case EnemyType::FAT_GREMLIN: return 14;
+        case EnemyType::VINE_SHAMBLER: return 64;
         default: return 0;
     }
 }
@@ -426,6 +431,26 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ESCAPE;
             current_intent.description = "Fuite";
         }
+    } else if (type == EnemyType::VINE_SHAMBLER) {
+        // Swipe, Grasping Vines, Chomp, and again.
+        if (turn_number % 3 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.hits = 2;
+            current_intent.description = "Griffe (6 dmg x2)";
+        } else if (turn_number % 3 == 2) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.power = PowerId::TANGLED;
+            current_intent.power_amount = 1;
+            current_intent.power_on_player = true;
+            current_intent.power_turn_only = true;
+            current_intent.description = "Lianes paralysantes (8 dmg, Paralysie)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 18 : 16;
+            current_intent.description = "Croc (16 dmg)";
+        }
     }
 }
 
@@ -448,15 +473,17 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
         add_status(current_intent.status_type, current_intent.status_amount);
     }
 
-    // Execute attack if any
+    // Execute attack if any, one hit after the other
     if (current_intent.base_damage > 0) {
-        const int16_t block_before = player.block;
-        player.take_damage_with_minion(intent_damage(player));
+        for (uint8_t hit = 0; hit < current_intent.hits && is_alive() && player.is_alive(); ++hit) {
+            const int16_t block_before = player.block;
+            player.take_damage_with_minion(intent_damage(player));
+            // The attacker gets hurt back: the player's Thorns, Flame Barrier, and the damage Reflect sends back.
+            int16_t back = static_cast<int16_t>(player.get_status(StatusType::THORNS) + damage_back);
+            if (reflect) back = static_cast<int16_t>(back + block_before - player.block);
+            take_damage(back);
+        }
         clear_status(StatusType::VIGOR); // spent on this attack
-        // The attacker gets hurt back: the player's Thorns, Flame Barrier, and the damage Reflect sends back.
-        int16_t back = static_cast<int16_t>(player.get_status(StatusType::THORNS) + damage_back);
-        if (reflect) back = static_cast<int16_t>(back + block_before - player.block);
-        take_damage(back);
     }
 
     if (buff_after_attack && is_alive() && current_intent.status_amount > 0) {

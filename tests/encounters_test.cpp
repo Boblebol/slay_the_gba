@@ -39,6 +39,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::THE_FORGOTTEN: return "THE_FORGOTTEN";
         case EnemyType::LIVING_SHIELD: return "LIVING_SHIELD";
         case EnemyType::FAT_GREMLIN: return "FAT_GREMLIN";
+        case EnemyType::VINE_SHAMBLER: return "VINE_SHAMBLER";
     }
     return {};
 }
@@ -154,7 +155,7 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::WEAK)) ==
            std::set<std::string_view>{ "FuzzyWurmCrawlerWeak" });
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
-           std::set<std::string_view>{ "RubyRaidersNormal" });
+           (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal" }));
     for (ActZone zone : ZONES) {
@@ -293,14 +294,24 @@ void test_same_seed_same_fights() {
         assert(first.size() >= 10);
         assert(first == fights_of(seed));
     }
-    // A run of Act 1 (A): weak fights on the first floors, ruby raiders after them.
+    // A run of Act 1 (A): weak fights on the first floors, then the ruby raiders or the Vine Shambler, both met.
     uint32_t seed = 99;
     assert(act_zone(1, make_run(seed, 1).map_seed) == ActZone::ACT1A);
     std::vector<std::string> fights = fights_of(seed);
+    int raiders = 0;
+    int shamblers = 0;
     for (size_t floor = 1; floor <= fights.size() - 2; ++floor) {
-        std::string_view expected = floor <= WEAK_ENCOUNTER_FLOORS ? "FuzzyWurmCrawlerWeak" : "RubyRaidersNormal";
-        assert(std::string_view(fights[floor - 1]).starts_with(expected));
+        std::string_view fight = fights[floor - 1];
+        if (floor <= WEAK_ENCOUNTER_FLOORS) {
+            assert(fight.starts_with("FuzzyWurmCrawlerWeak"));
+        } else if (fight.starts_with("RubyRaidersNormal")) {
+            ++raiders;
+        } else {
+            assert(fight == "VineShamblerNormal VINE_SHAMBLER");
+            ++shamblers;
+        }
     }
+    assert(raiders > 0 && shamblers > 0);
     assert(fights[fights.size() - 1] == "CeremonialBeastBoss CEREMONIAL_BEAST");
     std::cout << "[PASS] Encounter tables: the same seed gives the same fights" << std::endl;
 }

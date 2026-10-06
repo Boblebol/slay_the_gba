@@ -201,6 +201,8 @@ private:
     Label _player_block_label;
     // Potion belt: two more description lines and the key reminder under them.
     Label _line3;
+    // Power an enemy move just put on the hero: its description is shown while the enemies play.
+    engine::PowerId _landed_power = engine::PowerId::NONE;
     Label _line4;
     Label _belt_hint;
 
@@ -556,8 +558,28 @@ void CombatScene::_refresh_card_text()
         stream << "Cible : " << bn::string_view(enemy.name.data(), enemy.name.size());
         _line1.set(-112, LINE1_Y, text, Align::LEFT, TextColor::GOLD);
         _line1_right.set(112, LINE1_Y, "◄ ► changer", Align::RIGHT, TextColor::GRAY);
-        _line2.set(-112, LINE2_Y, _aimed_potion >= 0 ? "A : lancer   B : retour" : "A : attaquer   B : annuler",
-                   Align::LEFT, TextColor::WHITE);
+        // An enemy that holds a power: its description takes turns with the key reminder.
+        bn::string_view held;
+
+        for(const engine::ActivePower& power : _combat.powers)
+        {
+            if(power.holder == _target && ! enemy_power_description(power.id).empty())
+            {
+                held = enemy_power_description(power.id);
+                break;
+            }
+        }
+
+        if(! held.empty() && (_ctx.frame / 150) % 2 == 0)
+        {
+            _line2.set(-112, LINE2_Y, held, Align::LEFT, TextColor::PURPLE);
+        }
+        else
+        {
+            _line2.set(-112, LINE2_Y, _aimed_potion >= 0 ? "A : lancer   B : retour" : "A : attaquer   B : annuler",
+                       Align::LEFT, TextColor::WHITE);
+        }
+
         _selected_shown = -1;
         return;
     }
@@ -588,7 +610,7 @@ void CombatScene::_refresh_card_text()
     {
         _line1.set(-112, LINE1_Y, "Tour ennemi...", Align::LEFT, TextColor::RED);
         _line1_right.clear();
-        _line2.clear();
+        _line2.set(-112, LINE2_Y, enemy_power_description(_landed_power), Align::LEFT, TextColor::PURPLE);
         _selected_shown = -1;
         return;
     }
@@ -769,6 +791,7 @@ void CombatScene::_refresh_hud()
 
     TextLine status;
     status_line(player, status, STATUS_WIDTH);
+    append_enemy_powers(_combat, -1, status, STATUS_WIDTH);
 
     if(status != _player_status_text)
     {
@@ -926,6 +949,11 @@ void CombatScene::_refresh_enemy_hud(int index)
         set_icon(view.intent_icon, icon);
     }
 
+    if(damage > 0 && intent.hits > 1)
+    {
+        stream << "x" << int(intent.hits);
+    }
+
     view.intent_icon.set_visible(view.intent_visible);
     view.intent_label.set(view.intent_label.x(), view.intent_label.y(), value, Align::LEFT,
                           icon == Icon::ATTACK ? TextColor::RED : TextColor::WHITE);
@@ -933,6 +961,7 @@ void CombatScene::_refresh_enemy_hud(int index)
 
     TextLine status;
     status_line(enemy, status, STATUS_WIDTH);
+    append_enemy_powers(_combat, index, status, STATUS_WIDTH);
 
     if(status != view.status_text)
     {
@@ -2001,6 +2030,7 @@ void CombatScene::_update_card_flight()
 void CombatScene::_start_enemy_turn()
 {
     _phase = Phase::ENEMY_TURN;
+    _landed_power = engine::PowerId::NONE;
     _timer = 0;
 
     for(EnemyView& view : _enemies)
@@ -2165,6 +2195,17 @@ void CombatScene::_update_enemy_turn()
                     // One after the other at the same place: stacked, they would climb over the counters.
                     _popups.spawn(PLAYER_X + 8, PLAYER_Y - 10, text, TextColor::PURPLE,
                                   (attacked ? 12 : 0) + landed * 14);
+                    ++landed;
+                }
+
+                if(record.power != engine::PowerId::NONE)
+                {
+                    // A power instead of a status: its short name, and its text in the box under the fight.
+                    text.clear();
+                    stream << enemy_power_label(record.power);
+                    _popups.spawn(PLAYER_X + 8, PLAYER_Y - 10, text, TextColor::PURPLE,
+                                  (attacked ? 12 : 0) + landed * 14);
+                    _landed_power = record.power;
                     ++landed;
                 }
 
