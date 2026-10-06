@@ -2202,11 +2202,11 @@ bn::string_view enemy_power_description(engine::PowerId id)
     switch(id)
     {
     case engine::PowerId::TANGLED:
-        return "Paralysie : vos Attaques coûtent 1 ● de plus ce tour.";
+        return "Paralysie : Attaques +1 ● ce tour.";
     case engine::PowerId::TENDER:
-        return "Décomposition : chaque carte jouée, -1 Force et -1 Dex ce tour.";
+        return "Décomp. : chaque carte, -1 Force/Dex.";
     case engine::PowerId::PERSONAL_HIVE:
-        return "Ruche : touché par une Attaque, ajoute Hébété à la Pioche.";
+        return "Ruche : frappée, Hébété en Pioche.";
     default:
         return "";
     }
