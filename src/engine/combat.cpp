@@ -211,6 +211,41 @@ int16_t CombatEngine::power_amount(PowerId id) const {
     return total;
 }
 
+void CombatEngine::add_enemy_power(int enemy_index, PowerId id, int16_t amount) {
+    if (enemy_index < 0 || static_cast<size_t>(enemy_index) >= enemies.size() || id == PowerId::NONE) return;
+    if (!enemies[enemy_index].is_alive()) return;
+    for (ActivePower& power : powers) {
+        if (power.id == id && power.holder == enemy_index) {
+            power.amount = static_cast<int16_t>(power.amount + amount);
+            power.stacks = bump(power.stacks);
+            return;
+        }
+    }
+    ActivePower power;
+    power.id = id;
+    power.amount = amount;
+    power.stacks = 1;
+    power.holder = static_cast<int8_t>(enemy_index);
+    powers.push_back(power);
+}
+
+int16_t CombatEngine::enemy_power_amount(int enemy_index, PowerId id) const {
+    for (const ActivePower& power : powers) {
+        if (power.id == id && power.holder == enemy_index) return power.amount;
+    }
+    return 0;
+}
+
+bool CombatEngine::afflict_player(PowerId id, int16_t amount, bool turn_only) {
+    if (id == PowerId::NONE || amount <= 0) return false;
+    if (is_player_debuff_power(id) && player.get_status(StatusType::ARTIFACT) > 0) {
+        player.add_status(StatusType::ARTIFACT, -1);
+        return false;
+    }
+    add_power(id, amount, turn_only);
+    return true;
+}
+
 uint8_t CombatEngine::power_counter(PowerId id) const {
     for (const ActivePower& power : powers) {
         if (power.id == id) return power.counter;
@@ -223,6 +258,10 @@ void CombatEngine::settle_deaths() {
         uint8_t bit = static_cast<uint8_t>(1u << i);
         if ((alive_mask_ & bit) && !enemies[i].is_alive()) {
             alive_mask_ = static_cast<uint8_t>(alive_mask_ & ~bit);
+            // Its powers leave with it, whether it died or ran away.
+            for (size_t p = powers.size(); p-- > 0;) {
+                if (powers[p].holder == static_cast<int8_t>(i)) powers.erase(p);
+            }
             // An enemy that ran away is not a kill: it keeps what it stole and nothing reacts to its death.
             if (enemies[i].escaped) continue;
             // What it stole from the player comes back.
@@ -272,11 +311,26 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         return card_played && CardDef::get(info.card.id).type == type && (tally + 1) % every == 0;
     };
 
-    if (turn_start) {
+    if (power.holder >= 0) {
+        // A power held by an enemy: silent once its holder is out, and it counts its holder's turns.
+        if (static_cast<size_t>(power.holder) >= enemies.size() || !enemies[power.holder].is_alive()) return;
+        if (event == CombatEvent::ENEMY_TURN_START && info.enemy == power.holder) power.turns = bump(power.turns);
+    } else if (turn_start) {
         power.turns = bump(power.turns);
     }
 
     switch (power.id) {
+        case PowerId::TENDER:
+            if (card_played) {
+                gain_temporary(StatusType::STRENGTH, static_cast<int8_t>(-power.amount));
+                gain_temporary(StatusType::DEXTERITY, static_cast<int8_t>(-power.amount));
+            }
+            break;
+        case PowerId::PERSONAL_HIVE:
+            if (event == CombatEvent::UNBLOCKED_DAMAGE_DEALT && info.enemy == power.holder) {
+                for (int16_t i = 0; i < power.amount; ++i) create_card(CardId::DAZED, Pile::DRAW);
+            }
+            break;
         case PowerId::TURN_ENERGY:
             if (turn_start) player.energy = static_cast<int8_t>(player.energy + power.amount);
             break;
@@ -1606,6 +1660,7 @@ int CombatEngine::effective_cost(const DeckCard& card) const {
             break;
     }
     cost += power_amount(PowerId::SURCHARGE);
+    if (CardDef::get(card.id).type == CardType::ATTACK) cost += power_amount(PowerId::TANGLED);
     return std::clamp(cost, 0, 99);
 }
 
@@ -4762,7 +4817,21 @@ void CombatEngine::execute_enemy_turn() {
             const int16_t shield_before = player.block + player.minion_hp + player.minion_block;
             const int16_t osty_hp_before = player.minion_hp;
 
+            EventInfo acting;
+            acting.enemy = static_cast<int8_t>(i);
+            emit(CombatEvent::ENEMY_TURN_START, acting);
+            const EnemyIntent played = enemies[i].current_intent;
             enemies[i].execute_turn(player, power_amount(PowerId::FLAME_BARRIER), has_power(PowerId::REFLECT));
+            // The power of the move: kept by the enemy, or put on a player the attack left alive.
+            if (played.power != PowerId::NONE && player.is_alive()) {
+                if (!played.power_on_player) {
+                    add_enemy_power(static_cast<int>(i), played.power, played.power_amount);
+                } else if (afflict_player(played.power, played.power_amount, played.power_turn_only)) {
+                    record.power = played.power;
+                }
+            }
+            record.hits = played.hits;
+            record.debuff_attempted = record.debuff_attempted || (played.power_on_player && played.power != PowerId::NONE);
             note_osty_hp_lost(static_cast<int16_t>(osty_hp_before - player.minion_hp));
             settle_deaths(); // Thorns and damage sent back can kill the attacker
 

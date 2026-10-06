@@ -4,6 +4,7 @@
 #include <span>
 #include <string_view>
 #include "engine/status.h"
+#include "engine/power.h"
 #include "engine/fixed_vector.h"
 
 namespace engine {
@@ -295,6 +296,13 @@ struct EnemyIntent {
     StatusType status_type = StatusType::NONE;
     int16_t status_amount = 0;
     std::string_view description = "";
+    // Times the attack hits. Each hit goes through Block and is answered by Thorns on its own.
+    uint8_t hits = 1;
+    // Power the move grants once played: to the enemy itself, or to the player (`power_on_player`).
+    PowerId power = PowerId::NONE;
+    int16_t power_amount = 0;
+    bool power_on_player = false;
+    bool power_turn_only = false; // on the player: gone at the end of their next turn
     // HP the enemy gives itself back, after the attack if the move has one. Never above its maximum.
     int16_t heal = 0;
     // Statuses given to the player, after the attack if the move has one. Artifact cancels each of them.
@@ -324,7 +332,8 @@ enum class EnemyType : uint8_t {
     SEWER_CLAM,
     THE_FORGOTTEN,
     LIVING_SHIELD,
-    FAT_GREMLIN
+    FAT_GREMLIN,
+    VINE_SHAMBLER
 };
 
 // What a monster sees of the fight when it chooses its next move.
@@ -395,7 +404,7 @@ public:
     uint8_t use_move(uint8_t move) { return last_move = move; }
     // Gives back to the player what this enemy stole. Called when it dies.
     void return_stolen(Player& player);
-    // Damage the current intent would deal to `target` right now (0 when it does not attack).
+    // Damage of one hit of the current intent on `target` right now (0 when it does not attack).
     int16_t intent_damage(const CombatEntity& target) const;
     void plan_turn(int turn_number, const PlanContext& context = {});
     // Plays the current intent. An attack is answered by the player's Thorns, plus `damage_back` (Flame Barrier),

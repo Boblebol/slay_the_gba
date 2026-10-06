@@ -7,7 +7,8 @@
 namespace engine {
 
 // Lasting effects on the player: Power cards, "this turn" effects of other cards, and the relics that act
-// during a fight.
+// during a fight. The powers of the enemies are in the same registry: the ones a monster holds itself
+// (ActivePower::holder), and the ones its moves put on the player.
 // One id per behaviour: two cards with the same effect share it (Pyre and Friendship both give TURN_ENERGY).
 enum class PowerId : uint8_t {
     NONE = 0,
@@ -171,8 +172,18 @@ enum class PowerId : uint8_t {
     SENTRY_MODE,       // start of turn: `amount` Sweeping Gaze to the hand
     // Potions (appended)
     DEMISE,            // end of enemy turn: the enemy it is bound to loses `amount` HP
-    DUPLICATION        // this turn: the next `amount` cards are played once more
+    DUPLICATION,       // this turn: the next `amount` cards are played once more
+    // Powers of the enemies (appended). On the player, given by an enemy move:
+    TANGLED,           // this turn: Attacks cost `amount` more energy
+    TENDER,            // card played: lose `amount` Strength and Dexterity until the end of the turn
+    // Held by an enemy:
+    PERSONAL_HIVE      // it takes unblocked attack damage: `amount` Dazed into the player's draw pile
 };
+
+// Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
+constexpr bool is_player_debuff_power(PowerId id) {
+    return id == PowerId::TANGLED || id == PowerId::TENDER;
+}
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
 constexpr uint8_t ORBIT_ENERGY = 4;
@@ -202,11 +213,15 @@ struct ActivePower {
     uint8_t counter = 0;    // the power's own tally: uses this turn, energy spent so far...
     uint8_t turns = 0;      // player turns started since it was gained
     int8_t target = -1;     // enemy it is bound to, -1 for none
+    // Enemy that holds the power, -1 when the player does. A power held by an enemy only hears the fight while
+    // that enemy is alive, counts its holder's turns in `turns`, and is removed when it dies or leaves.
+    int8_t holder = -1;
     bool turn_only = false; // removed at the end of the player's turn
 };
 
 // What the powers can react to. Each event is raised from a single place in CombatEngine.
 enum class CombatEvent : uint8_t {
+    ENEMY_TURN_START,       // an enemy is about to act; `enemy`
     TURN_START,             // player's turn, after Block and energy are reset and before the draw
     TURN_END,               // player's turn, before the hand is discarded
     CARD_PLAYED,            // costs paid, before the card's effect; `card`, `cost` (energy paid)

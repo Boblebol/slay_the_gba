@@ -29,6 +29,8 @@ struct EnemyActionRecord {
     // Statuses the move gave the player (NONE for one Artifact cancelled), and whether it tried to give any.
     IntentDebuff debuffs[MAX_INTENT_DEBUFFS];
     bool debuff_attempted = false;
+    PowerId power = PowerId::NONE; // power the move put on the player, NONE when it gave none or Artifact cancelled it
+    uint8_t hits = 1;     // hits of its attack
     int16_t healed = 0;   // HP the enemy gave itself back
     bool escaped = false; // it left the fight with this move
 };
@@ -218,6 +220,12 @@ public:
     // Plans the next move of every living enemy, with what each one sees of the fight. On the first turn the
     // patterns start again.
     void plan_enemies();
+    // Gives a power to the enemy at `enemy_index`: it holds it until it dies or leaves the fight.
+    void add_enemy_power(int enemy_index, PowerId id, int16_t amount = 1);
+    // Amount of a power that enemy holds, 0 when it does not.
+    [[nodiscard]] int16_t enemy_power_amount(int enemy_index, PowerId id) const;
+    // Puts a harmful power on the player, as an enemy move does. False when Artifact cancelled it.
+    bool afflict_player(PowerId id, int16_t amount, bool turn_only);
     // True when every enemy of the fight ran away: nothing was killed, so nothing is won.
     [[nodiscard]] bool every_enemy_escaped() const;
     void reset_combat_state();

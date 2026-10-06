@@ -169,6 +169,7 @@ MONSTERS: dict[str, str] = {
     "the_forgotten": "the_forgotten",
     "living_shield": "living_shield",
     "fat_gremlin": "fat_gremlin",
+    "vine_shambler": "vine_shambler",
 }
 BOSSES: dict[str, str] = {
     "ceremonial_beast": "ceremonial_beast",

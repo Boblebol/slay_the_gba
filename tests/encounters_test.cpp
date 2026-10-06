@@ -39,6 +39,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::THE_FORGOTTEN: return "THE_FORGOTTEN";
         case EnemyType::LIVING_SHIELD: return "LIVING_SHIELD";
         case EnemyType::FAT_GREMLIN: return "FAT_GREMLIN";
+        case EnemyType::VINE_SHAMBLER: return "VINE_SHAMBLER";
     }
     return {};
 }
@@ -154,7 +155,7 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::WEAK)) ==
            std::set<std::string_view>{ "FuzzyWurmCrawlerWeak" });
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
-           std::set<std::string_view>{ "RubyRaidersNormal" });
+           (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal" }));
     for (ActZone zone : ZONES) {
