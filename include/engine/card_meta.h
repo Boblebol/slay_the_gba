@@ -418,6 +418,10 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::EVENT, CardPool::EVENT }, // PECK
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // PRODUCTION
     { CardRarity::RARE, CardPool::COLORLESS }, // MASTER_OF_STRATEGY
+    { CardRarity::EVENT, CardPool::EVENT }, // BYRD_SWOOP
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // ULTIMATE_STRIKE
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // ULTIMATE_DEFEND
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // FINESSE
 };
 
 } // namespace engine

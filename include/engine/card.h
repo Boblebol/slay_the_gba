@@ -494,6 +494,14 @@ enum class CardId : uint16_t {
     PRODUCTION,
     // Master of Strategy: a colorless 0-cost skill that draws cards
     MASTER_OF_STRATEGY,
+    // Byrd Swoop: an event card
+    BYRD_SWOOP,
+    // Ultimate Strike: a colorless Attack
+    ULTIMATE_STRIKE,
+    // Ultimate Defend: a colorless Skill
+    ULTIMATE_DEFEND,
+    // Finesse: a colorless Skill
+    FINESSE,
     COUNT
 };
 
