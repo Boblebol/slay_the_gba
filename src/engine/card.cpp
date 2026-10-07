@@ -473,6 +473,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::APPARITION, "Apparition", 1, CardType::SKILL, TargetType::SELF, 1, 0, "Ethereal. Gain 1 Intangible. Exhaust.", "Apparition+", 1, 1, 0, "Gain 1 Intangible. Exhaust.", KEYWORD_ETHEREAL | KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     // Maul: an event card; each play raises the damage of every Maul copy for the combat.
     { CardId::MAUL, "Maul", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 2, "Deal 5 dmg twice. ALL Maul cards gain 2 dmg this combat.", "Maul+", 1, 6, 2, "Deal 6 dmg twice. ALL Maul cards gain 3 dmg this combat." },
+    // Brightest Flame: an event card; the Max HP loss lasts for the run.
+    { CardId::BRIGHTEST_FLAME, "Brightest Flame", 0, CardType::SKILL, TargetType::SELF, 2, 2, "Gain 2 energy. Draw 2 cards. Lose 2 Max HP.", "Brightest Flame+", 0, 3, 3, "Gain 3 energy. Draw 3 cards. Lose 2 Max HP." },
 };
 
 const CardDef& CardDef::get(CardId id) {
