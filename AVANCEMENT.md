@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 57,3 %** — 703 faits, 20 partiels, 521 à faire (35 hors périmètre).
+**Avancement global : 57,9 %** — 710 faits, 20 partiels, 514 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -19,14 +19,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
 | [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
-| [Cartes communes aux cinq éditions](#cartes) | 26 | 0 | 94 | 21,7 % |
+| [Cartes communes aux cinq éditions](#cartes) | 33 | 0 | 87 | 27,5 % |
 | [Reliques et potions](#reliques) | 132 | 0 | 189 | 41,1 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **703** | **20** | **521** | **57,3 %** |
+| **Total** | **710** | **20** | **514** | **57,9 %** |
 
 <a id="ironclad"></a>
 
@@ -688,11 +688,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 21,7 %
+## Cartes communes aux cinq éditions — 27,5 %
 
-### Cartes incolores — 5,7 %
+### Cartes incolores — 13,2 %
 
-3 faits, 0 partiel, 50 à faire (12 hors périmètre).
+7 faits, 0 partiel, 46 à faire (12 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -707,13 +707,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Coordination | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Coup d'avance | Peu commune · Compétence | Non |  |
 | Découverte | Peu commune · Compétence | Non |  |
-| Défense ultime | Peu commune · Compétence | Non |  |
+| Défense ultime | Peu commune · Compétence | Oui |  |
 | Déflagration mentale | Peu commune · Attaque | Non |  |
 | Entraves des ténèbres | Peu commune · Compétence | Non |  |
 | Entrée fracassante | Peu commune · Attaque | Non |  |
-| Finesse | Peu commune · Compétence | Non |  |
+| Finesse | Peu commune · Compétence | Oui |  |
 | Frappe chercheuse | Peu commune · Attaque | Non |  |
-| Frappe ultime | Peu commune · Attaque | Non |  |
+| Frappe ultime | Peu commune · Attaque | Oui |  |
 | Grégarité | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Hache sifflante | Peu commune · Attaque | Non |  |
 | Impatience | Peu commune · Compétence | Non |  |
@@ -727,7 +727,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Polyvalence | Peu commune · Compétence | Non |  |
 | Production | Peu commune · Compétence | Oui |  |
 | Prolongations | Peu commune · Compétence | Non |  |
-| Prouesse | Peu commune · Pouvoir | Non |  |
+| Prouesse | Peu commune · Pouvoir | Oui |  |
 | Relais | Peu commune · Attaque | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Salve | Peu commune · Attaque | Non |  |
 | Sans repos | Peu commune · Compétence | Non |  |
@@ -762,9 +762,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sacrement | Rare · Compétence | Non |  |
 | Technique secrète | Rare · Compétence | Non |  |
 
-### Cartes d'évènement — 25,0 %
+### Cartes d'évènement — 35,7 %
 
-7 faits, 0 partiel, 21 à faire.
+10 faits, 0 partiel, 18 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -778,12 +778,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sifflet | Ancienne · Attaque | Oui |  |
 | Vœu | Ancienne · Compétence | Oui |  |
 | Ambidextrie | Évènement · Compétence | Non |  |
-| Aplatissement | Évènement · Attaque | Non |  |
+| Aplatissement | Évènement · Attaque | Oui |  |
 | Astucieux | Évènement · Compétence | Non |  |
 | Chausse-trapes | Évènement · Pouvoir | Non |  |
 | Conflit | Évènement · Attaque | Non |  |
 | Distraction | Évènement · Compétence | Non |  |
-| Extermination | Évènement · Attaque | Non |  |
+| Extermination | Évènement · Attaque | Oui |  |
 | Fortification | Évènement · Compétence | Non |  |
 | Hello World | Évènement · Pouvoir | Non |  |
 | Illumination | Évènement · Compétence | Non |  |
@@ -791,7 +791,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Métamorphose | Évènement · Compétence | Non |  |
 | Picpic | Évènement · Attaque | Oui |  |
 | Pile | Évènement · Compétence | Non |  |
-| Piqué d'oizo | Évènement · Attaque | Non |  |
+| Piqué d'oizo | Évènement · Attaque | Oui |  |
 | Rebond | Évènement · Attaque | Non |  |
 | Repas frénétique | Évènement · Compétence | Non |  |
 | Science sans conscience | Évènement · Attaque | Non |  |
