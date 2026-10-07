@@ -4688,6 +4688,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Sweeping Gaze+!"sv : "Played Sweeping Gaze!"sv);
             break;
         }
+        case CardId::GIANT_ROCK: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Giant Rock+!"sv : "Played Giant Rock!"sv);
+            break;
+        }
         case CardId::SOUL: {
             draw_cards(base_value);
             set_log(upgraded ? "Played Soul+!"sv : "Played Soul!"sv);
