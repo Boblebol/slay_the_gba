@@ -485,6 +485,14 @@ static constexpr CardDef CARDS[] = {
     { CardId::FOLLY, "Folly", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", "Folly+", COST_X, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL, KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL },
     // Enthralled (Assuétude): a Curse. Playable, but before any other card of the hand.
     { CardId::ENTHRALLED, "Enthralled", 2, CardType::CURSE, TargetType::SELF, 0, 0, "Must be played before other cards in hand. Eternal.", "Enthralled+", 2, 0, 0, "Must be played before other cards in hand. Eternal.", KEYWORD_PLAY_FIRST | KEYWORD_ETERNAL, KEYWORD_PLAY_FIRST | KEYWORD_ETERNAL },
+    // Flash of Steel: a colorless attack that draws a card.
+    { CardId::FLASH_OF_STEEL, "Flash of Steel", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 1, "Deal 5 dmg. Draw 1 card.", "Flash of Steel+", 0, 8, 1, "Deal 8 dmg. Draw 1 card." },
+    // Peck: an event card; 2 damage several times.
+    { CardId::PECK, "Peck", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 2, 3, "Deal 2 dmg 3 times.", "Peck+", 1, 2, 4, "Deal 2 dmg 4 times." },
+    // Production: a colorless skill that gives energy.
+    { CardId::PRODUCTION, "Production", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Gain 2 energy. Exhaust.", "Production+", 0, 3, 0, "Gain 3 energy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Master of Strategy: a colorless skill that draws cards.
+    { CardId::MASTER_OF_STRATEGY, "Master of Strategy", 0, CardType::SKILL, TargetType::SELF, 0, 3, "Draw 3 cards. Exhaust.", "Master of Strategy+", 0, 0, 4, "Draw 4 cards. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
 };
 
 const CardDef& CardDef::get(CardId id) {

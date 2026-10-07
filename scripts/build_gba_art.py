@@ -645,6 +645,10 @@ CARDS: list[CardArt] = [
     CardArt("brightest_flame", "hero", "brightest_flame", "skill", (0, 0), folder="event"),
     CardArt("folly", "curse", "folly", "status", (NO_COST, NO_COST)),
     CardArt("enthralled", "curse", "enthralled", "status", (2, 2)),
+    CardArt("flash_of_steel", "hero", "flash_of_steel", "attack", (0, 0), folder="colorless"),
+    CardArt("peck", "hero", "peck", "attack", (1, 1), folder="event"),
+    CardArt("production", "hero", "production", "skill", (0, 0), folder="colorless"),
+    CardArt("master_of_strategy", "hero", "master_of_strategy", "skill", (0, 0), folder="colorless"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
