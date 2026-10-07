@@ -187,6 +187,7 @@ public:
     Enemy enemy; // Primary enemy (kept in sync with enemies[0])
     FixedVector<Enemy, 3> enemies; // Multi-enemy field (Yu-Gi-Oh / Slay style: 1 to 3 enemies)
     int selected_target_index = 0;
+    int16_t gold = 0; // the run's gold, lent to the combat for the relics that spend it (Seal of Gold)
     CharacterId current_character = CharacterId::IRONCLAD;
     
     FixedVector<DeckCard, 50> draw_pile;

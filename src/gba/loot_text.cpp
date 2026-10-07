@@ -97,6 +97,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "STONE_CRACKER", "Au début de chaque combat, Améliorez 2 cartes aléatoires de votre Pioche pour le restant du combat." },
     { "STRAWBERRY", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 7." },
     { "STURDY_CLAMP", "Vous conservez jusqu'à 10 d'Armure entre chaque tour." },
+    { "SEAL_OF_GOLD", "Au début de votre tour, dépensez 3 Pièces d'or pour gagner 1 ●." },
     { "SYMBIOTIC_VIRUS", "Au début de chaque combat, Canalisez 1 Orbe ténébreux." },
     { "THE_ABACUS", "Chaque fois que la Pioche est mélangée, gagnez 6 d'Armure." },
     { "TINGSHA", "Pour chaque carte que vous défaussez pendant votre tour, infligez 3 dégâts à un ennemi aléatoire." },

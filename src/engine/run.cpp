@@ -854,6 +854,11 @@ void RunManager::register_relic_powers() {
     if (has_relic("ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 6);
     if (has_relic("SCREAMING_FLAGON")) combat.add_power(PowerId::SCREAMING_FLAGON, 20);
     // Kept from one turn to the next
+    // Ancient relic: the combat borrows the gold it spends, paid back when the fight ends.
+    if (has_relic("SEAL_OF_GOLD")) {
+        combat.gold = gold;
+        combat.add_power(PowerId::SEAL_OF_GOLD, 1);
+    }
     if (has_relic("ICE_CREAM")) combat.add_power(PowerId::ICE_CREAM);
     if (has_relic("STURDY_CLAMP")) combat.add_power(PowerId::STURDY_CLAMP, 10);
     // Combat events
@@ -1068,6 +1073,7 @@ void RunManager::proceed_after_combat() {
         }
     }
     combat.permanent_gains.clear();
+    if (has_relic("SEAL_OF_GOLD")) gold = combat.gold;
     hp = combat.player.hp;
     max_hp = combat.player.max_hp; // cards can raise it for the rest of the run (Feed)
     // Check Ironclad Burning blood passive

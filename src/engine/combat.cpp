@@ -632,6 +632,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 player.add_status(StatusType::DEXTERITY, power.amount);
             }
             break;
+        case PowerId::SEAL_OF_GOLD:
+            if (turn_start && gold >= 3) {
+                gold = static_cast<int16_t>(gold - 3);
+                player.energy = static_cast<int8_t>(player.energy + power.amount);
+            }
+            break;
         case PowerId::HAPPY_FLOWER:
             if (turn_start && power.turns % 3 == 0) player.energy = static_cast<int8_t>(player.energy + power.amount);
             break;
