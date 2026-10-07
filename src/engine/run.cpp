@@ -604,6 +604,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
         paels_tooth_picks = deck_choice.remaining;
     }
+    if (relic_id == "CLAWS" && has_relic("CLAWS")) request_deck_choice(DeckChoiceKind::TRANSFORM, 6, true, false, CardId::MAUL);
     if (relic_id == "PRESERVED_FOG" && has_relic("PRESERVED_FOG")) {
         // Hubris joins only after the removals, so the Eternal curse can never be picked.
         request_deck_choice(DeckChoiceKind::REMOVE, 3);
@@ -739,9 +740,13 @@ bool RunManager::add_card_to_deck(DeckCard card) {
     return master_deck.push_back(card);
 }
 
-bool RunManager::transform_card_in_deck(int deck_index, bool upgraded) {
+bool RunManager::transform_card_in_deck(int deck_index, bool upgraded, CardId into) {
     if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
     if (CardDef::is_eternal(master_deck[deck_index])) return false;
+    if (into != CardId::NONE) {
+        master_deck[deck_index] = DeckCard(into, upgraded);
+        return true;
+    }
     std::span<const CardId> pool = card_reward_pool(character);
     CardId old_id = master_deck[deck_index].id;
     size_t candidates = 0;
@@ -788,7 +793,7 @@ void RunManager::add_potion_slots(int count) {
     potion_slots = static_cast<uint8_t>(std::min<int>(MAX_POTION_SLOTS, potion_slots + count));
 }
 
-void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool optional, bool upgrade_result) {
+void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool optional, bool upgrade_result, CardId transform_into) {
     deck_choice = {};
     if (kind == DeckChoiceKind::NONE || count <= 0) return;
     deck_choice.kind = kind;
@@ -803,6 +808,7 @@ void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool option
     deck_choice.remaining = static_cast<uint8_t>(std::min(count, candidates));
     deck_choice.optional = optional;
     deck_choice.upgrade_result = upgrade_result;
+    deck_choice.transform_into = transform_into;
 }
 
 void RunManager::finish_preserved_fog() {
@@ -835,14 +841,14 @@ bool RunManager::resolve_deck_choice(int deck_index) {
             }
             break;
         }
-        case DeckChoiceKind::TRANSFORM: done = transform_card_in_deck(deck_index, deck_choice.upgrade_result); break;
+        case DeckChoiceKind::TRANSFORM: done = transform_card_in_deck(deck_index, deck_choice.upgrade_result, deck_choice.transform_into); break;
         default: break;
     }
     if (!done) return false;
 
     // The cards left may not allow as many picks as asked (deck emptied, everything upgraded).
     DeckChoice next = deck_choice;
-    request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result);
+    request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result, next.transform_into);
     finish_preserved_fog();
     return true;
 }

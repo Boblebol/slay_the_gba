@@ -37,6 +37,7 @@ struct DeckChoice {
     uint8_t remaining = 0;  // cards still to choose
     bool optional = false;  // "up to N": the choice can be left before the last card
     bool upgrade_result = false; // TRANSFORM only: the new card comes upgraded
+    CardId transform_into = CardId::NONE; // TRANSFORM only: fixed result card (NONE = random from the reward pool)
 };
 
 // Moments of a run, outside the fights, a relic can act on. Each one is a private `on_...` method of RunManager.
@@ -177,7 +178,7 @@ public:
     // Adds a card (a curse like any other) to the deck. False when the deck is full.
     bool add_card_to_deck(DeckCard card);
     // Replaces the card by another one of the hero's reward pool, drawn at random and never the same card.
-    bool transform_card_in_deck(int deck_index, bool upgraded = false);
+    bool transform_card_in_deck(int deck_index, bool upgraded = false, CardId into = CardId::NONE);
     // Obtains up to `count` relics drawn like the ones of a chest. Returns how many were obtained.
     int gain_random_relics(int count);
     // Fills up to `count` free slots of the belt with random potions. Returns how many were obtained.
@@ -195,7 +196,7 @@ public:
 
     // Asks the player for `count` cards of the deck to upgrade, remove or transform. Nothing is asked when no
     // card of the deck fits.
-    void request_deck_choice(DeckChoiceKind kind, int count, bool optional = false, bool upgrade_result = false);
+    void request_deck_choice(DeckChoiceKind kind, int count, bool optional = false, bool upgrade_result = false, CardId transform_into = CardId::NONE);
     [[nodiscard]] bool has_deck_choice() const { return deck_choice.kind != DeckChoiceKind::NONE; }
     // True when the card at `deck_index` can be picked for the choice in progress.
     [[nodiscard]] bool deck_choice_allows(int deck_index) const;
