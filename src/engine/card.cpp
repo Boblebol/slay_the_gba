@@ -507,6 +507,31 @@ static constexpr CardDef CARDS[] = {
     { CardId::SQUASH, "Squash", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 2, "Deal 10 dmg. Apply 2 Vuln.", "Squash+", 1, 12, 3, "Deal 12 dmg. Apply 3 Vuln." },
     // Exterminate: an event card; 4 hits on every enemy.
     { CardId::EXTERMINATE, "Exterminate", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 3, 4, "Deal 3 dmg to ALL enemies 4 times.", "Exterminate+", 1, 4, 4, "Deal 4 dmg to ALL enemies 4 times." },
+    // Feeding Frenzy: an event skill; temporary Strength.
+    { CardId::FEEDING_FRENZY, "Feeding Frenzy", 0, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 Strength until end of turn.", "Feeding Frenzy+", 0, 7, 0, "Gain 7 Strength until end of turn." },
+    // Outmaneuver: an event skill; energy next turn.
+    { CardId::OUTMANEUVER, "Outmaneuver", 1, CardType::SKILL, TargetType::SELF, 2, 0, "Next turn, gain 2 energy.", "Outmaneuver+", 1, 3, 0, "Next turn, gain 3 energy." },
+    // Toric Toughness: an event skill; block now and at the start of the next 2 turns.
+    { CardId::TORIC_TOUGHNESS, "Toric Toughness", 2, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 Block. Gain 5 Block at the start of the next 2 turns.", "Toric Toughness+", 2, 7, 0, "Gain 7 Block. Gain 7 Block at the start of the next 2 turns." },
+    // Entrench: an event skill; doubles the block.
+    { CardId::ENTRENCH, "Entrench", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Double your Block.", "Entrench+", 2, 0, 0, "Double your Block." },
+    // Stack: an event skill; block equals the discard pile size (+3 upgraded).
+    { CardId::STACK, "Stack", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Gain block equal to the cards in your discard pile.", "Stack+", 1, 3, 0, "Gain block equal to the cards in your discard pile +3." },
+    // Rip and Tear: an event attack; 7 damage to a random enemy twice.
+    { CardId::RIP_AND_TEAR, "Rip and Tear", 1, CardType::ATTACK, TargetType::RANDOM_ENEMY, 7, 2, "Deal 7 dmg to a random enemy 2 times.", "Rip and Tear+", 1, 9, 2, "Deal 9 dmg to a random enemy 2 times." },
+    // Scrawl: a colorless rare skill that fills the hand. Retain only once upgraded.
+    { CardId::SCRAWL, "Scrawl", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Draw cards until your hand is full. Exhaust.", "Scrawl+", 1, 0, 0, "Retain. Draw cards until your hand is full. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    // Mind Blast: a colorless innate attack; damage equals the draw pile size.
+    { CardId::MIND_BLAST, "Mind Blast", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 0, 0, "Innate. Deal damage equal to the cards in your draw pile.", "Mind Blast+", 1, 0, 0, "Innate. Deal damage equal to the cards in your draw pile.", KEYWORD_INNATE, KEYWORD_INNATE },
+    // Batch F: colorless and event cards.
+    { CardId::SHOCKWAVE, "Shockwave", 2, CardType::SKILL, TargetType::ALL_ENEMIES, 3, 0, "Apply 3 Weak and Vulnerable to ALL enemies. Exhaust.", "Shockwave+", 2, 5, 0, "Apply 5 Weak and Vulnerable to ALL enemies. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::BOLAS, "Bolas", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 3, 0, "Deal 3 dmg. Returns to your hand next turn.", "Bolas+", 0, 4, 0, "Deal 4 dmg. Returns to your hand next turn.", KEYWORD_RETURN, KEYWORD_RETURN },
+    { CardId::THRUMMING_HATCHET, "Thrumming Hatchet", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 11, 0, "Deal 11 dmg. Returns to your hand next turn.", "Thrumming Hatchet+", 1, 14, 0, "Deal 14 dmg. Returns to your hand next turn.", KEYWORD_RETURN, KEYWORD_RETURN },
+    { CardId::IMPATIENCE, "Impatience", 0, CardType::SKILL, TargetType::SELF, 0, 2, "If you have no Attacks in hand, draw 2 cards.", "Impatience+", 0, 0, 3, "If you have no Attacks in hand, draw 3 cards." },
+    { CardId::CLASH, "Clash", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 14, 0, "Only playable if every card in hand is an Attack. Deal 14 dmg.", "Clash+", 0, 18, 0, "Only playable if every card in hand is an Attack. Deal 18 dmg.", 0, 0, 0, 0, PlayCondition::HAND_ALL_ATTACKS },
+    { CardId::VOLLEY, "Volley", COST_X, CardType::ATTACK, TargetType::RANDOM_ENEMY, 10, 0, "Deal 10 dmg to a random enemy X times.", "Volley+", COST_X, 14, 0, "Deal 14 dmg to a random enemy X times." },
+    { CardId::OMNISLICE, "Omnislice", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 0, "Deal 8 dmg. Deal the same to ALL other enemies.", "Omnislice+", 0, 11, 0, "Deal 11 dmg. Deal the same to ALL other enemies." },
+    { CardId::RESTLESSNESS, "Restlessness", 0, CardType::SKILL, TargetType::SELF, 0, 2, "Retain. If your hand is empty, draw 2 cards and gain 2 energy.", "Restlessness+", 0, 0, 3, "Retain. If your hand is empty, draw 3 cards and gain 3 energy.", KEYWORD_RETAIN, KEYWORD_RETAIN },
 };
 
 const CardDef& CardDef::get(CardId id) {

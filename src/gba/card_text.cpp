@@ -678,6 +678,38 @@ bn::string_view base_name(engine::CardId id)
         return "Production";
     case engine::CardId::MASTER_OF_STRATEGY:
         return "Maître stratège";
+    case engine::CardId::FEEDING_FRENZY:
+        return "Repas frénétique";
+    case engine::CardId::OUTMANEUVER:
+        return "Astucieux";
+    case engine::CardId::TORIC_TOUGHNESS:
+        return "Ténacité torique";
+    case engine::CardId::ENTRENCH:
+        return "Fortification";
+    case engine::CardId::STACK:
+        return "Pile";
+    case engine::CardId::RIP_AND_TEAR:
+        return "Lacération";
+    case engine::CardId::SCRAWL:
+        return "Griffonage";
+    case engine::CardId::MIND_BLAST:
+        return "Déflagration mentale";
+    case engine::CardId::SHOCKWAVE:
+        return "Onde de choc";
+    case engine::CardId::BOLAS:
+        return "Bolas";
+    case engine::CardId::THRUMMING_HATCHET:
+        return "Hache sifflante";
+    case engine::CardId::IMPATIENCE:
+        return "Impatience";
+    case engine::CardId::CLASH:
+        return "Conflit";
+    case engine::CardId::VOLLEY:
+        return "Artillerie";
+    case engine::CardId::OMNISLICE:
+        return "Omnilame";
+    case engine::CardId::RESTLESSNESS:
+        return "Sans repos";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1206,6 +1238,52 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::MASTER_OF_STRATEGY:
         stream << "Pioche " << secondary << ". Épuisement.";
+        break;
+    case engine::CardId::FEEDING_FRENZY:
+        stream << "Force +" << value << " ce tour.";
+        break;
+    case engine::CardId::OUTMANEUVER:
+        stream << "Prochain tour : énergie +" << value << ".";
+        break;
+    case engine::CardId::TORIC_TOUGHNESS:
+        stream << "Armure +" << value << ", puis +" << value << " aux 2 tours suivants.";
+        break;
+    case engine::CardId::ENTRENCH:
+        stream << "Double l'Armure.";
+        break;
+    case engine::CardId::STACK:
+        stream << "Armure = Défausse" << (card.upgraded ? " +3." : ".");
+        break;
+    case engine::CardId::RIP_AND_TEAR:
+        stream << "Inflige " << value << " dégâts au hasard, " << secondary << " fois.";
+        break;
+    case engine::CardId::SCRAWL:
+        stream << (card.upgraded ? "Retenue. " : "") << "Pioche (main pleine). Épuisement.";
+        break;
+    case engine::CardId::MIND_BLAST:
+        stream << "Inné. Dégâts = cartes en Pioche.";
+        break;
+    case engine::CardId::SHOCKWAVE:
+        stream << "Affaibli et Vulnérable " << value << " à TOUS. Épuis.";
+        break;
+    case engine::CardId::BOLAS:
+    case engine::CardId::THRUMMING_HATCHET:
+        stream << "Inflige " << value << " dégâts. Revient plus tard.";
+        break;
+    case engine::CardId::IMPATIENCE:
+        stream << "Sans Attaque en main : pioche " << secondary << ".";
+        break;
+    case engine::CardId::CLASH:
+        stream << "Main d'Attaques seules. Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::VOLLEY:
+        stream << "Inflige " << value << " dégâts au hasard, X fois.";
+        break;
+    case engine::CardId::OMNISLICE:
+        stream << "Inflige " << value << " dégâts, autant aux autres.";
+        break;
+    case engine::CardId::RESTLESSNESS:
+        stream << "Retenue. Main vide : pioche " << secondary << ", énergie +" << secondary << ".";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:

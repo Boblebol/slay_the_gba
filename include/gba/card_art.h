@@ -113,6 +113,22 @@
 #include "bn_sprite_items_card_prowess_silent.h"
 #include "bn_sprite_items_card_squash_silent.h"
 #include "bn_sprite_items_card_exterminate_silent.h"
+#include "bn_sprite_items_card_feeding_frenzy_silent.h"
+#include "bn_sprite_items_card_outmaneuver_silent.h"
+#include "bn_sprite_items_card_toric_toughness_silent.h"
+#include "bn_sprite_items_card_entrench_silent.h"
+#include "bn_sprite_items_card_stack_silent.h"
+#include "bn_sprite_items_card_rip_and_tear_silent.h"
+#include "bn_sprite_items_card_scrawl_silent.h"
+#include "bn_sprite_items_card_mind_blast_silent.h"
+#include "bn_sprite_items_card_shockwave_silent.h"
+#include "bn_sprite_items_card_bolas_silent.h"
+#include "bn_sprite_items_card_thrumming_hatchet_silent.h"
+#include "bn_sprite_items_card_impatience_silent.h"
+#include "bn_sprite_items_card_clash_silent.h"
+#include "bn_sprite_items_card_volley_silent.h"
+#include "bn_sprite_items_card_omnislice_silent.h"
+#include "bn_sprite_items_card_restlessness_silent.h"
 
 namespace gba::card_art
 {
@@ -324,6 +340,38 @@ namespace gba::card_art
         return &bn::sprite_items::card_squash_silent;
     case engine::CardId::EXTERMINATE:
         return &bn::sprite_items::card_exterminate_silent;
+    case engine::CardId::FEEDING_FRENZY:
+        return &bn::sprite_items::card_feeding_frenzy_silent;
+    case engine::CardId::OUTMANEUVER:
+        return &bn::sprite_items::card_outmaneuver_silent;
+    case engine::CardId::TORIC_TOUGHNESS:
+        return &bn::sprite_items::card_toric_toughness_silent;
+    case engine::CardId::ENTRENCH:
+        return &bn::sprite_items::card_entrench_silent;
+    case engine::CardId::STACK:
+        return &bn::sprite_items::card_stack_silent;
+    case engine::CardId::RIP_AND_TEAR:
+        return &bn::sprite_items::card_rip_and_tear_silent;
+    case engine::CardId::SCRAWL:
+        return &bn::sprite_items::card_scrawl_silent;
+    case engine::CardId::MIND_BLAST:
+        return &bn::sprite_items::card_mind_blast_silent;
+    case engine::CardId::SHOCKWAVE:
+        return &bn::sprite_items::card_shockwave_silent;
+    case engine::CardId::BOLAS:
+        return &bn::sprite_items::card_bolas_silent;
+    case engine::CardId::THRUMMING_HATCHET:
+        return &bn::sprite_items::card_thrumming_hatchet_silent;
+    case engine::CardId::IMPATIENCE:
+        return &bn::sprite_items::card_impatience_silent;
+    case engine::CardId::CLASH:
+        return &bn::sprite_items::card_clash_silent;
+    case engine::CardId::VOLLEY:
+        return &bn::sprite_items::card_volley_silent;
+    case engine::CardId::OMNISLICE:
+        return &bn::sprite_items::card_omnislice_silent;
+    case engine::CardId::RESTLESSNESS:
+        return &bn::sprite_items::card_restlessness_silent;
     default:
         return nullptr;
     }
@@ -351,7 +399,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 82,
-    83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101,
+    83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102,
+    103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -471,6 +520,22 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_prowess_defect.h"
 #include "bn_sprite_items_card_squash_defect.h"
 #include "bn_sprite_items_card_exterminate_defect.h"
+#include "bn_sprite_items_card_feeding_frenzy_defect.h"
+#include "bn_sprite_items_card_outmaneuver_defect.h"
+#include "bn_sprite_items_card_toric_toughness_defect.h"
+#include "bn_sprite_items_card_entrench_defect.h"
+#include "bn_sprite_items_card_stack_defect.h"
+#include "bn_sprite_items_card_rip_and_tear_defect.h"
+#include "bn_sprite_items_card_scrawl_defect.h"
+#include "bn_sprite_items_card_mind_blast_defect.h"
+#include "bn_sprite_items_card_shockwave_defect.h"
+#include "bn_sprite_items_card_bolas_defect.h"
+#include "bn_sprite_items_card_thrumming_hatchet_defect.h"
+#include "bn_sprite_items_card_impatience_defect.h"
+#include "bn_sprite_items_card_clash_defect.h"
+#include "bn_sprite_items_card_volley_defect.h"
+#include "bn_sprite_items_card_omnislice_defect.h"
+#include "bn_sprite_items_card_restlessness_defect.h"
 
 namespace gba::card_art
 {
@@ -700,6 +765,38 @@ namespace gba::card_art
         return &bn::sprite_items::card_squash_defect;
     case engine::CardId::EXTERMINATE:
         return &bn::sprite_items::card_exterminate_defect;
+    case engine::CardId::FEEDING_FRENZY:
+        return &bn::sprite_items::card_feeding_frenzy_defect;
+    case engine::CardId::OUTMANEUVER:
+        return &bn::sprite_items::card_outmaneuver_defect;
+    case engine::CardId::TORIC_TOUGHNESS:
+        return &bn::sprite_items::card_toric_toughness_defect;
+    case engine::CardId::ENTRENCH:
+        return &bn::sprite_items::card_entrench_defect;
+    case engine::CardId::STACK:
+        return &bn::sprite_items::card_stack_defect;
+    case engine::CardId::RIP_AND_TEAR:
+        return &bn::sprite_items::card_rip_and_tear_defect;
+    case engine::CardId::SCRAWL:
+        return &bn::sprite_items::card_scrawl_defect;
+    case engine::CardId::MIND_BLAST:
+        return &bn::sprite_items::card_mind_blast_defect;
+    case engine::CardId::SHOCKWAVE:
+        return &bn::sprite_items::card_shockwave_defect;
+    case engine::CardId::BOLAS:
+        return &bn::sprite_items::card_bolas_defect;
+    case engine::CardId::THRUMMING_HATCHET:
+        return &bn::sprite_items::card_thrumming_hatchet_defect;
+    case engine::CardId::IMPATIENCE:
+        return &bn::sprite_items::card_impatience_defect;
+    case engine::CardId::CLASH:
+        return &bn::sprite_items::card_clash_defect;
+    case engine::CardId::VOLLEY:
+        return &bn::sprite_items::card_volley_defect;
+    case engine::CardId::OMNISLICE:
+        return &bn::sprite_items::card_omnislice_defect;
+    case engine::CardId::RESTLESSNESS:
+        return &bn::sprite_items::card_restlessness_defect;
     default:
         return nullptr;
     }
@@ -727,7 +824,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
+    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+    112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -843,6 +941,22 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_prowess_regent.h"
 #include "bn_sprite_items_card_squash_regent.h"
 #include "bn_sprite_items_card_exterminate_regent.h"
+#include "bn_sprite_items_card_feeding_frenzy_regent.h"
+#include "bn_sprite_items_card_outmaneuver_regent.h"
+#include "bn_sprite_items_card_toric_toughness_regent.h"
+#include "bn_sprite_items_card_entrench_regent.h"
+#include "bn_sprite_items_card_stack_regent.h"
+#include "bn_sprite_items_card_rip_and_tear_regent.h"
+#include "bn_sprite_items_card_scrawl_regent.h"
+#include "bn_sprite_items_card_mind_blast_regent.h"
+#include "bn_sprite_items_card_shockwave_regent.h"
+#include "bn_sprite_items_card_bolas_regent.h"
+#include "bn_sprite_items_card_thrumming_hatchet_regent.h"
+#include "bn_sprite_items_card_impatience_regent.h"
+#include "bn_sprite_items_card_clash_regent.h"
+#include "bn_sprite_items_card_volley_regent.h"
+#include "bn_sprite_items_card_omnislice_regent.h"
+#include "bn_sprite_items_card_restlessness_regent.h"
 
 namespace gba::card_art
 {
@@ -1064,6 +1178,38 @@ namespace gba::card_art
         return &bn::sprite_items::card_squash_regent;
     case engine::CardId::EXTERMINATE:
         return &bn::sprite_items::card_exterminate_regent;
+    case engine::CardId::FEEDING_FRENZY:
+        return &bn::sprite_items::card_feeding_frenzy_regent;
+    case engine::CardId::OUTMANEUVER:
+        return &bn::sprite_items::card_outmaneuver_regent;
+    case engine::CardId::TORIC_TOUGHNESS:
+        return &bn::sprite_items::card_toric_toughness_regent;
+    case engine::CardId::ENTRENCH:
+        return &bn::sprite_items::card_entrench_regent;
+    case engine::CardId::STACK:
+        return &bn::sprite_items::card_stack_regent;
+    case engine::CardId::RIP_AND_TEAR:
+        return &bn::sprite_items::card_rip_and_tear_regent;
+    case engine::CardId::SCRAWL:
+        return &bn::sprite_items::card_scrawl_regent;
+    case engine::CardId::MIND_BLAST:
+        return &bn::sprite_items::card_mind_blast_regent;
+    case engine::CardId::SHOCKWAVE:
+        return &bn::sprite_items::card_shockwave_regent;
+    case engine::CardId::BOLAS:
+        return &bn::sprite_items::card_bolas_regent;
+    case engine::CardId::THRUMMING_HATCHET:
+        return &bn::sprite_items::card_thrumming_hatchet_regent;
+    case engine::CardId::IMPATIENCE:
+        return &bn::sprite_items::card_impatience_regent;
+    case engine::CardId::CLASH:
+        return &bn::sprite_items::card_clash_regent;
+    case engine::CardId::VOLLEY:
+        return &bn::sprite_items::card_volley_regent;
+    case engine::CardId::OMNISLICE:
+        return &bn::sprite_items::card_omnislice_regent;
+    case engine::CardId::RESTLESSNESS:
+        return &bn::sprite_items::card_restlessness_regent;
     default:
         return nullptr;
     }
@@ -1091,7 +1237,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 65, 66, 0, 0, 0, 0, 0, 0, 0, 67, 68, 69, 70, 71, 72, 73, 74,
     75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 87,
-    88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106,
+    88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107,
+    108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1212,6 +1359,22 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_prowess_necrobinder.h"
 #include "bn_sprite_items_card_squash_necrobinder.h"
 #include "bn_sprite_items_card_exterminate_necrobinder.h"
+#include "bn_sprite_items_card_feeding_frenzy_necrobinder.h"
+#include "bn_sprite_items_card_outmaneuver_necrobinder.h"
+#include "bn_sprite_items_card_toric_toughness_necrobinder.h"
+#include "bn_sprite_items_card_entrench_necrobinder.h"
+#include "bn_sprite_items_card_stack_necrobinder.h"
+#include "bn_sprite_items_card_rip_and_tear_necrobinder.h"
+#include "bn_sprite_items_card_scrawl_necrobinder.h"
+#include "bn_sprite_items_card_mind_blast_necrobinder.h"
+#include "bn_sprite_items_card_shockwave_necrobinder.h"
+#include "bn_sprite_items_card_bolas_necrobinder.h"
+#include "bn_sprite_items_card_thrumming_hatchet_necrobinder.h"
+#include "bn_sprite_items_card_impatience_necrobinder.h"
+#include "bn_sprite_items_card_clash_necrobinder.h"
+#include "bn_sprite_items_card_volley_necrobinder.h"
+#include "bn_sprite_items_card_omnislice_necrobinder.h"
+#include "bn_sprite_items_card_restlessness_necrobinder.h"
 
 namespace gba::card_art
 {
@@ -1443,6 +1606,38 @@ namespace gba::card_art
         return &bn::sprite_items::card_squash_necrobinder;
     case engine::CardId::EXTERMINATE:
         return &bn::sprite_items::card_exterminate_necrobinder;
+    case engine::CardId::FEEDING_FRENZY:
+        return &bn::sprite_items::card_feeding_frenzy_necrobinder;
+    case engine::CardId::OUTMANEUVER:
+        return &bn::sprite_items::card_outmaneuver_necrobinder;
+    case engine::CardId::TORIC_TOUGHNESS:
+        return &bn::sprite_items::card_toric_toughness_necrobinder;
+    case engine::CardId::ENTRENCH:
+        return &bn::sprite_items::card_entrench_necrobinder;
+    case engine::CardId::STACK:
+        return &bn::sprite_items::card_stack_necrobinder;
+    case engine::CardId::RIP_AND_TEAR:
+        return &bn::sprite_items::card_rip_and_tear_necrobinder;
+    case engine::CardId::SCRAWL:
+        return &bn::sprite_items::card_scrawl_necrobinder;
+    case engine::CardId::MIND_BLAST:
+        return &bn::sprite_items::card_mind_blast_necrobinder;
+    case engine::CardId::SHOCKWAVE:
+        return &bn::sprite_items::card_shockwave_necrobinder;
+    case engine::CardId::BOLAS:
+        return &bn::sprite_items::card_bolas_necrobinder;
+    case engine::CardId::THRUMMING_HATCHET:
+        return &bn::sprite_items::card_thrumming_hatchet_necrobinder;
+    case engine::CardId::IMPATIENCE:
+        return &bn::sprite_items::card_impatience_necrobinder;
+    case engine::CardId::CLASH:
+        return &bn::sprite_items::card_clash_necrobinder;
+    case engine::CardId::VOLLEY:
+        return &bn::sprite_items::card_volley_necrobinder;
+    case engine::CardId::OMNISLICE:
+        return &bn::sprite_items::card_omnislice_necrobinder;
+    case engine::CardId::RESTLESSNESS:
+        return &bn::sprite_items::card_restlessness_necrobinder;
     default:
         return nullptr;
     }
@@ -1470,7 +1665,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 61, 62, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73,
     74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 0, 91, 92,
-    93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+    93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
+    113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1590,6 +1786,22 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_prowess_ironclad.h"
 #include "bn_sprite_items_card_squash_ironclad.h"
 #include "bn_sprite_items_card_exterminate_ironclad.h"
+#include "bn_sprite_items_card_feeding_frenzy_ironclad.h"
+#include "bn_sprite_items_card_outmaneuver_ironclad.h"
+#include "bn_sprite_items_card_toric_toughness_ironclad.h"
+#include "bn_sprite_items_card_entrench_ironclad.h"
+#include "bn_sprite_items_card_stack_ironclad.h"
+#include "bn_sprite_items_card_rip_and_tear_ironclad.h"
+#include "bn_sprite_items_card_scrawl_ironclad.h"
+#include "bn_sprite_items_card_mind_blast_ironclad.h"
+#include "bn_sprite_items_card_shockwave_ironclad.h"
+#include "bn_sprite_items_card_bolas_ironclad.h"
+#include "bn_sprite_items_card_thrumming_hatchet_ironclad.h"
+#include "bn_sprite_items_card_impatience_ironclad.h"
+#include "bn_sprite_items_card_clash_ironclad.h"
+#include "bn_sprite_items_card_volley_ironclad.h"
+#include "bn_sprite_items_card_omnislice_ironclad.h"
+#include "bn_sprite_items_card_restlessness_ironclad.h"
 
 namespace gba::card_art
 {
@@ -1819,6 +2031,38 @@ namespace gba::card_art
         return &bn::sprite_items::card_squash_ironclad;
     case engine::CardId::EXTERMINATE:
         return &bn::sprite_items::card_exterminate_ironclad;
+    case engine::CardId::FEEDING_FRENZY:
+        return &bn::sprite_items::card_feeding_frenzy_ironclad;
+    case engine::CardId::OUTMANEUVER:
+        return &bn::sprite_items::card_outmaneuver_ironclad;
+    case engine::CardId::TORIC_TOUGHNESS:
+        return &bn::sprite_items::card_toric_toughness_ironclad;
+    case engine::CardId::ENTRENCH:
+        return &bn::sprite_items::card_entrench_ironclad;
+    case engine::CardId::STACK:
+        return &bn::sprite_items::card_stack_ironclad;
+    case engine::CardId::RIP_AND_TEAR:
+        return &bn::sprite_items::card_rip_and_tear_ironclad;
+    case engine::CardId::SCRAWL:
+        return &bn::sprite_items::card_scrawl_ironclad;
+    case engine::CardId::MIND_BLAST:
+        return &bn::sprite_items::card_mind_blast_ironclad;
+    case engine::CardId::SHOCKWAVE:
+        return &bn::sprite_items::card_shockwave_ironclad;
+    case engine::CardId::BOLAS:
+        return &bn::sprite_items::card_bolas_ironclad;
+    case engine::CardId::THRUMMING_HATCHET:
+        return &bn::sprite_items::card_thrumming_hatchet_ironclad;
+    case engine::CardId::IMPATIENCE:
+        return &bn::sprite_items::card_impatience_ironclad;
+    case engine::CardId::CLASH:
+        return &bn::sprite_items::card_clash_ironclad;
+    case engine::CardId::VOLLEY:
+        return &bn::sprite_items::card_volley_ironclad;
+    case engine::CardId::OMNISLICE:
+        return &bn::sprite_items::card_omnislice_ironclad;
+    case engine::CardId::RESTLESSNESS:
+        return &bn::sprite_items::card_restlessness_ironclad;
     default:
         return nullptr;
     }
@@ -1846,7 +2090,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 87, 0, 0, 0, 0, 0, 0, 88, 89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
+    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+    112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.

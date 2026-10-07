@@ -425,6 +425,22 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // PROWESS
     { CardRarity::EVENT, CardPool::EVENT }, // SQUASH
     { CardRarity::EVENT, CardPool::EVENT }, // EXTERMINATE
+    { CardRarity::EVENT, CardPool::EVENT }, // FEEDING_FRENZY
+    { CardRarity::EVENT, CardPool::EVENT }, // OUTMANEUVER
+    { CardRarity::EVENT, CardPool::EVENT }, // TORIC_TOUGHNESS
+    { CardRarity::EVENT, CardPool::EVENT }, // ENTRENCH
+    { CardRarity::EVENT, CardPool::EVENT }, // STACK
+    { CardRarity::EVENT, CardPool::EVENT }, // RIP_AND_TEAR
+    { CardRarity::RARE, CardPool::COLORLESS }, // SCRAWL
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // MIND_BLAST
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // SHOCKWAVE
+    { CardRarity::RARE, CardPool::COLORLESS }, // BOLAS
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // THRUMMING_HATCHET
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // IMPATIENCE
+    { CardRarity::EVENT, CardPool::EVENT }, // CLASH
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // VOLLEY
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // OMNISLICE
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // RESTLESSNESS
 };
 
 } // namespace engine
