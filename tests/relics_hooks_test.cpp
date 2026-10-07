@@ -580,6 +580,30 @@ void test_strawberry() {
     std::cout << "[PASS] Strawberry: +7 Max HP when obtained, once, from a chest too" << std::endl;
 }
 
+void test_paels_tooth() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck = run.master_deck.size();
+    run.add_relic("PAELS_TOOTH");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 5);
+    for (int i = 0; i < 5; ++i) assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 5 && run.paels_tooth_cards.size() == 5);
+
+    // Each won fight gives one back, upgraded.
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.proceed_after_combat();
+    assert(run.master_deck.size() == deck - 4 && run.master_deck.back().upgraded && run.paels_tooth_cards.size() == 4);
+
+    // Without the relic nothing is asked and nothing comes back.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.proceed_after_combat();
+    assert(plain.master_deck.size() == deck);
+}
+
 void test_membership_card() {
     // Without the card, the prices are the ones the stock is drawn with.
     RunManager plain;
@@ -658,6 +682,7 @@ int main() {
     test_combat_start_relics();
     test_relics_in_a_run();
     test_strawberry();
+    test_paels_tooth();
     test_membership_card();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
