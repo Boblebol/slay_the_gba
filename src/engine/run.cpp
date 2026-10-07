@@ -570,6 +570,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         regenerate_map();
     }
     // Bought from the merchant himself, the card lowers what is still on his shelves.
+    if (relic_id == "SIGNET_RING" && has_relic("SIGNET_RING")) gain_gold(888);
     if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
         paels_tooth_picks = deck_choice.remaining;
