@@ -178,7 +178,9 @@ enum class PowerId : uint8_t {
     TANGLED,           // this turn: Attacks cost `amount` more energy
     TENDER,            // card played: lose `amount` Strength and Dexterity until the end of the turn
     // Held by an enemy:
-    PERSONAL_HIVE      // it takes unblocked attack damage: `amount` Dazed into the player's draw pile
+    PERSONAL_HIVE,     // it takes unblocked attack damage: `amount` Dazed into the player's draw pile
+    // Relics of the Ancients (appended)
+    PAELS_TEARS        // end of a turn with unspent energy: `amount` energy next turn
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

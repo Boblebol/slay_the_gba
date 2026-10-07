@@ -669,6 +669,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::ART_OF_WAR:
             if (event == CombatEvent::TURN_END && counters.attacks_played == 0) schedule(DelayedType::ENERGY, power.amount);
             break;
+        case PowerId::PAELS_TEARS:
+            if (event == CombatEvent::TURN_END && player.energy > 0) schedule(DelayedType::ENERGY, power.amount);
+            break;
         case PowerId::ORICHALCUM:
             if (event == CombatEvent::TURN_END && player.block == 0) add_block(power.amount);
             break;
