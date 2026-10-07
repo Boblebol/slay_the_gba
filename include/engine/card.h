@@ -466,6 +466,8 @@ enum class CardId : uint16_t {
     SOUL_STORM,
     GLIMPSE_BEYOND,
     MANIFEST_AUTHORITY,
+    // Giant Rock: a token made by other cards (appended: saves store the numeric id)
+    GIANT_ROCK,
     COUNT
 };
 
