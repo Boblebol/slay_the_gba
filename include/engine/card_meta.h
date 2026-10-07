@@ -407,6 +407,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::NONE, CardPool::NONE }, // GIANT_ROCK
     { CardRarity::NONE, CardPool::NONE }, // LUMINESCE
     { CardRarity::ANCIENT, CardPool::EVENT }, // APPARITION
+    { CardRarity::ANCIENT, CardPool::EVENT }, // MAUL
 };
 
 } // namespace engine

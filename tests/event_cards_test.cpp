@@ -46,9 +46,47 @@ void test_apparition() {
     std::cout << "[PASS] Apparition: 1 energy, Intangible 1, Ethereal (base only), Exhaust" << std::endl;
 }
 
+// A fight against a Jaw Worm with 200 HP, so that the damage can be read from its HP.
+CombatEngine make_big_fight() {
+    CombatEngine combat = make_fight();
+    combat.enemies[0].max_hp = 200;
+    combat.enemies[0].hp = 200;
+    combat.enemies[0].block = 0;
+    return combat;
+}
+
+void test_maul() {
+    assert(CardDef::get_cost(CardId::MAUL, false) == 1);
+    assert(CardDef::get(CardId::MAUL).type == CardType::ATTACK);
+    // Base: 5 damage twice, then every Maul gains 2.
+    CombatEngine combat = make_big_fight();
+    combat.hand.push_back(DeckCard(CardId::MAUL));
+    combat.hand.push_back(DeckCard(CardId::MAUL));
+    combat.draw_pile.push_back(DeckCard(CardId::MAUL));
+    assert(combat.play_card(0, 0));
+    assert(combat.enemies[0].hp == 190);
+    assert(combat.player.energy == 2);
+    assert(combat.hand[0].bonus == 2 && combat.draw_pile[0].bonus == 2);
+    assert(combat.play_card(0, 0));
+    assert(combat.enemies[0].hp == 190 - 14);
+    assert(combat.draw_pile[0].bonus == 4);
+    // Upgraded: 6 damage twice, then every Maul gains 3.
+    CombatEngine up = make_big_fight();
+    up.hand.push_back(DeckCard(CardId::MAUL, true));
+    up.hand.push_back(DeckCard(CardId::MAUL, true));
+    assert(CardDef::get_cost(CardId::MAUL, true) == 1);
+    assert(up.play_card(0, 0));
+    assert(up.enemies[0].hp == 188);
+    assert(up.hand[0].bonus == 3);
+    assert(up.play_card(0, 0));
+    assert(up.enemies[0].hp == 188 - 18);
+    std::cout << "[PASS] Maul: 5/6 damage twice, all Maul +2/+3 for the combat" << std::endl;
+}
+
 } // namespace
 
 int main() {
     test_apparition();
+    test_maul();
     return 0;
 }

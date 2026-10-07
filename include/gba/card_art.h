@@ -95,6 +95,7 @@
 #include "bn_sprite_items_card_giant_rock_silent.h"
 #include "bn_sprite_items_card_luminesce_silent.h"
 #include "bn_sprite_items_card_apparition_silent.h"
+#include "bn_sprite_items_card_maul_silent.h"
 
 namespace gba::card_art
 {
@@ -270,6 +271,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_luminesce_silent;
     case engine::CardId::APPARITION:
         return &bn::sprite_items::card_apparition_silent;
+    case engine::CardId::MAUL:
+        return &bn::sprite_items::card_maul_silent;
     default:
         return nullptr;
     }
@@ -297,7 +300,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 82,
-    83,
+    83, 84,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -399,6 +402,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_giant_rock_defect.h"
 #include "bn_sprite_items_card_luminesce_defect.h"
 #include "bn_sprite_items_card_apparition_defect.h"
+#include "bn_sprite_items_card_maul_defect.h"
 
 namespace gba::card_art
 {
@@ -592,6 +596,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_luminesce_defect;
     case engine::CardId::APPARITION:
         return &bn::sprite_items::card_apparition_defect;
+    case engine::CardId::MAUL:
+        return &bn::sprite_items::card_maul_defect;
     default:
         return nullptr;
     }
@@ -619,7 +625,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92,
+    92, 93,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -717,6 +723,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_giant_rock_regent.h"
 #include "bn_sprite_items_card_luminesce_regent.h"
 #include "bn_sprite_items_card_apparition_regent.h"
+#include "bn_sprite_items_card_maul_regent.h"
 
 namespace gba::card_art
 {
@@ -902,6 +909,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_luminesce_regent;
     case engine::CardId::APPARITION:
         return &bn::sprite_items::card_apparition_regent;
+    case engine::CardId::MAUL:
+        return &bn::sprite_items::card_maul_regent;
     default:
         return nullptr;
     }
@@ -929,7 +938,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 65, 66, 0, 0, 0, 0, 0, 0, 0, 67, 68, 69, 70, 71, 72, 73, 74,
     75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 87,
-    88,
+    88, 89,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1032,6 +1041,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_giant_rock_necrobinder.h"
 #include "bn_sprite_items_card_luminesce_necrobinder.h"
 #include "bn_sprite_items_card_apparition_necrobinder.h"
+#include "bn_sprite_items_card_maul_necrobinder.h"
 
 namespace gba::card_art
 {
@@ -1227,6 +1237,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_luminesce_necrobinder;
     case engine::CardId::APPARITION:
         return &bn::sprite_items::card_apparition_necrobinder;
+    case engine::CardId::MAUL:
+        return &bn::sprite_items::card_maul_necrobinder;
     default:
         return nullptr;
     }
@@ -1254,7 +1266,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 61, 62, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73,
     74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 0, 91, 92,
-    93,
+    93, 94,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1356,6 +1368,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_giant_rock_ironclad.h"
 #include "bn_sprite_items_card_luminesce_ironclad.h"
 #include "bn_sprite_items_card_apparition_ironclad.h"
+#include "bn_sprite_items_card_maul_ironclad.h"
 
 namespace gba::card_art
 {
@@ -1549,6 +1562,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_luminesce_ironclad;
     case engine::CardId::APPARITION:
         return &bn::sprite_items::card_apparition_ironclad;
+    case engine::CardId::MAUL:
+        return &bn::sprite_items::card_maul_ironclad;
     default:
         return nullptr;
     }
@@ -1576,7 +1591,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 87, 0, 0, 0, 0, 0, 0, 88, 89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92,
+    92, 93,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.

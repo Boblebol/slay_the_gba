@@ -472,6 +472,8 @@ enum class CardId : uint16_t {
     LUMINESCE,
     // Apparition: an event card
     APPARITION,
+    // Maul: an event card; every copy grows together during the combat
+    MAUL,
     COUNT
 };
 
