@@ -316,6 +316,23 @@ void test_turn_relics() {
     std::cout << "[PASS] Turn relics: Ripple Basin, Brimstone, Lunar Pastry" << std::endl;
 }
 
+void test_paels_tears() {
+    // Unspent energy at the end of the turn: 2 more energy next turn.
+    CombatEngine tears = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_TEARS, 2);
+    end_turn_idle(tears);
+    assert(tears.player.energy == 5);
+    // Everything spent: nothing.
+    tears.player.energy = 0;
+    end_turn_idle(tears);
+    assert(tears.player.energy == 3);
+
+    // Without the relic: no extra energy.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    end_turn_idle(plain);
+    assert(plain.player.energy == 3);
+    std::cout << "[PASS] Pael's Tears: 2 energy next turn after a turn with unspent energy" << std::endl;
+}
+
 void test_hp_relics() {
     // Self-Forming Clay: Block at the start of the turn that follows each HP loss.
     CombatEngine clay = make_relic_combat(CharacterId::IRONCLAD, PowerId::SELF_FORMING_CLAY, 3);
@@ -408,6 +425,21 @@ void test_poison_and_star_relics() {
     dust.spend_stars(29);
     assert(dust.player.block == 30 && dust.power_counter(PowerId::GALACTIC_DUST) == 0);
     std::cout << "[PASS] Poison and Star relics: Snecko Skull, Mini Regent, Galactic Dust" << std::endl;
+}
+
+void test_paels_blood() {
+    // Paël's Blood: 1 more card on the first turn and on each following one.
+    RunManager blood = make_relic_run(CharacterId::IRONCLAD, { "PAELS_BLOOD" });
+    assert(blood.combat.hand.size() == 6);
+    end_turn_idle(blood.combat);
+    assert(blood.combat.hand.size() == 6);
+
+    // Without the relic: the usual 5 cards.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.hand.size() == 5);
+    end_turn_idle(plain.combat);
+    assert(plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Paël's Blood" << std::endl;
 }
 
 void test_combat_start_relics() {
@@ -585,6 +617,30 @@ void test_pumpkin_candle() {
     std::cout << "[PASS] Pumpkin Candle: +1 energy per turn for 5 combats" << std::endl;
 }
 
+void test_paels_tooth() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck = run.master_deck.size();
+    run.add_relic("PAELS_TOOTH");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 5);
+    for (int i = 0; i < 5; ++i) assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 5 && run.paels_tooth_cards.size() == 5);
+
+    // Each won fight gives one back, upgraded.
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.proceed_after_combat();
+    assert(run.master_deck.size() == deck - 4 && run.master_deck.back().upgraded && run.paels_tooth_cards.size() == 4);
+
+    // Without the relic nothing is asked and nothing comes back.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.proceed_after_combat();
+    assert(plain.master_deck.size() == deck);
+}
+
 void test_membership_card() {
     // Without the card, the prices are the ones the stock is drawn with.
     RunManager plain;
@@ -657,11 +713,14 @@ int main() {
     test_skill_and_power_relics();
     test_exhaust_and_creation_relics();
     test_turn_relics();
+    test_paels_tears();
     test_hp_relics();
     test_poison_and_star_relics();
     test_combat_start_relics();
+    test_paels_blood();
     test_relics_in_a_run();
     test_strawberry();
+    test_paels_tooth();
     test_membership_card();
     test_pumpkin_candle();
     std::cout << "All relic hook tests passed." << std::endl;
