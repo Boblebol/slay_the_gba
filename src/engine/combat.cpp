@@ -638,6 +638,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::PENDULUM:
             if (turn_start && power.turns % 3 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;
+        case PowerId::VERY_HOT_COCOA:
+            if (turn_start && power.turns == 1) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
         case PowerId::BREAD:
             if (turn_start) {
                 int change = power.turns == 1 ? -BREAD_ENERGY_LOST : power.amount;
@@ -831,6 +834,10 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             }
             break;
         }
+        case PowerId::PAELS_LEGION:
+            // Asleep: one turn less each time the player's turn starts.
+            if (turn_start && power.counter > 0) --power.counter;
+            break;
         case PowerId::DEMON_TONGUE:
             // Poison takes its HP before the turn start is announced: the turn number tells the turns apart.
             if (event == CombatEvent::HP_LOST && my_turn && player.is_alive() &&
@@ -896,6 +903,14 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
 void CombatEngine::gain_block(int16_t amount) {
     int16_t before = player.block;
     player.gain_block(amount);
+    // Paël's Legion doubles the Block a card gives, then sleeps; the Block gained is doubled, Dexterity included.
+    if (resolving_card && player.block > before) {
+        ActivePower* legion = find_power(PowerId::PAELS_LEGION);
+        if (legion != nullptr && legion->counter == 0) {
+            player.block = static_cast<int16_t>(player.block + (player.block - before));
+            legion->counter = static_cast<uint8_t>(legion->amount + 1);
+        }
+    }
     if (player.block > before) {
         EventInfo info;
         info.amount = static_cast<int16_t>(player.block - before);
@@ -1815,7 +1830,9 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
 
         // The counters are updated once the effect is resolved: inside the effect they still describe what
         // happened before this card ("already played this turn", "spent on other cards").
+        resolving_card = true;
         resolve_effect(card, target_idx, x_value, after_play);
+        resolving_card = false;
         // Vigor goes to the first Attack played, all its hits included.
         if (played_type == CardType::ATTACK) player.clear_status(StatusType::VIGOR);
 
