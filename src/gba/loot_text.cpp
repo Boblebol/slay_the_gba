@@ -98,6 +98,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "SCREAMING_FLAGON", "Si votre Main est vide à la fin de votre tour, infligez 20 dégâts à TOUS les ennemis." },
     { "SELF_FORMING_CLAY", "Chaque fois que vous perdez des PV en combat, gagnez 3 d'Armure au tour suivant." },
     { "JEWELRY_BOX", "Lorsque vous obtenez cette relique, ajoutez 1 Apothéose à votre Deck." },
+    { "STORYBOOK", "Lorsque vous obtenez cette relique, ajoutez 1 Flamme éclatante à votre Deck." },
     { "SIGNET_RING", "Lorsque vous obtenez cette relique, obtenez 888 Pièces d'or." },
     { "SERE_TALON", "Lorsque vous obtenez cette relique, perdez 9 PV Max. Ajoutez 3 Vœux à votre Deck." },
     { "SHURIKEN", "Chaque fois que vous jouez 3 Attaques en un seul tour, gagnez 1 de Force." },
