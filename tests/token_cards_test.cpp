@@ -35,9 +35,22 @@ void test_giant_rock() {
     std::cout << "[PASS] Giant Rock: 1 energy, 20 damage" << std::endl;
 }
 
+void test_luminesce() {
+    CombatEngine combat = make_fight();
+    assert(CardDef::get_cost(CardId::LUMINESCE, false) == 0);
+    assert(CardDef::get(CardId::LUMINESCE).type == CardType::SKILL);
+    combat.hand.push_back(DeckCard(CardId::LUMINESCE));
+    assert(combat.play_card(0, 0));
+    assert(combat.player.energy == 5);
+    assert(combat.hand.empty() && combat.exhaust_pile.size() == 1);
+    assert(CardDef::get(CardId::LUMINESCE).keywords & KEYWORD_RETAIN);
+    std::cout << "[PASS] Luminesce: 0 energy, +2 energy, Retain, Exhaust" << std::endl;
+}
+
 } // namespace
 
 int main() {
     test_giant_rock();
+    test_luminesce();
     return 0;
 }
