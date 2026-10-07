@@ -594,6 +594,13 @@ void RunManager::on_rested() {
 void RunManager::on_shop_opened() {
     count_hook(RunHook::SHOP_OPENED);
     if (has_relic("MEMBERSHIP_CARD")) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
+    if (has_relic("LORDS_PARASOL")) {
+        // Everything on sale is obtained for free; a potion that does not fit the full belt is left behind.
+        current_shop.apply_discount(100);
+        for (size_t i = 0; i < current_shop.cards.size(); ++i) current_shop.buy_card(*this, static_cast<int>(i));
+        for (size_t i = 0; i < current_shop.relics.size(); ++i) current_shop.buy_relic(*this, static_cast<int>(i));
+        for (size_t i = 0; i < current_shop.potions.size(); ++i) current_shop.buy_potion(*this, static_cast<int>(i));
+    }
 }
 
 void RunManager::on_combat_won(RoomType) {
