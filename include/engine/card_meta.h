@@ -405,6 +405,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::RARE, CardPool::NECROBINDER }, // GLIMPSE_BEYOND
     { CardRarity::UNCOMMON, CardPool::REGENT }, // MANIFEST_AUTHORITY
     { CardRarity::NONE, CardPool::NONE }, // GIANT_ROCK
+    { CardRarity::NONE, CardPool::NONE }, // LUMINESCE
 };
 
 } // namespace engine

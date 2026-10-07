@@ -468,6 +468,8 @@ enum class CardId : uint16_t {
     MANIFEST_AUTHORITY,
     // Giant Rock: a token made by other cards (appended: saves store the numeric id)
     GIANT_ROCK,
+    // Luminesce: a token made by other cards
+    LUMINESCE,
     COUNT
 };
 

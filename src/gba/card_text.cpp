@@ -646,6 +646,8 @@ bn::string_view base_name(engine::CardId id)
         return "Surin";
     case engine::CardId::GIANT_ROCK:
         return "Rocher gigantesque";
+    case engine::CardId::LUMINESCE:
+        return "Éclat";
     case engine::CardId::BLADE_DANCE:
         return "Danse des lames";
     case engine::CardId::CLOAK_AND_DAGGER:
@@ -1133,6 +1135,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::WISP:
         stream << (card.upgraded ? "Retenue. " : "") << "Énergie +" << value << ". Épuisement.";
+        break;
+    case engine::CardId::LUMINESCE:
+        stream << "Retenue. Énergie +" << value << ". Épuisement.";
         break;
     case engine::CardId::PUTREFY:
         stream << "Affaibli et Vulnérable " << secondary << ". Épuisement.";
