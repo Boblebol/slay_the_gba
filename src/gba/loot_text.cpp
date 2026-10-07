@@ -89,6 +89,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "RUNIC_CAPACITOR", "Démarrez chaque combat avec 3 Emplacements d'Orbe supplémentaires." },
     { "SCREAMING_FLAGON", "Si votre Main est vide à la fin de votre tour, infligez 20 dégâts à TOUS les ennemis." },
     { "SELF_FORMING_CLAY", "Chaque fois que vous perdez des PV en combat, gagnez 3 d'Armure au tour suivant." },
+    { "SIGNET_RING", "Lorsque vous obtenez cette relique, obtenez 888 Pièces d'or." },
     { "SHURIKEN", "Chaque fois que vous jouez 3 Attaques en un seul tour, gagnez 1 de Force." },
     { "SLING_OF_COURAGE", "Démarrez chaque combat d'Élite avec 2 de Force." },
     { "SNECKO_SKULL", "Vous appliquez 1 de Poison en plus à chaque fois que vous appliquez du Poison." },
