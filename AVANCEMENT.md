@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 56,6 %** — 694 faits, 20 partiels, 530 à faire (35 hors périmètre).
+**Avancement global : 56,8 %** — 697 faits, 20 partiels, 527 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -19,14 +19,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
 | [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
-| [Cartes communes aux cinq éditions](#cartes) | 21 | 0 | 99 | 17,5 % |
-| [Reliques et potions](#reliques) | 128 | 0 | 193 | 39,9 % |
+| [Cartes communes aux cinq éditions](#cartes) | 22 | 0 | 98 | 18,3 % |
+| [Reliques et potions](#reliques) | 130 | 0 | 191 | 40,5 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **694** | **20** | **530** | **56,6 %** |
+| **Total** | **697** | **20** | **527** | **56,8 %** |
 
 <a id="ironclad"></a>
 
@@ -688,7 +688,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 17,5 %
+## Cartes communes aux cinq éditions — 18,3 %
 
 ### Cartes incolores — 0,0 %
 
@@ -797,13 +797,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Science sans conscience | Évènement · Attaque | Non |  |
 | Ténacité torique | Évènement · Compétence | Non |  |
 
-### Malédictions — 5,6 %
+### Malédictions — 11,1 %
 
-1 fait, 0 partiel, 17 à faire.
+2 faits, 0 partiel, 16 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Assuétude | Malédiction · Malédiction | Non |  |
+| Assuétude | Malédiction · Malédiction | Oui |  |
 | Blessure | Malédiction · Malédiction | Non |  |
 | Conscience sporique | Malédiction · Malédiction | Non |  |
 | Culpabilité | Malédiction · Malédiction | Non |  |
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 39,9 %
+## Reliques et potions — 40,5 %
 
 ### Reliques partagées — 51,3 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 22,5 %
+### Reliques des Anciens — 24,5 %
 
-23 faits, 0 partiel, 79 à faire.
+25 faits, 0 partiel, 77 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1050,13 +1050,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Boîte de Pandore | Ancienne | Non |  |
 | Boîte à musique | Ancienne | Non |  |
 | Bracelet brillant | Ancienne | Non |  |
-| Brouillard en conserve | Ancienne | Non |  |
+| Brouillard en conserve | Ancienne | Oui |  |
 | Cage vide | Ancienne | Non |  |
 | Caisse d'alchimie | Ancienne | Non |  |
 | Caisse de parchemins | Ancienne | Non |  |
 | Caisse à jouets | Ancienne | Non |  |
 | Canne à pêche | Ancienne | Non |  |
-| Cape distinguée | Ancienne | Non |  |
+| Cape distinguée | Ancienne | Oui |  |
 | Cataplasme | Ancienne | Non |  |
 | Chair de Paël | Ancienne | Non |  |
 | Chocolat très chaud | Ancienne | Oui |  |
