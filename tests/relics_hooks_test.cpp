@@ -518,6 +518,16 @@ void test_relics_in_a_run() {
 
 } // namespace
 
+void test_very_hot_cocoa() {
+    // The first turn starts with 4 more energy; the next ones are back to normal.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    RunManager cocoa = make_relic_run(CharacterId::IRONCLAD, { "VERY_HOT_COCOA" });
+    assert(cocoa.combat.player.energy == plain.combat.player.energy + 4);
+    end_turn_idle(cocoa.combat);
+    end_turn_idle(plain.combat);
+    assert(cocoa.combat.player.energy == plain.combat.player.energy);
+}
+
 void test_strawberry() {
     // Obtained: 7 more maximum HP, and the current HP follow.
     RunManager run;
@@ -639,6 +649,7 @@ int main() {
     test_poison_and_star_relics();
     test_combat_start_relics();
     test_relics_in_a_run();
+    test_very_hot_cocoa();
     test_strawberry();
     test_membership_card();
     std::cout << "All relic hook tests passed." << std::endl;
