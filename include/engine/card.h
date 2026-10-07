@@ -486,6 +486,22 @@ enum class CardId : uint16_t {
     FOLLY,
     // Enthralled (Assuétude): a Curse, Eternal; must be played before the other cards in hand
     ENTHRALLED,
+    // Flash of Steel: a colorless 0-cost attack that draws a card
+    FLASH_OF_STEEL,
+    // Peck: an event card that hits several times
+    PECK,
+    // Production: a colorless 0-cost skill that gives energy
+    PRODUCTION,
+    // Master of Strategy: a colorless 0-cost skill that draws cards
+    MASTER_OF_STRATEGY,
+    // Byrd Swoop: an event card
+    BYRD_SWOOP,
+    // Ultimate Strike: a colorless Attack
+    ULTIMATE_STRIKE,
+    // Ultimate Defend: a colorless Skill
+    ULTIMATE_DEFEND,
+    // Finesse: a colorless Skill
+    FINESSE,
     // Prowess: a colorless Power
     PROWESS,
     // Squash: an event card

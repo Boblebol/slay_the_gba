@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 57,0 %** — 699 faits, 20 partiels, 525 à faire (35 hors périmètre).
+**Avancement global : 57,3 %** — 703 faits, 20 partiels, 521 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -19,14 +19,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
 | [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
-| [Cartes communes aux cinq éditions](#cartes) | 22 | 0 | 98 | 18,3 % |
+| [Cartes communes aux cinq éditions](#cartes) | 26 | 0 | 94 | 21,7 % |
 | [Reliques et potions](#reliques) | 132 | 0 | 189 | 41,1 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **699** | **20** | **525** | **57,0 %** |
+| **Total** | **703** | **20** | **521** | **57,3 %** |
 
 <a id="ironclad"></a>
 
@@ -688,11 +688,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 18,3 %
+## Cartes communes aux cinq éditions — 21,7 %
 
-### Cartes incolores — 0,0 %
+### Cartes incolores — 5,7 %
 
-0 fait, 0 partiel, 53 à faire (12 hors périmètre).
+3 faits, 0 partiel, 50 à faire (12 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -725,7 +725,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Onde de choc | Peu commune · Compétence | Non |  |
 | Panache | Peu commune · Pouvoir | Non |  |
 | Polyvalence | Peu commune · Compétence | Non |  |
-| Production | Peu commune · Compétence | Non |  |
+| Production | Peu commune · Compétence | Oui |  |
 | Prolongations | Peu commune · Compétence | Non |  |
 | Prouesse | Peu commune · Pouvoir | Non |  |
 | Relais | Peu commune · Attaque | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
@@ -733,7 +733,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sans repos | Peu commune · Compétence | Non |  |
 | Stratagème | Peu commune · Pouvoir | Non |  |
 | Échauffement | Peu commune · Pouvoir | Non |  |
-| Éclair d'acier | Peu commune · Attaque | Non |  |
+| Éclair d'acier | Peu commune · Attaque | Oui |  |
 | Épuration | Peu commune · Compétence | Non |  |
 | Équilibre | Peu commune · Compétence | Non |  |
 | Alchimie | Rare · Compétence | Non |  |
@@ -752,7 +752,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Joyau caché | Rare · Compétence | Non |  |
 | La grande manœuvre | Rare · Compétence | Non |  |
 | Main de la cupidité | Rare · Attaque | Non |  |
-| Maître stratège | Rare · Compétence | Non |  |
+| Maître stratège | Rare · Compétence | Oui |  |
 | Nostalgie | Rare · Pouvoir | Non |  |
 | Passage à tabac | Rare · Compétence | Non |  |
 | Pierre qui roule | Rare · Pouvoir | Non |  |
@@ -762,9 +762,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sacrement | Rare · Compétence | Non |  |
 | Technique secrète | Rare · Compétence | Non |  |
 
-### Cartes d'évènement — 21,4 %
+### Cartes d'évènement — 25,0 %
 
-6 faits, 0 partiel, 22 à faire.
+7 faits, 0 partiel, 21 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -789,7 +789,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Illumination | Évènement · Compétence | Non |  |
 | Lacération | Évènement · Attaque | Non |  |
 | Métamorphose | Évènement · Compétence | Non |  |
-| Picpic | Évènement · Attaque | Non |  |
+| Picpic | Évènement · Attaque | Oui |  |
 | Pile | Évènement · Compétence | Non |  |
 | Piqué d'oizo | Évènement · Attaque | Non |  |
 | Rebond | Évènement · Attaque | Non |  |

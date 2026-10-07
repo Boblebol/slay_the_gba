@@ -2912,6 +2912,50 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Brightest Flame+!"sv : "Played Brightest Flame!"sv);
             break;
         }
+        case CardId::FLASH_OF_STEEL: {
+            hit(current_target, base_value);
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Flash of Steel+!"sv : "Played Flash of Steel!"sv);
+            break;
+        }
+        case CardId::PECK: {
+            for (uint8_t blow = 0; blow < secondary_value; ++blow) {
+                hit(current_target, base_value);
+            }
+            set_log(upgraded ? "Played Peck+!"sv : "Played Peck!"sv);
+            break;
+        }
+        case CardId::PRODUCTION: {
+            player.energy = static_cast<int8_t>(player.energy + base_value);
+            set_log(upgraded ? "Played Production+!"sv : "Played Production!"sv);
+            break;
+        }
+        case CardId::MASTER_OF_STRATEGY: {
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Master of Strategy+!"sv : "Played Master of Strategy!"sv);
+            break;
+        }
+        case CardId::BYRD_SWOOP: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Byrd Swoop+!"sv : "Played Byrd Swoop!"sv);
+            break;
+        }
+        case CardId::ULTIMATE_STRIKE: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Ultimate Strike+!"sv : "Played Ultimate Strike!"sv);
+            break;
+        }
+        case CardId::ULTIMATE_DEFEND: {
+            gain_block(base_value);
+            set_log(upgraded ? "Played Ultimate Defend+!"sv : "Played Ultimate Defend!"sv);
+            break;
+        }
+        case CardId::FINESSE: {
+            gain_block(base_value);
+            draw_cards(secondary_value);
+            set_log(upgraded ? "Played Finesse+!"sv : "Played Finesse!"sv);
+            break;
+        }
         case CardId::PUTREFY: {
             afflict(current_target, StatusType::WEAK, secondary_value);
             afflict(current_target, StatusType::VULNERABLE, secondary_value);
