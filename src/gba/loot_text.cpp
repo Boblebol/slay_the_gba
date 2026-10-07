@@ -78,6 +78,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ORNAMENTAL_FAN", "Chaque fois que vous jouez 3 Attaques en un seul tour, gagnez 4 d'Armure." },
     { "PAELS_BLOOD", "Au début de votre tour, piochez 1 carte supplémentaire." },
     { "PANTOGRAPH", "Au début de chaque combat de Boss, récupérez 25 PV." },
+    { "PAELS_LEGION", "Double l'Armure reçue d'une carte, puis s'endort pendant 2 tours." },
     { "PARRYING_SHIELD", "Si vous terminez votre tour avec au moins 10 d'Armure, infligez 6 dégâts à un ennemi aléatoire." },
     { "PENDULUM", "Tous les 3 tours, piochez 1 carte." },
     { "PERMAFROST", "La première fois que vous jouez un Pouvoir chaque combat, gagnez 7 d'Armure." },
@@ -98,6 +99,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "SPARKLING_ROUGE", "Au début de votre 3ème tour, gagnez 1 de Force et 1 de Dextérité." },
     { "STONE_CALENDAR", "À la fin du tour 7, infligez 52 dégâts à TOUS les ennemis." },
     { "STONE_CRACKER", "Au début de chaque combat, Améliorez 2 cartes aléatoires de votre Pioche pour le restant du combat." },
+    { "GOLDEN_COMPASS", "Lorsque vous obtenez cette relique, remplacez la carte de l'Acte 2 par un chemin unique." },
     { "PAELS_TOOTH", "Retirez 5 cartes de votre Deck. Après chaque combat, rajoutez-en 1 aléatoirement ; elle est Améliorée." },
     { "STRAWBERRY", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 7." },
     { "STURDY_CLAMP", "Vous conservez jusqu'à 10 d'Armure entre chaque tour." },
@@ -109,6 +111,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "TWISTED_FUNNEL", "Au début de chaque combat, appliquez 4 de Poison à TOUS les ennemis." },
     { "UNCEASING_TOP", "Chaque fois que votre Main est vide pendant votre tour, piochez une carte." },
     { "VAJRA", "Démarrez chaque combat avec 1 de Force." },
+    { "VERY_HOT_COCOA", "Démarrez chaque combat avec 4 ● supplémentaires." },
     { "VEXING_PUZZLEBOX", "Au début de chaque combat, ajoutez une carte aléatoire à votre Main. Elle coûte 0 ce tour." },
 };
 

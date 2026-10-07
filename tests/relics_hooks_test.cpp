@@ -550,6 +550,16 @@ void test_relics_in_a_run() {
 
 } // namespace
 
+void test_very_hot_cocoa() {
+    // The first turn starts with 4 more energy; the next ones are back to normal.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    RunManager cocoa = make_relic_run(CharacterId::IRONCLAD, { "VERY_HOT_COCOA" });
+    assert(cocoa.combat.player.energy == plain.combat.player.energy + 4);
+    end_turn_idle(cocoa.combat);
+    end_turn_idle(plain.combat);
+    assert(cocoa.combat.player.energy == plain.combat.player.energy);
+}
+
 void test_strawberry() {
     // Obtained: 7 more maximum HP, and the current HP follow.
     RunManager run;
@@ -617,6 +627,29 @@ void test_pumpkin_candle() {
     std::cout << "[PASS] Pumpkin Candle: +1 energy per turn for 5 combats" << std::endl;
 }
 
+void test_golden_compass() {
+    auto nodes_on_floor = [](const RunManager& r, uint8_t floor) {
+        int n = 0;
+        for (const MapNode& node : r.map.nodes) n += node.floor == floor ? 1 : 0;
+        return n;
+    };
+    // Without the compass, Act 2 keeps its several paths.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.advance_act();
+    assert(plain.current_act == 2 && !plain.has_relic("GOLDEN_COMPASS"));
+    bool branches = false;
+    for (uint8_t f = 0; f < 14; ++f) branches = branches || nodes_on_floor(plain, f) > 1;
+    assert(branches);
+
+    // With it, obtained once the Act 2 map exists, every floor holds a single room.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.advance_act();
+    run.add_relic("GOLDEN_COMPASS");
+    for (uint8_t f = 0; f <= 15; ++f) assert(nodes_on_floor(run, f) == 1);
+    std::cout << "[PASS] Golden Compass: Act 2 map becomes a single path" << std::endl;
+} 
 void test_paels_tooth() {
     RunManager run;
     run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
@@ -707,6 +740,35 @@ void test_membership_card() {
     std::cout << "[PASS] Membership Card: every price halved, removal included, at once when bought in the shop" << std::endl;
 }
 
+void test_paels_legion() {
+    // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
+    CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 10);
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 15);
+    legion.end_player_turn();
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 5);
+    legion.end_player_turn();
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 5);
+    legion.end_player_turn();
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 10);
+
+    // Without the relic: nothing changes.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.player.block = 0;
+    play(plain, CardId::DEFEND);
+    assert(plain.player.block == 5);
+    std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -719,10 +781,13 @@ int main() {
     test_combat_start_relics();
     test_paels_blood();
     test_relics_in_a_run();
+    test_very_hot_cocoa();
     test_strawberry();
+    test_golden_compass();
     test_paels_tooth();
     test_membership_card();
     test_pumpkin_candle();
+    test_paels_legion();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

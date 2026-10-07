@@ -564,6 +564,10 @@ void RunManager::add_relic(std::string_view relic_id) {
 void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
+    // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
+    if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
+        regenerate_map();
+    }
     // Bought from the merchant himself, the card lowers what is still on his shelves.
     if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
@@ -865,6 +869,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("HAPPY_FLOWER")) combat.add_power(PowerId::HAPPY_FLOWER, 1);
     if (has_relic("PENDULUM")) combat.add_power(PowerId::PENDULUM, 1);
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
+    if (has_relic("VERY_HOT_COCOA")) combat.add_power(PowerId::VERY_HOT_COCOA, 4);
     // Paël's Blood: one more card in every opening draw, the first one included.
     if (has_relic("PAELS_BLOOD")) combat.add_power(PowerId::TURN_DRAW, 1);
     if (has_relic("MERCURY_HOURGLASS")) combat.add_power(PowerId::MERCURY_HOURGLASS, 3);
@@ -938,6 +943,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("LUNAR_PASTRY")) combat.add_power(PowerId::LUNAR_PASTRY, 1);
     if (has_relic("REGALITE")) combat.add_power(PowerId::REGALITE, 4);
     if (has_relic("IVORY_TILE")) combat.add_power(PowerId::IVORY_TILE, 1);
+    if (has_relic("PAELS_LEGION")) combat.add_power(PowerId::PAELS_LEGION, 2);
     // Confused from the start: the opening hand already gets random costs.
     if (has_relic("FAKE_SNECKO_EYE")) combat.player.add_status(StatusType::CONFUSED, 1);
     if (has_relic("SNECKO_EYE")) {
@@ -1133,12 +1139,16 @@ void RunManager::proceed_after_combat() {
     }
 }
 
+void RunManager::regenerate_map() {
+    map.generate(current_act, map_seed, ascension_level, current_act == 2 && has_relic("GOLDEN_COMPASS"));
+}
+
 void RunManager::advance_act() {
     current_act++;
     current_floor = 1;
     current_node_index = -1;
     map_seed = next_random();
-    map.generate(current_act, map_seed, ascension_level);
+    regenerate_map();
     phase = RunPhase::ANCIENT_BLESSING; // Transition with Ancient encounter!
 }
 
