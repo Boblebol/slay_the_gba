@@ -166,6 +166,7 @@ public:
     // Effects a relic has when obtained. Each one is also usable on its own.
     // Raises the maximum HP, and the current HP by as much.
     void gain_max_hp(int16_t amount);
+    void lose_max_hp(int16_t amount);
     void heal(int16_t amount);
     void gain_gold(int16_t amount);
     // Upgrades up to `count` cards drawn at random among the ones not upgraded yet, of `type` only when given.

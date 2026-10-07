@@ -573,6 +573,10 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     // Bought from the merchant himself, the card lowers what is still on his shelves.
     if (relic_id == "SIGNET_RING" && has_relic("SIGNET_RING")) gain_gold(888);
+    if (relic_id == "SERE_TALON" && has_relic("SERE_TALON")) {
+        lose_max_hp(9);
+        for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::WISH, false });
+    }
     if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
         paels_tooth_picks = deck_choice.remaining;
@@ -657,6 +661,12 @@ void RunManager::gain_max_hp(int16_t amount) {
     if (amount <= 0) return;
     max_hp = static_cast<int16_t>(std::min<int>(999, max_hp + amount));
     heal(amount);
+}
+
+void RunManager::lose_max_hp(int16_t amount) {
+    if (amount <= 0) return;
+    max_hp = static_cast<int16_t>(std::max<int>(1, max_hp - amount));
+    hp = std::min(hp, max_hp);
 }
 
 void RunManager::heal(int16_t amount) {
