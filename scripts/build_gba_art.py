@@ -645,10 +645,14 @@ CARDS: list[CardArt] = [
     CardArt("brightest_flame", "hero", "brightest_flame", "skill", (0, 0), folder="event"),
     CardArt("folly", "curse", "folly", "status", (NO_COST, NO_COST)),
     CardArt("enthralled", "curse", "enthralled", "status", (2, 2)),
+    CardArt("flash_of_steel", "hero", "flash_of_steel", "attack", (0, 0), folder="colorless"),
+    CardArt("peck", "hero", "peck", "attack", (1, 1), folder="event"),
+    CardArt("production", "hero", "production", "skill", (0, 0), folder="colorless"),
+    CardArt("master_of_strategy", "hero", "master_of_strategy", "skill", (0, 0), folder="colorless"),
     CardArt("byrd_swoop", "hero", "byrd_swoop", "attack", (0, 0), folder="event"),
-    CardArt("ultimate_strike", "status", "ultimate_strike", "attack", (1, 1), folder="colorless"),
-    CardArt("ultimate_defend", "status", "ultimate_defend", "skill", (1, 1), folder="colorless"),
-    CardArt("finesse", "status", "finesse", "skill", (0, 0), folder="colorless"),
+    CardArt("ultimate_strike", "hero", "ultimate_strike", "attack", (1, 1), folder="colorless"),
+    CardArt("ultimate_defend", "hero", "ultimate_defend", "skill", (1, 1), folder="colorless"),
+    CardArt("finesse", "hero", "finesse", "skill", (0, 0), folder="colorless"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

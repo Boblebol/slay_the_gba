@@ -414,6 +414,10 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::ANCIENT, CardPool::EVENT }, // BRIGHTEST_FLAME
     { CardRarity::CURSE, CardPool::CURSE }, // FOLLY
     { CardRarity::CURSE, CardPool::CURSE }, // ENTHRALLED
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // FLASH_OF_STEEL
+    { CardRarity::EVENT, CardPool::EVENT }, // PECK
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // PRODUCTION
+    { CardRarity::RARE, CardPool::COLORLESS }, // MASTER_OF_STRATEGY
     { CardRarity::EVENT, CardPool::EVENT }, // BYRD_SWOOP
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // ULTIMATE_STRIKE
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // ULTIMATE_DEFEND
