@@ -637,6 +637,7 @@ CARDS: list[CardArt] = [
     CardArt("manifest_authority", "regent", "manifest_authority", "skill", (1, 1)),
     CardArt("giant_rock", "hero", "giant_rock", "attack", (1, 1), folder="token"),
     CardArt("luminesce", "hero", "luminesce", "skill", (0, 0), folder="token"),
+    CardArt("apparition", "hero", "apparition", "skill", (0, 0), folder="event"),
     CardArt("maul", "hero", "maul", "attack", (1, 1), folder="event"),
 ]
 
