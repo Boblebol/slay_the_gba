@@ -470,6 +470,8 @@ enum class CardId : uint16_t {
     GIANT_ROCK,
     // Luminesce: a token made by other cards
     LUMINESCE,
+    // Apotheosis: an event card
+    APOTHEOSIS,
     COUNT
 };
 

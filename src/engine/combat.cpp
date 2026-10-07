@@ -2850,6 +2850,20 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Luminesce+!"sv : "Played Luminesce!"sv);
             break;
         }
+        case CardId::APOTHEOSIS: {
+            // Every card in every combat pile; the played card is in none of them.
+            const auto upgrade_all = [this](auto& pile) {
+                for (DeckCard& held : pile) {
+                    if (can_be_picked(held, ChoiceKind::UPGRADE)) held.upgraded = true;
+                }
+            };
+            upgrade_all(hand);
+            upgrade_all(draw_pile);
+            upgrade_all(discard_pile);
+            upgrade_all(exhaust_pile);
+            set_log(upgraded ? "Played Apotheosis+!"sv : "Played Apotheosis!"sv);
+            break;
+        }
         case CardId::PUTREFY: {
             afflict(current_target, StatusType::WEAK, secondary_value);
             afflict(current_target, StatusType::VULNERABLE, secondary_value);

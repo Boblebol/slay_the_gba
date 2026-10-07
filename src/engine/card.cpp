@@ -469,6 +469,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::GIANT_ROCK, "Giant Rock", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 20, 0, "Deal 20 dmg.", "Giant Rock+", 1, 20, 0, "Deal 20 dmg." },
     // Luminesce: a token, made by other cards.
     { CardId::LUMINESCE, "Luminesce", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Retain. Gain 2 energy. Exhaust.", "Luminesce+", 0, 2, 0, "Retain. Gain 2 energy. Exhaust.", KEYWORD_EXHAUST | KEYWORD_RETAIN, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    // Apotheosis: an event card.
+    { CardId::APOTHEOSIS, "Apotheosis", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", "Apotheosis+", 2, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", KEYWORD_EXHAUST | KEYWORD_INNATE, KEYWORD_EXHAUST | KEYWORD_INNATE },
 };
 
 const CardDef& CardDef::get(CardId id) {
