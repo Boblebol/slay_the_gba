@@ -766,6 +766,28 @@ void test_membership_card() {
     std::cout << "[PASS] Membership Card: every price halved, removal included, at once when bought in the shop" << std::endl;
 }
 
+void test_yummy_cookie() {
+    // Obtained: four cards of the deck are upgraded.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    auto upgraded_count = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) n += r.master_deck[i].upgraded ? 1 : 0;
+        return n;
+    };
+    int before = upgraded_count(run);
+    run.add_relic("YUMMY_COOKIE");
+    assert(run.has_relic("YUMMY_COOKIE"));
+    assert(upgraded_count(run) == before + 4);
+
+    // Any other relic upgrades nothing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(upgraded_count(plain) == before);
+    std::cout << "[PASS] Yummy Cookie: upgrades 4 cards when obtained" << std::endl;
+}
+
 void test_delicate_frond() {
     // With the relic, a fight starts with every potion slot filled.
     RunManager with;
@@ -830,6 +852,7 @@ int main() {
     test_golden_compass();
     test_paels_tooth();
     test_membership_card();
+    test_yummy_cookie();
     test_delicate_frond();
     test_seal_of_gold();
     test_pumpkin_candle();
