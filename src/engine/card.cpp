@@ -465,6 +465,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::SOUL_STORM, "Soul Storm", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 4, "Deal 9 dmg, +4 for each Soul in your exhaust pile.", "Soul Storm+", 1, 9, 6, "Deal 9 dmg, +6 for each Soul in your exhaust pile." },
     { CardId::GLIMPSE_BEYOND, "Glimpse Beyond", 1, CardType::SKILL, TargetType::SELF, 3, 0, "Add 3 Souls into your draw pile. Exhaust.", "Glimpse Beyond+", 1, 4, 0, "Add 4 Souls into your draw pile. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     { CardId::MANIFEST_AUTHORITY, "Manifest Authority", 1, CardType::SKILL, TargetType::SELF, 7, 1, "Gain 7 block. Add 1 random Colorless card into your hand.", "Manifest Authority+", 1, 8, 1, "Gain 8 block. Add 1 random Upgraded Colorless card into your hand." },
+    // Giant Rock: a token, made by other cards.
+    { CardId::GIANT_ROCK, "Giant Rock", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 20, 0, "Deal 20 dmg.", "Giant Rock+", 1, 20, 0, "Deal 20 dmg." },
 };
 
 const CardDef& CardDef::get(CardId id) {

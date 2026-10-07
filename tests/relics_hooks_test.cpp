@@ -316,6 +316,23 @@ void test_turn_relics() {
     std::cout << "[PASS] Turn relics: Ripple Basin, Brimstone, Lunar Pastry" << std::endl;
 }
 
+void test_paels_tears() {
+    // Unspent energy at the end of the turn: 2 more energy next turn.
+    CombatEngine tears = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_TEARS, 2);
+    end_turn_idle(tears);
+    assert(tears.player.energy == 5);
+    // Everything spent: nothing.
+    tears.player.energy = 0;
+    end_turn_idle(tears);
+    assert(tears.player.energy == 3);
+
+    // Without the relic: no extra energy.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    end_turn_idle(plain);
+    assert(plain.player.energy == 3);
+    std::cout << "[PASS] Pael's Tears: 2 energy next turn after a turn with unspent energy" << std::endl;
+}
+
 void test_hp_relics() {
     // Self-Forming Clay: Block at the start of the turn that follows each HP loss.
     CombatEngine clay = make_relic_combat(CharacterId::IRONCLAD, PowerId::SELF_FORMING_CLAY, 3);
@@ -408,6 +425,21 @@ void test_poison_and_star_relics() {
     dust.spend_stars(29);
     assert(dust.player.block == 30 && dust.power_counter(PowerId::GALACTIC_DUST) == 0);
     std::cout << "[PASS] Poison and Star relics: Snecko Skull, Mini Regent, Galactic Dust" << std::endl;
+}
+
+void test_paels_blood() {
+    // Paël's Blood: 1 more card on the first turn and on each following one.
+    RunManager blood = make_relic_run(CharacterId::IRONCLAD, { "PAELS_BLOOD" });
+    assert(blood.combat.hand.size() == 6);
+    end_turn_idle(blood.combat);
+    assert(blood.combat.hand.size() == 6);
+
+    // Without the relic: the usual 5 cards.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.hand.size() == 5);
+    end_turn_idle(plain.combat);
+    assert(plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Paël's Blood" << std::endl;
 }
 
 void test_combat_start_relics() {
@@ -518,6 +550,16 @@ void test_relics_in_a_run() {
 
 } // namespace
 
+void test_very_hot_cocoa() {
+    // The first turn starts with 4 more energy; the next ones are back to normal.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    RunManager cocoa = make_relic_run(CharacterId::IRONCLAD, { "VERY_HOT_COCOA" });
+    assert(cocoa.combat.player.energy == plain.combat.player.energy + 4);
+    end_turn_idle(cocoa.combat);
+    end_turn_idle(plain.combat);
+    assert(cocoa.combat.player.energy == plain.combat.player.energy);
+}
+
 void test_strawberry() {
     // Obtained: 7 more maximum HP, and the current HP follow.
     RunManager run;
@@ -561,6 +603,101 @@ void test_strawberry() {
     }
     assert(found);
     std::cout << "[PASS] Strawberry: +7 Max HP when obtained, once, from a chest too" << std::endl;
+}
+
+void test_seal_of_gold() {
+    // With the relic: the turn start costs 3 gold and gives 1 energy.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("SEAL_OF_GOLD");
+    run.gold = 10;
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 4 && run.combat.gold == 7);
+
+    // Without the relic: no extra energy, no gold spent.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.gold = 10;
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.combat.player.energy == 3 && plain.gold == 10);
+
+    // Too poor to pay: nothing happens.
+    RunManager poor;
+    poor.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    poor.add_relic("SEAL_OF_GOLD");
+    poor.gold = 2;
+    enter_room_of_type(poor, RoomType::MONSTER);
+    assert(poor.combat.player.energy == 3 && poor.combat.gold == 2);
+    std::cout << "[PASS] Seal of Gold: 3 gold for 1 energy at each turn start" << std::endl;
+}
+
+void test_pumpkin_candle() {
+    // Lit: one more energy each turn, for 5 combats.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("PUMPKIN_CANDLE");
+    for (int fight = 1; fight <= 5; ++fight) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        assert(run.combat.player.energy == 4);
+        assert(run.relic_counter("PUMPKIN_CANDLE") == fight);
+    }
+    // Extinguished after the fifth combat.
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 3);
+
+    // Without the relic: the usual 3.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.combat.player.energy == 3);
+    std::cout << "[PASS] Pumpkin Candle: +1 energy per turn for 5 combats" << std::endl;
+}
+
+void test_golden_compass() {
+    auto nodes_on_floor = [](const RunManager& r, uint8_t floor) {
+        int n = 0;
+        for (const MapNode& node : r.map.nodes) n += node.floor == floor ? 1 : 0;
+        return n;
+    };
+    // Without the compass, Act 2 keeps its several paths.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.advance_act();
+    assert(plain.current_act == 2 && !plain.has_relic("GOLDEN_COMPASS"));
+    bool branches = false;
+    for (uint8_t f = 0; f < 14; ++f) branches = branches || nodes_on_floor(plain, f) > 1;
+    assert(branches);
+
+    // With it, obtained once the Act 2 map exists, every floor holds a single room.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.advance_act();
+    run.add_relic("GOLDEN_COMPASS");
+    for (uint8_t f = 0; f <= 15; ++f) assert(nodes_on_floor(run, f) == 1);
+    std::cout << "[PASS] Golden Compass: Act 2 map becomes a single path" << std::endl;
+} 
+void test_paels_tooth() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck = run.master_deck.size();
+    run.add_relic("PAELS_TOOTH");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 5);
+    for (int i = 0; i < 5; ++i) assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 5 && run.paels_tooth_cards.size() == 5);
+
+    // Each won fight gives one back, upgraded.
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.proceed_after_combat();
+    assert(run.master_deck.size() == deck - 4 && run.master_deck.back().upgraded && run.paels_tooth_cards.size() == 4);
+
+    // Without the relic nothing is asked and nothing comes back.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.proceed_after_combat();
+    assert(plain.master_deck.size() == deck);
 }
 
 void test_membership_card() {
@@ -629,18 +766,74 @@ void test_membership_card() {
     std::cout << "[PASS] Membership Card: every price halved, removal included, at once when bought in the shop" << std::endl;
 }
 
+void test_delicate_frond() {
+    // With the relic, a fight starts with every potion slot filled.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("DELICATE_FROND");
+    with.potions.clear();
+    enter_room_of_type(with, RoomType::MONSTER);
+    assert(with.potion_belt_full());
+
+    // Without it, the belt stays as it was.
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    without.potions.clear();
+    enter_room_of_type(without, RoomType::MONSTER);
+    assert(without.potions.empty());
+    std::cout << "[PASS] Delicate Frond: every empty potion slot filled at combat start" << std::endl;
+}
+
+void test_paels_legion() {
+    // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
+    CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 10);
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 15);
+    legion.end_player_turn();
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 5);
+    legion.end_player_turn();
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 5);
+    legion.end_player_turn();
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 10);
+
+    // Without the relic: nothing changes.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.player.block = 0;
+    play(plain, CardId::DEFEND);
+    assert(plain.player.block == 5);
+    std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
     test_skill_and_power_relics();
     test_exhaust_and_creation_relics();
     test_turn_relics();
+    test_paels_tears();
     test_hp_relics();
     test_poison_and_star_relics();
     test_combat_start_relics();
+    test_paels_blood();
     test_relics_in_a_run();
+    test_very_hot_cocoa();
     test_strawberry();
+    test_golden_compass();
+    test_paels_tooth();
     test_membership_card();
+    test_delicate_frond();
+    test_seal_of_gold();
+    test_pumpkin_candle();
+    test_paels_legion();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

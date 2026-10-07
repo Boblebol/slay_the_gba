@@ -635,6 +635,7 @@ CARDS: list[CardArt] = [
     CardArt("soul_storm", "necrobinder", "soul_storm", "attack", (1, 1)),
     CardArt("glimpse_beyond", "necrobinder", "glimpse_beyond", "skill", (1, 1)),
     CardArt("manifest_authority", "regent", "manifest_authority", "skill", (1, 1)),
+    CardArt("giant_rock", "hero", "giant_rock", "attack", (1, 1), folder="token"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

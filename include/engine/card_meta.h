@@ -404,6 +404,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::RARE, CardPool::NECROBINDER }, // SOUL_STORM
     { CardRarity::RARE, CardPool::NECROBINDER }, // GLIMPSE_BEYOND
     { CardRarity::UNCOMMON, CardPool::REGENT }, // MANIFEST_AUTHORITY
+    { CardRarity::NONE, CardPool::NONE }, // GIANT_ROCK
 };
 
 } // namespace engine
