@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 56,1 %** — 688 faits, 20 partiels, 536 à faire (35 hors périmètre).
+**Avancement global : 56,4 %** — 691 faits, 20 partiels, 533 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -19,14 +19,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
 | [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
-| [Cartes communes aux cinq éditions](#cartes) | 19 | 0 | 101 | 15,8 % |
-| [Reliques et potions](#reliques) | 124 | 0 | 197 | 38,6 % |
+| [Cartes communes aux cinq éditions](#cartes) | 20 | 0 | 100 | 16,7 % |
+| [Reliques et potions](#reliques) | 126 | 0 | 195 | 39,3 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **688** | **20** | **536** | **56,1 %** |
+| **Total** | **691** | **20** | **533** | **56,4 %** |
 
 <a id="ironclad"></a>
 
@@ -688,7 +688,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 15,8 %
+## Cartes communes aux cinq éditions — 16,7 %
 
 ### Cartes incolores — 0,0 %
 
@@ -762,16 +762,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sacrement | Rare · Compétence | Non |  |
 | Technique secrète | Rare · Compétence | Non |  |
 
-### Cartes d'évènement — 17,9 %
+### Cartes d'évènement — 21,4 %
 
-5 faits, 0 partiel, 23 à faire.
+6 faits, 0 partiel, 22 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Abondance | Ancienne · Compétence | Non |  |
 | Apothéose | Ancienne · Compétence | Oui |  |
 | Apparition | Ancienne · Compétence | Oui |  |
-| Flamme éclatante | Ancienne · Compétence | Non |  |
+| Flamme éclatante | Ancienne · Compétence | Oui |  |
 | Fureur de Neow | Ancienne · Attaque | Non |  |
 | Mutilation | Ancienne · Attaque | Oui |  |
 | Relaxation | Ancienne · Compétence | Non |  |
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 38,6 %
+## Reliques et potions — 39,3 %
 
 ### Reliques partagées — 51,3 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 18,6 %
+### Reliques des Anciens — 20,6 %
 
-19 faits, 0 partiel, 83 à faire.
+21 faits, 0 partiel, 81 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1063,7 +1063,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Château de sable | Ancienne | Non |  |
 | Ciseaux précis | Ancienne | Non |  |
 | Cloche d'appel | Ancienne | Non |  |
-| Coffre à bijoux | Ancienne | Non |  |
+| Coffre à bijoux | Ancienne | Oui |  |
 | Coffret perdu | Ancienne | Non |  |
 | Conque retentissante | Ancienne | Non |  |
 | Corne de Paël | Ancienne | Non |  |
@@ -1121,7 +1121,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sang de Paël | Ancienne | Oui |  |
 | Saï | Ancienne | Oui |  |
 | Sceau doré | Ancienne | Oui |  |
-| Serre desséchée | Ancienne | Non |  |
+| Serre desséchée | Ancienne | Oui |  |
 | Sifflet de Tanx | Ancienne | Non |  |
 | Soupe nourrissante | Ancienne | Non |  |
 | Sozu | Ancienne | Non |  |
