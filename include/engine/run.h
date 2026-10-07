@@ -148,6 +148,8 @@ public:
 
     // Rewards & Deck modification
     void generate_rewards();
+    // Regenerates the current act's map from its seed; the Golden Compass narrows Act 2 to a single path.
+    void regenerate_map();
     // Engine-supported cards a hero can be offered after a combat.
     static std::span<const CardId> card_reward_pool(CharacterId char_id);
     void pick_card_reward(int reward_index);

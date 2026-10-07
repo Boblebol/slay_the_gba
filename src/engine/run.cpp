@@ -564,6 +564,10 @@ void RunManager::add_relic(std::string_view relic_id) {
 void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
+    // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
+    if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
+        regenerate_map();
+    }
     // Bought from the merchant himself, the card lowers what is still on his shelves.
     if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
@@ -1128,12 +1132,16 @@ void RunManager::proceed_after_combat() {
     }
 }
 
+void RunManager::regenerate_map() {
+    map.generate(current_act, map_seed, ascension_level, current_act == 2 && has_relic("GOLDEN_COMPASS"));
+}
+
 void RunManager::advance_act() {
     current_act++;
     current_floor = 1;
     current_node_index = -1;
     map_seed = next_random();
-    map.generate(current_act, map_seed, ascension_level);
+    regenerate_map();
     phase = RunPhase::ANCIENT_BLESSING; // Transition with Ancient encounter!
 }
 
