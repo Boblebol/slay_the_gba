@@ -4152,6 +4152,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::VOID_CARD:
         case CardId::WOUND:
         case CardId::FOLLY:
+        case CardId::ENTHRALLED:
             // Unplayable: only another card can play them, and nothing happens.
             break;
         case CardId::DEBRIS: {
