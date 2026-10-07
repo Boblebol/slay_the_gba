@@ -895,6 +895,7 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::TURN_ENERGY, 1);
         set_relic_counter("PUMPKIN_CANDLE", static_cast<uint8_t>(relic_counter("PUMPKIN_CANDLE") + 1));
     }
+    if (has_relic("SAI")) combat.add_power(PowerId::SAI, 7);
     if (has_relic("ICE_CREAM")) combat.add_power(PowerId::ICE_CREAM);
     if (has_relic("STURDY_CLAMP")) combat.add_power(PowerId::STURDY_CLAMP, 10);
     // Combat events
