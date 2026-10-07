@@ -844,6 +844,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("HAPPY_FLOWER")) combat.add_power(PowerId::HAPPY_FLOWER, 1);
     if (has_relic("PENDULUM")) combat.add_power(PowerId::PENDULUM, 1);
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
+    // Paël's Blood: one more card in every opening draw, the first one included.
+    if (has_relic("PAELS_BLOOD")) combat.add_power(PowerId::TURN_DRAW, 1);
     if (has_relic("MERCURY_HOURGLASS")) combat.add_power(PowerId::MERCURY_HOURGLASS, 3);
     // End of turn
     if (has_relic("CLOAK_CLASP")) combat.add_power(PowerId::CLOAK_CLASP, 1);
