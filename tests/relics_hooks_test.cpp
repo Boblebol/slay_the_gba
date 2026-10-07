@@ -316,6 +316,23 @@ void test_turn_relics() {
     std::cout << "[PASS] Turn relics: Ripple Basin, Brimstone, Lunar Pastry" << std::endl;
 }
 
+void test_paels_tears() {
+    // Unspent energy at the end of the turn: 2 more energy next turn.
+    CombatEngine tears = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_TEARS, 2);
+    end_turn_idle(tears);
+    assert(tears.player.energy == 5);
+    // Everything spent: nothing.
+    tears.player.energy = 0;
+    end_turn_idle(tears);
+    assert(tears.player.energy == 3);
+
+    // Without the relic: no extra energy.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    end_turn_idle(plain);
+    assert(plain.player.energy == 3);
+    std::cout << "[PASS] Pael's Tears: 2 energy next turn after a turn with unspent energy" << std::endl;
+}
+
 void test_hp_relics() {
     // Self-Forming Clay: Block at the start of the turn that follows each HP loss.
     CombatEngine clay = make_relic_combat(CharacterId::IRONCLAD, PowerId::SELF_FORMING_CLAY, 3);
@@ -635,6 +652,7 @@ int main() {
     test_skill_and_power_relics();
     test_exhaust_and_creation_relics();
     test_turn_relics();
+    test_paels_tears();
     test_hp_relics();
     test_poison_and_star_relics();
     test_combat_start_relics();
