@@ -474,6 +474,10 @@ enum class CardId : uint16_t {
     APPARITION,
     // Maul: an event card; every copy grows together during the combat
     MAUL,
+    // Apotheosis: an event card
+    APOTHEOSIS,
+    // Wish: an event card
+    WISH,
     // Whistle: an event card that stuns the enemy
     WHISTLE,
     COUNT

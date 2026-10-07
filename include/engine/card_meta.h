@@ -408,6 +408,8 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::NONE, CardPool::NONE }, // LUMINESCE
     { CardRarity::ANCIENT, CardPool::EVENT }, // APPARITION
     { CardRarity::ANCIENT, CardPool::EVENT }, // MAUL
+    { CardRarity::ANCIENT, CardPool::EVENT }, // APOTHEOSIS
+    { CardRarity::ANCIENT, CardPool::EVENT }, // WISH
     { CardRarity::ANCIENT, CardPool::EVENT }, // WHISTLE
 };
 

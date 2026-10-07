@@ -83,10 +83,38 @@ void test_maul() {
     std::cout << "[PASS] Maul: 5/6 damage twice, all Maul +2/+3 for the combat" << std::endl;
 }
 
+void check_apotheosis(bool upgraded) {
+    CombatEngine combat = make_fight();
+    combat.exhaust_pile.clear();
+    assert(CardDef::get_cost(CardId::APOTHEOSIS, upgraded) == 2);
+    assert(CardDef::get(CardId::APOTHEOSIS).type == CardType::SKILL);
+    assert(CardDef::get(CardId::APOTHEOSIS).keywords & KEYWORD_INNATE);
+    assert(CardDef::get(CardId::APOTHEOSIS).keywords & KEYWORD_EXHAUST);
+    combat.hand.push_back(DeckCard(CardId::APOTHEOSIS, upgraded));
+    combat.hand.push_back(DeckCard(CardId::STRIKE));
+    combat.draw_pile.push_back(DeckCard(CardId::DEFEND));
+    combat.discard_pile.push_back(DeckCard(CardId::BASH));
+    combat.exhaust_pile.push_back(DeckCard(CardId::STRIKE));
+    assert(combat.play_card(0, 0));
+    assert(combat.player.energy == 1);
+    assert(combat.exhaust_pile.size() == 2);
+    assert(combat.hand.size() == 1 && combat.hand[0].upgraded);
+    assert(combat.draw_pile[0].upgraded);
+    assert(combat.discard_pile[0].upgraded);
+    assert(combat.exhaust_pile[0].upgraded);
+}
+
+void test_apotheosis() {
+    check_apotheosis(false);
+    check_apotheosis(true);
+    std::cout << "[PASS] Apotheosis: 2 energy, Innate, upgrades all cards, Exhaust" << std::endl;
+}
+
 } // namespace
 
 int main() {
     test_apparition();
     test_maul();
+    test_apotheosis();
     return 0;
 }

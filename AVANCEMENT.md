@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 55,8 %** — 684 faits, 20 partiels, 540 à faire (35 hors périmètre).
+**Avancement global : 55,9 %** — 686 faits, 20 partiels, 538 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -19,14 +19,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
 | [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
-| [Cartes communes aux cinq éditions](#cartes) | 15 | 0 | 105 | 12,5 % |
+| [Cartes communes aux cinq éditions](#cartes) | 17 | 0 | 103 | 14,2 % |
 | [Reliques et potions](#reliques) | 124 | 0 | 197 | 38,6 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **684** | **20** | **540** | **55,8 %** |
+| **Total** | **686** | **20** | **538** | **55,9 %** |
 
 <a id="ironclad"></a>
 
@@ -688,7 +688,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 12,5 %
+## Cartes communes aux cinq éditions — 14,2 %
 
 ### Cartes incolores — 0,0 %
 
@@ -762,18 +762,18 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sacrement | Rare · Compétence | Non |  |
 | Technique secrète | Rare · Compétence | Non |  |
 
-### Cartes d'évènement — 3,6 %
+### Cartes d'évènement — 10,7 %
 
-1 fait, 0 partiel, 27 à faire.
+3 faits, 0 partiel, 25 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Abondance | Ancienne · Compétence | Non |  |
-| Apothéose | Ancienne · Compétence | Non |  |
+| Apothéose | Ancienne · Compétence | Oui |  |
 | Apparition | Ancienne · Compétence | Oui |  |
 | Flamme éclatante | Ancienne · Compétence | Non |  |
 | Fureur de Neow | Ancienne · Attaque | Non |  |
-| Mutilation | Ancienne · Attaque | Non |  |
+| Mutilation | Ancienne · Attaque | Oui |  |
 | Relaxation | Ancienne · Compétence | Non |  |
 | Sifflet | Ancienne · Attaque | Non |  |
 | Vœu | Ancienne · Compétence | Non |  |

@@ -2860,6 +2860,20 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Maul+!"sv : "Played Maul!"sv);
             break;
         }
+        case CardId::APOTHEOSIS: {
+            // Every card in every combat pile; the played card is in none of them.
+            const auto upgrade_all = [this](auto& pile) {
+                for (DeckCard& held : pile) {
+                    if (can_be_picked(held, ChoiceKind::UPGRADE)) held.upgraded = true;
+                }
+            };
+            upgrade_all(hand);
+            upgrade_all(draw_pile);
+            upgrade_all(discard_pile);
+            upgrade_all(exhaust_pile);
+            set_log(upgraded ? "Played Apotheosis+!"sv : "Played Apotheosis!"sv);
+            break;
+        }
         case CardId::WHISTLE: {
             hit(current_target, base_value);
             if (current_target.is_alive()) {
@@ -4417,6 +4431,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             hit(current_target, base_value);
             ask_pile_choice(Pile::DISCARD, ChoiceKind::TOP_OF_DRAW, 1);
             set_log(upgraded ? "Played Headbutt+!"sv : "Played Headbutt!"sv);
+            break;
+        }
+        case CardId::WISH: {
+            ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, 1);
+            set_log(upgraded ? "Played Wish+!"sv : "Played Wish!"sv);
             break;
         }
         case CardId::HOLOGRAM: {
