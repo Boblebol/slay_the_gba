@@ -427,6 +427,21 @@ void test_poison_and_star_relics() {
     std::cout << "[PASS] Poison and Star relics: Snecko Skull, Mini Regent, Galactic Dust" << std::endl;
 }
 
+void test_paels_blood() {
+    // Paël's Blood: 1 more card on the first turn and on each following one.
+    RunManager blood = make_relic_run(CharacterId::IRONCLAD, { "PAELS_BLOOD" });
+    assert(blood.combat.hand.size() == 6);
+    end_turn_idle(blood.combat);
+    assert(blood.combat.hand.size() == 6);
+
+    // Without the relic: the usual 5 cards.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.hand.size() == 5);
+    end_turn_idle(plain.combat);
+    assert(plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Paël's Blood" << std::endl;
+}
+
 void test_combat_start_relics() {
     // Bag of Preparation: 2 more cards in the first hand, not in the next ones.
     RunManager bag = make_relic_run(CharacterId::IRONCLAD, { "BAG_OF_PREPARATION" });
@@ -680,6 +695,7 @@ int main() {
     test_hp_relics();
     test_poison_and_star_relics();
     test_combat_start_relics();
+    test_paels_blood();
     test_relics_in_a_run();
     test_strawberry();
     test_paels_tooth();
