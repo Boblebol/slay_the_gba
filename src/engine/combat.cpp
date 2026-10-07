@@ -2912,6 +2912,27 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Master of Strategy+!"sv : "Played Master of Strategy!"sv);
             break;
         }
+        case CardId::FEEDING_FRENZY: {
+            gain_temporary(StatusType::STRENGTH, static_cast<int8_t>(base_value));
+            set_log(upgraded ? "Played Feeding Frenzy+!"sv : "Played Feeding Frenzy!"sv);
+            break;
+        }
+        case CardId::OUTMANEUVER: {
+            schedule(DelayedType::ENERGY, base_value);
+            set_log(upgraded ? "Played Outmaneuver+!"sv : "Played Outmaneuver!"sv);
+            break;
+        }
+        case CardId::TORIC_TOUGHNESS: {
+            gain_block(base_value);
+            schedule(DelayedType::BLOCK, static_cast<int16_t>(base_value + player.get_status(StatusType::DEXTERITY)), 1, 2);
+            set_log(upgraded ? "Played Toric Toughness+!"sv : "Played Toric Toughness!"sv);
+            break;
+        }
+        case CardId::ENTRENCH: {
+            add_block(player.block);
+            set_log(upgraded ? "Played Entrench+!"sv : "Played Entrench!"sv);
+            break;
+        }
         case CardId::PUTREFY: {
             afflict(current_target, StatusType::WEAK, secondary_value);
             afflict(current_target, StatusType::VULNERABLE, secondary_value);

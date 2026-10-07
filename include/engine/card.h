@@ -494,6 +494,14 @@ enum class CardId : uint16_t {
     PRODUCTION,
     // Master of Strategy: a colorless 0-cost skill that draws cards
     MASTER_OF_STRATEGY,
+    // Feeding Frenzy: an event skill that gives temporary Strength
+    FEEDING_FRENZY,
+    // Outmaneuver: an event skill that gives energy next turn
+    OUTMANEUVER,
+    // Toric Toughness: an event skill that gives block now and at the start of the next 2 turns
+    TORIC_TOUGHNESS,
+    // Entrench: an event skill that doubles the block
+    ENTRENCH,
     COUNT
 };
 

@@ -493,6 +493,14 @@ static constexpr CardDef CARDS[] = {
     { CardId::PRODUCTION, "Production", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Gain 2 energy. Exhaust.", "Production+", 0, 3, 0, "Gain 3 energy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     // Master of Strategy: a colorless skill that draws cards.
     { CardId::MASTER_OF_STRATEGY, "Master of Strategy", 0, CardType::SKILL, TargetType::SELF, 0, 3, "Draw 3 cards. Exhaust.", "Master of Strategy+", 0, 0, 4, "Draw 4 cards. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Feeding Frenzy: an event skill; temporary Strength.
+    { CardId::FEEDING_FRENZY, "Feeding Frenzy", 0, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 Strength until end of turn.", "Feeding Frenzy+", 0, 7, 0, "Gain 7 Strength until end of turn." },
+    // Outmaneuver: an event skill; energy next turn.
+    { CardId::OUTMANEUVER, "Outmaneuver", 1, CardType::SKILL, TargetType::SELF, 2, 0, "Next turn, gain 2 energy.", "Outmaneuver+", 1, 3, 0, "Next turn, gain 3 energy." },
+    // Toric Toughness: an event skill; block now and at the start of the next 2 turns.
+    { CardId::TORIC_TOUGHNESS, "Toric Toughness", 2, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 Block. Gain 5 Block at the start of the next 2 turns.", "Toric Toughness+", 2, 7, 0, "Gain 7 Block. Gain 7 Block at the start of the next 2 turns." },
+    // Entrench: an event skill; doubles the block.
+    { CardId::ENTRENCH, "Entrench", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Double your Block.", "Entrench+", 2, 0, 0, "Double your Block." },
 };
 
 const CardDef& CardDef::get(CardId id) {

@@ -672,6 +672,14 @@ bn::string_view base_name(engine::CardId id)
         return "Production";
     case engine::CardId::MASTER_OF_STRATEGY:
         return "Maître stratège";
+    case engine::CardId::FEEDING_FRENZY:
+        return "Repas frénétique";
+    case engine::CardId::OUTMANEUVER:
+        return "Astucieux";
+    case engine::CardId::TORIC_TOUGHNESS:
+        return "Ténacité torique";
+    case engine::CardId::ENTRENCH:
+        return "Fortification";
     case engine::CardId::BLADE_DANCE:
         return "Danse des lames";
     case engine::CardId::CLOAK_AND_DAGGER:
@@ -1192,6 +1200,18 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::MASTER_OF_STRATEGY:
         stream << "Pioche " << secondary << ". Épuisement.";
+        break;
+    case engine::CardId::FEEDING_FRENZY:
+        stream << "Force +" << value << " ce tour.";
+        break;
+    case engine::CardId::OUTMANEUVER:
+        stream << "Prochain tour : énergie +" << value << ".";
+        break;
+    case engine::CardId::TORIC_TOUGHNESS:
+        stream << "Armure +" << value << ", puis +" << value << " aux 2 tours suivants.";
+        break;
+    case engine::CardId::ENTRENCH:
+        stream << "Double l'Armure.";
         break;
     case engine::CardId::PUTREFY:
         stream << "Affaibli et Vulnérable " << secondary << ". Épuisement.";

@@ -106,6 +106,10 @@
 #include "bn_sprite_items_card_peck_silent.h"
 #include "bn_sprite_items_card_production_silent.h"
 #include "bn_sprite_items_card_master_of_strategy_silent.h"
+#include "bn_sprite_items_card_feeding_frenzy_silent.h"
+#include "bn_sprite_items_card_outmaneuver_silent.h"
+#include "bn_sprite_items_card_toric_toughness_silent.h"
+#include "bn_sprite_items_card_entrench_silent.h"
 
 namespace gba::card_art
 {
@@ -303,6 +307,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_production_silent;
     case engine::CardId::MASTER_OF_STRATEGY:
         return &bn::sprite_items::card_master_of_strategy_silent;
+    case engine::CardId::FEEDING_FRENZY:
+        return &bn::sprite_items::card_feeding_frenzy_silent;
+    case engine::CardId::OUTMANEUVER:
+        return &bn::sprite_items::card_outmaneuver_silent;
+    case engine::CardId::TORIC_TOUGHNESS:
+        return &bn::sprite_items::card_toric_toughness_silent;
+    case engine::CardId::ENTRENCH:
+        return &bn::sprite_items::card_entrench_silent;
     default:
         return nullptr;
     }
@@ -330,7 +342,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 82,
-    83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94,
+    83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -443,6 +455,10 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_peck_defect.h"
 #include "bn_sprite_items_card_production_defect.h"
 #include "bn_sprite_items_card_master_of_strategy_defect.h"
+#include "bn_sprite_items_card_feeding_frenzy_defect.h"
+#include "bn_sprite_items_card_outmaneuver_defect.h"
+#include "bn_sprite_items_card_toric_toughness_defect.h"
+#include "bn_sprite_items_card_entrench_defect.h"
 
 namespace gba::card_art
 {
@@ -658,6 +674,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_production_defect;
     case engine::CardId::MASTER_OF_STRATEGY:
         return &bn::sprite_items::card_master_of_strategy_defect;
+    case engine::CardId::FEEDING_FRENZY:
+        return &bn::sprite_items::card_feeding_frenzy_defect;
+    case engine::CardId::OUTMANEUVER:
+        return &bn::sprite_items::card_outmaneuver_defect;
+    case engine::CardId::TORIC_TOUGHNESS:
+        return &bn::sprite_items::card_toric_toughness_defect;
+    case engine::CardId::ENTRENCH:
+        return &bn::sprite_items::card_entrench_defect;
     default:
         return nullptr;
     }
@@ -685,7 +709,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
+    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -794,6 +818,10 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_peck_regent.h"
 #include "bn_sprite_items_card_production_regent.h"
 #include "bn_sprite_items_card_master_of_strategy_regent.h"
+#include "bn_sprite_items_card_feeding_frenzy_regent.h"
+#include "bn_sprite_items_card_outmaneuver_regent.h"
+#include "bn_sprite_items_card_toric_toughness_regent.h"
+#include "bn_sprite_items_card_entrench_regent.h"
 
 namespace gba::card_art
 {
@@ -1001,6 +1029,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_production_regent;
     case engine::CardId::MASTER_OF_STRATEGY:
         return &bn::sprite_items::card_master_of_strategy_regent;
+    case engine::CardId::FEEDING_FRENZY:
+        return &bn::sprite_items::card_feeding_frenzy_regent;
+    case engine::CardId::OUTMANEUVER:
+        return &bn::sprite_items::card_outmaneuver_regent;
+    case engine::CardId::TORIC_TOUGHNESS:
+        return &bn::sprite_items::card_toric_toughness_regent;
+    case engine::CardId::ENTRENCH:
+        return &bn::sprite_items::card_entrench_regent;
     default:
         return nullptr;
     }
@@ -1028,7 +1064,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 65, 66, 0, 0, 0, 0, 0, 0, 0, 67, 68, 69, 70, 71, 72, 73, 74,
     75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 87,
-    88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
+    88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1142,6 +1178,10 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_peck_necrobinder.h"
 #include "bn_sprite_items_card_production_necrobinder.h"
 #include "bn_sprite_items_card_master_of_strategy_necrobinder.h"
+#include "bn_sprite_items_card_feeding_frenzy_necrobinder.h"
+#include "bn_sprite_items_card_outmaneuver_necrobinder.h"
+#include "bn_sprite_items_card_toric_toughness_necrobinder.h"
+#include "bn_sprite_items_card_entrench_necrobinder.h"
 
 namespace gba::card_art
 {
@@ -1359,6 +1399,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_production_necrobinder;
     case engine::CardId::MASTER_OF_STRATEGY:
         return &bn::sprite_items::card_master_of_strategy_necrobinder;
+    case engine::CardId::FEEDING_FRENZY:
+        return &bn::sprite_items::card_feeding_frenzy_necrobinder;
+    case engine::CardId::OUTMANEUVER:
+        return &bn::sprite_items::card_outmaneuver_necrobinder;
+    case engine::CardId::TORIC_TOUGHNESS:
+        return &bn::sprite_items::card_toric_toughness_necrobinder;
+    case engine::CardId::ENTRENCH:
+        return &bn::sprite_items::card_entrench_necrobinder;
     default:
         return nullptr;
     }
@@ -1386,7 +1434,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 61, 62, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73,
     74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 0, 91, 92,
-    93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104,
+    93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1499,6 +1547,10 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_peck_ironclad.h"
 #include "bn_sprite_items_card_production_ironclad.h"
 #include "bn_sprite_items_card_master_of_strategy_ironclad.h"
+#include "bn_sprite_items_card_feeding_frenzy_ironclad.h"
+#include "bn_sprite_items_card_outmaneuver_ironclad.h"
+#include "bn_sprite_items_card_toric_toughness_ironclad.h"
+#include "bn_sprite_items_card_entrench_ironclad.h"
 
 namespace gba::card_art
 {
@@ -1714,6 +1766,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_production_ironclad;
     case engine::CardId::MASTER_OF_STRATEGY:
         return &bn::sprite_items::card_master_of_strategy_ironclad;
+    case engine::CardId::FEEDING_FRENZY:
+        return &bn::sprite_items::card_feeding_frenzy_ironclad;
+    case engine::CardId::OUTMANEUVER:
+        return &bn::sprite_items::card_outmaneuver_ironclad;
+    case engine::CardId::TORIC_TOUGHNESS:
+        return &bn::sprite_items::card_toric_toughness_ironclad;
+    case engine::CardId::ENTRENCH:
+        return &bn::sprite_items::card_entrench_ironclad;
     default:
         return nullptr;
     }
@@ -1741,7 +1801,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 87, 0, 0, 0, 0, 0, 0, 88, 89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
+    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
