@@ -829,6 +829,8 @@ std::string_view RunManager::draw_treasure_relic() {
     return {};
 }
 
+static constexpr uint8_t PUMPKIN_CANDLE_COMBATS = 5;
+
 void RunManager::register_relic_powers() {
     // Blessed Antler: one more energy each turn, paid for with three Dazed shuffled into the draw pile.
     if (has_relic("BLESSED_ANTLER")) {
@@ -854,6 +856,11 @@ void RunManager::register_relic_powers() {
     if (has_relic("ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 6);
     if (has_relic("SCREAMING_FLAGON")) combat.add_power(PowerId::SCREAMING_FLAGON, 20);
     // Kept from one turn to the next
+    // Pumpkin Candle: one more energy each turn, for the first 5 combats; the counter holds the combats lit so far.
+    if (has_relic("PUMPKIN_CANDLE") && relic_counter("PUMPKIN_CANDLE") < PUMPKIN_CANDLE_COMBATS) {
+        combat.add_power(PowerId::TURN_ENERGY, 1);
+        set_relic_counter("PUMPKIN_CANDLE", static_cast<uint8_t>(relic_counter("PUMPKIN_CANDLE") + 1));
+    }
     if (has_relic("ICE_CREAM")) combat.add_power(PowerId::ICE_CREAM);
     if (has_relic("STURDY_CLAMP")) combat.add_power(PowerId::STURDY_CLAMP, 10);
     // Combat events

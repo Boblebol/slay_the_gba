@@ -563,6 +563,28 @@ void test_strawberry() {
     std::cout << "[PASS] Strawberry: +7 Max HP when obtained, once, from a chest too" << std::endl;
 }
 
+void test_pumpkin_candle() {
+    // Lit: one more energy each turn, for 5 combats.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("PUMPKIN_CANDLE");
+    for (int fight = 1; fight <= 5; ++fight) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        assert(run.combat.player.energy == 4);
+        assert(run.relic_counter("PUMPKIN_CANDLE") == fight);
+    }
+    // Extinguished after the fifth combat.
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 3);
+
+    // Without the relic: the usual 3.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.combat.player.energy == 3);
+    std::cout << "[PASS] Pumpkin Candle: +1 energy per turn for 5 combats" << std::endl;
+}
+
 void test_membership_card() {
     // Without the card, the prices are the ones the stock is drawn with.
     RunManager plain;
@@ -641,6 +663,7 @@ int main() {
     test_relics_in_a_run();
     test_strawberry();
     test_membership_card();
+    test_pumpkin_candle();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

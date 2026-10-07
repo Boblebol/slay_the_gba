@@ -53,6 +53,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "HAPPY_FLOWER", "Tous les 3 tours, gagnez 1 ●." },
     { "HELICAL_DART", "Chaque fois que vous jouez un Surin, gagnez 1 de Dextérité jusqu'à la fin du tour." },
     { "HORN_CLEAT", "Au début de votre 2ème tour, gagnez 14 d'Armure." },
+    { "PUMPKIN_CANDLE", "Gagnez 1 ● par tour pendant 5 combats." },
     { "ICE_CREAM", "Vous conservez votre Énergie entre chaque tour." },
     { "INTIMIDATING_HELMET", "Lorsque vous jouez une carte qui coûte 2 ● ou plus, gagnez 4 d'Armure." },
     { "IVORY_TILE", "Lorsque vous jouez une carte qui coûte 3 ● ou plus, gagnez 1 ●." },
