@@ -641,6 +641,7 @@ CARDS: list[CardArt] = [
     CardArt("maul", "hero", "maul", "attack", (1, 1), folder="event"),
     CardArt("apotheosis", "hero", "apotheosis", "skill", (2, 2), folder="event"),
     CardArt("wish", "hero", "wish", "skill", (0, 0), folder="event"),
+    CardArt("whistle", "hero", "whistle", "attack", (1, 1), folder="event"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

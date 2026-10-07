@@ -477,6 +477,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::APOTHEOSIS, "Apotheosis", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", "Apotheosis+", 2, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", KEYWORD_EXHAUST | KEYWORD_INNATE, KEYWORD_EXHAUST | KEYWORD_INNATE },
     // Wish: an event card. Retain only once upgraded.
     { CardId::WISH, "Wish", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Put a card from your draw pile into your hand. Exhaust.", "Wish+", 0, 0, 0, "Retain. Put a card from your draw pile into your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    // Whistle: an event card that stuns the enemy.
+    { CardId::WHISTLE, "Whistle", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 33, 0, "Deal 33 dmg. Stun the enemy. Exhaust.", "Whistle+", 2, 44, 0, "Deal 44 dmg. Stun the enemy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
 };
 
 const CardDef& CardDef::get(CardId id) {

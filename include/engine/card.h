@@ -478,6 +478,8 @@ enum class CardId : uint16_t {
     APOTHEOSIS,
     // Wish: an event card
     WISH,
+    // Whistle: an event card that stuns the enemy
+    WHISTLE,
     COUNT
 };
 

@@ -577,6 +577,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         lose_max_hp(9);
         for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::WISH, false });
     }
+    if (relic_id == "JEWELRY_BOX" && has_relic("JEWELRY_BOX")) add_card_to_deck(DeckCard{ CardId::APOTHEOSIS, false });
     if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
         paels_tooth_picks = deck_choice.remaining;
