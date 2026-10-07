@@ -658,6 +658,8 @@ bn::string_view base_name(engine::CardId id)
         return "Vœu";
     case engine::CardId::WHISTLE:
         return "Sifflet";
+    case engine::CardId::BRIGHTEST_FLAME:
+        return "Flamme éclatante";
     case engine::CardId::BLADE_DANCE:
         return "Danse des lames";
     case engine::CardId::CLOAK_AND_DAGGER:
@@ -1163,6 +1165,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::WHISTLE:
         stream << "Inflige " << value << " dégâts. Étourdit. Épuisement.";
+        break;
+    case engine::CardId::BRIGHTEST_FLAME:
+        stream << "Énergie +" << value << ". Pioche " << secondary << ". -2 PV Max.";
         break;
     case engine::CardId::PUTREFY:
         stream << "Affaibli et Vulnérable " << secondary << ". Épuisement.";

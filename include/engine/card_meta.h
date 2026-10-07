@@ -411,6 +411,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::ANCIENT, CardPool::EVENT }, // APOTHEOSIS
     { CardRarity::ANCIENT, CardPool::EVENT }, // WISH
     { CardRarity::ANCIENT, CardPool::EVENT }, // WHISTLE
+    { CardRarity::ANCIENT, CardPool::EVENT }, // BRIGHTEST_FLAME
 };
 
 } // namespace engine

@@ -480,6 +480,8 @@ enum class CardId : uint16_t {
     WISH,
     // Whistle: an event card that stuns the enemy
     WHISTLE,
+    // Brightest Flame: an event card; costs 2 Max HP for the rest of the run
+    BRIGHTEST_FLAME,
     COUNT
 };
 
