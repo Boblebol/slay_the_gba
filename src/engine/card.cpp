@@ -485,6 +485,14 @@ static constexpr CardDef CARDS[] = {
     { CardId::FOLLY, "Folly", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", "Folly+", COST_X, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL, KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL },
     // Enthralled (Assuétude): a Curse. Playable, but before any other card of the hand.
     { CardId::ENTHRALLED, "Enthralled", 2, CardType::CURSE, TargetType::SELF, 0, 0, "Must be played before other cards in hand. Eternal.", "Enthralled+", 2, 0, 0, "Must be played before other cards in hand. Eternal.", KEYWORD_PLAY_FIRST | KEYWORD_ETERNAL, KEYWORD_PLAY_FIRST | KEYWORD_ETERNAL },
+    // Byrd Swoop: an event card.
+    { CardId::BYRD_SWOOP, "Byrd Swoop", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 14, 0, "Deal 14 dmg.", "Byrd Swoop+", 0, 18, 0, "Deal 18 dmg." },
+    // Ultimate Strike: a colorless Attack.
+    { CardId::ULTIMATE_STRIKE, "Ultimate Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 14, 0, "Deal 14 dmg.", "Ultimate Strike+", 1, 20, 0, "Deal 20 dmg." },
+    // Ultimate Defend: a colorless Skill.
+    { CardId::ULTIMATE_DEFEND, "Ultimate Defend", 1, CardType::SKILL, TargetType::SELF, 11, 0, "Gain 11 Block.", "Ultimate Defend+", 1, 15, 0, "Gain 15 Block." },
+    // Finesse: a colorless Skill.
+    { CardId::FINESSE, "Finesse", 0, CardType::SKILL, TargetType::SELF, 4, 1, "Gain 4 Block. Draw 1 card.", "Finesse+", 0, 7, 1, "Gain 7 Block. Draw 1 card." },
 };
 
 const CardDef& CardDef::get(CardId id) {

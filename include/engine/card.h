@@ -486,6 +486,14 @@ enum class CardId : uint16_t {
     FOLLY,
     // Enthralled (Assuétude): a Curse, Eternal; must be played before the other cards in hand
     ENTHRALLED,
+    // Byrd Swoop: an event card
+    BYRD_SWOOP,
+    // Ultimate Strike: a colorless Attack
+    ULTIMATE_STRIKE,
+    // Ultimate Defend: a colorless Skill
+    ULTIMATE_DEFEND,
+    // Finesse: a colorless Skill
+    FINESSE,
     COUNT
 };
 
