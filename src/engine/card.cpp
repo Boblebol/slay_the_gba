@@ -477,6 +477,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::APOTHEOSIS, "Apotheosis", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", "Apotheosis+", 2, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", KEYWORD_EXHAUST | KEYWORD_INNATE, KEYWORD_EXHAUST | KEYWORD_INNATE },
     // Wish: an event card. Retain only once upgraded.
     { CardId::WISH, "Wish", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Put a card from your draw pile into your hand. Exhaust.", "Wish+", 0, 0, 0, "Retain. Put a card from your draw pile into your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    // Folly (Hubris): a Curse. Cost X, but Unplayable.
+    { CardId::FOLLY, "Folly", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", "Folly+", COST_X, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL, KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL },
 };
 
 const CardDef& CardDef::get(CardId id) {

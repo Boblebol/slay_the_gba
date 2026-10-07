@@ -478,6 +478,8 @@ enum class CardId : uint16_t {
     APOTHEOSIS,
     // Wish: an event card
     WISH,
+    // Folly (Hubris): a Curse, Eternal
+    FOLLY,
     COUNT
 };
 
