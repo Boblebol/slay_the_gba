@@ -577,6 +577,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         lose_max_hp(9);
         for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::WISH, false });
     }
+    if (relic_id == "BLOOD_SOAKED_ROSE" && has_relic("BLOOD_SOAKED_ROSE")) add_card_to_deck(DeckCard{ CardId::ENTHRALLED, false });
     if (relic_id == "JEWELRY_BOX" && has_relic("JEWELRY_BOX")) add_card_to_deck(DeckCard{ CardId::APOTHEOSIS, false });
     if (relic_id == "DISTINGUISHED_CAPE" && has_relic("DISTINGUISHED_CAPE")) {
         // Two random curses (repetition allowed) drawn from the whole curse pool, then three Apparitions.
@@ -919,6 +920,7 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::TURN_ENERGY, 1);
         for (int copy = 0; copy < 3; ++copy) combat.create_card(CardId::DAZED, Pile::DRAW);
     }
+    if (has_relic("BLOOD_SOAKED_ROSE")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Start of turn
     if (has_relic("CAPTAINS_WHEEL")) combat.add_power(PowerId::CAPTAINS_WHEEL, 18);
     if (has_relic("HORN_CLEAT")) combat.add_power(PowerId::HORN_CLEAT, 14);
