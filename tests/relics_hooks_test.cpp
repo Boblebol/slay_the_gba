@@ -563,6 +563,30 @@ void test_strawberry() {
     std::cout << "[PASS] Strawberry: +7 Max HP when obtained, once, from a chest too" << std::endl;
 }
 
+void test_golden_compass() {
+    auto nodes_on_floor = [](const RunManager& r, uint8_t floor) {
+        int n = 0;
+        for (const MapNode& node : r.map.nodes) n += node.floor == floor ? 1 : 0;
+        return n;
+    };
+    // Without the compass, Act 2 keeps its several paths.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.advance_act();
+    assert(plain.current_act == 2 && !plain.has_relic("GOLDEN_COMPASS"));
+    bool branches = false;
+    for (uint8_t f = 0; f < 14; ++f) branches = branches || nodes_on_floor(plain, f) > 1;
+    assert(branches);
+
+    // With it, obtained once the Act 2 map exists, every floor holds a single room.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.advance_act();
+    run.add_relic("GOLDEN_COMPASS");
+    for (uint8_t f = 0; f <= 15; ++f) assert(nodes_on_floor(run, f) == 1);
+    std::cout << "[PASS] Golden Compass: Act 2 map becomes a single path" << std::endl;
+}
+
 void test_membership_card() {
     // Without the card, the prices are the ones the stock is drawn with.
     RunManager plain;
@@ -640,6 +664,7 @@ int main() {
     test_combat_start_relics();
     test_relics_in_a_run();
     test_strawberry();
+    test_golden_compass();
     test_membership_card();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
