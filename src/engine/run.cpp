@@ -578,6 +578,17 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::WISH, false });
     }
     if (relic_id == "JEWELRY_BOX" && has_relic("JEWELRY_BOX")) add_card_to_deck(DeckCard{ CardId::APOTHEOSIS, false });
+    if (relic_id == "DISTINGUISHED_CAPE" && has_relic("DISTINGUISHED_CAPE")) {
+        // Two random curses (repetition allowed) drawn from the whole curse pool, then three Apparitions.
+        std::vector<CardId> curses;
+        for (uint16_t i = 0; i < static_cast<uint16_t>(CardId::COUNT); ++i) {
+            if (card_meta(static_cast<CardId>(i)).pool == CardPool::CURSE) curses.push_back(static_cast<CardId>(i));
+        }
+        for (int i = 0; i < 2 && !curses.empty(); ++i) {
+            add_card_to_deck(DeckCard{ curses[next_random() % curses.size()], false });
+        }
+        for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::APPARITION, false });
+    }
     if (relic_id == "STORYBOOK" && has_relic("STORYBOOK")) add_card_to_deck(DeckCard{ CardId::BRIGHTEST_FLAME, false });
     if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
