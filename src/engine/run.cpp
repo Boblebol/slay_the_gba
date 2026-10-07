@@ -596,8 +596,10 @@ void RunManager::on_shop_opened() {
     if (has_relic("MEMBERSHIP_CARD")) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
 }
 
-void RunManager::on_combat_won(RoomType) {
+void RunManager::on_combat_won(RoomType room) {
     count_hook(RunHook::COMBAT_WON);
+    // War Hammer: killing an Elite upgrades 4 random cards of the deck.
+    if (room == RoomType::ELITE && has_relic("WAR_HAMMER")) upgrade_random_cards(4);
     // Paël's Tooth gives back one devoured card, upgraded, per fight (chosen at random).
     if (has_relic("PAELS_TOOTH") && !paels_tooth_cards.empty()) {
         size_t pick = next_random() % paels_tooth_cards.size();
