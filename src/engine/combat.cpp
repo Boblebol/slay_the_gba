@@ -2860,6 +2860,14 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Maul+!"sv : "Played Maul!"sv);
             break;
         }
+        case CardId::WHISTLE: {
+            hit(current_target, base_value);
+            if (current_target.is_alive()) {
+                current_target.stun();
+            }
+            set_log(upgraded ? "Played Whistle+!"sv : "Played Whistle!"sv);
+            break;
+        }
         case CardId::PUTREFY: {
             afflict(current_target, StatusType::WEAK, secondary_value);
             afflict(current_target, StatusType::VULNERABLE, secondary_value);

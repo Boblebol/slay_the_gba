@@ -652,6 +652,8 @@ bn::string_view base_name(engine::CardId id)
         return "Apparition";
     case engine::CardId::MAUL:
         return "Mutilation";
+    case engine::CardId::WHISTLE:
+        return "Sifflet";
     case engine::CardId::BLADE_DANCE:
         return "Danse des lames";
     case engine::CardId::CLOAK_AND_DAGGER:
@@ -1148,6 +1150,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::MAUL:
         stream << "Inflige " << value << " dégâts " << secondary << " fois. Mutilation +" << (card.upgraded ? "3" : "2") << ".";
+        break;
+    case engine::CardId::WHISTLE:
+        stream << "Inflige " << value << " dégâts. Étourdit. Épuisement.";
         break;
     case engine::CardId::PUTREFY:
         stream << "Affaibli et Vulnérable " << secondary << ". Épuisement.";
