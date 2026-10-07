@@ -578,6 +578,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::WISH, false });
     }
     if (relic_id == "JEWELRY_BOX" && has_relic("JEWELRY_BOX")) add_card_to_deck(DeckCard{ CardId::APOTHEOSIS, false });
+    if (relic_id == "TANXS_WHISTLE" && has_relic("TANXS_WHISTLE")) add_card_to_deck(DeckCard{ CardId::WHISTLE, false });
     if (relic_id == "STORYBOOK" && has_relic("STORYBOOK")) add_card_to_deck(DeckCard{ CardId::BRIGHTEST_FLAME, false });
     if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
