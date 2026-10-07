@@ -486,6 +486,12 @@ enum class CardId : uint16_t {
     FOLLY,
     // Enthralled (Assuétude): a Curse, Eternal; must be played before the other cards in hand
     ENTHRALLED,
+    // Prowess: a colorless Power
+    PROWESS,
+    // Squash: an event card
+    SQUASH,
+    // Exterminate: an event card
+    EXTERMINATE,
     COUNT
 };
 

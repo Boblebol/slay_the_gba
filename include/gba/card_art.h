@@ -102,6 +102,9 @@
 #include "bn_sprite_items_card_brightest_flame_silent.h"
 #include "bn_sprite_items_card_folly.h"
 #include "bn_sprite_items_card_enthralled.h"
+#include "bn_sprite_items_card_prowess_silent.h"
+#include "bn_sprite_items_card_squash_silent.h"
+#include "bn_sprite_items_card_exterminate_silent.h"
 
 namespace gba::card_art
 {
@@ -291,6 +294,12 @@ namespace gba::card_art
         return &bn::sprite_items::card_folly;
     case engine::CardId::ENTHRALLED:
         return &bn::sprite_items::card_enthralled;
+    case engine::CardId::PROWESS:
+        return &bn::sprite_items::card_prowess_silent;
+    case engine::CardId::SQUASH:
+        return &bn::sprite_items::card_squash_silent;
+    case engine::CardId::EXTERMINATE:
+        return &bn::sprite_items::card_exterminate_silent;
     default:
         return nullptr;
     }
@@ -318,7 +327,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 82,
-    83, 84, 85, 86, 87, 88, 89, 90,
+    83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -427,6 +436,9 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_brightest_flame_defect.h"
 #include "bn_sprite_items_card_folly.h"
 #include "bn_sprite_items_card_enthralled.h"
+#include "bn_sprite_items_card_prowess_defect.h"
+#include "bn_sprite_items_card_squash_defect.h"
+#include "bn_sprite_items_card_exterminate_defect.h"
 
 namespace gba::card_art
 {
@@ -634,6 +646,12 @@ namespace gba::card_art
         return &bn::sprite_items::card_folly;
     case engine::CardId::ENTHRALLED:
         return &bn::sprite_items::card_enthralled;
+    case engine::CardId::PROWESS:
+        return &bn::sprite_items::card_prowess_defect;
+    case engine::CardId::SQUASH:
+        return &bn::sprite_items::card_squash_defect;
+    case engine::CardId::EXTERMINATE:
+        return &bn::sprite_items::card_exterminate_defect;
     default:
         return nullptr;
     }
@@ -661,7 +679,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92, 93, 94, 95, 96, 97, 98, 99,
+    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -766,6 +784,9 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_brightest_flame_regent.h"
 #include "bn_sprite_items_card_folly.h"
 #include "bn_sprite_items_card_enthralled.h"
+#include "bn_sprite_items_card_prowess_regent.h"
+#include "bn_sprite_items_card_squash_regent.h"
+#include "bn_sprite_items_card_exterminate_regent.h"
 
 namespace gba::card_art
 {
@@ -965,6 +986,12 @@ namespace gba::card_art
         return &bn::sprite_items::card_folly;
     case engine::CardId::ENTHRALLED:
         return &bn::sprite_items::card_enthralled;
+    case engine::CardId::PROWESS:
+        return &bn::sprite_items::card_prowess_regent;
+    case engine::CardId::SQUASH:
+        return &bn::sprite_items::card_squash_regent;
+    case engine::CardId::EXTERMINATE:
+        return &bn::sprite_items::card_exterminate_regent;
     default:
         return nullptr;
     }
@@ -992,7 +1019,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 65, 66, 0, 0, 0, 0, 0, 0, 0, 67, 68, 69, 70, 71, 72, 73, 74,
     75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 87,
-    88, 89, 90, 91, 92, 93, 94, 95,
+    88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1102,6 +1129,9 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_brightest_flame_necrobinder.h"
 #include "bn_sprite_items_card_folly.h"
 #include "bn_sprite_items_card_enthralled.h"
+#include "bn_sprite_items_card_prowess_necrobinder.h"
+#include "bn_sprite_items_card_squash_necrobinder.h"
+#include "bn_sprite_items_card_exterminate_necrobinder.h"
 
 namespace gba::card_art
 {
@@ -1311,6 +1341,12 @@ namespace gba::card_art
         return &bn::sprite_items::card_folly;
     case engine::CardId::ENTHRALLED:
         return &bn::sprite_items::card_enthralled;
+    case engine::CardId::PROWESS:
+        return &bn::sprite_items::card_prowess_necrobinder;
+    case engine::CardId::SQUASH:
+        return &bn::sprite_items::card_squash_necrobinder;
+    case engine::CardId::EXTERMINATE:
+        return &bn::sprite_items::card_exterminate_necrobinder;
     default:
         return nullptr;
     }
@@ -1338,7 +1374,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 61, 62, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73,
     74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 0, 91, 92,
-    93, 94, 95, 96, 97, 98, 99, 100,
+    93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1447,6 +1483,9 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_brightest_flame_ironclad.h"
 #include "bn_sprite_items_card_folly.h"
 #include "bn_sprite_items_card_enthralled.h"
+#include "bn_sprite_items_card_prowess_ironclad.h"
+#include "bn_sprite_items_card_squash_ironclad.h"
+#include "bn_sprite_items_card_exterminate_ironclad.h"
 
 namespace gba::card_art
 {
@@ -1654,6 +1693,12 @@ namespace gba::card_art
         return &bn::sprite_items::card_folly;
     case engine::CardId::ENTHRALLED:
         return &bn::sprite_items::card_enthralled;
+    case engine::CardId::PROWESS:
+        return &bn::sprite_items::card_prowess_ironclad;
+    case engine::CardId::SQUASH:
+        return &bn::sprite_items::card_squash_ironclad;
+    case engine::CardId::EXTERMINATE:
+        return &bn::sprite_items::card_exterminate_ironclad;
     default:
         return nullptr;
     }
@@ -1681,7 +1726,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 87, 0, 0, 0, 0, 0, 0, 88, 89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92, 93, 94, 95, 96, 97, 98, 99,
+    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.

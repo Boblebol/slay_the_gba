@@ -485,6 +485,12 @@ static constexpr CardDef CARDS[] = {
     { CardId::FOLLY, "Folly", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", "Folly+", COST_X, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL, KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL },
     // Enthralled (Assuétude): a Curse. Playable, but before any other card of the hand.
     { CardId::ENTHRALLED, "Enthralled", 2, CardType::CURSE, TargetType::SELF, 0, 0, "Must be played before other cards in hand. Eternal.", "Enthralled+", 2, 0, 0, "Must be played before other cards in hand. Eternal.", KEYWORD_PLAY_FIRST | KEYWORD_ETERNAL, KEYWORD_PLAY_FIRST | KEYWORD_ETERNAL },
+    // Prowess: a colorless Power; both gains scale together.
+    { CardId::PROWESS, "Prowess", 1, CardType::POWER, TargetType::SELF, 1, 0, "Gain 1 Strength. Gain 1 Dexterity.", "Prowess+", 1, 2, 0, "Gain 2 Strength. Gain 2 Dexterity." },
+    // Squash: an event card.
+    { CardId::SQUASH, "Squash", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 2, "Deal 10 dmg. Apply 2 Vuln.", "Squash+", 1, 12, 3, "Deal 12 dmg. Apply 3 Vuln." },
+    // Exterminate: an event card; 4 hits on every enemy.
+    { CardId::EXTERMINATE, "Exterminate", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 3, 4, "Deal 3 dmg to ALL enemies 4 times.", "Exterminate+", 1, 4, 4, "Deal 4 dmg to ALL enemies 4 times." },
 };
 
 const CardDef& CardDef::get(CardId id) {
