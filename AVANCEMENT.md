@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 56,9 %** — 698 faits, 20 partiels, 526 à faire (35 hors périmètre).
+**Avancement global : 57,0 %** — 699 faits, 20 partiels, 525 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
 | [Cartes communes aux cinq éditions](#cartes) | 22 | 0 | 98 | 18,3 % |
-| [Reliques et potions](#reliques) | 131 | 0 | 190 | 40,8 % |
+| [Reliques et potions](#reliques) | 132 | 0 | 189 | 41,1 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **698** | **20** | **526** | **56,9 %** |
+| **Total** | **699** | **20** | **525** | **57,0 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 40,8 %
+## Reliques et potions — 41,1 %
 
 ### Reliques partagées — 51,3 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 25,5 %
+### Reliques des Anciens — 26,5 %
 
-26 faits, 0 partiel, 76 à faire.
+27 faits, 0 partiel, 75 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1084,7 +1084,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Gourdin de fer | Ancienne | Non |  |
 | Grande capsule | Ancienne | Non |  |
 | Griffe de Paël | Ancienne | Non |  |
-| Griffes | Ancienne | Non |  |
+| Griffes | Ancienne | Oui |  |
 | Grimoire poussiéreux | Ancienne | Non |  |
 | Grooos câlin | Ancienne | Non |  |
 | Hache de lancer | Ancienne | Non |  |
