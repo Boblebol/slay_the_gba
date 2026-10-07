@@ -578,6 +578,25 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::WISH, false });
     }
     if (relic_id == "JEWELRY_BOX" && has_relic("JEWELRY_BOX")) add_card_to_deck(DeckCard{ CardId::APOTHEOSIS, false });
+    if (relic_id == "DISTINGUISHED_CAPE" && has_relic("DISTINGUISHED_CAPE")) {
+        // Two random curses (repetition allowed) drawn from the whole curse pool, then three Apparitions.
+        const auto is_curse = [](uint16_t id) { return card_meta(static_cast<CardId>(id)).pool == CardPool::CURSE; };
+        uint16_t curse_count = 0;
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (is_curse(id)) ++curse_count;
+        }
+        for (int i = 0; i < 2 && curse_count > 0; ++i) {
+            uint16_t pick = next_random() % curse_count;
+            for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+                if (!is_curse(id)) continue;
+                if (pick-- == 0) {
+                    add_card_to_deck(DeckCard{ static_cast<CardId>(id), false });
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::APPARITION, false });
+    }
     if (relic_id == "TANXS_WHISTLE" && has_relic("TANXS_WHISTLE")) add_card_to_deck(DeckCard{ CardId::WHISTLE, false });
     if (relic_id == "STORYBOOK" && has_relic("STORYBOOK")) add_card_to_deck(DeckCard{ CardId::BRIGHTEST_FLAME, false });
     if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
