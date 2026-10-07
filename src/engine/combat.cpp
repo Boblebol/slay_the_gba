@@ -4462,6 +4462,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Buffer+!"sv : "Played Buffer!"sv);
             break;
         }
+        case CardId::APPARITION: {
+            player.add_status(StatusType::INTANGIBLE, base_value);
+            set_log(upgraded ? "Played Apparition+!"sv : "Played Apparition!"sv);
+            break;
+        }
         case CardId::WRAITH_FORM: {
             player.add_status(StatusType::INTANGIBLE, base_value);
             add_power(PowerId::WRAITH_FORM, secondary_value);
