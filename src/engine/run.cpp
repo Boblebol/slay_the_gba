@@ -909,6 +909,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("LUNAR_PASTRY")) combat.add_power(PowerId::LUNAR_PASTRY, 1);
     if (has_relic("REGALITE")) combat.add_power(PowerId::REGALITE, 4);
     if (has_relic("IVORY_TILE")) combat.add_power(PowerId::IVORY_TILE, 1);
+    if (has_relic("PAELS_LEGION")) combat.add_power(PowerId::PAELS_LEGION, 2);
     // Confused from the start: the opening hand already gets random costs.
     if (has_relic("FAKE_SNECKO_EYE")) combat.player.add_status(StatusType::CONFUSED, 1);
     if (has_relic("SNECKO_EYE")) {

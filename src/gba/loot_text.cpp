@@ -75,6 +75,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ORICHALCUM", "Si vous terminez votre tour sans Armure, gagnez 6 d'Armure." },
     { "ORNAMENTAL_FAN", "Chaque fois que vous jouez 3 Attaques en un seul tour, gagnez 4 d'Armure." },
     { "PANTOGRAPH", "Au début de chaque combat de Boss, récupérez 25 PV." },
+    { "PAELS_LEGION", "Double l'Armure reçue d'une carte, puis s'endort pendant 2 tours." },
     { "PARRYING_SHIELD", "Si vous terminez votre tour avec au moins 10 d'Armure, infligez 6 dégâts à un ennemi aléatoire." },
     { "PENDULUM", "Tous les 3 tours, piochez 1 carte." },
     { "PERMAFROST", "La première fois que vous jouez un Pouvoir chaque combat, gagnez 7 d'Armure." },

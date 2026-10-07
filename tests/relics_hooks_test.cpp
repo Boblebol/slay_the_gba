@@ -629,6 +629,35 @@ void test_membership_card() {
     std::cout << "[PASS] Membership Card: every price halved, removal included, at once when bought in the shop" << std::endl;
 }
 
+void test_paels_legion() {
+    // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
+    CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 10);
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 15);
+    legion.end_player_turn();
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 5);
+    legion.end_player_turn();
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 5);
+    legion.end_player_turn();
+    legion.player.block = 0;
+    play(legion, CardId::DEFEND);
+    assert(legion.player.block == 10);
+
+    // Without the relic: nothing changes.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.player.block = 0;
+    play(plain, CardId::DEFEND);
+    assert(plain.player.block == 5);
+    std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -641,6 +670,7 @@ int main() {
     test_relics_in_a_run();
     test_strawberry();
     test_membership_card();
+    test_paels_legion();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
