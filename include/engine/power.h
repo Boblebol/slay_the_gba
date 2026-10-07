@@ -157,6 +157,7 @@ enum class PowerId : uint8_t {
     LUNAR_PASTRY,      // end of turn: `amount` Stars
     REGALITE,          // first card created each turn: `amount` Block
     IVORY_TILE,        // card costing IVORY_TILE_COST energy or more played: `amount` energy
+    PAELS_LEGION,      // Block from a card is doubled, then the relic sleeps `amount` turns (counter = turn starts left asleep + 1)
     // Damage sent back and statuses lost each turn (appended)
     FLAME_BARRIER,     // until the next turn: each enemy attack deals `amount` damage back to the attacker
     REFLECT,           // until the next turn: the attack damage the player's Block absorbs goes back to the attacker
