@@ -106,6 +106,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "UNCEASING_TOP", "Chaque fois que votre Main est vide pendant votre tour, piochez une carte." },
     { "VAJRA", "Démarrez chaque combat avec 1 de Force." },
     { "VEXING_PUZZLEBOX", "Au début de chaque combat, ajoutez une carte aléatoire à votre Main. Elle coûte 0 ce tour." },
+    { "YUMMY_COOKIE", "Lorsque vous obtenez cette relique, Améliorez 4 cartes." },
 };
 
 bn::string_view to_bn(std::string_view text)

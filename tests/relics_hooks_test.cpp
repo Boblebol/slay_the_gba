@@ -629,6 +629,27 @@ void test_membership_card() {
     std::cout << "[PASS] Membership Card: every price halved, removal included, at once when bought in the shop" << std::endl;
 }
 
+void test_yummy_cookie() {
+    // Obtained: four cards of the deck are upgraded.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    auto upgraded_count = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) n += r.master_deck[i].upgraded ? 1 : 0;
+        return n;
+    };
+    int before = upgraded_count(run);
+    run.add_relic("YUMMY_COOKIE");
+    assert(run.has_relic("YUMMY_COOKIE"));
+    assert(upgraded_count(run) == before + 4);
+
+    // Any other relic upgrades nothing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(upgraded_count(plain) == before);
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -641,6 +662,7 @@ int main() {
     test_relics_in_a_run();
     test_strawberry();
     test_membership_card();
+    test_yummy_cookie();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
