@@ -644,6 +644,8 @@ bn::string_view base_name(engine::CardId id)
         return "Atterrissage forcé";
     case engine::CardId::SHIV:
         return "Surin";
+    case engine::CardId::GIANT_ROCK:
+        return "Rocher gigantesque";
     case engine::CardId::BLADE_DANCE:
         return "Danse des lames";
     case engine::CardId::CLOAK_AND_DAGGER:
@@ -1780,6 +1782,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::CRASH_LANDING:
         stream << "TOUS : " << value << ". Main remplie de Débris.";
+        break;
+    case engine::CardId::GIANT_ROCK:
+        stream << "Inflige " << value << " dégâts.";
         break;
     case engine::CardId::SHIV:
         stream << "Inflige " << value << " dégâts."

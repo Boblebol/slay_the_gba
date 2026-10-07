@@ -113,6 +113,9 @@ public:
 
     ShopInventory current_shop;
     uint8_t card_removals_count = 0;
+    // Paël's Tooth: cards devoured from the deck, returned one per won combat (upgraded).
+    FixedVector<CardId, 5> paels_tooth_cards;
+    uint8_t paels_tooth_picks = 0; // devour picks still to make
     PaletteVariant palette = PaletteVariant::CLASSIC;
 
     EventEncounter current_event;
@@ -145,6 +148,8 @@ public:
 
     // Rewards & Deck modification
     void generate_rewards();
+    // Regenerates the current act's map from its seed; the Golden Compass narrows Act 2 to a single path.
+    void regenerate_map();
     // Engine-supported cards a hero can be offered after a combat.
     static std::span<const CardId> card_reward_pool(CharacterId char_id);
     void pick_card_reward(int reward_index);
