@@ -2098,6 +2098,10 @@ bn::string_view card_type_name(engine::CardType type)
         return "Compétence";
     case engine::CardType::STATUS:
         return "Statut";
+    case engine::CardType::CURSE:
+        return "Malédiction";
+    case engine::CardType::QUEST:
+        return "Quête";
     default:
         return "Pouvoir";
     }

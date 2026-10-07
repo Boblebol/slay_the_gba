@@ -4789,6 +4789,13 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
     }
 }
 
+void CombatEngine::trigger_end_of_turn_in_hand(const DeckCard& card) {
+    switch (card.id) {
+        case CardId::BURN: damage_player(CardDef::get_value(card.id, card.upgraded)); break;
+        default: break;
+    }
+}
+
 void CombatEngine::end_player_turn() {
     if (state != CombatState::PLAYER_TURN) return;
     // A choice left unanswered is answered for the player.
@@ -4813,10 +4820,8 @@ void CombatEngine::end_player_turn() {
     if (state != CombatState::PLAYER_TURN) return;
     for (DeckCard& card : hand) card.free_this_turn = false;
 
-    // Burn hurts while it is still in hand.
-    for (size_t i = 0; i < hand.size() && player.is_alive(); ++i) {
-        if (hand[i].id == CardId::BURN) damage_player(CardDef::get_value(hand[i].id, hand[i].upgraded));
-    }
+    // Cards that hurt while they are still in hand (Burn, curses).
+    for (size_t i = 0; i < hand.size() && player.is_alive(); ++i) trigger_end_of_turn_in_hand(hand[i]);
     if (!player.is_alive()) {
         state = CombatState::DEFEAT;
         set_log("You were defeated!");
