@@ -788,6 +788,24 @@ void test_yummy_cookie() {
     std::cout << "[PASS] Yummy Cookie: upgrades 4 cards when obtained" << std::endl;
 }
 
+void test_delicate_frond() {
+    // With the relic, a fight starts with every potion slot filled.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("DELICATE_FROND");
+    with.potions.clear();
+    enter_room_of_type(with, RoomType::MONSTER);
+    assert(with.potion_belt_full());
+
+    // Without it, the belt stays as it was.
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    without.potions.clear();
+    enter_room_of_type(without, RoomType::MONSTER);
+    assert(without.potions.empty());
+    std::cout << "[PASS] Delicate Frond: every empty potion slot filled at combat start" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -835,6 +853,7 @@ int main() {
     test_paels_tooth();
     test_membership_card();
     test_yummy_cookie();
+    test_delicate_frond();
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
