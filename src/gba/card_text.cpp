@@ -1152,7 +1152,7 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Inflige " << value << " dégâts " << secondary << " fois. Mutilation +" << (card.upgraded ? "3" : "2") << ".";
         break;
     case engine::CardId::APOTHEOSIS:
-        stream << "Inné. Améliore TOUTES vos cartes. Épuisement.";
+        stream << "Inné. Améliore TOUT. Épuisement.";
         break;
     case engine::CardId::PUTREFY:
         stream << "Affaibli et Vulnérable " << secondary << ". Épuisement.";
