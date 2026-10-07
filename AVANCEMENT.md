@@ -4,11 +4,11 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 55,0 %** — 674 faits, 20 partiels, 550 à faire (35 hors périmètre).
+**Avancement global : 55,6 %** — 682 faits, 20 partiels, 542 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
-Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Fuel, Giant Rock, Metallicize, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
+Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Fuel, Giant Rock, Luminesce, Metallicize, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
 
 ## Synthèse
 
@@ -19,14 +19,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
 | [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
-| [Cartes communes aux cinq éditions](#cartes) | 13 | 0 | 107 | 10,8 % |
-| [Reliques et potions](#reliques) | 116 | 0 | 205 | 36,1 % |
+| [Cartes communes aux cinq éditions](#cartes) | 14 | 0 | 106 | 11,7 % |
+| [Reliques et potions](#reliques) | 123 | 0 | 198 | 38,3 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **674** | **20** | **550** | **55,0 %** |
+| **Total** | **682** | **20** | **542** | **55,6 %** |
 
 <a id="ironclad"></a>
 
@@ -688,7 +688,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 10,8 %
+## Cartes communes aux cinq éditions — 11,7 %
 
 ### Cartes incolores — 0,0 %
 
@@ -833,9 +833,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Rhabdomancie | Quête · Quête | Non |  |
 | Œuf d'oizodon | Quête · Quête | Non |  |
 
-### Cartes créées en combat et statuts — 76,5 %
+### Cartes créées en combat et statuts — 82,4 %
 
-13 faits, 0 partiel, 4 à faire.
+14 faits, 0 partiel, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -855,11 +855,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Suie | Statut · Statut | Oui |  |
 | Surin | Créée en combat · Attaque | Oui |  |
 | Âme | Créée en combat · Compétence | Oui |  |
-| Éclat | Créée en combat · Compétence | Non |  |
+| Éclat | Créée en combat · Compétence | Oui |  |
 
 <a id="reliques"></a>
 
-## Reliques et potions — 36,1 %
+## Reliques et potions — 38,3 %
 
 ### Reliques partagées — 51,3 %
 
@@ -1031,14 +1031,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 10,8 %
+### Reliques des Anciens — 17,6 %
 
-11 faits, 0 partiel, 91 à faire.
+18 faits, 0 partiel, 84 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Aile de Paël | Ancienne | Non |  |
-| Anneau à signet | Ancienne | Non |  |
+| Anneau à signet | Ancienne | Oui |  |
 | Arbalète | Ancienne | Non |  |
 | Astrolabe | Ancienne | Non |  |
 | Baguette de rhabdomancie | Ancienne | Non |  |
@@ -1073,13 +1073,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Dent archaïque | Ancienne | Non |  |
 | Dent de Paël | Ancienne | Oui |  |
 | Diadème de diamant | Ancienne | Non |  |
-| Délicieux biscuit | Ancienne | Non |  |
+| Délicieux biscuit | Ancienne | Oui |  |
 | Ectoplasme | Ancienne | Non |  |
 | Embarras du choix | Ancienne | Non |  |
 | Excroissance de Paël | Ancienne | Non |  |
 | Forces précaires | Ancienne | Non |  |
 | Fougère délicate | Ancienne | Oui |  |
-| Fruits exotiques | Ancienne | Non |  |
+| Fruits exotiques | Ancienne | Oui |  |
 | Gantelets à pointes | Ancienne | Non |  |
 | Gourdin de fer | Ancienne | Non |  |
 | Grande capsule | Ancienne | Non |  |
@@ -1097,8 +1097,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Livre d'histoires | Ancienne | Non |  |
 | Légion de Paël | Ancienne | Oui |  |
 | Manteau de fourrure | Ancienne | Non |  |
-| Marteau de guerre | Ancienne | Non |  |
-| Masque serti | Ancienne | Non |  |
+| Marteau de guerre | Ancienne | Oui |  |
+| Masque serti | Ancienne | Oui |  |
 | Mitaines réchauffantes | Ancienne | Non |  |
 | Nouvelle page | Ancienne | Non |  |
 | Osselets de Neow | Ancienne | Non |  |
@@ -1119,7 +1119,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Rose sanguinolente | Ancienne | Non |  |
 | Sacrifice de Neow | Ancienne | Non |  |
 | Sang de Paël | Ancienne | Oui |  |
-| Saï | Ancienne | Non |  |
+| Saï | Ancienne | Oui |  |
 | Sceau doré | Ancienne | Oui |  |
 | Serre desséchée | Ancienne | Non |  |
 | Sifflet de Tanx | Ancienne | Non |  |
@@ -1132,7 +1132,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tresse soyeuse | Ancienne | Non |  |
 | Tri-boomerang | Ancienne | Non |  |
 | Verre marin | Ancienne | Non |  |
-| Violon | Ancienne | Non |  |
+| Violon | Ancienne | Oui |  |
 | Écharpe étincelante | Ancienne | Non |  |
 | Étoile noire | Ancienne | Non |  |
 | Étui à fioles | Ancienne | Non |  |
