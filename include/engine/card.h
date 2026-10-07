@@ -476,6 +476,8 @@ enum class CardId : uint16_t {
     MAUL,
     // Apotheosis: an event card
     APOTHEOSIS,
+    // Wish: an event card
+    WISH,
     COUNT
 };
 

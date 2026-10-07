@@ -475,6 +475,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::MAUL, "Maul", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 2, "Deal 5 dmg twice. ALL Maul cards gain 2 dmg this combat.", "Maul+", 1, 6, 2, "Deal 6 dmg twice. ALL Maul cards gain 3 dmg this combat." },
     // Apotheosis: an event card.
     { CardId::APOTHEOSIS, "Apotheosis", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", "Apotheosis+", 2, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", KEYWORD_EXHAUST | KEYWORD_INNATE, KEYWORD_EXHAUST | KEYWORD_INNATE },
+    // Wish: an event card. Retain only once upgraded.
+    { CardId::WISH, "Wish", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Put a card from your draw pile into your hand. Exhaust.", "Wish+", 0, 0, 0, "Retain. Put a card from your draw pile into your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
 };
 
 const CardDef& CardDef::get(CardId id) {
