@@ -115,6 +115,7 @@ public:
     uint8_t card_removals_count = 0;
     // Paël's Tooth: cards devoured from the deck, returned one per won combat (upgraded).
     FixedVector<CardId, 5> paels_tooth_cards;
+    bool preserved_fog_pending = false; // Hubris is added once the 3 removals are done
     uint8_t paels_tooth_picks = 0; // devour picks still to make
     PaletteVariant palette = PaletteVariant::CLASSIC;
 
@@ -200,6 +201,8 @@ public:
     [[nodiscard]] bool deck_choice_allows(int deck_index) const;
     // Applies the choice in progress to the card. The choice ends with its last card, or when no card fits.
     bool resolve_deck_choice(int deck_index);
+    // Adds Hubris once the Preserved Fog removals are over.
+    void finish_preserved_fog();
     // Leaves an optional choice. False when the choice has to be made.
     bool skip_deck_choice();
     std::string_view draw_treasure_relic();

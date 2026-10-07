@@ -583,6 +583,12 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
         paels_tooth_picks = deck_choice.remaining;
     }
+    if (relic_id == "PRESERVED_FOG" && has_relic("PRESERVED_FOG")) {
+        // Hubris joins only after the removals, so the Eternal curse can never be picked.
+        request_deck_choice(DeckChoiceKind::REMOVE, 3);
+        preserved_fog_pending = true;
+        finish_preserved_fog();
+    }
     if (relic_id == "MEMBERSHIP_CARD" && phase == RunPhase::SHOP) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
 }
 
@@ -778,6 +784,12 @@ void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool option
     deck_choice.upgrade_result = upgrade_result;
 }
 
+void RunManager::finish_preserved_fog() {
+    if (!preserved_fog_pending || has_deck_choice()) return;
+    preserved_fog_pending = false;
+    add_card_to_deck(DeckCard{ CardId::FOLLY, false });
+}
+
 bool RunManager::deck_choice_allows(int deck_index) const {
     if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
     switch (deck_choice.kind) {
@@ -810,6 +822,7 @@ bool RunManager::resolve_deck_choice(int deck_index) {
     // The cards left may not allow as many picks as asked (deck emptied, everything upgraded).
     DeckChoice next = deck_choice;
     request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result);
+    finish_preserved_fog();
     return true;
 }
 
