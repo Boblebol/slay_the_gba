@@ -2850,6 +2850,16 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Luminesce+!"sv : "Played Luminesce!"sv);
             break;
         }
+        case CardId::MAUL: {
+            for (uint8_t blow = 0; blow < secondary_value; ++blow) {
+                hit(current_target, static_cast<int16_t>(base_value + played_card.bonus));
+            }
+            const int growth = upgraded ? 3 : 2;
+            played_card.bonus = bump(played_card.bonus, growth);
+            boost_copies(CardId::MAUL, growth);
+            set_log(upgraded ? "Played Maul+!"sv : "Played Maul!"sv);
+            break;
+        }
         case CardId::PUTREFY: {
             afflict(current_target, StatusType::WEAK, secondary_value);
             afflict(current_target, StatusType::VULNERABLE, secondary_value);

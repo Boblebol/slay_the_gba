@@ -469,6 +469,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::GIANT_ROCK, "Giant Rock", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 20, 0, "Deal 20 dmg.", "Giant Rock+", 1, 20, 0, "Deal 20 dmg." },
     // Luminesce: a token, made by other cards.
     { CardId::LUMINESCE, "Luminesce", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Retain. Gain 2 energy. Exhaust.", "Luminesce+", 0, 2, 0, "Retain. Gain 2 energy. Exhaust.", KEYWORD_EXHAUST | KEYWORD_RETAIN, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    // Maul: an event card; each play raises the damage of every Maul copy for the combat.
+    { CardId::MAUL, "Maul", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 2, "Deal 5 dmg twice. ALL Maul cards gain 2 dmg this combat.", "Maul+", 1, 6, 2, "Deal 6 dmg twice. ALL Maul cards gain 3 dmg this combat." },
 };
 
 const CardDef& CardDef::get(CardId id) {
