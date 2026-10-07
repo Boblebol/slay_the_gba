@@ -46,6 +46,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "FENCING_MANUAL", "Au début de chaque combat, Forgez 10." },
     { "FESTIVE_POPPER", "Au début de chaque combat, infligez 9 dégâts à TOUS les ennemis." },
     { "FUNERARY_MASK", "Au début de chaque combat, ajoutez 3 Âmes à votre Pioche." },
+    { "JEWELED_MASK", "Au début de chaque combat, placez un Pouvoir aléatoire de votre Pioche dans votre Main. Il coûte 0 ce combat." },
     { "GALACTIC_DUST", "Chaque fois que vous dépensez 10 ★, gagnez 10 d'Armure." },
     { "GAMBLING_CHIP", "Au début de chaque combat, défaussez autant de cartes que vous souhaitez, puis piochez-en le même nombre." },
     { "GAME_PIECE", "Chaque fois que vous jouez un Pouvoir, piochez 1 carte." },
