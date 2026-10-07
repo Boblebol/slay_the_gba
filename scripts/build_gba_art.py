@@ -643,10 +643,11 @@ CARDS: list[CardArt] = [
     CardArt("wish", "hero", "wish", "skill", (0, 0), folder="event"),
     CardArt("whistle", "hero", "whistle", "attack", (1, 1), folder="event"),
     CardArt("brightest_flame", "hero", "brightest_flame", "skill", (0, 0), folder="event"),
+    CardArt("folly", "curse", "folly", "status", (NO_COST, NO_COST)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
-               "status": "grey"}
+               "status": "grey", "curse": "purple"}
 PORTRAIT_BOX = (47, 84, 547, 464)  # transparent window inside the 598x844 frame templates
 
 # 3x5 digits baked into the mini cards' energy gem.
@@ -697,6 +698,17 @@ def load_frame(kind: str, color: str) -> Image.Image:
         grey = Image.fromarray(hsv.astype(np.uint8), "HSV").convert("RGBA")
         grey.putalpha(red.getchannel("A"))
         return grey
+    if color == "purple":
+        # Curse cards: the Skill shape, border and text panel moved to a dim purple.
+        red = Image.open(template / "frame_skill_red.webp").convert("RGBA")
+        hsv, border, panel = frame_zones(red)
+        zone = border | panel
+        hsv[..., 0] = np.where(zone, 200, hsv[..., 0])
+        hsv[..., 1] = np.where(zone, hsv[..., 1] * 0.55, hsv[..., 1])
+        hsv[..., 2] = np.where(zone, hsv[..., 2] * 0.7, hsv[..., 2])
+        purple = Image.fromarray(hsv.astype(np.uint8), "HSV").convert("RGBA")
+        purple.putalpha(red.getchannel("A"))
+        return purple
     path = template / f"frame_{kind}_{color}.webp"
     if path.exists():
         return Image.open(path).convert("RGBA")
@@ -735,7 +747,8 @@ def compose_card(card: CardArt, hero: str, size: tuple[int, int]) -> Image.Image
 
 
 HERO_RGB = {"ironclad": (200, 48, 40), "silent": (64, 160, 72), "defect": (56, 112, 216),
-            "regent": (232, 152, 40), "necrobinder": (200, 96, 184), "status": (120, 120, 132)}
+            "regent": (232, 152, 40), "necrobinder": (200, 96, 184), "status": (120, 120, 132),
+            "curse": (112, 64, 144)}
 
 TYPE_ICONS = {
     "attack": [
@@ -810,7 +823,7 @@ def compose_mini(card: CardArt, hero: str) -> Image.Image:
 
 
 def energy_gem(hero: str, size: int) -> Image.Image:
-    if hero == "status":
+    if hero in ("status", "curse"):
         # No colourless gem in the dump: the Ironclad one, without its colour.
         gem = Image.open(BIBLE / "card_template" / "energy_ironclad.webp").convert("RGBA")
         grey = ImageEnhance.Color(gem).enhance(0.0)
@@ -821,7 +834,7 @@ def energy_gem(hero: str, size: int) -> Image.Image:
 
 def on_cartridge(card: CardArt, hero: str) -> bool:
     """A cartridge only carries the art of its hero's cards and of the cards every hero shares."""
-    return card.owner in ("hero", "status", hero)
+    return card.owner in ("hero", "status", "curse", hero)
 
 
 def sheet_cards(hero: str) -> list[CardArt]:

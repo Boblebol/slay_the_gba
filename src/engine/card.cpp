@@ -481,6 +481,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::WHISTLE, "Whistle", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 33, 0, "Deal 33 dmg. Stun the enemy. Exhaust.", "Whistle+", 2, 44, 0, "Deal 44 dmg. Stun the enemy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     // Brightest Flame: an event card; the Max HP loss lasts for the run.
     { CardId::BRIGHTEST_FLAME, "Brightest Flame", 0, CardType::SKILL, TargetType::SELF, 2, 2, "Gain 2 energy. Draw 2 cards. Lose 2 Max HP.", "Brightest Flame+", 0, 3, 3, "Gain 3 energy. Draw 3 cards. Lose 2 Max HP." },
+    // Folly (Hubris): a Curse. Cost X, but Unplayable.
+    { CardId::FOLLY, "Folly", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", "Folly+", COST_X, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL, KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL },
 };
 
 const CardDef& CardDef::get(CardId id) {

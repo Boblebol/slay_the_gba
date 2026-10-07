@@ -482,6 +482,8 @@ enum class CardId : uint16_t {
     WHISTLE,
     // Brightest Flame: an event card; costs 2 Max HP for the rest of the run
     BRIGHTEST_FLAME,
+    // Folly (Hubris): a Curse, Eternal
+    FOLLY,
     COUNT
 };
 

@@ -105,7 +105,7 @@ def test_every_cost_and_star_of_the_card_table_can_be_drawn() -> None:
 def test_a_cartridge_sheet_starts_with_the_blank_card_and_skips_other_heroes(hero: str) -> None:
     sheet = build_gba_art.sheet_cards(hero)
     assert sheet[0].enum_name == "none"
-    assert {card.owner for card in sheet} <= {"hero", "status", hero}
+    assert {card.owner for card in sheet} <= {"hero", "status", "curse", hero}
     assert len(sheet) == len({card.enum_name for card in sheet})
 
 
