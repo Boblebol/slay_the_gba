@@ -113,6 +113,9 @@ public:
 
     ShopInventory current_shop;
     uint8_t card_removals_count = 0;
+    // Paël's Tooth: cards devoured from the deck, returned one per won combat (upgraded).
+    FixedVector<CardId, 5> paels_tooth_cards;
+    uint8_t paels_tooth_picks = 0; // devour picks still to make
     PaletteVariant palette = PaletteVariant::CLASSIC;
 
     EventEncounter current_event;

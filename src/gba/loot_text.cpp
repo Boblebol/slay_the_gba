@@ -20,6 +20,7 @@ struct RelicText
 constexpr RelicText RELIC_TEXTS[] = {
     { "AKABEKO", "Au début de chaque combat, gagnez 8 de Vigueur." },
     { "ANCHOR", "Démarrez chaque combat avec 10 d'Armure." },
+    { "PAELS_TEARS", "Si vous terminez votre tour avec de l'Énergie non dépensée, gagnez 2 ● supplémentaires au tour suivant." },
     { "ART_OF_WAR", "Si vous ne jouez aucune Attaque pendant votre tour, gagnez 1 ● supplémentaire au tour suivant." },
     { "BAG_OF_MARBLES", "Au début de chaque combat, appliquez Vulnérable (1) sur TOUS les ennemis." },
     { "BAG_OF_PREPARATION", "Au début de chaque combat, piochez 2 cartes supplémentaires." },
@@ -74,6 +75,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ODDLY_SMOOTH_STONE", "Démarrez chaque combat avec 1 de Dextérité." },
     { "ORICHALCUM", "Si vous terminez votre tour sans Armure, gagnez 6 d'Armure." },
     { "ORNAMENTAL_FAN", "Chaque fois que vous jouez 3 Attaques en un seul tour, gagnez 4 d'Armure." },
+    { "PAELS_BLOOD", "Au début de votre tour, piochez 1 carte supplémentaire." },
     { "PANTOGRAPH", "Au début de chaque combat de Boss, récupérez 25 PV." },
     { "PARRYING_SHIELD", "Si vous terminez votre tour avec au moins 10 d'Armure, infligez 6 dégâts à un ennemi aléatoire." },
     { "PENDULUM", "Tous les 3 tours, piochez 1 carte." },
@@ -96,6 +98,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "STONE_CALENDAR", "À la fin du tour 7, infligez 52 dégâts à TOUS les ennemis." },
     { "STONE_CRACKER", "Au début de chaque combat, Améliorez 2 cartes aléatoires de votre Pioche pour le restant du combat." },
     { "GOLDEN_COMPASS", "Lorsque vous obtenez cette relique, remplacez la carte de l'Acte 2 par un chemin unique." },
+    { "PAELS_TOOTH", "Retirez 5 cartes de votre Deck. Après chaque combat, rajoutez-en 1 aléatoirement ; elle est Améliorée." },
     { "STRAWBERRY", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 7." },
     { "STURDY_CLAMP", "Vous conservez jusqu'à 10 d'Armure entre chaque tour." },
     { "SYMBIOTIC_VIRUS", "Au début de chaque combat, Canalisez 1 Orbe ténébreux." },
