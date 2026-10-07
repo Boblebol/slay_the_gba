@@ -664,6 +664,14 @@ bn::string_view base_name(engine::CardId id)
         return "Hubris";
     case engine::CardId::ENTHRALLED:
         return "Assuétude";
+    case engine::CardId::FLASH_OF_STEEL:
+        return "Éclair d'acier";
+    case engine::CardId::PECK:
+        return "Picpic";
+    case engine::CardId::PRODUCTION:
+        return "Production";
+    case engine::CardId::MASTER_OF_STRATEGY:
+        return "Maître stratège";
     case engine::CardId::BLADE_DANCE:
         return "Danse des lames";
     case engine::CardId::CLOAK_AND_DAGGER:
@@ -1172,6 +1180,18 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::BRIGHTEST_FLAME:
         stream << "Énergie +" << value << ". Pioche " << secondary << ". -2 PV Max.";
+        break;
+    case engine::CardId::FLASH_OF_STEEL:
+        stream << "Inflige " << value << " dégâts. Pioche " << secondary << ".";
+        break;
+    case engine::CardId::PECK:
+        stream << "Inflige " << value << " dégâts " << secondary << " fois.";
+        break;
+    case engine::CardId::PRODUCTION:
+        stream << "Énergie +" << value << ". Épuisement.";
+        break;
+    case engine::CardId::MASTER_OF_STRATEGY:
+        stream << "Pioche " << secondary << ". Épuisement.";
         break;
     case engine::CardId::PUTREFY:
         stream << "Affaibli et Vulnérable " << secondary << ". Épuisement.";
