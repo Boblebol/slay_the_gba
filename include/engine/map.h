@@ -31,7 +31,7 @@ public:
     int boss_node_index = -1;
 
     // Deterministic for a given (act, seed, ascension): saves regenerate the map from them.
-    void generate(uint8_t act, uint32_t seed, uint8_t ascension = 0);
+    void generate(uint8_t act, uint32_t seed, uint8_t ascension = 0, bool single_path = false);
     FixedVector<int, 3> get_starting_nodes() const;
     FixedVector<int, 3> get_next_nodes(int current_node_index) const;
     std::string_view get_room_icon(RoomType type) const;

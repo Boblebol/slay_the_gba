@@ -336,6 +336,8 @@ bool SaveManager::restore_run(RunManager& run) {
         if (!id.empty()) run.relic_counters.push_back(RelicCounter{ id, r.relic_counter_values[i] });
     }
 
+    run.regenerate_map(); // relics are back: the Golden Compass changes the Act 2 map
+
     return true;
 }
 

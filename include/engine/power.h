@@ -104,6 +104,7 @@ enum class PowerId : uint8_t {
     SPARKLING_ROUGE,   // start of turn 3: `amount` Strength and Dexterity
     HAPPY_FLOWER,      // every 3 turns: `amount` energy
     PENDULUM,          // every 3 turns: draw `amount` more
+    VERY_HOT_COCOA,    // turn 1: `amount` more energy
     BREAD,             // turn 1: lose BREAD_ENERGY_LOST energy; later turns: `amount` energy
     MERCURY_HOURGLASS, // start of turn: `amount` damage to every enemy
     CLOAK_CLASP,       // end of turn: `amount` Block for each card in hand
@@ -158,6 +159,7 @@ enum class PowerId : uint8_t {
     REGALITE,          // first card created each turn: `amount` Block
     IVORY_TILE,        // card costing IVORY_TILE_COST energy or more played: `amount` energy
     SEAL_OF_GOLD,      // start of turn: spend 3 gold (CombatEngine::gold) to gain `amount` energy
+    PAELS_LEGION,      // Block from a card is doubled, then the relic sleeps `amount` turns (counter = turn starts left asleep + 1)
     // Damage sent back and statuses lost each turn (appended)
     FLAME_BARRIER,     // until the next turn: each enemy attack deals `amount` damage back to the attacker
     REFLECT,           // until the next turn: the attack damage the player's Block absorbs goes back to the attacker
@@ -178,7 +180,9 @@ enum class PowerId : uint8_t {
     TANGLED,           // this turn: Attacks cost `amount` more energy
     TENDER,            // card played: lose `amount` Strength and Dexterity until the end of the turn
     // Held by an enemy:
-    PERSONAL_HIVE      // it takes unblocked attack damage: `amount` Dazed into the player's draw pile
+    PERSONAL_HIVE,     // it takes unblocked attack damage: `amount` Dazed into the player's draw pile
+    // Relics of the Ancients (appended)
+    PAELS_TEARS        // end of a turn with unspent energy: `amount` energy next turn
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

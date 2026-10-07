@@ -208,6 +208,7 @@ public:
     FixedVector<DeckCard, 24> powers_in_play; // Power cards played this combat: they stay in play
     FixedVector<PermanentGain, 16> permanent_gains; // bonuses to write back to the deck after the combat
     FixedVector<CardChoice, 4> pending_choices;      // asked in order, the first one first
+    bool resolving_card = false;     // a card's effect is being resolved (Paël's Legion doubles its Block)
     bool end_turn_requested = false; // a card ended the turn (Void Form): the caller ends it once the card is resolved
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;
