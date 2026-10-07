@@ -869,6 +869,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("POCKETWATCH")) combat.add_power(PowerId::POCKETWATCH, 3);
     if (has_relic("PARRYING_SHIELD")) combat.add_power(PowerId::PARRYING_SHIELD, 6);
     if (has_relic("STONE_CALENDAR")) combat.add_power(PowerId::STONE_CALENDAR, 52);
+    if (has_relic("PAELS_TEARS")) combat.add_power(PowerId::PAELS_TEARS, 2);
     if (has_relic("ART_OF_WAR")) combat.add_power(PowerId::ART_OF_WAR, 1);
     if (has_relic("ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 6);
     if (has_relic("SCREAMING_FLAGON")) combat.add_power(PowerId::SCREAMING_FLAGON, 20);
