@@ -605,6 +605,32 @@ void test_strawberry() {
     std::cout << "[PASS] Strawberry: +7 Max HP when obtained, once, from a chest too" << std::endl;
 }
 
+void test_seal_of_gold() {
+    // With the relic: the turn start costs 3 gold and gives 1 energy.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("SEAL_OF_GOLD");
+    run.gold = 10;
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 4 && run.combat.gold == 7);
+
+    // Without the relic: no extra energy, no gold spent.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.gold = 10;
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.combat.player.energy == 3 && plain.gold == 10);
+
+    // Too poor to pay: nothing happens.
+    RunManager poor;
+    poor.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    poor.add_relic("SEAL_OF_GOLD");
+    poor.gold = 2;
+    enter_room_of_type(poor, RoomType::MONSTER);
+    assert(poor.combat.player.energy == 3 && poor.combat.gold == 2);
+    std::cout << "[PASS] Seal of Gold: 3 gold for 1 energy at each turn start" << std::endl;
+}
+
 void test_pumpkin_candle() {
     // Lit: one more energy each turn, for 5 combats.
     RunManager run;
@@ -805,6 +831,7 @@ int main() {
     test_paels_tooth();
     test_membership_card();
     test_delicate_frond();
+    test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
     std::cout << "All relic hook tests passed." << std::endl;
