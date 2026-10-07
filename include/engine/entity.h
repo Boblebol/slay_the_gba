@@ -181,6 +181,14 @@ public:
             hp = std::min<int16_t>(max_hp, hp + amount);
         }
     }
+
+    // Lowers Max HP (never below 1) and drags HP down with it. On the player, RunManager::proceed_after_combat
+    // writes Max HP back to the run, so the loss lasts for the rest of the run (Brightest Flame).
+    void lose_max_hp(int16_t amount) {
+        if (amount <= 0) return;
+        max_hp = static_cast<int16_t>(std::max<int>(1, max_hp - amount));
+        hp = std::min<int16_t>(hp, max_hp);
+    }
 };
 
 class Player : public CombatEntity {
