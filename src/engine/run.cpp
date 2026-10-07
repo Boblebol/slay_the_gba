@@ -873,6 +873,11 @@ void RunManager::register_relic_powers() {
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
     if (has_relic("VERY_HOT_COCOA")) combat.add_power(PowerId::VERY_HOT_COCOA, 4);
     // Paël's Blood: one more card in every opening draw, the first one included.
+    // Fiddle: two more cards in every opening draw, then no draw until the next turn.
+    if (has_relic("FIDDLE")) {
+        combat.add_power(PowerId::TURN_DRAW, 2);
+        combat.add_power(PowerId::FIDDLE, 1);
+    }
     if (has_relic("PAELS_BLOOD")) combat.add_power(PowerId::TURN_DRAW, 1);
     if (has_relic("MERCURY_HOURGLASS")) combat.add_power(PowerId::MERCURY_HOURGLASS, 3);
     // End of turn

@@ -77,6 +77,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ODDLY_SMOOTH_STONE", "Démarrez chaque combat avec 1 de Dextérité." },
     { "ORICHALCUM", "Si vous terminez votre tour sans Armure, gagnez 6 d'Armure." },
     { "ORNAMENTAL_FAN", "Chaque fois que vous jouez 3 Attaques en un seul tour, gagnez 4 d'Armure." },
+    { "FIDDLE", "Au début de chaque tour, piochez 2 cartes supplémentaires. Vous ne pouvez plus piocher de cartes pendant votre tour." },
     { "PAELS_BLOOD", "Au début de votre tour, piochez 1 carte supplémentaire." },
     { "PANTOGRAPH", "Au début de chaque combat de Boss, récupérez 25 PV." },
     { "PAELS_LEGION", "Double l'Armure reçue d'une carte, puis s'endort pendant 2 tours." },

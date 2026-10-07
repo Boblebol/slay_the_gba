@@ -1616,6 +1616,8 @@ void CombatEngine::start_player_turn() {
     opening_draw_ = true;
     draw_cards(5 + extra_draw);
     opening_draw_ = false;
+    // Fiddle: the opening draw is the last one of the turn.
+    if (has_power(PowerId::FIDDLE)) no_draw_this_turn = true;
     // Foregone Conclusion: cards of the draw pile, picked once the hand is drawn.
     if (turn_picks_from_draw_ > 0) {
         ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, turn_picks_from_draw_);

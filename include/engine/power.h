@@ -106,6 +106,7 @@ enum class PowerId : uint8_t {
     PENDULUM,          // every 3 turns: draw `amount` more
     VERY_HOT_COCOA,    // turn 1: `amount` more energy
     BREAD,             // turn 1: lose BREAD_ENERGY_LOST energy; later turns: `amount` energy
+    FIDDLE,            // marker: no card is drawn after the opening draw of the turn (the bonus is a TURN_DRAW)
     MERCURY_HOURGLASS, // start of turn: `amount` damage to every enemy
     CLOAK_CLASP,       // end of turn: `amount` Block for each card in hand
     POCKETWATCH,       // end of a turn with POCKETWATCH_CARDS cards played or fewer: draw `amount` more next turn
