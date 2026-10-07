@@ -66,6 +66,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "LANTERN", "Démarrez chaque combat avec 1 ● supplémentaire." },
     { "LETTER_OPENER", "Chaque fois que vous jouez 3 Compétences en un seul tour, infligez 5 dégâts à TOUS les ennemis." },
     { "LIZARD_TAIL", "Lorsque vos PV sont réduits à 0, récupérez 50 % de vos PV max (ne fonctionne qu'une fois)." },
+    { "LORDS_PARASOL", "Chez le Marchand, vous obtenez TOUT ce qu'il propose." },
     { "LUNAR_PASTRY", "À la fin de votre tour, gagnez 1 ★." },
     { "MEAT_ON_THE_BONE", "Si vous avez 50% ou moins de vos PV Max à la fin d'un combat, récupérez 12 PV." },
     { "MEMBERSHIP_CARD", "50% de remise sur tous les produits !" },
