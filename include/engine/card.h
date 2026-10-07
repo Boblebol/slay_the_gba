@@ -502,6 +502,12 @@ enum class CardId : uint16_t {
     ULTIMATE_DEFEND,
     // Finesse: a colorless Skill
     FINESSE,
+    // Prowess: a colorless Power
+    PROWESS,
+    // Squash: an event card
+    SQUASH,
+    // Exterminate: an event card
+    EXTERMINATE,
     COUNT
 };
 

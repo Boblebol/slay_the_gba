@@ -653,6 +653,9 @@ CARDS: list[CardArt] = [
     CardArt("ultimate_strike", "hero", "ultimate_strike", "attack", (1, 1), folder="colorless"),
     CardArt("ultimate_defend", "hero", "ultimate_defend", "skill", (1, 1), folder="colorless"),
     CardArt("finesse", "hero", "finesse", "skill", (0, 0), folder="colorless"),
+    CardArt("prowess", "hero", "prowess", "power", (1, 1), folder="colorless"),
+    CardArt("squash", "hero", "squash", "attack", (1, 1), folder="event"),
+    CardArt("exterminate", "hero", "exterminate", "attack", (1, 1), folder="event"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

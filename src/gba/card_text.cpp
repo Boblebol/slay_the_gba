@@ -660,6 +660,12 @@ bn::string_view base_name(engine::CardId id)
         return "Sifflet";
     case engine::CardId::BRIGHTEST_FLAME:
         return "Flamme éclatante";
+    case engine::CardId::PROWESS:
+        return "Prouesse";
+    case engine::CardId::SQUASH:
+        return "Aplatissement";
+    case engine::CardId::EXTERMINATE:
+        return "Extermination";
     case engine::CardId::FOLLY:
         return "Hubris";
     case engine::CardId::ENTHRALLED:
@@ -1210,6 +1216,15 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::FINESSE:
         stream << "Gagne " << value << " d'Armure. Pioche " << secondary << ".";
+        break;
+    case engine::CardId::PROWESS:
+        stream << "Force +" << value << ". Dextérité +" << value << ".";
+        break;
+    case engine::CardId::SQUASH:
+        stream << "Inflige " << value << " dégâts. Vulnérable " << secondary << ".";
+        break;
+    case engine::CardId::EXTERMINATE:
+        stream << "Inflige " << value << " dégâts à TOUS " << secondary << " fois.";
         break;
     case engine::CardId::PUTREFY:
         stream << "Affaibli et Vulnérable " << secondary << ". Épuisement.";

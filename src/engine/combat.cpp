@@ -2882,6 +2882,29 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Whistle+!"sv : "Played Whistle!"sv);
             break;
         }
+        case CardId::PROWESS: {
+            player.add_status(StatusType::STRENGTH, base_value);
+            player.add_status(StatusType::DEXTERITY, base_value);
+            set_log(upgraded ? "Played Prowess+!"sv : "Played Prowess!"sv);
+            break;
+        }
+        case CardId::SQUASH: {
+            hit(current_target, base_value);
+            afflict(current_target, StatusType::VULNERABLE, secondary_value);
+            set_log(upgraded ? "Played Squash+!"sv : "Played Squash!"sv);
+            break;
+        }
+        case CardId::EXTERMINATE: {
+            for (uint8_t blow = 0; blow < secondary_value; ++blow) {
+                for (size_t i = 0; i < enemies.size(); ++i) {
+                    if (enemies[i].is_alive()) {
+                        hit(enemies[i], base_value);
+                    }
+                }
+            }
+            set_log(upgraded ? "Played Exterminate+!"sv : "Played Exterminate!"sv);
+            break;
+        }
         case CardId::BRIGHTEST_FLAME: {
             player.energy = static_cast<int8_t>(player.energy + base_value);
             draw_cards(secondary_value);

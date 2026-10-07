@@ -501,6 +501,12 @@ static constexpr CardDef CARDS[] = {
     { CardId::ULTIMATE_DEFEND, "Ultimate Defend", 1, CardType::SKILL, TargetType::SELF, 11, 0, "Gain 11 Block.", "Ultimate Defend+", 1, 15, 0, "Gain 15 Block." },
     // Finesse: a colorless Skill.
     { CardId::FINESSE, "Finesse", 0, CardType::SKILL, TargetType::SELF, 4, 1, "Gain 4 Block. Draw 1 card.", "Finesse+", 0, 7, 1, "Gain 7 Block. Draw 1 card." },
+    // Prowess: a colorless Power; both gains scale together.
+    { CardId::PROWESS, "Prowess", 1, CardType::POWER, TargetType::SELF, 1, 0, "Gain 1 Strength. Gain 1 Dexterity.", "Prowess+", 1, 2, 0, "Gain 2 Strength. Gain 2 Dexterity." },
+    // Squash: an event card.
+    { CardId::SQUASH, "Squash", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 2, "Deal 10 dmg. Apply 2 Vuln.", "Squash+", 1, 12, 3, "Deal 12 dmg. Apply 3 Vuln." },
+    // Exterminate: an event card; 4 hits on every enemy.
+    { CardId::EXTERMINATE, "Exterminate", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 3, 4, "Deal 3 dmg to ALL enemies 4 times.", "Exterminate+", 1, 4, 4, "Deal 4 dmg to ALL enemies 4 times." },
 };
 
 const CardDef& CardDef::get(CardId id) {

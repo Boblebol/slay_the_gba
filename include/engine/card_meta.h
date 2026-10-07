@@ -422,6 +422,9 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // ULTIMATE_STRIKE
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // ULTIMATE_DEFEND
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // FINESSE
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // PROWESS
+    { CardRarity::EVENT, CardPool::EVENT }, // SQUASH
+    { CardRarity::EVENT, CardPool::EVENT }, // EXTERMINATE
 };
 
 } // namespace engine
