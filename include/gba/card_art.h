@@ -106,6 +106,10 @@
 #include "bn_sprite_items_card_peck_silent.h"
 #include "bn_sprite_items_card_production_silent.h"
 #include "bn_sprite_items_card_master_of_strategy_silent.h"
+#include "bn_sprite_items_card_stack_silent.h"
+#include "bn_sprite_items_card_rip_and_tear_silent.h"
+#include "bn_sprite_items_card_scrawl_silent.h"
+#include "bn_sprite_items_card_mind_blast_silent.h"
 
 namespace gba::card_art
 {
@@ -303,6 +307,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_production_silent;
     case engine::CardId::MASTER_OF_STRATEGY:
         return &bn::sprite_items::card_master_of_strategy_silent;
+    case engine::CardId::STACK:
+        return &bn::sprite_items::card_stack_silent;
+    case engine::CardId::RIP_AND_TEAR:
+        return &bn::sprite_items::card_rip_and_tear_silent;
+    case engine::CardId::SCRAWL:
+        return &bn::sprite_items::card_scrawl_silent;
+    case engine::CardId::MIND_BLAST:
+        return &bn::sprite_items::card_mind_blast_silent;
     default:
         return nullptr;
     }
@@ -330,7 +342,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 82,
-    83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94,
+    83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -443,6 +455,10 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_peck_defect.h"
 #include "bn_sprite_items_card_production_defect.h"
 #include "bn_sprite_items_card_master_of_strategy_defect.h"
+#include "bn_sprite_items_card_stack_defect.h"
+#include "bn_sprite_items_card_rip_and_tear_defect.h"
+#include "bn_sprite_items_card_scrawl_defect.h"
+#include "bn_sprite_items_card_mind_blast_defect.h"
 
 namespace gba::card_art
 {
@@ -658,6 +674,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_production_defect;
     case engine::CardId::MASTER_OF_STRATEGY:
         return &bn::sprite_items::card_master_of_strategy_defect;
+    case engine::CardId::STACK:
+        return &bn::sprite_items::card_stack_defect;
+    case engine::CardId::RIP_AND_TEAR:
+        return &bn::sprite_items::card_rip_and_tear_defect;
+    case engine::CardId::SCRAWL:
+        return &bn::sprite_items::card_scrawl_defect;
+    case engine::CardId::MIND_BLAST:
+        return &bn::sprite_items::card_mind_blast_defect;
     default:
         return nullptr;
     }
@@ -685,7 +709,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
+    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -794,6 +818,10 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_peck_regent.h"
 #include "bn_sprite_items_card_production_regent.h"
 #include "bn_sprite_items_card_master_of_strategy_regent.h"
+#include "bn_sprite_items_card_stack_regent.h"
+#include "bn_sprite_items_card_rip_and_tear_regent.h"
+#include "bn_sprite_items_card_scrawl_regent.h"
+#include "bn_sprite_items_card_mind_blast_regent.h"
 
 namespace gba::card_art
 {
@@ -1001,6 +1029,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_production_regent;
     case engine::CardId::MASTER_OF_STRATEGY:
         return &bn::sprite_items::card_master_of_strategy_regent;
+    case engine::CardId::STACK:
+        return &bn::sprite_items::card_stack_regent;
+    case engine::CardId::RIP_AND_TEAR:
+        return &bn::sprite_items::card_rip_and_tear_regent;
+    case engine::CardId::SCRAWL:
+        return &bn::sprite_items::card_scrawl_regent;
+    case engine::CardId::MIND_BLAST:
+        return &bn::sprite_items::card_mind_blast_regent;
     default:
         return nullptr;
     }
@@ -1028,7 +1064,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 65, 66, 0, 0, 0, 0, 0, 0, 0, 67, 68, 69, 70, 71, 72, 73, 74,
     75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 87,
-    88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
+    88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1142,6 +1178,10 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_peck_necrobinder.h"
 #include "bn_sprite_items_card_production_necrobinder.h"
 #include "bn_sprite_items_card_master_of_strategy_necrobinder.h"
+#include "bn_sprite_items_card_stack_necrobinder.h"
+#include "bn_sprite_items_card_rip_and_tear_necrobinder.h"
+#include "bn_sprite_items_card_scrawl_necrobinder.h"
+#include "bn_sprite_items_card_mind_blast_necrobinder.h"
 
 namespace gba::card_art
 {
@@ -1359,6 +1399,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_production_necrobinder;
     case engine::CardId::MASTER_OF_STRATEGY:
         return &bn::sprite_items::card_master_of_strategy_necrobinder;
+    case engine::CardId::STACK:
+        return &bn::sprite_items::card_stack_necrobinder;
+    case engine::CardId::RIP_AND_TEAR:
+        return &bn::sprite_items::card_rip_and_tear_necrobinder;
+    case engine::CardId::SCRAWL:
+        return &bn::sprite_items::card_scrawl_necrobinder;
+    case engine::CardId::MIND_BLAST:
+        return &bn::sprite_items::card_mind_blast_necrobinder;
     default:
         return nullptr;
     }
@@ -1386,7 +1434,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 61, 62, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73,
     74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 0, 91, 92,
-    93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104,
+    93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1499,6 +1547,10 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_peck_ironclad.h"
 #include "bn_sprite_items_card_production_ironclad.h"
 #include "bn_sprite_items_card_master_of_strategy_ironclad.h"
+#include "bn_sprite_items_card_stack_ironclad.h"
+#include "bn_sprite_items_card_rip_and_tear_ironclad.h"
+#include "bn_sprite_items_card_scrawl_ironclad.h"
+#include "bn_sprite_items_card_mind_blast_ironclad.h"
 
 namespace gba::card_art
 {
@@ -1714,6 +1766,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_production_ironclad;
     case engine::CardId::MASTER_OF_STRATEGY:
         return &bn::sprite_items::card_master_of_strategy_ironclad;
+    case engine::CardId::STACK:
+        return &bn::sprite_items::card_stack_ironclad;
+    case engine::CardId::RIP_AND_TEAR:
+        return &bn::sprite_items::card_rip_and_tear_ironclad;
+    case engine::CardId::SCRAWL:
+        return &bn::sprite_items::card_scrawl_ironclad;
+    case engine::CardId::MIND_BLAST:
+        return &bn::sprite_items::card_mind_blast_ironclad;
     default:
         return nullptr;
     }
@@ -1741,7 +1801,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 87, 0, 0, 0, 0, 0, 0, 88, 89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103,
+    92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.

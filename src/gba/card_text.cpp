@@ -672,6 +672,14 @@ bn::string_view base_name(engine::CardId id)
         return "Production";
     case engine::CardId::MASTER_OF_STRATEGY:
         return "Maître stratège";
+    case engine::CardId::STACK:
+        return "Pile";
+    case engine::CardId::RIP_AND_TEAR:
+        return "Lacération";
+    case engine::CardId::SCRAWL:
+        return "Griffonage";
+    case engine::CardId::MIND_BLAST:
+        return "Déflagration mentale";
     case engine::CardId::BLADE_DANCE:
         return "Danse des lames";
     case engine::CardId::CLOAK_AND_DAGGER:
@@ -1192,6 +1200,18 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::MASTER_OF_STRATEGY:
         stream << "Pioche " << secondary << ". Épuisement.";
+        break;
+    case engine::CardId::STACK:
+        stream << "Armure = Défausse" << (card.upgraded ? " +3." : ".");
+        break;
+    case engine::CardId::RIP_AND_TEAR:
+        stream << "Inflige " << value << " dégâts au hasard, " << secondary << " fois.";
+        break;
+    case engine::CardId::SCRAWL:
+        stream << (card.upgraded ? "Retenue. " : "") << "Pioche (main pleine). Épuisement.";
+        break;
+    case engine::CardId::MIND_BLAST:
+        stream << "Inné. Dégâts = cartes en Pioche.";
         break;
     case engine::CardId::PUTREFY:
         stream << "Affaibli et Vulnérable " << secondary << ". Épuisement.";

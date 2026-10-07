@@ -649,6 +649,10 @@ CARDS: list[CardArt] = [
     CardArt("peck", "hero", "peck", "attack", (1, 1), folder="event"),
     CardArt("production", "hero", "production", "skill", (0, 0), folder="colorless"),
     CardArt("master_of_strategy", "hero", "master_of_strategy", "skill", (0, 0), folder="colorless"),
+    CardArt("stack", "hero", "stack", "skill", (1, 1), folder="event"),
+    CardArt("rip_and_tear", "hero", "rip_and_tear", "attack", (1, 1), folder="event"),
+    CardArt("scrawl", "hero", "scrawl", "skill", (1, 1), folder="colorless"),
+    CardArt("mind_blast", "hero", "mind_blast", "attack", (1, 1), folder="colorless"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

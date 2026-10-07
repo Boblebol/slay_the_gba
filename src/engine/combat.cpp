@@ -2912,6 +2912,33 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Master of Strategy+!"sv : "Played Master of Strategy!"sv);
             break;
         }
+        case CardId::STACK: {
+            gain_block(static_cast<int>(discard_pile.size()) + base_value);
+            set_log(upgraded ? "Played Stack+!"sv : "Played Stack!"sv);
+            break;
+        }
+        case CardId::RIP_AND_TEAR: {
+            for (uint8_t blow = 0; blow < secondary_value && has_alive_enemies(); ++blow) {
+                Enemy& victim = enemies[random_alive_enemy_index()];
+                hit(victim, base_value);
+            }
+            set_log(upgraded ? "Played Rip and Tear+!"sv : "Played Rip and Tear!"sv);
+            break;
+        }
+        case CardId::SCRAWL: {
+            while (hand.size() < hand.capacity() && (!draw_pile.empty() || !discard_pile.empty())) {
+                const size_t before = hand.size();
+                draw_card();
+                if (hand.size() == before) break; // Drawing is blocked
+            }
+            set_log(upgraded ? "Played Scrawl+!"sv : "Played Scrawl!"sv);
+            break;
+        }
+        case CardId::MIND_BLAST: {
+            hit(current_target, static_cast<int16_t>(draw_pile.size()));
+            set_log(upgraded ? "Played Mind Blast+!"sv : "Played Mind Blast!"sv);
+            break;
+        }
         case CardId::PUTREFY: {
             afflict(current_target, StatusType::WEAK, secondary_value);
             afflict(current_target, StatusType::VULNERABLE, secondary_value);

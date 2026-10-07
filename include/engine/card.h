@@ -494,6 +494,14 @@ enum class CardId : uint16_t {
     PRODUCTION,
     // Master of Strategy: a colorless 0-cost skill that draws cards
     MASTER_OF_STRATEGY,
+    // Stack: an event skill that gives block equal to the discard pile size
+    STACK,
+    // Rip and Tear: an event attack that hits random enemies twice
+    RIP_AND_TEAR,
+    // Scrawl: a colorless rare skill that draws until the hand is full
+    SCRAWL,
+    // Mind Blast: a colorless innate attack that deals damage equal to the draw pile size
+    MIND_BLAST,
     COUNT
 };
 

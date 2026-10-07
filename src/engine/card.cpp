@@ -493,6 +493,14 @@ static constexpr CardDef CARDS[] = {
     { CardId::PRODUCTION, "Production", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Gain 2 energy. Exhaust.", "Production+", 0, 3, 0, "Gain 3 energy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     // Master of Strategy: a colorless skill that draws cards.
     { CardId::MASTER_OF_STRATEGY, "Master of Strategy", 0, CardType::SKILL, TargetType::SELF, 0, 3, "Draw 3 cards. Exhaust.", "Master of Strategy+", 0, 0, 4, "Draw 4 cards. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Stack: an event skill; block equals the discard pile size (+3 upgraded).
+    { CardId::STACK, "Stack", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Gain block equal to the cards in your discard pile.", "Stack+", 1, 3, 0, "Gain block equal to the cards in your discard pile +3." },
+    // Rip and Tear: an event attack; 7 damage to a random enemy twice.
+    { CardId::RIP_AND_TEAR, "Rip and Tear", 1, CardType::ATTACK, TargetType::RANDOM_ENEMY, 7, 2, "Deal 7 dmg to a random enemy 2 times.", "Rip and Tear+", 1, 9, 2, "Deal 9 dmg to a random enemy 2 times." },
+    // Scrawl: a colorless rare skill that fills the hand. Retain only once upgraded.
+    { CardId::SCRAWL, "Scrawl", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Draw cards until your hand is full. Exhaust.", "Scrawl+", 1, 0, 0, "Retain. Draw cards until your hand is full. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    // Mind Blast: a colorless innate attack; damage equals the draw pile size.
+    { CardId::MIND_BLAST, "Mind Blast", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 0, 0, "Innate. Deal damage equal to the cards in your draw pile.", "Mind Blast+", 1, 0, 0, "Innate. Deal damage equal to the cards in your draw pile.", KEYWORD_INNATE, KEYWORD_INNATE },
 };
 
 const CardDef& CardDef::get(CardId id) {
