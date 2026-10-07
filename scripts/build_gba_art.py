@@ -644,6 +644,7 @@ CARDS: list[CardArt] = [
     CardArt("whistle", "hero", "whistle", "attack", (1, 1), folder="event"),
     CardArt("brightest_flame", "hero", "brightest_flame", "skill", (0, 0), folder="event"),
     CardArt("folly", "curse", "folly", "status", (NO_COST, NO_COST)),
+    CardArt("enthralled", "curse", "enthralled", "status", (2, 2)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

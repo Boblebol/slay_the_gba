@@ -484,6 +484,8 @@ enum class CardId : uint16_t {
     BRIGHTEST_FLAME,
     // Folly (Hubris): a Curse, Eternal
     FOLLY,
+    // Enthralled (Assuétude): a Curse, Eternal; must be played before the other cards in hand
+    ENTHRALLED,
     COUNT
 };
 

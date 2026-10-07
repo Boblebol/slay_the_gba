@@ -483,6 +483,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::BRIGHTEST_FLAME, "Brightest Flame", 0, CardType::SKILL, TargetType::SELF, 2, 2, "Gain 2 energy. Draw 2 cards. Lose 2 Max HP.", "Brightest Flame+", 0, 3, 3, "Gain 3 energy. Draw 3 cards. Lose 2 Max HP." },
     // Folly (Hubris): a Curse. Cost X, but Unplayable.
     { CardId::FOLLY, "Folly", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", "Folly+", COST_X, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL, KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL },
+    // Enthralled (Assuétude): a Curse. Playable, but before any other card of the hand.
+    { CardId::ENTHRALLED, "Enthralled", 2, CardType::CURSE, TargetType::SELF, 0, 0, "Must be played before other cards in hand. Eternal.", "Enthralled+", 2, 0, 0, "Must be played before other cards in hand. Eternal.", KEYWORD_PLAY_FIRST | KEYWORD_ETERNAL, KEYWORD_PLAY_FIRST | KEYWORD_ETERNAL },
 };
 
 const CardDef& CardDef::get(CardId id) {

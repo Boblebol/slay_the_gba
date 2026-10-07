@@ -662,6 +662,8 @@ bn::string_view base_name(engine::CardId id)
         return "Flamme éclatante";
     case engine::CardId::FOLLY:
         return "Hubris";
+    case engine::CardId::ENTHRALLED:
+        return "Assuétude";
     case engine::CardId::BLADE_DANCE:
         return "Danse des lames";
     case engine::CardId::CLOAK_AND_DAGGER:
@@ -1765,6 +1767,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::FOLLY:
         stream << "Injouable. Inné. Éthéré. Éternel.";
+        break;
+    case engine::CardId::ENTHRALLED:
+        stream << "À jouer avant les autres cartes. Éternel.";
         break;
     case engine::CardId::BURN:
         stream << "Injouable. Fin de tour en main : " << value << " dégâts.";
