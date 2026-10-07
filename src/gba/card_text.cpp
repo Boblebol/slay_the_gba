@@ -652,6 +652,12 @@ bn::string_view base_name(engine::CardId id)
         return "Apparition";
     case engine::CardId::MAUL:
         return "Mutilation";
+    case engine::CardId::APOTHEOSIS:
+        return "Apothéose";
+    case engine::CardId::WISH:
+        return "Vœu";
+    case engine::CardId::WHISTLE:
+        return "Sifflet";
     case engine::CardId::BRIGHTEST_FLAME:
         return "Flamme éclatante";
     case engine::CardId::BLADE_DANCE:
@@ -1133,6 +1139,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::SUPERCRITICAL:
         stream << "Énergie +" << value << ". Épuisement.";
         break;
+    case engine::CardId::WISH:
+        stream << (card.upgraded ? "Retenue. " : "") << "Pioche vers main. Épuisement.";
+        break;
     case engine::CardId::DOUBLE_ENERGY:
         stream << "Double votre énergie. Épuisement.";
         break;
@@ -1150,6 +1159,12 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::MAUL:
         stream << "Inflige " << value << " dégâts " << secondary << " fois. Mutilation +" << (card.upgraded ? "3" : "2") << ".";
+        break;
+    case engine::CardId::APOTHEOSIS:
+        stream << "Inné. Améliore TOUT. Épuisement.";
+        break;
+    case engine::CardId::WHISTLE:
+        stream << "Inflige " << value << " dégâts. Étourdit. Épuisement.";
         break;
     case engine::CardId::BRIGHTEST_FLAME:
         stream << "Énergie +" << value << ". Pioche " << secondary << ". -2 PV Max.";
