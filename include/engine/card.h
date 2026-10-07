@@ -474,6 +474,8 @@ enum class CardId : uint16_t {
     APPARITION,
     // Maul: an event card; every copy grows together during the combat
     MAUL,
+    // Apotheosis: an event card
+    APOTHEOSIS,
     COUNT
 };
 
