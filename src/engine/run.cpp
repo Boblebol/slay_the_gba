@@ -565,6 +565,10 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     // Bought from the merchant himself, the card lowers what is still on his shelves.
+    if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
+        request_deck_choice(DeckChoiceKind::REMOVE, 5);
+        paels_tooth_picks = deck_choice.remaining;
+    }
     if (relic_id == "MEMBERSHIP_CARD" && phase == RunPhase::SHOP) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
 }
 
@@ -588,6 +592,13 @@ void RunManager::on_shop_opened() {
 
 void RunManager::on_combat_won(RoomType) {
     count_hook(RunHook::COMBAT_WON);
+    // Paël's Tooth gives back one devoured card, upgraded, per fight (chosen at random).
+    if (has_relic("PAELS_TOOTH") && !paels_tooth_cards.empty()) {
+        size_t pick = next_random() % paels_tooth_cards.size();
+        CardId id = paels_tooth_cards[pick];
+        paels_tooth_cards.erase(pick);
+        add_card_to_deck(DeckCard{ id, true });
+    }
 }
 
 void RunManager::on_rewards_generated(RoomType) {
@@ -752,7 +763,15 @@ bool RunManager::resolve_deck_choice(int deck_index) {
     bool done = false;
     switch (deck_choice.kind) {
         case DeckChoiceKind::UPGRADE: done = upgrade_card_in_deck(deck_index); break;
-        case DeckChoiceKind::REMOVE: done = remove_card_from_deck(deck_index); break;
+        case DeckChoiceKind::REMOVE: {
+            CardId devoured = master_deck[deck_index].id;
+            done = remove_card_from_deck(deck_index);
+            if (done && paels_tooth_picks > 0) {
+                --paels_tooth_picks;
+                paels_tooth_cards.push_back(devoured);
+            }
+            break;
+        }
         case DeckChoiceKind::TRANSFORM: done = transform_card_in_deck(deck_index, deck_choice.upgrade_result); break;
         default: break;
     }
