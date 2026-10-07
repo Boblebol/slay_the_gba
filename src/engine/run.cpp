@@ -997,6 +997,21 @@ void RunManager::apply_combat_start_relics() {
         gift.free_this_turn = combat.hand.size() < combat.hand.capacity();
         combat.create_card(gift, Pile::HAND);
     }
+    // Jeweled Mask (ancient): a random Power of the draw pile goes to the hand and costs 0 for the combat.
+    if (has_relic("JEWELED_MASK") && combat.hand.size() < combat.hand.capacity()) {
+        FixedVector<uint8_t, 50> powers;
+        for (size_t i = 0; i < combat.draw_pile.size(); ++i) {
+            if (CardDef::get(combat.draw_pile[i].id).type == CardType::POWER) powers.push_back(static_cast<uint8_t>(i));
+        }
+        if (!powers.empty()) {
+            size_t pick = powers[next_random() % powers.size()];
+            DeckCard card = combat.draw_pile[pick];
+            combat.draw_pile.erase(pick);
+            uint8_t printed = CardDef::get_cost(card.id, card.upgraded);
+            if (printed != COST_X) card.cost_delta = static_cast<int8_t>(card.cost_delta - printed);
+            combat.hand.push_back(card);
+        }
+    }
     // Big Hat (Necrobinder): 2 random Ethereal cards of the hero's pool.
     if (has_relic("BIG_HAT")) {
         FixedVector<CardId, 128> ethereal;
