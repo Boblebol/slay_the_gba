@@ -187,6 +187,7 @@ public:
     Enemy enemy; // Primary enemy (kept in sync with enemies[0])
     FixedVector<Enemy, 3> enemies; // Multi-enemy field (Yu-Gi-Oh / Slay style: 1 to 3 enemies)
     int selected_target_index = 0;
+    int16_t gold_lost = 0; // gold taken during the combat (curses in hand at the end of a turn), paid by the run after it
     int16_t gold = 0; // the run's gold, lent to the combat for the relics that spend it (Seal of Gold)
     CharacterId current_character = CharacterId::IRONCLAD;
     
@@ -334,6 +335,11 @@ public:
     void damage_player(int16_t amount);
     // The player loses HP: Block does not absorb it.
     void lose_hp(int16_t amount);
+    // Takes gold from the run (paid once the combat is over).
+    void lose_gold(int16_t amount) { if (amount > 0) gold_lost = static_cast<int16_t>(gold_lost + amount); }
+    // Effect of a card still in hand at the end of the player's turn (Burn, curses): damage, HP loss, gold loss
+    // or a status. Cards without such an effect do nothing.
+    void trigger_end_of_turn_in_hand(const DeckCard& card);
     // Strength or Dexterity until the end of the turn.
     void gain_temporary(StatusType type, int8_t amount);
     // The enemy loses Strength until the end of its turn.

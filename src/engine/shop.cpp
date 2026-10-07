@@ -121,6 +121,7 @@ void ShopInventory::apply_discount(int percent) {
 bool ShopInventory::remove_card(RunManager& run, int deck_index) {
     if (card_removal_used || run.gold < card_removal_cost) return false;
     if (deck_index < 0 || static_cast<size_t>(deck_index) >= run.master_deck.size()) return false;
+    if (CardDef::is_eternal(run.master_deck[deck_index])) return false;
 
     run.gold -= card_removal_cost;
     card_removal_used = true;
