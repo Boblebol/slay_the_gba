@@ -918,6 +918,8 @@ void RunManager::register_relic_powers() {
 }
 
 void RunManager::apply_combat_start_relics() {
+    // Delicate Frond: fill every empty potion slot with a random potion.
+    if (has_relic("DELICATE_FROND")) gain_random_potions(MAX_POTION_SLOTS);
     // Vajra: start each combat with 1 Strength.
     if (has_relic("VAJRA")) {
         combat.player.add_status(StatusType::STRENGTH, 1);

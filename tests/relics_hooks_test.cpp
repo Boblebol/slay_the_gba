@@ -629,6 +629,23 @@ void test_membership_card() {
     std::cout << "[PASS] Membership Card: every price halved, removal included, at once when bought in the shop" << std::endl;
 }
 
+void test_delicate_frond() {
+    // With the relic, a fight starts with every potion slot filled.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("DELICATE_FROND");
+    with.potions.clear();
+    enter_room_of_type(with, RoomType::MONSTER);
+    assert(with.potion_belt_full());
+
+    // Without it, the belt stays as it was.
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    without.potions.clear();
+    enter_room_of_type(without, RoomType::MONSTER);
+    assert(without.potions.empty());
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -641,6 +658,7 @@ int main() {
     test_relics_in_a_run();
     test_strawberry();
     test_membership_card();
+    test_delicate_frond();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
