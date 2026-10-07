@@ -104,6 +104,7 @@ enum class PowerId : uint8_t {
     SPARKLING_ROUGE,   // start of turn 3: `amount` Strength and Dexterity
     HAPPY_FLOWER,      // every 3 turns: `amount` energy
     PENDULUM,          // every 3 turns: draw `amount` more
+    VERY_HOT_COCOA,    // turn 1: `amount` more energy
     BREAD,             // turn 1: lose BREAD_ENERGY_LOST energy; later turns: `amount` energy
     MERCURY_HOURGLASS, // start of turn: `amount` damage to every enemy
     CLOAK_CLASP,       // end of turn: `amount` Block for each card in hand

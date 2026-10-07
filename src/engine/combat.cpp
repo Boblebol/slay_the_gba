@@ -638,6 +638,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::PENDULUM:
             if (turn_start && power.turns % 3 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;
+        case PowerId::VERY_HOT_COCOA:
+            if (turn_start && power.turns == 1) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
         case PowerId::BREAD:
             if (turn_start) {
                 int change = power.turns == 1 ? -BREAD_ENERGY_LOST : power.amount;
