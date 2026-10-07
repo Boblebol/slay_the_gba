@@ -159,6 +159,7 @@ enum class PowerId : uint8_t {
     REGALITE,          // first card created each turn: `amount` Block
     IVORY_TILE,        // card costing IVORY_TILE_COST energy or more played: `amount` energy
     SEAL_OF_GOLD,      // start of turn: spend 3 gold (CombatEngine::gold) to gain `amount` energy
+    SAI,               // start of turn: `amount` Block
     PAELS_LEGION,      // Block from a card is doubled, then the relic sleeps `amount` turns (counter = turn starts left asleep + 1)
     // Damage sent back and statuses lost each turn (appended)
     FLAME_BARRIER,     // until the next turn: each enemy attack deals `amount` damage back to the attacker

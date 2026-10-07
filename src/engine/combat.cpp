@@ -638,6 +638,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 player.energy = static_cast<int8_t>(player.energy + power.amount);
             }
             break;
+        case PowerId::SAI:
+            if (turn_start) add_block(power.amount);
+            break;
         case PowerId::HAPPY_FLOWER:
             if (turn_start && power.turns % 3 == 0) player.energy = static_cast<int8_t>(player.energy + power.amount);
             break;
