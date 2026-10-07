@@ -469,6 +469,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::GIANT_ROCK, "Giant Rock", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 20, 0, "Deal 20 dmg.", "Giant Rock+", 1, 20, 0, "Deal 20 dmg." },
     // Luminesce: a token, made by other cards.
     { CardId::LUMINESCE, "Luminesce", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Retain. Gain 2 energy. Exhaust.", "Luminesce+", 0, 2, 0, "Retain. Gain 2 energy. Exhaust.", KEYWORD_EXHAUST | KEYWORD_RETAIN, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    // Wish: an event card. Retain only once upgraded.
+    { CardId::WISH, "Wish", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Put a card from your draw pile into your hand. Exhaust.", "Wish+", 0, 0, 0, "Retain. Put a card from your draw pile into your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
 };
 
 const CardDef& CardDef::get(CardId id) {

@@ -4401,6 +4401,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Headbutt+!"sv : "Played Headbutt!"sv);
             break;
         }
+        case CardId::WISH: {
+            ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, 1);
+            set_log(upgraded ? "Played Wish+!"sv : "Played Wish!"sv);
+            break;
+        }
         case CardId::HOLOGRAM: {
             gain_block(base_value);
             ask_pile_choice(Pile::DISCARD, ChoiceKind::TO_HAND, 1);
