@@ -2874,6 +2874,21 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Apotheosis+!"sv : "Played Apotheosis!"sv);
             break;
         }
+        case CardId::WHISTLE: {
+            hit(current_target, base_value);
+            if (current_target.is_alive()) {
+                current_target.stun();
+            }
+            set_log(upgraded ? "Played Whistle+!"sv : "Played Whistle!"sv);
+            break;
+        }
+        case CardId::BRIGHTEST_FLAME: {
+            player.energy = static_cast<int8_t>(player.energy + base_value);
+            draw_cards(secondary_value);
+            player.lose_max_hp(2);
+            set_log(upgraded ? "Played Brightest Flame+!"sv : "Played Brightest Flame!"sv);
+            break;
+        }
         case CardId::PUTREFY: {
             afflict(current_target, StatusType::WEAK, secondary_value);
             afflict(current_target, StatusType::VULNERABLE, secondary_value);

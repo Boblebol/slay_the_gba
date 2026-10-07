@@ -477,6 +477,10 @@ static constexpr CardDef CARDS[] = {
     { CardId::APOTHEOSIS, "Apotheosis", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", "Apotheosis+", 2, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", KEYWORD_EXHAUST | KEYWORD_INNATE, KEYWORD_EXHAUST | KEYWORD_INNATE },
     // Wish: an event card. Retain only once upgraded.
     { CardId::WISH, "Wish", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Put a card from your draw pile into your hand. Exhaust.", "Wish+", 0, 0, 0, "Retain. Put a card from your draw pile into your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    // Whistle: an event card that stuns the enemy.
+    { CardId::WHISTLE, "Whistle", 2, CardType::ATTACK, TargetType::SINGLE_ENEMY, 33, 0, "Deal 33 dmg. Stun the enemy. Exhaust.", "Whistle+", 2, 44, 0, "Deal 44 dmg. Stun the enemy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Brightest Flame: an event card; the Max HP loss lasts for the run.
+    { CardId::BRIGHTEST_FLAME, "Brightest Flame", 0, CardType::SKILL, TargetType::SELF, 2, 2, "Gain 2 energy. Draw 2 cards. Lose 2 Max HP.", "Brightest Flame+", 0, 3, 3, "Gain 3 energy. Draw 3 cards. Lose 2 Max HP." },
     // Folly (Hubris): a Curse. Cost X, but Unplayable.
     { CardId::FOLLY, "Folly", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", "Folly+", COST_X, 0, 0, "Unplayable. Innate. Ethereal. Eternal.", KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL, KEYWORD_UNPLAYABLE | KEYWORD_INNATE | KEYWORD_ETHEREAL | KEYWORD_ETERNAL },
 };

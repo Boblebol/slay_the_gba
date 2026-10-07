@@ -98,6 +98,8 @@
 #include "bn_sprite_items_card_maul_silent.h"
 #include "bn_sprite_items_card_apotheosis_silent.h"
 #include "bn_sprite_items_card_wish_silent.h"
+#include "bn_sprite_items_card_whistle_silent.h"
+#include "bn_sprite_items_card_brightest_flame_silent.h"
 #include "bn_sprite_items_card_folly.h"
 
 namespace gba::card_art
@@ -280,6 +282,10 @@ namespace gba::card_art
         return &bn::sprite_items::card_apotheosis_silent;
     case engine::CardId::WISH:
         return &bn::sprite_items::card_wish_silent;
+    case engine::CardId::WHISTLE:
+        return &bn::sprite_items::card_whistle_silent;
+    case engine::CardId::BRIGHTEST_FLAME:
+        return &bn::sprite_items::card_brightest_flame_silent;
     case engine::CardId::FOLLY:
         return &bn::sprite_items::card_folly;
     default:
@@ -309,7 +315,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     79, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 82,
-    83, 84, 85, 86, 87,
+    83, 84, 85, 86, 87, 88, 89,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -414,6 +420,8 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_maul_defect.h"
 #include "bn_sprite_items_card_apotheosis_defect.h"
 #include "bn_sprite_items_card_wish_defect.h"
+#include "bn_sprite_items_card_whistle_defect.h"
+#include "bn_sprite_items_card_brightest_flame_defect.h"
 #include "bn_sprite_items_card_folly.h"
 
 namespace gba::card_art
@@ -614,6 +622,10 @@ namespace gba::card_art
         return &bn::sprite_items::card_apotheosis_defect;
     case engine::CardId::WISH:
         return &bn::sprite_items::card_wish_defect;
+    case engine::CardId::WHISTLE:
+        return &bn::sprite_items::card_whistle_defect;
+    case engine::CardId::BRIGHTEST_FLAME:
+        return &bn::sprite_items::card_brightest_flame_defect;
     case engine::CardId::FOLLY:
         return &bn::sprite_items::card_folly;
     default:
@@ -643,7 +655,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 88, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92, 93, 94, 95, 96,
+    92, 93, 94, 95, 96, 97, 98,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -744,6 +756,8 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_maul_regent.h"
 #include "bn_sprite_items_card_apotheosis_regent.h"
 #include "bn_sprite_items_card_wish_regent.h"
+#include "bn_sprite_items_card_whistle_regent.h"
+#include "bn_sprite_items_card_brightest_flame_regent.h"
 #include "bn_sprite_items_card_folly.h"
 
 namespace gba::card_art
@@ -936,6 +950,10 @@ namespace gba::card_art
         return &bn::sprite_items::card_apotheosis_regent;
     case engine::CardId::WISH:
         return &bn::sprite_items::card_wish_regent;
+    case engine::CardId::WHISTLE:
+        return &bn::sprite_items::card_whistle_regent;
+    case engine::CardId::BRIGHTEST_FLAME:
+        return &bn::sprite_items::card_brightest_flame_regent;
     case engine::CardId::FOLLY:
         return &bn::sprite_items::card_folly;
     default:
@@ -965,7 +983,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 65, 66, 0, 0, 0, 0, 0, 0, 0, 67, 68, 69, 70, 71, 72, 73, 74,
     75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 87,
-    88, 89, 90, 91, 92,
+    88, 89, 90, 91, 92, 93, 94,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1071,6 +1089,8 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_maul_necrobinder.h"
 #include "bn_sprite_items_card_apotheosis_necrobinder.h"
 #include "bn_sprite_items_card_wish_necrobinder.h"
+#include "bn_sprite_items_card_whistle_necrobinder.h"
+#include "bn_sprite_items_card_brightest_flame_necrobinder.h"
 #include "bn_sprite_items_card_folly.h"
 
 namespace gba::card_art
@@ -1273,6 +1293,10 @@ namespace gba::card_art
         return &bn::sprite_items::card_apotheosis_necrobinder;
     case engine::CardId::WISH:
         return &bn::sprite_items::card_wish_necrobinder;
+    case engine::CardId::WHISTLE:
+        return &bn::sprite_items::card_whistle_necrobinder;
+    case engine::CardId::BRIGHTEST_FLAME:
+        return &bn::sprite_items::card_brightest_flame_necrobinder;
     case engine::CardId::FOLLY:
         return &bn::sprite_items::card_folly;
     default:
@@ -1302,7 +1326,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 61, 62, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73,
     74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 0, 91, 92,
-    93, 94, 95, 96, 97,
+    93, 94, 95, 96, 97, 98, 99,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1407,6 +1431,8 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_maul_ironclad.h"
 #include "bn_sprite_items_card_apotheosis_ironclad.h"
 #include "bn_sprite_items_card_wish_ironclad.h"
+#include "bn_sprite_items_card_whistle_ironclad.h"
+#include "bn_sprite_items_card_brightest_flame_ironclad.h"
 #include "bn_sprite_items_card_folly.h"
 
 namespace gba::card_art
@@ -1607,6 +1633,10 @@ namespace gba::card_art
         return &bn::sprite_items::card_apotheosis_ironclad;
     case engine::CardId::WISH:
         return &bn::sprite_items::card_wish_ironclad;
+    case engine::CardId::WHISTLE:
+        return &bn::sprite_items::card_whistle_ironclad;
+    case engine::CardId::BRIGHTEST_FLAME:
+        return &bn::sprite_items::card_brightest_flame_ironclad;
     case engine::CardId::FOLLY:
         return &bn::sprite_items::card_folly;
     default:
@@ -1636,7 +1666,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 87, 0, 0, 0, 0, 0, 0, 88, 89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
-    92, 93, 94, 95, 96,
+    92, 93, 94, 95, 96, 97, 98,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
