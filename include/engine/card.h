@@ -508,6 +508,31 @@ enum class CardId : uint16_t {
     SQUASH,
     // Exterminate: an event card
     EXTERMINATE,
+    // Feeding Frenzy: an event skill that gives temporary Strength
+    FEEDING_FRENZY,
+    // Outmaneuver: an event skill that gives energy next turn
+    OUTMANEUVER,
+    // Toric Toughness: an event skill that gives block now and at the start of the next 2 turns
+    TORIC_TOUGHNESS,
+    // Entrench: an event skill that doubles the block
+    ENTRENCH,
+    // Stack: an event skill that gives block equal to the discard pile size
+    STACK,
+    // Rip and Tear: an event attack that hits random enemies twice
+    RIP_AND_TEAR,
+    // Scrawl: a colorless rare skill that draws until the hand is full
+    SCRAWL,
+    // Mind Blast: a colorless innate attack that deals damage equal to the draw pile size
+    MIND_BLAST,
+    // Batch F: colorless and event cards built on existing mechanics
+    SHOCKWAVE,
+    BOLAS,
+    THRUMMING_HATCHET,
+    IMPATIENCE,
+    CLASH,
+    VOLLEY,
+    OMNISLICE,
+    RESTLESSNESS,
     COUNT
 };
 

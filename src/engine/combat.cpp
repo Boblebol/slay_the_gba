@@ -2935,6 +2935,110 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Master of Strategy+!"sv : "Played Master of Strategy!"sv);
             break;
         }
+        case CardId::FEEDING_FRENZY: {
+            gain_temporary(StatusType::STRENGTH, static_cast<int8_t>(base_value));
+            set_log(upgraded ? "Played Feeding Frenzy+!"sv : "Played Feeding Frenzy!"sv);
+            break;
+        }
+        case CardId::OUTMANEUVER: {
+            schedule(DelayedType::ENERGY, base_value);
+            set_log(upgraded ? "Played Outmaneuver+!"sv : "Played Outmaneuver!"sv);
+            break;
+        }
+        case CardId::TORIC_TOUGHNESS: {
+            gain_block(base_value);
+            schedule(DelayedType::BLOCK, static_cast<int16_t>(base_value + player.get_status(StatusType::DEXTERITY)), 1, 2);
+            set_log(upgraded ? "Played Toric Toughness+!"sv : "Played Toric Toughness!"sv);
+            break;
+        }
+        case CardId::ENTRENCH: {
+            add_block(player.block);
+            set_log(upgraded ? "Played Entrench+!"sv : "Played Entrench!"sv);
+            break;
+        }
+        case CardId::STACK: {
+            gain_block(static_cast<int>(discard_pile.size()) + base_value);
+            set_log(upgraded ? "Played Stack+!"sv : "Played Stack!"sv);
+            break;
+        }
+        case CardId::RIP_AND_TEAR: {
+            for (uint8_t blow = 0; blow < secondary_value && has_alive_enemies(); ++blow) {
+                Enemy& victim = enemies[random_alive_enemy_index()];
+                hit(victim, base_value);
+            }
+            set_log(upgraded ? "Played Rip and Tear+!"sv : "Played Rip and Tear!"sv);
+            break;
+        }
+        case CardId::SCRAWL: {
+            while (hand.size() < hand.capacity() && (!draw_pile.empty() || !discard_pile.empty())) {
+                const size_t before = hand.size();
+                draw_card();
+                if (hand.size() == before) break; // Drawing is blocked
+            }
+            set_log(upgraded ? "Played Scrawl+!"sv : "Played Scrawl!"sv);
+            break;
+        }
+        case CardId::MIND_BLAST: {
+            hit(current_target, static_cast<int16_t>(draw_pile.size()));
+            set_log(upgraded ? "Played Mind Blast+!"sv : "Played Mind Blast!"sv);
+            break;
+        }
+        case CardId::SHOCKWAVE: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (!enemies[i].is_alive()) continue;
+                afflict(enemies[i], StatusType::WEAK, base_value);
+                afflict(enemies[i], StatusType::VULNERABLE, base_value);
+            }
+            set_log(upgraded ? "Played Shockwave+!"sv : "Played Shockwave!"sv);
+            break;
+        }
+        case CardId::BOLAS: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Bolas+!"sv : "Played Bolas!"sv);
+            break;
+        }
+        case CardId::THRUMMING_HATCHET: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Thrumming Hatchet+!"sv : "Played Thrumming Hatchet!"sv);
+            break;
+        }
+        case CardId::CLASH: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Clash+!"sv : "Played Clash!"sv);
+            break;
+        }
+        case CardId::IMPATIENCE: {
+            bool has_attack = false;
+            for (const DeckCard& held : hand) {
+                if (CardDef::get(held.id).type == CardType::ATTACK) has_attack = true;
+            }
+            if (!has_attack) draw_cards(secondary_value);
+            set_log(upgraded ? "Played Impatience+!"sv : "Played Impatience!"sv);
+            break;
+        }
+        case CardId::VOLLEY: {
+            for (int blow = 0; blow < x_value && has_alive_enemies(); ++blow) {
+                hit(enemies[random_alive_enemy_index()], base_value);
+            }
+            set_log(upgraded ? "Played Volley+!"sv : "Played Volley!"sv);
+            break;
+        }
+        case CardId::OMNISLICE: {
+            hit(current_target, base_value);
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (static_cast<int>(i) != target_idx && enemies[i].is_alive()) hit(enemies[i], base_value);
+            }
+            set_log(upgraded ? "Played Omnislice+!"sv : "Played Omnislice!"sv);
+            break;
+        }
+        case CardId::RESTLESSNESS: {
+            if (hand.empty()) {
+                draw_cards(secondary_value);
+                player.energy = static_cast<int8_t>(player.energy + secondary_value);
+            }
+            set_log(upgraded ? "Played Restlessness+!"sv : "Played Restlessness!"sv);
+            break;
+        }
         case CardId::BYRD_SWOOP: {
             hit(current_target, base_value);
             set_log(upgraded ? "Played Byrd Swoop+!"sv : "Played Byrd Swoop!"sv);
