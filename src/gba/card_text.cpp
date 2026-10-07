@@ -648,6 +648,12 @@ bn::string_view base_name(engine::CardId id)
         return "Rocher gigantesque";
     case engine::CardId::LUMINESCE:
         return "Éclat";
+    case engine::CardId::APPARITION:
+        return "Apparition";
+    case engine::CardId::MAUL:
+        return "Mutilation";
+    case engine::CardId::APOTHEOSIS:
+        return "Apothéose";
     case engine::CardId::WISH:
         return "Vœu";
     case engine::CardId::BLADE_DANCE:
@@ -1143,6 +1149,15 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::LUMINESCE:
         stream << "Retenue. Énergie +" << value << ". Épuisement.";
+        break;
+    case engine::CardId::APPARITION:
+        stream << (card.upgraded ? "" : "Éthéré. ") << "Intangible " << value << ". Épuisement.";
+        break;
+    case engine::CardId::MAUL:
+        stream << "Inflige " << value << " dégâts " << secondary << " fois. Mutilation +" << (card.upgraded ? "3" : "2") << ".";
+        break;
+    case engine::CardId::APOTHEOSIS:
+        stream << "Inné. Améliore TOUT. Épuisement.";
         break;
     case engine::CardId::PUTREFY:
         stream << "Affaibli et Vulnérable " << secondary << ". Épuisement.";
@@ -2098,6 +2113,10 @@ bn::string_view card_type_name(engine::CardType type)
         return "Compétence";
     case engine::CardType::STATUS:
         return "Statut";
+    case engine::CardType::CURSE:
+        return "Malédiction";
+    case engine::CardType::QUEST:
+        return "Quête";
     default:
         return "Pouvoir";
     }
