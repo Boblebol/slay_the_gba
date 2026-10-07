@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 56,4 %** — 691 faits, 20 partiels, 533 à faire (35 hors périmètre).
+**Avancement global : 56,5 %** — 693 faits, 20 partiels, 531 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -19,14 +19,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
 | [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
-| [Cartes communes aux cinq éditions](#cartes) | 20 | 0 | 100 | 16,7 % |
-| [Reliques et potions](#reliques) | 126 | 0 | 195 | 39,3 % |
+| [Cartes communes aux cinq éditions](#cartes) | 21 | 0 | 99 | 17,5 % |
+| [Reliques et potions](#reliques) | 127 | 0 | 194 | 39,6 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **691** | **20** | **533** | **56,4 %** |
+| **Total** | **693** | **20** | **531** | **56,5 %** |
 
 <a id="ironclad"></a>
 
@@ -688,7 +688,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 16,7 %
+## Cartes communes aux cinq éditions — 17,5 %
 
 ### Cartes incolores — 0,0 %
 
@@ -797,9 +797,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Science sans conscience | Évènement · Attaque | Non |  |
 | Ténacité torique | Évènement · Compétence | Non |  |
 
-### Malédictions — 0,0 %
+### Malédictions — 5,6 %
 
-0 fait, 0 partiel, 18 à faire.
+1 fait, 0 partiel, 17 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -813,7 +813,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Déclin | Malédiction · Malédiction | Non |  |
 | Fléau de l'ascendant | Malédiction · Malédiction | Non |  |
 | Honte | Malédiction · Malédiction | Non |  |
-| Hubris | Malédiction · Malédiction | Non |  |
+| Hubris | Malédiction · Malédiction | Oui |  |
 | Insomnie | Malédiction · Malédiction | Non |  |
 | Maladresse | Malédiction · Malédiction | Non |  |
 | Malchance | Malédiction · Malédiction | Non |  |
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 39,3 %
+## Reliques et potions — 39,6 %
 
 ### Reliques partagées — 51,3 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 20,6 %
+### Reliques des Anciens — 21,6 %
 
-21 faits, 0 partiel, 81 à faire.
+22 faits, 0 partiel, 80 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1094,7 +1094,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Kaléidoscope | Ancienne | Non |  |
 | Lanterne-citrouille | Ancienne | Oui |  |
 | Larmes de Paël | Ancienne | Oui |  |
-| Livre d'histoires | Ancienne | Non |  |
+| Livre d'histoires | Ancienne | Oui |  |
 | Légion de Paël | Ancienne | Oui |  |
 | Manteau de fourrure | Ancienne | Non |  |
 | Marteau de guerre | Ancienne | Oui |  |
