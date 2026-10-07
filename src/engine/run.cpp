@@ -263,6 +263,7 @@ bool RunManager::upgrade_card_in_deck(int deck_index) {
 
 bool RunManager::remove_card_from_deck(int deck_index) {
     if (deck_index >= 0 && static_cast<size_t>(deck_index) < master_deck.size()) {
+        if (CardDef::is_eternal(master_deck[deck_index])) return false;
         master_deck.erase(deck_index);
         return true;
     }
@@ -701,6 +702,7 @@ bool RunManager::add_card_to_deck(DeckCard card) {
 
 bool RunManager::transform_card_in_deck(int deck_index, bool upgraded) {
     if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
+    if (CardDef::is_eternal(master_deck[deck_index])) return false;
     std::span<const CardId> pool = card_reward_pool(character);
     CardId old_id = master_deck[deck_index].id;
     size_t candidates = 0;
@@ -769,7 +771,7 @@ bool RunManager::deck_choice_allows(int deck_index) const {
     switch (deck_choice.kind) {
         case DeckChoiceKind::UPGRADE: return !master_deck[deck_index].upgraded;
         case DeckChoiceKind::REMOVE:
-        case DeckChoiceKind::TRANSFORM: return true;
+        case DeckChoiceKind::TRANSFORM: return !CardDef::is_eternal(master_deck[deck_index]);
         default: return false;
     }
 }
@@ -1144,6 +1146,9 @@ void RunManager::proceed_after_combat() {
     }
     combat.permanent_gains.clear();
     if (has_relic("SEAL_OF_GOLD")) gold = combat.gold;
+    // Gold taken by the cards left in hand at the end of a turn (curses).
+    gold = static_cast<decltype(gold)>(std::max(0, static_cast<int>(gold) - combat.gold_lost));
+    combat.gold_lost = 0;
     hp = combat.player.hp;
     max_hp = combat.player.max_hp; // cards can raise it for the rest of the run (Feed)
     // Check Ironclad Burning blood passive

@@ -470,6 +470,10 @@ enum class CardId : uint16_t {
     GIANT_ROCK,
     // Luminesce: a token made by other cards
     LUMINESCE,
+    // Apparition: an event card
+    APPARITION,
+    // Maul: an event card; every copy grows together during the combat
+    MAUL,
     // Apotheosis: an event card
     APOTHEOSIS,
     COUNT
@@ -519,7 +523,8 @@ enum CardKeyword : uint16_t {
     KEYWORD_RETAIN_ONCE = 32, // per-copy only: stays in hand at the end of this turn, then the mark is removed
     KEYWORD_PLAY_FIRST = 64,  // while in hand, it must be played before any other card
     KEYWORD_LIMIT_PLAYS = 128, // while in hand, no more than MAX_PLAYS_WHEN_LIMITED cards can be played each turn
-    KEYWORD_UNPLAYABLE = 256  // cannot be played from the hand; played by another card, it does nothing
+    KEYWORD_UNPLAYABLE = 256, // cannot be played from the hand; played by another card, it does nothing
+    KEYWORD_ETERNAL = 512     // can never be removed from the deck nor transformed (shop, events, relics)
 };
 
 constexpr uint8_t MAX_PLAYS_WHEN_LIMITED = 3;
@@ -539,7 +544,9 @@ enum class CardType : uint8_t {
     ATTACK,
     SKILL,
     POWER,
-    STATUS // added to the piles during a combat, never part of the deck
+    STATUS, // added to the piles during a combat, never part of the deck
+    CURSE,  // a deck card that hinders the player, usually Unplayable
+    QUEST   // a deck card tied to a goal of the run, usually Unplayable
 };
 
 enum class TargetType : uint8_t {
@@ -599,6 +606,8 @@ struct CardDef {
     static bool has_keyword(const DeckCard& card, CardKeyword keyword) {
         return (card.added_keywords & keyword) != 0 || has_keyword(card.id, card.upgraded, keyword);
     }
+    // An Eternal card stays in the deck: it is never removed nor transformed.
+    static bool is_eternal(const DeckCard& card) { return has_keyword(card.id, card.upgraded, KEYWORD_ETERNAL); }
     static bool is_x_cost(CardId id, bool upgraded) {
         return get_cost(id, upgraded) == COST_X;
     }

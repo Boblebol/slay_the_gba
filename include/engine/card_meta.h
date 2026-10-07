@@ -406,6 +406,8 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::UNCOMMON, CardPool::REGENT }, // MANIFEST_AUTHORITY
     { CardRarity::NONE, CardPool::NONE }, // GIANT_ROCK
     { CardRarity::NONE, CardPool::NONE }, // LUMINESCE
+    { CardRarity::ANCIENT, CardPool::EVENT }, // APPARITION
+    { CardRarity::ANCIENT, CardPool::EVENT }, // MAUL
     { CardRarity::ANCIENT, CardPool::EVENT }, // APOTHEOSIS
 };
 

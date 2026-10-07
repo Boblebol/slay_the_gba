@@ -2850,6 +2850,16 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Luminesce+!"sv : "Played Luminesce!"sv);
             break;
         }
+        case CardId::MAUL: {
+            for (uint8_t blow = 0; blow < secondary_value; ++blow) {
+                hit(current_target, static_cast<int16_t>(base_value + played_card.bonus));
+            }
+            const int growth = upgraded ? 3 : 2;
+            played_card.bonus = bump(played_card.bonus, growth);
+            boost_copies(CardId::MAUL, growth);
+            set_log(upgraded ? "Played Maul+!"sv : "Played Maul!"sv);
+            break;
+        }
         case CardId::APOTHEOSIS: {
             // Every card in every combat pile; the played card is in none of them.
             const auto upgrade_all = [this](auto& pile) {
@@ -4476,6 +4486,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Buffer+!"sv : "Played Buffer!"sv);
             break;
         }
+        case CardId::APPARITION: {
+            player.add_status(StatusType::INTANGIBLE, base_value);
+            set_log(upgraded ? "Played Apparition+!"sv : "Played Apparition!"sv);
+            break;
+        }
         case CardId::WRAITH_FORM: {
             player.add_status(StatusType::INTANGIBLE, base_value);
             add_power(PowerId::WRAITH_FORM, secondary_value);
@@ -4798,6 +4813,13 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
     }
 }
 
+void CombatEngine::trigger_end_of_turn_in_hand(const DeckCard& card) {
+    switch (card.id) {
+        case CardId::BURN: damage_player(CardDef::get_value(card.id, card.upgraded)); break;
+        default: break;
+    }
+}
+
 void CombatEngine::end_player_turn() {
     if (state != CombatState::PLAYER_TURN) return;
     // A choice left unanswered is answered for the player.
@@ -4822,10 +4844,8 @@ void CombatEngine::end_player_turn() {
     if (state != CombatState::PLAYER_TURN) return;
     for (DeckCard& card : hand) card.free_this_turn = false;
 
-    // Burn hurts while it is still in hand.
-    for (size_t i = 0; i < hand.size() && player.is_alive(); ++i) {
-        if (hand[i].id == CardId::BURN) damage_player(CardDef::get_value(hand[i].id, hand[i].upgraded));
-    }
+    // Cards that hurt while they are still in hand (Burn, curses).
+    for (size_t i = 0; i < hand.size() && player.is_alive(); ++i) trigger_end_of_turn_in_hand(hand[i]);
     if (!player.is_alive()) {
         state = CombatState::DEFEAT;
         set_log("You were defeated!");
