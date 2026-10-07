@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 54,7 %** — 670 faits, 20 partiels, 554 à faire (35 hors périmètre).
+**Avancement global : 54,7 %** — 671 faits, 20 partiels, 553 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
 | [Cartes communes aux cinq éditions](#cartes) | 12 | 0 | 108 | 10,0 % |
-| [Reliques et potions](#reliques) | 113 | 0 | 208 | 35,2 % |
+| [Reliques et potions](#reliques) | 114 | 0 | 207 | 35,5 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **670** | **20** | **554** | **54,7 %** |
+| **Total** | **671** | **20** | **553** | **54,7 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 35,2 %
+## Reliques et potions — 35,5 %
 
 ### Reliques partagées — 51,3 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 7,8 %
+### Reliques des Anciens — 8,8 %
 
-8 faits, 0 partiel, 94 à faire.
+9 faits, 0 partiel, 93 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1092,7 +1092,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Huître nourrissante | Ancienne | Non |  |
 | Joyau prismatique | Ancienne | Non |  |
 | Kaléidoscope | Ancienne | Non |  |
-| Lanterne-citrouille | Ancienne | Non |  |
+| Lanterne-citrouille | Ancienne | Oui |  |
 | Larmes de Paël | Ancienne | Oui |  |
 | Livre d'histoires | Ancienne | Non |  |
 | Légion de Paël | Ancienne | Oui |  |
