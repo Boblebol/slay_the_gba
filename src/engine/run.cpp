@@ -564,7 +564,15 @@ void RunManager::add_relic(std::string_view relic_id) {
 void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
+    // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
+    if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
+        regenerate_map();
+    }
     // Bought from the merchant himself, the card lowers what is still on his shelves.
+    if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
+        request_deck_choice(DeckChoiceKind::REMOVE, 5);
+        paels_tooth_picks = deck_choice.remaining;
+    }
     if (relic_id == "MEMBERSHIP_CARD" && phase == RunPhase::SHOP) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
 }
 
@@ -588,6 +596,13 @@ void RunManager::on_shop_opened() {
 
 void RunManager::on_combat_won(RoomType) {
     count_hook(RunHook::COMBAT_WON);
+    // Paël's Tooth gives back one devoured card, upgraded, per fight (chosen at random).
+    if (has_relic("PAELS_TOOTH") && !paels_tooth_cards.empty()) {
+        size_t pick = next_random() % paels_tooth_cards.size();
+        CardId id = paels_tooth_cards[pick];
+        paels_tooth_cards.erase(pick);
+        add_card_to_deck(DeckCard{ id, true });
+    }
 }
 
 void RunManager::on_rewards_generated(RoomType) {
@@ -752,7 +767,15 @@ bool RunManager::resolve_deck_choice(int deck_index) {
     bool done = false;
     switch (deck_choice.kind) {
         case DeckChoiceKind::UPGRADE: done = upgrade_card_in_deck(deck_index); break;
-        case DeckChoiceKind::REMOVE: done = remove_card_from_deck(deck_index); break;
+        case DeckChoiceKind::REMOVE: {
+            CardId devoured = master_deck[deck_index].id;
+            done = remove_card_from_deck(deck_index);
+            if (done && paels_tooth_picks > 0) {
+                --paels_tooth_picks;
+                paels_tooth_cards.push_back(devoured);
+            }
+            break;
+        }
         case DeckChoiceKind::TRANSFORM: done = transform_card_in_deck(deck_index, deck_choice.upgrade_result); break;
         default: break;
     }
@@ -844,12 +867,16 @@ void RunManager::register_relic_powers() {
     if (has_relic("HAPPY_FLOWER")) combat.add_power(PowerId::HAPPY_FLOWER, 1);
     if (has_relic("PENDULUM")) combat.add_power(PowerId::PENDULUM, 1);
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
+    if (has_relic("VERY_HOT_COCOA")) combat.add_power(PowerId::VERY_HOT_COCOA, 4);
+    // Paël's Blood: one more card in every opening draw, the first one included.
+    if (has_relic("PAELS_BLOOD")) combat.add_power(PowerId::TURN_DRAW, 1);
     if (has_relic("MERCURY_HOURGLASS")) combat.add_power(PowerId::MERCURY_HOURGLASS, 3);
     // End of turn
     if (has_relic("CLOAK_CLASP")) combat.add_power(PowerId::CLOAK_CLASP, 1);
     if (has_relic("POCKETWATCH")) combat.add_power(PowerId::POCKETWATCH, 3);
     if (has_relic("PARRYING_SHIELD")) combat.add_power(PowerId::PARRYING_SHIELD, 6);
     if (has_relic("STONE_CALENDAR")) combat.add_power(PowerId::STONE_CALENDAR, 52);
+    if (has_relic("PAELS_TEARS")) combat.add_power(PowerId::PAELS_TEARS, 2);
     if (has_relic("ART_OF_WAR")) combat.add_power(PowerId::ART_OF_WAR, 1);
     if (has_relic("ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 6);
     if (has_relic("SCREAMING_FLAGON")) combat.add_power(PowerId::SCREAMING_FLAGON, 20);
@@ -909,6 +936,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("LUNAR_PASTRY")) combat.add_power(PowerId::LUNAR_PASTRY, 1);
     if (has_relic("REGALITE")) combat.add_power(PowerId::REGALITE, 4);
     if (has_relic("IVORY_TILE")) combat.add_power(PowerId::IVORY_TILE, 1);
+    if (has_relic("PAELS_LEGION")) combat.add_power(PowerId::PAELS_LEGION, 2);
     // Confused from the start: the opening hand already gets random costs.
     if (has_relic("FAKE_SNECKO_EYE")) combat.player.add_status(StatusType::CONFUSED, 1);
     if (has_relic("SNECKO_EYE")) {
@@ -1104,12 +1132,16 @@ void RunManager::proceed_after_combat() {
     }
 }
 
+void RunManager::regenerate_map() {
+    map.generate(current_act, map_seed, ascension_level, current_act == 2 && has_relic("GOLDEN_COMPASS"));
+}
+
 void RunManager::advance_act() {
     current_act++;
     current_floor = 1;
     current_node_index = -1;
     map_seed = next_random();
-    map.generate(current_act, map_seed, ascension_level);
+    regenerate_map();
     phase = RunPhase::ANCIENT_BLESSING; // Transition with Ancient encounter!
 }
 

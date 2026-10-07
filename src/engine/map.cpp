@@ -148,7 +148,7 @@ struct Layout {
 
 } // namespace
 
-void MapGraph::generate(uint8_t act, uint32_t seed, uint8_t ascension) {
+void MapGraph::generate(uint8_t act, uint32_t seed, uint8_t ascension, bool single_path) {
     nodes.clear();
     Xorshift rng{ (seed ? seed : 777u) ^ (act * 0x9E3779B9u) };
     if (rng.state == 0) rng.state = 777;
@@ -158,8 +158,8 @@ void MapGraph::generate(uint8_t act, uint32_t seed, uint8_t ascension) {
     uint8_t first_lane = static_cast<uint8_t>(rng.below(LANE_COUNT));
     uint8_t second_lane = static_cast<uint8_t>((first_lane + 1 + rng.below(LANE_COUNT - 1)) % LANE_COUNT);
     layout.trace_path(rng, first_lane);
-    layout.trace_path(rng, second_lane);
-    for (uint8_t p = 2; p < PATH_COUNT; ++p) {
+    if (!single_path) layout.trace_path(rng, second_lane);
+    for (uint8_t p = 2; p < PATH_COUNT && !single_path; ++p) {
         layout.trace_path(rng, static_cast<uint8_t>(rng.below(LANE_COUNT)));
     }
     layout.assign_types(rng, act, ascension);
