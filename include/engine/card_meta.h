@@ -453,6 +453,18 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::RARE, CardPool::COLORLESS }, // ROLLING_BOULDER
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // PANACHE
     { CardRarity::RARE, CardPool::COLORLESS }, // JACKPOT
+    { CardRarity::RARE, CardPool::COLORLESS }, // BEAT_DOWN
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // CATASTROPHE
+    { CardRarity::RARE, CardPool::COLORLESS }, // NOSTALGIA
+    { CardRarity::ANCIENT, CardPool::EVENT }, // RELAX
+    { CardRarity::ANCIENT, CardPool::EVENT }, // NEOWS_FURY
+    { CardRarity::EVENT, CardPool::EVENT }, // METAMORPHOSIS
+    { CardRarity::EVENT, CardPool::EVENT }, // DISTRACTION
+    { CardRarity::EVENT, CardPool::EVENT }, // CALTROPS
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // PROLONG
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // SALVO
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // THINKING_AHEAD
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // JACK_OF_ALL_TRADES
 };
 
 } // namespace engine

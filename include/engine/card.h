@@ -546,6 +546,19 @@ enum class CardId : uint16_t {
     ROLLING_BOULDER,
     PANACHE,
     JACKPOT,
+    // Batch H: cards that play cards, move cards between piles or hold the hand
+    BEAT_DOWN,
+    CATASTROPHE,
+    NOSTALGIA,
+    RELAX,
+    NEOWS_FURY,
+    METAMORPHOSIS,
+    DISTRACTION,
+    CALTROPS,
+    PROLONG,
+    SALVO,
+    THINKING_AHEAD,
+    JACK_OF_ALL_TRADES,
     COUNT
 };
 

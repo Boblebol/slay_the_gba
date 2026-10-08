@@ -697,6 +697,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::FASTEN:
             break; // read when a Defend card is played
+        case PowerId::NOSTALGIA:
+            if (turn_start) power.counter = 0;
+            break;
         case PowerId::PAELS_TEARS:
             if (event == CombatEvent::TURN_END && player.energy > 0) schedule(DelayedType::ENERGY, power.amount);
             break;
@@ -1848,6 +1851,13 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
     // Rebound: the card played right after it goes back on top of the draw pile.
     const bool rebounded = rebound_pending;
     rebound_pending = false;
+    // Nostalgia: the first Attack or Skill of the turn goes back on top of the draw pile too.
+    bool nostalgic = false;
+    ActivePower* nostalgia = find_power(PowerId::NOSTALGIA);
+    if (nostalgia && nostalgia->counter == 0 && (played_type == CardType::ATTACK || played_type == CardType::SKILL)) {
+        nostalgia->counter = 1;
+        nostalgic = true;
+    }
 
     for (int play = 0; play < plays; ++play) {
         fatal_kills = 0;
@@ -1921,7 +1931,7 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
             after_play = AfterPlay::HAND;
         }
     }
-    if (rebounded && after_play == AfterPlay::DISCARD) after_play = AfterPlay::DRAW_TOP;
+    if ((rebounded || nostalgic) && after_play == AfterPlay::DISCARD) after_play = AfterPlay::DRAW_TOP;
 }
 
 void CombatEngine::place_played_card(const DeckCard& card, AfterPlay after_play) {
@@ -3145,6 +3155,109 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             zero_cost.cost_upgraded = upgraded;
             for (uint8_t copy = 0; copy < secondary_value; ++copy) create_random_card(zero_cost, Pile::HAND, upgraded);
             set_log(upgraded ? "Played Jackpot+!"sv : "Played Jackpot!"sv);
+            break;
+        }
+        case CardId::BEAT_DOWN: {
+            // The attacks are picked first, so one played now cannot come back into the pick.
+            FixedVector<DeckCard, 4> picked;
+            for (uint8_t pick = 0; pick < base_value; ++pick) {
+                FixedVector<uint8_t, 50> attacks;
+                for (size_t i = 0; i < discard_pile.size(); ++i) {
+                    if (CardDef::get(discard_pile[i].id).type == CardType::ATTACK) attacks.push_back(static_cast<uint8_t>(i));
+                }
+                if (attacks.empty()) break;
+                const size_t chosen = attacks[next_random() % attacks.size()];
+                picked.push_back(discard_pile[chosen]);
+                discard_pile.erase(chosen);
+            }
+            for (size_t i = 0; i < picked.size() && has_alive_enemies(); ++i) autoplay(picked[i]);
+            set_log(upgraded ? "Played Beat Down+!"sv : "Played Beat Down!"sv);
+            break;
+        }
+        case CardId::CATASTROPHE: {
+            for (uint8_t round = 0; round < base_value && has_alive_enemies(); ++round) {
+                if (draw_pile.empty()) shuffle_discard_into_draw();
+                if (draw_pile.empty()) break;
+                const size_t chosen = next_random() % draw_pile.size();
+                const DeckCard picked = draw_pile[chosen];
+                draw_pile.erase(chosen);
+                autoplay(picked);
+            }
+            set_log(upgraded ? "Played Catastrophe+!"sv : "Played Catastrophe!"sv);
+            break;
+        }
+        case CardId::NOSTALGIA: {
+            add_power(PowerId::NOSTALGIA);
+            set_log(upgraded ? "Played Nostalgia+!"sv : "Played Nostalgia!"sv);
+            break;
+        }
+        case CardId::RELAX: {
+            gain_block(base_value);
+            schedule(DelayedType::DRAW, secondary_value);
+            schedule(DelayedType::ENERGY, secondary_value);
+            set_log(upgraded ? "Played Relax+!"sv : "Played Relax!"sv);
+            break;
+        }
+        case CardId::NEOWS_FURY: {
+            hit(current_target, base_value);
+            CardChoice choice;
+            choice.kind = ChoiceKind::TO_HAND;
+            choice.count = secondary_value;
+            choice.optional = true;
+            choice.source = Pile::DISCARD;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Neow's Fury+!"sv : "Played Neow's Fury!"sv);
+            break;
+        }
+        case CardId::METAMORPHOSIS: {
+            for (uint8_t added = 0; added < base_value; ++added) {
+                const CardId attack = random_card(CardFilter(CardType::ATTACK));
+                if (attack == CardId::NONE) break;
+                DeckCard copy(attack);
+                const uint8_t printed = CardDef::get_cost(attack, false);
+                if (printed != COST_X) copy.cost_delta = static_cast<int8_t>(-static_cast<int>(printed));
+                create_card(copy, Pile::DRAW);
+            }
+            set_log(upgraded ? "Played Metamorphosis+!"sv : "Played Metamorphosis!"sv);
+            break;
+        }
+        case CardId::DISTRACTION: {
+            const CardId skill = random_card(CardFilter(CardType::SKILL));
+            if (skill != CardId::NONE) {
+                DeckCard copy(skill);
+                copy.free_this_turn = true;
+                create_card(copy, Pile::HAND);
+            }
+            set_log(upgraded ? "Played Distraction+!"sv : "Played Distraction!"sv);
+            break;
+        }
+        case CardId::CALTROPS: {
+            player.add_status(StatusType::THORNS, base_value);
+            set_log(upgraded ? "Played Caltrops+!"sv : "Played Caltrops!"sv);
+            break;
+        }
+        case CardId::PROLONG: {
+            if (player.block > 0) schedule(DelayedType::BLOCK, player.block);
+            set_log(upgraded ? "Played Prolong+!"sv : "Played Prolong!"sv);
+            break;
+        }
+        case CardId::SALVO: {
+            hit(current_target, base_value);
+            retain_hand = true;
+            set_log(upgraded ? "Played Salvo+!"sv : "Played Salvo!"sv);
+            break;
+        }
+        case CardId::THINKING_AHEAD: {
+            draw_cards(base_value);
+            ask_choice(CardChoice{ ChoiceKind::TOP_OF_DRAW, 1 });
+            set_log(upgraded ? "Played Thinking Ahead+!"sv : "Played Thinking Ahead!"sv);
+            break;
+        }
+        case CardId::JACK_OF_ALL_TRADES: {
+            for (uint8_t added = 0; added < base_value; ++added) {
+                create_random_card(CardFilter(CardPool::COLORLESS), Pile::HAND);
+            }
+            set_log(upgraded ? "Played Jack of All Trades+!"sv : "Played Jack of All Trades!"sv);
             break;
         }
         case CardId::BYRD_SWOOP: {
