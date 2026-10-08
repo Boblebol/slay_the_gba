@@ -558,6 +558,19 @@ static constexpr CardDef CARDS[] = {
     { CardId::SALVO, "Salvo", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 12, 0, "Deal 12 dmg. Retain your hand until next turn.", "Salvo+", 1, 16, 0, "Deal 16 dmg. Retain your hand until next turn." },
     { CardId::THINKING_AHEAD, "Thinking Ahead", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Draw 2 cards. Put 1 card from your hand on top of your draw pile. Exhaust.", "Thinking Ahead+", 0, 2, 0, "Draw 2 cards. Put 1 card from your hand on top of your draw pile.", KEYWORD_EXHAUST, 0 },
     { CardId::JACK_OF_ALL_TRADES, "Jack of All Trades", 0, CardType::SKILL, TargetType::SELF, 1, 0, "Add 1 random Colorless card to your hand. Exhaust.", "Jack of All Trades+", 0, 2, 0, "Add 2 random Colorless cards to your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Batch I: Powers with turn and event triggers, and cards that pick from the draw pile.
+    { CardId::HELLO_WORLD, "Hello World", 1, CardType::POWER, TargetType::SELF, 0, 0, "At the start of your turn, add a random Common card to your hand.", "Hello World+", 1, 0, 0, "Innate. At the start of your turn, add a random Common card to your hand.", 0, KEYWORD_INNATE },
+    { CardId::DARK_SHACKLES, "Dark Shackles", 0, CardType::SKILL, TargetType::SINGLE_ENEMY, 9, 0, "Enemy loses 9 Str this turn. Exhaust.", "Dark Shackles+", 0, 15, 0, "Enemy loses 15 Str this turn. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::EQUILIBRIUM, "Equilibrium", 2, CardType::SKILL, TargetType::SELF, 13, 0, "Gain 13 Block. Retain your hand this turn.", "Equilibrium+", 2, 16, 0, "Gain 16 Block. Retain your hand this turn." },
+    { CardId::PURITY, "Purity", 0, CardType::SKILL, TargetType::SELF, 3, 0, "Retain. Exhaust up to 3 cards from your hand. Exhaust.", "Purity+", 0, 5, 0, "Retain. Exhaust up to 5 cards from your hand. Exhaust.", KEYWORD_RETAIN | KEYWORD_EXHAUST, KEYWORD_RETAIN | KEYWORD_EXHAUST },
+    { CardId::SECRET_TECHNIQUE, "Secret Technique", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Put a Skill from your draw pile into your hand. Exhaust.", "Secret Technique+", 0, 0, 0, "Put a Skill from your draw pile into your hand.", KEYWORD_EXHAUST, 0 },
+    { CardId::DRAMATIC_ENTRANCE, "Dramatic Entrance", 0, CardType::ATTACK, TargetType::ALL_ENEMIES, 11, 0, "Innate. Deal 11 dmg to ALL enemies. Exhaust.", "Dramatic Entrance+", 0, 15, 0, "Innate. Deal 15 dmg to ALL enemies. Exhaust.", KEYWORD_INNATE | KEYWORD_EXHAUST, KEYWORD_INNATE | KEYWORD_EXHAUST },
+    { CardId::SECRET_WEAPON, "Secret Weapon", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Put an Attack from your draw pile into your hand. Exhaust.", "Secret Weapon+", 0, 0, 0, "Put an Attack from your draw pile into your hand.", KEYWORD_EXHAUST, 0 },
+    { CardId::MAYHEM, "Mayhem", 2, CardType::POWER, TargetType::SELF, 1, 0, "At the start of your turn, play the top card of your draw pile.", "Mayhem+", 1, 1, 0, "At the start of your turn, play the top card of your draw pile." },
+    { CardId::PREP_TIME, "Prep Time", 1, CardType::POWER, TargetType::SELF, 4, 0, "At the start of your turn, gain 4 Vigor.", "Prep Time+", 1, 6, 0, "At the start of your turn, gain 6 Vigor." },
+    { CardId::STRATAGEM, "Stratagem", 1, CardType::POWER, TargetType::SELF, 1, 0, "When you shuffle your draw pile, choose a card to put into your hand.", "Stratagem+", 0, 1, 0, "When you shuffle your draw pile, choose a card to put into your hand." },
+    { CardId::CALAMITY, "Calamity", 3, CardType::POWER, TargetType::SELF, 1, 0, "Whenever you play an Attack, add a random Attack to your hand.", "Calamity+", 2, 1, 0, "Whenever you play an Attack, add a random Attack to your hand." },
+    { CardId::AUTOMATION, "Automation", 1, CardType::POWER, TargetType::SELF, 1, 0, "Every 10 cards you draw, gain 1 energy.", "Automation+", 0, 1, 0, "Every 10 cards you draw, gain 1 energy." },
 };
 
 const CardDef& CardDef::get(CardId id) {

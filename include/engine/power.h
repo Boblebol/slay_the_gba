@@ -189,7 +189,13 @@ enum class PowerId : uint8_t {
     FASTEN,            // Defend cards give `amount` more Block
     ROLLING_BOULDER,   // start of turn: `amount` damage to every enemy, then 5 more (counter = the growth so far)
     PANACHE,           // every PANACHE_CARDS cards played in a turn: `amount` damage to every enemy
-    NOSTALGIA          // the first Attack or Skill played each turn goes on top of the draw pile (counter = used this turn)
+    NOSTALGIA,         // the first Attack or Skill played each turn goes on top of the draw pile (counter = used this turn)
+    HELLO_WORLD,       // start of turn: `amount` random Common cards to the hand
+    MAYHEM,            // start of turn: play the top card of the draw pile, `amount` times
+    PREP_TIME,         // start of turn: `amount` Vigor
+    STRATAGEM,         // draw pile shuffled: pick `amount` cards of it for the hand
+    CALAMITY,          // Attack played: `amount` random Attacks to the hand
+    AUTOMATION         // every AUTOMATION_CARDS cards drawn: `amount` energy (counter = cards drawn so far)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -199,6 +205,7 @@ constexpr bool is_player_debuff_power(PowerId id) {
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
 constexpr uint8_t PANACHE_CARDS = 5;
+constexpr uint8_t AUTOMATION_CARDS = 10;
 constexpr uint8_t ROLLING_BOULDER_GROWTH = 5;
 constexpr uint8_t ORBIT_ENERGY = 4;
 constexpr uint8_t DANSE_MACABRE_COST = 2;

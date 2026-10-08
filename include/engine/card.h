@@ -559,6 +559,19 @@ enum class CardId : uint16_t {
     SALVO,
     THINKING_AHEAD,
     JACK_OF_ALL_TRADES,
+    // Batch I: Powers with turn and event triggers, and cards that pick from the draw pile
+    HELLO_WORLD,
+    DARK_SHACKLES,
+    EQUILIBRIUM,
+    PURITY,
+    SECRET_TECHNIQUE,
+    DRAMATIC_ENTRANCE,
+    SECRET_WEAPON,
+    MAYHEM,
+    PREP_TIME,
+    STRATAGEM,
+    CALAMITY,
+    AUTOMATION,
     COUNT
 };
 

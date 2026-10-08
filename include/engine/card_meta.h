@@ -465,6 +465,18 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // SALVO
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // THINKING_AHEAD
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // JACK_OF_ALL_TRADES
+    { CardRarity::EVENT, CardPool::EVENT }, // HELLO_WORLD
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // DARK_SHACKLES
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // EQUILIBRIUM
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // PURITY
+    { CardRarity::RARE, CardPool::COLORLESS }, // SECRET_TECHNIQUE
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // DRAMATIC_ENTRANCE
+    { CardRarity::RARE, CardPool::COLORLESS }, // SECRET_WEAPON
+    { CardRarity::RARE, CardPool::COLORLESS }, // MAYHEM
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // PREP_TIME
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // STRATAGEM
+    { CardRarity::RARE, CardPool::COLORLESS }, // CALAMITY
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // AUTOMATION
 };
 
 } // namespace engine

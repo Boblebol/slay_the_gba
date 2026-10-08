@@ -700,6 +700,48 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::NOSTALGIA:
             if (turn_start) power.counter = 0;
             break;
+        case PowerId::HELLO_WORLD:
+            if (turn_start) {
+                for (int16_t copy = 0; copy < power.amount; ++copy) {
+                    create_random_card(CardFilter(CardRarity::COMMON), Pile::HAND);
+                }
+            }
+            break;
+        case PowerId::MAYHEM:
+            if (turn_start) {
+                for (int16_t copy = 0; copy < power.amount && has_alive_enemies(); ++copy) {
+                    if (draw_pile.empty()) shuffle_discard_into_draw();
+                    if (draw_pile.empty()) break;
+                    const DeckCard top = draw_pile.back();
+                    draw_pile.pop_back();
+                    autoplay(top);
+                }
+            }
+            break;
+        case PowerId::PREP_TIME:
+            if (turn_start) player.add_status(StatusType::VIGOR, power.amount);
+            break;
+        case PowerId::STRATAGEM:
+            if (event == CombatEvent::DRAW_PILE_SHUFFLED) {
+                ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, static_cast<uint8_t>(power.amount));
+            }
+            break;
+        case PowerId::CALAMITY:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK) {
+                for (int16_t copy = 0; copy < power.amount; ++copy) {
+                    create_random_card(CardFilter(CardType::ATTACK), Pile::HAND);
+                }
+            }
+            break;
+        case PowerId::AUTOMATION:
+            if (event == CombatEvent::CARD_DRAWN) {
+                power.counter = static_cast<uint8_t>(power.counter + 1);
+                if (power.counter >= AUTOMATION_CARDS) {
+                    power.counter = 0;
+                    player.energy = static_cast<int8_t>(player.energy + power.amount);
+                }
+            }
+            break;
         case PowerId::PAELS_TEARS:
             if (event == CombatEvent::TURN_END && player.energy > 0) schedule(DelayedType::ENERGY, power.amount);
             break;
@@ -1996,6 +2038,11 @@ bool CombatEngine::can_be_picked(const DeckCard& card, ChoiceKind kind) const {
     }
 }
 
+bool CombatEngine::can_be_picked(const DeckCard& card, const CardChoice& choice) const {
+    if (!choice.any_type && CardDef::get(card.id).type != choice.type) return false;
+    return can_be_picked(card, choice.kind);
+}
+
 size_t CombatEngine::pile_size(Pile pile) const {
     return pile == Pile::HAND ? hand.size() : pile == Pile::DRAW ? draw_pile.size() : discard_pile.size();
 }
@@ -2011,7 +2058,7 @@ size_t CombatEngine::choice_pool(const CardChoice& choice) const {
 bool CombatEngine::choice_allows(size_t index) const {
     if (!choice_pending()) return false;
     const CardChoice& choice = pending_choices[0];
-    return index < choice_pool(choice) && can_be_picked(pile_card(choice.source, index), choice.kind);
+    return index < choice_pool(choice) && can_be_picked(pile_card(choice.source, index), choice);
 }
 
 int CombatEngine::choice_pool_size() const {
@@ -2046,7 +2093,7 @@ void CombatEngine::settle_choices() {
         const CardChoice choice = pending_choices[0];
         FixedVector<uint8_t, 50> pickable;
         for (size_t i = 0, pool = choice_pool(choice); i < pool; ++i) {
-            if (can_be_picked(pile_card(choice.source, i), choice.kind)) pickable.push_back(static_cast<uint8_t>(i));
+            if (can_be_picked(pile_card(choice.source, i), choice)) pickable.push_back(static_cast<uint8_t>(i));
         }
         // Something is left to decide when a card can be left out, or when picking is optional.
         if (!pickable.empty() && (choice.optional || pickable.size() > choice.count)) return;
@@ -3258,6 +3305,74 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
                 create_random_card(CardFilter(CardPool::COLORLESS), Pile::HAND);
             }
             set_log(upgraded ? "Played Jack of All Trades+!"sv : "Played Jack of All Trades!"sv);
+            break;
+        }
+        case CardId::HELLO_WORLD: {
+            add_power(PowerId::HELLO_WORLD, 1);
+            set_log(upgraded ? "Played Hello World+!"sv : "Played Hello World!"sv);
+            break;
+        }
+        case CardId::DARK_SHACKLES: {
+            sap_strength(current_target, base_value);
+            set_log(upgraded ? "Played Dark Shackles+!"sv : "Played Dark Shackles!"sv);
+            break;
+        }
+        case CardId::EQUILIBRIUM: {
+            gain_block(base_value);
+            retain_hand = true;
+            set_log(upgraded ? "Played Equilibrium+!"sv : "Played Equilibrium!"sv);
+            break;
+        }
+        case CardId::PURITY: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::EXHAUST;
+            choice.count = base_value;
+            choice.optional = true;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Purity+!"sv : "Played Purity!"sv);
+            break;
+        }
+        case CardId::SECRET_TECHNIQUE:
+        case CardId::SECRET_WEAPON: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::TO_HAND;
+            choice.source = Pile::DRAW;
+            choice.any_type = false;
+            choice.type = played_card.id == CardId::SECRET_TECHNIQUE ? CardType::SKILL : CardType::ATTACK;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Secret card+!"sv : "Played Secret card!"sv);
+            break;
+        }
+        case CardId::DRAMATIC_ENTRANCE: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) hit(enemies[i], base_value);
+            }
+            set_log(upgraded ? "Played Dramatic Entrance+!"sv : "Played Dramatic Entrance!"sv);
+            break;
+        }
+        case CardId::MAYHEM: {
+            add_power(PowerId::MAYHEM, 1);
+            set_log(upgraded ? "Played Mayhem+!"sv : "Played Mayhem!"sv);
+            break;
+        }
+        case CardId::PREP_TIME: {
+            add_power(PowerId::PREP_TIME, base_value);
+            set_log(upgraded ? "Played Prep Time+!"sv : "Played Prep Time!"sv);
+            break;
+        }
+        case CardId::STRATAGEM: {
+            add_power(PowerId::STRATAGEM, 1);
+            set_log(upgraded ? "Played Stratagem+!"sv : "Played Stratagem!"sv);
+            break;
+        }
+        case CardId::CALAMITY: {
+            add_power(PowerId::CALAMITY, 1);
+            set_log(upgraded ? "Played Calamity+!"sv : "Played Calamity!"sv);
+            break;
+        }
+        case CardId::AUTOMATION: {
+            add_power(PowerId::AUTOMATION, 1);
+            set_log(upgraded ? "Played Automation+!"sv : "Played Automation!"sv);
             break;
         }
         case CardId::BYRD_SWOOP: {
