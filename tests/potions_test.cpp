@@ -695,6 +695,27 @@ void test_duplicator() {
     std::cout << "[PASS] Duplicator: next card this turn is played an extra time" << std::endl;
 }
 
+void test_cosmic_concoction() {
+    // Adds 3 upgraded Colorless cards to the hand.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.hand.size() == 5);
+    assert(combat.use_potion("COSMIC_CONCOCTION"));
+    assert(std::string_view(combat.combat_log) == "Cosmic Concoction!");
+    assert(combat.hand.size() == 8);
+    for (size_t i = 5; i < 8; ++i) {
+        assert(combat.hand[i].upgraded);
+        assert(card_meta(combat.hand[i].id).pool == CardPool::COLORLESS);
+    }
+
+    // A full hand only keeps what fits: nothing crashes.
+    CombatEngine full = make_combat(CharacterId::IRONCLAD);
+    while (full.hand.size() < full.hand.capacity()) full.hand.push_back(DeckCard(CardId::STRIKE));
+    assert(full.use_potion("COSMIC_CONCOCTION"));
+    assert(full.hand.size() == full.hand.capacity());
+
+    std::cout << "[PASS] Cosmic Concoction: 3 upgraded Colorless cards added to the hand" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));

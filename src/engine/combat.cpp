@@ -5387,6 +5387,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
             add_power(PowerId::DEMISE, 9, false, static_cast<int8_t>(target_index));
         }
         set_log("Powdered Demise!");
+    } else if (potion_id == "COSMIC_CONCOCTION") {
+        for (int copy = 0; copy < 3; ++copy) create_random_card(CardPool::COLORLESS, Pile::HAND, true);
+        set_log("Cosmic Concoction!");
     } else if (potion_id == "DUPLICATOR") {
         add_power(PowerId::DUPLICATION, 1, true);
         set_log("Duplicator!");
