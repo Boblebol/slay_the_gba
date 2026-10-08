@@ -184,7 +184,11 @@ enum class PowerId : uint8_t {
     // Held by an enemy:
     PERSONAL_HIVE,     // it takes unblocked attack damage: `amount` Dazed into the player's draw pile
     // Relics of the Ancients (appended)
-    PAELS_TEARS        // end of a turn with unspent energy: `amount` energy next turn
+    PAELS_TEARS,       // end of a turn with unspent energy: `amount` energy next turn
+    // Colorless and event cards (appended)
+    FASTEN,            // Defend cards give `amount` more Block
+    ROLLING_BOULDER,   // start of turn: `amount` damage to every enemy, then 5 more (counter = the growth so far)
+    PANACHE            // every PANACHE_CARDS cards played in a turn: `amount` damage to every enemy
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -193,6 +197,8 @@ constexpr bool is_player_debuff_power(PowerId id) {
 }
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
+constexpr uint8_t PANACHE_CARDS = 5;
+constexpr uint8_t ROLLING_BOULDER_GROWTH = 5;
 constexpr uint8_t ORBIT_ENERGY = 4;
 constexpr uint8_t DANSE_MACABRE_COST = 2;
 constexpr uint8_t BREAD_ENERGY_LOST = 2;

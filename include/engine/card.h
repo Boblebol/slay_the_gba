@@ -533,6 +533,19 @@ enum class CardId : uint16_t {
     VOLLEY,
     OMNISLICE,
     RESTLESSNESS,
+    // Batch G: colorless and event cards, some with a new power or counter
+    ETERNAL_ARMOR,
+    FASTEN,
+    REBOUND,
+    PANIC_BUTTON,
+    GOLD_AXE,
+    ANOINTED,
+    FISTICUFFS,
+    REND,
+    THE_BOMB,
+    ROLLING_BOULDER,
+    PANACHE,
+    JACKPOT,
     COUNT
 };
 

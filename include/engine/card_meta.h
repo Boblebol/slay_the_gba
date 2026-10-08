@@ -441,6 +441,18 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // VOLLEY
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // OMNISLICE
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // RESTLESSNESS
+    { CardRarity::RARE, CardPool::COLORLESS }, // ETERNAL_ARMOR
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // FASTEN
+    { CardRarity::EVENT, CardPool::EVENT }, // REBOUND
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // PANIC_BUTTON
+    { CardRarity::RARE, CardPool::COLORLESS }, // GOLD_AXE
+    { CardRarity::RARE, CardPool::COLORLESS }, // ANOINTED
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // FISTICUFFS
+    { CardRarity::RARE, CardPool::COLORLESS }, // REND
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // THE_BOMB
+    { CardRarity::RARE, CardPool::COLORLESS }, // ROLLING_BOULDER
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // PANACHE
+    { CardRarity::RARE, CardPool::COLORLESS }, // JACKPOT
 };
 
 } // namespace engine

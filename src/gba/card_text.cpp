@@ -710,6 +710,30 @@ bn::string_view base_name(engine::CardId id)
         return "Omnilame";
     case engine::CardId::RESTLESSNESS:
         return "Sans repos";
+    case engine::CardId::ETERNAL_ARMOR:
+        return "Armure éternelle";
+    case engine::CardId::FASTEN:
+        return "Bien attaché";
+    case engine::CardId::REBOUND:
+        return "Rebond";
+    case engine::CardId::PANIC_BUTTON:
+        return "Bouton de secours";
+    case engine::CardId::GOLD_AXE:
+        return "Hache dorée";
+    case engine::CardId::ANOINTED:
+        return "Sacrement";
+    case engine::CardId::FISTICUFFS:
+        return "Bagarre";
+    case engine::CardId::REND:
+        return "Pourfendre";
+    case engine::CardId::THE_BOMB:
+        return "La bombe";
+    case engine::CardId::ROLLING_BOULDER:
+        return "Pierre qui roule";
+    case engine::CardId::PANACHE:
+        return "Panache";
+    case engine::CardId::JACKPOT:
+        return "Jackpot";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1284,6 +1308,42 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::RESTLESSNESS:
         stream << "Retenue. Main vide : pioche " << secondary << ", énergie +" << secondary << ".";
+        break;
+    case engine::CardId::ETERNAL_ARMOR:
+        stream << "Gagnez " << value << " de Blindage.";
+        break;
+    case engine::CardId::FASTEN:
+        stream << "Défense : Armure +" << value << ".";
+        break;
+    case engine::CardId::REBOUND:
+        stream << "Inflige " << value << " dégâts. Suivante en Pioche.";
+        break;
+    case engine::CardId::PANIC_BUTTON:
+        stream << "Armure +" << value << ". Pas d'Armure 2 tours. Épuis.";
+        break;
+    case engine::CardId::GOLD_AXE:
+        stream << (card.upgraded ? "Retenue. " : "") << "Dégâts = cartes jouées.";
+        break;
+    case engine::CardId::ANOINTED:
+        stream << (card.upgraded ? "Retenue. " : "") << "Rares de Pioche en main. Épuis.";
+        break;
+    case engine::CardId::FISTICUFFS:
+        stream << "Inflige " << value << " dégâts. Armure = dégâts.";
+        break;
+    case engine::CardId::REND:
+        stream << "Inflige " << value << " dégâts, +" << secondary << " par effet néfaste.";
+        break;
+    case engine::CardId::THE_BOMB:
+        stream << "Dans 3 tours : " << value << " dégâts à TOUS.";
+        break;
+    case engine::CardId::ROLLING_BOULDER:
+        stream << value << " dégâts à TOUS par tour, +5.";
+        break;
+    case engine::CardId::PANACHE:
+        stream << "Toutes les 5 cartes : " << value << " dégâts à TOUS.";
+        break;
+    case engine::CardId::JACKPOT:
+        stream << "Inflige " << value << " dégâts. +" << secondary << " cartes à 0" << (card.upgraded ? " amél." : ".");
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:

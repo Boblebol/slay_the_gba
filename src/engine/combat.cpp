@@ -678,6 +678,25 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::ART_OF_WAR:
             if (event == CombatEvent::TURN_END && counters.attacks_played == 0) schedule(DelayedType::ENERGY, power.amount);
             break;
+        case PowerId::ROLLING_BOULDER:
+            if (turn_start) {
+                damage_all_enemies(static_cast<int16_t>(power.amount + power.counter));
+                power.counter = bump(power.counter, ROLLING_BOULDER_GROWTH * power.stacks);
+            }
+            break;
+        case PowerId::PANACHE:
+            if (turn_start) {
+                power.counter = 0;
+            } else if (card_played) {
+                power.counter = bump(power.counter);
+                if (power.counter >= PANACHE_CARDS) {
+                    power.counter = 0;
+                    damage_all_enemies(power.amount);
+                }
+            }
+            break;
+        case PowerId::FASTEN:
+            break; // read when a Defend card is played
         case PowerId::PAELS_TEARS:
             if (event == CombatEvent::TURN_END && player.energy > 0) schedule(DelayedType::ENERGY, power.amount);
             break;
@@ -910,6 +929,8 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
 }
 
 void CombatEngine::gain_block(int16_t amount) {
+    // Panic Button: a card gives no Block.
+    if (resolving_card && no_card_block_turns > 0) return;
     int16_t before = player.block;
     player.gain_block(amount);
     // Paël's Legion doubles the Block a card gives, then sleeps; the Block gained is doubled, Dexterity included.
@@ -1176,6 +1197,7 @@ bool CombatEngine::card_fits(CardId id, const CardFilter& filter) const {
     } else if (meta.rarity != filter.rarity) {
         return false;
     }
+    if (filter.cost >= 0 && CardDef::get_cost(id, filter.cost_upgraded) != filter.cost) return false;
     return filter.any_type || CardDef::get(id).type == filter.type;
 }
 
@@ -1525,6 +1547,8 @@ void CombatEngine::reset_combat_state() {
     keep_block_turns = 0;
     retain_hand = false;
     no_draw_this_turn = false;
+    no_card_block_turns = 0;
+    rebound_pending = false;
     fatal_kills = 0;
     powers.clear();
     powers_in_play.clear();
@@ -1596,6 +1620,8 @@ void CombatEngine::start_player_turn() {
     exhausted_this_turn = 0;
     retain_hand = false;
     no_draw_this_turn = false;
+    rebound_pending = false;
+    if (no_card_block_turns > 0) --no_card_block_turns;
     trigger_turn_passives(true);
     int extra_draw = run_delayed_effects(false);
     turn_draw_bonus_ = 0;
@@ -1819,6 +1845,9 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
                             AfterPlay& after_play) {
     const CardType played_type = CardDef::get(card.id).type;
     const int plays = 1 + consume_play_modifiers(card);
+    // Rebound: the card played right after it goes back on top of the draw pile.
+    const bool rebounded = rebound_pending;
+    rebound_pending = false;
 
     for (int play = 0; play < plays; ++play) {
         fatal_kills = 0;
@@ -1892,6 +1921,7 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
             after_play = AfterPlay::HAND;
         }
     }
+    if (rebounded && after_play == AfterPlay::DISCARD) after_play = AfterPlay::DRAW_TOP;
 }
 
 void CombatEngine::place_played_card(const DeckCard& card, AfterPlay after_play) {
@@ -2175,7 +2205,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             break;
         }
         case CardId::DEFEND: {
-            gain_block(base_value);
+            gain_block(static_cast<int16_t>(base_value + power_amount(PowerId::FASTEN)));
             set_log(upgraded ? "Played Defend+!"sv : "Played Defend!"sv);
             break;
         }
@@ -3039,6 +3069,84 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Restlessness+!"sv : "Played Restlessness!"sv);
             break;
         }
+        case CardId::ETERNAL_ARMOR: {
+            player.add_status(StatusType::PLATED_ARMOR, base_value);
+            set_log(upgraded ? "Played Eternal Armor+!"sv : "Played Eternal Armor!"sv);
+            break;
+        }
+        case CardId::FASTEN: {
+            add_power(PowerId::FASTEN, base_value);
+            set_log(upgraded ? "Played Fasten+!"sv : "Played Fasten!"sv);
+            break;
+        }
+        case CardId::REBOUND: {
+            hit(current_target, base_value);
+            rebound_pending = true;
+            set_log(upgraded ? "Played Rebound+!"sv : "Played Rebound!"sv);
+            break;
+        }
+        case CardId::PANIC_BUTTON: {
+            gain_block(base_value);
+            no_card_block_turns = secondary_value;
+            set_log(upgraded ? "Played Panic Button+!"sv : "Played Panic Button!"sv);
+            break;
+        }
+        case CardId::GOLD_AXE: {
+            // The tally is updated once the card is resolved: this card counts too.
+            hit(current_target, static_cast<int16_t>(counters.combat_cards_played + 1));
+            set_log(upgraded ? "Played Gold Axe+!"sv : "Played Gold Axe!"sv);
+            break;
+        }
+        case CardId::ANOINTED: {
+            for (size_t i = draw_pile.size(); i-- > 0 && hand.size() < hand.capacity();) {
+                if (card_meta(draw_pile[i].id).rarity == CardRarity::RARE) {
+                    hand.push_back(draw_pile[i]);
+                    draw_pile.erase(i);
+                }
+            }
+            set_log(upgraded ? "Played Anointed+!"sv : "Played Anointed!"sv);
+            break;
+        }
+        case CardId::FISTICUFFS: {
+            const int16_t dealt = hit(current_target, base_value);
+            // Block from the damage dealt: exact, Dexterity does not apply, but Panic Button still stops it.
+            if (no_card_block_turns == 0) add_block(dealt);
+            set_log(upgraded ? "Played Fisticuffs+!"sv : "Played Fisticuffs!"sv);
+            break;
+        }
+        case CardId::REND: {
+            int debuffs = 0;
+            for (const StatusEffect& status : current_target.statuses) {
+                if (is_debuff(status.type, status.amount)) ++debuffs;
+            }
+            hit(current_target, static_cast<int16_t>(base_value + secondary_value * debuffs));
+            set_log(upgraded ? "Played Rend+!"sv : "Played Rend!"sv);
+            break;
+        }
+        case CardId::THE_BOMB: {
+            schedule(DelayedType::DAMAGE_ALL, base_value, secondary_value);
+            set_log(upgraded ? "Played The Bomb+!"sv : "Played The Bomb!"sv);
+            break;
+        }
+        case CardId::ROLLING_BOULDER: {
+            add_power(PowerId::ROLLING_BOULDER, base_value);
+            set_log(upgraded ? "Played Rolling Boulder+!"sv : "Played Rolling Boulder!"sv);
+            break;
+        }
+        case CardId::PANACHE: {
+            add_power(PowerId::PANACHE, base_value);
+            set_log(upgraded ? "Played Panache+!"sv : "Played Panache!"sv);
+            break;
+        }
+        case CardId::JACKPOT: {
+            hit(current_target, base_value);
+            CardFilter zero_cost;
+            zero_cost.cost = 0;
+            zero_cost.cost_upgraded = upgraded;
+            for (uint8_t copy = 0; copy < secondary_value; ++copy) create_random_card(zero_cost, Pile::HAND, upgraded);
+            set_log(upgraded ? "Played Jackpot+!"sv : "Played Jackpot!"sv);
+            break;
+        }
         case CardId::BYRD_SWOOP: {
             hit(current_target, base_value);
             set_log(upgraded ? "Played Byrd Swoop+!"sv : "Played Byrd Swoop!"sv);
@@ -3050,7 +3158,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             break;
         }
         case CardId::ULTIMATE_DEFEND: {
-            gain_block(base_value);
+            gain_block(static_cast<int16_t>(base_value + power_amount(PowerId::FASTEN)));
             set_log(upgraded ? "Played Ultimate Defend+!"sv : "Played Ultimate Defend!"sv);
             break;
         }

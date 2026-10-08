@@ -43,6 +43,8 @@ struct CardFilter {
     CardRarity rarity = CardRarity::NONE; // NONE: Common, Uncommon or Rare
     bool any_type = true;
     CardType type = CardType::ATTACK;     // read when `any_type` is false
+    int16_t cost = -1;                    // energy cost the card must have, -1 for any
+    bool cost_upgraded = false;           // the cost is read on the upgraded card
 
     constexpr CardFilter() = default;
     constexpr CardFilter(CardPool p) : pool(p) {}
@@ -202,6 +204,8 @@ public:
     uint8_t keep_block_turns = 0;  // starts of turn where the player's Block is not removed (Blur)
     bool retain_hand = false;      // the whole hand stays at the end of this turn
     bool no_draw_this_turn = false; // "you cannot draw any more cards this turn"
+    uint8_t no_card_block_turns = 0; // player turns left (this one included) where cards give no Block (Panic Button)
+    bool rebound_pending = false;    // the next card played this turn goes on top of the draw pile (Rebound)
     uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
     // Active powers, in the order they were gained: every relic a run can hold plus a combat's worth of
     // card powers (add_power drops a power silently once it is full).

@@ -532,6 +532,19 @@ static constexpr CardDef CARDS[] = {
     { CardId::VOLLEY, "Volley", COST_X, CardType::ATTACK, TargetType::RANDOM_ENEMY, 10, 0, "Deal 10 dmg to a random enemy X times.", "Volley+", COST_X, 14, 0, "Deal 14 dmg to a random enemy X times." },
     { CardId::OMNISLICE, "Omnislice", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 8, 0, "Deal 8 dmg. Deal the same to ALL other enemies.", "Omnislice+", 0, 11, 0, "Deal 11 dmg. Deal the same to ALL other enemies." },
     { CardId::RESTLESSNESS, "Restlessness", 0, CardType::SKILL, TargetType::SELF, 0, 2, "Retain. If your hand is empty, draw 2 cards and gain 2 energy.", "Restlessness+", 0, 0, 3, "Retain. If your hand is empty, draw 3 cards and gain 3 energy.", KEYWORD_RETAIN, KEYWORD_RETAIN },
+    // Batch G: colorless and event cards.
+    { CardId::ETERNAL_ARMOR, "Eternal Armor", 3, CardType::POWER, TargetType::SELF, 9, 0, "Gain 9 Plating.", "Eternal Armor+", 3, 12, 0, "Gain 12 Plating." },
+    { CardId::FASTEN, "Fasten", 1, CardType::POWER, TargetType::SELF, 4, 0, "Defend cards give 4 additional Block.", "Fasten+", 1, 6, 0, "Defend cards give 6 additional Block." },
+    { CardId::REBOUND, "Rebound", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 0, "Deal 9 dmg. The next card you play this turn goes on top of your draw pile.", "Rebound+", 1, 12, 0, "Deal 12 dmg. The next card you play this turn goes on top of your draw pile." },
+    { CardId::PANIC_BUTTON, "Panic Button", 0, CardType::SKILL, TargetType::SELF, 30, 2, "Gain 30 Block. You cannot gain Block from cards for 2 turns. Exhaust.", "Panic Button+", 0, 40, 2, "Gain 40 Block. You cannot gain Block from cards for 2 turns. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::GOLD_AXE, "Gold Axe", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 0, 0, "Deal damage equal to the cards played this combat.", "Gold Axe+", 1, 0, 0, "Retain. Deal damage equal to the cards played this combat.", 0, KEYWORD_RETAIN },
+    { CardId::ANOINTED, "Anointed", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Put ALL Rare cards from your draw pile into your hand. Exhaust.", "Anointed+", 1, 0, 0, "Retain. Put ALL Rare cards from your draw pile into your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
+    { CardId::FISTICUFFS, "Fisticuffs", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 7, 0, "Deal 7 dmg. Gain Block equal to damage dealt.", "Fisticuffs+", 1, 9, 0, "Deal 9 dmg. Gain Block equal to damage dealt." },
+    { CardId::REND, "Rend", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 5, "Deal 10 dmg. 5 more for each unique debuff on the enemy.", "Rend+", 1, 12, 8, "Deal 12 dmg. 8 more for each unique debuff on the enemy." },
+    { CardId::THE_BOMB, "The Bomb", 2, CardType::SKILL, TargetType::SELF, 40, 3, "In 3 turns, deal 40 dmg to ALL enemies.", "The Bomb+", 2, 50, 3, "In 3 turns, deal 50 dmg to ALL enemies." },
+    { CardId::ROLLING_BOULDER, "Rolling Boulder", 3, CardType::POWER, TargetType::SELF, 5, 5, "Start of turn: deal 5 dmg to ALL enemies, then +5.", "Rolling Boulder+", 3, 10, 5, "Start of turn: deal 10 dmg to ALL enemies, then +5." },
+    { CardId::PANACHE, "Panache", 0, CardType::POWER, TargetType::SELF, 10, 5, "Every 5 cards played in a turn, deal 10 dmg to ALL enemies.", "Panache+", 0, 14, 5, "Every 5 cards played in a turn, deal 14 dmg to ALL enemies." },
+    { CardId::JACKPOT, "Jackpot", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 25, 3, "Deal 25 dmg. Add 3 random 0-cost cards to your hand.", "Jackpot+", 3, 30, 3, "Deal 30 dmg. Add 3 random upgraded 0-cost cards to your hand." },
 };
 
 const CardDef& CardDef::get(CardId id) {
