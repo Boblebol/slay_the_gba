@@ -672,6 +672,18 @@ CARDS: list[CardArt] = [
     CardArt("volley", "hero", "volley", "attack", (0, 0), folder="colorless"),
     CardArt("omnislice", "hero", "omnislice", "attack", (0, 0), folder="colorless"),
     CardArt("restlessness", "hero", "restlessness", "skill", (0, 0), folder="colorless"),
+    CardArt("eternal_armor", "hero", "eternal_armor", "power", (3, 3), folder="colorless"),
+    CardArt("fasten", "hero", "fasten", "power", (1, 1), folder="colorless"),
+    CardArt("rebound", "hero", "rebound", "attack", (1, 1), folder="event"),
+    CardArt("panic_button", "hero", "panic_button", "skill", (0, 0), folder="colorless"),
+    CardArt("gold_axe", "hero", "gold_axe", "attack", (1, 1), folder="colorless"),
+    CardArt("anointed", "hero", "anointed", "skill", (1, 1), folder="colorless"),
+    CardArt("fisticuffs", "hero", "fisticuffs", "attack", (1, 1), folder="colorless"),
+    CardArt("rend", "hero", "rend", "attack", (1, 1), folder="colorless"),
+    CardArt("the_bomb", "hero", "the_bomb", "skill", (2, 2), folder="colorless"),
+    CardArt("rolling_boulder", "hero", "rolling_boulder", "power", (3, 3), folder="colorless"),
+    CardArt("panache", "hero", "panache", "power", (0, 0), folder="colorless"),
+    CardArt("jackpot", "hero", "jackpot", "attack", (3, 3), folder="colorless"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

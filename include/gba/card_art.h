@@ -129,6 +129,18 @@
 #include "bn_sprite_items_card_volley_silent.h"
 #include "bn_sprite_items_card_omnislice_silent.h"
 #include "bn_sprite_items_card_restlessness_silent.h"
+#include "bn_sprite_items_card_eternal_armor_silent.h"
+#include "bn_sprite_items_card_fasten_silent.h"
+#include "bn_sprite_items_card_rebound_silent.h"
+#include "bn_sprite_items_card_panic_button_silent.h"
+#include "bn_sprite_items_card_gold_axe_silent.h"
+#include "bn_sprite_items_card_anointed_silent.h"
+#include "bn_sprite_items_card_fisticuffs_silent.h"
+#include "bn_sprite_items_card_rend_silent.h"
+#include "bn_sprite_items_card_the_bomb_silent.h"
+#include "bn_sprite_items_card_rolling_boulder_silent.h"
+#include "bn_sprite_items_card_panache_silent.h"
+#include "bn_sprite_items_card_jackpot_silent.h"
 
 namespace gba::card_art
 {
@@ -372,6 +384,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_omnislice_silent;
     case engine::CardId::RESTLESSNESS:
         return &bn::sprite_items::card_restlessness_silent;
+    case engine::CardId::ETERNAL_ARMOR:
+        return &bn::sprite_items::card_eternal_armor_silent;
+    case engine::CardId::FASTEN:
+        return &bn::sprite_items::card_fasten_silent;
+    case engine::CardId::REBOUND:
+        return &bn::sprite_items::card_rebound_silent;
+    case engine::CardId::PANIC_BUTTON:
+        return &bn::sprite_items::card_panic_button_silent;
+    case engine::CardId::GOLD_AXE:
+        return &bn::sprite_items::card_gold_axe_silent;
+    case engine::CardId::ANOINTED:
+        return &bn::sprite_items::card_anointed_silent;
+    case engine::CardId::FISTICUFFS:
+        return &bn::sprite_items::card_fisticuffs_silent;
+    case engine::CardId::REND:
+        return &bn::sprite_items::card_rend_silent;
+    case engine::CardId::THE_BOMB:
+        return &bn::sprite_items::card_the_bomb_silent;
+    case engine::CardId::ROLLING_BOULDER:
+        return &bn::sprite_items::card_rolling_boulder_silent;
+    case engine::CardId::PANACHE:
+        return &bn::sprite_items::card_panache_silent;
+    case engine::CardId::JACKPOT:
+        return &bn::sprite_items::card_jackpot_silent;
     default:
         return nullptr;
     }
@@ -400,7 +436,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 82,
     83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102,
-    103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117,
+    103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,
+    123, 124, 125, 126, 127, 128, 129,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -536,6 +573,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_volley_defect.h"
 #include "bn_sprite_items_card_omnislice_defect.h"
 #include "bn_sprite_items_card_restlessness_defect.h"
+#include "bn_sprite_items_card_eternal_armor_defect.h"
+#include "bn_sprite_items_card_fasten_defect.h"
+#include "bn_sprite_items_card_rebound_defect.h"
+#include "bn_sprite_items_card_panic_button_defect.h"
+#include "bn_sprite_items_card_gold_axe_defect.h"
+#include "bn_sprite_items_card_anointed_defect.h"
+#include "bn_sprite_items_card_fisticuffs_defect.h"
+#include "bn_sprite_items_card_rend_defect.h"
+#include "bn_sprite_items_card_the_bomb_defect.h"
+#include "bn_sprite_items_card_rolling_boulder_defect.h"
+#include "bn_sprite_items_card_panache_defect.h"
+#include "bn_sprite_items_card_jackpot_defect.h"
 
 namespace gba::card_art
 {
@@ -797,6 +846,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_omnislice_defect;
     case engine::CardId::RESTLESSNESS:
         return &bn::sprite_items::card_restlessness_defect;
+    case engine::CardId::ETERNAL_ARMOR:
+        return &bn::sprite_items::card_eternal_armor_defect;
+    case engine::CardId::FASTEN:
+        return &bn::sprite_items::card_fasten_defect;
+    case engine::CardId::REBOUND:
+        return &bn::sprite_items::card_rebound_defect;
+    case engine::CardId::PANIC_BUTTON:
+        return &bn::sprite_items::card_panic_button_defect;
+    case engine::CardId::GOLD_AXE:
+        return &bn::sprite_items::card_gold_axe_defect;
+    case engine::CardId::ANOINTED:
+        return &bn::sprite_items::card_anointed_defect;
+    case engine::CardId::FISTICUFFS:
+        return &bn::sprite_items::card_fisticuffs_defect;
+    case engine::CardId::REND:
+        return &bn::sprite_items::card_rend_defect;
+    case engine::CardId::THE_BOMB:
+        return &bn::sprite_items::card_the_bomb_defect;
+    case engine::CardId::ROLLING_BOULDER:
+        return &bn::sprite_items::card_rolling_boulder_defect;
+    case engine::CardId::PANACHE:
+        return &bn::sprite_items::card_panache_defect;
+    case engine::CardId::JACKPOT:
+        return &bn::sprite_items::card_jackpot_defect;
     default:
         return nullptr;
     }
@@ -825,7 +898,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
     92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
-    112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
+    112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
+    132, 133, 134, 135, 136, 137, 138,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -957,6 +1031,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_volley_regent.h"
 #include "bn_sprite_items_card_omnislice_regent.h"
 #include "bn_sprite_items_card_restlessness_regent.h"
+#include "bn_sprite_items_card_eternal_armor_regent.h"
+#include "bn_sprite_items_card_fasten_regent.h"
+#include "bn_sprite_items_card_rebound_regent.h"
+#include "bn_sprite_items_card_panic_button_regent.h"
+#include "bn_sprite_items_card_gold_axe_regent.h"
+#include "bn_sprite_items_card_anointed_regent.h"
+#include "bn_sprite_items_card_fisticuffs_regent.h"
+#include "bn_sprite_items_card_rend_regent.h"
+#include "bn_sprite_items_card_the_bomb_regent.h"
+#include "bn_sprite_items_card_rolling_boulder_regent.h"
+#include "bn_sprite_items_card_panache_regent.h"
+#include "bn_sprite_items_card_jackpot_regent.h"
 
 namespace gba::card_art
 {
@@ -1210,6 +1296,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_omnislice_regent;
     case engine::CardId::RESTLESSNESS:
         return &bn::sprite_items::card_restlessness_regent;
+    case engine::CardId::ETERNAL_ARMOR:
+        return &bn::sprite_items::card_eternal_armor_regent;
+    case engine::CardId::FASTEN:
+        return &bn::sprite_items::card_fasten_regent;
+    case engine::CardId::REBOUND:
+        return &bn::sprite_items::card_rebound_regent;
+    case engine::CardId::PANIC_BUTTON:
+        return &bn::sprite_items::card_panic_button_regent;
+    case engine::CardId::GOLD_AXE:
+        return &bn::sprite_items::card_gold_axe_regent;
+    case engine::CardId::ANOINTED:
+        return &bn::sprite_items::card_anointed_regent;
+    case engine::CardId::FISTICUFFS:
+        return &bn::sprite_items::card_fisticuffs_regent;
+    case engine::CardId::REND:
+        return &bn::sprite_items::card_rend_regent;
+    case engine::CardId::THE_BOMB:
+        return &bn::sprite_items::card_the_bomb_regent;
+    case engine::CardId::ROLLING_BOULDER:
+        return &bn::sprite_items::card_rolling_boulder_regent;
+    case engine::CardId::PANACHE:
+        return &bn::sprite_items::card_panache_regent;
+    case engine::CardId::JACKPOT:
+        return &bn::sprite_items::card_jackpot_regent;
     default:
         return nullptr;
     }
@@ -1238,7 +1348,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 87,
     88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107,
-    108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,
+    108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
+    128, 129, 130, 131, 132, 133, 134,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1375,6 +1486,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_volley_necrobinder.h"
 #include "bn_sprite_items_card_omnislice_necrobinder.h"
 #include "bn_sprite_items_card_restlessness_necrobinder.h"
+#include "bn_sprite_items_card_eternal_armor_necrobinder.h"
+#include "bn_sprite_items_card_fasten_necrobinder.h"
+#include "bn_sprite_items_card_rebound_necrobinder.h"
+#include "bn_sprite_items_card_panic_button_necrobinder.h"
+#include "bn_sprite_items_card_gold_axe_necrobinder.h"
+#include "bn_sprite_items_card_anointed_necrobinder.h"
+#include "bn_sprite_items_card_fisticuffs_necrobinder.h"
+#include "bn_sprite_items_card_rend_necrobinder.h"
+#include "bn_sprite_items_card_the_bomb_necrobinder.h"
+#include "bn_sprite_items_card_rolling_boulder_necrobinder.h"
+#include "bn_sprite_items_card_panache_necrobinder.h"
+#include "bn_sprite_items_card_jackpot_necrobinder.h"
 
 namespace gba::card_art
 {
@@ -1638,6 +1761,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_omnislice_necrobinder;
     case engine::CardId::RESTLESSNESS:
         return &bn::sprite_items::card_restlessness_necrobinder;
+    case engine::CardId::ETERNAL_ARMOR:
+        return &bn::sprite_items::card_eternal_armor_necrobinder;
+    case engine::CardId::FASTEN:
+        return &bn::sprite_items::card_fasten_necrobinder;
+    case engine::CardId::REBOUND:
+        return &bn::sprite_items::card_rebound_necrobinder;
+    case engine::CardId::PANIC_BUTTON:
+        return &bn::sprite_items::card_panic_button_necrobinder;
+    case engine::CardId::GOLD_AXE:
+        return &bn::sprite_items::card_gold_axe_necrobinder;
+    case engine::CardId::ANOINTED:
+        return &bn::sprite_items::card_anointed_necrobinder;
+    case engine::CardId::FISTICUFFS:
+        return &bn::sprite_items::card_fisticuffs_necrobinder;
+    case engine::CardId::REND:
+        return &bn::sprite_items::card_rend_necrobinder;
+    case engine::CardId::THE_BOMB:
+        return &bn::sprite_items::card_the_bomb_necrobinder;
+    case engine::CardId::ROLLING_BOULDER:
+        return &bn::sprite_items::card_rolling_boulder_necrobinder;
+    case engine::CardId::PANACHE:
+        return &bn::sprite_items::card_panache_necrobinder;
+    case engine::CardId::JACKPOT:
+        return &bn::sprite_items::card_jackpot_necrobinder;
     default:
         return nullptr;
     }
@@ -1666,7 +1813,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73,
     74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 0, 91, 92,
     93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
-    113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
+    113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132,
+    133, 134, 135, 136, 137, 138, 139,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1802,6 +1950,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_volley_ironclad.h"
 #include "bn_sprite_items_card_omnislice_ironclad.h"
 #include "bn_sprite_items_card_restlessness_ironclad.h"
+#include "bn_sprite_items_card_eternal_armor_ironclad.h"
+#include "bn_sprite_items_card_fasten_ironclad.h"
+#include "bn_sprite_items_card_rebound_ironclad.h"
+#include "bn_sprite_items_card_panic_button_ironclad.h"
+#include "bn_sprite_items_card_gold_axe_ironclad.h"
+#include "bn_sprite_items_card_anointed_ironclad.h"
+#include "bn_sprite_items_card_fisticuffs_ironclad.h"
+#include "bn_sprite_items_card_rend_ironclad.h"
+#include "bn_sprite_items_card_the_bomb_ironclad.h"
+#include "bn_sprite_items_card_rolling_boulder_ironclad.h"
+#include "bn_sprite_items_card_panache_ironclad.h"
+#include "bn_sprite_items_card_jackpot_ironclad.h"
 
 namespace gba::card_art
 {
@@ -2063,6 +2223,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_omnislice_ironclad;
     case engine::CardId::RESTLESSNESS:
         return &bn::sprite_items::card_restlessness_ironclad;
+    case engine::CardId::ETERNAL_ARMOR:
+        return &bn::sprite_items::card_eternal_armor_ironclad;
+    case engine::CardId::FASTEN:
+        return &bn::sprite_items::card_fasten_ironclad;
+    case engine::CardId::REBOUND:
+        return &bn::sprite_items::card_rebound_ironclad;
+    case engine::CardId::PANIC_BUTTON:
+        return &bn::sprite_items::card_panic_button_ironclad;
+    case engine::CardId::GOLD_AXE:
+        return &bn::sprite_items::card_gold_axe_ironclad;
+    case engine::CardId::ANOINTED:
+        return &bn::sprite_items::card_anointed_ironclad;
+    case engine::CardId::FISTICUFFS:
+        return &bn::sprite_items::card_fisticuffs_ironclad;
+    case engine::CardId::REND:
+        return &bn::sprite_items::card_rend_ironclad;
+    case engine::CardId::THE_BOMB:
+        return &bn::sprite_items::card_the_bomb_ironclad;
+    case engine::CardId::ROLLING_BOULDER:
+        return &bn::sprite_items::card_rolling_boulder_ironclad;
+    case engine::CardId::PANACHE:
+        return &bn::sprite_items::card_panache_ironclad;
+    case engine::CardId::JACKPOT:
+        return &bn::sprite_items::card_jackpot_ironclad;
     default:
         return nullptr;
     }
@@ -2091,7 +2275,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
     92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
-    112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
+    112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
+    132, 133, 134, 135, 136, 137, 138,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
