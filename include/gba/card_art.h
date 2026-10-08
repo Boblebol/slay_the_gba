@@ -153,6 +153,18 @@
 #include "bn_sprite_items_card_salvo_silent.h"
 #include "bn_sprite_items_card_thinking_ahead_silent.h"
 #include "bn_sprite_items_card_jack_of_all_trades_silent.h"
+#include "bn_sprite_items_card_hello_world_silent.h"
+#include "bn_sprite_items_card_dark_shackles_silent.h"
+#include "bn_sprite_items_card_equilibrium_silent.h"
+#include "bn_sprite_items_card_purity_silent.h"
+#include "bn_sprite_items_card_secret_technique_silent.h"
+#include "bn_sprite_items_card_dramatic_entrance_silent.h"
+#include "bn_sprite_items_card_secret_weapon_silent.h"
+#include "bn_sprite_items_card_mayhem_silent.h"
+#include "bn_sprite_items_card_prep_time_silent.h"
+#include "bn_sprite_items_card_stratagem_silent.h"
+#include "bn_sprite_items_card_calamity_silent.h"
+#include "bn_sprite_items_card_automation_silent.h"
 
 namespace gba::card_art
 {
@@ -444,6 +456,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_thinking_ahead_silent;
     case engine::CardId::JACK_OF_ALL_TRADES:
         return &bn::sprite_items::card_jack_of_all_trades_silent;
+    case engine::CardId::HELLO_WORLD:
+        return &bn::sprite_items::card_hello_world_silent;
+    case engine::CardId::DARK_SHACKLES:
+        return &bn::sprite_items::card_dark_shackles_silent;
+    case engine::CardId::EQUILIBRIUM:
+        return &bn::sprite_items::card_equilibrium_silent;
+    case engine::CardId::PURITY:
+        return &bn::sprite_items::card_purity_silent;
+    case engine::CardId::SECRET_TECHNIQUE:
+        return &bn::sprite_items::card_secret_technique_silent;
+    case engine::CardId::DRAMATIC_ENTRANCE:
+        return &bn::sprite_items::card_dramatic_entrance_silent;
+    case engine::CardId::SECRET_WEAPON:
+        return &bn::sprite_items::card_secret_weapon_silent;
+    case engine::CardId::MAYHEM:
+        return &bn::sprite_items::card_mayhem_silent;
+    case engine::CardId::PREP_TIME:
+        return &bn::sprite_items::card_prep_time_silent;
+    case engine::CardId::STRATAGEM:
+        return &bn::sprite_items::card_stratagem_silent;
+    case engine::CardId::CALAMITY:
+        return &bn::sprite_items::card_calamity_silent;
+    case engine::CardId::AUTOMATION:
+        return &bn::sprite_items::card_automation_silent;
     default:
         return nullptr;
     }
@@ -473,7 +509,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 82,
     83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102,
     103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,
-    123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141,
+    123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
+    143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -633,6 +670,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_salvo_defect.h"
 #include "bn_sprite_items_card_thinking_ahead_defect.h"
 #include "bn_sprite_items_card_jack_of_all_trades_defect.h"
+#include "bn_sprite_items_card_hello_world_defect.h"
+#include "bn_sprite_items_card_dark_shackles_defect.h"
+#include "bn_sprite_items_card_equilibrium_defect.h"
+#include "bn_sprite_items_card_purity_defect.h"
+#include "bn_sprite_items_card_secret_technique_defect.h"
+#include "bn_sprite_items_card_dramatic_entrance_defect.h"
+#include "bn_sprite_items_card_secret_weapon_defect.h"
+#include "bn_sprite_items_card_mayhem_defect.h"
+#include "bn_sprite_items_card_prep_time_defect.h"
+#include "bn_sprite_items_card_stratagem_defect.h"
+#include "bn_sprite_items_card_calamity_defect.h"
+#include "bn_sprite_items_card_automation_defect.h"
 
 namespace gba::card_art
 {
@@ -942,6 +991,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_thinking_ahead_defect;
     case engine::CardId::JACK_OF_ALL_TRADES:
         return &bn::sprite_items::card_jack_of_all_trades_defect;
+    case engine::CardId::HELLO_WORLD:
+        return &bn::sprite_items::card_hello_world_defect;
+    case engine::CardId::DARK_SHACKLES:
+        return &bn::sprite_items::card_dark_shackles_defect;
+    case engine::CardId::EQUILIBRIUM:
+        return &bn::sprite_items::card_equilibrium_defect;
+    case engine::CardId::PURITY:
+        return &bn::sprite_items::card_purity_defect;
+    case engine::CardId::SECRET_TECHNIQUE:
+        return &bn::sprite_items::card_secret_technique_defect;
+    case engine::CardId::DRAMATIC_ENTRANCE:
+        return &bn::sprite_items::card_dramatic_entrance_defect;
+    case engine::CardId::SECRET_WEAPON:
+        return &bn::sprite_items::card_secret_weapon_defect;
+    case engine::CardId::MAYHEM:
+        return &bn::sprite_items::card_mayhem_defect;
+    case engine::CardId::PREP_TIME:
+        return &bn::sprite_items::card_prep_time_defect;
+    case engine::CardId::STRATAGEM:
+        return &bn::sprite_items::card_stratagem_defect;
+    case engine::CardId::CALAMITY:
+        return &bn::sprite_items::card_calamity_defect;
+    case engine::CardId::AUTOMATION:
+        return &bn::sprite_items::card_automation_defect;
     default:
         return nullptr;
     }
@@ -971,7 +1044,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
     92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
-    132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150,
+    132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
+    152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1127,6 +1201,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_salvo_regent.h"
 #include "bn_sprite_items_card_thinking_ahead_regent.h"
 #include "bn_sprite_items_card_jack_of_all_trades_regent.h"
+#include "bn_sprite_items_card_hello_world_regent.h"
+#include "bn_sprite_items_card_dark_shackles_regent.h"
+#include "bn_sprite_items_card_equilibrium_regent.h"
+#include "bn_sprite_items_card_purity_regent.h"
+#include "bn_sprite_items_card_secret_technique_regent.h"
+#include "bn_sprite_items_card_dramatic_entrance_regent.h"
+#include "bn_sprite_items_card_secret_weapon_regent.h"
+#include "bn_sprite_items_card_mayhem_regent.h"
+#include "bn_sprite_items_card_prep_time_regent.h"
+#include "bn_sprite_items_card_stratagem_regent.h"
+#include "bn_sprite_items_card_calamity_regent.h"
+#include "bn_sprite_items_card_automation_regent.h"
 
 namespace gba::card_art
 {
@@ -1428,6 +1514,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_thinking_ahead_regent;
     case engine::CardId::JACK_OF_ALL_TRADES:
         return &bn::sprite_items::card_jack_of_all_trades_regent;
+    case engine::CardId::HELLO_WORLD:
+        return &bn::sprite_items::card_hello_world_regent;
+    case engine::CardId::DARK_SHACKLES:
+        return &bn::sprite_items::card_dark_shackles_regent;
+    case engine::CardId::EQUILIBRIUM:
+        return &bn::sprite_items::card_equilibrium_regent;
+    case engine::CardId::PURITY:
+        return &bn::sprite_items::card_purity_regent;
+    case engine::CardId::SECRET_TECHNIQUE:
+        return &bn::sprite_items::card_secret_technique_regent;
+    case engine::CardId::DRAMATIC_ENTRANCE:
+        return &bn::sprite_items::card_dramatic_entrance_regent;
+    case engine::CardId::SECRET_WEAPON:
+        return &bn::sprite_items::card_secret_weapon_regent;
+    case engine::CardId::MAYHEM:
+        return &bn::sprite_items::card_mayhem_regent;
+    case engine::CardId::PREP_TIME:
+        return &bn::sprite_items::card_prep_time_regent;
+    case engine::CardId::STRATAGEM:
+        return &bn::sprite_items::card_stratagem_regent;
+    case engine::CardId::CALAMITY:
+        return &bn::sprite_items::card_calamity_regent;
+    case engine::CardId::AUTOMATION:
+        return &bn::sprite_items::card_automation_regent;
     default:
         return nullptr;
     }
@@ -1457,7 +1567,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 87,
     88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107,
     108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
-    128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146,
+    128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147,
+    148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1618,6 +1729,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_salvo_necrobinder.h"
 #include "bn_sprite_items_card_thinking_ahead_necrobinder.h"
 #include "bn_sprite_items_card_jack_of_all_trades_necrobinder.h"
+#include "bn_sprite_items_card_hello_world_necrobinder.h"
+#include "bn_sprite_items_card_dark_shackles_necrobinder.h"
+#include "bn_sprite_items_card_equilibrium_necrobinder.h"
+#include "bn_sprite_items_card_purity_necrobinder.h"
+#include "bn_sprite_items_card_secret_technique_necrobinder.h"
+#include "bn_sprite_items_card_dramatic_entrance_necrobinder.h"
+#include "bn_sprite_items_card_secret_weapon_necrobinder.h"
+#include "bn_sprite_items_card_mayhem_necrobinder.h"
+#include "bn_sprite_items_card_prep_time_necrobinder.h"
+#include "bn_sprite_items_card_stratagem_necrobinder.h"
+#include "bn_sprite_items_card_calamity_necrobinder.h"
+#include "bn_sprite_items_card_automation_necrobinder.h"
 
 namespace gba::card_art
 {
@@ -1929,6 +2052,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_thinking_ahead_necrobinder;
     case engine::CardId::JACK_OF_ALL_TRADES:
         return &bn::sprite_items::card_jack_of_all_trades_necrobinder;
+    case engine::CardId::HELLO_WORLD:
+        return &bn::sprite_items::card_hello_world_necrobinder;
+    case engine::CardId::DARK_SHACKLES:
+        return &bn::sprite_items::card_dark_shackles_necrobinder;
+    case engine::CardId::EQUILIBRIUM:
+        return &bn::sprite_items::card_equilibrium_necrobinder;
+    case engine::CardId::PURITY:
+        return &bn::sprite_items::card_purity_necrobinder;
+    case engine::CardId::SECRET_TECHNIQUE:
+        return &bn::sprite_items::card_secret_technique_necrobinder;
+    case engine::CardId::DRAMATIC_ENTRANCE:
+        return &bn::sprite_items::card_dramatic_entrance_necrobinder;
+    case engine::CardId::SECRET_WEAPON:
+        return &bn::sprite_items::card_secret_weapon_necrobinder;
+    case engine::CardId::MAYHEM:
+        return &bn::sprite_items::card_mayhem_necrobinder;
+    case engine::CardId::PREP_TIME:
+        return &bn::sprite_items::card_prep_time_necrobinder;
+    case engine::CardId::STRATAGEM:
+        return &bn::sprite_items::card_stratagem_necrobinder;
+    case engine::CardId::CALAMITY:
+        return &bn::sprite_items::card_calamity_necrobinder;
+    case engine::CardId::AUTOMATION:
+        return &bn::sprite_items::card_automation_necrobinder;
     default:
         return nullptr;
     }
@@ -1958,7 +2105,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 0, 91, 92,
     93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
     113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132,
-    133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
+    133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
+    153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -2118,6 +2266,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_salvo_ironclad.h"
 #include "bn_sprite_items_card_thinking_ahead_ironclad.h"
 #include "bn_sprite_items_card_jack_of_all_trades_ironclad.h"
+#include "bn_sprite_items_card_hello_world_ironclad.h"
+#include "bn_sprite_items_card_dark_shackles_ironclad.h"
+#include "bn_sprite_items_card_equilibrium_ironclad.h"
+#include "bn_sprite_items_card_purity_ironclad.h"
+#include "bn_sprite_items_card_secret_technique_ironclad.h"
+#include "bn_sprite_items_card_dramatic_entrance_ironclad.h"
+#include "bn_sprite_items_card_secret_weapon_ironclad.h"
+#include "bn_sprite_items_card_mayhem_ironclad.h"
+#include "bn_sprite_items_card_prep_time_ironclad.h"
+#include "bn_sprite_items_card_stratagem_ironclad.h"
+#include "bn_sprite_items_card_calamity_ironclad.h"
+#include "bn_sprite_items_card_automation_ironclad.h"
 
 namespace gba::card_art
 {
@@ -2427,6 +2587,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_thinking_ahead_ironclad;
     case engine::CardId::JACK_OF_ALL_TRADES:
         return &bn::sprite_items::card_jack_of_all_trades_ironclad;
+    case engine::CardId::HELLO_WORLD:
+        return &bn::sprite_items::card_hello_world_ironclad;
+    case engine::CardId::DARK_SHACKLES:
+        return &bn::sprite_items::card_dark_shackles_ironclad;
+    case engine::CardId::EQUILIBRIUM:
+        return &bn::sprite_items::card_equilibrium_ironclad;
+    case engine::CardId::PURITY:
+        return &bn::sprite_items::card_purity_ironclad;
+    case engine::CardId::SECRET_TECHNIQUE:
+        return &bn::sprite_items::card_secret_technique_ironclad;
+    case engine::CardId::DRAMATIC_ENTRANCE:
+        return &bn::sprite_items::card_dramatic_entrance_ironclad;
+    case engine::CardId::SECRET_WEAPON:
+        return &bn::sprite_items::card_secret_weapon_ironclad;
+    case engine::CardId::MAYHEM:
+        return &bn::sprite_items::card_mayhem_ironclad;
+    case engine::CardId::PREP_TIME:
+        return &bn::sprite_items::card_prep_time_ironclad;
+    case engine::CardId::STRATAGEM:
+        return &bn::sprite_items::card_stratagem_ironclad;
+    case engine::CardId::CALAMITY:
+        return &bn::sprite_items::card_calamity_ironclad;
+    case engine::CardId::AUTOMATION:
+        return &bn::sprite_items::card_automation_ironclad;
     default:
         return nullptr;
     }
@@ -2456,7 +2640,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
     92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
-    132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150,
+    132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
+    152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.

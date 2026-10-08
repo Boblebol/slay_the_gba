@@ -758,6 +758,30 @@ bn::string_view base_name(engine::CardId id)
         return "Coup d'avance";
     case engine::CardId::JACK_OF_ALL_TRADES:
         return "Polyvalence";
+    case engine::CardId::HELLO_WORLD:
+        return "Hello World";
+    case engine::CardId::DARK_SHACKLES:
+        return "Entraves des ténèbres";
+    case engine::CardId::EQUILIBRIUM:
+        return "Équilibre";
+    case engine::CardId::PURITY:
+        return "Épuration";
+    case engine::CardId::SECRET_TECHNIQUE:
+        return "Technique secrète";
+    case engine::CardId::DRAMATIC_ENTRANCE:
+        return "Entrée fracassante";
+    case engine::CardId::SECRET_WEAPON:
+        return "Arme secrète";
+    case engine::CardId::MAYHEM:
+        return "Grabuge";
+    case engine::CardId::PREP_TIME:
+        return "Échauffement";
+    case engine::CardId::STRATAGEM:
+        return "Stratagème";
+    case engine::CardId::CALAMITY:
+        return "Calamité";
+    case engine::CardId::AUTOMATION:
+        return "Automatisation";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1404,6 +1428,42 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::JACK_OF_ALL_TRADES:
         stream << "+" << value << (card.upgraded ? " cartes Incolores" : " carte Incolore") << " en main. Épuis.";
+        break;
+    case engine::CardId::HELLO_WORLD:
+        stream << (card.upgraded ? "Inné. " : "") << "Début de tour : +1 carte Commune.";
+        break;
+    case engine::CardId::DARK_SHACKLES:
+        stream << "Ennemi : -" << value << " Force ce tour. Épuis.";
+        break;
+    case engine::CardId::EQUILIBRIUM:
+        stream << "Armure +" << value << ". Retient la Main.";
+        break;
+    case engine::CardId::PURITY:
+        stream << "Retenue. Épuise jusqu'à " << value << " cartes. Épuis.";
+        break;
+    case engine::CardId::SECRET_TECHNIQUE:
+        stream << "Compétence de la Pioche en main." << (card.upgraded ? "" : " Épuis.");
+        break;
+    case engine::CardId::DRAMATIC_ENTRANCE:
+        stream << "Inné. " << value << " dégâts à TOUS. Épuis.";
+        break;
+    case engine::CardId::SECRET_WEAPON:
+        stream << "Attaque de la Pioche en main." << (card.upgraded ? "" : " Épuis.");
+        break;
+    case engine::CardId::MAYHEM:
+        stream << "Début de tour : joue le haut de la Pioche.";
+        break;
+    case engine::CardId::PREP_TIME:
+        stream << "Début de tour : Vigueur +" << value << ".";
+        break;
+    case engine::CardId::STRATAGEM:
+        stream << "Pioche mélangée : 1 carte en main.";
+        break;
+    case engine::CardId::CALAMITY:
+        stream << "Attaque jouée : +1 Attaque en main.";
+        break;
+    case engine::CardId::AUTOMATION:
+        stream << "Par 10 cartes piochées : +1 én.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:

@@ -696,6 +696,18 @@ CARDS: list[CardArt] = [
     CardArt("salvo", "hero", "salvo", "attack", (1, 1), folder="colorless"),
     CardArt("thinking_ahead", "hero", "thinking_ahead", "skill", (0, 0), folder="colorless"),
     CardArt("jack_of_all_trades", "hero", "jack_of_all_trades", "skill", (0, 0), folder="colorless"),
+    CardArt("hello_world", "hero", "hello_world", "power", (1, 1), folder="event"),
+    CardArt("dark_shackles", "hero", "dark_shackles", "skill", (0, 0), folder="colorless"),
+    CardArt("equilibrium", "hero", "equilibrium", "skill", (2, 2), folder="colorless"),
+    CardArt("purity", "hero", "purity", "skill", (0, 0), folder="colorless"),
+    CardArt("secret_technique", "hero", "secret_technique", "skill", (0, 0), folder="colorless"),
+    CardArt("dramatic_entrance", "hero", "dramatic_entrance", "attack", (0, 0), folder="colorless"),
+    CardArt("secret_weapon", "hero", "secret_weapon", "skill", (0, 0), folder="colorless"),
+    CardArt("mayhem", "hero", "mayhem", "power", (2, 1), folder="colorless"),
+    CardArt("prep_time", "hero", "prep_time", "power", (1, 1), folder="colorless"),
+    CardArt("stratagem", "hero", "stratagem", "power", (1, 0), folder="colorless"),
+    CardArt("calamity", "hero", "calamity", "power", (3, 2), folder="colorless"),
+    CardArt("automation", "hero", "automation", "power", (1, 0), folder="colorless"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

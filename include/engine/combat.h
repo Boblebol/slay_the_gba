@@ -166,6 +166,9 @@ struct CardChoice {
     // Cards of the source the choice is about, from its first one. Set by ask_choice for the discard pile:
     // the card that asks goes there once played, and cannot pick itself.
     uint8_t pool = WHOLE_PILE;
+    // Only cards of this type can be picked, when `any_type` is false (Secret Technique, Secret Weapon).
+    bool any_type = true;
+    CardType type = CardType::ATTACK;
 };
 
 // Where a card goes once it has been played.
@@ -426,6 +429,7 @@ private:
     // Adds `amount` to the bonus of every copy of `id` in the piles.
     void boost_copies(CardId id, int amount);
     bool can_be_picked(const DeckCard& card, ChoiceKind kind) const;
+    bool can_be_picked(const DeckCard& card, const CardChoice& choice) const;
     void apply_choice(const CardChoice& choice, std::span<const uint8_t> indices);
     // Number of cards of its source the choice is about.
     size_t choice_pool(const CardChoice& choice) const;
