@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 59,2 %** — 726 faits, 20 partiels, 498 à faire (35 hors périmètre).
+**Avancement global : 60,1 %** — 738 faits, 20 partiels, 486 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -19,14 +19,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
 | [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
 | [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
-| [Cartes communes aux cinq éditions](#cartes) | 49 | 0 | 71 | 40,8 % |
+| [Cartes communes aux cinq éditions](#cartes) | 61 | 0 | 59 | 50,8 % |
 | [Reliques et potions](#reliques) | 132 | 0 | 189 | 41,1 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **726** | **20** | **498** | **59,2 %** |
+| **Total** | **738** | **20** | **486** | **60,1 %** |
 
 <a id="ironclad"></a>
 
@@ -688,20 +688,20 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 40,8 %
+## Cartes communes aux cinq éditions — 50,8 %
 
-### Cartes incolores — 30,2 %
+### Cartes incolores — 50,9 %
 
-16 faits, 0 partiel, 37 à faire (12 hors périmètre).
+27 faits, 0 partiel, 26 à faire (12 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Artillerie | Peu commune · Attaque | Oui |  |
 | Assistance | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Automatisation | Peu commune · Pouvoir | Non |  |
-| Bagarre | Peu commune · Attaque | Non |  |
-| Bien attaché | Peu commune · Pouvoir | Non |  |
-| Bouton de secours | Peu commune · Compétence | Non |  |
+| Bagarre | Peu commune · Attaque | Oui |  |
+| Bien attaché | Peu commune · Pouvoir | Oui |  |
+| Bouton de secours | Peu commune · Compétence | Oui |  |
 | Catastrophe | Peu commune · Compétence | Non |  |
 | Confiance | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Coordination | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
@@ -719,11 +719,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Impatience | Peu commune · Compétence | Oui |  |
 | Interposition | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | La Boule | Peu commune · Attaque | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
-| La bombe | Peu commune · Compétence | Non |  |
+| La bombe | Peu commune · Compétence | Oui |  |
 | Meute | Peu commune · Attaque | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Omnilame | Peu commune · Attaque | Oui |  |
 | Onde de choc | Peu commune · Compétence | Oui |  |
-| Panache | Peu commune · Pouvoir | Non |  |
+| Panache | Peu commune · Pouvoir | Oui |  |
 | Polyvalence | Peu commune · Compétence | Non |  |
 | Production | Peu commune · Compétence | Oui |  |
 | Prolongations | Peu commune · Compétence | Non |  |
@@ -738,7 +738,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Équilibre | Peu commune · Compétence | Non |  |
 | Alchimie | Rare · Compétence | Non |  |
 | Arme secrète | Rare · Compétence | Non |  |
-| Armure éternelle | Rare · Pouvoir | Non |  |
+| Armure éternelle | Rare · Pouvoir | Oui |  |
 | Balise d'espoir | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Bolas | Rare · Attaque | Oui |  |
 | Calamité | Rare · Pouvoir | Non |  |
@@ -746,25 +746,25 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Entropie | Rare · Pouvoir | Non |  |
 | Grabuge | Rare · Pouvoir | Non |  |
 | Griffonage | Rare · Compétence | Oui |  |
-| Hache dorée | Rare · Attaque | Non |  |
+| Hache dorée | Rare · Attaque | Oui |  |
 | Imitation | Rare · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
-| Jackpot | Rare · Attaque | Non |  |
+| Jackpot | Rare · Attaque | Oui |  |
 | Joyau caché | Rare · Compétence | Non |  |
 | La grande manœuvre | Rare · Compétence | Non |  |
 | Main de la cupidité | Rare · Attaque | Non |  |
 | Maître stratège | Rare · Compétence | Oui |  |
 | Nostalgie | Rare · Pouvoir | Non |  |
 | Passage à tabac | Rare · Compétence | Non |  |
-| Pierre qui roule | Rare · Pouvoir | Non |  |
-| Pourfendre | Rare · Attaque | Non |  |
+| Pierre qui roule | Rare · Pouvoir | Oui |  |
+| Pourfendre | Rare · Attaque | Oui |  |
 | Ralliement | Rare · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Renverser | Rare · Attaque | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
-| Sacrement | Rare · Compétence | Non |  |
+| Sacrement | Rare · Compétence | Oui |  |
 | Technique secrète | Rare · Compétence | Non |  |
 
-### Cartes d'évènement — 60,7 %
+### Cartes d'évènement — 64,3 %
 
-17 faits, 0 partiel, 11 à faire.
+18 faits, 0 partiel, 10 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -792,7 +792,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Picpic | Évènement · Attaque | Oui |  |
 | Pile | Évènement · Compétence | Oui |  |
 | Piqué d'oizo | Évènement · Attaque | Oui |  |
-| Rebond | Évènement · Attaque | Non |  |
+| Rebond | Évènement · Attaque | Oui |  |
 | Repas frénétique | Évènement · Compétence | Oui |  |
 | Science sans conscience | Évènement · Attaque | Non |  |
 | Ténacité torique | Évènement · Compétence | Oui |  |
