@@ -141,6 +141,18 @@
 #include "bn_sprite_items_card_rolling_boulder_silent.h"
 #include "bn_sprite_items_card_panache_silent.h"
 #include "bn_sprite_items_card_jackpot_silent.h"
+#include "bn_sprite_items_card_beat_down_silent.h"
+#include "bn_sprite_items_card_catastrophe_silent.h"
+#include "bn_sprite_items_card_nostalgia_silent.h"
+#include "bn_sprite_items_card_relax_silent.h"
+#include "bn_sprite_items_card_neows_fury_silent.h"
+#include "bn_sprite_items_card_metamorphosis_silent.h"
+#include "bn_sprite_items_card_distraction_silent.h"
+#include "bn_sprite_items_card_caltrops_silent.h"
+#include "bn_sprite_items_card_prolong_silent.h"
+#include "bn_sprite_items_card_salvo_silent.h"
+#include "bn_sprite_items_card_thinking_ahead_silent.h"
+#include "bn_sprite_items_card_jack_of_all_trades_silent.h"
 
 namespace gba::card_art
 {
@@ -408,6 +420,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_panache_silent;
     case engine::CardId::JACKPOT:
         return &bn::sprite_items::card_jackpot_silent;
+    case engine::CardId::BEAT_DOWN:
+        return &bn::sprite_items::card_beat_down_silent;
+    case engine::CardId::CATASTROPHE:
+        return &bn::sprite_items::card_catastrophe_silent;
+    case engine::CardId::NOSTALGIA:
+        return &bn::sprite_items::card_nostalgia_silent;
+    case engine::CardId::RELAX:
+        return &bn::sprite_items::card_relax_silent;
+    case engine::CardId::NEOWS_FURY:
+        return &bn::sprite_items::card_neows_fury_silent;
+    case engine::CardId::METAMORPHOSIS:
+        return &bn::sprite_items::card_metamorphosis_silent;
+    case engine::CardId::DISTRACTION:
+        return &bn::sprite_items::card_distraction_silent;
+    case engine::CardId::CALTROPS:
+        return &bn::sprite_items::card_caltrops_silent;
+    case engine::CardId::PROLONG:
+        return &bn::sprite_items::card_prolong_silent;
+    case engine::CardId::SALVO:
+        return &bn::sprite_items::card_salvo_silent;
+    case engine::CardId::THINKING_AHEAD:
+        return &bn::sprite_items::card_thinking_ahead_silent;
+    case engine::CardId::JACK_OF_ALL_TRADES:
+        return &bn::sprite_items::card_jack_of_all_trades_silent;
     default:
         return nullptr;
     }
@@ -437,7 +473,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 82,
     83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102,
     103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,
-    123, 124, 125, 126, 127, 128, 129,
+    123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -585,6 +621,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_rolling_boulder_defect.h"
 #include "bn_sprite_items_card_panache_defect.h"
 #include "bn_sprite_items_card_jackpot_defect.h"
+#include "bn_sprite_items_card_beat_down_defect.h"
+#include "bn_sprite_items_card_catastrophe_defect.h"
+#include "bn_sprite_items_card_nostalgia_defect.h"
+#include "bn_sprite_items_card_relax_defect.h"
+#include "bn_sprite_items_card_neows_fury_defect.h"
+#include "bn_sprite_items_card_metamorphosis_defect.h"
+#include "bn_sprite_items_card_distraction_defect.h"
+#include "bn_sprite_items_card_caltrops_defect.h"
+#include "bn_sprite_items_card_prolong_defect.h"
+#include "bn_sprite_items_card_salvo_defect.h"
+#include "bn_sprite_items_card_thinking_ahead_defect.h"
+#include "bn_sprite_items_card_jack_of_all_trades_defect.h"
 
 namespace gba::card_art
 {
@@ -870,6 +918,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_panache_defect;
     case engine::CardId::JACKPOT:
         return &bn::sprite_items::card_jackpot_defect;
+    case engine::CardId::BEAT_DOWN:
+        return &bn::sprite_items::card_beat_down_defect;
+    case engine::CardId::CATASTROPHE:
+        return &bn::sprite_items::card_catastrophe_defect;
+    case engine::CardId::NOSTALGIA:
+        return &bn::sprite_items::card_nostalgia_defect;
+    case engine::CardId::RELAX:
+        return &bn::sprite_items::card_relax_defect;
+    case engine::CardId::NEOWS_FURY:
+        return &bn::sprite_items::card_neows_fury_defect;
+    case engine::CardId::METAMORPHOSIS:
+        return &bn::sprite_items::card_metamorphosis_defect;
+    case engine::CardId::DISTRACTION:
+        return &bn::sprite_items::card_distraction_defect;
+    case engine::CardId::CALTROPS:
+        return &bn::sprite_items::card_caltrops_defect;
+    case engine::CardId::PROLONG:
+        return &bn::sprite_items::card_prolong_defect;
+    case engine::CardId::SALVO:
+        return &bn::sprite_items::card_salvo_defect;
+    case engine::CardId::THINKING_AHEAD:
+        return &bn::sprite_items::card_thinking_ahead_defect;
+    case engine::CardId::JACK_OF_ALL_TRADES:
+        return &bn::sprite_items::card_jack_of_all_trades_defect;
     default:
         return nullptr;
     }
@@ -899,7 +971,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
     92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
-    132, 133, 134, 135, 136, 137, 138,
+    132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1043,6 +1115,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_rolling_boulder_regent.h"
 #include "bn_sprite_items_card_panache_regent.h"
 #include "bn_sprite_items_card_jackpot_regent.h"
+#include "bn_sprite_items_card_beat_down_regent.h"
+#include "bn_sprite_items_card_catastrophe_regent.h"
+#include "bn_sprite_items_card_nostalgia_regent.h"
+#include "bn_sprite_items_card_relax_regent.h"
+#include "bn_sprite_items_card_neows_fury_regent.h"
+#include "bn_sprite_items_card_metamorphosis_regent.h"
+#include "bn_sprite_items_card_distraction_regent.h"
+#include "bn_sprite_items_card_caltrops_regent.h"
+#include "bn_sprite_items_card_prolong_regent.h"
+#include "bn_sprite_items_card_salvo_regent.h"
+#include "bn_sprite_items_card_thinking_ahead_regent.h"
+#include "bn_sprite_items_card_jack_of_all_trades_regent.h"
 
 namespace gba::card_art
 {
@@ -1320,6 +1404,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_panache_regent;
     case engine::CardId::JACKPOT:
         return &bn::sprite_items::card_jackpot_regent;
+    case engine::CardId::BEAT_DOWN:
+        return &bn::sprite_items::card_beat_down_regent;
+    case engine::CardId::CATASTROPHE:
+        return &bn::sprite_items::card_catastrophe_regent;
+    case engine::CardId::NOSTALGIA:
+        return &bn::sprite_items::card_nostalgia_regent;
+    case engine::CardId::RELAX:
+        return &bn::sprite_items::card_relax_regent;
+    case engine::CardId::NEOWS_FURY:
+        return &bn::sprite_items::card_neows_fury_regent;
+    case engine::CardId::METAMORPHOSIS:
+        return &bn::sprite_items::card_metamorphosis_regent;
+    case engine::CardId::DISTRACTION:
+        return &bn::sprite_items::card_distraction_regent;
+    case engine::CardId::CALTROPS:
+        return &bn::sprite_items::card_caltrops_regent;
+    case engine::CardId::PROLONG:
+        return &bn::sprite_items::card_prolong_regent;
+    case engine::CardId::SALVO:
+        return &bn::sprite_items::card_salvo_regent;
+    case engine::CardId::THINKING_AHEAD:
+        return &bn::sprite_items::card_thinking_ahead_regent;
+    case engine::CardId::JACK_OF_ALL_TRADES:
+        return &bn::sprite_items::card_jack_of_all_trades_regent;
     default:
         return nullptr;
     }
@@ -1349,7 +1457,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 87,
     88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107,
     108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
-    128, 129, 130, 131, 132, 133, 134,
+    128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1498,6 +1606,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_rolling_boulder_necrobinder.h"
 #include "bn_sprite_items_card_panache_necrobinder.h"
 #include "bn_sprite_items_card_jackpot_necrobinder.h"
+#include "bn_sprite_items_card_beat_down_necrobinder.h"
+#include "bn_sprite_items_card_catastrophe_necrobinder.h"
+#include "bn_sprite_items_card_nostalgia_necrobinder.h"
+#include "bn_sprite_items_card_relax_necrobinder.h"
+#include "bn_sprite_items_card_neows_fury_necrobinder.h"
+#include "bn_sprite_items_card_metamorphosis_necrobinder.h"
+#include "bn_sprite_items_card_distraction_necrobinder.h"
+#include "bn_sprite_items_card_caltrops_necrobinder.h"
+#include "bn_sprite_items_card_prolong_necrobinder.h"
+#include "bn_sprite_items_card_salvo_necrobinder.h"
+#include "bn_sprite_items_card_thinking_ahead_necrobinder.h"
+#include "bn_sprite_items_card_jack_of_all_trades_necrobinder.h"
 
 namespace gba::card_art
 {
@@ -1785,6 +1905,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_panache_necrobinder;
     case engine::CardId::JACKPOT:
         return &bn::sprite_items::card_jackpot_necrobinder;
+    case engine::CardId::BEAT_DOWN:
+        return &bn::sprite_items::card_beat_down_necrobinder;
+    case engine::CardId::CATASTROPHE:
+        return &bn::sprite_items::card_catastrophe_necrobinder;
+    case engine::CardId::NOSTALGIA:
+        return &bn::sprite_items::card_nostalgia_necrobinder;
+    case engine::CardId::RELAX:
+        return &bn::sprite_items::card_relax_necrobinder;
+    case engine::CardId::NEOWS_FURY:
+        return &bn::sprite_items::card_neows_fury_necrobinder;
+    case engine::CardId::METAMORPHOSIS:
+        return &bn::sprite_items::card_metamorphosis_necrobinder;
+    case engine::CardId::DISTRACTION:
+        return &bn::sprite_items::card_distraction_necrobinder;
+    case engine::CardId::CALTROPS:
+        return &bn::sprite_items::card_caltrops_necrobinder;
+    case engine::CardId::PROLONG:
+        return &bn::sprite_items::card_prolong_necrobinder;
+    case engine::CardId::SALVO:
+        return &bn::sprite_items::card_salvo_necrobinder;
+    case engine::CardId::THINKING_AHEAD:
+        return &bn::sprite_items::card_thinking_ahead_necrobinder;
+    case engine::CardId::JACK_OF_ALL_TRADES:
+        return &bn::sprite_items::card_jack_of_all_trades_necrobinder;
     default:
         return nullptr;
     }
@@ -1814,7 +1958,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 0, 91, 92,
     93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
     113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132,
-    133, 134, 135, 136, 137, 138, 139,
+    133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1962,6 +2106,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_rolling_boulder_ironclad.h"
 #include "bn_sprite_items_card_panache_ironclad.h"
 #include "bn_sprite_items_card_jackpot_ironclad.h"
+#include "bn_sprite_items_card_beat_down_ironclad.h"
+#include "bn_sprite_items_card_catastrophe_ironclad.h"
+#include "bn_sprite_items_card_nostalgia_ironclad.h"
+#include "bn_sprite_items_card_relax_ironclad.h"
+#include "bn_sprite_items_card_neows_fury_ironclad.h"
+#include "bn_sprite_items_card_metamorphosis_ironclad.h"
+#include "bn_sprite_items_card_distraction_ironclad.h"
+#include "bn_sprite_items_card_caltrops_ironclad.h"
+#include "bn_sprite_items_card_prolong_ironclad.h"
+#include "bn_sprite_items_card_salvo_ironclad.h"
+#include "bn_sprite_items_card_thinking_ahead_ironclad.h"
+#include "bn_sprite_items_card_jack_of_all_trades_ironclad.h"
 
 namespace gba::card_art
 {
@@ -2247,6 +2403,30 @@ namespace gba::card_art
         return &bn::sprite_items::card_panache_ironclad;
     case engine::CardId::JACKPOT:
         return &bn::sprite_items::card_jackpot_ironclad;
+    case engine::CardId::BEAT_DOWN:
+        return &bn::sprite_items::card_beat_down_ironclad;
+    case engine::CardId::CATASTROPHE:
+        return &bn::sprite_items::card_catastrophe_ironclad;
+    case engine::CardId::NOSTALGIA:
+        return &bn::sprite_items::card_nostalgia_ironclad;
+    case engine::CardId::RELAX:
+        return &bn::sprite_items::card_relax_ironclad;
+    case engine::CardId::NEOWS_FURY:
+        return &bn::sprite_items::card_neows_fury_ironclad;
+    case engine::CardId::METAMORPHOSIS:
+        return &bn::sprite_items::card_metamorphosis_ironclad;
+    case engine::CardId::DISTRACTION:
+        return &bn::sprite_items::card_distraction_ironclad;
+    case engine::CardId::CALTROPS:
+        return &bn::sprite_items::card_caltrops_ironclad;
+    case engine::CardId::PROLONG:
+        return &bn::sprite_items::card_prolong_ironclad;
+    case engine::CardId::SALVO:
+        return &bn::sprite_items::card_salvo_ironclad;
+    case engine::CardId::THINKING_AHEAD:
+        return &bn::sprite_items::card_thinking_ahead_ironclad;
+    case engine::CardId::JACK_OF_ALL_TRADES:
+        return &bn::sprite_items::card_jack_of_all_trades_ironclad;
     default:
         return nullptr;
     }
@@ -2276,7 +2456,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 91,
     92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
-    132, 133, 134, 135, 136, 137, 138,
+    132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.

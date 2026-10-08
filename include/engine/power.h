@@ -188,7 +188,8 @@ enum class PowerId : uint8_t {
     // Colorless and event cards (appended)
     FASTEN,            // Defend cards give `amount` more Block
     ROLLING_BOULDER,   // start of turn: `amount` damage to every enemy, then 5 more (counter = the growth so far)
-    PANACHE            // every PANACHE_CARDS cards played in a turn: `amount` damage to every enemy
+    PANACHE,           // every PANACHE_CARDS cards played in a turn: `amount` damage to every enemy
+    NOSTALGIA          // the first Attack or Skill played each turn goes on top of the draw pile (counter = used this turn)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

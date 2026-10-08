@@ -734,6 +734,30 @@ bn::string_view base_name(engine::CardId id)
         return "Panache";
     case engine::CardId::JACKPOT:
         return "Jackpot";
+    case engine::CardId::BEAT_DOWN:
+        return "Passage à tabac";
+    case engine::CardId::CATASTROPHE:
+        return "Catastrophe";
+    case engine::CardId::NOSTALGIA:
+        return "Nostalgie";
+    case engine::CardId::RELAX:
+        return "Relaxation";
+    case engine::CardId::NEOWS_FURY:
+        return "Fureur de Neow";
+    case engine::CardId::METAMORPHOSIS:
+        return "Métamorphose";
+    case engine::CardId::DISTRACTION:
+        return "Distraction";
+    case engine::CardId::CALTROPS:
+        return "Chausse-trapes";
+    case engine::CardId::PROLONG:
+        return "Prolongations";
+    case engine::CardId::SALVO:
+        return "Salve";
+    case engine::CardId::THINKING_AHEAD:
+        return "Coup d'avance";
+    case engine::CardId::JACK_OF_ALL_TRADES:
+        return "Polyvalence";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1344,6 +1368,42 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::JACKPOT:
         stream << "Inflige " << value << " dégâts. +" << secondary << " cartes à 0" << (card.upgraded ? " amél." : ".");
+        break;
+    case engine::CardId::BEAT_DOWN:
+        stream << "Joue " << value << " Attaques au hasard de la Défausse.";
+        break;
+    case engine::CardId::CATASTROPHE:
+        stream << "Joue " << value << " cartes au hasard de la Pioche.";
+        break;
+    case engine::CardId::NOSTALGIA:
+        stream << "1re Att./Comp. : sur la Pioche.";
+        break;
+    case engine::CardId::RELAX:
+        stream << "Armure +" << value << ". Puis +" << secondary << " cartes/én. Épuis.";
+        break;
+    case engine::CardId::NEOWS_FURY:
+        stream << value << " dégâts. +" << secondary << " de la Défausse. Épuis.";
+        break;
+    case engine::CardId::METAMORPHOSIS:
+        stream << "+" << value << " Attaques en Pioche, coût 0. Épuis.";
+        break;
+    case engine::CardId::DISTRACTION:
+        stream << "Compétence au hasard à 0. Épuis.";
+        break;
+    case engine::CardId::CALTROPS:
+        stream << "Attaqué : " << value << " dégâts à l'attaquant.";
+        break;
+    case engine::CardId::PROLONG:
+        stream << "Prochain tour : Armure actuelle." << (card.upgraded ? "" : " Épuis.");
+        break;
+    case engine::CardId::SALVO:
+        stream << "Inflige " << value << " dégâts. Retient la Main.";
+        break;
+    case engine::CardId::THINKING_AHEAD:
+        stream << "Pioche " << value << ". 1 carte sur la Pioche." << (card.upgraded ? "" : " Épuis.");
+        break;
+    case engine::CardId::JACK_OF_ALL_TRADES:
+        stream << "+" << value << (card.upgraded ? " cartes Incolores" : " carte Incolore") << " en main. Épuis.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:

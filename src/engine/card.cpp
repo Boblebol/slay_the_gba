@@ -545,6 +545,19 @@ static constexpr CardDef CARDS[] = {
     { CardId::ROLLING_BOULDER, "Rolling Boulder", 3, CardType::POWER, TargetType::SELF, 5, 5, "Start of turn: deal 5 dmg to ALL enemies, then +5.", "Rolling Boulder+", 3, 10, 5, "Start of turn: deal 10 dmg to ALL enemies, then +5." },
     { CardId::PANACHE, "Panache", 0, CardType::POWER, TargetType::SELF, 10, 5, "Every 5 cards played in a turn, deal 10 dmg to ALL enemies.", "Panache+", 0, 14, 5, "Every 5 cards played in a turn, deal 14 dmg to ALL enemies." },
     { CardId::JACKPOT, "Jackpot", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 25, 3, "Deal 25 dmg. Add 3 random 0-cost cards to your hand.", "Jackpot+", 3, 30, 3, "Deal 30 dmg. Add 3 random upgraded 0-cost cards to your hand." },
+    // Batch H: cards that play cards, move cards between piles or hold the hand.
+    { CardId::BEAT_DOWN, "Beat Down", 3, CardType::SKILL, TargetType::SELF, 3, 0, "Play 3 random Attacks from your discard pile.", "Beat Down+", 3, 4, 0, "Play 4 random Attacks from your discard pile." },
+    { CardId::CATASTROPHE, "Catastrophe", 2, CardType::SKILL, TargetType::SELF, 2, 0, "Play 2 random cards from your draw pile.", "Catastrophe+", 2, 3, 0, "Play 3 random cards from your draw pile." },
+    { CardId::NOSTALGIA, "Nostalgia", 1, CardType::POWER, TargetType::SELF, 0, 0, "The first Attack or Skill you play each turn goes on top of your draw pile.", "Nostalgia+", 1, 0, 0, "The first Attack or Skill you play each turn goes on top of your draw pile." },
+    { CardId::RELAX, "Relax", 3, CardType::SKILL, TargetType::SELF, 16, 2, "Gain 16 Block. Next turn, draw 2 cards and gain 2 energy. Exhaust.", "Relax+", 3, 18, 3, "Gain 18 Block. Next turn, draw 3 cards and gain 3 energy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::NEOWS_FURY, "Neow's Fury", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 2, "Deal 10 dmg. Put up to 2 cards from your discard pile into your hand. Exhaust.", "Neow's Fury+", 1, 14, 3, "Deal 14 dmg. Put up to 3 cards from your discard pile into your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::METAMORPHOSIS, "Metamorphosis", 2, CardType::SKILL, TargetType::SELF, 3, 0, "Add 3 random Attacks to your draw pile. They cost 0 this combat. Exhaust.", "Metamorphosis+", 2, 5, 0, "Add 5 random Attacks to your draw pile. They cost 0 this combat. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::DISTRACTION, "Distraction", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Add a random Skill to your hand. It costs 0 this turn. Exhaust.", "Distraction+", 1, 0, 0, "Add a random Skill to your hand. It costs 0 this turn. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::CALTROPS, "Caltrops", 1, CardType::POWER, TargetType::SELF, 3, 0, "Deal 3 dmg to the attacker whenever you are attacked.", "Caltrops+", 1, 5, 0, "Deal 5 dmg to the attacker whenever you are attacked." },
+    { CardId::PROLONG, "Prolong", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Next turn, gain Block equal to your current Block. Exhaust.", "Prolong+", 0, 0, 0, "Next turn, gain Block equal to your current Block.", KEYWORD_EXHAUST, 0 },
+    { CardId::SALVO, "Salvo", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 12, 0, "Deal 12 dmg. Retain your hand until next turn.", "Salvo+", 1, 16, 0, "Deal 16 dmg. Retain your hand until next turn." },
+    { CardId::THINKING_AHEAD, "Thinking Ahead", 0, CardType::SKILL, TargetType::SELF, 2, 0, "Draw 2 cards. Put 1 card from your hand on top of your draw pile. Exhaust.", "Thinking Ahead+", 0, 2, 0, "Draw 2 cards. Put 1 card from your hand on top of your draw pile.", KEYWORD_EXHAUST, 0 },
+    { CardId::JACK_OF_ALL_TRADES, "Jack of All Trades", 0, CardType::SKILL, TargetType::SELF, 1, 0, "Add 1 random Colorless card to your hand. Exhaust.", "Jack of All Trades+", 0, 2, 0, "Add 2 random Colorless cards to your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
 };
 
 const CardDef& CardDef::get(CardId id) {
