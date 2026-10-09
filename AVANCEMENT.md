@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 62,1 %** — 762 faits, 20 partiels, 462 à faire (35 hors périmètre).
+**Avancement global : 63,1 %** — 775 faits, 20 partiels, 449 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -14,27 +14,27 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
-| [Soldat de Fer](#ironclad) | 93 | 1 | 8 | 91,7 % |
-| [La Silencieuse](#silent) | 84 | 1 | 16 | 83,7 % |
-| [Le Défectueux](#defect) | 98 | 1 | 6 | 93,8 % |
-| [Le Régent](#regent) | 87 | 1 | 12 | 87,5 % |
-| [La Nécrolieuse](#necrobinder) | 93 | 1 | 8 | 91,7 % |
-| [Cartes communes aux cinq éditions](#cartes) | 85 | 0 | 35 | 70,8 % |
+| [Soldat de Fer](#ironclad) | 95 | 1 | 6 | 93,6 % |
+| [La Silencieuse](#silent) | 86 | 1 | 14 | 85,6 % |
+| [Le Défectueux](#defect) | 100 | 1 | 4 | 95,7 % |
+| [Le Régent](#regent) | 91 | 1 | 8 | 91,5 % |
+| [La Nécrolieuse](#necrobinder) | 94 | 1 | 7 | 92,6 % |
+| [Cartes communes aux cinq éditions](#cartes) | 87 | 0 | 33 | 72,5 % |
 | [Reliques et potions](#reliques) | 132 | 0 | 189 | 41,1 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **762** | **20** | **462** | **62,1 %** |
+| **Total** | **775** | **20** | **449** | **63,1 %** |
 
 <a id="ironclad"></a>
 
-## Soldat de Fer — 91,7 %
+## Soldat de Fer — 93,6 %
 
-### Cartes — 93,0 %
+### Cartes — 95,3 %
 
-80 faits, 0 partiel, 6 à faire (4 hors périmètre).
+82 faits, 0 partiel, 4 à faire (4 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -78,7 +78,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Ignorer la douleur | Peu commune · Pouvoir | Oui |  |
 | Ivresse du combat | Peu commune · Compétence | Oui |  |
 | Jonglage | Peu commune · Pouvoir | Oui |  |
-| Lame infernale | Peu commune · Compétence | Non |  |
+| Lame infernale | Peu commune · Compétence | Oui |  |
 | Mauvais œil | Peu commune · Compétence | Oui |  |
 | Pacte brûlant | Peu commune · Compétence | Oui |  |
 | Paré au combat | Peu commune · Compétence | Oui |  |
@@ -101,7 +101,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Viens te battre  ! | Peu commune · Attaque | Oui |  |
 | Agression | Rare · Pouvoir | Oui |  |
 | Appétit | Rare · Attaque | Oui |  |
-| Attiser les flammes | Rare · Compétence | Non |  |
+| Attiser les flammes | Rare · Compétence | Oui |  |
 | Barricade | Rare · Pouvoir | Oui |  |
 | Bûcher | Rare · Pouvoir | Oui |  |
 | Cascade | Rare · Compétence | Oui |  |
@@ -161,11 +161,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="silent"></a>
 
-## La Silencieuse — 83,7 %
+## La Silencieuse — 85,6 %
 
-### Cartes — 83,7 %
+### Cartes — 86,0 %
 
-72 faits, 0 partiel, 14 à faire (5 hors périmètre).
+74 faits, 0 partiel, 12 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -236,7 +236,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Assassiner | Rare · Attaque | Oui |  |
 | Bullet Time | Rare · Compétence | Oui |  |
 | Camouflage | Rare · Compétence | Non |  |
-| Cauchemar | Rare · Compétence | Non |  |
+| Cauchemar | Rare · Compétence | Oui |  |
 | Clou du spectacle | Rare · Attaque | Oui |  |
 | Déflagration | Rare · Compétence | Oui |  |
 | Encerclement | Rare · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
@@ -253,7 +253,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Pistage | Rare · Pouvoir | Non |  |
 | Piège à poignards | Rare · Compétence | Oui |  |
 | Préméditation | Rare · Pouvoir | Oui |  |
-| Savoir-faire | Rare · Pouvoir | Non |  |
+| Savoir-faire | Rare · Pouvoir | Oui |  |
 | Tempête d'acier | Rare · Compétence | Oui |  |
 | Vague corrosive | Rare · Compétence | Oui |  |
 | Épidémie | Rare · Compétence | Oui |  |
@@ -292,11 +292,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="defect"></a>
 
-## Le Défectueux — 93,8 %
+## Le Défectueux — 95,7 %
 
-### Cartes — 94,2 %
+### Cartes — 96,5 %
 
-81 faits, 0 partiel, 5 à faire (5 hors périmètre).
+83 faits, 0 partiel, 3 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -328,7 +328,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Bobine Tesla | Peu commune · Attaque | Oui |  |
 | Boucle | Peu commune · Pouvoir | Oui |  |
 | Bouclier ténébreux | Peu commune · Compétence | Oui |  |
-| Bruit blanc | Peu commune · Compétence | Non |  |
+| Bruit blanc | Peu commune · Compétence | Oui |  |
 | Chaos | Peu commune · Compétence | Oui |  |
 | Cheminée | Peu commune · Pouvoir | Oui |  |
 | Compactage | Peu commune · Compétence | Oui |  |
@@ -373,7 +373,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Forme résonnante | Rare · Pouvoir | Oui |  |
 | Frappe adaptative | Rare · Attaque | Oui |  |
 | Frappe météorique | Rare · Attaque | Oui |  |
-| IA créative | Rare · Pouvoir | Non |  |
+| IA créative | Rare · Pouvoir | Oui |  |
 | Javelot de glace | Rare · Attaque | Oui |  |
 | Machine Learning | Rare · Pouvoir | Oui |  |
 | Modificateurs | Rare · Compétence | Oui |  |
@@ -427,11 +427,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regent"></a>
 
-## Le Régent — 87,5 %
+## Le Régent — 91,5 %
 
-### Cartes — 89,5 %
+### Cartes — 94,2 %
 
-77 faits, 0 partiel, 9 à faire (5 hors périmètre).
+81 faits, 0 partiel, 5 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -493,7 +493,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Reflet miroir | Peu commune · Compétence | Oui |  |
 | Rempart | Peu commune · Compétence | Oui |  |
 | Résonance | Peu commune · Compétence | Oui |  |
-| Spectre visible | Peu commune · Pouvoir | Non |  |
+| Spectre visible | Peu commune · Pouvoir | Oui |  |
 | Supermassif | Peu commune · Attaque | Oui |  |
 | Terraformation | Peu commune · Compétence | Oui |  |
 | Trou noir | Peu commune · Pouvoir | Oui |  |
@@ -502,7 +502,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Atterrissage forcé | Rare · Attaque | Oui |  |
 | Big Bang | Rare · Compétence | Oui |  |
 | Bombardement | Rare · Attaque | Oui |  |
-| Cadeau joyeux | Rare · Compétence | Non |  |
+| Cadeau joyeux | Rare · Compétence | Oui |  |
 | Châtiment | Rare · Attaque | Oui |  |
 | Comète | Rare · Attaque | Oui |  |
 | Couru d'avance | Rare · Compétence | Oui |  |
@@ -510,13 +510,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Forme du néant | Rare · Pouvoir | Oui |  |
 | GARDES !!! | Rare · Compétence | Non |  |
 | Genèse | Rare · Pouvoir | Oui |  |
-| Grandes décisions | Rare · Compétence | Non |  |
+| Grandes décisions | Rare · Compétence | Oui |  |
 | Je suis invincible | Rare · Compétence | Oui |  |
 | L'heure du marteau | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Lame chercheuse | Rare · Pouvoir | Oui |  |
 | Le forgeron | Rare · Compétence | Oui |  |
 | Leçon | Rare · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
-| Marteau d'héritage | Rare · Attaque | Non |  |
+| Marteau d'héritage | Rare · Attaque | Oui |  |
 | Pléiades | Rare · Attaque | Oui |  |
 | Regard monarchique | Rare · Pouvoir | Oui |  |
 | Royalties | Rare · Pouvoir | Non |  |
@@ -557,11 +557,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 91,7 %
+## La Nécrolieuse — 92,6 %
 
-### Cartes — 93,1 %
+### Cartes — 94,3 %
 
-81 faits, 0 partiel, 6 à faire (4 hors périmètre).
+82 faits, 0 partiel, 5 à faire (4 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -627,7 +627,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | À l'agonie | Peu commune · Compétence | Oui |  |
 | À l'attaque ! | Peu commune · Attaque | Oui |  |
 | Âme sœur | Peu commune · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
-| Appel du néant | Rare · Pouvoir | Non |  |
+| Appel du néant | Rare · Pouvoir | Oui |  |
 | Cacophonie | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Cri de la banshee | Rare · Attaque | Oui |  |
 | Destin partagé | Rare · Compétence | Oui |  |
@@ -688,7 +688,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 70,8 %
+## Cartes communes aux cinq éditions — 72,5 %
 
 ### Cartes incolores — 84,9 %
 
@@ -762,9 +762,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sacrement | Rare · Compétence | Oui |  |
 | Technique secrète | Rare · Compétence | Oui |  |
 
-### Cartes d'évènement — 85,7 %
+### Cartes d'évènement — 92,9 %
 
-24 faits, 0 partiel, 4 à faire.
+26 faits, 0 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -777,7 +777,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Relaxation | Ancienne · Compétence | Oui |  |
 | Sifflet | Ancienne · Attaque | Oui |  |
 | Vœu | Ancienne · Compétence | Oui |  |
-| Ambidextrie | Évènement · Compétence | Non |  |
+| Ambidextrie | Évènement · Compétence | Oui |  |
 | Aplatissement | Évènement · Attaque | Oui |  |
 | Astucieux | Évènement · Compétence | Oui |  |
 | Chausse-trapes | Évènement · Pouvoir | Oui |  |
@@ -786,7 +786,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Extermination | Évènement · Attaque | Oui |  |
 | Fortification | Évènement · Compétence | Oui |  |
 | Hello World | Évènement · Pouvoir | Oui |  |
-| Illumination | Évènement · Compétence | Non |  |
+| Illumination | Évènement · Compétence | Oui |  |
 | Lacération | Évènement · Attaque | Oui |  |
 | Métamorphose | Évènement · Compétence | Oui |  |
 | Picpic | Évènement · Attaque | Oui |  |
