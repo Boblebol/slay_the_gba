@@ -227,13 +227,19 @@ NO_COST = -2  # CardArt.costs of an Unplayable card: no energy gem and no digit
 @dataclass(frozen=True)
 class CardArt:
     enum_name: str   # engine CardId name (lower case)
-    owner: str       # hero owning the card (frame colour); "hero" = the ROM's own hero, "status" = on every ROM
+    # Hero owning the card (frame colour). "hero" = the ROM's own hero, one art file per cartridge.
+    # SHARED_OWNERS are on every ROM with a single art file: "status" and "colorless" (grey frame),
+    # "curse" (purple frame), "ancient" (event cards of Ancient rarity: full-card art and the Ancient border).
+    owner: str
     art: str         # art file relative to bible/images/cards/<folder>/ ; "{hero}" is substituted
     kind: str        # attack | skill | power | status
     costs: tuple[int, int]  # base cost, upgraded cost; -1 = X, NO_COST = unplayable
     stars: tuple[int, int] = (0, 0)  # Star cost (Regent), base and upgraded; -1 = X
     folder: str = ""  # art folder when it is not the owner's (tokens)
 
+
+# Owners whose cards look the same on every cartridge: no hero colour in the frame, the gem or the mini card.
+SHARED_OWNERS = ("status", "curse", "colorless", "ancient")
 
 # Mirrors engine::CardId order (card.h). Index 0 (NONE) is a blank card.
 CARDS: list[CardArt] = [
@@ -637,23 +643,23 @@ CARDS: list[CardArt] = [
     CardArt("manifest_authority", "regent", "manifest_authority", "skill", (1, 1)),
     CardArt("giant_rock", "hero", "giant_rock", "attack", (1, 1), folder="token"),
     CardArt("luminesce", "hero", "luminesce", "skill", (0, 0), folder="token"),
-    CardArt("apparition", "hero", "apparition", "skill", (0, 0), folder="event"),
-    CardArt("maul", "hero", "maul", "attack", (1, 1), folder="event"),
-    CardArt("apotheosis", "hero", "apotheosis", "skill", (2, 1), folder="event"),
-    CardArt("wish", "hero", "wish", "skill", (0, 0), folder="event"),
-    CardArt("whistle", "hero", "whistle", "attack", (1, 1), folder="event"),
-    CardArt("brightest_flame", "hero", "brightest_flame", "skill", (0, 0), folder="event"),
+    CardArt("apparition", "ancient", "apparition", "skill", (1, 1), folder="event"),
+    CardArt("maul", "ancient", "maul", "attack", (1, 1), folder="event"),
+    CardArt("apotheosis", "ancient", "apotheosis", "skill", (2, 1), folder="event"),
+    CardArt("wish", "ancient", "wish", "skill", (0, 0), folder="event"),
+    CardArt("whistle", "ancient", "whistle", "attack", (2, 2), folder="event"),
+    CardArt("brightest_flame", "ancient", "brightest_flame", "skill", (0, 0), folder="event"),
     CardArt("folly", "curse", "folly", "status", (NO_COST, NO_COST)),
     CardArt("enthralled", "curse", "enthralled", "status", (2, 2)),
-    CardArt("flash_of_steel", "hero", "flash_of_steel", "attack", (0, 0), folder="colorless"),
+    CardArt("flash_of_steel", "colorless", "flash_of_steel", "attack", (0, 0)),
     CardArt("peck", "hero", "peck", "attack", (1, 1), folder="event"),
-    CardArt("production", "hero", "production", "skill", (0, 0), folder="colorless"),
-    CardArt("master_of_strategy", "hero", "master_of_strategy", "skill", (0, 0), folder="colorless"),
+    CardArt("production", "colorless", "production", "skill", (0, 0)),
+    CardArt("master_of_strategy", "colorless", "master_of_strategy", "skill", (0, 0)),
     CardArt("byrd_swoop", "hero", "byrd_swoop", "attack", (0, 0), folder="event"),
-    CardArt("ultimate_strike", "hero", "ultimate_strike", "attack", (1, 1), folder="colorless"),
-    CardArt("ultimate_defend", "hero", "ultimate_defend", "skill", (1, 1), folder="colorless"),
-    CardArt("finesse", "hero", "finesse", "skill", (0, 0), folder="colorless"),
-    CardArt("prowess", "hero", "prowess", "power", (1, 1), folder="colorless"),
+    CardArt("ultimate_strike", "colorless", "ultimate_strike", "attack", (1, 1)),
+    CardArt("ultimate_defend", "colorless", "ultimate_defend", "skill", (1, 1)),
+    CardArt("finesse", "colorless", "finesse", "skill", (0, 0)),
+    CardArt("prowess", "colorless", "prowess", "power", (1, 1)),
     CardArt("squash", "hero", "squash", "attack", (1, 1), folder="event"),
     CardArt("exterminate", "hero", "exterminate", "attack", (1, 1), folder="event"),
     CardArt("feeding_frenzy", "hero", "feeding_frenzy", "skill", (0, 0), folder="event"),
@@ -662,52 +668,52 @@ CARDS: list[CardArt] = [
     CardArt("entrench", "hero", "entrench", "skill", (2, 1), folder="event"),
     CardArt("stack", "hero", "stack", "skill", (1, 1), folder="event"),
     CardArt("rip_and_tear", "hero", "rip_and_tear", "attack", (1, 1), folder="event"),
-    CardArt("scrawl", "hero", "scrawl", "skill", (1, 1), folder="colorless"),
-    CardArt("mind_blast", "hero", "mind_blast", "attack", (1, 0), folder="colorless"),
-    CardArt("shockwave", "hero", "shockwave", "skill", (2, 2), folder="colorless"),
-    CardArt("bolas", "hero", "bolas", "attack", (0, 0), folder="colorless"),
-    CardArt("thrumming_hatchet", "hero", "thrumming_hatchet", "attack", (1, 1), folder="colorless"),
-    CardArt("impatience", "hero", "impatience", "skill", (0, 0), folder="colorless"),
+    CardArt("scrawl", "colorless", "scrawl", "skill", (1, 1)),
+    CardArt("mind_blast", "colorless", "mind_blast", "attack", (1, 0)),
+    CardArt("shockwave", "colorless", "shockwave", "skill", (2, 2)),
+    CardArt("bolas", "colorless", "bolas", "attack", (0, 0)),
+    CardArt("thrumming_hatchet", "colorless", "thrumming_hatchet", "attack", (1, 1)),
+    CardArt("impatience", "colorless", "impatience", "skill", (0, 0)),
     CardArt("clash", "hero", "clash", "attack", (0, 0), folder="event"),
-    CardArt("volley", "hero", "volley", "attack", (0, 0), folder="colorless"),
-    CardArt("omnislice", "hero", "omnislice", "attack", (0, 0), folder="colorless"),
-    CardArt("restlessness", "hero", "restlessness", "skill", (0, 0), folder="colorless"),
-    CardArt("eternal_armor", "hero", "eternal_armor", "power", (3, 3), folder="colorless"),
-    CardArt("fasten", "hero", "fasten", "power", (1, 1), folder="colorless"),
+    CardArt("volley", "colorless", "volley", "attack", (-1, -1)),
+    CardArt("omnislice", "colorless", "omnislice", "attack", (0, 0)),
+    CardArt("restlessness", "colorless", "restlessness", "skill", (0, 0)),
+    CardArt("eternal_armor", "colorless", "eternal_armor", "power", (3, 3)),
+    CardArt("fasten", "colorless", "fasten", "power", (1, 1)),
     CardArt("rebound", "hero", "rebound", "attack", (1, 1), folder="event"),
-    CardArt("panic_button", "hero", "panic_button", "skill", (0, 0), folder="colorless"),
-    CardArt("gold_axe", "hero", "gold_axe", "attack", (1, 1), folder="colorless"),
-    CardArt("anointed", "hero", "anointed", "skill", (1, 1), folder="colorless"),
-    CardArt("fisticuffs", "hero", "fisticuffs", "attack", (1, 1), folder="colorless"),
-    CardArt("rend", "hero", "rend", "attack", (1, 1), folder="colorless"),
-    CardArt("the_bomb", "hero", "the_bomb", "skill", (2, 2), folder="colorless"),
-    CardArt("rolling_boulder", "hero", "rolling_boulder", "power", (3, 3), folder="colorless"),
-    CardArt("panache", "hero", "panache", "power", (0, 0), folder="colorless"),
-    CardArt("jackpot", "hero", "jackpot", "attack", (3, 3), folder="colorless"),
-    CardArt("beat_down", "hero", "beat_down", "skill", (3, 3), folder="colorless"),
-    CardArt("catastrophe", "hero", "catastrophe", "skill", (2, 2), folder="colorless"),
-    CardArt("nostalgia", "hero", "nostalgia", "power", (1, 0), folder="colorless"),
-    CardArt("relax", "hero", "relax", "skill", (3, 3), folder="event"),
-    CardArt("neows_fury", "hero", "neows_fury", "attack", (1, 1), folder="event"),
+    CardArt("panic_button", "colorless", "panic_button", "skill", (0, 0)),
+    CardArt("gold_axe", "colorless", "gold_axe", "attack", (1, 1)),
+    CardArt("anointed", "colorless", "anointed", "skill", (1, 1)),
+    CardArt("fisticuffs", "colorless", "fisticuffs", "attack", (1, 1)),
+    CardArt("rend", "colorless", "rend", "attack", (1, 1)),
+    CardArt("the_bomb", "colorless", "the_bomb", "skill", (2, 2)),
+    CardArt("rolling_boulder", "colorless", "rolling_boulder", "power", (3, 3)),
+    CardArt("panache", "colorless", "panache", "power", (0, 0)),
+    CardArt("jackpot", "colorless", "jackpot", "attack", (3, 3)),
+    CardArt("beat_down", "colorless", "beat_down", "skill", (3, 3)),
+    CardArt("catastrophe", "colorless", "catastrophe", "skill", (2, 2)),
+    CardArt("nostalgia", "colorless", "nostalgia", "power", (1, 0)),
+    CardArt("relax", "ancient", "relax", "skill", (3, 3), folder="event"),
+    CardArt("neows_fury", "ancient", "neows_fury", "attack", (1, 1), folder="event"),
     CardArt("metamorphosis", "hero", "metamorphosis", "skill", (2, 2), folder="event"),
     CardArt("distraction", "hero", "distraction", "skill", (1, 0), folder="event"),
     CardArt("caltrops", "hero", "caltrops", "power", (1, 1), folder="event"),
-    CardArt("prolong", "hero", "prolong", "skill", (0, 0), folder="colorless"),
-    CardArt("salvo", "hero", "salvo", "attack", (1, 1), folder="colorless"),
-    CardArt("thinking_ahead", "hero", "thinking_ahead", "skill", (0, 0), folder="colorless"),
-    CardArt("jack_of_all_trades", "hero", "jack_of_all_trades", "skill", (0, 0), folder="colorless"),
+    CardArt("prolong", "colorless", "prolong", "skill", (0, 0)),
+    CardArt("salvo", "colorless", "salvo", "attack", (1, 1)),
+    CardArt("thinking_ahead", "colorless", "thinking_ahead", "skill", (0, 0)),
+    CardArt("jack_of_all_trades", "colorless", "jack_of_all_trades", "skill", (0, 0)),
     CardArt("hello_world", "hero", "hello_world", "power", (1, 1), folder="event"),
-    CardArt("dark_shackles", "hero", "dark_shackles", "skill", (0, 0), folder="colorless"),
-    CardArt("equilibrium", "hero", "equilibrium", "skill", (2, 2), folder="colorless"),
-    CardArt("purity", "hero", "purity", "skill", (0, 0), folder="colorless"),
-    CardArt("secret_technique", "hero", "secret_technique", "skill", (0, 0), folder="colorless"),
-    CardArt("dramatic_entrance", "hero", "dramatic_entrance", "attack", (0, 0), folder="colorless"),
-    CardArt("secret_weapon", "hero", "secret_weapon", "skill", (0, 0), folder="colorless"),
-    CardArt("mayhem", "hero", "mayhem", "power", (2, 1), folder="colorless"),
-    CardArt("prep_time", "hero", "prep_time", "power", (1, 1), folder="colorless"),
-    CardArt("stratagem", "hero", "stratagem", "power", (1, 0), folder="colorless"),
-    CardArt("calamity", "hero", "calamity", "power", (3, 2), folder="colorless"),
-    CardArt("automation", "hero", "automation", "power", (1, 0), folder="colorless"),
+    CardArt("dark_shackles", "colorless", "dark_shackles", "skill", (0, 0)),
+    CardArt("equilibrium", "colorless", "equilibrium", "skill", (2, 2)),
+    CardArt("purity", "colorless", "purity", "skill", (0, 0)),
+    CardArt("secret_technique", "colorless", "secret_technique", "skill", (0, 0)),
+    CardArt("dramatic_entrance", "colorless", "dramatic_entrance", "attack", (0, 0)),
+    CardArt("secret_weapon", "colorless", "secret_weapon", "skill", (0, 0)),
+    CardArt("mayhem", "colorless", "mayhem", "power", (2, 1)),
+    CardArt("prep_time", "colorless", "prep_time", "power", (1, 1)),
+    CardArt("stratagem", "colorless", "stratagem", "power", (1, 0)),
+    CardArt("calamity", "colorless", "calamity", "power", (3, 2)),
+    CardArt("automation", "colorless", "automation", "power", (1, 0)),
     CardArt("enlightenment", "hero", "enlightenment", "skill", (0, 0), folder="event"),
     CardArt("dual_wield", "hero", "dual_wield", "skill", (1, 1), folder="event"),
     CardArt("call_of_the_void", "necrobinder", "call_of_the_void", "power", (1, 1)),
@@ -724,7 +730,7 @@ CARDS: list[CardArt] = [
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
-               "status": "grey", "curse": "purple"}
+               "status": "grey", "colorless": "grey", "curse": "purple", "ancient": "ancient"}
 PORTRAIT_BOX = (47, 84, 547, 464)  # transparent window inside the 598x844 frame templates
 
 # 3x5 digits baked into the mini cards' energy gem.
@@ -767,8 +773,10 @@ def load_frame(kind: str, color: str) -> Image.Image:
     seen between the two Skill frames."""
     template = BIBLE / "card_template"
     if color == "grey":
-        # Status cards: the Skill shape, with its colour washed out.
-        red = Image.open(template / "frame_skill_red.webp").convert("RGBA")
+        # Status and colorless cards: the red frame with its colour washed out. A Status card has no frame
+        # of its own and takes the Skill shape; a colorless card keeps the shape of its kind.
+        shape = "skill" if kind == "status" else kind
+        red = Image.open(template / f"frame_{shape}_red.webp").convert("RGBA")
         hsv, border, panel = frame_zones(red)
         hsv[..., 1] = np.where(border | panel, hsv[..., 1] * 0.12, hsv[..., 1])
         hsv[..., 2] = np.where(border, np.clip(hsv[..., 2] * 0.85, 0, 255), hsv[..., 2])
@@ -808,8 +816,49 @@ def card_art_path(card: CardArt, hero: str) -> Path:
     return BIBLE / "cards" / (card.folder or owner) / (card.art.format(hero=hero) + ".webp")
 
 
+SHEET_WHITE = (248, 248, 248)    # palette entry every mini-card sheet keeps
+ANCIENT_LINE = (248, 248, 240)   # the Ancient border is a white glowing line
+ANCIENT_PANEL = (40, 36, 48)     # text panel laid over the art; lighter than black so the type icon keeps its outline
+ANCIENT_PANEL_ALPHA = 0.85
+ANCIENT_LINE_GAIN = 4.0          # the line is under half a pixel wide at GBA size: its coverage is multiplied
+ANCIENT_LINE_THRESHOLD = 110     # multiplied coverage (0-255) from which a pixel belongs to the line
+
+
+def ancient_panel(kind: str) -> Image.Image:
+    """Text panel of an Ancient card, as a mask over the frame template: the dark panel of the kind's frame."""
+    red = Image.open(BIBLE / "card_template" / f"frame_{kind}_red.webp").convert("RGBA")
+    hsv = np.asarray(red.convert("RGB").convert("HSV"), dtype=np.float32)
+    mask = (np.asarray(red.getchannel("A")) > 128) & (hsv[..., 1] <= 96)
+    mask[: PORTRAIT_BOX[1] + 4, :] = False  # the dark strip above the portrait is not part of the panel
+    return Image.fromarray((mask * 255).astype(np.uint8), "L")
+
+
+def compose_ancient_card(card: CardArt, hero: str, size: tuple[int, int]) -> Image.Image:
+    """Ancient card: its art covers the whole card, under a dark text panel and inside the white Ancient
+    border (ancient_border.webp). The Ancient banner is left out: at this size it is a grey smudge over the
+    art, and the card name is not drawn on the sprite."""
+    panel = ancient_panel(card.kind)
+    full = Image.open(card_art_path(card, hero)).convert("RGBA").resize(panel.size, Image.Resampling.LANCZOS)
+    shade = Image.new("RGBA", panel.size, ANCIENT_PANEL + (255,))
+    shade.putalpha(panel.point(lambda a: int(a * ANCIENT_PANEL_ALPHA)))
+    full.alpha_composite(shade)
+    outline = Image.new("L", panel.size, 0)
+    ImageDraw.Draw(outline).rounded_rectangle((0, 0, panel.width - 1, panel.height - 1), radius=44, fill=255)
+    full.putalpha(outline)
+    card_img = ImageEnhance.Contrast(full.resize(size, Image.Resampling.LANCZOS)).enhance(1.1)
+    border = Image.open(BIBLE / "card_template" / "ancient_border.webp").getchannel("A")
+    coverage = np.asarray(border.resize(size, Image.Resampling.BOX), dtype=np.float32) * ANCIENT_LINE_GAIN
+    line = Image.new("RGBA", size, ANCIENT_LINE + (255,))
+    # All or nothing: a half-covered pixel would blend with the art and take a palette entry of its own.
+    line.putalpha(Image.fromarray(((coverage >= ANCIENT_LINE_THRESHOLD) * 255).astype(np.uint8), "L"))
+    card_img.alpha_composite(line)
+    return card_img
+
+
 def compose_card(card: CardArt, hero: str, size: tuple[int, int]) -> Image.Image:
     owner = hero if card.owner == "hero" else card.owner
+    if owner == "ancient":
+        return compose_ancient_card(card, hero, size)
     frame = load_frame(card.kind, FRAME_COLOR[owner])
     full = Image.new("RGBA", frame.size, (0, 0, 0, 0))
     if card.art:
@@ -825,7 +874,7 @@ def compose_card(card: CardArt, hero: str, size: tuple[int, int]) -> Image.Image
 
 HERO_RGB = {"ironclad": (200, 48, 40), "silent": (64, 160, 72), "defect": (56, 112, 216),
             "regent": (232, 152, 40), "necrobinder": (200, 96, 184), "status": (120, 120, 132),
-            "curse": (112, 64, 144)}
+            "colorless": (120, 120, 132), "curse": (112, 64, 144), "ancient": ANCIENT_LINE}
 
 TYPE_ICONS = {
     "attack": [
@@ -876,12 +925,24 @@ TYPE_ICONS = {
 
 
 def compose_mini(card: CardArt, hero: str) -> Image.Image:
-    """23x32 hand card drawn for legibility: full-bleed art, hero-coloured border, type icon."""
+    """23x32 hand card drawn for legibility: full-bleed art, border in the owner's colour, type icon."""
     owner = hero if card.owner == "hero" else card.owner
     border = HERO_RGB[owner]
     img = Image.new("RGBA", (23, 32), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     d.rounded_rectangle((0, 0, 22, 31), radius=2, fill=(12, 10, 16, 255))
+    if owner == "ancient":
+        # Ancient card: a white line around the art, which goes edge to edge, and the dark panel under it.
+        # The art is a whole card: only its top, the part the text panel leaves visible, is shown.
+        d.rounded_rectangle((1, 1, 21, 30), radius=2, fill=border + (255,))
+        art = Image.open(card_art_path(card, hero)).convert("RGBA")
+        art = art.crop((0, 0, art.width, art.width * 18 // 19)).resize((19, 18), Image.Resampling.LANCZOS)
+        art = ImageEnhance.Contrast(art).enhance(1.2)
+        art = ImageEnhance.Color(art).enhance(1.2)
+        img.paste(art, (2, 2))
+        d.rectangle((2, 20, 20, 29), fill=ANCIENT_PANEL + (255,))
+        img.alpha_composite(pixel_art(TYPE_ICONS[card.kind], UI_COLORS), (7, 21))
+        return img
     d.rounded_rectangle((1, 1, 21, 30), radius=2, fill=lerp(border, (255, 255, 255), 0.25) + (255,))
     d.rectangle((2, 2, 20, 29), fill=border + (255,))
     d.rectangle((3, 3, 19, 28), fill=(52, 42, 38, 255))
@@ -900,7 +961,7 @@ def compose_mini(card: CardArt, hero: str) -> Image.Image:
 
 
 def energy_gem(hero: str, size: int) -> Image.Image:
-    if hero in ("status", "curse"):
+    if hero in SHARED_OWNERS:
         # No colourless gem in the dump: the Ironclad one, without its colour.
         gem = Image.open(BIBLE / "card_template" / "energy_ironclad.webp").convert("RGBA")
         grey = ImageEnhance.Color(gem).enhance(0.0)
@@ -911,7 +972,7 @@ def energy_gem(hero: str, size: int) -> Image.Image:
 
 def on_cartridge(card: CardArt, hero: str) -> bool:
     """A cartridge only carries the art of its hero's cards and of the cards every hero shares."""
-    return card.owner in ("hero", "status", "curse", hero)
+    return card.owner in ("hero", hero) or card.owner in SHARED_OWNERS
 
 
 def sheet_cards(hero: str) -> list[CardArt]:
@@ -1052,7 +1113,11 @@ def build_cards() -> None:
         for img in minis:
             arr = np.array(img)
             samples.append(arr[:, :, :3][arr[:, :, 3] >= 110])
-        palette = quantize_opaque(np.vstack(samples), 15)
+        # One entry is kept for white: the median cut would otherwise merge the cost digits and the Ancient
+        # border with the nearest art colour (cream, or the Regent's orange).
+        palette = quantize_opaque(np.vstack(samples), 14)
+        if SHEET_WHITE not in palette:
+            palette.append(SHEET_WHITE)
         frames = [rgba_to_sprite(img, palette=palette)[0] for img in minis]
         save_sprite(f"hand_cards_{hero}", frames, [TRANSPARENT] + palette, 32)
 
