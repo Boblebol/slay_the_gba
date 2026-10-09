@@ -64,7 +64,7 @@ void test_scrawl(bool upgraded) {
 }
 
 void test_mind_blast(bool upgraded) {
-    assert(CardDef::get_cost(CardId::MIND_BLAST, upgraded) == 1);
+    assert(CardDef::get_cost(CardId::MIND_BLAST, upgraded) == (upgraded ? 0 : 1));
     assert(CardDef::get(CardId::MIND_BLAST).type == CardType::ATTACK);
     assert(CardDef::has_keyword(CardId::MIND_BLAST, upgraded, KEYWORD_INNATE));
     CombatEngine combat = make_fight();
@@ -72,7 +72,7 @@ void test_mind_blast(bool upgraded) {
     combat.hand.push_back(DeckCard(CardId::MIND_BLAST, upgraded));
     assert(combat.play_card(0, 0));
     assert(combat.enemies[0].hp == 200 - 7);
-    assert(combat.player.energy == 2);
+    assert(combat.player.energy == (upgraded ? 3 : 2));
 }
 
 } // namespace

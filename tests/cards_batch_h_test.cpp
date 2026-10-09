@@ -57,7 +57,7 @@ void test_catastrophe(bool upgraded, int plays) {
 }
 
 void test_nostalgia(bool upgraded) {
-    assert(CardDef::get_cost(CardId::NOSTALGIA, upgraded) == 1);
+    assert(CardDef::get_cost(CardId::NOSTALGIA, upgraded) == (upgraded ? 0 : 1));
     CombatEngine combat = make_fight();
     combat.hand.push_back(DeckCard(CardId::NOSTALGIA, upgraded));
     combat.hand.push_back(DeckCard(CardId::STRIKE));
@@ -119,7 +119,7 @@ void test_metamorphosis(bool upgraded, int added) {
 }
 
 void test_distraction(bool upgraded) {
-    assert(CardDef::get_cost(CardId::DISTRACTION, upgraded) == 1);
+    assert(CardDef::get_cost(CardId::DISTRACTION, upgraded) == (upgraded ? 0 : 1));
     CombatEngine combat = make_fight();
     combat.hand.push_back(DeckCard(CardId::DISTRACTION, upgraded));
     assert(combat.play_card(0, 0));

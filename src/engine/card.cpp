@@ -474,7 +474,7 @@ static constexpr CardDef CARDS[] = {
     // Maul: an event card; each play raises the damage of every Maul copy for the combat.
     { CardId::MAUL, "Maul", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 5, 2, "Deal 5 dmg twice. ALL Maul cards gain 2 dmg this combat.", "Maul+", 1, 6, 2, "Deal 6 dmg twice. ALL Maul cards gain 3 dmg this combat." },
     // Apotheosis: an event card.
-    { CardId::APOTHEOSIS, "Apotheosis", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", "Apotheosis+", 2, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", KEYWORD_EXHAUST | KEYWORD_INNATE, KEYWORD_EXHAUST | KEYWORD_INNATE },
+    { CardId::APOTHEOSIS, "Apotheosis", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", "Apotheosis+", 1, 0, 0, "Innate. Upgrade ALL your cards. Exhaust.", KEYWORD_EXHAUST | KEYWORD_INNATE, KEYWORD_EXHAUST | KEYWORD_INNATE },
     // Wish: an event card. Retain only once upgraded.
     { CardId::WISH, "Wish", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Put a card from your draw pile into your hand. Exhaust.", "Wish+", 0, 0, 0, "Retain. Put a card from your draw pile into your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
     // Whistle: an event card that stuns the enemy.
@@ -514,7 +514,7 @@ static constexpr CardDef CARDS[] = {
     // Toric Toughness: an event skill; block now and at the start of the next 2 turns.
     { CardId::TORIC_TOUGHNESS, "Toric Toughness", 2, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 Block. Gain 5 Block at the start of the next 2 turns.", "Toric Toughness+", 2, 7, 0, "Gain 7 Block. Gain 7 Block at the start of the next 2 turns." },
     // Entrench: an event skill; doubles the block.
-    { CardId::ENTRENCH, "Entrench", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Double your Block.", "Entrench+", 2, 0, 0, "Double your Block." },
+    { CardId::ENTRENCH, "Entrench", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Double your Block.", "Entrench+", 1, 0, 0, "Double your Block." },
     // Stack: an event skill; block equals the discard pile size (+3 upgraded).
     { CardId::STACK, "Stack", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Gain block equal to the cards in your discard pile.", "Stack+", 1, 3, 0, "Gain block equal to the cards in your discard pile +3." },
     // Rip and Tear: an event attack; 7 damage to a random enemy twice.
@@ -522,7 +522,7 @@ static constexpr CardDef CARDS[] = {
     // Scrawl: a colorless rare skill that fills the hand. Retain only once upgraded.
     { CardId::SCRAWL, "Scrawl", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Draw cards until your hand is full. Exhaust.", "Scrawl+", 1, 0, 0, "Retain. Draw cards until your hand is full. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST | KEYWORD_RETAIN },
     // Mind Blast: a colorless innate attack; damage equals the draw pile size.
-    { CardId::MIND_BLAST, "Mind Blast", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 0, 0, "Innate. Deal damage equal to the cards in your draw pile.", "Mind Blast+", 1, 0, 0, "Innate. Deal damage equal to the cards in your draw pile.", KEYWORD_INNATE, KEYWORD_INNATE },
+    { CardId::MIND_BLAST, "Mind Blast", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 0, 0, "Innate. Deal damage equal to the cards in your draw pile.", "Mind Blast+", 0, 0, 0, "Innate. Deal damage equal to the cards in your draw pile.", KEYWORD_INNATE, KEYWORD_INNATE },
     // Batch F: colorless and event cards.
     { CardId::SHOCKWAVE, "Shockwave", 2, CardType::SKILL, TargetType::ALL_ENEMIES, 3, 0, "Apply 3 Weak and Vulnerable to ALL enemies. Exhaust.", "Shockwave+", 2, 5, 0, "Apply 5 Weak and Vulnerable to ALL enemies. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     { CardId::BOLAS, "Bolas", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 3, 0, "Deal 3 dmg. Returns to your hand next turn.", "Bolas+", 0, 4, 0, "Deal 4 dmg. Returns to your hand next turn.", KEYWORD_RETURN, KEYWORD_RETURN },
@@ -548,11 +548,11 @@ static constexpr CardDef CARDS[] = {
     // Batch H: cards that play cards, move cards between piles or hold the hand.
     { CardId::BEAT_DOWN, "Beat Down", 3, CardType::SKILL, TargetType::SELF, 3, 0, "Play 3 random Attacks from your discard pile.", "Beat Down+", 3, 4, 0, "Play 4 random Attacks from your discard pile." },
     { CardId::CATASTROPHE, "Catastrophe", 2, CardType::SKILL, TargetType::SELF, 2, 0, "Play 2 random cards from your draw pile.", "Catastrophe+", 2, 3, 0, "Play 3 random cards from your draw pile." },
-    { CardId::NOSTALGIA, "Nostalgia", 1, CardType::POWER, TargetType::SELF, 0, 0, "The first Attack or Skill you play each turn goes on top of your draw pile.", "Nostalgia+", 1, 0, 0, "The first Attack or Skill you play each turn goes on top of your draw pile." },
+    { CardId::NOSTALGIA, "Nostalgia", 1, CardType::POWER, TargetType::SELF, 0, 0, "The first Attack or Skill you play each turn goes on top of your draw pile.", "Nostalgia+", 0, 0, 0, "The first Attack or Skill you play each turn goes on top of your draw pile." },
     { CardId::RELAX, "Relax", 3, CardType::SKILL, TargetType::SELF, 16, 2, "Gain 16 Block. Next turn, draw 2 cards and gain 2 energy. Exhaust.", "Relax+", 3, 18, 3, "Gain 18 Block. Next turn, draw 3 cards and gain 3 energy. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     { CardId::NEOWS_FURY, "Neow's Fury", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 2, "Deal 10 dmg. Put up to 2 cards from your discard pile into your hand. Exhaust.", "Neow's Fury+", 1, 14, 3, "Deal 14 dmg. Put up to 3 cards from your discard pile into your hand. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     { CardId::METAMORPHOSIS, "Metamorphosis", 2, CardType::SKILL, TargetType::SELF, 3, 0, "Add 3 random Attacks to your draw pile. They cost 0 this combat. Exhaust.", "Metamorphosis+", 2, 5, 0, "Add 5 random Attacks to your draw pile. They cost 0 this combat. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
-    { CardId::DISTRACTION, "Distraction", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Add a random Skill to your hand. It costs 0 this turn. Exhaust.", "Distraction+", 1, 0, 0, "Add a random Skill to your hand. It costs 0 this turn. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::DISTRACTION, "Distraction", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Add a random Skill to your hand. It costs 0 this turn. Exhaust.", "Distraction+", 0, 0, 0, "Add a random Skill to your hand. It costs 0 this turn. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     { CardId::CALTROPS, "Caltrops", 1, CardType::POWER, TargetType::SELF, 3, 0, "Deal 3 dmg to the attacker whenever you are attacked.", "Caltrops+", 1, 5, 0, "Deal 5 dmg to the attacker whenever you are attacked." },
     { CardId::PROLONG, "Prolong", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Next turn, gain Block equal to your current Block. Exhaust.", "Prolong+", 0, 0, 0, "Next turn, gain Block equal to your current Block.", KEYWORD_EXHAUST, 0 },
     { CardId::SALVO, "Salvo", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 12, 0, "Deal 12 dmg. Retain your hand until next turn.", "Salvo+", 1, 16, 0, "Deal 16 dmg. Retain your hand until next turn." },
