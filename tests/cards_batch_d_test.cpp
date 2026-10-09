@@ -59,13 +59,13 @@ void test_toric_toughness(bool upgraded, int block) {
 }
 
 void test_entrench(bool upgraded) {
-    assert(CardDef::get_cost(CardId::ENTRENCH, upgraded) == 2);
+    assert(CardDef::get_cost(CardId::ENTRENCH, upgraded) == (upgraded ? 1 : 2));
     CombatEngine combat = make_fight();
     combat.player.block = 7;
     combat.hand.push_back(DeckCard(CardId::ENTRENCH, upgraded));
     assert(combat.play_card(0, 0));
     assert(combat.player.block == 14);
-    assert(combat.player.energy == 1);
+    assert(combat.player.energy == (upgraded ? 2 : 1));
 }
 
 } // namespace
