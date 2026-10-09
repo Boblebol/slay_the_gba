@@ -106,8 +106,11 @@ enum class DelayedType : uint8_t {
     SUMMON,            // start of turn
     CHANNEL_LIGHTNING, // start of turn
     DAMAGE_ALL,        // end of turn: damage to every enemy, not modified by Strength (countdown cards)
-    PICK_FROM_DRAW     // start of turn, once the hand is drawn: `amount` cards of the draw pile, picked, go to the hand
+    PICK_FROM_DRAW,    // start of turn, once the hand is drawn: `amount` cards of the draw pile, picked, go to the hand
+    COPIES_TO_HAND     // start of turn: NIGHTMARE_COPIES copies of a card to the hand; `amount` = card id * 2 + upgraded
 };
+
+constexpr uint8_t NIGHTMARE_COPIES = 3;
 
 struct DelayedEffect {
     DelayedType type = DelayedType::ENERGY;
@@ -136,7 +139,12 @@ enum class ChoiceKind : uint8_t {
     TO_HAND,      // from the draw or the discard pile; a card stays where it is when the hand is full
     UPGRADE,      // for the rest of the combat
     MAKE_ETHEREAL, // the copy gains Ethereal
-    MAKE_RETAIN   // the copy gains Retain
+    MAKE_RETAIN,  // the copy gains Retain
+    // The picked hand card stays; `amount` copies of it are made (CardChoice::amount):
+    COPY_ATTACK_OR_POWER, // to the hand, only an Attack or a Power can be picked (Dual Wield)
+    COPY_COLORLESS,       // to the hand, only a Colorless card can be picked (Heirloom Hammer)
+    COPY_NEXT_TURN,       // to the hand at the start of the next turn (Nightmare)
+    PLAY_REPEATED         // the picked hand card is played `amount` times, then goes where it goes (Decisions, Decisions)
 };
 
 // What follows once the cards are picked: the part of a card's text that comes after its choice.

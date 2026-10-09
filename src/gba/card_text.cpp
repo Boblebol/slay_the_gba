@@ -782,6 +782,32 @@ bn::string_view base_name(engine::CardId id)
         return "Calamité";
     case engine::CardId::AUTOMATION:
         return "Automatisation";
+    case engine::CardId::ENLIGHTENMENT:
+        return "Illumination";
+    case engine::CardId::DUAL_WIELD:
+        return "Ambidextrie";
+    case engine::CardId::CALL_OF_THE_VOID:
+        return "Appel du néant";
+    case engine::CardId::HEIRLOOM_HAMMER:
+        return "Marteau d'héritage";
+    case engine::CardId::BUNDLE_OF_JOY:
+        return "Cadeau joyeux";
+    case engine::CardId::SPECTRUM_SHIFT:
+        return "Spectre visible";
+    case engine::CardId::DECISIONS_DECISIONS:
+        return "Grandes décisions";
+    case engine::CardId::WHITE_NOISE:
+        return "Bruit blanc";
+    case engine::CardId::CREATIVE_AI:
+        return "IA créative";
+    case engine::CardId::NIGHTMARE:
+        return "Cauchemar";
+    case engine::CardId::TOOLS_OF_THE_TRADE:
+        return "Savoir-faire";
+    case engine::CardId::INFERNAL_BLADE:
+        return "Lame infernale";
+    case engine::CardId::STOKE:
+        return "Attiser les flammes";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1464,6 +1490,45 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::AUTOMATION:
         stream << "Par 10 cartes piochées : +1 én.";
+        break;
+    case engine::CardId::ENLIGHTENMENT:
+        stream << "Main : coût max 1 " << (card.upgraded ? "ce combat" : "ce tour") << ". Épuis.";
+        break;
+    case engine::CardId::DUAL_WIELD:
+        stream << "Attaque/Pouvoir de la Main : +" << value << (card.upgraded ? " copies." : " copie.");
+        break;
+    case engine::CardId::CALL_OF_THE_VOID:
+        stream << (card.upgraded ? "Inné. " : "") << "Début de tour : +1 carte Éthérée.";
+        break;
+    case engine::CardId::HEIRLOOM_HAMMER:
+        stream << "Inflige " << value << " dégâts. Copie 1 Incolore.";
+        break;
+    case engine::CardId::BUNDLE_OF_JOY:
+        stream << "+" << value << " cartes Incolores en main. Épuis.";
+        break;
+    case engine::CardId::SPECTRUM_SHIFT:
+        stream << "Début de tour : +1 carte Incolore.";
+        break;
+    case engine::CardId::DECISIONS_DECISIONS:
+        stream << "Pioche " << value << ". Joue 3x 1 Compétence. Épuis.";
+        break;
+    case engine::CardId::WHITE_NOISE:
+        stream << "+1 Pouvoir gratuit ce tour. Épuis.";
+        break;
+    case engine::CardId::CREATIVE_AI:
+        stream << "Début de tour : +1 Pouvoir en main.";
+        break;
+    case engine::CardId::NIGHTMARE:
+        stream << "1 carte : 3 copies au tour suivant.";
+        break;
+    case engine::CardId::TOOLS_OF_THE_TRADE:
+        stream << "Début de tour : pioche 1, défausse 1.";
+        break;
+    case engine::CardId::INFERNAL_BLADE:
+        stream << "+1 Attaque gratuite ce tour. Épuis.";
+        break;
+    case engine::CardId::STOKE:
+        stream << "Épuise la Main. +1 carte" << (card.upgraded ? "+" : "") << " par carte.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:

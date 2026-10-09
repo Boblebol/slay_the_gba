@@ -1713,6 +1713,16 @@ void CombatScene::_refresh_choice_banner()
     case engine::ChoiceKind::MAKE_RETAIN:
         stream << "Retenue";
         break;
+    case engine::ChoiceKind::COPY_ATTACK_OR_POWER:
+    case engine::ChoiceKind::COPY_COLORLESS:
+        stream << "Copie";
+        break;
+    case engine::ChoiceKind::COPY_NEXT_TURN:
+        stream << "Copie au prochain tour";
+        break;
+    case engine::ChoiceKind::PLAY_REPEATED:
+        stream << "Joue " << int(choice.amount) << " fois";
+        break;
     default:
         stream << "Rends Éthérée";
         break;

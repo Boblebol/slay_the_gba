@@ -572,6 +572,20 @@ enum class CardId : uint16_t {
     STRATAGEM,
     CALAMITY,
     AUTOMATION,
+    // Batch J: cards that copy, replay or create cards, and Powers that add cards each turn
+    ENLIGHTENMENT,
+    DUAL_WIELD,
+    CALL_OF_THE_VOID,
+    HEIRLOOM_HAMMER,
+    BUNDLE_OF_JOY,
+    SPECTRUM_SHIFT,
+    DECISIONS_DECISIONS,
+    WHITE_NOISE,
+    CREATIVE_AI,
+    NIGHTMARE,
+    TOOLS_OF_THE_TRADE,
+    INFERNAL_BLADE,
+    STOKE,
     COUNT
 };
 
@@ -599,6 +613,7 @@ struct DeckCard {
     uint8_t added_keywords = 0; // CardKeyword bits (the low eight) given to this copy during the combat, on top of its CardDef
     int8_t cost_delta = 0;      // energy cost change of this copy for the combat (Momentum Strike, Modded)
     bool free_this_turn = false; // this copy costs 0 until the end of the turn (Bullet Time)
+    bool cost_one_this_turn = false; // this copy costs at most 1 until the end of the turn (Enlightenment)
     uint8_t deck_index = NOT_IN_DECK; // position of the card in the run's deck, for the gains that outlive the combat
     Enchantment enchantment = Enchantment::NONE;
 

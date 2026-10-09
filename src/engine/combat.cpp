@@ -733,6 +733,31 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 }
             }
             break;
+        case PowerId::CALL_OF_THE_VOID:
+            if (turn_start) {
+                for (int16_t copy = 0; copy < power.amount; ++copy) {
+                    const CardId id = random_card();
+                    if (id == CardId::NONE) break;
+                    DeckCard card(id);
+                    card.added_keywords |= KEYWORD_ETHEREAL;
+                    create_card(card, Pile::HAND);
+                }
+            }
+            break;
+        case PowerId::SPECTRUM_SHIFT:
+            if (turn_start) {
+                for (int16_t copy = 0; copy < power.amount; ++copy) {
+                    create_random_card(CardFilter(CardPool::COLORLESS), Pile::HAND);
+                }
+            }
+            break;
+        case PowerId::CREATIVE_AI:
+            if (turn_start) {
+                for (int16_t copy = 0; copy < power.amount; ++copy) {
+                    create_random_card(CardFilter(CardType::POWER), Pile::HAND);
+                }
+            }
+            break;
         case PowerId::AUTOMATION:
             if (event == CombatEvent::CARD_DRAWN) {
                 power.counter = static_cast<uint8_t>(power.counter + 1);
@@ -1510,6 +1535,11 @@ int CombatEngine::run_delayed_effects(bool end_of_turn) {
             case DelayedType::PICK_FROM_DRAW:
                 turn_picks_from_draw_ = bump(turn_picks_from_draw_, effect.amount);
                 break;
+            case DelayedType::COPIES_TO_HAND:
+                for (uint8_t copy = 0; copy < NIGHTMARE_COPIES; ++copy) {
+                    create_card(DeckCard(static_cast<CardId>(effect.amount / 2), (effect.amount % 2) != 0), Pile::HAND);
+                }
+                break;
         }
         if (--effect.repeat == 0) {
             delayed_effects.erase(i);
@@ -1694,6 +1724,13 @@ void CombatEngine::start_player_turn() {
         ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, turn_picks_from_draw_);
         turn_picks_from_draw_ = 0;
     }
+    // Tools of the Trade: once the hand is drawn, draw then discard.
+    if (int16_t tools = power_amount(PowerId::TOOLS_OF_THE_TRADE); tools > 0) {
+        draw_cards(tools);
+        CardChoice choice;
+        choice.count = static_cast<uint8_t>(tools);
+        ask_choice(choice);
+    }
     // Tyranny: one card of the new hand is exhausted for each card it drew.
     if (int16_t tyranny = power_amount(PowerId::TYRANNY); tyranny > 0) {
         CardChoice choice;
@@ -1800,6 +1837,7 @@ int CombatEngine::effective_cost(const DeckCard& card) const {
     }
     cost += power_amount(PowerId::SURCHARGE);
     if (CardDef::get(card.id).type == CardType::ATTACK) cost += power_amount(PowerId::TANGLED);
+    if (card.cost_one_this_turn) cost = std::min(cost, 1);
     return std::clamp(cost, 0, 99);
 }
 
@@ -1984,6 +2022,7 @@ void CombatEngine::place_played_card(const DeckCard& card, AfterPlay after_play)
     // Where it goes is decided by the card as it was played; Razor Tooth upgrades the copy that comes back.
     DeckCard kept_card = card;
     kept_card.free_this_turn = false;
+    kept_card.cost_one_this_turn = false;
     if (has_power(PowerId::RAZOR_TOOTH)) kept_card.upgraded = true;
     const bool corrupted = played_type == CardType::SKILL && has_power(PowerId::CORRUPTION);
     if (CardDef::has_keyword(card, KEYWORD_EXHAUST) || after_play == AfterPlay::EXHAUST || corrupted) {
@@ -2033,6 +2072,10 @@ bool CombatEngine::can_be_picked(const DeckCard& card, ChoiceKind kind) const {
             return !CardDef::has_keyword(card, KEYWORD_ETHEREAL);
         case ChoiceKind::MAKE_RETAIN:
             return !CardDef::has_keyword(card, KEYWORD_RETAIN);
+        case ChoiceKind::COPY_ATTACK_OR_POWER:
+            return CardDef::get(card.id).type == CardType::ATTACK || CardDef::get(card.id).type == CardType::POWER;
+        case ChoiceKind::COPY_COLORLESS:
+            return card_meta(card.id).pool == CardPool::COLORLESS;
         default:
             return true;
     }
@@ -2134,6 +2177,31 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                 case ChoiceKind::MAKE_RETAIN:
                     hand[index].added_keywords |= KEYWORD_RETAIN;
                     break;
+                case ChoiceKind::COPY_ATTACK_OR_POWER:
+                case ChoiceKind::COPY_COLORLESS: {
+                    DeckCard copy = hand[index];
+                    copy.free_this_turn = false;
+                    copy.cost_one_this_turn = false;
+                    copy.deck_index = NOT_IN_DECK; // a gain on the copy does not reach the deck
+                    for (uint8_t made = 0; made < choice.amount; ++made) create_card(copy, Pile::HAND);
+                    break;
+                }
+                case ChoiceKind::COPY_NEXT_TURN:
+                    schedule(DelayedType::COPIES_TO_HAND,
+                             static_cast<int16_t>(static_cast<int>(hand[index].id) * 2 + (hand[index].upgraded ? 1 : 0)));
+                    break;
+                case ChoiceKind::PLAY_REPEATED: {
+                    DeckCard card = hand[index];
+                    hand.erase(index);
+                    // Every play but the last leaves the card out of the piles; the last one sends it where it goes.
+                    bool placed = false;
+                    for (uint8_t play = 0; play < choice.amount && has_alive_enemies(); ++play) {
+                        placed = play + 1 == choice.amount;
+                        autoplay(card, -1, placed ? AfterPlay::DISCARD : AfterPlay::NOWHERE);
+                    }
+                    if (!placed) discard_pile.push_back(card);
+                    break;
+                }
                 case ChoiceKind::TO_HAND:
                     break;
             }
@@ -3373,6 +3441,81 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::AUTOMATION: {
             add_power(PowerId::AUTOMATION, 1);
             set_log(upgraded ? "Played Automation+!"sv : "Played Automation!"sv);
+            break;
+        }
+        case CardId::ENLIGHTENMENT: {
+            for (DeckCard& held : hand) {
+                if (!upgraded) {
+                    held.cost_one_this_turn = true;
+                    continue;
+                }
+                // For the combat: the copy's own cost change brings it down to 1.
+                const int cost = effective_cost(held);
+                if (cost != COST_X && cost > 1) held.cost_delta = static_cast<int8_t>(held.cost_delta - (cost - 1));
+            }
+            set_log(upgraded ? "Played Enlightenment+!"sv : "Played Enlightenment!"sv);
+            break;
+        }
+        case CardId::DUAL_WIELD:
+        case CardId::HEIRLOOM_HAMMER:
+        case CardId::NIGHTMARE: {
+            if (played_card.id == CardId::HEIRLOOM_HAMMER) hit(current_target, base_value);
+            CardChoice choice;
+            choice.kind = played_card.id == CardId::DUAL_WIELD    ? ChoiceKind::COPY_ATTACK_OR_POWER
+                          : played_card.id == CardId::NIGHTMARE ? ChoiceKind::COPY_NEXT_TURN
+                                                                : ChoiceKind::COPY_COLORLESS;
+            choice.amount = played_card.id == CardId::DUAL_WIELD ? base_value : 1;
+            ask_choice(choice);
+            set_log(upgraded ? "Played a copying card+!"sv : "Played a copying card!"sv);
+            break;
+        }
+        case CardId::BUNDLE_OF_JOY: {
+            for (uint8_t made = 0; made < base_value; ++made) {
+                create_random_card(CardFilter(CardPool::COLORLESS), Pile::HAND);
+            }
+            set_log(upgraded ? "Played Bundle of Joy+!"sv : "Played Bundle of Joy!"sv);
+            break;
+        }
+        case CardId::CALL_OF_THE_VOID:
+        case CardId::SPECTRUM_SHIFT:
+        case CardId::CREATIVE_AI:
+        case CardId::TOOLS_OF_THE_TRADE: {
+            const PowerId power = played_card.id == CardId::CALL_OF_THE_VOID ? PowerId::CALL_OF_THE_VOID
+                                  : played_card.id == CardId::SPECTRUM_SHIFT ? PowerId::SPECTRUM_SHIFT
+                                  : played_card.id == CardId::CREATIVE_AI    ? PowerId::CREATIVE_AI
+                                                                             : PowerId::TOOLS_OF_THE_TRADE;
+            add_power(power, 1);
+            set_log(upgraded ? "Played a Power+!"sv : "Played a Power!"sv);
+            break;
+        }
+        case CardId::DECISIONS_DECISIONS: {
+            draw_cards(base_value);
+            CardChoice choice;
+            choice.kind = ChoiceKind::PLAY_REPEATED;
+            choice.any_type = false;
+            choice.type = CardType::SKILL;
+            choice.amount = secondary_value;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Decisions, Decisions+!"sv : "Played Decisions, Decisions!"sv);
+            break;
+        }
+        case CardId::WHITE_NOISE:
+        case CardId::INFERNAL_BLADE: {
+            const CardId made = random_card(CardFilter(played_card.id == CardId::WHITE_NOISE ? CardType::POWER : CardType::ATTACK));
+            if (made != CardId::NONE) {
+                DeckCard copy(made);
+                copy.free_this_turn = true;
+                create_card(copy, Pile::HAND);
+            }
+            set_log(upgraded ? "Played a card maker+!"sv : "Played a card maker!"sv);
+            break;
+        }
+        case CardId::STOKE: {
+            // Only the cards held now burn: a card an exhaustion draws (Dark Embrace) lands above them and stays.
+            const size_t burnt = hand.size();
+            for (size_t i = burnt; i-- > 0;) exhaust_from_hand(i);
+            for (size_t made = 0; made < burnt; ++made) create_random_card(CardFilter(), Pile::HAND, upgraded);
+            set_log(upgraded ? "Played Stoke+!"sv : "Played Stoke!"sv);
             break;
         }
         case CardId::BYRD_SWOOP: {
@@ -5371,7 +5514,10 @@ void CombatEngine::end_player_turn() {
     // So are the choices of the cards that just played themselves.
     while (choice_pending()) resolve_choice_default();
     if (state != CombatState::PLAYER_TURN) return;
-    for (DeckCard& card : hand) card.free_this_turn = false;
+    for (DeckCard& card : hand) {
+        card.free_this_turn = false;
+        card.cost_one_this_turn = false;
+    }
 
     // Cards that hurt while they are still in hand (Burn, curses).
     for (size_t i = 0; i < hand.size() && player.is_alive(); ++i) trigger_end_of_turn_in_hand(hand[i]);
