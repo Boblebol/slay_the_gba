@@ -59,6 +59,8 @@ constexpr int ENEMY_TURN_LEAD = 14;
 constexpr int ENEMY_STEP = 30;
 constexpr int ENEMY_STEP_IMPACT = 9;
 constexpr int DEATH_FRAMES = 32;
+// Whispering Earring: frames Vakuu waits before each card he plays, and before he ends the turn.
+constexpr int VAKUU_DELAY = 24;
 
 struct Point
 {
@@ -212,6 +214,9 @@ private:
 
     Phase _phase = Phase::INTRO;
     int _timer = 0;
+    // Whispering Earring: frames since Vakuu's last card, and whether his turn has been announced.
+    int _vakuu_timer = 0;
+    bool _vakuu_announced = false;
     int _selected = 0;
     int _target = 0;
     int _player_hurt = 0;
@@ -264,6 +269,7 @@ private:
 
     void _update_intro();
     void _update_player_input();
+    void _update_vakuu_turn();
     void _update_target_input();
     void _open_belt();
     void _close_belt();
@@ -503,7 +509,8 @@ void CombatScene::_layout_hand()
     }
 
     bool choosing = _phase == Phase::CHOICE;
-    bool interactive = _phase == Phase::PLAYER || _phase == Phase::TARGET || choosing;
+    // While Vakuu plays, no card is under the player's cursor.
+    bool interactive = (_phase == Phase::PLAYER && ! _combat.vakuu_turn_active) || _phase == Phase::TARGET || choosing;
     int spacing = count > 1 ? bn::min(27, 196 / (count - 1)) : 0;
     int start = -((count - 1) * spacing) / 2;
 
@@ -618,6 +625,15 @@ void CombatScene::_refresh_card_text()
     if(_phase == Phase::END_BANNER || _phase == Phase::INTRO)
     {
         _line1.clear();
+        _line1_right.clear();
+        _line2.clear();
+        _selected_shown = -1;
+        return;
+    }
+
+    if(_combat.vakuu_turn_active)
+    {
+        _line1.set(-112, LINE1_Y, "Vakuu joue votre tour...", Align::LEFT, TextColor::PURPLE);
         _line1_right.clear();
         _line2.clear();
         _selected_shown = -1;
@@ -799,7 +815,7 @@ void CombatScene::_refresh_hud()
         _player_status.set(status_line_x(PLAYER_X, status), STATUS_Y, status, Align::CENTER, TextColor::PURPLE);
     }
 
-    bool interactive = _phase == Phase::PLAYER;
+    bool interactive = _phase == Phase::PLAYER && ! _combat.vakuu_turn_active;
     // Key reminders on the right of line 1. With a potion in the belt, its key joins the START one when the card
     // name leaves room for both.
     constexpr bn::string_view REMINDER = "START : fin du tour";
@@ -1305,6 +1321,53 @@ void CombatScene::_update_player_input()
             _start_card(_combat.get_first_alive_enemy_index());
         }
     }
+}
+
+// Whispering Earring: Vakuu plays the first turn. The keys are not read; after a short wait the card the
+// engine names flies like one the player picked, and when none is left the turn ends the usual way.
+void CombatScene::_update_vakuu_turn()
+{
+    if(! _vakuu_announced)
+    {
+        _vakuu_announced = true;
+        _set_banner("Vakuu joue...", TextColor::PURPLE);
+    }
+
+    ++_vakuu_timer;
+
+    if(_vakuu_timer < VAKUU_DELAY)
+    {
+        return;
+    }
+
+    _vakuu_timer = 0;
+
+    // A choice asked at the start of the turn is answered by the engine before it names a card.
+    bool settled = _combat.choice_pending();
+    _snapshot();
+    int index = _combat.vakuu_next_card();
+
+    if(settled)
+    {
+        _resolve_diffs(false);
+    }
+
+    if(settled || _hand.size() != int(_combat.hand.size()))
+    {
+        _build_hand(false);
+        _selected_shown = -1;
+    }
+
+    if(index < 0 || index >= _hand.size())
+    {
+        play_sfx(Sfx::DISCARD);
+        _start_enemy_turn();
+        return;
+    }
+
+    _selected = index;
+    _target = bn::max(0, _combat.get_first_alive_enemy_index());
+    _start_card(_target);
 }
 
 void CombatScene::_update_target_input()
@@ -1960,8 +2023,16 @@ void CombatScene::_update_card_flight()
         _flying_card.reset();
         _snapshot();
 
-        // The view was removed from the hand; the engine plays the same index.
-        _combat.play_card(_flying_hand_index, _flying_target);
+        // The view was removed from the hand; the engine plays the same index. On Vakuu's turn the engine
+        // plays the card it named, the one that is flying, and counts it.
+        if(_combat.vakuu_turn_active)
+        {
+            _combat.vakuu_step();
+        }
+        else
+        {
+            _combat.play_card(_flying_hand_index, _flying_target);
+        }
         _resolve_diffs(attack);
 
         // Re-sync the hand views with the engine (some cards add, discard or change cards).
@@ -2538,6 +2609,12 @@ bn::optional<SceneId> CombatScene::update()
         _update_intro();
         break;
     case Phase::PLAYER:
+        if(_combat.vakuu_turn_active)
+        {
+            _update_vakuu_turn();
+            break;
+        }
+
         // The engine waits for cards to be picked: after a card, at the start of a turn or of the combat.
         if(_combat.choice_pending())
         {

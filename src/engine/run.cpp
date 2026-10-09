@@ -927,6 +927,11 @@ void RunManager::register_relic_powers() {
         for (int copy = 0; copy < 3; ++copy) combat.create_card(CardId::DAZED, Pile::DRAW);
     }
     if (has_relic("BLOOD_SOAKED_ROSE")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Whispering Earring: one more energy each turn, and Vakuu plays the first turn of the combat.
+    if (has_relic("WHISPERING_EARRING")) {
+        combat.add_power(PowerId::TURN_ENERGY, 1);
+        combat.add_power(PowerId::WHISPERING_EARRING, 1);
+    }
     // Start of turn
     if (has_relic("CAPTAINS_WHEEL")) combat.add_power(PowerId::CAPTAINS_WHEEL, 18);
     if (has_relic("HORN_CLEAT")) combat.add_power(PowerId::HORN_CLEAT, 14);

@@ -1633,6 +1633,8 @@ void CombatEngine::reset_combat_state() {
     end_turn_requested = false;
     event_depth_ = 0;
     autoplay_depth_ = 0;
+    vakuu_turn_active = false;
+    vakuu_plays_ = 0;
     temp_strength = 0;
     temp_dexterity = 0;
     temp_focus = 0;
@@ -1662,6 +1664,9 @@ void CombatEngine::begin_first_turn() {
         if (!draw_card()) break;
     }
     counters.start_turn();
+    // Whispering Earring: this turn is Vakuu's.
+    vakuu_plays_ = 0;
+    vakuu_turn_active = has_power(PowerId::WHISPERING_EARRING) && state == CombatState::PLAYER_TURN;
 }
 
 void CombatEngine::start_player_turn() {
@@ -1922,6 +1927,78 @@ void CombatEngine::autoplay(DeckCard card, int target_index, AfterPlay destinati
     if (destination != AfterPlay::DISCARD) after_play = destination;
     place_played_card(card, after_play);
     --autoplay_depth_;
+}
+
+bool CombatEngine::opens_choice(const DeckCard& card) {
+    switch (card.id) {
+        case CardId::SURVIVOR:
+        case CardId::NEOWS_FURY:
+        case CardId::THINKING_AHEAD:
+        case CardId::PURITY:
+        case CardId::SECRET_TECHNIQUE:
+        case CardId::SECRET_WEAPON:
+        case CardId::DUAL_WIELD:
+        case CardId::HEIRLOOM_HAMMER:
+        case CardId::NIGHTMARE:
+        case CardId::DECISIONS_DECISIONS:
+        case CardId::BRAND:
+        case CardId::BURNING_PACT:
+        case CardId::ACROBATICS:
+        case CardId::DAGGER_THROW:
+        case CardId::PREPARED:
+        case CardId::HIDDEN_DAGGERS:
+        case CardId::SCAVENGE:
+        case CardId::PHOTON_CUT:
+        case CardId::GLIMMER:
+        case CardId::SCULPTING_STRIKE:
+        case CardId::HEADBUTT:
+        case CardId::WISH:
+        case CardId::HOLOGRAM:
+        case CardId::COSMIC_INDIFFERENCE:
+        case CardId::GRAVEBLAST:
+        case CardId::DREDGE:
+        case CardId::CLEANSE:
+        case CardId::SNAP:
+            return true;
+        // True Grit picks at random until it is upgraded; Armaments upgrades the whole hand once it is.
+        case CardId::TRUE_GRIT:
+            return card.upgraded;
+        case CardId::ARMAMENTS:
+            return !card.upgraded;
+        default:
+            return false;
+    }
+}
+
+int CombatEngine::vakuu_next_card() {
+    if (!vakuu_turn_active || state != CombatState::PLAYER_TURN) return -1;
+    while (choice_pending()) resolve_choice_default();
+    if (state != CombatState::PLAYER_TURN || vakuu_plays_ >= VAKUU_MAX_PLAYS) return -1;
+
+    for (size_t i = 0; i < hand.size(); ++i) {
+        const DeckCard& card = hand[i];
+        if (opens_choice(card) || !can_play_card(static_cast<int>(i))) continue;
+        // An X card with nothing to spend would be played for nothing.
+        if (CardDef::is_x_cost(card.id, card.upgraded) && player.energy <= 0) continue;
+        if (CardDef::get_star_cost(card.id, card.upgraded) == COST_X && player.sovereign_stars == 0) continue;
+        return static_cast<int>(i);
+    }
+    return -1;
+}
+
+bool CombatEngine::vakuu_step() {
+    const int index = vakuu_next_card();
+    if (index < 0) return false;
+    ++vakuu_plays_;
+    return play_card(index, get_first_alive_enemy_index());
+}
+
+int CombatEngine::vakuu_play_turn() {
+    if (!vakuu_turn_active) return 0;
+    int played = 0;
+    while (vakuu_step()) ++played;
+    end_player_turn();
+    return played;
 }
 
 void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target, int x_value, uint8_t energy_paid,
@@ -5493,6 +5570,7 @@ void CombatEngine::trigger_end_of_turn_in_hand(const DeckCard& card) {
 }
 
 void CombatEngine::end_player_turn() {
+    vakuu_turn_active = false;
     if (state != CombatState::PLAYER_TURN) return;
     // A choice left unanswered is answered for the player.
     while (choice_pending()) resolve_choice_default();
