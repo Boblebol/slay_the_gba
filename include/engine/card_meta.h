@@ -477,6 +477,19 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // STRATAGEM
     { CardRarity::RARE, CardPool::COLORLESS }, // CALAMITY
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // AUTOMATION
+    { CardRarity::EVENT, CardPool::EVENT }, // ENLIGHTENMENT
+    { CardRarity::EVENT, CardPool::EVENT }, // DUAL_WIELD
+    { CardRarity::RARE, CardPool::NECROBINDER }, // CALL_OF_THE_VOID
+    { CardRarity::RARE, CardPool::REGENT }, // HEIRLOOM_HAMMER
+    { CardRarity::RARE, CardPool::REGENT }, // BUNDLE_OF_JOY
+    { CardRarity::UNCOMMON, CardPool::REGENT }, // SPECTRUM_SHIFT
+    { CardRarity::RARE, CardPool::REGENT }, // DECISIONS_DECISIONS
+    { CardRarity::UNCOMMON, CardPool::DEFECT }, // WHITE_NOISE
+    { CardRarity::RARE, CardPool::DEFECT }, // CREATIVE_AI
+    { CardRarity::RARE, CardPool::SILENT }, // NIGHTMARE
+    { CardRarity::RARE, CardPool::SILENT }, // TOOLS_OF_THE_TRADE
+    { CardRarity::UNCOMMON, CardPool::IRONCLAD }, // INFERNAL_BLADE
+    { CardRarity::RARE, CardPool::IRONCLAD }, // STOKE
 };
 
 } // namespace engine

@@ -195,7 +195,12 @@ enum class PowerId : uint8_t {
     PREP_TIME,         // start of turn: `amount` Vigor
     STRATAGEM,         // draw pile shuffled: pick `amount` cards of it for the hand
     CALAMITY,          // Attack played: `amount` random Attacks to the hand
-    AUTOMATION         // every AUTOMATION_CARDS cards drawn: `amount` energy (counter = cards drawn so far)
+    AUTOMATION,        // every AUTOMATION_CARDS cards drawn: `amount` energy (counter = cards drawn so far)
+    // Hero cards (appended)
+    CALL_OF_THE_VOID,  // start of turn: `amount` random cards to the hand, made Ethereal
+    SPECTRUM_SHIFT,    // start of turn: `amount` random Colorless cards to the hand
+    CREATIVE_AI,       // start of turn: `amount` random Powers to the hand
+    TOOLS_OF_THE_TRADE // once the hand is drawn: draw `amount` cards, then discard `amount` cards
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
