@@ -18,6 +18,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR",
+    "COSMIC_CONCOCTION",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -695,6 +696,23 @@ void test_duplicator() {
     std::cout << "[PASS] Duplicator: next card this turn is played an extra time" << std::endl;
 }
 
+void test_cosmic_concoction() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    const size_t before = combat.hand.size();
+    const size_t draw_before = combat.draw_pile.size();
+    assert(combat.use_potion("COSMIC_CONCOCTION"));
+    assert(std::string_view(combat.combat_log) == "Cosmic Concoction!");
+    assert(combat.hand.size() == before + 3);
+    assert(combat.draw_pile.size() == draw_before);
+    for (size_t index = before; index < combat.hand.size(); ++index) {
+        assert(combat.hand[index].upgraded);
+        assert(card_meta(combat.hand[index].id).pool == CardPool::COLORLESS);
+    }
+    assert(combat.player.energy == combat.player.max_energy);
+
+    std::cout << "[PASS] Cosmic Concoction: 3 upgraded Colorless cards added to the hand" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -766,6 +784,7 @@ int main() {
     test_gamblers_brew();
     test_powdered_demise();
     test_duplicator();
+    test_cosmic_concoction();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;
