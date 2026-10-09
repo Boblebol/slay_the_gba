@@ -1296,7 +1296,7 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Énergie +" << value << ". Épuisement.";
         break;
     case engine::CardId::WISH:
-        stream << (card.upgraded ? "Retenue. " : "") << "Pioche vers main. Épuisement.";
+        stream << (card.upgraded ? "Retenue. 1 carte Pioche vers main. Épuis." : "1 carte Pioche vers main. Épuisement.");
         break;
     case engine::CardId::DOUBLE_ENERGY:
         stream << "Double votre énergie. Épuisement.";
@@ -1314,10 +1314,10 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << (card.upgraded ? "" : "Éthéré. ") << "Intangible " << value << ". Épuisement.";
         break;
     case engine::CardId::MAUL:
-        stream << "Inflige " << value << " dégâts " << secondary << " fois. Mutilation +" << (card.upgraded ? "3" : "2") << ".";
+        stream << "Inflige " << value << " dégâts " << secondary << " fois. Mutilations +" << (card.upgraded ? "3" : "2") << ".";
         break;
     case engine::CardId::APOTHEOSIS:
-        stream << "Inné. Améliore TOUT. Épuisement.";
+        stream << "Inné. Améliore toutes vos cartes. Épuis.";
         break;
     case engine::CardId::WHISTLE:
         stream << "Inflige " << value << " dégâts. Étourdit. Épuisement.";
@@ -1341,7 +1341,7 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Force +" << value << " ce tour.";
         break;
     case engine::CardId::OUTMANEUVER:
-        stream << "Prochain tour : énergie +" << value << ".";
+        stream << "Tour suivant : Énergie +" << value << ".";
         break;
     case engine::CardId::TORIC_TOUGHNESS:
         stream << "Armure +" << value << ", puis +" << value << " aux 2 tours suivants.";
@@ -1350,29 +1350,29 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Double l'Armure.";
         break;
     case engine::CardId::STACK:
-        stream << "Armure = Défausse" << (card.upgraded ? " +3." : ".");
+        stream << "Armure = cartes en Défausse" << (card.upgraded ? " +3." : ".");
         break;
     case engine::CardId::RIP_AND_TEAR:
         stream << "Inflige " << value << " dégâts au hasard, " << secondary << " fois.";
         break;
     case engine::CardId::SCRAWL:
-        stream << (card.upgraded ? "Retenue. " : "") << "Pioche (main pleine). Épuisement.";
+        stream << (card.upgraded ? "Retenue. " : "") << "Remplit la main (pioche). " << (card.upgraded ? "Épuis." : "Épuisement.");
         break;
     case engine::CardId::MIND_BLAST:
-        stream << "Inné. Dégâts = cartes en Pioche.";
+        stream << "Inné. Inflige 1 dégât par carte en Pioche.";
         break;
     case engine::CardId::SHOCKWAVE:
         stream << "Affaibli et Vulnérable " << value << " à TOUS. Épuis.";
         break;
     case engine::CardId::BOLAS:
     case engine::CardId::THRUMMING_HATCHET:
-        stream << "Inflige " << value << " dégâts. Revient plus tard.";
+        stream << "Inflige " << value << ". Revient au tour suivant.";
         break;
     case engine::CardId::IMPATIENCE:
         stream << "Sans Attaque en main : pioche " << secondary << ".";
         break;
     case engine::CardId::CLASH:
-        stream << "Main d'Attaques seules. Inflige " << value << " dégâts.";
+        stream << "Jouable si Main d'Attaques : " << value << " dégâts.";
         break;
     case engine::CardId::VOLLEY:
         stream << "Inflige " << value << " dégâts au hasard, X fois.";
@@ -1384,13 +1384,13 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Retenue. Main vide : pioche " << secondary << ", énergie +" << secondary << ".";
         break;
     case engine::CardId::ETERNAL_ARMOR:
-        stream << "Gagnez " << value << " de Blindage.";
+        stream << "Gagne " << value << " de Blindage.";
         break;
     case engine::CardId::FASTEN:
         stream << "Défense : Armure +" << value << ".";
         break;
     case engine::CardId::REBOUND:
-        stream << "Inflige " << value << " dégâts. Suivante en Pioche.";
+        stream << "Inflige " << value << ". Prochaine carte sur la Pioche.";
         break;
     case engine::CardId::PANIC_BUTTON:
         stream << "Armure +" << value << ". Pas d'Armure 2 tours. Épuis.";
@@ -1411,13 +1411,13 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Dans 3 tours : " << value << " dégâts à TOUS.";
         break;
     case engine::CardId::ROLLING_BOULDER:
-        stream << value << " dégâts à TOUS par tour, +5.";
+        stream << "Début de tour : " << value << " dégâts à TOUS, +5.";
         break;
     case engine::CardId::PANACHE:
         stream << "Toutes les 5 cartes : " << value << " dégâts à TOUS.";
         break;
     case engine::CardId::JACKPOT:
-        stream << "Inflige " << value << " dégâts. +" << secondary << " cartes à 0" << (card.upgraded ? " amél." : ".");
+        stream << "Inflige " << value << ". +" << secondary << " cartes à 0" << (card.upgraded ? " améliorées." : " en Main.");
         break;
     case engine::CardId::BEAT_DOWN:
         stream << "Joue " << value << " Attaques au hasard de la Défausse.";
@@ -1426,25 +1426,25 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Joue " << value << " cartes au hasard de la Pioche.";
         break;
     case engine::CardId::NOSTALGIA:
-        stream << "1re Att./Comp. : sur la Pioche.";
+        stream << "Par tour, 1re Att./Comp. sur la Pioche.";
         break;
     case engine::CardId::RELAX:
         stream << "Armure +" << value << ". Puis +" << secondary << " cartes/én. Épuis.";
         break;
     case engine::CardId::NEOWS_FURY:
-        stream << value << " dégâts. +" << secondary << " de la Défausse. Épuis.";
+        stream << value << " dégâts. Défausse vers main : " << secondary << ". Épuis.";
         break;
     case engine::CardId::METAMORPHOSIS:
         stream << "+" << value << " Attaques en Pioche, coût 0. Épuis.";
         break;
     case engine::CardId::DISTRACTION:
-        stream << "Compétence au hasard à 0. Épuis.";
+        stream << "+1 Compétence gratuite ce tour. Épuis.";
         break;
     case engine::CardId::CALTROPS:
         stream << "Attaqué : " << value << " dégâts à l'attaquant.";
         break;
     case engine::CardId::PROLONG:
-        stream << "Prochain tour : Armure actuelle." << (card.upgraded ? "" : " Épuis.");
+        stream << "Tour suivant : regagne l'Armure." << (card.upgraded ? "" : " Épuis.");
         break;
     case engine::CardId::SALVO:
         stream << "Inflige " << value << " dégâts. Retient la Main.";
@@ -1453,13 +1453,13 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Pioche " << value << ". 1 carte sur la Pioche." << (card.upgraded ? "" : " Épuis.");
         break;
     case engine::CardId::JACK_OF_ALL_TRADES:
-        stream << "+" << value << (card.upgraded ? " cartes Incolores" : " carte Incolore") << " en main. Épuis.";
+        stream << "+" << value << (card.upgraded ? " cartes Incolores" : " carte Incolore") << " en main. Épuisement.";
         break;
     case engine::CardId::HELLO_WORLD:
         stream << (card.upgraded ? "Inné. " : "") << "Début de tour : +1 carte Commune.";
         break;
     case engine::CardId::DARK_SHACKLES:
-        stream << "Ennemi : -" << value << " Force ce tour. Épuis.";
+        stream << "Ennemi : Force -" << value << " ce tour. Épuisement.";
         break;
     case engine::CardId::EQUILIBRIUM:
         stream << "Armure +" << value << ". Retient la Main.";
@@ -1471,10 +1471,10 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Compétence de la Pioche en main." << (card.upgraded ? "" : " Épuis.");
         break;
     case engine::CardId::DRAMATIC_ENTRANCE:
-        stream << "Inné. " << value << " dégâts à TOUS. Épuis.";
+        stream << "Inné. " << value << " dégâts à TOUS. Épuisement.";
         break;
     case engine::CardId::SECRET_WEAPON:
-        stream << "Attaque de la Pioche en main." << (card.upgraded ? "" : " Épuis.");
+        stream << "Attaque de la Pioche en main." << (card.upgraded ? "" : " Épuisement.");
         break;
     case engine::CardId::MAYHEM:
         stream << "Début de tour : joue le haut de la Pioche.";
@@ -1489,46 +1489,46 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Attaque jouée : +1 Attaque en main.";
         break;
     case engine::CardId::AUTOMATION:
-        stream << "Par 10 cartes piochées : +1 én.";
+        stream << "Par 10 cartes piochées : +1 énergie.";
         break;
     case engine::CardId::ENLIGHTENMENT:
-        stream << "Main : coût max 1 " << (card.upgraded ? "ce combat" : "ce tour") << ". Épuis.";
+        stream << "Main : coût max 1 " << (card.upgraded ? "ce combat" : "ce tour") << ". Épuisement.";
         break;
     case engine::CardId::DUAL_WIELD:
-        stream << "Attaque/Pouvoir de la Main : +" << value << (card.upgraded ? " copies." : " copie.");
+        stream << "+" << value << (card.upgraded ? " copies" : " copie") << " d'une Attaque ou d'un Pouvoir.";
         break;
     case engine::CardId::CALL_OF_THE_VOID:
         stream << (card.upgraded ? "Inné. " : "") << "Début de tour : +1 carte Éthérée.";
         break;
     case engine::CardId::HEIRLOOM_HAMMER:
-        stream << "Inflige " << value << " dégâts. Copie 1 Incolore.";
+        stream << "Inflige " << value << ". Copie 1 Incolore de la Main.";
         break;
     case engine::CardId::BUNDLE_OF_JOY:
-        stream << "+" << value << " cartes Incolores en main. Épuis.";
+        stream << "+" << value << " cartes Incolores en main. Épuisement.";
         break;
     case engine::CardId::SPECTRUM_SHIFT:
         stream << "Début de tour : +1 carte Incolore.";
         break;
     case engine::CardId::DECISIONS_DECISIONS:
-        stream << "Pioche " << value << ". Joue 3x 1 Compétence. Épuis.";
+        stream << "Pioche " << value << ". Joue 1 Compétence x3. Épuis.";
         break;
     case engine::CardId::WHITE_NOISE:
-        stream << "+1 Pouvoir gratuit ce tour. Épuis.";
+        stream << "+1 Pouvoir gratuit ce tour. Épuisement.";
         break;
     case engine::CardId::CREATIVE_AI:
         stream << "Début de tour : +1 Pouvoir en main.";
         break;
     case engine::CardId::NIGHTMARE:
-        stream << "1 carte : 3 copies au tour suivant.";
+        stream << "1 carte : 3 copies au tour suivant. Épuis.";
         break;
     case engine::CardId::TOOLS_OF_THE_TRADE:
         stream << "Début de tour : pioche 1, défausse 1.";
         break;
     case engine::CardId::INFERNAL_BLADE:
-        stream << "+1 Attaque gratuite ce tour. Épuis.";
+        stream << "+1 Attaque gratuite ce tour. Épuisement.";
         break;
     case engine::CardId::STOKE:
-        stream << "Épuise la Main. +1 carte" << (card.upgraded ? "+" : "") << " par carte.";
+        stream << "Épuise la Main. +1 carte" << (card.upgraded ? " amél." : "") << " par carte.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:
