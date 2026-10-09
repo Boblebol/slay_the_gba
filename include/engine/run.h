@@ -117,6 +117,9 @@ public:
     // Paël's Tooth: cards devoured from the deck, returned one per won combat (upgraded).
     FixedVector<CardId, 5> paels_tooth_cards;
     bool preserved_fog_pending = false; // Hubris is added once the 3 removals are done
+    // Meat Cleaver: the +5 Max HP of Cook come once the removals are done. Not saved: the autosave is written on the
+    // map, after the choice has ended.
+    bool cook_pending = false;
     uint8_t paels_tooth_picks = 0; // devour picks still to make
     PaletteVariant palette = PaletteVariant::CLASSIC;
 
@@ -136,6 +139,9 @@ public:
     bool can_rest() const;
     bool smith_at_campfire(int card_index);
     bool can_smith() const;
+    // Meat Cleaver: asks for 2 cards of the deck to remove, then gives +5 Max HP and uses up the rest site. With fewer
+    // than 2 removable cards it removes what it can and still gives the Max HP. False without the relic.
+    bool cook_at_campfire();
 
     // Shop actions
     void open_shop();
@@ -204,6 +210,8 @@ public:
     bool resolve_deck_choice(int deck_index);
     // Adds Hubris once the Preserved Fog removals are over.
     void finish_preserved_fog();
+    // Gives the Max HP of Cook once its removals are over.
+    void finish_cook();
     // Leaves an optional choice. False when the choice has to be made.
     bool skip_deck_choice();
     std::string_view draw_treasure_relic();

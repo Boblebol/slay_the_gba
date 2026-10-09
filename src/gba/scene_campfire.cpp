@@ -84,6 +84,13 @@ public:
                     _done_timer = 0;
                     _clear_options();
                 }
+                else if(action == engine::CampfireAction::COOK)
+                {
+                    // Meat Cleaver: the run asks for 2 cards to remove, then the map is back (see DeckChoiceScene).
+                    play_sfx(Sfx::UI_OPEN);
+                    _ctx.run.cook_at_campfire();
+                    return scene_after_deck_choice(_ctx, SceneId::MAP);
+                }
                 else if(action != engine::CampfireAction::SMITH)
                 {
                     // An action the engine does not resolve yet.
@@ -225,7 +232,7 @@ private:
                 stream << "Soulever : gagner de la Force";
                 break;
             default:
-                stream << "Cuisiner : retirer 2 cartes";
+                stream << "Cuisiner : -2 cartes, +5 PV Max";
                 break;
             }
 
