@@ -374,6 +374,11 @@ public:
     bool choice_pending() const { return !pending_choices.empty(); }
     // Whether the card at `index` of the choice's source can be picked for the choice being asked.
     bool choice_allows(size_t index) const;
+    // First position, from `from` (included) stepping by `step` (+1 or -1), whose card can be picked. Positions
+    // go through `order` (indices of the choice's source, as a sorted pile view shows them), or through the
+    // indices 0 to the pool size when `order` is empty. With `wrap` the search goes around the ends. -1 when no
+    // card can be picked.
+    int next_pickable_choice(std::span<const uint8_t> order, int from, int step, bool wrap) const;
     // Number of cards the choice being asked expects: fewer than its count when the hand is short.
     int choice_size() const;
     // Number of cards of its source the choice being asked is about: indices 0 to this number can be shown.

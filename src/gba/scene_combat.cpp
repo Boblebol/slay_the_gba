@@ -39,7 +39,10 @@ constexpr int STATUS_WIDTH = 112;
 constexpr int HAND_Y = 64;
 constexpr int HAND_FOCUS_Y = 57;
 constexpr int HAND_PICKED_Y = 50;
-constexpr int CHOICE_BANNER_X = 36;
+constexpr int BANNER_Y = -48;
+// Prompt of a card choice, centred under the intent icons (lowest bottom edge -36, a boss's) and the pile counters
+// (bottom edge -41): the glyphs span -34 to -26, and the widest prompt is 204 px, inside the 240 px screen.
+constexpr int CHOICE_BANNER_Y = -30;
 constexpr int LINE1_Y = 30;
 constexpr int LINE2_Y = 41;
 constexpr int LINE_STEP = LINE2_Y - LINE1_Y;
@@ -219,7 +222,7 @@ private:
     int _player_guard = 0;
     int _player_death = 0;
     int _banner_timer = 0;
-    int _banner_x = 0;
+    int _banner_y = -48;
     bool _victory = false;
 
     // Potion belt: the potion under the cursor, the one shown, and the one waiting for its target (-1: none).
@@ -275,6 +278,8 @@ private:
     void _update_choice_input();
     void _resolve_choice();
     void _refresh_choice_banner();
+    [[nodiscard]] std::span<const uint8_t> _choice_span() const;
+    void _move_to_position(int position);
     void _build_choice_views();
     void _move_in_pile(int step);
     [[nodiscard]] int _choice_index(int view_index) const;
@@ -1050,8 +1055,8 @@ int CombatScene::_next_alive(int from, int step) const
 
 void CombatScene::_set_banner(const bn::string_view& text, TextColor color)
 {
-    _banner_x = 0;
-    _banner.set(0, -48, text, Align::CENTER, color);
+    _banner_y = BANNER_Y;
+    _banner.set(0, _banner_y, text, Align::CENTER, color);
     _banner_timer = 60;
 }
 
@@ -1614,6 +1619,14 @@ void CombatScene::_enter_choice()
         _build_choice_views();
     }
 
+    // The cursor starts on a card that can be picked, so that A works at once (stays put when none can).
+    int first = _combat.next_pickable_choice(_choice_span(), 0, 1, false);
+
+    if(first >= 0)
+    {
+        _move_to_position(first);
+    }
+
     _selected = bn::clamp(_selected, 0, bn::max(0, _hand.size() - 1));
     _selected_shown = -1;
     _refresh_choice_banner();
@@ -1645,10 +1658,40 @@ void CombatScene::_build_choice_views()
     _selected_shown = -1;
 }
 
+std::span<const uint8_t> CombatScene::_choice_span() const
+{
+    return std::span<const uint8_t>(_choice_order.data(), size_t(_choice_order.size()));
+}
+
 void CombatScene::_move_in_pile(int step)
 {
+    // Cards that cannot be picked are skipped; the cursor stays when no card lies that way.
+    int position = _combat.next_pickable_choice(_choice_span(), _pile_offset + _selected + step, step, false);
+
+    if(position < 0)
+    {
+        if(_combat.next_pickable_choice(_choice_span(), 0, 1, false) >= 0)
+        {
+            return;
+        }
+
+        // Nothing can be picked at all: every card can be looked at.
+        position = bn::clamp(_pile_offset + _selected + step, 0, int(_choice_order.size()) - 1);
+    }
+
+    _move_to_position(position);
+}
+
+void CombatScene::_move_to_position(int position)
+{
+    if(! _pile_view)
+    {
+        _selected = bn::clamp(position, 0, bn::max(0, _hand.size() - 1));
+        return;
+    }
+
     int total = _choice_order.size();
-    int position = bn::clamp(_pile_offset + _selected + step, 0, total - 1);
+    position = bn::clamp(position, 0, total - 1);
 
     // The cursor left the ten cards on screen: the window moves so that it sits in the middle.
     if(position < _pile_offset || position >= _pile_offset + _hand.max_size())
@@ -1741,9 +1784,9 @@ void CombatScene::_refresh_choice_banner()
         stream << " : 1 carte";
     }
 
-    // Off centre: the pile counters are on the left, and the prompt stays as long as the choice does.
-    _banner_x = CHOICE_BANNER_X;
-    _banner.set(_banner_x, -48, text, Align::CENTER, TextColor::GOLD);
+    // Under the pile counters and the intent icons, and it stays as long as the choice does.
+    _banner_y = CHOICE_BANNER_Y;
+    _banner.set(0, _banner_y, text, Align::CENTER, TextColor::GOLD);
     _banner_timer = bn::max(_banner_timer, 50);
 }
 
@@ -1778,7 +1821,9 @@ void CombatScene::_update_choice_input()
         }
         else
         {
-            _selected = (_selected + count + step) % count;
+            // Cards that cannot be picked are skipped, wrapping around the hand.
+            int next = _combat.next_pickable_choice(_choice_span(), (_selected + count + step) % count, step, true);
+            _selected = next >= 0 ? next : (_selected + count + step) % count;
         }
 
         play_sfx(Sfx::UI_CURSOR);
@@ -2591,7 +2636,7 @@ bn::optional<SceneId> CombatScene::update()
         --_banner_timer;
         int age = 60 - _banner_timer;
         int x = age < 10 ? ((10 - age) * (10 - age) * 2) : 0;
-        _banner.move_to(_banner_x - x, -48);
+        _banner.move_to(-x, _banner_y);
         _banner.set_visible(_banner_timer > 0);
     }
 
