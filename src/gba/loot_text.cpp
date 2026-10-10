@@ -88,6 +88,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "PEN_NIB", "Toutes les 10 Attaques jouées, la 10ème inflige le double de dégâts." },
     { "STRIKE_DUMMY", "Les cartes contenant « Frappe » infligent 3 dégâts supplémentaires." },
     { "TUNGSTEN_ROD", "Vous perdez 1 PV de moins chaque fois que vous perdriez des PV." },
+    { "AMETHYST_AUBERGINE", "Les ennemis donnent 15 Pièces d'or supplémentaires." },
     { "FIDDLE", "Au début de chaque tour, piochez 2 cartes supplémentaires. Vous ne pouvez plus piocher de cartes pendant votre tour." },
     { "PAELS_BLOOD", "Au début de votre tour, piochez 1 carte supplémentaire." },
     { "PANTOGRAPH", "Au début de chaque combat de Boss, récupérez 25 PV." },

@@ -1935,6 +1935,24 @@ void test_tungsten_rod() {
     std::cout << "[PASS] Tungsten Rod: 1 less HP lost each time" << std::endl;
 }
 
+void test_amethyst_aubergine() {
+    // With the relic: every fight reward holds 15 more Gold than the same fight without it.
+    for (uint32_t seed = 1; seed <= 20; ++seed) {
+        RunManager with;
+        with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with.add_relic("AMETHYST_AUBERGINE");
+        enter_room_of_type(with, RoomType::MONSTER);
+        with.generate_rewards();
+
+        RunManager plain;
+        plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(plain, RoomType::MONSTER);
+        plain.generate_rewards();
+        assert(with.gold_reward == plain.gold_reward + 15);
+    }
+    std::cout << "[PASS] Amethyst Aubergine: 15 more Gold in each fight reward" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2003,5 +2021,6 @@ int main() {
     test_cauldron();
     test_bookmark();
     test_tungsten_rod();
+    test_amethyst_aubergine();
     return 0;
 }
