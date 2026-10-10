@@ -2676,6 +2676,27 @@ void test_chemical_x() {
     std::cout << "[PASS] Chemical X: X cards get 2 more X, the energy spent is unchanged" << std::endl;
 }
 
+void test_pollinous_core() {
+    // With the relic, turn 4 draws 2 more cards than a plain turn; the other turns do not.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "POLLINOUS_CORE" });
+    CombatEngine& with = run.combat;
+    assert(with.has_power(PowerId::POLLINOUS_CORE));
+    for (int turn = 1; turn <= 3; ++turn) {
+        assert(with.hand.size() == 5);
+        end_turn_idle(with);
+    }
+    assert(with.hand.size() == 7);
+    end_turn_idle(with);
+    assert(with.hand.size() == 5);
+
+    // Without the relic, turn 4 draws the usual hand.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, { "ANCHOR" });
+    assert(!plain.combat.has_power(PowerId::POLLINOUS_CORE));
+    for (int turn = 1; turn <= 3; ++turn) end_turn_idle(plain.combat);
+    assert(plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Pollinous Core: every 4 turns, draw 2 more cards" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2775,5 +2796,6 @@ int main() {
     test_shovel();
     test_white_star();
     test_chemical_x();
+    test_pollinous_core();
     return 0;
 }
