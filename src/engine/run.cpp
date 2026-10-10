@@ -953,6 +953,11 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::TURN_ENERGY, 1);
         combat.add_power(PowerId::WHISPERING_EARRING, 1);
     }
+    // Velvet Choker: one more energy each turn, and no more than VELVET_CHOKER_CARDS cards played each turn.
+    if (has_relic("VELVET_CHOKER")) {
+        combat.add_power(PowerId::TURN_ENERGY, 1);
+        combat.add_power(PowerId::VELVET_CHOKER, VELVET_CHOKER_CARDS);
+    }
     // Start of turn
     if (has_relic("CAPTAINS_WHEEL")) combat.add_power(PowerId::CAPTAINS_WHEEL, 18);
     if (has_relic("HORN_CLEAT")) combat.add_power(PowerId::HORN_CLEAT, 14);

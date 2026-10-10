@@ -202,7 +202,8 @@ enum class PowerId : uint8_t {
     CREATIVE_AI,       // start of turn: `amount` random Powers to the hand
     TOOLS_OF_THE_TRADE, // once the hand is drawn: draw `amount` cards, then discard `amount` cards
     // Relics of the Ancients (appended)
-    WHISPERING_EARRING  // Vakuu plays the first turn of the combat (CombatEngine::vakuu_turn_active)
+    WHISPERING_EARRING, // Vakuu plays the first turn of the combat (CombatEngine::vakuu_turn_active)
+    VELVET_CHOKER       // no more than `amount` cards played each turn (CombatEngine::play_blocker)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -233,6 +234,7 @@ constexpr uint8_t ORNAMENTAL_FAN_ATTACKS = 3;
 constexpr uint8_t RED_SKULL_HP_PERCENT = 50;
 constexpr uint8_t GALACTIC_DUST_STARS = 10;
 constexpr uint8_t IVORY_TILE_COST = 3;
+constexpr uint8_t VELVET_CHOKER_CARDS = 6;
 
 struct ActivePower {
     PowerId id = PowerId::NONE;
