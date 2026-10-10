@@ -1144,7 +1144,7 @@ void CombatEngine::evoke_orb(size_t slot, int times) {
             case OrbType::LIGHTNING:
                 if (has_alive_enemies()) {
                     Enemy& struck = enemies[random_alive_enemy_index()];
-                    damage_enemy(struck, static_cast<int16_t>(with_focus(LIGHTNING_EVOKE) + power_amount(PowerId::THUNDER)));
+                    damage_enemy(struck, static_cast<int16_t>(with_focus(LIGHTNING_EVOKE) + power_amount(PowerId::THUNDER) + power_amount(PowerId::INFUSED_CORE)));
                 }
                 break;
             case OrbType::FROST:
@@ -1174,7 +1174,7 @@ void CombatEngine::trigger_orb_passive(size_t slot, Enemy* target) {
     switch (orb.type) {
         case OrbType::LIGHTNING:
             if (!target && has_alive_enemies()) target = &enemies[random_alive_enemy_index()];
-            if (target) damage_enemy(*target, with_focus(LIGHTNING_PASSIVE));
+            if (target) damage_enemy(*target, static_cast<int16_t>(with_focus(LIGHTNING_PASSIVE) + power_amount(PowerId::INFUSED_CORE)));
             break;
         case OrbType::FROST:
             add_block(with_focus(FROST_PASSIVE));

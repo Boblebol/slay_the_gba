@@ -2676,6 +2676,37 @@ void test_chemical_x() {
     std::cout << "[PASS] Chemical X: X cards get 2 more X, the energy spent is unchanged" << std::endl;
 }
 
+void test_infused_core() {
+    // At the start of each combat, 3 Lightning orbs are channeled; each deals 1 more damage, passive or evoked.
+    auto total_hp = [](const CombatEngine& combat) {
+        int sum = 0;
+        for (const Enemy& foe : combat.enemies) sum += foe.hp;
+        return sum;
+    };
+    RunManager core = make_relic_run(CharacterId::DEFECT, { "INFUSED_CORE" });
+    assert(core.combat.player.orbs.size() == 3);
+    for (const Orb& orb : core.combat.player.orbs) assert(orb == OrbType::LIGHTNING);
+
+    int hp = total_hp(core.combat);
+    core.combat.evoke_orb(0);
+    assert(total_hp(core.combat) == hp - (LIGHTNING_EVOKE + 1));
+    assert(core.combat.player.orbs.size() == 2);
+
+    Enemy& first = core.combat.enemies[0];
+    int16_t first_hp = first.hp;
+    core.combat.trigger_orb_passive(0, &first);
+    assert(first.hp == first_hp - (LIGHTNING_PASSIVE + 1));
+
+    // Without the relic, only Cracked Core's Lightning orb is channeled at the start, and the evoke keeps its usual damage.
+    RunManager plain = make_relic_run(CharacterId::DEFECT, {});
+    assert(plain.combat.player.orbs.size() == 1);
+    plain.combat.channel_orb(OrbType::LIGHTNING);
+    int plain_hp = total_hp(plain.combat);
+    plain.combat.evoke_orb(0);
+    assert(total_hp(plain.combat) == plain_hp - LIGHTNING_EVOKE);
+    std::cout << "[PASS] Infused Core: 3 Lightning orbs at the start of each combat, each 1 damage more" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2775,5 +2806,6 @@ int main() {
     test_shovel();
     test_white_star();
     test_chemical_x();
+    test_infused_core();
     return 0;
 }
