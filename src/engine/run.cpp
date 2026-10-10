@@ -886,8 +886,10 @@ void RunManager::count_hook(RunHook hook) {
     if (runs < UINT16_MAX) ++runs;
 }
 
-void RunManager::on_room_entered(RoomType) {
+void RunManager::on_room_entered(RoomType room) {
     count_hook(RunHook::ROOM_ENTERED);
+    // Meal Ticket: entering a shop heals 15 HP.
+    if (room == RoomType::SHOP && has_relic("MEAL_TICKET")) heal(15);
 }
 
 void RunManager::on_rested() {
@@ -1173,7 +1175,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "MEAL_TICKET", // Shared, out of combat
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR",                                   // Shared, out of combat

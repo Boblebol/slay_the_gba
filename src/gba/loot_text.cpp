@@ -162,6 +162,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "MANGO", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 14." },
     { "STONE_HUMIDIFIER", "Lorsque vous vous Reposez à un Site de repos, augmentez vos PV Max de 5." },
     { "TINY_MAILBOX", "Lorsque vous vous Reposez, obtenez 2 Potions aléatoires." },
+    { "MEAL_TICKET", "Lorsque vous entrez dans une boutique, récupérez 15 PV." },
     { "LARGE_CAPSULE", "Lorsque vous obtenez cette relique, obtenez 2 Reliques aléatoires. Ajoutez une Frappe et une Défense à votre Deck." },
     { "CALLING_BELL", "Lorsque vous obtenez cette relique, obtenez une Malédiction spéciale et 3 Reliques." },
     { "CAULDRON", "Lorsque vous obtenez cette relique, concoctez 5 Potions aléatoires." },
