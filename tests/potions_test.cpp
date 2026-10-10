@@ -21,6 +21,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION",
     "ATTACK_POTION",
     "SKILL_POTION",
+    "POWER_POTION",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -917,6 +918,32 @@ void test_refused_outside_player_turn() {
     std::cout << "[PASS] Potions are refused outside the player's turn: enemy turn, victory, defeat" << std::endl;
 }
 
+void test_power_potion() {
+    // Choose 1 of 3 random Powers to add to the hand: it costs 0 this turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.hand.clear();
+    assert(combat.use_potion("POWER_POTION"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.pending_choices[0].kind == ChoiceKind::TO_HAND);
+    assert(combat.offers.size() == 3 && combat.choice_size() == 1);
+    for (size_t i = 0; i < combat.offers.size(); ++i) {
+        assert(CardDef::get(combat.offers[i].id).type == CardType::POWER);
+        assert(combat.offers[i].free_this_turn);
+        for (size_t j = 0; j < i; ++j) assert(combat.offers[j].id != combat.offers[i].id);
+    }
+    assert(std::string_view(combat.combat_log) == "Power Potion!");
+
+    const DeckCard picked = combat.offers[1];
+    const uint8_t pick[] = { 1 };
+    assert(combat.resolve_choice(pick));
+    assert(!combat.choice_pending() && combat.offers.empty());
+    assert(combat.hand.size() == 1 && combat.hand[0].id == picked.id && combat.hand[0].free_this_turn);
+    assert(combat.effective_cost(combat.hand[0]) == 0);
+
+    std::cout << "[PASS] Power Potion: 1 of 3 random Powers added to the hand, free this turn" << std::endl;
+}
+
 void test_gigantification_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     combat.hand.clear();
@@ -1038,6 +1065,7 @@ int main() {
     test_touch_of_insanity();
     test_liquid_memories();
     test_attack_potion();
+    test_power_potion();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;

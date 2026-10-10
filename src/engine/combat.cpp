@@ -6456,6 +6456,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "SKILL_POTION") {
         offer_random_cards(CardFilter(CardType::SKILL), 3, false, true);
         set_log("Skill Potion!");
+    } else if (potion_id == "POWER_POTION") {
+        offer_random_cards(CardFilter(CardType::POWER), 3, false, true);
+        set_log("Power Potion!");
     } else if (potion_id == "OROBIC_ACID") {
         for (CardType type : { CardType::ATTACK, CardType::SKILL, CardType::POWER }) {
             const CardId card = random_card(CardFilter(type));
