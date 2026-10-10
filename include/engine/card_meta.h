@@ -505,6 +505,22 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::CURSE, CardPool::CURSE }, // BAD_LUCK
     { CardRarity::CURSE, CardPool::CURSE }, // DEBT
     { CardRarity::CURSE, CardPool::CURSE }, // SPORE_MIND
+    { CardRarity::UNCOMMON, CardPool::SILENT }, // TACTICIAN
+    { CardRarity::RARE, CardPool::SILENT }, // ABRASIVE
+    { CardRarity::RARE, CardPool::SILENT }, // MASTER_PLANNER
+    { CardRarity::UNCOMMON, CardPool::SILENT }, // HAND_TRICK
+    { CardRarity::COMMON, CardPool::SILENT }, // UNTOUCHABLE
+    { CardRarity::COMMON, CardPool::SILENT }, // RICOCHET
+    { CardRarity::UNCOMMON, CardPool::SILENT }, // REFLEX
+    { CardRarity::COMMON, CardPool::SILENT }, // FLICK_FLACK
+    { CardRarity::RARE, CardPool::SILENT }, // SHADOWMELD
+    { CardRarity::RARE, CardPool::IRONCLAD }, // UNMOVABLE
+    { CardRarity::UNCOMMON, CardPool::IRONCLAD }, // COLOSSUS
+    { CardRarity::UNCOMMON, CardPool::IRONCLAD }, // CRUELTY
+    { CardRarity::RARE, CardPool::SILENT }, // TRACKING
+    { CardRarity::UNCOMMON, CardPool::NECROBINDER }, // LETHALITY
+    { CardRarity::RARE, CardPool::SILENT }, // SHADOW_STEP
+    { CardRarity::UNCOMMON, CardPool::NECROBINDER }, // DEBILITATE
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // SEEKER_STRIKE
 };
 

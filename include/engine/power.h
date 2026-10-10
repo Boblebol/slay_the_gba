@@ -203,7 +203,15 @@ enum class PowerId : uint8_t {
     TOOLS_OF_THE_TRADE, // once the hand is drawn: draw `amount` cards, then discard `amount` cards
     // Relics of the Ancients (appended)
     WHISPERING_EARRING, // Vakuu plays the first turn of the combat (CombatEngine::vakuu_turn_active)
-    VELVET_CHOKER       // no more than `amount` cards played each turn (CombatEngine::play_blocker)
+    VELVET_CHOKER,      // no more than `amount` cards played each turn (CombatEngine::play_blocker)
+    PAELS_EYE,          // first turn ended with no card played: exhaust the hand, take an extra turn (removed once used)
+    // Sly (appended)
+    MASTER_PLANNER,     // the Skills played gain Sly (read by place_played_card)
+    // Percentage modifiers (appended)
+    CRUELTY,            // Vulnerable enemies take `amount` % more damage from attacks (read by hit)
+    UNMOVABLE,          // the first Block a card gives each turn is doubled (read by gain_block)
+    TRACKING,           // Weak enemies take `amount` % more damage from attacks (read by hit)
+    LETHALITY           // the first Attack each turn deals `amount` % more damage (read by hit)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

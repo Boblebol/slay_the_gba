@@ -372,7 +372,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                 CardId::BRAND, CardId::BURNING_PACT,
                                                 CardId::JUGGLING,
                                                 CardId::HEADBUTT,
-                                                CardId::STONE_ARMOR, CardId::FLAME_BARRIER };
+                                                CardId::STONE_ARMOR, CardId::FLAME_BARRIER, CardId::UNMOVABLE, CardId::COLOSSUS, CardId::CRUELTY };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
@@ -394,7 +394,9 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::FAN_OF_KNIVES, CardId::PHANTOM_BLADES, CardId::ACCURACY,
                                               CardId::UP_MY_SLEEVE, CardId::KNIFE_TRAP, CardId::ACROBATICS,
                                               CardId::DAGGER_THROW, CardId::PREPARED, CardId::HIDDEN_DAGGERS,
-                                              CardId::EXPOSE };
+                                              CardId::EXPOSE, CardId::TACTICIAN, CardId::ABRASIVE,
+                                              CardId::MASTER_PLANNER, CardId::HAND_TRICK, CardId::UNTOUCHABLE,
+                                              CardId::RICOCHET, CardId::REFLEX, CardId::FLICK_FLACK, CardId::SHADOWMELD, CardId::TRACKING, CardId::SHADOW_STEP };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
                                               CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
                                               CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,
@@ -477,7 +479,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::REAVE, CardId::GRAVE_WARDEN, CardId::CAPTURE_SPIRIT,
                                                    CardId::SEVERANCE, CardId::DIRGE, CardId::HAUNT,
                                                    CardId::DEVOUR_LIFE, CardId::SOUL_STORM,
-                                                   CardId::GLIMPSE_BEYOND };
+                                                   CardId::GLIMPSE_BEYOND, CardId::LETHALITY, CardId::DEBILITATE };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;
@@ -603,6 +605,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         add_card_to_deck(DeckCard{ CardId::DEFEND, false });
     }
     if (relic_id == "YUMMY_COOKIE" && has_relic("YUMMY_COOKIE")) upgrade_random_cards(4);
+    if (relic_id == "SAND_CASTLE" && has_relic("SAND_CASTLE")) upgrade_random_cards(6);
     // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
     if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
         regenerate_map();
@@ -611,6 +614,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "SIGNET_RING" && has_relic("SIGNET_RING")) gain_gold(888);
     // Relic of the Ancients: the gold comes once, when the pearl is obtained.
     if (relic_id == "GOLDEN_PEARL" && has_relic("GOLDEN_PEARL")) gain_gold(150);
+    // Relic of the Ancients: a Greed curse joins the deck and the gold comes once, when the pearl is obtained.
+    if (relic_id == "CURSED_PEARL" && has_relic("CURSED_PEARL")) {
+        add_card_to_deck(DeckCard{ CardId::GREED, false });
+        gain_gold(333);
+    }
     // Relic of the Ancients: one Ancient card of the hero, drawn at random with the run's generator.
     if (relic_id == "DUSTY_TOME" && has_relic("DUSTY_TOME")) {
         const auto hero_pool = static_cast<CardPool>(static_cast<uint8_t>(character) + 1);
@@ -735,6 +743,14 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
                 }
             }
         }
+    }
+    if (relic_id == "PAELS_HORN" && has_relic("PAELS_HORN")) {
+        for (int i = 0; i < 2; ++i) add_card_to_deck(DeckCard{ CardId::RELAX, false });
+    }
+    // Calling Bell (Ancient): the unique Curse of the Bell joins the deck, then 3 random relics.
+    if (relic_id == "CALLING_BELL" && has_relic("CALLING_BELL")) {
+        add_card_to_deck(DeckCard{ CardId::CURSE_OF_THE_BELL, false });
+        gain_random_relics(3);
     }
     if (relic_id == "TANXS_WHISTLE" && has_relic("TANXS_WHISTLE")) add_card_to_deck(DeckCard{ CardId::WHISTLE, false });
     if (relic_id == "STORYBOOK" && has_relic("STORYBOOK")) add_card_to_deck(DeckCard{ CardId::BRIGHTEST_FLAME, false });
@@ -1119,6 +1135,8 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::TURN_ENERGY, 1);
         combat.add_power(PowerId::VELVET_CHOKER, VELVET_CHOKER_CARDS);
     }
+    // Pael's Eye: the first turn ended without playing a card is followed by an extra turn.
+    if (has_relic("PAELS_EYE")) combat.add_power(PowerId::PAELS_EYE, 1);
     // Start of turn
     if (has_relic("CAPTAINS_WHEEL")) combat.add_power(PowerId::CAPTAINS_WHEEL, 18);
     if (has_relic("HORN_CLEAT")) combat.add_power(PowerId::HORN_CLEAT, 14);
@@ -1294,6 +1312,10 @@ void RunManager::apply_combat_start_relics() {
         for (int n = 0; n < 2 && !ethereal.empty(); ++n) {
             combat.create_card(ethereal[next_random() % ethereal.size()], Pile::HAND);
         }
+    }
+    // Radiant Pearl (Orobas): 1 Luminesce in hand.
+    if (has_relic("RADIANT_PEARL")) {
+        combat.create_card(DeckCard(CardId::LUMINESCE), Pile::HAND);
     }
     // Fencing Manual (Regent): Forge 10.
     if (has_relic("FENCING_MANUAL")) {

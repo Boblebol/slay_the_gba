@@ -17,7 +17,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "BLESSING_OF_THE_FORGE", "FORTIFIER", "FYSH_OIL", "BONE_BREW", "POTION_OF_BINDING", "CURE_ALL", "CLARITY",
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
-    "POWDERED_DEMISE", "DUPLICATOR",
+    "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -695,6 +695,39 @@ void test_duplicator() {
     std::cout << "[PASS] Duplicator: next card this turn is played an extra time" << std::endl;
 }
 
+void test_droplet_of_precognition() {
+    // Choose 1 card of the draw pile and add it to the hand: the hand grows by one, the draw pile loses it.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.hand.size() == 5 && combat.draw_pile.size() == 5);
+    assert(combat.use_potion("DROPLET_OF_PRECOGNITION"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].kind == ChoiceKind::TO_HAND);
+    assert(combat.pending_choices[0].source == Pile::DRAW);
+    assert(combat.pending_choices[0].count == 1);
+    assert(!combat.pending_choices[0].optional);
+    assert(combat.choice_size() == 1);
+    assert(std::string_view(combat.combat_log) == "Droplet of Precognition!");
+    assert(combat.player.energy == 3 && combat.hand.size() == 5);
+
+    const CardId picked = combat.draw_pile[1].id;
+    const uint8_t pick[] = { 1 };
+    assert(combat.resolve_choice(pick));
+    assert(!combat.choice_pending());
+    assert(combat.hand.size() == 6 && combat.hand[5].id == picked);
+    assert(combat.draw_pile.size() == 4);
+    assert(combat.discard_pile.empty() && combat.exhaust_pile.empty());
+
+    // Empty draw pile: nothing to choose from, the discard pile is not used.
+    CombatEngine empty = make_combat(CharacterId::IRONCLAD);
+    empty.draw_pile.clear();
+    empty.discard_pile.push_back(DeckCard(CardId::BASH));
+    assert(empty.use_potion("DROPLET_OF_PRECOGNITION"));
+    assert(!empty.choice_pending());
+    assert(empty.hand.size() == 5 && empty.discard_pile.size() == 1);
+
+    std::cout << "[PASS] Droplet of Precognition: add a card of the draw pile to the hand" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -766,6 +799,7 @@ int main() {
     test_gamblers_brew();
     test_powdered_demise();
     test_duplicator();
+    test_droplet_of_precognition();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;

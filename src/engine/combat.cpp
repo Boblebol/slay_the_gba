@@ -697,6 +697,8 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::FASTEN:
             break; // read when a Defend card is played
+        case PowerId::MASTER_PLANNER:
+            break; // read when a Skill is placed after it was played
         case PowerId::NOSTALGIA:
             if (turn_start) power.counter = 0;
             break;
@@ -1011,6 +1013,16 @@ void CombatEngine::gain_block(int16_t amount) {
             legion->counter = static_cast<uint8_t>(legion->amount + 1);
         }
     }
+    // Unmovable doubles the first Block a card gives each turn, Shadowmeld every one of the turn.
+    if (player.block > before) {
+        int factor = 1;
+        if (resolving_card && !unmovable_used && has_power(PowerId::UNMOVABLE)) {
+            unmovable_used = true;
+            factor *= 2;
+        }
+        if (double_block_turn) factor *= 2;
+        if (factor > 1) player.block = static_cast<int16_t>(before + (player.block - before) * factor);
+    }
     if (player.block > before) {
         EventInfo info;
         info.amount = static_cast<int16_t>(player.block - before);
@@ -1252,6 +1264,29 @@ void CombatEngine::discard_from_hand(size_t index) {
     EventInfo info;
     info.card = card;
     emit(CombatEvent::CARD_DISCARDED, info);
+    // Sly: discarded from the hand during the player's turn, the card is played for free once the discard is over.
+    if (state == CombatState::PLAYER_TURN && CardDef::is_sly(card) && !discard_pile.empty() &&
+        discard_pile.back().id == card.id && sly_pending.push_back(card)) {
+        discard_pile.pop_back();
+    }
+}
+
+void CombatEngine::play_sly_pending() {
+    // A Sly card played by this loop may discard another one: the queue is read again until it is empty.
+    for (int guard = 0; !sly_pending.empty() && guard < 24; ++guard) {
+        DeckCard card = sly_pending[0];
+        sly_pending.erase(0);
+        card.sly_this_turn = false;
+        if (state != CombatState::PLAYER_TURN || !has_alive_enemies()) {
+            discard_pile.push_back(card);
+            continue;
+        }
+        autoplay(card, -1, AfterPlay::DISCARD);
+    }
+    while (!sly_pending.empty()) {
+        discard_pile.push_back(sly_pending[0]);
+        sly_pending.erase(0);
+    }
 }
 
 bool CombatEngine::card_fits(CardId id, const CardFilter& filter) const {
@@ -1348,7 +1383,13 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     counters.hits_dealt = bump(counters.hits_dealt);
     if (int8_t at = index_of(target); at >= 0 && at < 3) counters.hits_on_enemy[at] = bump(counters.hits_on_enemy[at]);
     bool was_alive = target.is_alive();
-    int16_t lost = target.take_damage(attack_damage(base, player, target));
+    // Percentage modifiers add up; Shadow Step then doubles the total.
+    int32_t percent = 100;
+    if (target.get_status(StatusType::VULNERABLE) > 0) percent += power_amount(PowerId::CRUELTY);
+    if (target.get_status(StatusType::WEAK) > 0) percent += power_amount(PowerId::TRACKING);
+    if (resolving_card && counters.attacks_played == 0) percent += power_amount(PowerId::LETHALITY);
+    if (attack_double_now) percent *= 2;
+    int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
         EventInfo info;
@@ -1622,6 +1663,10 @@ void CombatEngine::reset_combat_state() {
     keep_block_turns = 0;
     retain_hand = false;
     no_draw_this_turn = false;
+    double_block_turn = false;
+    unmovable_used = false;
+    attack_double_next = false;
+    attack_double_now = false;
     no_card_block_turns = 0;
     rebound_pending = false;
     fatal_kills = 0;
@@ -1702,6 +1747,13 @@ void CombatEngine::start_player_turn() {
     retain_hand = false;
     no_draw_this_turn = false;
     rebound_pending = false;
+    unmovable_used = false;
+    attack_double_now = attack_double_next;
+    attack_double_next = false;
+    player.halve_vulnerable_damage = false;
+    for (Enemy& foe : enemies) {
+        if (foe.debilitate_turns > 0) --foe.debilitate_turns;
+    }
     if (no_card_block_turns > 0) --no_card_block_turns;
     trigger_turn_passives(true);
     int extra_draw = run_delayed_effects(false);
@@ -1937,6 +1989,7 @@ void CombatEngine::autoplay(DeckCard card, int target_index, AfterPlay destinati
 bool CombatEngine::opens_choice(const DeckCard& card) {
     switch (card.id) {
         case CardId::SURVIVOR:
+        case CardId::HAND_TRICK:
         case CardId::NEOWS_FURY:
         case CardId::THINKING_AHEAD:
         case CardId::PURITY:
@@ -2106,6 +2159,8 @@ void CombatEngine::place_played_card(const DeckCard& card, AfterPlay after_play)
     DeckCard kept_card = card;
     kept_card.free_this_turn = false;
     kept_card.cost_one_this_turn = false;
+    kept_card.sly_this_turn = false;
+    if (played_type == CardType::SKILL && has_power(PowerId::MASTER_PLANNER)) kept_card.sly_combat = true;
     if (has_power(PowerId::RAZOR_TOOTH)) kept_card.upgraded = true;
     const bool corrupted = played_type == CardType::SKILL && has_power(PowerId::CORRUPTION);
     if (CardDef::has_keyword(card, KEYWORD_EXHAUST) || after_play == AfterPlay::EXHAUST || corrupted) {
@@ -2122,6 +2177,7 @@ void CombatEngine::place_played_card(const DeckCard& card, AfterPlay after_play)
 }
 
 void CombatEngine::finish_play() {
+    play_sly_pending();
     // Deaths not caused by a hit (orbs, HP loss) are noticed here.
     settle_deaths();
     if (hand.empty() && has_power(PowerId::UNCEASING_TOP) && player.is_alive()) {
@@ -2155,6 +2211,8 @@ bool CombatEngine::can_be_picked(const DeckCard& card, ChoiceKind kind) const {
             return !CardDef::has_keyword(card, KEYWORD_ETHEREAL);
         case ChoiceKind::MAKE_RETAIN:
             return !CardDef::has_keyword(card, KEYWORD_RETAIN);
+        case ChoiceKind::MAKE_SLY:
+            return !CardDef::is_sly(card);
         case ChoiceKind::COPY_ATTACK_OR_POWER:
             return CardDef::get(card.id).type == CardType::ATTACK || CardDef::get(card.id).type == CardType::POWER;
         case ChoiceKind::COPY_COLORLESS:
@@ -2352,6 +2410,9 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                     break;
                 case ChoiceKind::MAKE_RETAIN:
                     hand[index].added_keywords |= KEYWORD_RETAIN;
+                    break;
+                case ChoiceKind::MAKE_SLY:
+                    hand[index].sly_this_turn = true;
                     break;
                 case ChoiceKind::COPY_ATTACK_OR_POWER:
                 case ChoiceKind::COPY_COLORLESS: {
@@ -4983,6 +5044,55 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Hang+!"sv : "Played Hang!"sv);
             break;
         }
+        case CardId::TACTICIAN: {
+            player.energy = static_cast<int8_t>(player.energy + base_value);
+            set_log(upgraded ? "Played Tactician+!"sv : "Played Tactician!"sv);
+            break;
+        }
+        case CardId::ABRASIVE: {
+            player.add_status(StatusType::DEXTERITY, 1);
+            player.add_status(StatusType::THORNS, base_value);
+            set_log(upgraded ? "Played Abrasive+!"sv : "Played Abrasive!"sv);
+            break;
+        }
+        case CardId::MASTER_PLANNER: {
+            add_power(PowerId::MASTER_PLANNER);
+            set_log(upgraded ? "Played Master Planner+!"sv : "Played Master Planner!"sv);
+            break;
+        }
+        case CardId::HAND_TRICK: {
+            gain_block(base_value);
+            CardChoice choice{ ChoiceKind::MAKE_SLY, 1 };
+            choice.any_type = false;
+            choice.type = CardType::SKILL;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Hand Trick+!"sv : "Played Hand Trick!"sv);
+            break;
+        }
+        case CardId::UNTOUCHABLE: {
+            gain_block(base_value);
+            set_log(upgraded ? "Played Untouchable+!"sv : "Played Untouchable!"sv);
+            break;
+        }
+        case CardId::RICOCHET: {
+            for (uint8_t blow = 0; blow < secondary_value && has_alive_enemies(); ++blow) {
+                hit(enemies[random_alive_enemy_index()], base_value);
+            }
+            set_log(upgraded ? "Played Ricochet+!"sv : "Played Ricochet!"sv);
+            break;
+        }
+        case CardId::REFLEX: {
+            draw_cards(base_value);
+            set_log(upgraded ? "Played Reflex+!"sv : "Played Reflex!"sv);
+            break;
+        }
+        case CardId::FLICK_FLACK: {
+            for (size_t i = 0; i < enemies.size(); ++i) {
+                if (enemies[i].is_alive()) hit(enemies[i], base_value);
+            }
+            set_log(upgraded ? "Played Flick-Flack+!"sv : "Played Flick-Flack!"sv);
+            break;
+        }
         case CardId::BURN:
         case CardId::DAZED:
         case CardId::SOOT:
@@ -5176,6 +5286,49 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::PHANTOM_BLADES: {
             add_power(PowerId::PHANTOM_BLADES, base_value);
             set_log(upgraded ? "Played Phantom Blades+!"sv : "Played Phantom Blades!"sv);
+            break;
+        }
+        case CardId::SHADOWMELD: {
+            double_block_turn = true;
+            set_log(upgraded ? "Played Shadowmeld+!"sv : "Played Shadowmeld!"sv);
+            break;
+        }
+        case CardId::UNMOVABLE: {
+            add_power(PowerId::UNMOVABLE, 1);
+            set_log(upgraded ? "Played Unmovable+!"sv : "Played Unmovable!"sv);
+            break;
+        }
+        case CardId::COLOSSUS: {
+            gain_block(base_value);
+            player.halve_vulnerable_damage = true;
+            set_log(upgraded ? "Played Colossus+!"sv : "Played Colossus!"sv);
+            break;
+        }
+        case CardId::CRUELTY: {
+            add_power(PowerId::CRUELTY, base_value);
+            set_log(upgraded ? "Played Cruelty+!"sv : "Played Cruelty!"sv);
+            break;
+        }
+        case CardId::TRACKING: {
+            add_power(PowerId::TRACKING, 50);
+            set_log(upgraded ? "Played Tracking+!"sv : "Played Tracking!"sv);
+            break;
+        }
+        case CardId::LETHALITY: {
+            add_power(PowerId::LETHALITY, base_value);
+            set_log(upgraded ? "Played Lethality+!"sv : "Played Lethality!"sv);
+            break;
+        }
+        case CardId::SHADOW_STEP: {
+            for (size_t i = hand.size(); i-- > 0;) discard_from_hand(i);
+            attack_double_next = true;
+            set_log(upgraded ? "Played Shadow Step+!"sv : "Played Shadow Step!"sv);
+            break;
+        }
+        case CardId::DEBILITATE: {
+            hit(current_target, base_value);
+            current_target.debilitate_turns = static_cast<uint8_t>(secondary_value);
+            set_log(upgraded ? "Played Debilitate+!"sv : "Played Debilitate!"sv);
             break;
         }
         case CardId::ACCURACY: {
@@ -5703,6 +5856,8 @@ void CombatEngine::trigger_end_of_turn_in_hand(const DeckCard& card) {
 void CombatEngine::end_player_turn() {
     vakuu_turn_active = false;
     if (state != CombatState::PLAYER_TURN) return;
+    double_block_turn = false;
+    attack_double_now = false;
     // A choice left unanswered is answered for the player.
     while (choice_pending()) resolve_choice_default();
     if (state != CombatState::PLAYER_TURN) return;
@@ -5726,6 +5881,21 @@ void CombatEngine::end_player_turn() {
     for (DeckCard& card : hand) {
         card.free_this_turn = false;
         card.cost_one_this_turn = false;
+    }
+    // "Until the end of the turn" Sly goes in every pile (a card discarded this turn keeps its mark otherwise).
+    for (DeckCard& card : hand) card.sly_this_turn = false;
+    for (DeckCard& card : draw_pile) card.sly_this_turn = false;
+    for (DeckCard& card : discard_pile) card.sly_this_turn = false;
+
+    // Pael's Eye: the first turn of the combat ended without a card played exhausts the hand and gives an
+    // extra turn, the enemies do not act in between.
+    bool extra_turn = false;
+    if (counters.cards_played() == 0 && power_amount(PowerId::PAELS_EYE) > 0) {
+        for (size_t i = powers.size(); i-- > 0;) {
+            if (powers[i].id == PowerId::PAELS_EYE) powers.erase(i);
+        }
+        extra_turn = true;
+        while (!hand.empty()) exhaust_from_hand(hand.size() - 1);
     }
 
     // Cards that hurt while they are still in hand (Burn, curses).
@@ -5797,6 +5967,12 @@ void CombatEngine::end_player_turn() {
     if (!has_alive_enemies()) {
         state = CombatState::VICTORY;
         set_log("Victory!");
+        return;
+    }
+
+    if (extra_turn) {
+        start_player_turn();
+        set_log("Extra turn!");
         return;
     }
 
@@ -6081,6 +6257,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "DUPLICATOR") {
         add_power(PowerId::DUPLICATION, 1, true);
         set_log("Duplicator!");
+    } else if (potion_id == "DROPLET_OF_PRECOGNITION") {
+        ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, 1);
+        set_log("Droplet of Precognition!");
     } else {
         return false;
     }
