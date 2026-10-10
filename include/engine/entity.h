@@ -25,6 +25,8 @@ public:
     uint8_t fresh_debuffs = 0;
     uint8_t debilitate_turns = 0;          // turns left where this entity's Vulnerable and Weak are twice as effective
     bool halve_vulnerable_damage = false;  // takes 50% less damage from Vulnerable enemies until its next turn (Colossus)
+    // HP this entity may still lose this turn, -1 for no limit (Beating Remnant, set at the start of the player's turn)
+    int16_t hp_loss_budget = -1;
 
     bool is_alive() const { return hp > 0; }
 
@@ -113,6 +115,11 @@ public:
         if (get_status(StatusType::BUFFER) > 0) {
             add_status(StatusType::BUFFER, -1);
             return 0;
+        }
+        if (hp_loss_budget >= 0) {
+            amount = static_cast<int16_t>(amount < hp_loss_budget ? amount : hp_loss_budget);
+            hp_loss_budget = static_cast<int16_t>(hp_loss_budget - amount);
+            if (amount <= 0) return 0;
         }
         hp = static_cast<int16_t>(hp - amount);
         if (hp < 0) hp = 0;

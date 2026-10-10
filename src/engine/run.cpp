@@ -1129,6 +1129,8 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", // Shared, out of combat
+        "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
@@ -1282,6 +1284,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("CHARONS_ASHES")) combat.add_power(PowerId::CHARONS_ASHES, 3);
     if (has_relic("RED_SKULL")) combat.add_power(PowerId::RED_SKULL, 3);
     if (has_relic("DEMON_TONGUE")) combat.add_power(PowerId::DEMON_TONGUE);
+    if (has_relic("BEATING_REMNANT")) combat.add_power(PowerId::BEATING_REMNANT, BEATING_REMNANT_HP_LOSS);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);

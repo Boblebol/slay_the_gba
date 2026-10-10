@@ -42,6 +42,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "CIRCLET", "C'est un diadème." },
     { "CLOAK_CLASP", "À la fin de votre tour, gagnez 1 d'Armure pour chaque carte dans votre Main." },
     { "DATA_DISK", "Commencez chaque combat avec 1 de Focalisation." },
+    { "BEATING_REMNANT", "Vous ne pouvez perdre plus de 20 PV en un seul tour." },
     { "BELT_BUCKLE", "Sans Potion, vous avez 2 de Dextérité supplémentaire." },
     { "DELICATE_FROND", "Au début de chaque combat, remplissez vos emplacements de potion vides avec des Potions aléatoires." },
     { "DEMON_TONGUE", "La première fois que vous perdez des PV pendant votre tour, vous récupérez autant de PV." },
