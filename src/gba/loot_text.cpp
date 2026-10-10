@@ -38,6 +38,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "CENTENNIAL_PUZZLE", "La première fois que vous perdez des PV chaque combat, piochez 3 cartes." },
     { "CHANDELIER", "Au début de votre 3ème tour, gagnez 3 ●." },
     { "CHARONS_ASHES", "Chaque fois que vous Épuisez une carte, infligez 3 dégâts à TOUS les ennemis." },
+    { "CIRCLET", "C'est un diadème." },
     { "CLOAK_CLASP", "À la fin de votre tour, gagnez 1 d'Armure pour chaque carte dans votre Main." },
     { "DATA_DISK", "Commencez chaque combat avec 1 de Focalisation." },
     { "BELT_BUCKLE", "Sans Potion, vous avez 2 de Dextérité supplémentaire." },
