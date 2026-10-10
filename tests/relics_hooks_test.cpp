@@ -1711,6 +1711,30 @@ void test_ringing_triangle() {
     std::cout << "[PASS] Ringing Triangle: the first hand is kept at the end of the first turn" << std::endl;
 }
 
+void test_toolbox() {
+    // With the relic: 3 Colorless cards are offered at the start of the combat, and the one picked joins the hand.
+    RunManager toolbox = make_relic_run(CharacterId::IRONCLAD, { "TOOLBOX" });
+    CombatEngine& combat = toolbox.combat;
+    assert(combat.choice_pending() && combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.offers.size() == 3 && combat.choice_size() == 1);
+    assert(combat.hand.size() == 5);
+    for (const DeckCard& offered : combat.offers) assert(card_meta(offered.id).pool == CardPool::COLORLESS);
+    const DeckCard picked = combat.offers[1];
+    const uint8_t picks[] = { 1 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending() && combat.offers.empty());
+    assert(combat.hand.size() == 6 && combat.hand.back().id == picked.id);
+    assert(combat.hand.back().deck_index == NOT_IN_DECK);
+    // Offered once per combat: the next turn is dealt its own hand, with no new offer.
+    end_turn_idle(combat);
+    assert(!combat.choice_pending() && combat.hand.size() == 5);
+
+    // Without the relic: no offer at the start of the combat.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(!plain.combat.choice_pending() && plain.combat.offers.empty() && plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Toolbox: a Colorless card is picked from 3 offers at the start of the combat" << std::endl;
+}
+
 void test_cursed_pearl() {
     // Obtained: a Greed curse joins the deck and 333 gold is paid once.
     RunManager run;
@@ -2249,6 +2273,7 @@ int main() {
     test_ghost_seed();
     test_reptile_trinket();
     test_ringing_triangle();
+    test_toolbox();
     test_pen_nib();
     test_strike_dummy();
     test_white_beast_statue();
