@@ -394,7 +394,9 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::FAN_OF_KNIVES, CardId::PHANTOM_BLADES, CardId::ACCURACY,
                                               CardId::UP_MY_SLEEVE, CardId::KNIFE_TRAP, CardId::ACROBATICS,
                                               CardId::DAGGER_THROW, CardId::PREPARED, CardId::HIDDEN_DAGGERS,
-                                              CardId::EXPOSE };
+                                              CardId::EXPOSE, CardId::TACTICIAN, CardId::ABRASIVE,
+                                              CardId::MASTER_PLANNER, CardId::HAND_TRICK, CardId::UNTOUCHABLE,
+                                              CardId::RICOCHET, CardId::REFLEX, CardId::FLICK_FLACK };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
                                               CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
                                               CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,

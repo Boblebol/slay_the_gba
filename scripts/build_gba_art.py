@@ -742,6 +742,14 @@ CARDS: list[CardArt] = [
     CardArt("bad_luck", "curse", "bad_luck", "status", (NO_COST, NO_COST)),
     CardArt("debt", "curse", "debt", "status", (NO_COST, NO_COST)),
     CardArt("spore_mind", "curse", "spore_mind", "status", (1, 1)),
+    CardArt("tactician", "silent", "tactician", "skill", (3, 3)),
+    CardArt("abrasive", "silent", "abrasive", "power", (3, 3)),
+    CardArt("master_planner", "silent", "master_planner", "power", (2, 1)),
+    CardArt("hand_trick", "silent", "hand_trick", "skill", (1, 1)),
+    CardArt("untouchable", "silent", "untouchable", "skill", (2, 2)),
+    CardArt("ricochet", "silent", "ricochet", "attack", (2, 2)),
+    CardArt("reflex", "silent", "reflex", "skill", (3, 3)),
+    CardArt("flick_flack", "silent", "flick_flack", "attack", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

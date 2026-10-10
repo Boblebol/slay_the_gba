@@ -602,6 +602,15 @@ enum class CardId : uint16_t {
     BAD_LUCK,
     DEBT,
     SPORE_MIND,
+    // Sly (Silent): played for free when discarded from the hand during the turn
+    TACTICIAN,
+    ABRASIVE,
+    MASTER_PLANNER,
+    HAND_TRICK,
+    UNTOUCHABLE,
+    RICOCHET,
+    REFLEX,
+    FLICK_FLACK,
     COUNT
 };
 
@@ -630,6 +639,8 @@ struct DeckCard {
     int8_t cost_delta = 0;      // energy cost change of this copy for the combat (Momentum Strike, Modded)
     bool free_this_turn = false; // this copy costs 0 until the end of the turn (Bullet Time)
     bool cost_one_this_turn = false; // this copy costs at most 1 until the end of the turn (Enlightenment)
+    bool sly_combat = false;    // this copy has Sly for the rest of the combat (Master Planner)
+    bool sly_this_turn = false; // this copy has Sly until the end of the turn (Hand Trick)
     uint8_t deck_index = NOT_IN_DECK; // position of the card in the run's deck, for the gains that outlive the combat
     Enchantment enchantment = Enchantment::NONE;
 
@@ -651,7 +662,8 @@ enum CardKeyword : uint16_t {
     KEYWORD_PLAY_FIRST = 64,  // while in hand, it must be played before any other card
     KEYWORD_LIMIT_PLAYS = 128, // while in hand, no more than MAX_PLAYS_WHEN_LIMITED cards can be played each turn
     KEYWORD_UNPLAYABLE = 256, // cannot be played from the hand; played by another card, it does nothing
-    KEYWORD_ETERNAL = 512     // can never be removed from the deck nor transformed (shop, events, relics)
+    KEYWORD_ETERNAL = 512,    // can never be removed from the deck nor transformed (shop, events, relics)
+    KEYWORD_SLY = 1024        // discarded from the hand during the turn: played for free (Silent)
 };
 
 constexpr uint8_t MAX_PLAYS_WHEN_LIMITED = 3;
@@ -733,6 +745,8 @@ struct CardDef {
     static bool has_keyword(const DeckCard& card, CardKeyword keyword) {
         return (card.added_keywords & keyword) != 0 || has_keyword(card.id, card.upgraded, keyword);
     }
+    // Sly: from its definition, or given to that copy during the combat.
+    static bool is_sly(const DeckCard& card) { return card.sly_combat || card.sly_this_turn || has_keyword(card, KEYWORD_SLY); }
     // An Eternal card stays in the deck: it is never removed nor transformed.
     static bool is_eternal(const DeckCard& card) { return has_keyword(card.id, card.upgraded, KEYWORD_ETERNAL); }
     static bool is_x_cost(CardId id, bool upgraded) {
