@@ -835,6 +835,28 @@ void test_paels_legion() {
     std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
 }
 
+void test_sand_castle() {
+    // Obtained: six cards of the deck are upgraded, never more than the deck holds.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    auto upgraded_count = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) n += r.master_deck[i].upgraded ? 1 : 0;
+        return n;
+    };
+    int before = upgraded_count(run);
+    run.add_relic("SAND_CASTLE");
+    assert(run.has_relic("SAND_CASTLE"));
+    assert(upgraded_count(run) == std::min(before + 6, static_cast<int>(run.master_deck.size())));
+
+    // Without the relic, no card is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("SAND_CASTLE") && upgraded_count(plain) == before);
+    std::cout << "[PASS] Sand Castle: upgrades 6 random cards when obtained" << std::endl;
+}
+
 void test_golden_pearl() {
     // Obtained: 150 gold, paid once.
     RunManager run;
@@ -876,6 +898,7 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    test_sand_castle();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
