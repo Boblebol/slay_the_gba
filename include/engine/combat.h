@@ -239,6 +239,8 @@ public:
     bool double_block_turn = false;   // the Block gained this turn is doubled (Shadowmeld)
     bool unmovable_used = false;      // Unmovable already doubled a Block this turn
     bool attack_double_next = false;  // Attacks deal double damage on the next turn (Shadow Step)
+    uint8_t fairy_bottles = 0;        // Fairy in a Bottle potions ready to revive the player (automatic, set by the run)
+    uint8_t fairy_used = 0;           // Fairy in a Bottle potions spent during this combat
     bool triple_next_attack = false;  // the next Attack played deals triple damage (Gigantification Potion)
     bool attack_double_now = false;   // Attacks deal double damage this turn
     bool pen_nib_now = false;         // the Attack being played deals double damage (Pen Nib)
