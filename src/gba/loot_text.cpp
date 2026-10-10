@@ -103,6 +103,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "JEWELRY_BOX", "Lorsque vous obtenez cette relique, ajoutez 1 Apothéose à votre Deck." },
     { "TANXS_WHISTLE", "Lorsque vous obtenez cette relique, ajoutez 1 Sifflet à votre Deck." },
     { "STORYBOOK", "Lorsque vous obtenez cette relique, ajoutez 1 Flamme éclatante à votre Deck." },
+    { "NEOWS_TORMENT", "Lorsque vous obtenez cette relique, ajoutez 1 Fureur de Neow à votre Deck." },
     { "SIGNET_RING", "Lorsque vous obtenez cette relique, obtenez 888 Pièces d'or." },
     { "SERE_TALON", "Lorsque vous obtenez cette relique, perdez 9 PV Max. Ajoutez 3 Vœux à votre Deck." },
     { "SHURIKEN", "Chaque fois que vous jouez 3 Attaques en un seul tour, gagnez 1 de Force." },

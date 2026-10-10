@@ -835,6 +835,30 @@ void test_paels_legion() {
     std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
 }
 
+void test_neows_torment() {
+    // Obtained: one Neow's Fury is added to the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    auto fury_count = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) n += r.master_deck[i].id == CardId::NEOWS_FURY ? 1 : 0;
+        return n;
+    };
+    int before = fury_count(run);
+    size_t size_before = run.master_deck.size();
+    run.add_relic("NEOWS_TORMENT");
+    assert(run.has_relic("NEOWS_TORMENT"));
+    assert(fury_count(run) == before + 1);
+    assert(run.master_deck.size() == size_before + 1);
+
+    // Without the relic: no Neow's Fury is added.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(fury_count(plain) == before);
+    std::cout << "[PASS] Neow's Torment: adds 1 Neow's Fury to the deck when obtained" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -857,6 +881,7 @@ int main() {
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
+    test_neows_torment();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
