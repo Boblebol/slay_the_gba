@@ -2300,6 +2300,26 @@ void test_war_paint() {
     std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
 }
 
+void test_toxic_egg() {
+    // With the relic: a Skill added to the Deck comes in upgraded; an Attack does not.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 495);
+    with.add_relic("TOXIC_EGG");
+    with.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    with.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(with.master_deck.back().id == CardId::STRIKE && !with.master_deck.back().upgraded);
+    assert(with.master_deck[with.master_deck.size() - 2].id == CardId::DEFEND);
+    assert(with.master_deck[with.master_deck.size() - 2].upgraded);
+
+    // Without the relic: the Skill is added as it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 495);
+    plain.add_relic("ANCHOR");
+    plain.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    assert(!plain.has_relic("TOXIC_EGG") && !plain.master_deck.back().upgraded);
+    std::cout << "[PASS] Toxic Egg: a Skill added to the Deck is upgraded" << std::endl;
+}
+
 void test_dragon_fruit() {
     // With the relic: each gain of Gold raises the Max HP by 1, a gain of 0 changes nothing.
     RunManager with;
@@ -2631,6 +2651,7 @@ int main() {
     test_pear();
     test_whetstone();
     test_dragon_fruit();
+    test_toxic_egg();
     test_amethyst_aubergine();
     test_lucky_fysh();
     test_book_of_five_rings();

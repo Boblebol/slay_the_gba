@@ -994,6 +994,8 @@ void RunManager::on_card_added(DeckCard& card) {
     count_hook(RunHook::CARD_ADDED);
     // Frozen Egg: a Power added to the Deck is upgraded.
     if (has_relic("FROZEN_EGG") && CardDef::get(card.id).type == CardType::POWER) card.upgraded = true;
+    // Toxic Egg: a Skill added to the Deck is Upgraded.
+    if (has_relic("TOXIC_EGG") && CardDef::get(card.id).type == CardType::SKILL) card.upgraded = true;
 }
 
 void RunManager::on_gold_gained(int16_t) {
@@ -1275,6 +1277,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         "GIRYA",
         // Potion at the start of each combat (#497)
         "PETRIFIED_TOAD"
+        "DINGY_RUG",
+        // Skills added to the Deck are upgraded (#495)
+        "TOXIC_EGG"
     };
     return ACTIVE_RELICS;
 }
