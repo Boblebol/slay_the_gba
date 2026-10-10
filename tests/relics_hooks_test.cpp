@@ -1744,6 +1744,38 @@ void test_cauldron() {
     std::cout << "[PASS] Cauldron: 5 random potions brewed on pickup" << std::endl;
 }
 
+void test_tungsten_rod() {
+    // With the relic: each HP loss is 1 smaller, Block absorbs the hit first, and a 1 HP loss is cancelled.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("TUNGSTEN_ROD");
+    with.potions.clear();
+    enter_room_of_type(with, RoomType::MONSTER);
+    CombatEngine& tungsten = with.combat;
+    tungsten.player.hp = 50;
+    tungsten.player.block = 0;
+    tungsten.lose_hp(5);
+    assert(tungsten.player.hp == 46);
+    tungsten.lose_hp(1);
+    assert(tungsten.player.hp == 46);
+    tungsten.player.block = 3;
+    tungsten.damage_player(5); // 3 blocked, 2 unblocked: 1 HP lost
+    assert(tungsten.player.hp == 45 && tungsten.player.block == 0);
+
+    // Without the relic: every HP loss is whole.
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    without.potions.clear();
+    enter_room_of_type(without, RoomType::MONSTER);
+    without.combat.player.hp = 50;
+    without.combat.player.block = 0;
+    without.combat.lose_hp(5);
+    assert(without.combat.player.hp == 45);
+    without.combat.lose_hp(1);
+    assert(without.combat.player.hp == 44);
+    std::cout << "[PASS] Tungsten Rod: 1 less HP lost each time" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1804,5 +1836,6 @@ int main() {
     test_pen_nib();
     test_white_beast_statue();
     test_cauldron();
+    test_tungsten_rod();
     return 0;
 }

@@ -25,6 +25,7 @@ public:
     uint8_t fresh_debuffs = 0;
     uint8_t debilitate_turns = 0;          // turns left where this entity's Vulnerable and Weak are twice as effective
     bool halve_vulnerable_damage = false;  // takes 50% less damage from Vulnerable enemies until its next turn (Colossus)
+    uint8_t hp_loss_reduction = 0;         // every HP loss is this much smaller (Tungsten Rod, the player only)
 
     bool is_alive() const { return hp > 0; }
 
@@ -108,6 +109,7 @@ public:
     // HP loss that Block does not absorb: Intangible reduces it to 1, Buffer cancels it. Returns the loss that went
     // through, which can be more than the HP that was left.
     int16_t lose_hp(int16_t amount) {
+        if (amount > 0) amount = static_cast<int16_t>(amount > hp_loss_reduction ? amount - hp_loss_reduction : 0);
         if (amount <= 0) return 0;
         if (amount > 1 && get_status(StatusType::INTANGIBLE) > 0) amount = 1;
         if (get_status(StatusType::BUFFER) > 0) {
@@ -223,6 +225,7 @@ public:
         minion_hp = 0;
         minion_block = 0;
         minion_max_hp = 0;
+        hp_loss_reduction = 0;
     }
 
     void reset_turn() {
