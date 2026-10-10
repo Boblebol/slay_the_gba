@@ -3199,6 +3199,25 @@ void test_infused_core() {
     std::cout << "[PASS] Infused Core: 3 Lightning orbs at the start of each combat, each 1 damage more" << std::endl;
 }
 
+void test_sword_of_jade() {
+    // With the relic: 3 Strength at the start of the combat, so an Attack hits for 3 more.
+    RunManager with = make_relic_run(CharacterId::IRONCLAD, { "SWORD_OF_JADE" });
+    assert(with.combat.player.get_status(StatusType::STRENGTH) == 3);
+    with.combat.enemies[0].hp = 100;
+    with.combat.enemies[0].block = 0;
+    play(with.combat, CardId::STRIKE);
+    assert(with.combat.enemies[0].hp == 100 - (6 + 3));
+
+    // Without the relic: no Strength at the start of the combat.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.player.get_status(StatusType::STRENGTH) == 0);
+    plain.combat.enemies[0].hp = 100;
+    plain.combat.enemies[0].block = 0;
+    play(plain.combat, CardId::STRIKE);
+    assert(plain.combat.enemies[0].hp == 100 - 6);
+    std::cout << "[PASS] Sword of Jade: 3 Strength at the start of each combat" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3300,6 +3319,7 @@ int main() {
     test_dragon_fruit();
     test_toxic_egg();
     test_amethyst_aubergine();
+    test_sword_of_jade();
     test_lucky_fysh();
     test_book_of_five_rings();
     test_prayer_wheel();

@@ -1534,6 +1534,8 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("BRONZE_SCALES")) combat.player.add_status(StatusType::THORNS, 3);
     if (has_relic("GORGET")) combat.player.add_status(StatusType::PLATED_ARMOR, 4);
     if (has_relic("AKABEKO")) combat.player.add_status(StatusType::VIGOR, 8);
+    // Sword of Jade (event): start each combat with 3 Strength.
+    if (has_relic("SWORD_OF_JADE")) combat.player.add_status(StatusType::STRENGTH, 3);
     // Ring of the Snake (Silent): draw 2 additional cards on the first turn.
     if (has_relic("RING_OF_THE_SNAKE")) {
         combat.draw_cards(2);

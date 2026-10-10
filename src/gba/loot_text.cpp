@@ -220,6 +220,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "TWISTED_FUNNEL", "Au début de chaque combat, appliquez 4 de Poison à TOUS les ennemis." },
     { "HISTORY_COURSE", "Au début de votre tour, jouez une copie de la dernière Attaque que vous avez jouée." },
     { "UNCEASING_TOP", "Chaque fois que votre Main est vide pendant votre tour, piochez une carte." },
+    { "SWORD_OF_JADE", "Démarrez chaque combat avec 3 de Force." },
     { "VAJRA", "Démarrez chaque combat avec 1 de Force." },
     { "VERY_HOT_COCOA", "Démarrez chaque combat avec 4 ● supplémentaires." },
     { "VEXING_PUZZLEBOX", "Au début de chaque combat, ajoutez une carte aléatoire à votre Main. Elle coûte 0 ce tour." },
