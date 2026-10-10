@@ -1211,6 +1211,27 @@ void test_meal_ticket() {
     std::cout << "[PASS] Meal Ticket: 15 HP when entering a shop" << std::endl;
 }
 
+void test_shovel() {
+    // With the Shovel: a Rest Site digs up one random relic the run does not own yet.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("SHOVEL");
+    size_t before = run.relics.size();
+    enter_room_of_type(run, RoomType::REST_SITE);
+    assert(run.dig_at_campfire());
+    assert(run.relics.size() == before + 1 && run.phase == RunPhase::MAP_NAVIGATION);
+    assert(run.hook_count(RunHook::RESTED) == 0); // digging is not resting
+
+    // Without the Shovel: nothing is dug up.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_before = plain.relics.size();
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    assert(!plain.dig_at_campfire());
+    assert(plain.relics.size() == plain_before && !plain.has_relic("SHOVEL"));
+    std::cout << "[PASS] Shovel: a random relic dug up at a Rest Site, nothing without it" << std::endl;
+}
+
 void test_tiny_mailbox() {
     // With the relic: each Rest procures 2 potions.
     RunManager run;
@@ -2568,5 +2589,6 @@ int main() {
     test_molten_egg();
     test_frozen_egg();
     test_girya();
+    test_shovel();
     return 0;
 }

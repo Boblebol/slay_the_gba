@@ -150,6 +150,8 @@ public:
     // Girya: gains 1 Strength for every combat of the run, at most 3 times. Uses up the rest site. False without the
     // relic or once the 3 lifts are done.
     bool lift_at_campfire();
+    // Shovel: digs for a random relic at the campfire (false when there is none to find).
+    bool dig_at_campfire();
 
     // Shop actions
     void open_shop();
