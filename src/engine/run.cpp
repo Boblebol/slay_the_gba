@@ -1246,6 +1246,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         "WHETSTONE", "WAR_PAINT",
         // Upgrades a Power added to the Deck (#494)
         "FROZEN_EGG"
+        "DINGY_RUG",
+        // A Colorless card offered at the start of the combat (#496)
+        "TOOLBOX"
     };
     return ACTIVE_RELICS;
 }
@@ -1456,6 +1459,10 @@ void RunManager::apply_combat_start_relics() {
         DeckCard gift(pool[next_random() % pool.size()]);
         gift.free_this_turn = combat.hand.size() < combat.hand.capacity();
         combat.create_card(gift, Pile::HAND);
+    }
+    // Toolbox: 3 random Colorless cards are offered, the one picked goes to the hand.
+    if (has_relic("TOOLBOX")) {
+        combat.offer_random_cards(CardFilter(CardPool::COLORLESS), 3);
     }
     // Jeweled Mask (ancient): a random Power of the draw pile goes to the hand and costs 0 for the combat.
     if (has_relic("JEWELED_MASK") && combat.hand.size() < combat.hand.capacity()) {
