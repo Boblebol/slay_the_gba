@@ -1402,9 +1402,9 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (target.get_status(StatusType::WEAK) > 0) percent += power_amount(PowerId::TRACKING);
     if (resolving_card && counters.attacks_played == 0) percent += power_amount(PowerId::LETHALITY);
     if (attack_double_now) percent *= 2;
+    if (resolving_card && triple_next_attack) percent *= 3;
     if (pen_nib_now && resolving_card) percent *= 2;
     if (strike_played_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY));
-    if (gigantic_now && resolving_card) percent *= 3;
     int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
@@ -1683,8 +1683,7 @@ void CombatEngine::reset_combat_state() {
     unmovable_used = false;
     attack_double_next = false;
     attack_double_now = false;
-    gigantic_next = false;
-    gigantic_now = false;
+    triple_next_attack = false;
     no_card_block_turns = 0;
     rebound_pending = false;
     fatal_kills = 0;
@@ -2106,12 +2105,6 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         played.cost = paid;
         emit(CombatEvent::CARD_PLAYED, played);
 
-        // Gigantification: the first Attack played after the potion deals triple damage, all its hits included.
-        if (gigantic_next && played_type == CardType::ATTACK) {
-            gigantic_next = false;
-            gigantic_now = true;
-        }
-
         // Resolve target: a reaction may have killed the one that was aimed at
         int target_idx = random_target ? random_alive_enemy_index() : target_index;
         if (target_idx < 0 || target_idx >= static_cast<int>(enemies.size()) || !enemies[target_idx].is_alive()) {
@@ -2128,9 +2121,11 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         resolving_card = false;
         pen_nib_now = false;
         strike_played_now = false;
-        gigantic_now = false;
         // Vigor goes to the first Attack played, all its hits included.
-        if (played_type == CardType::ATTACK) player.clear_status(StatusType::VIGOR);
+        if (played_type == CardType::ATTACK) {
+            player.clear_status(StatusType::VIGOR);
+            triple_next_attack = false;
+        }
 
         // Keep primary enemy in sync
         if (!enemies.empty()) {
@@ -5329,6 +5324,39 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Phantom Blades+!"sv : "Played Phantom Blades!"sv);
             break;
         }
+        case CardId::HAND_OF_GREED: {
+            hit(current_target, base_value);
+            if (fatal_kills > 0) gold_gained = static_cast<int16_t>(gold_gained + base_value);
+            set_log(upgraded ? "Played Hand of Greed+!"sv : "Played Hand of Greed!"sv);
+            break;
+        }
+        case CardId::THE_HUNT: {
+            hit(current_target, base_value);
+            if (fatal_kills > 0) extra_card_rewards = bump(extra_card_rewards);
+            set_log(upgraded ? "Played The Hunt+!"sv : "Played The Hunt!"sv);
+            break;
+        }
+        case CardId::ROYALTIES: {
+            add_power(PowerId::ROYALTIES, base_value);
+            set_log(upgraded ? "Played Royalties+!"sv : "Played Royalties!"sv);
+            break;
+        }
+        case CardId::FORBIDDEN_GRIMOIRE: {
+            add_power(PowerId::FORBIDDEN_GRIMOIRE, 1);
+            set_log(upgraded ? "Played Forbidden Grimoire+!"sv : "Played Forbidden Grimoire!"sv);
+            break;
+        }
+        case CardId::ALCHEMIZE: {
+            potions_gained = bump(potions_gained);
+            set_log(upgraded ? "Played Alchemize+!"sv : "Played Alchemize!"sv);
+            break;
+        }
+        case CardId::THE_GAMBIT: {
+            gain_block(base_value);
+            gambit_active = true;
+            set_log(upgraded ? "Played The Gambit+!"sv : "Played The Gambit!"sv);
+            break;
+        }
         case CardId::SHADOWMELD: {
             double_block_turn = true;
             set_log(upgraded ? "Played Shadowmeld+!"sv : "Played Shadowmeld!"sv);
@@ -6097,6 +6125,8 @@ void CombatEngine::execute_enemy_turn() {
             enemies[i].temp_strength_loss = 0;
 
             record.damage_to_player = hp_before - player.hp;
+            // The Gambit: one unblocked point of attack damage and the hero is dead.
+            if (gambit_active && record.damage_to_player > 0 && enemies[i].current_intent.base_damage > 0) player.hp = 0;
             note_player_hp_lost(record.damage_to_player);
             record.damage_blocked = shield_before - (player.block + player.minion_hp + player.minion_block);
             record.block_gained = enemies[i].block; // execute_turn() clears block before gaining it
@@ -6154,6 +6184,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         }
         damage_enemy(enemies[target_index], 20);
         set_log("Fire Potion!");
+    } else if (potion_id == "GIGANTIFICATION_POTION") {
+        triple_next_attack = true;
+        set_log("Gigantification Potion!");
     } else if (potion_id == "BLOCK_POTION") {
         add_block(12); // Potion Block is not modified by Dexterity
         set_log("Block Potion!");
@@ -6341,9 +6374,6 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
             create_card(made, Pile::HAND);
         }
         set_log("Orobic Acid!");
-    } else if (potion_id == "GIGANTIFICATION_POTION") {
-        gigantic_next = true; // the next Attack played deals triple damage
-        set_log("Gigantification Potion!");
     } else {
         return false;
     }

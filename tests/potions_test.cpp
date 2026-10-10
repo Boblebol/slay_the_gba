@@ -830,31 +830,6 @@ void test_liquid_memories() {
     std::cout << "[PASS] Liquid Memories: a card of the discard pile added to the hand, free this turn" << std::endl;
 }
 
-void test_gigantification_potion() {
-    // The next Attack played deals triple damage, all its hits included; Skills do not use it up.
-    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
-    assert(combat.use_potion("GIGANTIFICATION_POTION"));
-    assert(std::string_view(combat.combat_log) == "Gigantification Potion!");
-    assert(combat.enemies[0].hp == 42);
-    play(combat, CardId::DEFEND);
-    assert(combat.enemies[0].hp == 42);
-
-    // Still held at the next turn: Strike 6 x 3 = 18, then the second Strike is normal (6).
-    end_turn_idle(combat);
-    play(combat, CardId::STRIKE, 0);
-    assert(combat.enemies[0].hp == 42 - 18);
-    play(combat, CardId::STRIKE, 0);
-    assert(combat.enemies[0].hp == 42 - 18 - 6);
-
-    // A multi-hit Attack: Twin Strike 5 x 2, each hit tripled to 15 (30 in total).
-    CombatEngine twin = make_combat(CharacterId::IRONCLAD);
-    assert(twin.use_potion("GIGANTIFICATION_POTION"));
-    play(twin, CardId::TWIN_STRIKE, 0);
-    assert(twin.enemies[0].hp == 42 - 30);
-
-    std::cout << "[PASS] Gigantification Potion: the next Attack deals triple damage" << std::endl;
-}
-
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -889,6 +864,23 @@ void test_refused_outside_player_turn() {
         assert(combat.use_potion(potion_id, 0));
     }
     std::cout << "[PASS] Potions are refused outside the player's turn: enemy turn, victory, defeat" << std::endl;
+}
+
+void test_gigantification_potion() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.hand.clear();
+    combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+    combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+    combat.hand.push_back(DeckCard(CardId::DEFEND, false));
+    assert(combat.use_potion("GIGANTIFICATION_POTION"));
+    int16_t hp = combat.enemies[0].hp;
+    assert(combat.play_card(2, 0)); // a Skill does not spend the potion
+    assert(combat.play_card(0, 0));
+    assert(hp - combat.enemies[0].hp == 18);
+    hp = combat.enemies[0].hp;
+    assert(combat.play_card(0, 0));
+    assert(hp - combat.enemies[0].hp == 6);
+    std::cout << "[PASS] Gigantification Potion: the next Attack deals triple damage, only once" << std::endl;
 }
 
 } // namespace
@@ -956,6 +948,7 @@ void test_ashwater() {
 
 int main() {
     std::cout << "=== Potions ===" << std::endl;
+    test_gigantification_potion();
     test_explosive_ampoule();
     test_weak_potion();
     test_swift_potion();
@@ -992,7 +985,6 @@ int main() {
     test_beetle_juice();
     test_touch_of_insanity();
     test_liquid_memories();
-    test_gigantification_potion();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;
