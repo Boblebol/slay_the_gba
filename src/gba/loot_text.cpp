@@ -159,6 +159,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "LARGE_CAPSULE", "Lorsque vous obtenez cette relique, obtenez 2 Reliques aléatoires. Ajoutez une Frappe et une Défense à votre Deck." },
     { "CALLING_BELL", "Lorsque vous obtenez cette relique, obtenez une Malédiction spéciale et 3 Reliques." },
     { "CAULDRON", "Lorsque vous obtenez cette relique, concoctez 5 Potions aléatoires." },
+    { "OLD_COIN", "Lorsque vous obtenez cette relique, obtenez 300 Pièces d'or." },
     { "STURDY_CLAMP", "Vous conservez jusqu'à 10 d'Armure entre chaque tour." },
     { "SAI", "Au début de votre tour, gagnez 7 d'Armure." },
     { "SEAL_OF_GOLD", "Au début de votre tour, dépensez 3 Pièces d'or pour gagner 1 ●." },
