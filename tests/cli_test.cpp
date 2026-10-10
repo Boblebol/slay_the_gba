@@ -319,12 +319,12 @@ int main() {
     assert(aeonglass->min_hp == 512);
     std::cout << "[PASS] Monsters database: 112 monsters registered (validated: " << aeonglass->name << " HP: " << aeonglass->min_hp << ")" << std::endl;
 
-    // Test Complete Potions Database (63 potions)
+    // Test Complete Potions Database (64 potions)
     auto all_potions = get_all_potions();
-    assert(all_potions.size() == 63);
+    assert(all_potions.size() == 64);
     const auto* ambergris = find_potion("AMBERGRIS");
     assert(ambergris != nullptr && ambergris->name == "Ambre gris");
-    std::cout << "[PASS] Potions database: 63 potions registered (validated: " << ambergris->name << ")" << std::endl;
+    std::cout << "[PASS] Potions database: 64 potions registered (validated: " << ambergris->name << ")" << std::endl;
 
     // Test Complete Events Database (57 events)
     auto all_events = get_all_events();

@@ -27,6 +27,7 @@ constexpr int THE_COURIER_DISCOUNT = 20;
 constexpr int COOK_REMOVALS = 2; // cards removed by Cook (Meat Cleaver)
 constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
 constexpr int LAVA_ROCK_RELICS = 2; // relics the Act 1 Boss gives to Lava Rock when defeated
+constexpr uint8_t GIRYA_LIFTS = 3;  // most Strength Girya gives, one lift each
 
 constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 0, "Normal", "Difficulté standard de l'Ascension." },
@@ -280,10 +281,24 @@ bool RunManager::cook_at_campfire() {
     return true;
 }
 
+bool RunManager::lift_at_campfire() {
+    if (!has_relic("GIRYA") || relic_counter("GIRYA") >= GIRYA_LIFTS) return false;
+    set_relic_counter("GIRYA", static_cast<uint8_t>(relic_counter("GIRYA") + 1));
+    phase = RunPhase::MAP_NAVIGATION;
+    return true;
+}
+
 void RunManager::finish_cook() {
     if (!cook_pending || has_deck_choice()) return;
     cook_pending = false;
     gain_max_hp(COOK_MAX_HP);
+}
+
+bool RunManager::dig_at_campfire() {
+    if (!has_relic("SHOVEL")) return false;
+    if (gain_random_relics(1) == 0) return false;
+    phase = RunPhase::MAP_NAVIGATION;
+    return true;
 }
 
 bool RunManager::can_smith() const {
@@ -554,19 +569,20 @@ uint32_t RunManager::reward_seed() const {
            (static_cast<uint32_t>(current_node_index + 1) * 0xC2B2AE35u);
 }
 
-void RunManager::draw_card_rewards(bool boss, RewardRng& rng) {
-    // Offer distinct cards drawn at random from the hero's pool.
+void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity) {
+    // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked.
     current_card_rewards.clear();
     FixedVector<CardId, 512> candidates;
+    auto keep = [rarity](CardId id) { return rarity == CardRarity::NONE || card_meta(id).rarity == rarity; };
     for (CardId id : card_reward_pool(character)) {
-        candidates.push_back(id);
+        if (keep(id)) candidates.push_back(id);
     }
     // Prismatic Gem: the other heroes' pools are added too (the pools do not overlap).
     if (has_relic("PRISMATIC_GEM")) {
         for (uint8_t hero = 0; hero < static_cast<uint8_t>(CharacterId::COUNT); ++hero) {
             if (static_cast<CharacterId>(hero) == character) continue;
             for (CardId id : card_reward_pool(static_cast<CharacterId>(hero))) {
-                candidates.push_back(id);
+                if (keep(id)) candidates.push_back(id);
             }
         }
     }
@@ -591,6 +607,8 @@ void RunManager::generate_rewards() {
     bool boss = room == RoomType::BOSS;
 
     draw_card_rewards(boss, rng);
+    // Prayer Wheel: a normal enemy gives one more set of cards, after the first one (as The Hunt does).
+    if (room == RoomType::MONSTER && has_relic("PRAYER_WHEEL")) extra_card_rewards = static_cast<uint8_t>(std::min(255, extra_card_rewards + 1));
 
     // A boss gives 95 to 105 gold.
     gold_reward = boss ? static_cast<int16_t>(95 + rng.below(11)) : 15 + static_cast<int16_t>(next_random() % 15);
@@ -610,6 +628,8 @@ void RunManager::generate_rewards() {
         relic_reward = draw_relic(rng, character, boss ? RelicSource::BOSS : RelicSource::ELITE,
                                   std::span<const std::string_view>(relics.begin(), relics.size()));
     }
+    // White Star: an Elite gives one more set of Rare cards, offered once the first set is taken or skipped.
+    extra_rare_card_rewards = room == RoomType::ELITE && has_relic("WHITE_STAR") ? 1 : 0;
     on_rewards_generated(room);
     phase = RunPhase::REWARD_SCREEN;
 }
@@ -642,6 +662,7 @@ void RunManager::finish_rewards() {
     gold_reward = 0;
     potion_reward = {};
     relic_reward = {};
+    extra_rare_card_rewards = 0;
     // The boss of act 1 or 2: its rewards are taken, the next act opens.
     if (current_node_index >= 0 && map.nodes[current_node_index].type == RoomType::BOSS && current_act < 3) {
         advance_act();
@@ -662,6 +683,13 @@ void RunManager::skip_card_rewards() {
 }
 
 void RunManager::next_card_reward_or_finish() {
+    // White Star: one more set of Rare cards after an Elite.
+    if (extra_rare_card_rewards > 0) {
+        --extra_rare_card_rewards;
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng, CardRarity::RARE);
+        return;
+    }
     // The Hunt: one more set of cards is offered before the rewards are over.
     if (extra_card_rewards > 0) {
         --extra_card_rewards;
@@ -910,6 +938,8 @@ void RunManager::on_room_entered(RoomType room) {
     }
     // Planisphere: each ? room entered heals 5 HP.
     if (room == RoomType::EVENT && has_relic("PLANISPHERE")) heal(5);
+    // Meal Ticket: entering a shop heals 15 HP.
+    if (room == RoomType::SHOP && has_relic("MEAL_TICKET")) heal(15);
 }
 
 void RunManager::on_rested() {
@@ -960,8 +990,10 @@ void RunManager::on_rewards_generated(RoomType) {
     count_hook(RunHook::REWARDS_GENERATED);
 }
 
-void RunManager::on_card_added(DeckCard&) {
+void RunManager::on_card_added(DeckCard& card) {
     count_hook(RunHook::CARD_ADDED);
+    // Frozen Egg: a Power added to the Deck is upgraded.
+    if (has_relic("FROZEN_EGG") && CardDef::get(card.id).type == CardType::POWER) card.upgraded = true;
 }
 
 void RunManager::on_gold_gained(int16_t) {
@@ -1048,6 +1080,8 @@ static constexpr int16_t BOOK_OF_FIVE_RINGS_HEAL = 20;
 
 bool RunManager::add_card_to_deck(DeckCard card) {
     if (master_deck.size() >= master_deck.capacity()) return false;
+    // Molten Egg: an Attack added to the deck comes in upgraded.
+    if (has_relic("MOLTEN_EGG") && CardDef::get(card.id).type == CardType::ATTACK) card.upgraded = true;
     on_card_added(card);
     if (!master_deck.push_back(card)) return false;
     // Lucky Fysh: each card that joins the deck gains gold, whatever the source (reward, shop, event).
@@ -1207,7 +1241,8 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", "VENERABLE_TEA_SET", "PLANISPHERE", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", "VENERABLE_TEA_SET", "PLANISPHERE", "MEAL_TICKET", "SHOVEL", // Shared, out of combat
+        "WHITE_STAR",                         // Shared, rare: an Elite gives one more set of Rare cards
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
@@ -1227,7 +1262,19 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Colorless cards in the card rewards (#486)
         "DINGY_RUG",
         // Out of combat, at the end of a fight without HP lost (#476)
-        "LAVA_LAMP"
+        "LAVA_LAMP",
+        // Extra card reward after a normal fight (#479)
+        "PRAYER_WHEEL",
+        // Upgrades the Attacks added to the deck (#493)
+        "MOLTEN_EGG",
+        // Upgrades a Power added to the Deck (#494)
+        "FROZEN_EGG",
+        // A Colorless card offered at the start of the combat (#496)
+        "TOOLBOX",
+        // Out of combat, at the rest sites (#475)
+        "GIRYA",
+        // Potion at the start of each combat (#497)
+        "PETRIFIED_TOAD"
     };
     return ACTIVE_RELICS;
 }
@@ -1396,9 +1443,15 @@ void RunManager::register_relic_powers() {
 void RunManager::apply_combat_start_relics() {
     // Delicate Frond: fill every empty potion slot with a random potion.
     if (has_relic("DELICATE_FROND")) gain_random_potions(MAX_POTION_SLOTS);
+    // Petrified Toad: procure a Potion-Shaped Rock at the start of each combat (lost if the belt is full).
+    if (has_relic("PETRIFIED_TOAD") && !potion_belt_full()) potions.push_back("POTION_SHAPED_ROCK");
     // Vajra: start each combat with 1 Strength.
     if (has_relic("VAJRA")) {
         combat.player.add_status(StatusType::STRENGTH, 1);
+    }
+    // Girya: the Strength lifted at the rest sites, one point per lift.
+    if (has_relic("GIRYA") && relic_counter("GIRYA") > 0) {
+        combat.player.add_status(StatusType::STRENGTH, relic_counter("GIRYA"));
     }
     // Statuses to start the combat with. Given once the first turn has started, so that Plating does not lose a
     // point before it has given any Block.
@@ -1438,6 +1491,10 @@ void RunManager::apply_combat_start_relics() {
         DeckCard gift(pool[next_random() % pool.size()]);
         gift.free_this_turn = combat.hand.size() < combat.hand.capacity();
         combat.create_card(gift, Pile::HAND);
+    }
+    // Toolbox: 3 random Colorless cards are offered, the one picked goes to the hand.
+    if (has_relic("TOOLBOX")) {
+        combat.offer_random_cards(CardFilter(CardPool::COLORLESS), 3);
     }
     // Jeweled Mask (ancient): a random Power of the draw pile goes to the hand and costs 0 for the combat.
     if (has_relic("JEWELED_MASK") && combat.hand.size() < combat.hand.capacity()) {

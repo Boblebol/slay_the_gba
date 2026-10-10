@@ -1185,6 +1185,53 @@ void test_stone_humidifier() {
     std::cout << "[PASS] Stone Humidifier: +5 Max HP at each Rest Site rest" << std::endl;
 }
 
+void test_meal_ticket() {
+    // With the relic: entering a shop heals 15 HP, capped at Max HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("MEAL_TICKET");
+    run.hp = 10;
+    enter_room_of_type(run, RoomType::SHOP);
+    assert(run.hp == 25);
+    run.hp = run.max_hp - 5;
+    enter_room_of_type(run, RoomType::SHOP);
+    assert(run.hp == run.max_hp);
+
+    // Entering another room heals nothing.
+    run.hp = 10;
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.hp == 10);
+
+    // Without the relic: a shop heals nothing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 10;
+    enter_room_of_type(plain, RoomType::SHOP);
+    assert(!plain.has_relic("MEAL_TICKET") && plain.hp == 10);
+    std::cout << "[PASS] Meal Ticket: 15 HP when entering a shop" << std::endl;
+}
+
+void test_shovel() {
+    // With the Shovel: a Rest Site digs up one random relic the run does not own yet.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("SHOVEL");
+    size_t before = run.relics.size();
+    enter_room_of_type(run, RoomType::REST_SITE);
+    assert(run.dig_at_campfire());
+    assert(run.relics.size() == before + 1 && run.phase == RunPhase::MAP_NAVIGATION);
+    assert(run.hook_count(RunHook::RESTED) == 0); // digging is not resting
+
+    // Without the Shovel: nothing is dug up.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_before = plain.relics.size();
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    assert(!plain.dig_at_campfire());
+    assert(plain.relics.size() == plain_before && !plain.has_relic("SHOVEL"));
+    std::cout << "[PASS] Shovel: a random relic dug up at a Rest Site, nothing without it" << std::endl;
+}
+
 void test_tiny_mailbox() {
     // With the relic: each Rest procures 2 potions.
     RunManager run;
@@ -1754,6 +1801,30 @@ void test_ringing_triangle() {
     std::cout << "[PASS] Ringing Triangle: the first hand is kept at the end of the first turn" << std::endl;
 }
 
+void test_toolbox() {
+    // With the relic: 3 Colorless cards are offered at the start of the combat, and the one picked joins the hand.
+    RunManager toolbox = make_relic_run(CharacterId::IRONCLAD, { "TOOLBOX" });
+    CombatEngine& combat = toolbox.combat;
+    assert(combat.choice_pending() && combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.offers.size() == 3 && combat.choice_size() == 1);
+    assert(combat.hand.size() == 5);
+    for (const DeckCard& offered : combat.offers) assert(card_meta(offered.id).pool == CardPool::COLORLESS);
+    const DeckCard picked = combat.offers[1];
+    const uint8_t picks[] = { 1 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending() && combat.offers.empty());
+    assert(combat.hand.size() == 6 && combat.hand.back().id == picked.id);
+    assert(combat.hand.back().deck_index == NOT_IN_DECK);
+    // Offered once per combat: the next turn is dealt its own hand, with no new offer.
+    end_turn_idle(combat);
+    assert(!combat.choice_pending() && combat.hand.size() == 5);
+
+    // Without the relic: no offer at the start of the combat.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(!plain.combat.choice_pending() && plain.combat.offers.empty() && plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Toolbox: a Colorless card is picked from 3 offers at the start of the combat" << std::endl;
+}
+
 void test_cursed_pearl() {
     // Obtained: a Greed curse joins the deck and 333 gold is paid once.
     RunManager run;
@@ -2152,6 +2223,26 @@ void test_lucky_fysh() {
     std::cout << "[PASS] Lucky Fysh: +15 gold each time a card joins the deck" << std::endl;
 }
 
+void test_molten_egg() {
+    // With the relic, every Attack added to the deck is upgraded; other cards are left as they are.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 493);
+    run.add_relic("MOLTEN_EGG");
+    assert(run.has_relic("MOLTEN_EGG"));
+    run.add_card_to_deck(DeckCard{ CardId::BASH, false });
+    assert(run.master_deck[run.master_deck.size() - 1].upgraded);
+    run.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    assert(!run.master_deck[run.master_deck.size() - 1].upgraded);
+
+    // Without the relic, an Attack added to the deck stays as it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 493);
+    plain.add_relic("ANCHOR");
+    plain.add_card_to_deck(DeckCard{ CardId::BASH, false });
+    assert(!plain.has_relic("MOLTEN_EGG") && !plain.master_deck[plain.master_deck.size() - 1].upgraded);
+    std::cout << "[PASS] Molten Egg: upgrades an Attack added to the deck" << std::endl;
+}
+
 void test_whetstone() {
     // Obtained: two random Attacks of the deck are upgraded, never more than the deck holds.
     auto upgraded_attacks = [](const RunManager& r) {
@@ -2340,8 +2431,123 @@ void test_lava_lamp() {
     std::cout << "[PASS] Lava Lamp: card rewards upgraded after a fight without HP lost" << std::endl;
 }
 
+void test_prayer_wheel() {
+    // A normal fight gives a second set of cards once the first one is taken or skipped.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "PRAYER_WHEEL" });
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN);
+    run.pick_card_reward(0);
+    assert(run.phase == RunPhase::REWARD_SCREEN && run.current_card_rewards.size() > 0);
+    run.skip_card_rewards();
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, a normal fight gives one set only.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    plain.proceed_after_combat();
+    plain.pick_card_reward(0);
+    assert(plain.phase == RunPhase::MAP_NAVIGATION);
+
+    // An elite fight is not a normal fight: one set only.
+    RunManager elite = make_relic_run(CharacterId::IRONCLAD, { "PRAYER_WHEEL" });
+    enter_room_of_type(elite, RoomType::ELITE);
+    elite.proceed_after_combat();
+    elite.pick_card_reward(0);
+    assert(elite.phase == RunPhase::MAP_NAVIGATION);
+    std::cout << "[PASS] Prayer Wheel: a normal fight gives an extra card reward" << std::endl;
+}
+
+void test_frozen_egg() {
+    // With the relic: a Power added to the Deck is upgraded, another card is not.
+    RunManager with = make_relic_run(CharacterId::IRONCLAD, { "FROZEN_EGG" });
+    with.add_card_to_deck(DeckCard{ CardId::INFLAME, false });
+    assert(with.master_deck.back().id == CardId::INFLAME && with.master_deck.back().upgraded);
+    with.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(with.master_deck.back().id == CardId::STRIKE && !with.master_deck.back().upgraded);
+
+    // Without the relic: the Power stays as it is.
+    RunManager without = make_relic_run(CharacterId::IRONCLAD, {});
+    without.add_card_to_deck(DeckCard{ CardId::INFLAME, false });
+    assert(without.master_deck.back().id == CardId::INFLAME && !without.master_deck.back().upgraded);
+    std::cout << "[PASS] Frozen Egg: a Power added to the Deck is upgraded" << std::endl;
+}
+
+void test_girya() {
+    // Rest sites: each lift gives 1 Strength for the rest of the run, 3 times at most, and uses up the rest site.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.phase = RunPhase::CAMPFIRE;
+    assert(!run.lift_at_campfire() && run.relic_counter("GIRYA") == 0 && run.phase == RunPhase::CAMPFIRE);
+    run.add_relic("GIRYA");
+    for (uint8_t lift = 1; lift <= 3; ++lift) {
+        run.phase = RunPhase::CAMPFIRE;
+        assert(run.lift_at_campfire() && run.relic_counter("GIRYA") == lift);
+        assert(run.phase == RunPhase::MAP_NAVIGATION);
+    }
+    run.phase = RunPhase::CAMPFIRE;
+    assert(!run.lift_at_campfire() && run.relic_counter("GIRYA") == 3 && run.phase == RunPhase::CAMPFIRE);
+
+    // Every combat starts with the Strength lifted so far, and with none without the relic.
+    RunManager fight;
+    fight.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    fight.add_relic("GIRYA");
+    assert(fight.set_relic_counter("GIRYA", 2));
+    enter_room_of_type(fight, RoomType::MONSTER);
+    assert(fight.phase == RunPhase::IN_COMBAT && fight.combat.player.get_status(StatusType::STRENGTH) == 2);
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.player.get_status(StatusType::STRENGTH) == 0);
+    std::cout << "[PASS] Girya: +1 Strength per lift at a rest site, 3 times max, carried into each combat" << std::endl;
+}
+
+void test_petrified_toad() {
+    // Each combat starts with a Potion-Shaped Rock in the belt; drinking it deals 15 damage.
+    RunManager toad = make_relic_run(CharacterId::IRONCLAD, { "PETRIFIED_TOAD" });
+    assert(toad.has_relic("PETRIFIED_TOAD"));
+    assert(toad.potions.size() == 1 && toad.potions[0] == "POTION_SHAPED_ROCK");
+    toad.combat.enemies[0].hp = 40;
+    assert(toad.use_potion(0, 0));
+    assert(toad.combat.enemies[0].hp == 25);
+    assert(toad.potions.empty());
+
+    // Without the relic, no potion is given at the start of the combat.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(!plain.has_relic("PETRIFIED_TOAD") && plain.potions.empty());
+    std::cout << "[PASS] Petrified Toad: a Potion-Shaped Rock at the start of each combat" << std::endl;
+}
+
+void test_white_star() {
+    // With the relic, an Elite offers one more set of Rare cards once its first set is taken or skipped.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 492);
+    run.add_relic("WHITE_STAR");
+    enter_room_of_type(run, RoomType::ELITE);
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN);
+    run.pick_card_reward(0);
+    assert(run.phase == RunPhase::REWARD_SCREEN);
+    assert(!run.current_card_rewards.empty());
+    for (DeckCard card : run.current_card_rewards) assert(card_meta(card.id).rarity == CardRarity::RARE);
+    run.skip_card_rewards();
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, the Elite offers only its first set.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 492);
+    plain.add_relic("ANCHOR");
+    enter_room_of_type(plain, RoomType::ELITE);
+    plain.proceed_after_combat();
+    plain.pick_card_reward(0);
+    assert(plain.phase == RunPhase::MAP_NAVIGATION);
+
+    // With the relic, a Monster room gives no extra set.
+    RunManager monster = make_relic_run(CharacterId::IRONCLAD, { "WHITE_STAR" });
+    monster.proceed_after_combat();
+    monster.pick_card_reward(0);
+    assert(monster.phase == RunPhase::MAP_NAVIGATION);
+    std::cout << "[PASS] White Star: an Elite offers one more set of Rare cards" << std::endl;
+}
+
 int main() {
-    std::cout << "=== Relics on Combat Hooks ===" << std::endl;
+  std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
     test_skill_and_power_relics();
     test_exhaust_and_creation_relics();
@@ -2380,6 +2586,7 @@ int main() {
     test_regal_pillow();
     test_eternal_feather();
     test_planisphere();
+    test_meal_ticket();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();
@@ -2402,6 +2609,7 @@ int main() {
     test_calling_bell();
     test_war_paint();
     test_lava_lamp();
+    test_petrified_toad();
     test_belt_buckle();
     test_circlet();
     test_dingy_rug();
@@ -2409,6 +2617,7 @@ int main() {
     test_ghost_seed();
     test_reptile_trinket();
     test_ringing_triangle();
+    test_toolbox();
     test_pen_nib();
     test_strike_dummy();
     test_white_beast_statue();
@@ -2425,5 +2634,11 @@ int main() {
     test_amethyst_aubergine();
     test_lucky_fysh();
     test_book_of_five_rings();
+    test_prayer_wheel();
+    test_molten_egg();
+    test_frozen_egg();
+    test_girya();
+    test_shovel();
+    test_white_star();
     return 0;
 }

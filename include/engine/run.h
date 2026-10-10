@@ -113,6 +113,7 @@ public:
     bool card_rewards_upgraded = false;
     int16_t gold_reward = 0;
     uint8_t extra_card_rewards = 0; // card rewards still to offer after this one (The Hunt)
+    uint8_t extra_rare_card_rewards = 0; // Rare card rewards still to offer after this one (White Star)
     // Potion and relic offered on the reward screen, empty when the fight gave none or once taken.
     std::string_view potion_reward;
     std::string_view relic_reward;
@@ -147,6 +148,11 @@ public:
     // Meat Cleaver: asks for 2 cards of the deck to remove, then gives +5 Max HP and uses up the rest site. With fewer
     // than 2 removable cards it removes what it can and still gives the Max HP. False without the relic.
     bool cook_at_campfire();
+    // Girya: gains 1 Strength for every combat of the run, at most 3 times. Uses up the rest site. False without the
+    // relic or once the 3 lifts are done.
+    bool lift_at_campfire();
+    // Shovel: digs for a random relic at the campfire (false when there is none to find).
+    bool dig_at_campfire();
 
     // Shop actions
     void open_shop();
@@ -255,7 +261,8 @@ private:
     uint32_t reward_seed() const;
     // Leaves the reward screen: the gold is paid, and a boss opens the next act.
     void finish_rewards();
-    void draw_card_rewards(bool boss, RewardRng& rng);
+    // `rarity` restricts the offer to one rarity; NONE draws from every card of the pool.
+    void draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity = CardRarity::NONE);
     void next_card_reward_or_finish();
     // What a relic does when obtained.
     void on_relic_obtained(std::string_view relic_id);
