@@ -560,6 +560,27 @@ void test_very_hot_cocoa() {
     assert(cocoa.combat.player.energy == plain.combat.player.energy);
 }
 
+void test_nutritious_oyster() {
+    // Obtained: 11 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("NUTRITIOUS_OYSTER");
+    assert(run.has_relic("NUTRITIOUS_OYSTER"));
+    assert(run.max_hp == max_hp + 11 && run.hp == 61);
+
+    // Without the relic, nothing raises the maximum HP.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("NUTRITIOUS_OYSTER"));
+    assert(plain.max_hp == max_hp && plain.hp == 50);
+
+    std::cout << "[PASS] Nutritious Oyster: +11 Max HP when obtained" << std::endl;
+}
+
 void test_strawberry() {
     // Obtained: 7 more maximum HP, and the current HP follow.
     RunManager run;
@@ -1004,6 +1025,7 @@ int main() {
     test_paels_blood();
     test_relics_in_a_run();
     test_very_hot_cocoa();
+    test_nutritious_oyster();
     test_strawberry();
     test_small_capsule();
     test_golden_compass();
