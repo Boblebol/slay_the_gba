@@ -835,6 +835,33 @@ void test_paels_legion() {
     std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
 }
 
+void test_booming_conch() {
+    // Booming Conch: in an Elite room, 2 more cards and 1 more energy on the first turn, nothing after it.
+    RunManager plain_elite;
+    plain_elite.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain_elite, RoomType::ELITE);
+    RunManager conch;
+    conch.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    conch.add_relic("BOOMING_CONCH");
+    enter_room_of_type(conch, RoomType::ELITE);
+    assert(conch.combat.hand.size() == plain_elite.combat.hand.size() + 2);
+    assert(conch.combat.player.energy == plain_elite.combat.player.energy + 1);
+    end_turn_idle(conch.combat);
+    end_turn_idle(plain_elite.combat);
+    assert(conch.combat.hand.size() == plain_elite.combat.hand.size());
+    assert(conch.combat.player.energy == plain_elite.combat.player.energy);
+
+    // Not in a monster room: nothing changes.
+    RunManager monster = make_relic_run(CharacterId::IRONCLAD, { "BOOMING_CONCH" });
+    RunManager plain_monster = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(monster.combat.hand.size() == plain_monster.combat.hand.size());
+    assert(monster.combat.player.energy == plain_monster.combat.player.energy);
+
+    // Without the relic, in an Elite room: nothing changes.
+    assert(plain_elite.combat.hand.size() == 5);
+    std::cout << "[PASS] Booming Conch: 2 cards and 1 energy in an Elite room, first turn only" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -857,6 +884,7 @@ int main() {
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
+    test_booming_conch();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

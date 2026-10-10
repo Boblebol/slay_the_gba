@@ -1074,6 +1074,12 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("BAG_OF_PREPARATION")) {
         combat.draw_cards(2);
     }
+    // Booming Conch (Ancient): in an Elite room, 2 additional cards on the first turn and 1 more energy.
+    if (has_relic("BOOMING_CONCH") &&
+        (current_node_index >= 0 ? map.nodes[current_node_index].type : RoomType::MONSTER) == RoomType::ELITE) {
+        combat.draw_cards(2);
+        combat.player.energy = static_cast<int8_t>(combat.player.energy + 1);
+    }
     // Bellows: the first hand of the combat is upgraded, the cards of Ring of the Snake included.
     if (has_relic("BELLOWS")) {
         for (DeckCard& card : combat.hand) card.upgraded = true;
