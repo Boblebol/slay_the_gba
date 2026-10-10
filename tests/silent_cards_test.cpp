@@ -92,11 +92,39 @@ void test_expose() {
     std::cout << "[PASS] Silent: Expose" << std::endl;
 }
 
+void test_tracking() {
+    assert(CardDef::get_cost(CardId::TRACKING, false) == 2);
+    assert(CardDef::get_cost(CardId::TRACKING, true) == 1);
+    assert(CardDef::get(CardId::TRACKING).type == CardType::POWER);
+    assert_in_pool(CharacterId::SILENT, { CardId::TRACKING });
+    for (bool upgraded : { false, true }) {
+        // Weak enemies take 50% more damage from Attacks (Strike 6 -> 9); the upgrade keeps the same 50%.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        play(combat, DeckCard(CardId::TRACKING, upgraded));
+        assert(combat.player.energy == combat.player.max_energy - (upgraded ? 1 : 2));
+        combat.enemies[0].add_status(StatusType::WEAK, 3);
+        int16_t weak_before = combat.enemies[0].hp;
+        int16_t other_before = combat.enemies[1].hp;
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = combat.player.max_energy;
+        assert(combat.play_card(0, 0));
+        assert(weak_before - combat.enemies[0].hp == 9);
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = combat.player.max_energy;
+        assert(combat.play_card(0, 1));
+        assert(other_before - combat.enemies[1].hp == 6);
+    }
+    std::cout << "[PASS] Silent: Tracking" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Silent Cards ===" << std::endl;
     test_expose();
+    test_tracking();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
