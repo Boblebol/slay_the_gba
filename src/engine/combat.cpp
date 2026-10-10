@@ -6187,6 +6187,15 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "STABLE_SERUM") {
         add_power(PowerId::STABLE_SERUM, 2);
         set_log("Stable Serum!");
+    } else if (potion_id == "OROBIC_ACID") {
+        for (CardType type : { CardType::ATTACK, CardType::SKILL, CardType::POWER }) {
+            const CardId card = random_card(CardFilter(type));
+            if (card == CardId::NONE) continue;
+            DeckCard made(card);
+            made.free_this_turn = true;
+            create_card(made, Pile::HAND);
+        }
+        set_log("Orobic Acid!");
     } else {
         return false;
     }

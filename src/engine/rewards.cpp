@@ -29,7 +29,7 @@ constexpr ActivePotion ACTIVE_POTIONS[] = {
     { "FOCUS_POTION", false, CharacterId::DEFECT },
     { "FORTIFIER" }, { "FYSH_OIL" }, { "GAMBLERS_BREW" }, { "GHOST_IN_A_JAR" }, { "GLOWWATER_POTION" }, { "HEART_OF_IRON" },
     { "KINGS_COURAGE", false, CharacterId::REGENT },
-    { "LIQUID_BRONZE" }, { "LUCKY_TONIC" }, { "MAZALETHS_GIFT" }, { "POISON_POTION" }, { "POTION_OF_BINDING" },
+    { "LIQUID_BRONZE" }, { "LUCKY_TONIC" }, { "MAZALETHS_GIFT" }, { "OROBIC_ACID" }, { "POISON_POTION" }, { "POTION_OF_BINDING" },
     { "POTION_OF_CAPACITY", false, CharacterId::DEFECT },
     { "POTION_OF_DOOM" },
     { "POT_OF_GHOULS", false, CharacterId::NECROBINDER },
