@@ -948,6 +948,8 @@ void RunManager::register_relic_powers() {
         for (int copy = 0; copy < 3; ++copy) combat.create_card(CardId::DAZED, Pile::DRAW);
     }
     if (has_relic("BLOOD_SOAKED_ROSE")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Philosopher's Stone (ancient): one more energy each turn.
+    if (has_relic("PHILOSOPHERS_STONE")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Whispering Earring: one more energy each turn, and Vakuu plays the first turn of the combat.
     if (has_relic("WHISPERING_EARRING")) {
         combat.add_power(PowerId::TURN_ENERGY, 1);
@@ -1199,6 +1201,8 @@ void RunManager::apply_combat_start_relics() {
         if (has_relic("BAG_OF_MARBLES")) foe.add_status(StatusType::VULNERABLE, 1);
         if (has_relic("TWISTED_FUNNEL")) combat.afflict(foe, StatusType::POISON, 4);
         if (has_relic("FESTIVE_POPPER")) foe.take_damage(9);
+        // Philosopher's Stone (ancient): every enemy starts the combat with 1 Strength.
+        if (has_relic("PHILOSOPHERS_STONE")) foe.add_status(StatusType::STRENGTH, 1);
     }
     combat.enemy = combat.enemies[0];
     if (!combat.has_alive_enemies()) {

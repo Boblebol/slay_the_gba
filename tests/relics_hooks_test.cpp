@@ -853,6 +853,25 @@ void test_golden_pearl() {
     std::cout << "[PASS] Golden Pearl: +150 gold when obtained" << std::endl;
 }
 
+void test_philosophers_stone() {
+    // Every enemy starts the combat with 1 Strength, the player does not.
+    RunManager stone = make_relic_run(CharacterId::IRONCLAD, { "PHILOSOPHERS_STONE" });
+    for (const Enemy& foe : stone.combat.enemies) assert(foe.get_status(StatusType::STRENGTH) == 1);
+    assert(stone.combat.player.get_status(StatusType::STRENGTH) == 0);
+    RunManager stone_pack = make_relic_run(CharacterId::IRONCLAD, { "PHILOSOPHERS_STONE" });
+    assert(stone_pack.combat.enemy.get_status(StatusType::STRENGTH) == 1);
+
+    // One more energy at the start of each turn: 1 more on the first turn than without the relic.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    for (const Enemy& foe : plain.combat.enemies) assert(foe.get_status(StatusType::STRENGTH) == 0);
+    const int plain_energy = plain.combat.player.energy;
+    assert(stone.combat.player.energy == plain_energy + 1);
+    end_turn_idle(stone.combat);
+    end_turn_idle(plain.combat);
+    assert(stone.combat.player.energy == plain.combat.player.energy + 1);
+    std::cout << "[PASS] Philosopher's Stone: 1 energy each turn, 1 Strength for every enemy" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -876,6 +895,7 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    test_philosophers_stone();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
