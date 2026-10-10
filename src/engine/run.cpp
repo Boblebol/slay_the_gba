@@ -1070,7 +1070,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "MERCURY_HOURGLASS", "CLOAK_CLASP", "POCKETWATCH", "PARRYING_SHIELD", "STONE_CALENDAR", "ART_OF_WAR", "ORICHALCUM",
         "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP", "MEMBERSHIP_CARD",
         // Combat events
-        "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
+        "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "REPTILE_TRINKET", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
         "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA", "GAMBLING_CHIP", "HELICAL_DART", "NINJA_SCROLL",
         // Defect and Necrobinder
         "DATA_DISK", "SYMBIOTIC_VIRUS", "GOLD_PLATED_CABLES", "METRONOME", "RUNIC_CAPACITOR", "POWER_CELL", "EMOTION_CHIP",
@@ -1186,6 +1186,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("THE_ABACUS")) combat.add_power(PowerId::THE_ABACUS, 6);
     if (has_relic("PERMAFROST")) combat.add_power(PowerId::PERMAFROST, 7);
     if (has_relic("GAME_PIECE")) combat.add_power(PowerId::GAME_PIECE, 1);
+    if (has_relic("REPTILE_TRINKET")) combat.add_power(PowerId::REPTILE_TRINKET, 3);
     if (has_relic("CENTENNIAL_PUZZLE")) combat.add_power(PowerId::CENTENNIAL_PUZZLE, 3);
     if (has_relic("LIZARD_TAIL")) combat.add_power(PowerId::LIZARD_TAIL, 50);
     if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);

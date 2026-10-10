@@ -1535,6 +1535,25 @@ void test_paels_eye() {
     std::cout << "[PASS] Pael's Eye: empty first turn exhausts the hand and gives an extra turn" << std::endl;
 }
 
+void test_reptile_trinket() {
+    // With the relic: a potion drunk gives 3 Strength until the end of the turn.
+    CombatEngine trinket = make_relic_combat(CharacterId::IRONCLAD, PowerId::REPTILE_TRINKET, 3);
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 0);
+    assert(trinket.use_potion("BLOCK_POTION"));
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 3);
+    assert(trinket.use_potion("BLOCK_POTION"));
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 6);
+    end_turn_attacked(trinket, 11);
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 0);
+
+    // Without the relic: no Strength.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    assert(plain.use_potion("BLOCK_POTION"));
+    assert(plain.player.get_status(StatusType::STRENGTH) == 0);
+
+    std::cout << "[PASS] Reptile Trinket: 3 Strength this turn per potion used" << std::endl;
+}
+
 void test_cursed_pearl() {
     // Obtained: a Greed curse joins the deck and 333 gold is paid once.
     RunManager run;
@@ -1640,6 +1659,7 @@ int main() {
     test_sand_castle();
     test_paels_horn();
     test_paels_eye();
+    test_reptile_trinket();
     test_cursed_pearl();
     test_calling_bell();
     return 0;

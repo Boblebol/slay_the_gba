@@ -6172,6 +6172,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         return false;
     }
 
+    // Reptile Trinket: a potion drunk gives Strength until the end of the turn.
+    if (has_power(PowerId::REPTILE_TRINKET)) gain_temporary(StatusType::STRENGTH, power_amount(PowerId::REPTILE_TRINKET));
+
     // Keep primary enemy in sync
     if (!enemies.empty()) {
         enemy = enemies[0];

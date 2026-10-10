@@ -49,6 +49,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "JEWELED_MASK", "Au début de chaque combat, placez un Pouvoir aléatoire de votre Pioche dans votre Main. Il coûte 0 ce combat." },
     { "GALACTIC_DUST", "Chaque fois que vous dépensez 10 ★, gagnez 10 d'Armure." },
     { "GAMBLING_CHIP", "Au début de chaque combat, défaussez autant de cartes que vous souhaitez, puis piochez-en le même nombre." },
+    { "REPTILE_TRINKET", "Quand vous utilisez une potion, gagnez 3 Force ce tour." },
     { "GAME_PIECE", "Chaque fois que vous jouez un Pouvoir, piochez 1 carte." },
     { "GOLD_PLATED_CABLES", "Votre orbe le plus à droite déclenche sa capacité passive une fois de plus." },
     { "GORGET", "Au début de chaque combat, gagnez 4 de Blindage." },
