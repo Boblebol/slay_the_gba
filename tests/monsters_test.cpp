@@ -1144,6 +1144,47 @@ void test_eye_with_teeth() {
     std::cout << "[PASS] Eye With Teeth: 6 HP, Distract (3 Dazed into the discard pile) every turn" << std::endl;
 }
 
+void test_stabbot() {
+    // Stab every turn: 11 damage and 1 Frail on the player, Frail wearing off at the end of the round.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::STABBOT);
+    Enemy& bot = combat.enemies[0];
+    assert(bot.type == EnemyType::STABBOT && bot.name == "Poignard-bot");
+    assert(bot.hp >= 18 && bot.hp <= 23 && bot.max_hp == bot.hp && bot.max_hp == 18 + bot.hp_bonus);
+    const int16_t hp = bot.hp;
+    assert(bot.block == 0 && bot.statuses.empty());
+    for (int turn = 1; turn <= 4; ++turn) {
+        assert(combat.turn_number == turn);
+        assert(bot.current_intent.type == ATTACK_DEBUFF && bot.intent_damage(combat.player) == 11);
+        assert(bot.current_intent.debuffs[0].type == StatusType::FRAIL && bot.current_intent.debuffs[0].amount == 1);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == 11);
+        assert(combat.player.get_status(StatusType::FRAIL) >= 1); // renewed each turn, stacking on the one still running
+        assert(combat.last_enemy_actions[0].debuffs[0].type == StatusType::FRAIL);
+        assert(bot.block == 0 && bot.statuses.empty() && bot.hp == hp);
+    }
+    std::cout << "[PASS] Stabbot: 18 to 23 HP, Stab 11 damage + 1 Frail every turn" << std::endl;
+}
+
+void test_stabbot_ascension() {
+    // 19 to 24 HP (18 to 23 plus 1) and a Stab of 12 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::STABBOT);
+        Enemy& bot = combat.enemies[0];
+        bot.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = bot.hp;
+        assert(bot.ascension_hp() == 19 && bot.hp_spread() == 5);
+        assert(base >= 18 && base <= 23 && bot.max_hp == 18 + bot.hp_bonus);
+        bot.ascend(true, true);
+        combat.plan_enemies();
+        assert(bot.hp == base + 1 && bot.max_hp == base + 1 && bot.hp >= 19 && bot.hp <= 24);
+        assert(bot.current_intent.type == ATTACK_DEBUFF && bot.intent_damage(combat.player) == 12);
+        assert(bot.current_intent.debuffs[0].type == StatusType::FRAIL);
+    }
+    std::cout << "[PASS] Stabbot: Ascension gives 19 to 24 HP and a Stab of 12" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1182,6 +1223,8 @@ int main() {
     test_status_intent();
     test_status_cards_are_not_the_players();
     test_eye_with_teeth();
+    test_stabbot();
+    test_stabbot_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
