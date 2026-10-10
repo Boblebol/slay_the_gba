@@ -959,6 +959,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (has_relic("CIRCLET")) {}
     // Wongo customer appreciation badge (event relic): no effect in game, "Does nothing."
     if (has_relic("WONGO_CUSTOMER_APPRECIATION_BADGE")) {}
+    // Le tapis du Marchand ??? (event relic): no effect in game, a poor imitation.
+    if (has_relic("FAKE_MERCHANTS_RUG")) {}
 }
 
 void RunManager::count_hook(RunHook hook) {
