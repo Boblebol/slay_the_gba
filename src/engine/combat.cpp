@@ -1026,6 +1026,14 @@ void CombatEngine::gain_block(int16_t amount) {
             legion->counter = static_cast<uint8_t>(legion->amount + 1);
         }
     }
+    // Vambrace: the first Block a card gives each combat is doubled.
+    if (resolving_card && player.block > before) {
+        ActivePower* vambrace = find_power(PowerId::VAMBRACE);
+        if (vambrace != nullptr && vambrace->counter == 0) {
+            player.block = static_cast<int16_t>(player.block + (player.block - before));
+            vambrace->counter = 1;
+        }
+    }
     // Unmovable doubles the first Block a card gives each turn, Shadowmeld every one of the turn.
     if (player.block > before) {
         int factor = 1;
