@@ -223,7 +223,8 @@ enum class PowerId : uint8_t {
     // Potions (appended)
     STABLE_SERUM,       // the hand is kept at the end of the next `amount` turns (read by end_player_turn)
     // Relics (appended)
-    BEATING_REMNANT     // the player loses no more than `amount` HP each turn (CombatEntity::hp_loss_budget)
+    BEATING_REMNANT,    // the player loses no more than `amount` HP each turn (CombatEntity::hp_loss_budget)
+    CHEMICAL_X          // the X cards played get `amount` more X (CombatEngine::play_card, autoplay)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -238,6 +239,7 @@ constexpr uint8_t ROLLING_BOULDER_GROWTH = 5;
 constexpr uint8_t ORBIT_ENERGY = 4;
 constexpr uint8_t DANSE_MACABRE_COST = 2;
 constexpr uint8_t BEATING_REMNANT_HP_LOSS = 20;
+constexpr uint8_t CHEMICAL_X_INCREASE = 2;
 constexpr uint8_t BREAD_ENERGY_LOST = 2;
 constexpr uint8_t POCKETWATCH_CARDS = 3;
 constexpr uint8_t PARRYING_SHIELD_BLOCK = 10;

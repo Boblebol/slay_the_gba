@@ -1204,7 +1204,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Upgrades on pickup (#465, #464)
         "WHETSTONE", "WAR_PAINT",
         // Colorless cards in the card rewards (#486)
-        "DINGY_RUG"
+        "DINGY_RUG",
+        // At the merchant (#503)
+        "CHEMICAL_X"
     };
     return ACTIVE_RELICS;
 }
@@ -1353,6 +1355,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("RED_SKULL")) combat.add_power(PowerId::RED_SKULL, 3);
     if (has_relic("DEMON_TONGUE")) combat.add_power(PowerId::DEMON_TONGUE);
     if (has_relic("BEATING_REMNANT")) combat.add_power(PowerId::BEATING_REMNANT, BEATING_REMNANT_HP_LOSS);
+    if (has_relic("CHEMICAL_X")) combat.add_power(PowerId::CHEMICAL_X, CHEMICAL_X_INCREASE);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);
