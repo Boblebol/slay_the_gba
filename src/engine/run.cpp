@@ -1669,6 +1669,10 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("BLOOD_VIAL")) {
         combat.player.heal(2);
     }
+    // Fake Blood Vial (event relic): heal 1 HP.
+    if (has_relic("FAKE_BLOOD_VIAL")) {
+        combat.player.heal(1);
+    }
     // Sling of Courage and Pantograph only act in Elite and Boss rooms.
     RoomType room = current_node_index >= 0 ? map.nodes[current_node_index].type : RoomType::MONSTER;
     if (has_relic("SLING_OF_COURAGE") && room == RoomType::ELITE) {
