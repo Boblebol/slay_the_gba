@@ -385,6 +385,15 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::VOID_FORM:
             if (turn_start) power.counter = 0;
             break;
+        case PowerId::HISTORY_COURSE:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK) {
+                power.amount = static_cast<int16_t>(static_cast<int>(info.card.id) * 2 + (info.card.upgraded ? 1 : 0) + 1);
+            } else if (turn_start && my_turn && power.amount > 0) {
+                DeckCard copy(static_cast<CardId>((power.amount - 1) / 2));
+                copy.upgraded = (power.amount - 1) % 2 == 1;
+                autoplay(copy, -1, AfterPlay::NOWHERE);
+            }
+            break;
         case PowerId::HELLRAISER:
             // The card just drawn is the last one of the hand.
             if (event == CombatEvent::CARD_DRAWN && is_strike(info.card.id) && !hand.empty() && hand.back().id == info.card.id) {
@@ -644,11 +653,17 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::HAPPY_FLOWER:
             if (turn_start && power.turns % 3 == 0) player.energy = static_cast<int8_t>(player.energy + power.amount);
             break;
+        case PowerId::FAKE_HAPPY_FLOWER:
+            if (turn_start && power.turns % 5 == 0) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
         case PowerId::PENDULUM:
             if (turn_start && power.turns % 3 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;
         case PowerId::RING_OF_THE_DRAKE:
             if (turn_start && power.turns <= RING_OF_THE_DRAKE_TURNS) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
+            break;
+        case PowerId::POLLINOUS_CORE:
+            if (turn_start && power.turns % 4 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;
         case PowerId::RINGING_TRIANGLE:
             // Set after the turn start has cleared retain_hand: the hand is kept at the end of the first turn only.
@@ -1150,7 +1165,7 @@ void CombatEngine::evoke_orb(size_t slot, int times) {
             case OrbType::LIGHTNING:
                 if (has_alive_enemies()) {
                     Enemy& struck = enemies[random_alive_enemy_index()];
-                    damage_enemy(struck, static_cast<int16_t>(with_focus(LIGHTNING_EVOKE) + power_amount(PowerId::THUNDER)));
+                    damage_enemy(struck, static_cast<int16_t>(with_focus(LIGHTNING_EVOKE) + power_amount(PowerId::THUNDER) + power_amount(PowerId::INFUSED_CORE)));
                 }
                 break;
             case OrbType::FROST:
@@ -1180,7 +1195,7 @@ void CombatEngine::trigger_orb_passive(size_t slot, Enemy* target) {
     switch (orb.type) {
         case OrbType::LIGHTNING:
             if (!target && has_alive_enemies()) target = &enemies[random_alive_enemy_index()];
-            if (target) damage_enemy(*target, with_focus(LIGHTNING_PASSIVE));
+            if (target) damage_enemy(*target, static_cast<int16_t>(with_focus(LIGHTNING_PASSIVE) + power_amount(PowerId::INFUSED_CORE)));
             break;
         case OrbType::FROST:
             add_block(with_focus(FROST_PASSIVE));

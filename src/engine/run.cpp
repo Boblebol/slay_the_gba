@@ -28,6 +28,9 @@ constexpr int COOK_REMOVALS = 2; // cards removed by Cook (Meat Cleaver)
 constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
 constexpr int LAVA_ROCK_RELICS = 2; // relics the Act 1 Boss gives to Lava Rock when defeated
 constexpr uint8_t GIRYA_LIFTS = 3;  // most Strength Girya gives, one lift each
+constexpr int16_t MAW_BANK_GOLD = 12; // Gold Maw Bank gives on each floor climbed, until the merchant gets some
+constexpr uint8_t WONGOS_MYSTERY_TICKET_COMBATS = 5; // fights won before the Ticket pays out
+constexpr int WONGOS_MYSTERY_TICKET_RELICS = 3;      // random relics the Ticket pays out, once
 
 constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 0, "Normal", "Difficulté standard de l'Ascension." },
@@ -168,6 +171,8 @@ void RunManager::enter_room(int node_index) {
     const auto& node = map.nodes[node_index];
     current_floor = node.floor + 1;
     on_room_entered(node.type);
+    // Maw Bank: each floor climbed gives Gold, until the run spends some at the merchant (counter set to 1).
+    if (has_relic("MAW_BANK") && relic_counter("MAW_BANK") == 0) gain_gold(MAW_BANK_GOLD);
 
     switch (node.type) {
         case RoomType::MONSTER:
@@ -258,6 +263,13 @@ void RunManager::rest_at_campfire() {
     }
     on_rested();
     phase = RunPhase::MAP_NAVIGATION;
+    // Dream Catcher: after a Rest, one set of cards is offered for the deck (the player may skip it).
+    if (has_relic("DREAM_CATCHER")) {
+        card_rewards_upgraded = false; // the Lava Lamp upgrade belongs to the fight's rewards only
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng);
+        phase = RunPhase::REWARD_SCREEN;
+    }
 }
 
 bool RunManager::can_rest() const {
@@ -340,15 +352,24 @@ void RunManager::open_shop() {
     on_shop_opened();
 }
 
+// Maw Bank: the first Gold spent at the merchant ends its effect for the rest of the run.
+static void stop_maw_bank_if_spent(RunManager& run, int16_t gold_before) {
+    if (run.gold < gold_before && run.has_relic("MAW_BANK")) run.set_relic_counter("MAW_BANK", 1);
+}
+
 bool RunManager::buy_shop_card(int index) {
+    const int16_t gold_before = gold;
     if (!current_shop.buy_card(*this, index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
     // The Courier: the card bought is back on the shelf at once.
     if (has_relic("THE_COURIER")) current_shop.cards[index].purchased = false;
     return true;
 }
 
 bool RunManager::buy_shop_relic(int index) {
+    const int16_t gold_before = gold;
     if (!current_shop.buy_relic(*this, index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
     // The Courier: the relic bought is replaced by another one, priced after the discounts in force.
     if (has_relic("THE_COURIER")) {
         RewardRng rng(next_random());
@@ -369,7 +390,9 @@ bool RunManager::buy_shop_relic(int index) {
 }
 
 bool RunManager::buy_shop_potion(int index, int replace_index) {
+    const int16_t gold_before = gold;
     if (!current_shop.buy_potion(*this, index, replace_index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
     // The Courier: the potion bought is replaced by another one, priced after the discounts in force.
     if (has_relic("THE_COURIER")) {
         RewardRng rng(next_random());
@@ -402,7 +425,10 @@ bool RunManager::use_potion(int index, int target_index) {
 }
 
 bool RunManager::remove_card_at_shop(int deck_index) {
-    return current_shop.remove_card(*this, deck_index);
+    const int16_t gold_before = gold;
+    if (!current_shop.remove_card(*this, deck_index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
+    return true;
 }
 
 void RunManager::leave_shop() {
@@ -724,7 +750,10 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "MANGO" && has_relic("MANGO")) gain_max_hp(14);
     // Big Mushroom (Event): 20 more maximum HP when obtained.
     if (relic_id == "BIG_MUSHROOM" && has_relic("BIG_MUSHROOM")) gain_max_hp(20);
+    // Event relic (Fake Lee's Waffle): heals 10% of the max HP on pickup.
+    if (relic_id == "FAKE_LEES_WAFFLE" && has_relic("FAKE_LEES_WAFFLE")) heal(max_hp * 10 / 100);
     if (relic_id == "PEAR" && has_relic("PEAR")) gain_max_hp(10);
+    if (relic_id == "FAKE_MANGO" && has_relic("FAKE_MANGO")) gain_max_hp(3);
     if (relic_id == "LARGE_CAPSULE" && has_relic("LARGE_CAPSULE")) {
         gain_random_relics(2);
         add_card_to_deck(DeckCard{ CardId::STRIKE, false });
@@ -947,6 +976,11 @@ void RunManager::on_room_entered(RoomType room) {
     if (room == RoomType::REST_SITE && has_relic("VENERABLE_TEA_SET") && relic_counter("VENERABLE_TEA_SET") < UINT8_MAX) {
         set_relic_counter("VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("VENERABLE_TEA_SET") + 1));
     }
+    // Venerable Tea Set (event): each Rest Site entered adds one count, spent at the start of the next combat.
+    if (room == RoomType::REST_SITE && has_relic("FAKE_VENERABLE_TEA_SET") &&
+        relic_counter("FAKE_VENERABLE_TEA_SET") < UINT8_MAX) {
+        set_relic_counter("FAKE_VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("FAKE_VENERABLE_TEA_SET") + 1));
+    }
     // Planisphere: each ? room entered heals 5 HP.
     if (room == RoomType::EVENT && has_relic("PLANISPHERE")) heal(5);
     // Meal Ticket: entering a shop heals 15 HP.
@@ -976,6 +1010,13 @@ void RunManager::on_shop_opened() {
 
 void RunManager::on_combat_won(RoomType room) {
     count_hook(RunHook::COMBAT_WON);
+    // Wongo's Mystery Ticket (event): each fight won counts; the fifth one pays 3 random relics, once.
+    if (has_relic("WONGOS_MYSTERY_TICKET") && relic_counter("WONGOS_MYSTERY_TICKET") < WONGOS_MYSTERY_TICKET_COMBATS) {
+        set_relic_counter("WONGOS_MYSTERY_TICKET", static_cast<uint8_t>(relic_counter("WONGOS_MYSTERY_TICKET") + 1));
+        if (relic_counter("WONGOS_MYSTERY_TICKET") == WONGOS_MYSTERY_TICKET_COMBATS) {
+            gain_random_relics(WONGOS_MYSTERY_TICKET_RELICS);
+        }
+    }
     // War Hammer: killing an Elite upgrades 4 random cards of the deck.
     if (room == RoomType::ELITE && has_relic("WAR_HAMMER")) upgrade_random_cards(4);
     // Paël's Tooth gives back one devoured card, upgraded, per fight (chosen at random).
@@ -1354,9 +1395,11 @@ void RunManager::register_relic_powers() {
     if (has_relic("CHANDELIER")) combat.add_power(PowerId::CHANDELIER, 3);
     if (has_relic("SPARKLING_ROUGE")) combat.add_power(PowerId::SPARKLING_ROUGE, 1);
     if (has_relic("HAPPY_FLOWER")) combat.add_power(PowerId::HAPPY_FLOWER, 1);
+    if (has_relic("FAKE_HAPPY_FLOWER")) combat.add_power(PowerId::FAKE_HAPPY_FLOWER, 1);
     if (has_relic("PENDULUM")) combat.add_power(PowerId::PENDULUM, 1);
     // Ring of the Drake (event): 2 more cards drawn at the start of each of the first 3 turns.
     if (has_relic("RING_OF_THE_DRAKE")) combat.add_power(PowerId::RING_OF_THE_DRAKE, 2);
+    if (has_relic("POLLINOUS_CORE")) combat.add_power(PowerId::POLLINOUS_CORE, 2);
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
     if (has_relic("BOOKMARK")) combat.add_power(PowerId::BOOKMARK, 1);
     if (has_relic("VERY_HOT_COCOA")) combat.add_power(PowerId::VERY_HOT_COCOA, 4);
@@ -1380,6 +1423,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("PAELS_TEARS")) combat.add_power(PowerId::PAELS_TEARS, 2);
     if (has_relic("ART_OF_WAR")) combat.add_power(PowerId::ART_OF_WAR, 1);
     if (has_relic("ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 6);
+    // Event relic Orichalque ???: the Orichalcum effect, for 3 Block instead of 6.
+    if (has_relic("FAKE_ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 3);
     if (has_relic("SCREAMING_FLAGON")) combat.add_power(PowerId::SCREAMING_FLAGON, 20);
     // Runic Pyramid: the hand is not discarded at the end of the turn (KEEP_HAND, the Well-Laid Plans rule).
     if (has_relic("RUNIC_PYRAMID")) combat.add_power(PowerId::KEEP_HAND);
@@ -1406,6 +1451,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("REPTILE_TRINKET")) combat.add_power(PowerId::REPTILE_TRINKET, 3);
     if (has_relic("CENTENNIAL_PUZZLE")) combat.add_power(PowerId::CENTENNIAL_PUZZLE, 3);
     if (has_relic("LIZARD_TAIL")) combat.add_power(PowerId::LIZARD_TAIL, 50);
+    if (has_relic("HISTORY_COURSE")) combat.add_power(PowerId::HISTORY_COURSE, 0);
     if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);
     if (has_relic("TOUGH_BANDAGES")) combat.add_power(PowerId::TOUGH_BANDAGES, 3);
     if (has_relic("TINGSHA")) combat.add_power(PowerId::TINGSHA, 3);
@@ -1455,6 +1501,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("CHEMICAL_X")) combat.add_power(PowerId::CHEMICAL_X, CHEMICAL_X_INCREASE);
     // Unsettling Lamp: the first card of the fight that debuffs an enemy has its debuffs doubled.
     if (has_relic("UNSETTLING_LAMP")) combat.add_power(PowerId::UNSETTLING_LAMP, 1);
+    // Infused Core: Lightning orbs deal 1 more damage.
+    if (has_relic("INFUSED_CORE")) combat.add_power(PowerId::INFUSED_CORE, 1);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);
@@ -1565,6 +1613,10 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("DIVINE_RIGHT")) {
         combat.gain_stars(3);
     }
+    // Divine Destiny (event): 7 Stars.
+    if (has_relic("DIVINE_DESTINY")) {
+        combat.gain_stars(7);
+    }
     // Data Disk: 1 Focus. Runic Capacitor: 3 more orb slots. Symbiotic Virus: 1 Dark orb.
     if (has_relic("DATA_DISK")) {
         combat.player.add_status(StatusType::FOCUS, 1);
@@ -1593,9 +1645,17 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("CRACKED_CORE")) {
         combat.channel_orb(OrbType::LIGHTNING);
     }
+    // Infused Core (Defect): channel 3 Lightning.
+    if (has_relic("INFUSED_CORE")) {
+        for (int orb = 0; orb < 3; ++orb) combat.channel_orb(OrbType::LIGHTNING);
+    }
     // Anchor: start each combat with 10 Block, added after the turn reset and unaffected by Dexterity.
     if (has_relic("ANCHOR")) {
         combat.player.block += 10;
+    }
+    // Event relic (Fake Anchor): start each combat with 4 Block, same timing as Anchor.
+    if (has_relic("FAKE_ANCHOR")) {
+        combat.player.block += 4;
     }
     // Oddly Smooth Stone: start each combat with 1 Dexterity.
     if (has_relic("ODDLY_SMOOTH_STONE")) {
@@ -1610,10 +1670,21 @@ void RunManager::apply_combat_start_relics() {
         combat.player.energy = static_cast<int8_t>(combat.player.energy + 2 * relic_counter("VENERABLE_TEA_SET"));
         set_relic_counter("VENERABLE_TEA_SET", 0);
     }
+    // Venerable Tea Set (event): 1 additional energy on the first turn for each Rest Site entered since the last combat.
+    if (has_relic("FAKE_VENERABLE_TEA_SET") && relic_counter("FAKE_VENERABLE_TEA_SET") > 0) {
+        combat.player.energy = static_cast<int8_t>(combat.player.energy + relic_counter("FAKE_VENERABLE_TEA_SET"));
+        set_relic_counter("FAKE_VENERABLE_TEA_SET", 0);
+    }
     // Blood Vial: heal 2 HP.
     if (has_relic("BLOOD_VIAL")) {
         combat.player.heal(2);
     }
+    // Fake Blood Vial (event relic): heal 1 HP.
+    if (has_relic("FAKE_BLOOD_VIAL")) {
+        combat.player.heal(1);
+    }
+    // Poison royal (event relic): lose 4 HP at the start of each combat.
+    if (has_relic("ROYAL_POISON")) combat.lose_hp(4);
     // Sling of Courage and Pantograph only act in Elite and Boss rooms.
     RoomType room = current_node_index >= 0 ? map.nodes[current_node_index].type : RoomType::MONSTER;
     if (has_relic("SLING_OF_COURAGE") && room == RoomType::ELITE) {
@@ -1706,6 +1777,10 @@ void RunManager::proceed_after_combat() {
     if (has_relic("MEAT_ON_THE_BONE") && hp * 2 <= max_hp) {
         hp = std::min<int16_t>(max_hp, hp + 12);
     }
+    // Chosen Cheese: 1 Max HP at the end of each fight.
+    if (has_relic("CHOSEN_CHEESE")) gain_max_hp(1);
+    // Black Blood (event relic): 12 HP after every fight.
+    if (has_relic("BLACK_BLOOD")) hp = std::min<int16_t>(max_hp, hp + 12);
 
     // Every enemy ran away: the fight is over, but there is nothing to take.
     if (combat.every_enemy_escaped()) {
