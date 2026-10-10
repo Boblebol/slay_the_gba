@@ -42,6 +42,12 @@ constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 10, "Fléau de l'Ascension", "Vous commencez la tentative avec une malédiction inépuisable dans votre deck." }
 };
 
+// Strikes and Defends, by their English name (Perfected Strike, Ultimate Defend...).
+bool is_strike_or_defend(CardId id) {
+    const std::string_view name = CardDef::get(id).name;
+    return name.find("Strike") != std::string_view::npos || name.find("Defend") != std::string_view::npos;
+}
+
 } // namespace
 
 uint32_t RunManager::next_random() {
@@ -187,6 +193,8 @@ void RunManager::enter_room(int node_index) {
             for (size_t i = 0; i < master_deck.size(); ++i) {
                 DeckCard card = master_deck[i];
                 card.deck_index = static_cast<uint8_t>(i);
+                // Ghost Seed: the Strikes and Defends of the fight are Ethereal.
+                if (has_relic("GHOST_SEED") && is_strike_or_defend(card.id)) card.added_keywords |= KEYWORD_ETHEREAL;
                 combat.draw_pile.push_back(card);
             }
             combat.shuffle_draw_pile();
@@ -1125,6 +1133,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", // Shared, out of combat
+        "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)

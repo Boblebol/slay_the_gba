@@ -1635,6 +1635,39 @@ void test_calling_bell() {
     std::cout << "[PASS] Calling Bell: Curse of the Bell and 3 random relics on pickup" << std::endl;
 }
 
+void test_ghost_seed() {
+    // With the relic: the Strikes and Defends of the fight are Ethereal, the other cards are not.
+    RunManager with = make_relic_run(CharacterId::IRONCLAD, { "GHOST_SEED" });
+    int strikes = 0;
+    int defends = 0;
+    for (const DeckCard& card : with.combat.draw_pile) {
+        if (card.id == CardId::STRIKE) {
+            ++strikes;
+            assert(CardDef::has_keyword(card, KEYWORD_ETHEREAL));
+        } else if (card.id == CardId::DEFEND) {
+            ++defends;
+            assert(CardDef::has_keyword(card, KEYWORD_ETHEREAL));
+        } else if (card.id == CardId::BASH) {
+            assert(!CardDef::has_keyword(card, KEYWORD_ETHEREAL));
+        }
+    }
+    assert(strikes > 0 && defends > 0);
+    // Held at the end of the turn, a Strike is exhausted.
+    DeckCard held(CardId::STRIKE);
+    held.added_keywords |= KEYWORD_ETHEREAL;
+    with.combat.hand.clear();
+    with.combat.hand.push_back(held);
+    with.combat.end_player_turn();
+    bool exhausted = false;
+    for (const DeckCard& card : with.combat.exhaust_pile) exhausted = exhausted || card.id == CardId::STRIKE;
+    assert(exhausted);
+
+    // Without the relic: no Strike or Defend is Ethereal.
+    RunManager without = make_relic_run(CharacterId::IRONCLAD, {});
+    for (const DeckCard& card : without.combat.draw_pile) assert(!CardDef::has_keyword(card, KEYWORD_ETHEREAL));
+    std::cout << "[PASS] Ghost Seed: Strikes and Defends Ethereal in the fight" << std::endl;
+}
+
 void test_belt_buckle() {
     // With the relic and no potion: 2 additional Dexterity, lost as soon as a potion is held.
     RunManager with;
@@ -1800,6 +1833,7 @@ int main() {
     test_cursed_pearl();
     test_calling_bell();
     test_belt_buckle();
+    test_ghost_seed();
     test_reptile_trinket();
     test_pen_nib();
     test_white_beast_statue();
