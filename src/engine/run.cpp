@@ -1555,6 +1555,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("INFUSED_CORE")) combat.add_power(PowerId::INFUSED_CORE, 1);
     // Daughter of the Wind (event relic): every Attack played gives 1 Block.
     if (has_relic("DAUGHTER_OF_THE_WIND")) combat.add_power(PowerId::DAUGHTER_OF_THE_WIND, 1);
+    // Throwing Axe (ancient): the first card played each combat is played once more.
+    if (has_relic("THROWING_AXE")) combat.add_power(PowerId::THROWING_AXE, 1);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);

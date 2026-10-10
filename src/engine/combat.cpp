@@ -2018,6 +2018,7 @@ int CombatEngine::consume_play_modifiers(const DeckCard& card) {
 
     int extra = 0;
     if (use_one(PowerId::DUPLICATION)) ++extra;
+    if (use_one(PowerId::THROWING_AXE)) ++extra; // Throwing Axe: the first card of the combat
     if (type == CardType::ATTACK && use_one(PowerId::REPLAY_ATTACK)) ++extra;
     if (type == CardType::SKILL && use_one(PowerId::REPLAY_SKILL)) ++extra;
     if (type == CardType::POWER && use_one(PowerId::REPLAY_POWER)) ++extra;

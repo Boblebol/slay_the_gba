@@ -241,6 +241,8 @@ enum class PowerId : uint8_t {
     LOST_WISP,          // Power played: `amount` damage to every enemy (event relic)
     HAND_DRILL,         // an enemy's Block broken by the player's damage: `amount` Vulnerable on that enemy
     UNDYING_SIGIL       // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
+    INFUSED_CORE,       // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
+    THROWING_AXE        // the first card played in the combat is played once more (removed once used)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

@@ -1952,6 +1952,29 @@ void test_paels_horn() {
     std::cout << "[PASS] Paël's Horn: 2 Relax added to the deck when obtained" << std::endl;
 }
 
+void test_throwing_axe() {
+    // With the relic: the first card of the combat is played twice, the next ones once.
+    CombatEngine axe = make_relic_combat(CharacterId::IRONCLAD, PowerId::THROWING_AXE, 1);
+    int16_t hp = axe.enemies[0].hp;
+    play(axe, CardId::STRIKE);
+    assert(axe.enemies[0].hp == hp - 12);
+    play(axe, CardId::STRIKE);
+    assert(axe.enemies[0].hp == hp - 18);
+    // Still the first card of the combat on a later turn if none was played before.
+    CombatEngine late = make_relic_combat(CharacterId::IRONCLAD, PowerId::THROWING_AXE, 1);
+    end_turn_idle(late);
+    hp = late.enemies[0].hp;
+    play(late, CardId::STRIKE);
+    assert(late.enemies[0].hp == hp - 12);
+
+    // Without the relic: played once.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    hp = plain.enemies[0].hp;
+    play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].hp == hp - 6);
+    std::cout << "[PASS] Throwing Axe: the first card of the combat is played twice" << std::endl;
+}
+
 void test_paels_eye() {
     // With the relic: ending the first turn without a card exhausts the hand and gives an extra turn.
     CombatEngine eye = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_EYE, 1);
@@ -3700,6 +3723,7 @@ int main() {
     test_sand_castle();
     test_paels_horn();
     test_paels_eye();
+    test_throwing_axe();
     test_cursed_pearl();
     test_calling_bell();
     test_war_paint();
