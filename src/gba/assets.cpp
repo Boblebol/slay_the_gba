@@ -28,6 +28,7 @@
 #include "bn_sprite_items_mon_inklet.h"
 #include "bn_sprite_items_mon_jaw_worm.h"
 #include "bn_sprite_items_mon_noisebot.h"
+#include "bn_sprite_items_mon_nibbit.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
@@ -236,6 +237,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_cubex_construct, false };
     case engine::EnemyType::INKLET:
         return { &bn::sprite_items::mon_inklet, false };
+    case engine::EnemyType::NIBBIT:
+        return { &bn::sprite_items::mon_nibbit, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

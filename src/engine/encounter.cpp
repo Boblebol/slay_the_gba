@@ -23,12 +23,14 @@ constexpr EnemyType RUBY_RAIDERS[] = {
 // Act 1 (A): the Overgrowth.
 constexpr Encounter ACT1A_WEAK[] = {
     { "FuzzyWurmCrawlerWeak"sv, 1, { EnemyType::FUZZY_WURM_CRAWLER } },
+    { "NibbitsWeak"sv, 1, { EnemyType::NIBBIT } },
 };
 constexpr Encounter ACT1A_NORMAL[] = {
     { "RubyRaidersNormal"sv, 3, {}, RUBY_RAIDERS },
     { "VineShamblerNormal"sv, 1, { EnemyType::VINE_SHAMBLER } },
     { "CubexConstructNormal"sv, 1, { EnemyType::CUBEX_CONSTRUCT } },
     { "InkletsNormal"sv, 3, { EnemyType::INKLET, EnemyType::INKLET, EnemyType::INKLET } },
+    { "NibbitsNormal"sv, 2, { EnemyType::NIBBIT, EnemyType::NIBBIT } },
 };
 
 // Act 1 (B): the Underdocks.

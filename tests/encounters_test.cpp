@@ -45,6 +45,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::NOISEBOT: return "NOISEBOT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
         case EnemyType::INKLET: return "INKLET";
+        case EnemyType::NIBBIT: return "NIBBIT";
     }
     return {};
 }
@@ -158,10 +159,10 @@ void test_tables_use_existing_monsters_with_a_sprite() {
 
 void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::WEAK)) ==
-           std::set<std::string_view>{ "FuzzyWurmCrawlerWeak" });
+           (std::set<std::string_view>{ "FuzzyWurmCrawlerWeak", "NibbitsWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal",
-                                        "InkletsNormal" }));
+                                        "InkletsNormal", "NibbitsNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal" }));
     for (ActZone zone : ZONES) {
@@ -316,9 +317,11 @@ void test_same_seed_same_fights() {
     for (size_t floor = 1; floor <= fights.size() - 2; ++floor) {
         std::string_view fight = fights[floor - 1];
         if (floor <= WEAK_ENCOUNTER_FLOORS) {
-            assert(fight.starts_with("FuzzyWurmCrawlerWeak"));
+            assert(fight.starts_with("FuzzyWurmCrawlerWeak") || fight == "NibbitsWeak NIBBIT");
         } else if (fight.starts_with("RubyRaidersNormal")) {
             ++raiders;
+        } else if (fight.starts_with("NibbitsNormal")) {
+            assert(fight == "NibbitsNormal NIBBIT NIBBIT");
         } else {
             if (fight.starts_with("InkletsNormal")) {
                 assert(fight == "InkletsNormal INKLET INKLET INKLET");

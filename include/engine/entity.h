@@ -360,7 +360,8 @@ enum class EnemyType : uint8_t {
     STABBOT,
     NOISEBOT,
     CUBEX_CONSTRUCT,
-    INKLET
+    INKLET,
+    NIBBIT
 };
 
 // What a monster sees of the fight when it chooses its next move.

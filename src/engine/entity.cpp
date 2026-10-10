@@ -104,6 +104,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Encrelin";
         max_hp = 11;
         hp = 11;
+    } else if (type == EnemyType::NIBBIT) {
+        name = "Grignotin";
+        max_hp = 42;
+        hp = 42;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -119,6 +123,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
         case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
         case EnemyType::INKLET: return 6; // 11 to 17, 12 to 18 at Ascension
+        case EnemyType::NIBBIT: return 4;      // 42 to 46, 44 to 48 at Ascension
         default: return 0;
     }
 }
@@ -151,6 +156,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::NOISEBOT: return 19;
         case EnemyType::CUBEX_CONSTRUCT: return 70;
         case EnemyType::INKLET: return 12;
+        case EnemyType::NIBBIT: return 44;
         default: return 0;
     }
 }
@@ -540,6 +546,26 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         } else {
             current_intent.base_damage = ascended_damage ? 4 : 3;
             current_intent.description = "Coup sec (3 dmg)";
+        }
+    } else if (type == EnemyType::NIBBIT) {
+        // Butt, Slice, Hiss, and again. Where it starts depends on its place at the start of the fight: alone it
+        // begins with Butt, in front with Slice, behind with Hiss. `phase` holds that offset.
+        if (turn_number == 1) phase = context.allies == 0 ? 0 : (context.slot == 0 ? 1 : 2);
+        uint8_t move = static_cast<uint8_t>((phase + phase_turn - 1) % 3);
+        if (move == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 13 : 12;
+            current_intent.description = "Derrière (12 dmg)";
+        } else if (move == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.block = ascended_damage ? 6 : 5;
+            current_intent.description = "Slice (6 dmg, 5 blk)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 3 : 2;
+            current_intent.description = "Chuintement (+2 Force)";
         }
     }
 }
