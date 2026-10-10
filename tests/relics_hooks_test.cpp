@@ -853,6 +853,33 @@ void test_golden_pearl() {
     std::cout << "[PASS] Golden Pearl: +150 gold when obtained" << std::endl;
 }
 
+void test_glass_eye() {
+    // Obtained: 2 Common, 2 Uncommon and 1 Rare cards join the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    size_t size = run.master_deck.size();
+    run.add_relic("GLASS_EYE");
+    assert(run.has_relic("GLASS_EYE"));
+    assert(run.master_deck.size() == size + 5);
+    int commons = 0, uncommons = 0, rares = 0;
+    for (size_t i = size; i < run.master_deck.size(); ++i) {
+        CardRarity rarity = card_meta(run.master_deck[i].id).rarity;
+        if (rarity == CardRarity::COMMON) ++commons;
+        if (rarity == CardRarity::UNCOMMON) ++uncommons;
+        if (rarity == CardRarity::RARE) ++rares;
+    }
+    assert(commons == 2 && uncommons == 2 && rares == 1);
+
+    // Without the relic, the deck stays where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    size_t plain_size = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("GLASS_EYE") && plain.master_deck.size() == plain_size);
+
+    std::cout << "[PASS] Glass Eye: 2 Common, 2 Uncommon and 1 Rare cards when obtained" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -876,6 +903,7 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    test_glass_eye();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
