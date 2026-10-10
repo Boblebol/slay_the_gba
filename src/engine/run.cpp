@@ -946,6 +946,11 @@ void RunManager::on_room_entered(RoomType room) {
     if (room == RoomType::REST_SITE && has_relic("VENERABLE_TEA_SET") && relic_counter("VENERABLE_TEA_SET") < UINT8_MAX) {
         set_relic_counter("VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("VENERABLE_TEA_SET") + 1));
     }
+    // Venerable Tea Set (event): each Rest Site entered adds one count, spent at the start of the next combat.
+    if (room == RoomType::REST_SITE && has_relic("FAKE_VENERABLE_TEA_SET") &&
+        relic_counter("FAKE_VENERABLE_TEA_SET") < UINT8_MAX) {
+        set_relic_counter("FAKE_VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("FAKE_VENERABLE_TEA_SET") + 1));
+    }
     // Planisphere: each ? room entered heals 5 HP.
     if (room == RoomType::EVENT && has_relic("PLANISPHERE")) heal(5);
     // Meal Ticket: entering a shop heals 15 HP.
@@ -1610,6 +1615,11 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("VENERABLE_TEA_SET") && relic_counter("VENERABLE_TEA_SET") > 0) {
         combat.player.energy = static_cast<int8_t>(combat.player.energy + 2 * relic_counter("VENERABLE_TEA_SET"));
         set_relic_counter("VENERABLE_TEA_SET", 0);
+    }
+    // Venerable Tea Set (event): 1 additional energy on the first turn for each Rest Site entered since the last combat.
+    if (has_relic("FAKE_VENERABLE_TEA_SET") && relic_counter("FAKE_VENERABLE_TEA_SET") > 0) {
+        combat.player.energy = static_cast<int8_t>(combat.player.energy + relic_counter("FAKE_VENERABLE_TEA_SET"));
+        set_relic_counter("FAKE_VENERABLE_TEA_SET", 0);
     }
     // Blood Vial: heal 2 HP.
     if (has_relic("BLOOD_VIAL")) {
