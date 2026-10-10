@@ -2514,6 +2514,22 @@ void test_petrified_toad() {
     std::cout << "[PASS] Petrified Toad: a Potion-Shaped Rock at the start of each combat" << std::endl;
 }
 
+void test_fake_happy_flower() {
+    // Every 5 turns the turn starts with 1 more energy; nothing without the relic.
+    RunManager with = make_relic_run(CharacterId::IRONCLAD, { "FAKE_HAPPY_FLOWER" });
+    RunManager without = make_relic_run(CharacterId::IRONCLAD, {});
+    for (int turn = 1; turn <= 5; ++turn) {
+        int expected = turn == 5 ? with.combat.player.max_energy + 1 : with.combat.player.max_energy;
+        assert(with.combat.player.energy == expected);
+        assert(without.combat.player.energy == without.combat.player.max_energy);
+        if (turn < 5) {
+            end_turn_idle(with.combat);
+            end_turn_idle(without.combat);
+        }
+    }
+    std::cout << "[PASS] Fake Happy Flower: 1 energy every 5 turns" << std::endl;
+}
+
 void test_white_star() {
     // With the relic, an Elite offers one more set of Rare cards once its first set is taken or skipped.
     RunManager run;
@@ -2640,5 +2656,6 @@ int main() {
     test_girya();
     test_shovel();
     test_white_star();
+    test_fake_happy_flower();
     return 0;
 }

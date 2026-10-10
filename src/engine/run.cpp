@@ -1334,6 +1334,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("CHANDELIER")) combat.add_power(PowerId::CHANDELIER, 3);
     if (has_relic("SPARKLING_ROUGE")) combat.add_power(PowerId::SPARKLING_ROUGE, 1);
     if (has_relic("HAPPY_FLOWER")) combat.add_power(PowerId::HAPPY_FLOWER, 1);
+    if (has_relic("FAKE_HAPPY_FLOWER")) combat.add_power(PowerId::FAKE_HAPPY_FLOWER, 1);
     if (has_relic("PENDULUM")) combat.add_power(PowerId::PENDULUM, 1);
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
     if (has_relic("BOOKMARK")) combat.add_power(PowerId::BOOKMARK, 1);
