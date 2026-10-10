@@ -1535,6 +1535,59 @@ void test_paels_eye() {
     std::cout << "[PASS] Pael's Eye: empty first turn exhausts the hand and gives an extra turn" << std::endl;
 }
 
+void test_cursed_pearl() {
+    // Obtained: a Greed curse joins the deck and 333 gold is paid once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck_size = run.master_deck.size();
+    int16_t gold = run.gold;
+    run.add_relic("CURSED_PEARL");
+    assert(run.has_relic("CURSED_PEARL"));
+    assert(run.master_deck.size() == deck_size + 1);
+    assert(run.master_deck[run.master_deck.size() - 1].id == CardId::GREED);
+    assert(run.gold == gold + 333);
+
+    // Without the relic, the deck and the gold stay where they are.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("CURSED_PEARL") && plain.master_deck.size() == deck_size && plain.gold == gold);
+
+    std::cout << "[PASS] Cursed Pearl: Greed curse and +333 gold when obtained" << std::endl;
+}
+
+void test_calling_bell() {
+    // Obtained: the unique Curse of the Bell joins the deck, then 3 random relics join the run.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    size_t relics_before = run.relics.size();
+    size_t deck_before = run.master_deck.size();
+    int bells_before = 0;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (run.master_deck[i].id == CardId::CURSE_OF_THE_BELL) ++bells_before;
+    }
+    run.add_relic("CALLING_BELL");
+    assert(run.has_relic("CALLING_BELL"));
+    assert(run.relics.size() == relics_before + 4);
+    assert(run.master_deck.size() == deck_before + 1);
+    int bells_after = 0;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (run.master_deck[i].id == CardId::CURSE_OF_THE_BELL) ++bells_after;
+    }
+    assert(bells_after == bells_before + 1);
+
+    // Without the relic: no relic and no Curse of the Bell are given.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    size_t plain_relics = plain.relics.size();
+    size_t plain_deck = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("CALLING_BELL"));
+    assert(plain.relics.size() == plain_relics + 1);
+    assert(plain.master_deck.size() == plain_deck);
+    std::cout << "[PASS] Calling Bell: Curse of the Bell and 3 random relics on pickup" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1587,5 +1640,7 @@ int main() {
     test_sand_castle();
     test_paels_horn();
     test_paels_eye();
+    test_cursed_pearl();
+    test_calling_bell();
     return 0;
 }
