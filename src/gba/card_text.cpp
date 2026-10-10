@@ -808,6 +808,36 @@ bn::string_view base_name(engine::CardId id)
         return "Lame infernale";
     case engine::CardId::STOKE:
         return "Attiser les flammes";
+    case engine::CardId::INJURY:
+        return "Blessure";
+    case engine::CardId::GREED:
+        return "Cupidité";
+    case engine::CardId::CLUMSY:
+        return "Maladresse";
+    case engine::CardId::ASCENDERS_BANE:
+        return "Fléau de l'ascendant";
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return "Malédiction de la cloche";
+    case engine::CardId::POOR_SLEEP:
+        return "Insomnie";
+    case engine::CardId::WRITHE:
+        return "Souffrance";
+    case engine::CardId::NORMALITY:
+        return "Normalité";
+    case engine::CardId::DOUBT:
+        return "Doute";
+    case engine::CardId::SHAME:
+        return "Honte";
+    case engine::CardId::DECAY:
+        return "Déclin";
+    case engine::CardId::REGRET:
+        return "Regrets";
+    case engine::CardId::BAD_LUCK:
+        return "Malchance";
+    case engine::CardId::DEBT:
+        return "Dette";
+    case engine::CardId::SPORE_MIND:
+        return "Conscience sporique";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1529,6 +1559,51 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::STOKE:
         stream << "Épuise la Main. +1 carte" << (card.upgraded ? " amél." : "") << " par carte.";
+        break;
+    case engine::CardId::INJURY:
+        stream << "Injouable.";
+        break;
+    case engine::CardId::GREED:
+        stream << "Injouable. Éternel.";
+        break;
+    case engine::CardId::CLUMSY:
+        stream << "Injouable. Éthéré.";
+        break;
+    case engine::CardId::ASCENDERS_BANE:
+        stream << "Injouable. Éthéré. Éternel.";
+        break;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        stream << "Injouable. Éternel.";
+        break;
+    case engine::CardId::POOR_SLEEP:
+        stream << "Injouable. Retenue.";
+        break;
+    case engine::CardId::WRITHE:
+        stream << "Injouable. Inné.";
+        break;
+    case engine::CardId::NORMALITY:
+        stream << "Injouable. 3 cartes max par tour.";
+        break;
+    case engine::CardId::DOUBT:
+        stream << "Injouable. Fin de tour : Affaibli 1.";
+        break;
+    case engine::CardId::SHAME:
+        stream << "Injouable. Fin de tour : Fragilisé 1.";
+        break;
+    case engine::CardId::DECAY:
+        stream << "Injouable. Fin de tour : 2 dégâts.";
+        break;
+    case engine::CardId::REGRET:
+        stream << "Injouable. Fin de tour : -1 PV par carte.";
+        break;
+    case engine::CardId::BAD_LUCK:
+        stream << "Injouable. Fin de tour : -13 PV. Éternel.";
+        break;
+    case engine::CardId::DEBT:
+        stream << "Injouable. Fin de tour : -10 or.";
+        break;
+    case engine::CardId::SPORE_MIND:
+        stream << "Épuisement.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:
