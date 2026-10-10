@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 67,1 %** — 825 faits, 20 partiels, 399 à faire (35 hors périmètre).
+**Avancement global : 67,9 %** — 835 faits, 20 partiels, 389 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -15,7 +15,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
 | [Soldat de Fer](#ironclad) | 95 | 1 | 6 | 93,6 % |
-| [La Silencieuse](#silent) | 86 | 1 | 14 | 85,6 % |
+| [La Silencieuse](#silent) | 95 | 1 | 5 | 94,6 % |
 | [Le Défectueux](#defect) | 100 | 1 | 4 | 95,7 % |
 | [Le Régent](#regent) | 91 | 1 | 8 | 91,5 % |
 | [La Nécrolieuse](#necrobinder) | 94 | 1 | 7 | 92,6 % |
@@ -23,10 +23,10 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Reliques et potions](#reliques) | 166 | 0 | 155 | 51,7 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 39 | 1 | 17 | 69,3 % |
+| [Règles de combat](#regles) | 40 | 1 | 16 | 71,1 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **825** | **20** | **399** | **67,1 %** |
+| **Total** | **835** | **20** | **389** | **67,9 %** |
 
 <a id="ironclad"></a>
 
@@ -161,11 +161,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="silent"></a>
 
-## La Silencieuse — 85,6 %
+## La Silencieuse — 94,6 %
 
-### Cartes — 86,0 %
+### Cartes — 95,3 %
 
-74 faits, 0 partiel, 12 à faire (5 hors périmètre).
+82 faits, 0 partiel, 4 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -181,7 +181,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Déviation | Commune · Compétence | Oui |  |
 | Frappe initiale | Commune · Attaque | Oui |  |
 | Hurlement perçant | Commune · Compétence | Oui |  |
-| Intouchable | Commune · Compétence | Non |  |
+| Intouchable | Commune · Compétence | Oui |  |
 | Lancer de couteau | Commune · Attaque | Oui |  |
 | Morsure de serpent | Commune · Compétence | Oui |  |
 | Pluie de couteaux | Commune · Attaque | Oui |  |
@@ -189,9 +189,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Poison mortel | Commune · Compétence | Oui |  |
 | Prédateur | Commune · Attaque | Oui |  |
 | Préparatifs | Commune · Compétence | Oui |  |
-| Ricochet | Commune · Attaque | Non |  |
+| Ricochet | Commune · Attaque | Oui |  |
 | Salto arrière | Commune · Compétence | Oui |  |
-| Tic tac | Commune · Attaque | Non |  |
+| Tic tac | Commune · Attaque | Oui |  |
 | Trancher | Commune · Attaque | Oui |  |
 | Accélérant | Peu commune · Pouvoir | Oui |  |
 | Acrobaties | Peu commune · Compétence | Oui |  |
@@ -222,16 +222,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Point faible | Peu commune · Compétence | Oui |  |
 | Précipitation | Peu commune · Attaque | Oui |  |
 | Précision | Peu commune · Pouvoir | Oui |  |
-| Réflexes | Peu commune · Compétence | Non |  |
+| Réflexes | Peu commune · Compétence | Oui |  |
 | Strangulation | Peu commune · Attaque | Oui |  |
 | Surgissement | Peu commune · Attaque | Oui |  |
 | Symphonie de lames | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
-| Tactique | Peu commune · Compétence | Non |  |
-| Trucage | Peu commune · Compétence | Non |  |
+| Tactique | Peu commune · Compétence | Oui |  |
+| Trucage | Peu commune · Compétence | Oui |  |
 | Vapeurs toxiques | Peu commune · Pouvoir | Oui |  |
 | Venin mousseux | Peu commune · Compétence | Oui |  |
 | Vision trouble | Peu commune · Compétence | Oui |  |
-| Abrasif | Rare · Pouvoir | Non |  |
+| Abrasif | Rare · Pouvoir | Oui |  |
 | Adrénaline | Rare · Compétence | Oui |  |
 | Assassiner | Rare · Attaque | Oui |  |
 | Bullet Time | Rare · Compétence | Oui |  |
@@ -243,7 +243,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Envenimer | Rare · Pouvoir | Oui |  |
 | Forme du serpent | Rare · Pouvoir | Oui |  |
 | Furtif | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
-| Grands desseins | Rare · Pouvoir | Non |  |
+| Grands desseins | Rare · Pouvoir | Oui |  |
 | Image rémanente | Rare · Pouvoir | Oui |  |
 | La traque | Rare · Attaque | Non |  |
 | Lame d'encre | Rare · Compétence | Oui |  |
@@ -276,9 +276,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Grû en papier | Rare | Non |  |
 | Parchemin de ninja | Boutique | Oui |  |
 
-### Mécaniques — 78,6 %
+### Mécaniques — 92,9 %
 
-5 faits, 1 partiel, 1 à faire.
+6 faits, 1 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -287,7 +287,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Pioche supplémentaire (Salto arrière) |  | Oui |  |
 | Défausse au choix (Survivant, Acrobaties) |  | Oui |  |
 | Surins : attaques à 0 énergie créées en combat |  | Oui |  |
-| Ruse : carte jouée gratuitement quand elle est défaussée |  | Non | [#73](https://github.com/Boblebol/slay_the_gba/issues/73) |
+| Ruse : carte jouée gratuitement quand elle est défaussée |  | Oui | [#73](https://github.com/Boblebol/slay_the_gba/issues/73) |
 | Animations du héros (repos, attaque, dégâts, garde) |  | Partiel | Flottement au repos, secousse et fondu de mort ; pas de poses dessinées. [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
 
 <a id="defect"></a>
@@ -1424,7 +1424,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regles"></a>
 
-## Règles de combat — 69,3 %
+## Règles de combat — 71,1 %
 
 ### Déroulement du combat — 88,1 %
 
@@ -1477,9 +1477,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Désorienté |  | Oui | [#93](https://github.com/Boblebol/slay_the_gba/issues/93) |
 | Sables mouvants (L'Insatiable) |  | Non | [#245](https://github.com/Boblebol/slay_the_gba/issues/245) |
 
-### Mots-clés de cartes — 85,7 %
+### Mots-clés de cartes — 100,0 %
 
-6 faits, 0 partiel, 1 à faire.
+7 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1487,7 +1487,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Éthéré |  | Oui |  |
 | Inné |  | Oui |  |
 | Retenue |  | Oui |  |
-| Ruse |  | Non | [#73](https://github.com/Boblebol/slay_the_gba/issues/73) |
+| Ruse |  | Oui | [#73](https://github.com/Boblebol/slay_the_gba/issues/73) |
 | Injouable |  | Oui |  |
 | Éternel |  | Oui | [#95](https://github.com/Boblebol/slay_the_gba/issues/95) |
 
