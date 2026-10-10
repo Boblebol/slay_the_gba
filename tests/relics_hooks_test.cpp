@@ -2390,6 +2390,23 @@ void test_venerable_tea_set() {
     std::cout << "[PASS] Venerable Tea Set: 2 energy per Rest Site entered, for the next combat" << std::endl;
 }
 
+void test_divine_destiny() {
+    // With the relic: 7 Stars at the start of each combat.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    run.add_relic("DIVINE_DESTINY");
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.sovereign_stars == 7);
+
+    // Without the relic: no Stars at the start of the combat.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    assert(!plain.has_relic("DIVINE_DESTINY"));
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.combat.player.sovereign_stars == 0);
+    std::cout << "[PASS] Divine Destiny (event): 7 Stars at the start of each combat" << std::endl;
+}
+
 void test_lava_lamp() {
     // At the end of a fight without HP lost, every card reward of it is upgraded; with HP lost, none is.
     auto all_upgraded = [](const RunManager& r) {
@@ -2571,6 +2588,7 @@ int main() {
     test_paels_legion();
     test_golden_pearl();
     test_venerable_tea_set();
+    test_divine_destiny();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();
