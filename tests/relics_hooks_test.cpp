@@ -2228,6 +2228,25 @@ static void test_pen_nib() {
     std::cout << "[PASS] Pen Nib doubles every 10th Attack" << std::endl;
 }
 
+void test_iron_club() {
+    // With the relic, the 4th card played draws 1 card and the count starts over.
+    CombatEngine club = make_relic_combat(CharacterId::IRONCLAD, PowerId::IRON_CLUB, 1);
+    club.enemies[0].hp = 200;
+    club.player.energy = 10;
+    for (int i = 0; i < 3; ++i) play(club, CardId::DEFEND);
+    assert(club.hand.empty());
+    play(club, CardId::DEFEND);
+    assert(club.hand.size() == 1 && club.power_counter(PowerId::IRON_CLUB) == 0);
+
+    // Without it, no card is drawn.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::NUNCHAKU, 1);
+    plain.player.energy = 10;
+    for (int i = 0; i < 3; ++i) play(plain, CardId::DEFEND);
+    play(plain, CardId::DEFEND);
+    assert(plain.hand.empty());
+    std::cout << "[PASS] Iron Club draws a card every 4 cards played" << std::endl;
+}
+
 void test_strike_dummy() {
     // With the relic, every card containing "Strike" deals 3 more damage per hit; other cards do not.
     CombatEngine dummy = make_relic_combat(CharacterId::IRONCLAD, PowerId::STRIKE_DUMMY, 3);
@@ -3745,6 +3764,7 @@ int main() {
     test_toolbox();
     test_orange_dough();
     test_pen_nib();
+    test_iron_club();
     test_strike_dummy();
     test_fake_strike_dummy();
     test_miniature_cannon();
