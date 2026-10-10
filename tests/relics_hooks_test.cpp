@@ -941,6 +941,26 @@ void test_delicate_frond() {
     std::cout << "[PASS] Delicate Frond: every empty potion slot filled at combat start" << std::endl;
 }
 
+void test_wongo_customer_appreciation_badge() {
+    // Wongo customer appreciation badge is an event relic with no effect in game ("Does nothing."):
+    // a run holding it plays exactly like one without it.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    with.add_relic("WONGO_CUSTOMER_APPRECIATION_BADGE");
+    enter_room_of_type(with, RoomType::MONSTER);
+
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    enter_room_of_type(without, RoomType::MONSTER);
+
+    assert(with.has_relic("WONGO_CUSTOMER_APPRECIATION_BADGE"));
+    assert(!without.has_relic("WONGO_CUSTOMER_APPRECIATION_BADGE"));
+    assert(with.max_hp == without.max_hp && with.gold == without.gold);
+    assert(with.combat.player.energy == without.combat.player.energy);
+    assert(with.combat.player.get_status(StatusType::DEXTERITY) == without.combat.player.get_status(StatusType::DEXTERITY));
+    std::cout << "[PASS] Wongo customer appreciation badge: no effect in game" << std::endl;
+}
+
 void test_circlet() {
     // Circlet is a fallback relic with no effect in game: a run holding it plays exactly like one without it.
     RunManager with;
@@ -3417,6 +3437,7 @@ int main() {
     test_mr_struggles();
     test_belt_buckle();
     test_circlet();
+    test_wongo_customer_appreciation_badge();
     test_dingy_rug();
     test_beating_remnant();
     test_vambrace();
