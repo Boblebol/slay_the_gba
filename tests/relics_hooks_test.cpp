@@ -808,6 +808,35 @@ void test_delicate_frond() {
     std::cout << "[PASS] Delicate Frond: every empty potion slot filled at combat start" << std::endl;
 }
 
+void test_belt_buckle() {
+    // With the relic and no potion: 2 additional Dexterity, lost as soon as a potion is held.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("BELT_BUCKLE");
+    with.potions.clear();
+    enter_room_of_type(with, RoomType::MONSTER);
+    assert(with.combat.player.get_status(StatusType::DEXTERITY) == 2);
+
+    // Holding a potion at the start: no Dexterity; drinking it gives the Dexterity.
+    RunManager held;
+    held.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    held.add_relic("BELT_BUCKLE");
+    held.potions.clear();
+    held.potions.push_back("FIRE_POTION");
+    enter_room_of_type(held, RoomType::MONSTER);
+    assert(held.combat.player.get_status(StatusType::DEXTERITY) == 0);
+    assert(held.use_potion(0, 0));
+    assert(held.combat.player.get_status(StatusType::DEXTERITY) == 2);
+
+    // Without the relic: nothing.
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    without.potions.clear();
+    enter_room_of_type(without, RoomType::MONSTER);
+    assert(without.combat.player.get_status(StatusType::DEXTERITY) == 0);
+    std::cout << "[PASS] Belt Buckle: 2 Dexterity while the potion belt is empty" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -1607,6 +1636,7 @@ int main() {
     test_membership_card();
     test_yummy_cookie();
     test_delicate_frond();
+    test_belt_buckle();
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();

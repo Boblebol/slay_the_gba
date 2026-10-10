@@ -40,6 +40,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "CHARONS_ASHES", "Chaque fois que vous Épuisez une carte, infligez 3 dégâts à TOUS les ennemis." },
     { "CLOAK_CLASP", "À la fin de votre tour, gagnez 1 d'Armure pour chaque carte dans votre Main." },
     { "DATA_DISK", "Commencez chaque combat avec 1 de Focalisation." },
+    { "BELT_BUCKLE", "Sans Potion, vous avez 2 de Dextérité supplémentaire." },
     { "DELICATE_FROND", "Au début de chaque combat, remplissez vos emplacements de potion vides avec des Potions aléatoires." },
     { "DEMON_TONGUE", "La première fois que vous perdez des PV pendant votre tour, vous récupérez autant de PV." },
     { "EMOTION_CHIP", "Si vous avez perdu des PV lors du tour précédent, déclenchez la capacité passive de chacun de vos Orbes au début de votre tour." },

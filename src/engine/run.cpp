@@ -320,6 +320,7 @@ bool RunManager::use_potion(int index, int target_index) {
     if (index < 0 || static_cast<size_t>(index) >= potions.size()) return false;
     if (!combat.use_potion(potions[index], target_index)) return false;
     potions.erase(index);
+    refresh_belt_buckle();
     return true;
 }
 
@@ -1402,6 +1403,17 @@ void RunManager::apply_combat_start_relics() {
     if (!combat.has_alive_enemies()) {
         combat.state = CombatState::VICTORY;
     }
+    belt_buckle_active = false;
+    refresh_belt_buckle();
+}
+
+void RunManager::refresh_belt_buckle() {
+    // Belt Buckle: 2 additional Dexterity while the potion belt is empty.
+    if (!has_relic("BELT_BUCKLE")) return;
+    bool should_be_active = potions.empty();
+    if (should_be_active == belt_buckle_active) return;
+    combat.player.add_status(StatusType::DEXTERITY, should_be_active ? 2 : -2);
+    belt_buckle_active = should_be_active;
 }
 
 void RunManager::proceed_after_combat() {
