@@ -92,11 +92,35 @@ void test_expose() {
     std::cout << "[PASS] Silent: Expose" << std::endl;
 }
 
+void test_flick_flack() {
+    for (bool upgraded : { false, true }) {
+        // Flick-Flack: 7 damage to every enemy (9 upgraded). It costs 1 energy.
+        CombatEngine flick = make_pack(CharacterId::SILENT);
+        play(flick, DeckCard(CardId::FLICK_FLACK, upgraded));
+        int damage = upgraded ? 9 : 7;
+        assert(flick.player.energy == flick.player.max_energy - 1);
+        assert(flick.enemies[0].hp == 18 - damage);
+        assert(flick.enemies[1].hp == 18 - damage);
+        assert(flick.enemies[2].hp == 42 - damage);
+        assert(count_in(flick.discard_pile, CardId::FLICK_FLACK) == 1);
+    }
+
+    // Base and upgraded definitions: 1 energy, 7 then 9 damage, Attack against all enemies.
+    assert(CardDef::get_cost(CardId::FLICK_FLACK, false) == 1 && CardDef::get_cost(CardId::FLICK_FLACK, true) == 1);
+    assert(CardDef::get_value(CardId::FLICK_FLACK, false) == 7 && CardDef::get_value(CardId::FLICK_FLACK, true) == 9);
+    assert(CardDef::get(CardId::FLICK_FLACK).type == CardType::ATTACK);
+    assert(CardDef::get(CardId::FLICK_FLACK).target == TargetType::ALL_ENEMIES);
+
+    assert_in_pool(CharacterId::SILENT, { CardId::FLICK_FLACK });
+    std::cout << "[PASS] Silent: Flick-Flack" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Silent Cards ===" << std::endl;
     test_expose();
+    test_flick_flack();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
