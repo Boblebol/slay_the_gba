@@ -240,6 +240,8 @@ enum class PowerId : uint8_t {
     DAUGHTER_OF_THE_WIND, // Attack played: `amount` Block (event relic)
     LOST_WISP,          // Power played: `amount` damage to every enemy (event relic)
     HAND_DRILL          // an enemy's Block broken by the player's damage: `amount` Vulnerable on that enemy
+    MR_STRUGGLES,       // start of turn: damage equal to the turn number to every enemy (event relic)
+    UNDYING_SIGIL       // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

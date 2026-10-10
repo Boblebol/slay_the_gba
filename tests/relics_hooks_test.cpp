@@ -3572,6 +3572,32 @@ void test_silver_crucible() {
     std::cout << "[PASS] Silver Crucible: first 3 card rewards upgraded, first Treasure Chest empty" << std::endl;
 }
 
+void test_undying_sigil() {
+    // With the relic: an enemy with at least as much Doom as HP deals 50% less damage.
+    CombatEngine sigil = make_combat(CharacterId::IRONCLAD);
+    sigil.add_power(PowerId::UNDYING_SIGIL, 1);
+    sigil.enemies[0].hp = 30;
+    sigil.enemies[0].add_status(StatusType::DOOM, 30);
+    end_turn_attacked(sigil, 10);
+    assert(sigil.last_enemy_actions[0].damage_to_player == 5);
+
+    // Less Doom than HP: the full damage.
+    CombatEngine short_doom = make_combat(CharacterId::IRONCLAD);
+    short_doom.add_power(PowerId::UNDYING_SIGIL, 1);
+    short_doom.enemies[0].hp = 30;
+    short_doom.enemies[0].add_status(StatusType::DOOM, 29);
+    end_turn_attacked(short_doom, 10);
+    assert(short_doom.last_enemy_actions[0].damage_to_player == 10);
+
+    // Without the relic: the full damage, even with lethal Doom.
+    CombatEngine plain = make_combat(CharacterId::IRONCLAD);
+    plain.enemies[0].hp = 30;
+    plain.enemies[0].add_status(StatusType::DOOM, 30);
+    end_turn_attacked(plain, 10);
+    assert(plain.last_enemy_actions[0].damage_to_player == 10);
+    std::cout << "[PASS] Undying Sigil: enemy with Doom at least its HP deals 50% less damage" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3670,6 +3696,7 @@ int main() {
     test_unsettling_lamp();
     test_daughter_of_the_wind();
     test_bookmark();
+    test_undying_sigil();
     test_tungsten_rod();
     test_mango();
     test_fake_lees_waffle();
