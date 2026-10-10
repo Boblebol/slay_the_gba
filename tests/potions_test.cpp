@@ -19,6 +19,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
     "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION",
+    "ENTROPIC_BREW",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -883,6 +884,18 @@ void test_gigantification_potion() {
     std::cout << "[PASS] Gigantification Potion: the next Attack deals triple damage, only once" << std::endl;
 }
 
+void test_entropic_brew() {
+    // Drinking it asks the run to fill its empty potion slots; the combat itself gains nothing.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    int16_t hp = combat.player.hp;
+    int8_t energy = combat.player.energy;
+    assert(combat.use_potion("ENTROPIC_BREW"));
+    assert(combat.fill_potion_belt);
+    assert(combat.player.hp == hp && combat.player.energy == energy);
+    assert(std::string_view(combat.combat_log) == "Entropic Brew!");
+    std::cout << "[PASS] Entropic Brew: asks the run to fill the empty potion slots" << std::endl;
+}
+
 } // namespace
 
 void test_stable_serum() {
@@ -949,6 +962,7 @@ void test_ashwater() {
 int main() {
     std::cout << "=== Potions ===" << std::endl;
     test_gigantification_potion();
+    test_entropic_brew();
     test_explosive_ampoule();
     test_weak_potion();
     test_swift_potion();

@@ -394,6 +394,10 @@ bool RunManager::use_potion(int index, int target_index) {
     if (!combat.use_potion(potions[index], target_index)) return false;
     potions.erase(index);
     refresh_belt_buckle();
+    if (combat.fill_potion_belt) {
+        combat.fill_potion_belt = false;
+        gain_random_potions(MAX_POTION_SLOTS); // stops once the belt is full
+    }
     return true;
 }
 
