@@ -170,6 +170,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "MANGO", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 14." },
     { "STONE_HUMIDIFIER", "Lorsque vous vous Reposez à un Site de repos, augmentez vos PV Max de 5." },
     { "TINY_MAILBOX", "Lorsque vous vous Reposez, obtenez 2 Potions aléatoires." },
+    { "DREAM_CATCHER", "Lorsque vous vous Reposez, vous pouvez ajouter une carte à votre Deck." },
     { "VENERABLE_TEA_SET", "Chaque fois que vous entrez dans un Site de repos, commencez le combat suivant avec 2 Énergie supplémentaires." },
     { "PLANISPHERE", "Lorsque vous entrez dans une salle ?, récupérez 5 PV." },
     { "MEAL_TICKET", "Lorsque vous entrez dans une boutique, récupérez 15 PV." },
