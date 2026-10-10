@@ -1144,6 +1144,83 @@ void test_eye_with_teeth() {
     std::cout << "[PASS] Eye With Teeth: 6 HP, Distract (3 Dazed into the discard pile) every turn" << std::endl;
 }
 
+// Plays `turns` of the enemy at `index`: its intent, the damage the player loses, its Block and its Strength.
+void check_nibbit_cycle(CombatEngine& combat, size_t index, std::initializer_list<Turn> turns, int strength_step) {
+    Enemy& nibbit = combat.enemies[index];
+    int turn_number = 1;
+    int strength = 0;
+    for (const Turn& turn : turns) {
+        assert(combat.turn_number == turn_number);
+        assert(nibbit.current_intent.type == turn.intent);
+        assert(nibbit.intent_damage(combat.player) == turn.damage);
+        if (turn.intent == BUFF) strength += strength_step;
+        pass_turn(combat);
+        assert(nibbit.block == turn.block);
+        assert(nibbit.get_status(StatusType::STRENGTH) == strength);
+        ++turn_number;
+    }
+}
+
+void test_nibbit() {
+    // Alone: Butt 12, Slice 6 + 5 Block, Hiss (+2 Strength), and again.
+    CombatEngine alone = make_pack({ EnemyType::NIBBIT });
+    Enemy& single = alone.enemies[0];
+    assert(single.type == EnemyType::NIBBIT && single.name == "Grignotin");
+    assert(single.hp >= 42 && single.hp <= 46 && single.max_hp == single.hp && single.max_hp == 42 + single.hp_bonus);
+    assert(single.block == 0 && single.statuses.empty());
+    check_nibbit_cycle(alone, 0, {
+        { ATTACK, 12, 0, 0 },
+        { ATTACK_DEFEND, 6, 5, 0 },
+        { BUFF, 0, 0, 0 },
+        { ATTACK, 14, 0, 0 },
+        { ATTACK_DEFEND, 8, 5, 0 },
+        { BUFF, 0, 0, 0 },
+    }, 2);
+
+    // Two Nibbits: the one in front starts with Slice, the one behind with Hiss. Each follows the same cycle.
+    CombatEngine pair = make_pack({ EnemyType::NIBBIT, EnemyType::NIBBIT });
+    assert(pair.enemies[0].current_intent.type == ATTACK_DEFEND);
+    assert(pair.enemies[1].current_intent.type == BUFF);
+    const EnemyIntentType front[] = { ATTACK_DEFEND, BUFF, ATTACK, ATTACK_DEFEND, BUFF, ATTACK };
+    const EnemyIntentType behind[] = { BUFF, ATTACK, ATTACK_DEFEND, BUFF, ATTACK, ATTACK_DEFEND };
+    for (int turn = 0; turn < 6; ++turn) {
+        assert(pair.enemies[0].current_intent.type == front[turn]);
+        assert(pair.enemies[1].current_intent.type == behind[turn]);
+        pass_turn(pair);
+    }
+    // The pattern is kept when the partner dies: it does not start over as if alone.
+    CombatEngine left = make_pack({ EnemyType::NIBBIT, EnemyType::NIBBIT });
+    pass_turn(left);
+    left.enemies[0].hp = 0;
+    pass_turn(left);
+    assert(left.enemies[1].current_intent.type == ATTACK_DEFEND);
+    std::cout << "[PASS] Nibbit: 42 to 46 HP, Butt 12, Slice 6 + 5 Block, Hiss +2 Strength, start by position" << std::endl;
+}
+
+void test_nibbit_ascension() {
+    // 44 to 48 HP, Butt 13, Slice 7 + 6 Block and Hiss +3 Strength at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_pack({ EnemyType::NIBBIT });
+        Enemy& nibbit = combat.enemies[0];
+        nibbit.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = nibbit.hp;
+        assert(nibbit.ascension_hp() == 44 && nibbit.hp_spread() == 4);
+        assert(base >= 42 && base <= 46 && nibbit.max_hp == 42 + nibbit.hp_bonus);
+        nibbit.ascend(true, true);
+        combat.plan_enemies();
+        assert(nibbit.hp == base + 2 && nibbit.max_hp == base + 2 && nibbit.hp >= 44 && nibbit.hp <= 48);
+        assert(nibbit.current_intent.type == ATTACK && nibbit.intent_damage(combat.player) == 13);
+        pass_turn(combat);
+        assert(nibbit.current_intent.type == ATTACK_DEFEND && nibbit.intent_damage(combat.player) == 7);
+        pass_turn(combat);
+        assert(nibbit.block == 6);
+        assert(nibbit.current_intent.type == BUFF);
+        pass_turn(combat);
+        assert(nibbit.get_status(StatusType::STRENGTH) == 3);
+    }
+    std::cout << "[PASS] Nibbit: Ascension gives 44 to 48 HP, Butt 13, Slice 7 + 6 Block, Hiss +3 Strength" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1182,6 +1259,8 @@ int main() {
     test_status_intent();
     test_status_cards_are_not_the_players();
     test_eye_with_teeth();
+    test_nibbit();
+    test_nibbit_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
