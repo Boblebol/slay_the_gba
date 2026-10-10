@@ -2240,6 +2240,41 @@ void test_tungsten_rod() {
     std::cout << "[PASS] Tungsten Rod: 1 less HP lost each time" << std::endl;
 }
 
+void test_paper_krane() {
+    // With the relic: a Weak enemy deals 40% less damage (20 x 0.6 = 12), and the Vulnerable player takes 1.5x (18).
+    RunManager with;
+    with.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 451);
+    with.add_relic("PAPER_KRANE");
+    with.potions.clear();
+    enter_room_of_type(with, RoomType::MONSTER);
+    CombatEngine& krane = with.combat;
+    krane.enemies[0].statuses.clear();
+    krane.player.statuses.clear();
+    krane.enemies[0].current_intent.type = EnemyIntentType::ATTACK;
+    krane.enemies[0].current_intent.base_damage = 20;
+    krane.enemies[0].add_status(StatusType::WEAK, 1);
+    assert(krane.enemies[0].intent_damage(krane.player) == 12);
+    krane.player.add_status(StatusType::VULNERABLE, 1);
+    assert(krane.enemies[0].intent_damage(krane.player) == 18);
+    krane.player.statuses.clear();
+    krane.enemies[0].statuses.clear();
+    assert(krane.enemies[0].intent_damage(krane.player) == 20);
+
+    // Without the relic: the Weak enemy deals 25% less (20 x 0.75 = 15), as before.
+    RunManager without;
+    without.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 451);
+    without.potions.clear();
+    enter_room_of_type(without, RoomType::MONSTER);
+    CombatEngine& plain = without.combat;
+    plain.enemies[0].statuses.clear();
+    plain.player.statuses.clear();
+    plain.enemies[0].current_intent.type = EnemyIntentType::ATTACK;
+    plain.enemies[0].current_intent.base_damage = 20;
+    plain.enemies[0].add_status(StatusType::WEAK, 1);
+    assert(plain.enemies[0].intent_damage(plain.player) == 15);
+    std::cout << "[PASS] Paper Krane: Weak enemies deal 40% less damage to the player" << std::endl;
+}
+
 void test_lees_waffle() {
     // Obtained: 7 more maximum HP, and all of the HP is restored.
     RunManager run;
@@ -2884,6 +2919,7 @@ int main() {
     test_unsettling_lamp();
     test_bookmark();
     test_tungsten_rod();
+    test_paper_krane();
     test_mango();
     test_old_coin();
     test_pear();
