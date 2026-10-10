@@ -111,12 +111,44 @@ void test_untouchable() {
     std::cout << "[PASS] Silent: Untouchable" << std::endl;
 }
 
+void test_ricochet() {
+    for (bool upgraded : { false, true }) {
+        // Ricochet: 3 damage to a random enemy, 4 times (5 when upgraded). It costs 2 energy.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        for (Enemy& enemy : combat.enemies) {
+            enemy.hp = enemy.max_hp = 200;
+            enemy.block = 0;
+        }
+        int hp_before = 0;
+        for (const Enemy& enemy : combat.enemies) hp_before += enemy.hp;
+        play(combat, DeckCard(CardId::RICOCHET, upgraded), 0);
+        assert(combat.player.energy == combat.player.max_energy - 2);
+
+        int hp_after = 0;
+        for (const Enemy& enemy : combat.enemies) hp_after += enemy.hp;
+        assert(hp_before - hp_after == 3 * (upgraded ? 5 : 4));
+        assert(count_in(combat.discard_pile, CardId::RICOCHET) == 1);
+    }
+
+    // Base and upgraded definitions: 2 energy, 3 damage, 4 then 5 hits, Sly.
+    assert(CardDef::get_cost(CardId::RICOCHET, false) == 2 && CardDef::get_cost(CardId::RICOCHET, true) == 2);
+    assert(CardDef::get_value(CardId::RICOCHET, false) == 3 && CardDef::get_value(CardId::RICOCHET, true) == 3);
+    assert(CardDef::get_secondary(CardId::RICOCHET, false) == 4 && CardDef::get_secondary(CardId::RICOCHET, true) == 5);
+    assert(CardDef::get(CardId::RICOCHET).type == CardType::ATTACK);
+    assert(CardDef::has_keyword(CardId::RICOCHET, false, KEYWORD_SLY));
+    assert(CardDef::has_keyword(CardId::RICOCHET, true, KEYWORD_SLY));
+
+    assert_in_pool(CharacterId::SILENT, { CardId::RICOCHET });
+    std::cout << "[PASS] Silent: Ricochet" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Silent Cards ===" << std::endl;
     test_expose();
     test_untouchable();
+    test_ricochet();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
