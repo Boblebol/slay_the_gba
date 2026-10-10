@@ -17,7 +17,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "BLESSING_OF_THE_FORGE", "FORTIFIER", "FYSH_OIL", "BONE_BREW", "POTION_OF_BINDING", "CURE_ALL", "CLARITY",
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
-    "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION",
+    "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -728,6 +728,34 @@ void test_droplet_of_precognition() {
     std::cout << "[PASS] Droplet of Precognition: add a card of the draw pile to the hand" << std::endl;
 }
 
+void test_stable_serum() {
+    // The hand is kept at the end of the next 2 turns, then discarded again.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    pad_draw_pile(combat, 30);
+    assert(combat.use_potion("STABLE_SERUM"));
+    assert(combat.has_power(PowerId::STABLE_SERUM));
+    assert(combat.power_amount(PowerId::STABLE_SERUM) == 2);
+    assert(std::string_view(combat.combat_log) == "Stable Serum!");
+    assert(combat.player.energy == 3 && combat.hand.size() == 5);
+
+    end_turn_idle(combat);
+    // Turn 2: the 5 cards stayed, 5 more were drawn, nothing was discarded.
+    assert(combat.discard_pile.empty());
+    assert(combat.hand.size() == 10);
+    assert(combat.power_amount(PowerId::STABLE_SERUM) == 1);
+
+    end_turn_idle(combat);
+    assert(combat.discard_pile.empty());
+    assert(combat.hand.size() == 10);
+    assert(!combat.has_power(PowerId::STABLE_SERUM));
+
+    end_turn_idle(combat);
+    assert(combat.discard_pile.size() == 10);
+    assert(combat.hand.size() == 5);
+
+    std::cout << "[PASS] Stable Serum: retain the hand for 2 turns" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -800,6 +828,7 @@ int main() {
     test_powdered_demise();
     test_duplicator();
     test_droplet_of_precognition();
+    test_stable_serum();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;

@@ -995,7 +995,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         default:
             // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
             // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE,
-            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM, DEMISE, DUPLICATION.
+            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM, DEMISE, DUPLICATION, STABLE_SERUM.
             break;
     }
 }
@@ -5819,7 +5819,7 @@ void CombatEngine::end_player_turn() {
         if (i < hand.size() && CardDef::has_keyword(hand[i], KEYWORD_ETHEREAL)) exhaust_from_hand(i);
     }
     // The rest is discarded, except the cards with Retain.
-    const bool keep_hand = retain_hand || has_power(PowerId::KEEP_HAND);
+    const bool keep_hand = retain_hand || has_power(PowerId::KEEP_HAND) || has_power(PowerId::STABLE_SERUM);
     for (size_t i = hand.size(); i-- > 0;) {
         // Phantom Blades keeps the Shivs.
         const bool kept_shiv = hand[i].id == CardId::SHIV && has_power(PowerId::PHANTOM_BLADES);
@@ -5830,6 +5830,11 @@ void CombatEngine::end_player_turn() {
         }
         discard_pile.push_back(hand[i]);
         hand.erase(i);
+    }
+    // Stable Serum: one of its turns is spent.
+    for (size_t i = powers.size(); i-- > 0;) {
+        if (powers[i].id != PowerId::STABLE_SERUM) continue;
+        if (--powers[i].amount <= 0) powers.erase(i);
     }
 
     // Effects that only lasted this turn are over.
@@ -6168,6 +6173,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "DROPLET_OF_PRECOGNITION") {
         ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, 1);
         set_log("Droplet of Precognition!");
+    } else if (potion_id == "STABLE_SERUM") {
+        add_power(PowerId::STABLE_SERUM, 2);
+        set_log("Stable Serum!");
     } else {
         return false;
     }

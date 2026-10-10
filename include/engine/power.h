@@ -211,7 +211,9 @@ enum class PowerId : uint8_t {
     CRUELTY,            // Vulnerable enemies take `amount` % more damage from attacks (read by hit)
     UNMOVABLE,          // the first Block a card gives each turn is doubled (read by gain_block)
     TRACKING,           // Weak enemies take `amount` % more damage from attacks (read by hit)
-    LETHALITY           // the first Attack each turn deals `amount` % more damage (read by hit)
+    LETHALITY,          // the first Attack each turn deals `amount` % more damage (read by hit)
+    // Potions (appended)
+    STABLE_SERUM        // the hand is kept at the end of the next `amount` turns (read by end_player_turn)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
