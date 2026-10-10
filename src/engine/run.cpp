@@ -660,6 +660,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         gain_max_hp(7);
         hp = max_hp;
     }
+    if (relic_id == "MANGO" && has_relic("MANGO")) gain_max_hp(14);
     if (relic_id == "LARGE_CAPSULE" && has_relic("LARGE_CAPSULE")) {
         gain_random_relics(2);
         add_card_to_deck(DeckCard{ CardId::STRIKE, false });
@@ -1153,6 +1154,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "LEES_WAFFLE", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "MANGO", // Shared, out of combat
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
