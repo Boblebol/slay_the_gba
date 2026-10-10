@@ -100,6 +100,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "DISTINGUISHED_CAPE", "Lorsque vous obtenez cette relique, ajoutez 2 Malédictions aléatoires et 3 Apparitions à votre Deck." },
     { "BLOOD_SOAKED_ROSE", "Lorsque vous obtenez cette relique, ajoutez 1 Assuétude à votre Deck. Gagnez 1 ● au début de chaque tour." },
     { "GOLDEN_PEARL", "Lorsque vous obtenez cette relique, gagnez 150 Pièces d'or." },
+    { "CURSED_PEARL", "Lorsque vous obtenez cette relique, recevez Cupidité. Obtenez 333 Pièces d'or." },
     { "ECTOPLASM", "Vous ne pouvez plus obtenir de Pièces d'or. Gagnez 1 ● au début de chaque tour." },
     { "DUSTY_TOME", "Lorsque vous obtenez cette relique, obtenez une Carte d'Ancien." },
     { "GLASS_EYE", "Lorsque vous obtenez cette relique, obtenez 2 cartes Communes, 2 cartes Inhabituelles, et 1 carte Rare." },

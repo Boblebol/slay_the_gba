@@ -855,6 +855,27 @@ void test_golden_pearl() {
     std::cout << "[PASS] Golden Pearl: +150 gold when obtained" << std::endl;
 }
 
+void test_cursed_pearl() {
+    // Obtained: a Greed curse joins the deck and 333 gold is paid once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck_size = run.master_deck.size();
+    int16_t gold = run.gold;
+    run.add_relic("CURSED_PEARL");
+    assert(run.has_relic("CURSED_PEARL"));
+    assert(run.master_deck.size() == deck_size + 1);
+    assert(run.master_deck[run.master_deck.size() - 1].id == CardId::GREED);
+    assert(run.gold == gold + 333);
+
+    // Without the relic, the deck and the gold stay where they are.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("CURSED_PEARL") && plain.master_deck.size() == deck_size && plain.gold == gold);
+
+    std::cout << "[PASS] Cursed Pearl: Greed curse and +333 gold when obtained" << std::endl;
+}
+
 void test_booming_conch() {
     // Booming Conch: in an Elite room, 2 more cards and 1 more energy on the first turn, nothing after it.
     RunManager plain_elite;
@@ -1490,5 +1511,6 @@ int main() {
     test_velvet_choker();
     test_glass_eye();
     test_prismatic_gem();
+    test_cursed_pearl();
     return 0;
 }
