@@ -55,6 +55,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "GAMBLING_CHIP", "Au début de chaque combat, défaussez autant de cartes que vous souhaitez, puis piochez-en le même nombre." },
     { "REPTILE_TRINKET", "Quand vous utilisez une potion, gagnez 3 Force ce tour." },
     { "GAME_PIECE", "Chaque fois que vous jouez un Pouvoir, piochez 1 carte." },
+    { "GHOST_SEED", "Les Frappes et les Défenses deviennent Éthérées." },
     { "GOLD_PLATED_CABLES", "Votre orbe le plus à droite déclenche sa capacité passive une fois de plus." },
     { "GORGET", "Au début de chaque combat, gagnez 4 de Blindage." },
     { "GREMLIN_HORN", "Chaque fois qu'un ennemi est tué, gagnez 1 ● et piochez 1 carte." },

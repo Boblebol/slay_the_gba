@@ -42,6 +42,20 @@ constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 10, "Fléau de l'Ascension", "Vous commencez la tentative avec une malédiction inépuisable dans votre deck." }
 };
 
+// Hand-written search: string_view::find calls memchr, which the GBA build does not link.
+bool contains(std::string_view text, std::string_view word) {
+    for (size_t start = 0; start + word.size() <= text.size(); ++start) {
+        if (text.substr(start, word.size()) == word) return true;
+    }
+    return false;
+}
+
+// Strikes and Defends, by their English name (Perfected Strike, Ultimate Defend...).
+bool is_strike_or_defend(CardId id) {
+    const std::string_view name = CardDef::get(id).name;
+    return contains(name, "Strike") || contains(name, "Defend");
+}
+
 } // namespace
 
 uint32_t RunManager::next_random() {
@@ -187,6 +201,8 @@ void RunManager::enter_room(int node_index) {
             for (size_t i = 0; i < master_deck.size(); ++i) {
                 DeckCard card = master_deck[i];
                 card.deck_index = static_cast<uint8_t>(i);
+                // Ghost Seed: the Strikes and Defends of the fight are Ethereal.
+                if (has_relic("GHOST_SEED") && is_strike_or_defend(card.id)) card.added_keywords |= KEYWORD_ETHEREAL;
                 combat.draw_pile.push_back(card);
             }
             combat.shuffle_draw_pile();
@@ -1131,6 +1147,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", // Shared, out of combat
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
+        "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
