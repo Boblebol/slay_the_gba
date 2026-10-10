@@ -1398,6 +1398,90 @@ void test_nibbit_ascension() {
     std::cout << "[PASS] Nibbit: Ascension gives 44 to 48 HP, Butt 13, Slice 7 + 6 Block, Hiss +3 Strength" << std::endl;
 }
 
+void test_flyconid() {
+    // Calm: Frail Spores (8 damage + 2 Frail) or Smash (11), never the same twice in a row. Hurt, it opens with
+    // Vulnerable Spores, then draws among the three moves, again never the same twice in a row.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FLYCONID);
+    Enemy& fly = combat.enemies[0];
+    assert(fly.type == EnemyType::FLYCONID && fly.name == "Mycoptère");
+    assert(fly.hp >= 47 && fly.hp <= 49 && fly.max_hp == fly.hp && fly.max_hp == 47 + fly.hp_bonus);
+    bool saw_frail = false, saw_smash = false;
+    int previous = -1;
+    for (int turn = 1; turn <= 8; ++turn) {
+        assert(fly.phase == 0 && fly.block == 0 && fly.statuses.empty());
+        const EnemyIntent& intent = fly.current_intent;
+        int move;
+        if (intent.type == ATTACK_DEBUFF) {
+            assert(fly.intent_damage(combat.player) == 8);
+            assert(intent.debuffs[0].type == StatusType::FRAIL && intent.debuffs[0].amount == 2);
+            move = 1;
+            saw_frail = true;
+        } else {
+            assert(intent.type == ATTACK && fly.intent_damage(combat.player) == 11);
+            move = 2;
+            saw_smash = true;
+        }
+        assert(move != previous);
+        previous = move;
+        combat.player.hp = combat.player.max_hp;
+        combat.player.statuses.clear();
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == (move == 1 ? 8 : 11));
+    }
+    assert(saw_frail && saw_smash);
+
+    // Hurt: Vulnerable Spores at once (2 Vulnerable on the player, no damage), then a draw that cannot repeat.
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::FLYCONID);
+    Enemy& bug = hurt.enemies[0];
+    hurt.damage_enemy(bug, 5);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(bug.phase == 1);
+    assert(bug.current_intent.type == DEBUFF && bug.intent_damage(hurt.player) == 0);
+    assert(bug.current_intent.debuffs[0].type == StatusType::VULNERABLE && bug.current_intent.debuffs[0].amount == 2);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(hurt.player.max_hp == hurt.player.hp && hurt.player.get_status(StatusType::VULNERABLE) >= 1);
+    bool seen[3] = { true, false, false };
+    int last = 0;
+    for (int turn = 0; turn < 40; ++turn) {
+        const EnemyIntent& intent = bug.current_intent;
+        int move = intent.type == DEBUFF ? 0 : (intent.type == ATTACK_DEBUFF ? 1 : 2);
+        assert(bug.phase == 1 && move != last);
+        if (move == 1) assert(intent.base_damage == 8 && intent.debuffs[0].type == StatusType::FRAIL);
+        if (move == 2) assert(intent.type == ATTACK && intent.base_damage == 11);
+        seen[move] = true;
+        last = move;
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.end_player_turn();
+        assert(hurt.state == CombatState::PLAYER_TURN);
+    }
+    assert(seen[0] && seen[1] && seen[2]);
+    std::cout << "[PASS] Flyconid: 47 to 49 HP, Frail Spores / Smash, Vulnerable Spores once hurt" << std::endl;
+}
+
+void test_flyconid_ascension() {
+    // 51 to 53 HP (47 to 49 plus 4), Frail Spores of 9 and a Smash of 12 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FLYCONID);
+        Enemy& fly = combat.enemies[0];
+        fly.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = fly.hp;
+        assert(fly.ascension_hp() == 51 && fly.hp_spread() == 2);
+        assert(base >= 47 && base <= 49 && fly.max_hp == 47 + fly.hp_bonus);
+        fly.ascend(true, true);
+        combat.plan_enemies();
+        assert(fly.hp == base + 4 && fly.max_hp == base + 4 && fly.hp >= 51 && fly.hp <= 53);
+        if (fly.current_intent.type == ATTACK_DEBUFF) {
+            assert(fly.intent_damage(combat.player) == 9);
+        } else {
+            assert(fly.current_intent.type == ATTACK && fly.intent_damage(combat.player) == 12);
+        }
+    }
+    std::cout << "[PASS] Flyconid: Ascension gives 51 to 53 HP, Spores of 9 and a Smash of 12" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1446,6 +1530,8 @@ int main() {
     test_inklet_ascension();
     test_nibbit();
     test_nibbit_ascension();
+    test_flyconid();
+    test_flyconid_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

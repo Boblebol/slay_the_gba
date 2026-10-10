@@ -31,6 +31,7 @@ constexpr Encounter ACT1A_NORMAL[] = {
     { "CubexConstructNormal"sv, 1, { EnemyType::CUBEX_CONSTRUCT } },
     { "InkletsNormal"sv, 3, { EnemyType::INKLET, EnemyType::INKLET, EnemyType::INKLET } },
     { "NibbitsNormal"sv, 2, { EnemyType::NIBBIT, EnemyType::NIBBIT } },
+    { "FlyconidNormal"sv, 1, { EnemyType::FLYCONID } },
 };
 
 // Act 1 (B): the Underdocks.
