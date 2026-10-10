@@ -1565,6 +1565,10 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("ANCHOR")) {
         combat.player.block += 10;
     }
+    // Event relic (Fake Anchor): start each combat with 4 Block, same timing as Anchor.
+    if (has_relic("FAKE_ANCHOR")) {
+        combat.player.block += 4;
+    }
     // Oddly Smooth Stone: start each combat with 1 Dexterity.
     if (has_relic("ODDLY_SMOOTH_STONE")) {
         combat.player.add_status(StatusType::DEXTERITY, 1);

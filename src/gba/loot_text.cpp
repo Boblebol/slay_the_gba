@@ -20,6 +20,7 @@ struct RelicText
 constexpr RelicText RELIC_TEXTS[] = {
     { "AKABEKO", "Au début de chaque combat, gagnez 8 de Vigueur." },
     { "ANCHOR", "Démarrez chaque combat avec 10 d'Armure." },
+    { "FAKE_ANCHOR", "Démarrez chaque combat avec 4 d'Armure." },
     { "PAELS_TEARS", "Si vous terminez votre tour avec de l'Énergie non dépensée, gagnez 2 ● supplémentaires au tour suivant." },
     { "ART_OF_WAR", "Si vous ne jouez aucune Attaque pendant votre tour, gagnez 1 ● supplémentaire au tour suivant." },
     { "BAG_OF_MARBLES", "Au début de chaque combat, appliquez Vulnérable (1) sur TOUS les ennemis." },
