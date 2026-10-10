@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 70,9 %** — 874 faits, 20 partiels, 352 à faire (35 hors périmètre).
+**Avancement global : 71,4 %** — 880 faits, 20 partiels, 346 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 92 | 1 | 7 | 92,5 % |
 | [La Nécrolieuse](#necrobinder) | 98 | 1 | 3 | 96,6 % |
 | [Cartes communes aux cinq éditions](#cartes) | 106 | 0 | 14 | 88,3 % |
-| [Reliques et potions](#reliques) | 180 | 0 | 141 | 56,1 % |
+| [Reliques et potions](#reliques) | 186 | 0 | 135 | 57,9 % |
 | [Bestiaire](#bestiaire) | 19 | 1 | 84 | 18,8 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 43 | 1 | 15 | 73,7 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **874** | **20** | **352** | **70,9 %** |
+| **Total** | **880** | **20** | **346** | **71,4 %** |
 
 <a id="ironclad"></a>
 
@@ -859,11 +859,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 56,1 %
+## Reliques et potions — 57,9 %
 
-### Reliques partagées — 59,8 %
+### Reliques partagées — 62,4 %
 
-70 faits, 0 partiel, 47 à faire.
+73 faits, 0 partiel, 44 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -950,9 +950,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Shuriken | Rare | Oui |  |
 | Soufflet | Rare | Oui |  |
 | Statue de bête blanche | Rare | Oui |  |
-| Tige de tungstène | Rare | Non |  |
+| Tige de tungstène | Rare | Oui |  |
 | Toupie perpétuelle | Rare | Oui |  |
-| Vestige battant | Rare | Non |  |
+| Vestige battant | Rare | Oui |  |
 | Étoile blanche | Rare | Non |  |
 | Œuf en fusion | Rare | Non |  |
 | Œuf gelé | Rare | Non |  |
@@ -968,7 +968,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Fronde du courage | Boutique | Oui |  |
 | Fruit du dragon | Boutique | Non |  |
 | Gaufre de Lee | Boutique | Non |  |
-| Graine fantôme | Boutique | Non |  |
+| Graine fantôme | Boutique | Oui |  |
 | Kifuda | Boutique | Non |  |
 | L'Abaque | Boutique | Oui |  |
 | Lampe à lave | Boutique | Non |  |
@@ -1140,9 +1140,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Œil de geckobra | Ancienne | Oui |  |
 | Œil de verre | Ancienne | Oui |  |
 
-### Potions — 76,2 %
+### Potions — 81,0 %
 
-48 faits, 0 partiel, 15 à faire.
+51 faits, 0 partiel, 12 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1175,7 +1175,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Eau cendrée | Peu commune | Oui |  |
 | Extrait de lucidité | Peu commune | Oui |  |
 | Fortifiant | Peu commune | Oui |  |
-| Goutte de folie | Peu commune | Non |  |
+| Goutte de folie | Peu commune | Oui |  |
 | Huile de poissâme | Peu commune | Oui |  |
 | Infusion osseuse | Peu commune | Oui |  |
 | Lampée de radiance | Peu commune | Oui |  |
@@ -1203,9 +1203,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Philtre chanceux | Rare | Oui |  |
 | Potentiel en bouteille | Rare | Oui |  |
 | Potion d'entrave | Rare | Oui |  |
-| Potion de géantification | Rare | Non |  |
+| Potion de géantification | Rare | Oui |  |
 | Ragoût militaire | Rare | Non |  |
-| Souvenirs liquides | Rare | Non |  |
+| Souvenirs liquides | Rare | Oui |  |
 | Ambre gris | Évènement | Non |  |
 | Potion infecte | Évènement | Non |  |
 | Potion luminescente | Évènement | Oui |  |
