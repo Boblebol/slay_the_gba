@@ -490,6 +490,21 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::RARE, CardPool::SILENT }, // TOOLS_OF_THE_TRADE
     { CardRarity::UNCOMMON, CardPool::IRONCLAD }, // INFERNAL_BLADE
     { CardRarity::RARE, CardPool::IRONCLAD }, // STOKE
+    { CardRarity::CURSE, CardPool::CURSE }, // INJURY
+    { CardRarity::CURSE, CardPool::CURSE }, // GREED
+    { CardRarity::CURSE, CardPool::CURSE }, // CLUMSY
+    { CardRarity::CURSE, CardPool::CURSE }, // ASCENDERS_BANE
+    { CardRarity::CURSE, CardPool::CURSE }, // CURSE_OF_THE_BELL
+    { CardRarity::CURSE, CardPool::CURSE }, // POOR_SLEEP
+    { CardRarity::CURSE, CardPool::CURSE }, // WRITHE
+    { CardRarity::CURSE, CardPool::CURSE }, // NORMALITY
+    { CardRarity::CURSE, CardPool::CURSE }, // DOUBT
+    { CardRarity::CURSE, CardPool::CURSE }, // SHAME
+    { CardRarity::CURSE, CardPool::CURSE }, // DECAY
+    { CardRarity::CURSE, CardPool::CURSE }, // REGRET
+    { CardRarity::CURSE, CardPool::CURSE }, // BAD_LUCK
+    { CardRarity::CURSE, CardPool::CURSE }, // DEBT
+    { CardRarity::CURSE, CardPool::CURSE }, // SPORE_MIND
 };
 
 } // namespace engine

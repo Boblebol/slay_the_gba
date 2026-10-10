@@ -4898,6 +4898,21 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::WOUND:
         case CardId::FOLLY:
         case CardId::ENTHRALLED:
+        case CardId::SPORE_MIND:
+        case CardId::INJURY:
+        case CardId::GREED:
+        case CardId::CLUMSY:
+        case CardId::ASCENDERS_BANE:
+        case CardId::CURSE_OF_THE_BELL:
+        case CardId::POOR_SLEEP:
+        case CardId::WRITHE:
+        case CardId::NORMALITY:
+        case CardId::DOUBT:
+        case CardId::SHAME:
+        case CardId::DECAY:
+        case CardId::REGRET:
+        case CardId::BAD_LUCK:
+        case CardId::DEBT:
             // Unplayable: only another card can play them, and nothing happens.
             break;
         case CardId::DEBRIS: {
@@ -5583,6 +5598,12 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
 void CombatEngine::trigger_end_of_turn_in_hand(const DeckCard& card) {
     switch (card.id) {
         case CardId::BURN: damage_player(CardDef::get_value(card.id, card.upgraded)); break;
+        case CardId::DOUBT: player.add_status(StatusType::WEAK, 1); break;
+        case CardId::SHAME: player.add_status(StatusType::FRAIL, 1); break;
+        case CardId::DECAY: damage_player(2); break;
+        case CardId::REGRET: lose_hp(static_cast<int16_t>(hand.size())); break;
+        case CardId::BAD_LUCK: lose_hp(13); break;
+        case CardId::DEBT: lose_gold(10); break;
         default: break;
     }
 }

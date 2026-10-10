@@ -169,6 +169,21 @@
 #include "bn_sprite_items_card_dual_wield_silent.h"
 #include "bn_sprite_items_card_nightmare.h"
 #include "bn_sprite_items_card_tools_of_the_trade.h"
+#include "bn_sprite_items_card_injury.h"
+#include "bn_sprite_items_card_greed.h"
+#include "bn_sprite_items_card_clumsy.h"
+#include "bn_sprite_items_card_ascenders_bane.h"
+#include "bn_sprite_items_card_curse_of_the_bell.h"
+#include "bn_sprite_items_card_poor_sleep.h"
+#include "bn_sprite_items_card_writhe.h"
+#include "bn_sprite_items_card_normality.h"
+#include "bn_sprite_items_card_doubt.h"
+#include "bn_sprite_items_card_shame.h"
+#include "bn_sprite_items_card_decay.h"
+#include "bn_sprite_items_card_regret.h"
+#include "bn_sprite_items_card_bad_luck.h"
+#include "bn_sprite_items_card_debt.h"
+#include "bn_sprite_items_card_spore_mind.h"
 
 namespace gba::card_art
 {
@@ -492,6 +507,36 @@ namespace gba::card_art
         return &bn::sprite_items::card_nightmare;
     case engine::CardId::TOOLS_OF_THE_TRADE:
         return &bn::sprite_items::card_tools_of_the_trade;
+    case engine::CardId::INJURY:
+        return &bn::sprite_items::card_injury;
+    case engine::CardId::GREED:
+        return &bn::sprite_items::card_greed;
+    case engine::CardId::CLUMSY:
+        return &bn::sprite_items::card_clumsy;
+    case engine::CardId::ASCENDERS_BANE:
+        return &bn::sprite_items::card_ascenders_bane;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return &bn::sprite_items::card_curse_of_the_bell;
+    case engine::CardId::POOR_SLEEP:
+        return &bn::sprite_items::card_poor_sleep;
+    case engine::CardId::WRITHE:
+        return &bn::sprite_items::card_writhe;
+    case engine::CardId::NORMALITY:
+        return &bn::sprite_items::card_normality;
+    case engine::CardId::DOUBT:
+        return &bn::sprite_items::card_doubt;
+    case engine::CardId::SHAME:
+        return &bn::sprite_items::card_shame;
+    case engine::CardId::DECAY:
+        return &bn::sprite_items::card_decay;
+    case engine::CardId::REGRET:
+        return &bn::sprite_items::card_regret;
+    case engine::CardId::BAD_LUCK:
+        return &bn::sprite_items::card_bad_luck;
+    case engine::CardId::DEBT:
+        return &bn::sprite_items::card_debt;
+    case engine::CardId::SPORE_MIND:
+        return &bn::sprite_items::card_spore_mind;
     default:
         return nullptr;
     }
@@ -523,7 +568,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,
     123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
     143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 0, 0, 0, 0, 0, 0, 0,
-    156, 157, 0, 0,
+    156, 157, 0, 0, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -699,6 +744,21 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_dual_wield_defect.h"
 #include "bn_sprite_items_card_white_noise.h"
 #include "bn_sprite_items_card_creative_ai.h"
+#include "bn_sprite_items_card_injury.h"
+#include "bn_sprite_items_card_greed.h"
+#include "bn_sprite_items_card_clumsy.h"
+#include "bn_sprite_items_card_ascenders_bane.h"
+#include "bn_sprite_items_card_curse_of_the_bell.h"
+#include "bn_sprite_items_card_poor_sleep.h"
+#include "bn_sprite_items_card_writhe.h"
+#include "bn_sprite_items_card_normality.h"
+#include "bn_sprite_items_card_doubt.h"
+#include "bn_sprite_items_card_shame.h"
+#include "bn_sprite_items_card_decay.h"
+#include "bn_sprite_items_card_regret.h"
+#include "bn_sprite_items_card_bad_luck.h"
+#include "bn_sprite_items_card_debt.h"
+#include "bn_sprite_items_card_spore_mind.h"
 
 namespace gba::card_art
 {
@@ -1040,6 +1100,36 @@ namespace gba::card_art
         return &bn::sprite_items::card_white_noise;
     case engine::CardId::CREATIVE_AI:
         return &bn::sprite_items::card_creative_ai;
+    case engine::CardId::INJURY:
+        return &bn::sprite_items::card_injury;
+    case engine::CardId::GREED:
+        return &bn::sprite_items::card_greed;
+    case engine::CardId::CLUMSY:
+        return &bn::sprite_items::card_clumsy;
+    case engine::CardId::ASCENDERS_BANE:
+        return &bn::sprite_items::card_ascenders_bane;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return &bn::sprite_items::card_curse_of_the_bell;
+    case engine::CardId::POOR_SLEEP:
+        return &bn::sprite_items::card_poor_sleep;
+    case engine::CardId::WRITHE:
+        return &bn::sprite_items::card_writhe;
+    case engine::CardId::NORMALITY:
+        return &bn::sprite_items::card_normality;
+    case engine::CardId::DOUBT:
+        return &bn::sprite_items::card_doubt;
+    case engine::CardId::SHAME:
+        return &bn::sprite_items::card_shame;
+    case engine::CardId::DECAY:
+        return &bn::sprite_items::card_decay;
+    case engine::CardId::REGRET:
+        return &bn::sprite_items::card_regret;
+    case engine::CardId::BAD_LUCK:
+        return &bn::sprite_items::card_bad_luck;
+    case engine::CardId::DEBT:
+        return &bn::sprite_items::card_debt;
+    case engine::CardId::SPORE_MIND:
+        return &bn::sprite_items::card_spore_mind;
     default:
         return nullptr;
     }
@@ -1071,7 +1161,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
     132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
     152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 0, 0, 0, 0, 0, 165, 166,
-    0, 0, 0, 0,
+    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1245,6 +1335,21 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_bundle_of_joy.h"
 #include "bn_sprite_items_card_spectrum_shift.h"
 #include "bn_sprite_items_card_decisions_decisions.h"
+#include "bn_sprite_items_card_injury.h"
+#include "bn_sprite_items_card_greed.h"
+#include "bn_sprite_items_card_clumsy.h"
+#include "bn_sprite_items_card_ascenders_bane.h"
+#include "bn_sprite_items_card_curse_of_the_bell.h"
+#include "bn_sprite_items_card_poor_sleep.h"
+#include "bn_sprite_items_card_writhe.h"
+#include "bn_sprite_items_card_normality.h"
+#include "bn_sprite_items_card_doubt.h"
+#include "bn_sprite_items_card_shame.h"
+#include "bn_sprite_items_card_decay.h"
+#include "bn_sprite_items_card_regret.h"
+#include "bn_sprite_items_card_bad_luck.h"
+#include "bn_sprite_items_card_debt.h"
+#include "bn_sprite_items_card_spore_mind.h"
 
 namespace gba::card_art
 {
@@ -1582,6 +1687,36 @@ namespace gba::card_art
         return &bn::sprite_items::card_spectrum_shift;
     case engine::CardId::DECISIONS_DECISIONS:
         return &bn::sprite_items::card_decisions_decisions;
+    case engine::CardId::INJURY:
+        return &bn::sprite_items::card_injury;
+    case engine::CardId::GREED:
+        return &bn::sprite_items::card_greed;
+    case engine::CardId::CLUMSY:
+        return &bn::sprite_items::card_clumsy;
+    case engine::CardId::ASCENDERS_BANE:
+        return &bn::sprite_items::card_ascenders_bane;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return &bn::sprite_items::card_curse_of_the_bell;
+    case engine::CardId::POOR_SLEEP:
+        return &bn::sprite_items::card_poor_sleep;
+    case engine::CardId::WRITHE:
+        return &bn::sprite_items::card_writhe;
+    case engine::CardId::NORMALITY:
+        return &bn::sprite_items::card_normality;
+    case engine::CardId::DOUBT:
+        return &bn::sprite_items::card_doubt;
+    case engine::CardId::SHAME:
+        return &bn::sprite_items::card_shame;
+    case engine::CardId::DECAY:
+        return &bn::sprite_items::card_decay;
+    case engine::CardId::REGRET:
+        return &bn::sprite_items::card_regret;
+    case engine::CardId::BAD_LUCK:
+        return &bn::sprite_items::card_bad_luck;
+    case engine::CardId::DEBT:
+        return &bn::sprite_items::card_debt;
+    case engine::CardId::SPORE_MIND:
+        return &bn::sprite_items::card_spore_mind;
     default:
         return nullptr;
     }
@@ -1613,7 +1748,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
     128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147,
     148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 0, 161, 162, 163, 164, 0, 0,
-    0, 0, 0, 0,
+    0, 0, 0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1789,6 +1924,21 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_enlightenment_necrobinder.h"
 #include "bn_sprite_items_card_dual_wield_necrobinder.h"
 #include "bn_sprite_items_card_call_of_the_void.h"
+#include "bn_sprite_items_card_injury.h"
+#include "bn_sprite_items_card_greed.h"
+#include "bn_sprite_items_card_clumsy.h"
+#include "bn_sprite_items_card_ascenders_bane.h"
+#include "bn_sprite_items_card_curse_of_the_bell.h"
+#include "bn_sprite_items_card_poor_sleep.h"
+#include "bn_sprite_items_card_writhe.h"
+#include "bn_sprite_items_card_normality.h"
+#include "bn_sprite_items_card_doubt.h"
+#include "bn_sprite_items_card_shame.h"
+#include "bn_sprite_items_card_decay.h"
+#include "bn_sprite_items_card_regret.h"
+#include "bn_sprite_items_card_bad_luck.h"
+#include "bn_sprite_items_card_debt.h"
+#include "bn_sprite_items_card_spore_mind.h"
 
 namespace gba::card_art
 {
@@ -2130,6 +2280,36 @@ namespace gba::card_art
         return &bn::sprite_items::card_dual_wield_necrobinder;
     case engine::CardId::CALL_OF_THE_VOID:
         return &bn::sprite_items::card_call_of_the_void;
+    case engine::CardId::INJURY:
+        return &bn::sprite_items::card_injury;
+    case engine::CardId::GREED:
+        return &bn::sprite_items::card_greed;
+    case engine::CardId::CLUMSY:
+        return &bn::sprite_items::card_clumsy;
+    case engine::CardId::ASCENDERS_BANE:
+        return &bn::sprite_items::card_ascenders_bane;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return &bn::sprite_items::card_curse_of_the_bell;
+    case engine::CardId::POOR_SLEEP:
+        return &bn::sprite_items::card_poor_sleep;
+    case engine::CardId::WRITHE:
+        return &bn::sprite_items::card_writhe;
+    case engine::CardId::NORMALITY:
+        return &bn::sprite_items::card_normality;
+    case engine::CardId::DOUBT:
+        return &bn::sprite_items::card_doubt;
+    case engine::CardId::SHAME:
+        return &bn::sprite_items::card_shame;
+    case engine::CardId::DECAY:
+        return &bn::sprite_items::card_decay;
+    case engine::CardId::REGRET:
+        return &bn::sprite_items::card_regret;
+    case engine::CardId::BAD_LUCK:
+        return &bn::sprite_items::card_bad_luck;
+    case engine::CardId::DEBT:
+        return &bn::sprite_items::card_debt;
+    case engine::CardId::SPORE_MIND:
+        return &bn::sprite_items::card_spore_mind;
     default:
         return nullptr;
     }
@@ -2161,7 +2341,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132,
     133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
     153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0,
+    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -2337,6 +2517,21 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_dual_wield_ironclad.h"
 #include "bn_sprite_items_card_infernal_blade.h"
 #include "bn_sprite_items_card_stoke.h"
+#include "bn_sprite_items_card_injury.h"
+#include "bn_sprite_items_card_greed.h"
+#include "bn_sprite_items_card_clumsy.h"
+#include "bn_sprite_items_card_ascenders_bane.h"
+#include "bn_sprite_items_card_curse_of_the_bell.h"
+#include "bn_sprite_items_card_poor_sleep.h"
+#include "bn_sprite_items_card_writhe.h"
+#include "bn_sprite_items_card_normality.h"
+#include "bn_sprite_items_card_doubt.h"
+#include "bn_sprite_items_card_shame.h"
+#include "bn_sprite_items_card_decay.h"
+#include "bn_sprite_items_card_regret.h"
+#include "bn_sprite_items_card_bad_luck.h"
+#include "bn_sprite_items_card_debt.h"
+#include "bn_sprite_items_card_spore_mind.h"
 
 namespace gba::card_art
 {
@@ -2678,6 +2873,36 @@ namespace gba::card_art
         return &bn::sprite_items::card_infernal_blade;
     case engine::CardId::STOKE:
         return &bn::sprite_items::card_stoke;
+    case engine::CardId::INJURY:
+        return &bn::sprite_items::card_injury;
+    case engine::CardId::GREED:
+        return &bn::sprite_items::card_greed;
+    case engine::CardId::CLUMSY:
+        return &bn::sprite_items::card_clumsy;
+    case engine::CardId::ASCENDERS_BANE:
+        return &bn::sprite_items::card_ascenders_bane;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return &bn::sprite_items::card_curse_of_the_bell;
+    case engine::CardId::POOR_SLEEP:
+        return &bn::sprite_items::card_poor_sleep;
+    case engine::CardId::WRITHE:
+        return &bn::sprite_items::card_writhe;
+    case engine::CardId::NORMALITY:
+        return &bn::sprite_items::card_normality;
+    case engine::CardId::DOUBT:
+        return &bn::sprite_items::card_doubt;
+    case engine::CardId::SHAME:
+        return &bn::sprite_items::card_shame;
+    case engine::CardId::DECAY:
+        return &bn::sprite_items::card_decay;
+    case engine::CardId::REGRET:
+        return &bn::sprite_items::card_regret;
+    case engine::CardId::BAD_LUCK:
+        return &bn::sprite_items::card_bad_luck;
+    case engine::CardId::DEBT:
+        return &bn::sprite_items::card_debt;
+    case engine::CardId::SPORE_MIND:
+        return &bn::sprite_items::card_spore_mind;
     default:
         return nullptr;
     }
@@ -2709,7 +2934,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
     132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
     152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 165, 166,
+    0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
