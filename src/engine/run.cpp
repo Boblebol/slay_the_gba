@@ -736,6 +736,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
                 }
             }
         }
+    if (relic_id == "PAELS_HORN" && has_relic("PAELS_HORN")) {
+        for (int i = 0; i < 2; ++i) add_card_to_deck(DeckCard{ CardId::RELAX, false });
     }
     if (relic_id == "TANXS_WHISTLE" && has_relic("TANXS_WHISTLE")) add_card_to_deck(DeckCard{ CardId::WHISTLE, false });
     if (relic_id == "STORYBOOK" && has_relic("STORYBOOK")) add_card_to_deck(DeckCard{ CardId::BRIGHTEST_FLAME, false });

@@ -1383,6 +1383,15 @@ void test_dusty_tome() {
     assert(run.master_deck.size() == deck_size + 1);
     const CardMeta& gained = card_meta(run.master_deck[run.master_deck.size() - 1].id);
     assert(gained.rarity == CardRarity::ANCIENT && gained.pool == CardPool::IRONCLAD);
+void test_paels_horn() {
+    // Obtained: two Relax join the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck = run.master_deck.size();
+    run.add_relic("PAELS_HORN");
+    assert(run.has_relic("PAELS_HORN"));
+    assert(run.master_deck.size() == deck + 2);
+    assert(run.master_deck[deck].id == CardId::RELAX && run.master_deck[deck + 1].id == CardId::RELAX);
 
     // Without the relic, the deck stays where it is.
     RunManager plain;
@@ -1478,6 +1487,11 @@ void test_prismatic_gem() {
 
     std::cout << "[PASS] Prismatic Gem: +1 energy each turn, " << other_color << " of " << offers
               << " card rewards from other colors" << std::endl;
+    size_t plain_deck = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("PAELS_HORN") && plain.master_deck.size() == plain_deck);
+
+    std::cout << "[PASS] Paël's Horn: 2 Relax added to the deck when obtained" << std::endl;
 }
 
 int main() {
@@ -1505,6 +1519,7 @@ int main() {
     test_golden_pearl();
     test_radiant_pearl();
     test_sand_castle();
+    test_paels_horn();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();
