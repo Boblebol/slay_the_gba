@@ -584,6 +584,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     if (relic_id == "LOOMING_FRUIT" && has_relic("LOOMING_FRUIT")) gain_max_hp(31);
+    if (relic_id == "LARGE_CAPSULE" && has_relic("LARGE_CAPSULE")) {
+        gain_random_relics(2);
+        add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+        add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    }
     if (relic_id == "YUMMY_COOKIE" && has_relic("YUMMY_COOKIE")) upgrade_random_cards(4);
     // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
     if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
