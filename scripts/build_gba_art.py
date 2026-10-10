@@ -759,6 +759,7 @@ CARDS: list[CardArt] = [
     CardArt("lethality", "necrobinder", "lethality", "power", (1, 1)),
     CardArt("shadow_step", "silent", "shadow_step", "skill", (1, 0)),
     CardArt("debilitate", "necrobinder", "debilitate", "attack", (1, 1)),
+    CardArt("seeker_strike", "colorless", "seeker_strike", "attack", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

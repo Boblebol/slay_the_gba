@@ -521,6 +521,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::UNCOMMON, CardPool::NECROBINDER }, // LETHALITY
     { CardRarity::RARE, CardPool::SILENT }, // SHADOW_STEP
     { CardRarity::UNCOMMON, CardPool::NECROBINDER }, // DEBILITATE
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // SEEKER_STRIKE
 };
 
 } // namespace engine

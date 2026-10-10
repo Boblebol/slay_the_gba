@@ -870,6 +870,8 @@ bn::string_view base_name(engine::CardId id)
         return "Pas de l'ombre";
     case engine::CardId::DEBILITATE:
         return "Amoindrissement";
+    case engine::CardId::SEEKER_STRIKE:
+        return "Frappe chercheuse";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1684,6 +1686,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::DEBILITATE:
         stream << "Inflige " << value << ". Vuln. et Aff. x2, " << secondary << " tours.";
+        break;
+    case engine::CardId::SEEKER_STRIKE:
+        stream << value << " dégâts. Pioche : 1 parmi " << secondary << " en main.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:

@@ -619,6 +619,8 @@ enum class CardId : uint16_t {
     LETHALITY,
     SHADOW_STEP,
     DEBILITATE,
+    // Choose 1 card among N offered (mechanic #72)
+    SEEKER_STRIKE,
     COUNT
 };
 
@@ -626,7 +628,8 @@ enum class CardId : uint16_t {
 enum class Pile : uint8_t {
     HAND,
     DRAW, // at a random place
-    DISCARD
+    DISCARD,
+    OFFERS // cards offered by a choice (CombatEngine::offers), only picked from: "Choose 1 of 3 cards"
 };
 
 constexpr uint8_t NOT_IN_DECK = 0xFF;

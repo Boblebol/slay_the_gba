@@ -616,6 +616,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::LETHALITY, "Lethality", 1, CardType::POWER, TargetType::SELF, 50, 0, "Ethereal. The first Attack each turn deals 50% more damage.", "Lethality+", 1, 75, 0, "Ethereal. The first Attack each turn deals 75% more damage.", KEYWORD_ETHEREAL, KEYWORD_ETHEREAL },
     { CardId::SHADOW_STEP, "Shadow Step", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Discard your hand. Next turn, Attacks deal double damage.", "Shadow Step+", 0, 0, 0, "Discard your hand. Next turn, Attacks deal double damage." },
     { CardId::DEBILITATE, "Debilitate", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 2, "Deal 10 damage. Vulnerable and Weak are twice as effective on the enemy for 2 turns.", "Debilitate+", 1, 12, 3, "Deal 12 damage. Vulnerable and Weak are twice as effective on the enemy for 3 turns." },
+    // Choose 1 card among N offered (mechanic #72).
+    { CardId::SEEKER_STRIKE, "Seeker Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 3, "Deal 9 dmg. Choose 1 of 3 cards in your draw pile to add into your hand.", "Seeker Strike+", 1, 12, 3, "Deal 12 dmg. Choose 1 of 3 cards in your draw pile to add into your hand." },
 };
 
 const CardDef& CardDef::get(CardId id) {
