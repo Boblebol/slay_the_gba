@@ -948,6 +948,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             }
             break;
         case PowerId::STRIKE_DUMMY:
+        case PowerId::FAKE_STRIKE_DUMMY:
             if (card_played && is_strike(info.card.id)) strike_played_now = true;
             break;
         case PowerId::MINIATURE_CANNON:
@@ -1451,7 +1452,9 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (attack_double_now) percent *= 2;
     if (resolving_card && triple_next_attack) percent *= 3;
     if (pen_nib_now && resolving_card) percent *= 2;
-    if (strike_played_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY));
+    if (strike_played_now && resolving_card) {
+        base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY) + power_amount(PowerId::FAKE_STRIKE_DUMMY));
+    }
     if (upgraded_attack_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::MINIATURE_CANNON));
     int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);

@@ -2188,6 +2188,25 @@ void test_strike_dummy() {
     std::cout << "[PASS] Strike Dummy: cards containing Strike deal 3 more damage" << std::endl;
 }
 
+void test_fake_strike_dummy() {
+    // With the event relic, every card containing "Strike" deals 1 more damage per hit; other cards do not.
+    CombatEngine dummy = make_relic_combat(CharacterId::IRONCLAD, PowerId::FAKE_STRIKE_DUMMY, 1);
+    dummy.enemies[0].hp = 200;
+    play(dummy, CardId::STRIKE);
+    assert(dummy.enemies[0].hp == 200 - 7);
+    play(dummy, CardId::TWIN_STRIKE);
+    assert(dummy.enemies[0].hp == 200 - 7 - 2 * 6);
+    play(dummy, CardId::BASH);
+    assert(dummy.enemies[0].hp == 200 - 7 - 2 * 6 - 8);
+
+    // Without it, a Strike deals its ordinary damage.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 200;
+    play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].hp == 200 - 6);
+    std::cout << "[PASS] Fake Strike Dummy: cards containing Strike deal 1 more damage" << std::endl;
+}
+
 void test_miniature_cannon() {
     // With the relic, an upgraded Attack deals 3 more damage per hit (Twin Strike hits twice); an ordinary one does not.
     CombatEngine cannon = make_relic_combat(CharacterId::IRONCLAD, PowerId::MINIATURE_CANNON, 3);
@@ -3448,6 +3467,7 @@ int main() {
     test_toolbox();
     test_pen_nib();
     test_strike_dummy();
+    test_fake_strike_dummy();
     test_miniature_cannon();
     test_white_beast_statue();
     test_cauldron();
