@@ -29,7 +29,7 @@ constexpr ActivePotion ACTIVE_POTIONS[] = {
     { "FOCUS_POTION", false, CharacterId::DEFECT },
     { "FORTIFIER" }, { "FYSH_OIL" }, { "GAMBLERS_BREW" }, { "GHOST_IN_A_JAR" }, { "GIGANTIFICATION_POTION" }, { "GLOWWATER_POTION" }, { "HEART_OF_IRON" },
     { "KINGS_COURAGE", false, CharacterId::REGENT },
-    { "LIQUID_BRONZE" }, { "LUCKY_TONIC" }, { "MAZALETHS_GIFT" }, { "OROBIC_ACID" }, { "POISON_POTION" }, { "POTION_OF_BINDING" },
+    { "LIQUID_BRONZE" }, { "LIQUID_MEMORIES" }, { "LUCKY_TONIC" }, { "MAZALETHS_GIFT" }, { "OROBIC_ACID" }, { "POISON_POTION" }, { "POTION_OF_BINDING" },
     { "POTION_OF_CAPACITY", false, CharacterId::DEFECT },
     { "POTION_OF_DOOM" },
     { "POT_OF_GHOULS", false, CharacterId::NECROBINDER },
@@ -37,7 +37,7 @@ constexpr ActivePotion ACTIVE_POTIONS[] = {
     { "RADIANT_TINCTURE" }, { "REGEN_POTION" }, { "SHACKLING_POTION" },
     { "SHIP_IN_A_BOTTLE" }, { "SPEED_POTION" }, { "STABLE_SERUM" },
     { "STAR_POTION", false, CharacterId::REGENT },
-    { "STRENGTH_POTION" }, { "SWIFT_POTION" }, { "VULNERABLE_POTION" }, { "WEAK_POTION" },
+    { "STRENGTH_POTION" }, { "TOUCH_OF_INSANITY" }, { "SWIFT_POTION" }, { "VULNERABLE_POTION" }, { "WEAK_POTION" },
 };
 
 // Rarities a draw falls back on, in this order, when the one it rolled has no candidate left.

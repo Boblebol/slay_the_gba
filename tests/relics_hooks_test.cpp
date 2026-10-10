@@ -875,6 +875,26 @@ void test_circlet() {
     std::cout << "[PASS] Circlet: no effect, with or without the relic" << std::endl;
 }
 
+void test_beating_remnant() {
+    // With the relic: no more than 20 HP lost in a turn; the budget comes back at the start of the next turn.
+    CombatEngine remnant = make_relic_combat(CharacterId::IRONCLAD, PowerId::BEATING_REMNANT, 20);
+    int16_t hp_start = remnant.player.hp;
+    remnant.damage_player(30);
+    assert(remnant.player.hp == hp_start - 20);
+    remnant.damage_player(10);
+    assert(remnant.player.hp == hp_start - 20);
+    remnant.start_player_turn();
+    remnant.damage_player(15);
+    assert(remnant.player.hp == hp_start - 35);
+
+    // Without the relic: all of the HP is lost.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    int16_t plain_start = plain.player.hp;
+    plain.damage_player(30);
+    assert(plain.player.hp == plain_start - 30);
+    std::cout << "[PASS] Beating Remnant: no more than 20 HP lost per turn" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -1693,6 +1713,39 @@ void test_calling_bell() {
     std::cout << "[PASS] Calling Bell: Curse of the Bell and 3 random relics on pickup" << std::endl;
 }
 
+void test_ghost_seed() {
+    // With the relic: the Strikes and Defends of the fight are Ethereal, the other cards are not.
+    RunManager with = make_relic_run(CharacterId::IRONCLAD, { "GHOST_SEED" });
+    int strikes = 0;
+    int defends = 0;
+    for (const DeckCard& card : with.combat.draw_pile) {
+        if (card.id == CardId::STRIKE) {
+            ++strikes;
+            assert(CardDef::has_keyword(card, KEYWORD_ETHEREAL));
+        } else if (card.id == CardId::DEFEND) {
+            ++defends;
+            assert(CardDef::has_keyword(card, KEYWORD_ETHEREAL));
+        } else if (card.id == CardId::BASH) {
+            assert(!CardDef::has_keyword(card, KEYWORD_ETHEREAL));
+        }
+    }
+    assert(strikes > 0 && defends > 0);
+    // Held at the end of the turn, a Strike is exhausted.
+    DeckCard held(CardId::STRIKE);
+    held.added_keywords |= KEYWORD_ETHEREAL;
+    with.combat.hand.clear();
+    with.combat.hand.push_back(held);
+    with.combat.end_player_turn();
+    bool exhausted = false;
+    for (const DeckCard& card : with.combat.exhaust_pile) exhausted = exhausted || card.id == CardId::STRIKE;
+    assert(exhausted);
+
+    // Without the relic: no Strike or Defend is Ethereal.
+    RunManager without = make_relic_run(CharacterId::IRONCLAD, {});
+    for (const DeckCard& card : without.combat.draw_pile) assert(!CardDef::has_keyword(card, KEYWORD_ETHEREAL));
+    std::cout << "[PASS] Ghost Seed: Strikes and Defends Ethereal in the fight" << std::endl;
+}
+
 void test_belt_buckle() {
     // With the relic and no potion: 2 additional Dexterity, lost as soon as a potion is held.
     RunManager with;
@@ -1850,6 +1903,38 @@ void test_bookmark() {
     std::cout << "[PASS] Bookmark: a Retained card costs 1 less until played" << std::endl;
 }
 
+void test_tungsten_rod() {
+    // With the relic: each HP loss is 1 smaller, Block absorbs the hit first, and a 1 HP loss is cancelled.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("TUNGSTEN_ROD");
+    with.potions.clear();
+    enter_room_of_type(with, RoomType::MONSTER);
+    CombatEngine& tungsten = with.combat;
+    tungsten.player.hp = 50;
+    tungsten.player.block = 0;
+    tungsten.lose_hp(5);
+    assert(tungsten.player.hp == 46);
+    tungsten.lose_hp(1);
+    assert(tungsten.player.hp == 46);
+    tungsten.player.block = 3;
+    tungsten.damage_player(5); // 3 blocked, 2 unblocked: 1 HP lost
+    assert(tungsten.player.hp == 45 && tungsten.player.block == 0);
+
+    // Without the relic: every HP loss is whole.
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    without.potions.clear();
+    enter_room_of_type(without, RoomType::MONSTER);
+    without.combat.player.hp = 50;
+    without.combat.player.block = 0;
+    without.combat.lose_hp(5);
+    assert(without.combat.player.hp == 45);
+    without.combat.lose_hp(1);
+    assert(without.combat.player.hp == 44);
+    std::cout << "[PASS] Tungsten Rod: 1 less HP lost each time" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1908,6 +1993,8 @@ int main() {
     test_calling_bell();
     test_belt_buckle();
     test_circlet();
+    test_beating_remnant();
+    test_ghost_seed();
     test_reptile_trinket();
     test_ringing_triangle();
     test_pen_nib();
@@ -1915,5 +2002,6 @@ int main() {
     test_white_beast_statue();
     test_cauldron();
     test_bookmark();
+    test_tungsten_rod();
     return 0;
 }

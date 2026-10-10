@@ -207,6 +207,8 @@ void test_shop_purchases() {
             assert(run.gold == 17 && run.has_relic(relic_id));
         }
 
+        // A relic bought above can fill the belt (Cauldron brews potions): empty it so every potion fits.
+        run.potions.clear();
         for (size_t i = 0; i < run.current_shop.potions.size(); ++i) {
             std::string_view potion_id = run.current_shop.potions[i].potion_id;
             run.gold = run.current_shop.potions[i].cost + 5;

@@ -42,6 +42,22 @@ constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 10, "Fléau de l'Ascension", "Vous commencez la tentative avec une malédiction inépuisable dans votre deck." }
 };
 
+// Hand-written search: string_view::find calls memchr and substr can throw, neither links in the GBA build.
+bool contains(std::string_view text, std::string_view word) {
+    for (size_t start = 0; start + word.size() <= text.size(); ++start) {
+        size_t i = 0;
+        while (i < word.size() && text[start + i] == word[i]) ++i;
+        if (i == word.size()) return true;
+    }
+    return false;
+}
+
+// Strikes and Defends, by their English name (Perfected Strike, Ultimate Defend...).
+bool is_strike_or_defend(CardId id) {
+    const std::string_view name = CardDef::get(id).name;
+    return contains(name, "Strike") || contains(name, "Defend");
+}
+
 } // namespace
 
 uint32_t RunManager::next_random() {
@@ -187,6 +203,8 @@ void RunManager::enter_room(int node_index) {
             for (size_t i = 0; i < master_deck.size(); ++i) {
                 DeckCard card = master_deck[i];
                 card.deck_index = static_cast<uint8_t>(i);
+                // Ghost Seed: the Strikes and Defends of the fight are Ethereal.
+                if (has_relic("GHOST_SEED") && is_strike_or_defend(card.id)) card.added_keywords |= KEYWORD_ETHEREAL;
                 combat.draw_pile.push_back(card);
             }
             combat.shuffle_draw_pile();
@@ -1140,10 +1158,12 @@ std::span<const std::string_view> RunManager::active_relics() {
         // On the combat hooks (#299)
         "BAG_OF_PREPARATION", "BURNING_STICKS", "INTIMIDATING_HELMET", "JOSS_PAPER", "KUNAI", "KUSARIGAMA", "LETTER_OPENER",
         "MEAT_ON_THE_BONE", "MUMMIFIED_HAND", "NUNCHAKU", "ORNAMENTAL_FAN", "PEN_NIB", "RAINBOW_RING", "RIPPLE_BASIN", "SHURIKEN", "STRIKE_DUMMY",
-        "TUNING_FORK", "VEXING_PUZZLEBOX",
+        "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
+        "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
+        "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
@@ -1285,6 +1305,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("NUNCHAKU")) combat.add_power(PowerId::NUNCHAKU, 1);
     if (has_relic("PEN_NIB")) combat.add_power(PowerId::PEN_NIB);
     if (has_relic("STRIKE_DUMMY")) combat.add_power(PowerId::STRIKE_DUMMY, 3);
+    // Tungsten Rod: whenever the player would lose HP, 1 less.
+    if (has_relic("TUNGSTEN_ROD")) combat.player.hp_loss_reduction = 1;
     if (has_relic("RAINBOW_RING")) combat.add_power(PowerId::RAINBOW_RING, 1);
     if (has_relic("RIPPLE_BASIN")) combat.add_power(PowerId::RIPPLE_BASIN, 4);
     if (has_relic("BURNING_STICKS")) combat.add_power(PowerId::BURNING_STICKS);
@@ -1297,6 +1319,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("CHARONS_ASHES")) combat.add_power(PowerId::CHARONS_ASHES, 3);
     if (has_relic("RED_SKULL")) combat.add_power(PowerId::RED_SKULL, 3);
     if (has_relic("DEMON_TONGUE")) combat.add_power(PowerId::DEMON_TONGUE);
+    if (has_relic("BEATING_REMNANT")) combat.add_power(PowerId::BEATING_REMNANT, BEATING_REMNANT_HP_LOSS);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);
