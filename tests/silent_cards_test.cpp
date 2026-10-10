@@ -92,11 +92,31 @@ void test_expose() {
     std::cout << "[PASS] Silent: Expose" << std::endl;
 }
 
+void test_abrasive() {
+    for (bool upgraded : { false, true }) {
+        // Abrasive: Sly, +1 Dexterity and 4 (6) Thorns. It costs 3 energy.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        combat.player.energy = combat.player.max_energy;
+        play(combat, DeckCard(CardId::ABRASIVE, upgraded));
+        assert(combat.player.energy == combat.player.max_energy - 3);
+        assert(combat.player.get_status(StatusType::DEXTERITY) == 1);
+        assert(combat.player.get_status(StatusType::THORNS) == (upgraded ? 6 : 4));
+    }
+
+    assert(CardDef::get_cost(CardId::ABRASIVE, false) == 3 && CardDef::get_cost(CardId::ABRASIVE, true) == 3);
+    assert(CardDef::get(CardId::ABRASIVE).type == CardType::POWER);
+    assert(CardDef::has_keyword(CardId::ABRASIVE, false, KEYWORD_SLY));
+
+    assert_in_pool(CharacterId::SILENT, { CardId::ABRASIVE });
+    std::cout << "[PASS] Silent: Abrasive" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Silent Cards ===" << std::endl;
     test_expose();
+    test_abrasive();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
