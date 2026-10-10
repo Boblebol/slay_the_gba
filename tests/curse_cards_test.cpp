@@ -48,6 +48,21 @@ void test_injury() {
     std::cout << "[PASS] Injury: X cost, Curse, Unplayable, nothing else, same upgraded" << std::endl;
 }
 
+void test_doubt() {
+    // Unplayable curse: it only gains 1 Weak at the end of the turn while it is in hand.
+    check_definition(CardId::DOUBT, 0);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::DOUBT, up);
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+        assert(combat.player.get_status(StatusType::WEAK) == 0);
+        combat.trigger_end_of_turn_in_hand(combat.hand[0]);
+        assert(combat.player.get_status(StatusType::WEAK) == 1);
+    }
+    std::cout << "[PASS] Doubt: X cost, Curse, Unplayable, gains 1 Weak at end of turn in hand, same upgraded" << std::endl;
+}
+
 void test_keyword_curses() {
     check_definition(CardId::GREED, KEYWORD_ETERNAL);
     check_definition(CardId::CLUMSY, KEYWORD_ETHEREAL);
@@ -207,6 +222,7 @@ void test_eternal_stays_in_the_deck() {
 
 int main() {
     test_injury();
+    test_doubt();
     test_keyword_curses();
     test_ethereal_and_retain();
     test_innate();
