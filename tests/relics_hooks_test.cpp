@@ -1225,6 +1225,38 @@ void test_neows_bones() {
     assert(count_curses(plain) == 0);
 }
 
+void test_calling_bell() {
+    // Obtained: the unique Curse of the Bell joins the deck, then 3 random relics join the run.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    size_t relics_before = run.relics.size();
+    size_t deck_before = run.master_deck.size();
+    int bells_before = 0;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (run.master_deck[i].id == CardId::CURSE_OF_THE_BELL) ++bells_before;
+    }
+    run.add_relic("CALLING_BELL");
+    assert(run.has_relic("CALLING_BELL"));
+    assert(run.relics.size() == relics_before + 4);
+    assert(run.master_deck.size() == deck_before + 1);
+    int bells_after = 0;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (run.master_deck[i].id == CardId::CURSE_OF_THE_BELL) ++bells_after;
+    }
+    assert(bells_after == bells_before + 1);
+
+    // Without the relic: no relic and no Curse of the Bell are given.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    size_t plain_relics = plain.relics.size();
+    size_t plain_deck = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("CALLING_BELL"));
+    assert(plain.relics.size() == plain_relics + 1);
+    assert(plain.master_deck.size() == plain_deck);
+    std::cout << "[PASS] Calling Bell: Curse of the Bell and 3 random relics on pickup" << std::endl;
+}
+
 void test_empty_cage() {
     RunManager run;
     run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
@@ -1481,6 +1513,7 @@ int main() {
     test_large_capsule();
     test_astrolabe();
     test_neows_bones();
+    test_calling_bell();
     test_empty_cage();
     test_pandoras_box();
     test_runic_pyramid();
