@@ -21,6 +21,8 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 };
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+constexpr int COOK_REMOVALS = 2; // cards removed by Cook (Meat Cleaver)
+constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
 
 constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 0, "Normal", "Difficulté standard de l'Ascension." },
@@ -53,6 +55,7 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     current_floor = 1;
     current_node_index = -1;
     current_encounter = {};
+    cook_pending = false;
     rng_state_ = seed ? seed : 12345;
 
     const auto& cdef = get_character(character);
@@ -242,6 +245,21 @@ bool RunManager::smith_at_campfire(int card_index) {
         return true;
     }
     return false;
+}
+
+bool RunManager::cook_at_campfire() {
+    if (!has_relic("MEAT_CLEAVER")) return false;
+    request_deck_choice(DeckChoiceKind::REMOVE, COOK_REMOVALS);
+    cook_pending = true;
+    finish_cook(); // no removable card: the Max HP comes at once
+    phase = RunPhase::MAP_NAVIGATION;
+    return true;
+}
+
+void RunManager::finish_cook() {
+    if (!cook_pending || has_deck_choice()) return;
+    cook_pending = false;
+    gain_max_hp(COOK_MAX_HP);
 }
 
 bool RunManager::can_smith() const {
@@ -850,6 +868,7 @@ bool RunManager::resolve_deck_choice(int deck_index) {
     DeckChoice next = deck_choice;
     request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result, next.transform_into);
     finish_preserved_fog();
+    finish_cook();
     return true;
 }
 
