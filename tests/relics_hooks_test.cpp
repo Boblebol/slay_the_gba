@@ -822,6 +822,29 @@ void test_membership_card() {
     std::cout << "[PASS] Membership Card: every price halved, removal included, at once when bought in the shop" << std::endl;
 }
 
+void test_astrolabe() {
+    // Obtained: three chosen cards are transformed, then upgraded.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    size_t size = run.master_deck.size();
+    run.add_relic("ASTROLABE");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::TRANSFORM);
+    assert(run.deck_choice.remaining == 3 && !run.deck_choice.optional && run.deck_choice.upgrade_result);
+    for (int i = 0; i < 3; ++i) {
+        CardId before = run.master_deck[i].id;
+        assert(run.resolve_deck_choice(i));
+        assert(run.master_deck[i].id != before && run.master_deck[i].upgraded);
+    }
+    assert(!run.has_deck_choice() && run.master_deck.size() == size);
+
+    // Without the relic: nothing is asked and no card changes.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    std::cout << "[PASS] Astrolabe: transforms 3 cards then upgrades them when obtained" << std::endl;
+}
+
 void test_yummy_cookie() {
     // Obtained: four cards of the deck are upgraded.
     RunManager run;
@@ -1157,6 +1180,7 @@ int main() {
     test_paels_tooth();
     test_precise_scissors();
     test_membership_card();
+    test_astrolabe();
     test_yummy_cookie();
     test_delicate_frond();
     test_seal_of_gold();

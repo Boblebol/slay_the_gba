@@ -122,6 +122,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "CLAWS", "Lorsque vous obtenez cette relique, Transformez jusqu'à 6 cartes en Mutilation." },
     { "NEW_LEAF", "Lorsque vous obtenez cette relique, Transformez 1 carte." },
     { "POMANDER", "Lorsque vous obtenez cette relique, Améliorez une carte." },
+    { "ASTROLABE", "Lorsque vous obtenez cette relique, Transformez 3 cartes, puis Améliorez-les." },
     { "PRESERVED_FOG", "Retirez 3 cartes de votre Deck. Ajoutez Hubris à votre Deck." },
     { "PRECISE_SCISSORS", "Lorsque vous obtenez cette relique, retirez 1 carte de votre Deck." },
     { "PAELS_TOOTH", "Retirez 5 cartes de votre Deck. Après chaque combat, rajoutez-en 1 aléatoirement ; elle est Améliorée." },
