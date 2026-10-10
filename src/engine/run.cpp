@@ -676,6 +676,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "SIGNET_RING" && has_relic("SIGNET_RING")) gain_gold(888);
     // Relic of the Ancients: the gold comes once, when the pearl is obtained.
     if (relic_id == "GOLDEN_PEARL" && has_relic("GOLDEN_PEARL")) gain_gold(150);
+    // Rare relic: the gold comes once, when the coin is obtained.
+    if (relic_id == "OLD_COIN" && has_relic("OLD_COIN")) gain_gold(300);
     // Relic of the Ancients: a Greed curse joins the deck and the gold comes once, when the pearl is obtained.
     if (relic_id == "CURSED_PEARL" && has_relic("CURSED_PEARL")) {
         add_card_to_deck(DeckCard{ CardId::GREED, false });
@@ -1155,6 +1157,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "LEES_WAFFLE", // Shared, out of combat
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "MANGO", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "OLD_COIN", // Shared, out of combat
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)

@@ -1975,6 +1975,23 @@ void test_mango() {
     std::cout << "[PASS] Mango: 14 more max HP on pickup" << std::endl;
 }
 
+void test_old_coin() {
+    // Obtained: 300 gold, paid once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 466);
+    int16_t gold = run.gold;
+    run.add_relic("OLD_COIN");
+    assert(run.has_relic("OLD_COIN"));
+    assert(run.gold == gold + 300);
+
+    // Without the relic, the gold stays where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 466);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("OLD_COIN") && plain.gold == gold);
+    std::cout << "[PASS] Old Coin: +300 gold when obtained" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2045,5 +2062,6 @@ int main() {
     test_bookmark();
     test_tungsten_rod();
     test_mango();
+    test_old_coin();
     return 0;
 }
