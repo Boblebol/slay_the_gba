@@ -591,6 +591,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     // Bought from the merchant himself, the card lowers what is still on his shelves.
     if (relic_id == "SIGNET_RING" && has_relic("SIGNET_RING")) gain_gold(888);
+    // Relic of the Ancients: the gold comes once, when the pearl is obtained.
+    if (relic_id == "GOLDEN_PEARL" && has_relic("GOLDEN_PEARL")) gain_gold(150);
     if (relic_id == "SERE_TALON" && has_relic("SERE_TALON")) {
         lose_max_hp(9);
         for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::WISH, false });
