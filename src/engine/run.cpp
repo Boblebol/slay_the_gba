@@ -42,10 +42,18 @@ constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 10, "Fléau de l'Ascension", "Vous commencez la tentative avec une malédiction inépuisable dans votre deck." }
 };
 
+// Hand-written search: string_view::find calls memchr, which the GBA build does not link.
+bool contains(std::string_view text, std::string_view word) {
+    for (size_t start = 0; start + word.size() <= text.size(); ++start) {
+        if (text.substr(start, word.size()) == word) return true;
+    }
+    return false;
+}
+
 // Strikes and Defends, by their English name (Perfected Strike, Ultimate Defend...).
 bool is_strike_or_defend(CardId id) {
     const std::string_view name = CardDef::get(id).name;
-    return name.find("Strike") != std::string_view::npos || name.find("Defend") != std::string_view::npos;
+    return contains(name, "Strike") || contains(name, "Defend");
 }
 
 } // namespace
