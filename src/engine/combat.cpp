@@ -1013,6 +1013,16 @@ void CombatEngine::gain_block(int16_t amount) {
             legion->counter = static_cast<uint8_t>(legion->amount + 1);
         }
     }
+    // Unmovable doubles the first Block a card gives each turn, Shadowmeld every one of the turn.
+    if (player.block > before) {
+        int factor = 1;
+        if (resolving_card && !unmovable_used && has_power(PowerId::UNMOVABLE)) {
+            unmovable_used = true;
+            factor *= 2;
+        }
+        if (double_block_turn) factor *= 2;
+        if (factor > 1) player.block = static_cast<int16_t>(before + (player.block - before) * factor);
+    }
     if (player.block > before) {
         EventInfo info;
         info.amount = static_cast<int16_t>(player.block - before);
@@ -1373,7 +1383,13 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     counters.hits_dealt = bump(counters.hits_dealt);
     if (int8_t at = index_of(target); at >= 0 && at < 3) counters.hits_on_enemy[at] = bump(counters.hits_on_enemy[at]);
     bool was_alive = target.is_alive();
-    int16_t lost = target.take_damage(attack_damage(base, player, target));
+    // Percentage modifiers add up; Shadow Step then doubles the total.
+    int32_t percent = 100;
+    if (target.get_status(StatusType::VULNERABLE) > 0) percent += power_amount(PowerId::CRUELTY);
+    if (target.get_status(StatusType::WEAK) > 0) percent += power_amount(PowerId::TRACKING);
+    if (resolving_card && counters.attacks_played == 0) percent += power_amount(PowerId::LETHALITY);
+    if (attack_double_now) percent *= 2;
+    int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
         EventInfo info;
@@ -1647,6 +1663,10 @@ void CombatEngine::reset_combat_state() {
     keep_block_turns = 0;
     retain_hand = false;
     no_draw_this_turn = false;
+    double_block_turn = false;
+    unmovable_used = false;
+    attack_double_next = false;
+    attack_double_now = false;
     no_card_block_turns = 0;
     rebound_pending = false;
     fatal_kills = 0;
@@ -1726,6 +1746,13 @@ void CombatEngine::start_player_turn() {
     retain_hand = false;
     no_draw_this_turn = false;
     rebound_pending = false;
+    unmovable_used = false;
+    attack_double_now = attack_double_next;
+    attack_double_next = false;
+    player.halve_vulnerable_damage = false;
+    for (Enemy& foe : enemies) {
+        if (foe.debilitate_turns > 0) --foe.debilitate_turns;
+    }
     if (no_card_block_turns > 0) --no_card_block_turns;
     trigger_turn_passives(true);
     int extra_draw = run_delayed_effects(false);
@@ -5169,6 +5196,49 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Phantom Blades+!"sv : "Played Phantom Blades!"sv);
             break;
         }
+        case CardId::SHADOWMELD: {
+            double_block_turn = true;
+            set_log(upgraded ? "Played Shadowmeld+!"sv : "Played Shadowmeld!"sv);
+            break;
+        }
+        case CardId::UNMOVABLE: {
+            add_power(PowerId::UNMOVABLE, 1);
+            set_log(upgraded ? "Played Unmovable+!"sv : "Played Unmovable!"sv);
+            break;
+        }
+        case CardId::COLOSSUS: {
+            gain_block(base_value);
+            player.halve_vulnerable_damage = true;
+            set_log(upgraded ? "Played Colossus+!"sv : "Played Colossus!"sv);
+            break;
+        }
+        case CardId::CRUELTY: {
+            add_power(PowerId::CRUELTY, base_value);
+            set_log(upgraded ? "Played Cruelty+!"sv : "Played Cruelty!"sv);
+            break;
+        }
+        case CardId::TRACKING: {
+            add_power(PowerId::TRACKING, 50);
+            set_log(upgraded ? "Played Tracking+!"sv : "Played Tracking!"sv);
+            break;
+        }
+        case CardId::LETHALITY: {
+            add_power(PowerId::LETHALITY, base_value);
+            set_log(upgraded ? "Played Lethality+!"sv : "Played Lethality!"sv);
+            break;
+        }
+        case CardId::SHADOW_STEP: {
+            for (size_t i = hand.size(); i-- > 0;) discard_from_hand(i);
+            attack_double_next = true;
+            set_log(upgraded ? "Played Shadow Step+!"sv : "Played Shadow Step!"sv);
+            break;
+        }
+        case CardId::DEBILITATE: {
+            hit(current_target, base_value);
+            current_target.debilitate_turns = static_cast<uint8_t>(secondary_value);
+            set_log(upgraded ? "Played Debilitate+!"sv : "Played Debilitate!"sv);
+            break;
+        }
         case CardId::ACCURACY: {
             add_power(PowerId::ACCURACY, base_value);
             set_log(upgraded ? "Played Accuracy+!"sv : "Played Accuracy!"sv);
@@ -5694,6 +5764,8 @@ void CombatEngine::trigger_end_of_turn_in_hand(const DeckCard& card) {
 void CombatEngine::end_player_turn() {
     vakuu_turn_active = false;
     if (state != CombatState::PLAYER_TURN) return;
+    double_block_turn = false;
+    attack_double_now = false;
     // A choice left unanswered is answered for the player.
     while (choice_pending()) resolve_choice_default();
     if (state != CombatState::PLAYER_TURN) return;

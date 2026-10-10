@@ -97,6 +97,7 @@ items = [
   { name = "Jusqu'à 3 ennemis par combat, avec ciblage", status = "oui" },
   { name = "Intentions ennemies affichées", status = "oui" },
   { name = "Calcul des dégâts (Force, Affaibli, Vulnérable)", status = "oui" },
+  { name = "Modificateurs en pourcentage : dégâts (+25 %, +50 %, double), Armure doublée, Vulnérable et Affaibli renforcés", status = "oui", issue = 89 },
   { name = "Attaques de zone et attaques en plusieurs coups", status = "oui" },
   { name = "Cartes qui font piocher", status = "oui" },
   { name = "Amélioration de cartes pendant le combat", status = "oui" },

@@ -513,6 +513,14 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::COMMON, CardPool::SILENT }, // RICOCHET
     { CardRarity::UNCOMMON, CardPool::SILENT }, // REFLEX
     { CardRarity::COMMON, CardPool::SILENT }, // FLICK_FLACK
+    { CardRarity::RARE, CardPool::SILENT }, // SHADOWMELD
+    { CardRarity::RARE, CardPool::IRONCLAD }, // UNMOVABLE
+    { CardRarity::UNCOMMON, CardPool::IRONCLAD }, // COLOSSUS
+    { CardRarity::UNCOMMON, CardPool::IRONCLAD }, // CRUELTY
+    { CardRarity::RARE, CardPool::SILENT }, // TRACKING
+    { CardRarity::UNCOMMON, CardPool::NECROBINDER }, // LETHALITY
+    { CardRarity::RARE, CardPool::SILENT }, // SHADOW_STEP
+    { CardRarity::UNCOMMON, CardPool::NECROBINDER }, // DEBILITATE
 };
 
 } // namespace engine

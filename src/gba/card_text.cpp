@@ -854,6 +854,22 @@ bn::string_view base_name(engine::CardId id)
         return "Réflexes";
     case engine::CardId::FLICK_FLACK:
         return "Tic tac";
+    case engine::CardId::SHADOWMELD:
+        return "Camouflage";
+    case engine::CardId::UNMOVABLE:
+        return "Inflexible";
+    case engine::CardId::COLOSSUS:
+        return "Colosse";
+    case engine::CardId::CRUELTY:
+        return "Cruauté";
+    case engine::CardId::TRACKING:
+        return "Pistage";
+    case engine::CardId::LETHALITY:
+        return "Létalité";
+    case engine::CardId::SHADOW_STEP:
+        return "Pas de l'ombre";
+    case engine::CardId::DEBILITATE:
+        return "Amoindrissement";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1644,6 +1660,30 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::FLICK_FLACK:
         stream << "Ruse. Inflige " << value << " dégâts à TOUS.";
+        break;
+    case engine::CardId::SHADOWMELD:
+        stream << "Armure gagnée x2 ce tour.";
+        break;
+    case engine::CardId::UNMOVABLE:
+        stream << "1re Armure de carte x2 par tour.";
+        break;
+    case engine::CardId::COLOSSUS:
+        stream << "Armure " << value << ". -50% dégâts des Vulnérables.";
+        break;
+    case engine::CardId::CRUELTY:
+        stream << "Vulnérables subissent +" << value << "% dégâts.";
+        break;
+    case engine::CardId::TRACKING:
+        stream << "Affaiblis subissent +" << value << "% dégâts.";
+        break;
+    case engine::CardId::LETHALITY:
+        stream << "Éthéré. 1re Attaque +" << value << "% dégâts.";
+        break;
+    case engine::CardId::SHADOW_STEP:
+        stream << "Défausse la main. Attaques x2 ensuite.";
+        break;
+    case engine::CardId::DEBILITATE:
+        stream << "Inflige " << value << ". Vuln. et Aff. x2, " << secondary << " tours.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:

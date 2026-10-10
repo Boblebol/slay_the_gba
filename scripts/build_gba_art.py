@@ -750,6 +750,14 @@ CARDS: list[CardArt] = [
     CardArt("ricochet", "silent", "ricochet", "attack", (2, 2)),
     CardArt("reflex", "silent", "reflex", "skill", (3, 3)),
     CardArt("flick_flack", "silent", "flick_flack", "attack", (1, 1)),
+    CardArt("shadowmeld", "silent", "shadowmeld", "skill", (1, 0)),
+    CardArt("unmovable", "ironclad", "unmovable", "power", (2, 1)),
+    CardArt("colossus", "ironclad", "colossus", "skill", (1, 1)),
+    CardArt("cruelty", "ironclad", "cruelty", "power", (1, 1)),
+    CardArt("tracking", "silent", "tracking", "power", (2, 1)),
+    CardArt("lethality", "necrobinder", "lethality", "power", (1, 1)),
+    CardArt("shadow_step", "silent", "shadow_step", "skill", (1, 0)),
+    CardArt("debilitate", "necrobinder", "debilitate", "attack", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
