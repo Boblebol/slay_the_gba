@@ -1225,6 +1225,49 @@ void test_regal_pillow() {
     std::cout << "[PASS] Regal Pillow: 15 extra HP at each Rest" << std::endl;
 }
 
+void test_eternal_feather() {
+    // With the relic: entering a Rest Site heals 3 HP per 5 cards of the deck, capped at Max HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("ETERNAL_FEATHER");
+    int expected = static_cast<int>(run.master_deck.size()) / 5 * 3;
+    run.hp = 1;
+    enter_room_of_type(run, RoomType::REST_SITE);
+    assert(run.hp == std::min<int>(run.max_hp, 1 + expected));
+    run.hp = run.max_hp - 1;
+    enter_room_of_type(run, RoomType::REST_SITE);
+    assert(run.hp == run.max_hp);
+
+    // Without the relic: entering a Rest Site heals nothing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 1;
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    assert(!plain.has_relic("ETERNAL_FEATHER") && plain.hp == 1);
+    std::cout << "[PASS] Eternal Feather: heals 3 HP per 5 cards when entering a Rest Site" << std::endl;
+}
+
+void test_planisphere() {
+    // Entering a ? room heals 5 HP; the other rooms do not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 482);
+    run.add_relic("PLANISPHERE");
+    run.hp = 20;
+    enter_room_of_type(run, RoomType::EVENT);
+    assert(run.hp == 25);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.hp == 25);
+
+    // Without the relic: entering a ? room heals nothing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 482);
+    plain.hp = 20;
+    enter_room_of_type(plain, RoomType::EVENT);
+    assert(!plain.has_relic("PLANISPHERE"));
+    assert(plain.hp == 20);
+    std::cout << "[PASS] Planisphere: 5 HP when entering a ? room" << std::endl;
+}
+
 void test_pomander() {
     // Obtained: one card of the deck is picked to be upgraded.
     RunManager run;
@@ -2087,6 +2130,28 @@ void test_old_coin() {
     std::cout << "[PASS] Old Coin: +300 gold when obtained" << std::endl;
 }
 
+void test_lucky_fysh() {
+    // With the relic: each card added to the deck, by any source, gains 15 gold.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 484);
+    run.add_relic("LUCKY_FYSH");
+    assert(run.has_relic("LUCKY_FYSH"));
+    int16_t gold = run.gold;
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.gold == gold + 15);
+    run.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    assert(run.gold == gold + 30);
+
+    // Without the relic, adding a card leaves the gold where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 484);
+    plain.add_relic("ANCHOR");
+    int16_t plain_gold = plain.gold;
+    plain.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(!plain.has_relic("LUCKY_FYSH") && plain.gold == plain_gold);
+    std::cout << "[PASS] Lucky Fysh: +15 gold each time a card joins the deck" << std::endl;
+}
+
 void test_whetstone() {
     // Obtained: two random Attacks of the deck are upgraded, never more than the deck holds.
     auto upgraded_attacks = [](const RunManager& r) {
@@ -2184,6 +2249,97 @@ void test_amethyst_aubergine() {
     std::cout << "[PASS] Amethyst Aubergine: 15 more Gold in each fight reward" << std::endl;
 }
 
+void test_book_of_five_rings() {
+    // Obtained: every 5th card added to the Deck heals 20 HP, the first four do not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 478);
+    run.hp = 30;
+    run.add_relic("BOOK_OF_FIVE_RINGS");
+    assert(run.has_relic("BOOK_OF_FIVE_RINGS"));
+    for (int card = 1; card <= 4; ++card) run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 30);
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 50);
+    for (int card = 1; card <= 4; ++card) run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 50);
+    for (int card = 1; card <= 5; ++card) run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 70);
+
+    // Without the relic, adding cards never heals.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 478);
+    plain.hp = 30;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("BOOK_OF_FIVE_RINGS"));
+    for (int card = 1; card <= 10; ++card) plain.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(plain.hp == 30);
+    std::cout << "[PASS] Book of Five Rings: heals 20 HP on every 5th card added to the Deck" << std::endl;
+}
+
+void test_venerable_tea_set() {
+    // With the relic: each Rest Site entered gives 2 more energy to the next combat, once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("VENERABLE_TEA_SET");
+    enter_room_of_type(run, RoomType::REST_SITE);
+    enter_room_of_type(run, RoomType::REST_SITE);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 7);
+    assert(run.relic_counter("VENERABLE_TEA_SET") == 0);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 3);
+
+    // Without the relic: the usual 3 energy after a Rest Site.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(!plain.has_relic("VENERABLE_TEA_SET"));
+    assert(plain.combat.player.energy == 3);
+    std::cout << "[PASS] Venerable Tea Set: 2 energy per Rest Site entered, for the next combat" << std::endl;
+}
+
+void test_lava_lamp() {
+    // At the end of a fight without HP lost, every card reward of it is upgraded; with HP lost, none is.
+    auto all_upgraded = [](const RunManager& r) {
+        if (r.current_card_rewards.empty()) return false;
+        for (const DeckCard& card : r.current_card_rewards) {
+            if (!card.upgraded) return false;
+        }
+        return true;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 476);
+    run.add_relic("LAVA_LAMP");
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.combat.state = CombatState::VICTORY;
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN && all_upgraded(run));
+    run.skip_card_rewards();
+
+    RunManager hurt;
+    hurt.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 476);
+    hurt.add_relic("LAVA_LAMP");
+    enter_room_of_type(hurt, RoomType::MONSTER);
+    hurt.combat.counters.combat_hp_losses = 1;
+    hurt.combat.state = CombatState::VICTORY;
+    hurt.proceed_after_combat();
+    assert(hurt.phase == RunPhase::REWARD_SCREEN && !hurt.current_card_rewards.empty());
+    for (const DeckCard& card : hurt.current_card_rewards) assert(!card.upgraded);
+    hurt.skip_card_rewards();
+
+    // Without the relic, a fight without HP lost gives no upgraded card.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 476);
+    plain.add_relic("ANCHOR");
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
+    for (const DeckCard& card : plain.current_card_rewards) assert(!card.upgraded);
+    std::cout << "[PASS] Lava Lamp: card rewards upgraded after a fight without HP lost" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2208,6 +2364,7 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    test_venerable_tea_set();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();
@@ -2221,6 +2378,8 @@ int main() {
     test_stone_humidifier();
     test_tiny_mailbox();
     test_regal_pillow();
+    test_eternal_feather();
+    test_planisphere();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();
@@ -2242,6 +2401,7 @@ int main() {
     test_cursed_pearl();
     test_calling_bell();
     test_war_paint();
+    test_lava_lamp();
     test_belt_buckle();
     test_circlet();
     test_dingy_rug();
@@ -2263,5 +2423,7 @@ int main() {
     test_whetstone();
     test_dragon_fruit();
     test_amethyst_aubergine();
+    test_lucky_fysh();
+    test_book_of_five_rings();
     return 0;
 }

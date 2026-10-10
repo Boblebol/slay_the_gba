@@ -578,7 +578,7 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng) {
     }
     while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
         size_t pick = (boss ? rng.next() : next_random()) % candidates.size();
-        current_card_rewards.push_back(DeckCard(candidates[pick], false));
+        current_card_rewards.push_back(DeckCard(candidates[pick], card_rewards_upgraded));
         candidates.erase(pick);
     }
 }
@@ -898,8 +898,18 @@ void RunManager::count_hook(RunHook hook) {
     if (runs < UINT16_MAX) ++runs;
 }
 
-void RunManager::on_room_entered(RoomType) {
+void RunManager::on_room_entered(RoomType room) {
     count_hook(RunHook::ROOM_ENTERED);
+    // Eternal Feather: entering a Rest Site heals 3 HP for every 5 cards of the deck.
+    if (room == RoomType::REST_SITE && has_relic("ETERNAL_FEATHER")) {
+        heal(static_cast<int16_t>(master_deck.size() / 5 * 3));
+    }
+    // Venerable Tea Set: each Rest Site entered adds one count, spent at the start of the next combat.
+    if (room == RoomType::REST_SITE && has_relic("VENERABLE_TEA_SET") && relic_counter("VENERABLE_TEA_SET") < UINT8_MAX) {
+        set_relic_counter("VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("VENERABLE_TEA_SET") + 1));
+    }
+    // Planisphere: each ? room entered heals 5 HP.
+    if (room == RoomType::EVENT && has_relic("PLANISPHERE")) heal(5);
 }
 
 void RunManager::on_rested() {
@@ -1032,10 +1042,20 @@ int RunManager::upgrade_random_cards(int count, bool any_type, CardType type) {
     return upgraded;
 }
 
+// Book of Five Rings: every 5th card added to the Deck heals 20 HP.
+static constexpr uint8_t BOOK_OF_FIVE_RINGS_CARDS = 5;
+static constexpr int16_t BOOK_OF_FIVE_RINGS_HEAL = 20;
+
 bool RunManager::add_card_to_deck(DeckCard card) {
     if (master_deck.size() >= master_deck.capacity()) return false;
     on_card_added(card);
-    return master_deck.push_back(card);
+    if (!master_deck.push_back(card)) return false;
+    // Lucky Fysh: each card that joins the deck gains gold, whatever the source (reward, shop, event).
+    if (has_relic("LUCKY_FYSH")) gain_gold(15);
+    if (has_relic("BOOK_OF_FIVE_RINGS") && tick_relic_counter("BOOK_OF_FIVE_RINGS", BOOK_OF_FIVE_RINGS_CARDS)) {
+        heal(BOOK_OF_FIVE_RINGS_HEAL);
+    }
+    return true;
 }
 
 bool RunManager::transform_card_in_deck(int deck_index, bool upgraded, CardId into) {
@@ -1187,10 +1207,11 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", "VENERABLE_TEA_SET", "PLANISPHERE", // Shared, out of combat
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
-        "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR",                                   // Shared, out of combat
+        "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
+        "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
@@ -1204,7 +1225,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Upgrades on pickup (#465, #464)
         "WHETSTONE", "WAR_PAINT",
         // Colorless cards in the card rewards (#486)
-        "DINGY_RUG"
+        "DINGY_RUG",
+        // Out of combat, at the end of a fight without HP lost (#476)
+        "LAVA_LAMP"
     };
     return ACTIVE_RELICS;
 }
@@ -1493,6 +1516,11 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("LANTERN")) {
         combat.player.energy = static_cast<int8_t>(combat.player.energy + 1);
     }
+    // Venerable Tea Set: 2 additional energy on the first turn for each Rest Site entered since the last combat.
+    if (has_relic("VENERABLE_TEA_SET") && relic_counter("VENERABLE_TEA_SET") > 0) {
+        combat.player.energy = static_cast<int8_t>(combat.player.energy + 2 * relic_counter("VENERABLE_TEA_SET"));
+        set_relic_counter("VENERABLE_TEA_SET", 0);
+    }
     // Blood Vial: heal 2 HP.
     if (has_relic("BLOOD_VIAL")) {
         combat.player.heal(2);
@@ -1596,6 +1624,8 @@ void RunManager::proceed_after_combat() {
         return;
     }
 
+    // Lava Lamp: a fight won without losing HP upgrades all the card rewards it gives.
+    card_rewards_upgraded = won && has_relic("LAVA_LAMP") && combat.counters.combat_hp_losses == 0;
     on_combat_won(map.nodes[current_node_index].type);
 
     if (map.nodes[current_node_index].type == RoomType::BOSS) {
