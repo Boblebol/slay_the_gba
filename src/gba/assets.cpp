@@ -18,6 +18,7 @@
 #include "bn_sprite_items_mon_brute_ruby_raider.h"
 #include "bn_sprite_items_mon_calcified_cultist.h"
 #include "bn_sprite_items_mon_crossbow_ruby_raider.h"
+#include "bn_sprite_items_mon_cubex_construct.h"
 #include "bn_sprite_items_mon_cultist.h"
 #include "bn_sprite_items_mon_damp_cultist.h"
 #include "bn_sprite_items_mon_eye_with_teeth.h"
@@ -224,6 +225,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_sewer_clam, false };
     case engine::EnemyType::EYE_WITH_TEETH:
         return { &bn::sprite_items::mon_eye_with_teeth, false };
+    case engine::EnemyType::CUBEX_CONSTRUCT:
+        return { &bn::sprite_items::mon_cubex_construct, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

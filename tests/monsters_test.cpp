@@ -25,6 +25,7 @@ struct Turn {
     int block;        // Block the enemy holds after its turn
     int strength;     // Strength the enemy holds after its turn
     int ritual = 0;   // Ritual the enemy holds after its turn
+    int hits = 1;     // times the attack hits, `damage` each
 };
 
 // Lets the enemy play `turns` one after the other against a player who never plays a card.
@@ -46,7 +47,7 @@ void check_monster(EnemyType type, std::string_view name, int hp, std::initializ
         combat.player.hp = combat.player.max_hp; // long cycles must not kill the player
         combat.end_player_turn();
         assert(combat.state == CombatState::PLAYER_TURN);
-        assert(combat.player.max_hp - combat.player.hp == turn.damage);
+        assert(combat.player.max_hp - combat.player.hp == turn.damage * turn.hits);
         assert(enemy.block == turn.block);
         assert(enemy.get_status(StatusType::STRENGTH) == turn.strength);
         assert(enemy.get_status(StatusType::RITUAL) == turn.ritual);
@@ -1144,6 +1145,40 @@ void test_eye_with_teeth() {
     std::cout << "[PASS] Eye With Teeth: 6 HP, Distract (3 Dazed into the discard pile) every turn" << std::endl;
 }
 
+void test_cubex_construct() {
+    // Charge Up (+2 Strength), two Repeater Blasts 7 (+2 Strength each), Expel 5x2, then the blasts and Expel again.
+    // The Strength of a blast is gained after it hits.
+    check_monster(EnemyType::CUBEX_CONSTRUCT, "Assemblage Cubex", 65, {
+        { BUFF, 0, 0, 2 },
+        { ATTACK_BUFF, 9, 0, 4 },
+        { ATTACK_BUFF, 11, 0, 6 },
+        { ATTACK, 11, 0, 6, 0, 2 },
+        { ATTACK_BUFF, 13, 0, 8 },
+        { ATTACK_BUFF, 15, 0, 10 },
+        { ATTACK, 15, 0, 10, 0, 2 },
+    });
+    std::cout << "[PASS] Cubex Construct: 65 HP, Charge Up, 2 Repeater Blasts 7, Expel 5x2, loop" << std::endl;
+}
+
+void test_cubex_construct_ascension() {
+    // 70 HP, Repeater Blast 8 and Expel 6x2 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CUBEX_CONSTRUCT);
+    Enemy& cube = combat.enemies[0];
+    cube.ascend(true, true);
+    combat.plan_enemies();
+    assert(cube.hp == 70 && cube.max_hp == 70);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Charge Up: +2 Strength
+    assert(cube.current_intent.type == ATTACK_BUFF && cube.intent_damage(combat.player) == 10); // 8 + 2
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(cube.current_intent.type == ATTACK && cube.current_intent.hits == 2);
+    assert(cube.intent_damage(combat.player) == 6 + 6); // 6 + 6 Strength
+    std::cout << "[PASS] Cubex Construct: Ascension gives 70 HP, Repeater Blast 8, Expel 6x2" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1182,6 +1217,8 @@ int main() {
     test_status_intent();
     test_status_cards_are_not_the_players();
     test_eye_with_teeth();
+    test_cubex_construct();
+    test_cubex_construct_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
