@@ -108,11 +108,26 @@ void test_juggling() {
     std::cout << "[PASS] Ironclad: Juggling" << std::endl;
 }
 
+void test_cruelty() {
+    for (bool up : { false, true }) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+        combat.enemies[0].add_status(StatusType::VULNERABLE, 5);
+        play(combat, DeckCard(CardId::CRUELTY, up));
+        // Strike 6 x1.5 Vulnerable = 9, then +25% (+50% upgraded) from Cruelty.
+        int16_t before = combat.enemies[0].hp;
+        play(combat, DeckCard(CardId::STRIKE, false), 0);
+        assert(before - combat.enemies[0].hp == (up ? 13 : 11));
+    }
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::CRUELTY });
+    std::cout << "[PASS] Ironclad: Cruelty" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Ironclad Cards ===" << std::endl;
     test_juggling();
+    test_cruelty();
     std::cout << "=== All Ironclad Cards Passed! ===" << std::endl;
     return 0;
 }
