@@ -1246,6 +1246,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", "VENERABLE_TEA_SET", "PLANISPHERE", "MEAL_TICKET", "SHOVEL", // Shared, out of combat
         "WHITE_STAR",                         // Shared, rare: an Elite gives one more set of Rare cards
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
+        "VAMBRACE",                           // Shared, uncommon: the first Block of a card each combat is doubled
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
         "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
@@ -1428,6 +1429,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("RED_SKULL")) combat.add_power(PowerId::RED_SKULL, 3);
     if (has_relic("DEMON_TONGUE")) combat.add_power(PowerId::DEMON_TONGUE);
     if (has_relic("BEATING_REMNANT")) combat.add_power(PowerId::BEATING_REMNANT, BEATING_REMNANT_HP_LOSS);
+    // Vambrace: the first Block a card gives each combat is doubled.
+    if (has_relic("VAMBRACE")) combat.add_power(PowerId::VAMBRACE, 1);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);

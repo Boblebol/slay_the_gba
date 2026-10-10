@@ -897,6 +897,39 @@ void test_beating_remnant() {
     std::cout << "[PASS] Beating Remnant: no more than 20 HP lost per turn" << std::endl;
 }
 
+void test_vambrace() {
+    // With the relic: the first Block a card gives in the combat is doubled; the later ones are not.
+    CombatEngine with = make_relic_combat(CharacterId::IRONCLAD, PowerId::VAMBRACE, 1);
+    int16_t with_start = with.player.block;
+    with.resolving_card = true;
+    with.gain_block(5);
+    assert(with.player.block == with_start + 10);
+    with.gain_block(5);
+    assert(with.player.block == with_start + 15);
+    with.resolving_card = false;
+    with.start_player_turn();
+    with.resolving_card = true;
+    int16_t next_turn = with.player.block;
+    with.gain_block(4);
+    assert(with.player.block == next_turn + 4);
+    with.resolving_card = false;
+
+    // Block that is not from a card (a relic or a power) is never doubled.
+    CombatEngine other = make_relic_combat(CharacterId::IRONCLAD, PowerId::VAMBRACE, 1);
+    int16_t other_start = other.player.block;
+    other.add_block(6);
+    assert(other.player.block == other_start + 6);
+
+    // Without the relic: the Block of a card is the plain amount.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    int16_t plain_start = plain.player.block;
+    plain.resolving_card = true;
+    plain.gain_block(5);
+    assert(plain.player.block == plain_start + 5);
+    plain.resolving_card = false;
+    std::cout << "[PASS] Vambrace: the first Block a card gives each combat is doubled" << std::endl;
+}
+
 void test_dingy_rug() {
     // Card rewards: with the relic, some offers are Colorless cards; without it, never.
     uint32_t colorless = 0, offers = 0;
@@ -2634,6 +2667,7 @@ int main() {
     test_circlet();
     test_dingy_rug();
     test_beating_remnant();
+    test_vambrace();
     test_ghost_seed();
     test_reptile_trinket();
     test_ringing_triangle();
