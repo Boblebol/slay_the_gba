@@ -1247,6 +1247,8 @@ std::span<const std::string_view> RunManager::active_relics() {
         "WHITE_STAR",                         // Shared, rare: an Elite gives one more set of Rare cards
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "VAMBRACE",                           // Shared, uncommon: the first Block of a card each combat is doubled
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", // Shared, out of combat
+        "BEATING_REMNANT", "UNSETTLING_LAMP", // Shared, rare: caps the HP lost each turn, doubles the first debuff of the fight
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
         "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
@@ -1436,6 +1438,8 @@ void RunManager::register_relic_powers() {
     // Vambrace: the first Block a card gives each combat is doubled.
     if (has_relic("VAMBRACE")) combat.add_power(PowerId::VAMBRACE, 1);
     if (has_relic("CHEMICAL_X")) combat.add_power(PowerId::CHEMICAL_X, CHEMICAL_X_INCREASE);
+    // Unsettling Lamp: the first card of the fight that debuffs an enemy has its debuffs doubled.
+    if (has_relic("UNSETTLING_LAMP")) combat.add_power(PowerId::UNSETTLING_LAMP, 1);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);
