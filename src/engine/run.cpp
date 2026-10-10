@@ -1085,6 +1085,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("ART_OF_WAR")) combat.add_power(PowerId::ART_OF_WAR, 1);
     if (has_relic("ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 6);
     if (has_relic("SCREAMING_FLAGON")) combat.add_power(PowerId::SCREAMING_FLAGON, 20);
+    // Runic Pyramid: the hand is not discarded at the end of the turn (KEEP_HAND, the Well-Laid Plans rule).
+    if (has_relic("RUNIC_PYRAMID")) combat.add_power(PowerId::KEEP_HAND);
     // Kept from one turn to the next
     // Ancient relic: the combat borrows the gold it spends, paid back when the fight ends.
     if (has_relic("SEAL_OF_GOLD")) {

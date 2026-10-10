@@ -106,6 +106,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ARCANE_SCROLL", "Lorsque vous obtenez cette relique, ajoutez une Carte Rare aléatoire à votre Deck." },
     { "LEAD_PAPERWEIGHT", "Lorsque vous obtenez cette relique, choisissez 1 carte Incolore parmi 2 à ajouter à votre Deck." },
     { "LAVA_ROCK", "Le Boss de l'Acte 1 octroie 2 Reliques lorsqu'il est vaincu." },
+    { "RUNIC_PYRAMID", "À la fin de votre tour, vous ne défaussez pas votre Main." },
     { "JEWELRY_BOX", "Lorsque vous obtenez cette relique, ajoutez 1 Apothéose à votre Deck." },
     { "NEOWS_BONES", "Lorsque vous obtenez cette relique, gagnez 2 Reliques de Neow aléatoires. Ajoutez 1 Malédiction aléatoire à votre Deck." },
     { "TANXS_WHISTLE", "Lorsque vous obtenez cette relique, ajoutez 1 Sifflet à votre Deck." },
