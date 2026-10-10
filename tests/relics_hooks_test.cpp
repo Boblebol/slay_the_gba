@@ -1492,6 +1492,37 @@ void test_prismatic_gem() {
     assert(!plain.has_relic("PAELS_HORN") && plain.master_deck.size() == plain_deck);
 
     std::cout << "[PASS] Paël's Horn: 2 Relax added to the deck when obtained" << std::endl;
+void test_paels_eye() {
+    // With the relic: ending the first turn without a card exhausts the hand and gives an extra turn.
+    CombatEngine eye = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_EYE, 1);
+    int16_t hp = eye.player.hp;
+    size_t exhausted = eye.exhaust_pile.size();
+    size_t hand_size = eye.hand.size();
+    assert(hand_size > 0);
+    end_turn_attacked(eye, 11);
+    assert(eye.state == CombatState::PLAYER_TURN);
+    assert(eye.player.hp == hp); // the enemies did not act
+    assert(eye.exhaust_pile.size() == exhausted + hand_size);
+    assert(eye.hand.size() > 0);
+    // Once per combat: the next empty turn is a normal one.
+    end_turn_attacked(eye, 11);
+    assert(eye.player.hp == hp - 11);
+
+    // A turn with a card played gives nothing.
+    CombatEngine played = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_EYE, 1);
+    play(played, CardId::DEFEND);
+    hp = played.player.hp;
+    end_turn_attacked(played, 11);
+    assert(played.player.hp < hp);
+    assert(played.exhaust_pile.empty());
+
+    // Without the relic: the enemies act.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    hp = plain.player.hp;
+    end_turn_attacked(plain, 11);
+    assert(plain.player.hp == hp - 11);
+    assert(plain.exhaust_pile.empty());
+    std::cout << "[PASS] Pael's Eye: empty first turn exhausts the hand and gives an extra turn" << std::endl;
 }
 
 int main() {
@@ -1520,6 +1551,7 @@ int main() {
     test_radiant_pearl();
     test_sand_castle();
     test_paels_horn();
+    test_paels_eye();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();

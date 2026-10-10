@@ -1122,6 +1122,8 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::TURN_ENERGY, 1);
         combat.add_power(PowerId::VELVET_CHOKER, VELVET_CHOKER_CARDS);
     }
+    // Pael's Eye: the first turn ended without playing a card is followed by an extra turn.
+    if (has_relic("PAELS_EYE")) combat.add_power(PowerId::PAELS_EYE, 1);
     // Start of turn
     if (has_relic("CAPTAINS_WHEEL")) combat.add_power(PowerId::CAPTAINS_WHEEL, 18);
     if (has_relic("HORN_CLEAT")) combat.add_power(PowerId::HORN_CLEAT, 14);
