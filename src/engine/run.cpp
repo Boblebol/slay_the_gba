@@ -980,6 +980,8 @@ void RunManager::gain_gold(int16_t amount) {
     if (has_relic("ECTOPLASM")) return;
     gold = static_cast<int16_t>(std::min<int>(9999, gold + amount));
     on_gold_gained(amount);
+    // Dragon Fruit: each gain of Gold raises the Max HP by 1.
+    if (has_relic("DRAGON_FRUIT")) gain_max_hp(1);
 }
 
 int RunManager::upgrade_random_cards(int count) {
@@ -1170,6 +1172,8 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRONZE_SCALES", "GORGET", "AKABEKO",
         // At the merchant (#487)
         "THE_COURIER",
+        // Max HP with each gain of Gold (#474)
+        "DRAGON_FRUIT",
         // Retained hand on the first turn (#509)
         "RINGING_TRIANGLE"
     };
