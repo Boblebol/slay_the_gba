@@ -2071,6 +2071,33 @@ void test_war_paint() {
     std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
 }
 
+void test_girya() {
+    // Rest sites: each lift gives 1 Strength for the rest of the run, 3 times at most, and uses up the rest site.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.phase = RunPhase::CAMPFIRE;
+    assert(!run.lift_at_campfire() && run.relic_counter("GIRYA") == 0 && run.phase == RunPhase::CAMPFIRE);
+    run.add_relic("GIRYA");
+    for (uint8_t lift = 1; lift <= 3; ++lift) {
+        run.phase = RunPhase::CAMPFIRE;
+        assert(run.lift_at_campfire() && run.relic_counter("GIRYA") == lift);
+        assert(run.phase == RunPhase::MAP_NAVIGATION);
+    }
+    run.phase = RunPhase::CAMPFIRE;
+    assert(!run.lift_at_campfire() && run.relic_counter("GIRYA") == 3 && run.phase == RunPhase::CAMPFIRE);
+
+    // Every combat starts with the Strength lifted so far, and with none without the relic.
+    RunManager fight;
+    fight.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    fight.add_relic("GIRYA");
+    assert(fight.set_relic_counter("GIRYA", 2));
+    enter_room_of_type(fight, RoomType::MONSTER);
+    assert(fight.phase == RunPhase::IN_COMBAT && fight.combat.player.get_status(StatusType::STRENGTH) == 2);
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.player.get_status(StatusType::STRENGTH) == 0);
+    std::cout << "[PASS] Girya: +1 Strength per lift at a rest site, 3 times max, carried into each combat" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2145,5 +2172,6 @@ int main() {
     test_old_coin();
     test_pear();
     test_whetstone();
+    test_girya();
     return 0;
 }

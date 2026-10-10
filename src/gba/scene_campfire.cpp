@@ -91,6 +91,23 @@ public:
                     _ctx.run.cook_at_campfire();
                     return scene_after_deck_choice(_ctx, SceneId::MAP);
                 }
+                else if(action == engine::CampfireAction::LIFT)
+                {
+                    // Girya: +1 Strength for the rest of the run, then the rest site is used up.
+                    if(_ctx.run.lift_at_campfire())
+                    {
+                        _popups.spawn(0, -20, "+1 Force", TextColor::GREEN);
+                        play_sfx(Sfx::BUFF);
+                        _stage = Stage::DONE;
+                        _done_timer = 0;
+                        _clear_options();
+                    }
+                    else
+                    {
+                        _popups.spawn(0, 10, "Maximum atteint", TextColor::GRAY);
+                        play_sfx(Sfx::ERROR);
+                    }
+                }
                 else if(action != engine::CampfireAction::SMITH)
                 {
                     // An action the engine does not resolve yet.

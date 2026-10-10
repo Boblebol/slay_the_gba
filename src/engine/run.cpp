@@ -27,6 +27,7 @@ constexpr int THE_COURIER_DISCOUNT = 20;
 constexpr int COOK_REMOVALS = 2; // cards removed by Cook (Meat Cleaver)
 constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
 constexpr int LAVA_ROCK_RELICS = 2; // relics the Act 1 Boss gives to Lava Rock when defeated
+constexpr uint8_t GIRYA_LIFTS = 3;  // most Strength Girya gives, one lift each
 
 constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 0, "Normal", "Difficulté standard de l'Ascension." },
@@ -274,6 +275,13 @@ bool RunManager::cook_at_campfire() {
     request_deck_choice(DeckChoiceKind::REMOVE, COOK_REMOVALS);
     cook_pending = true;
     finish_cook(); // no removable card: the Max HP comes at once
+    phase = RunPhase::MAP_NAVIGATION;
+    return true;
+}
+
+bool RunManager::lift_at_campfire() {
+    if (!has_relic("GIRYA") || relic_counter("GIRYA") >= GIRYA_LIFTS) return false;
+    set_relic_counter("GIRYA", static_cast<uint8_t>(relic_counter("GIRYA") + 1));
     phase = RunPhase::MAP_NAVIGATION;
     return true;
 }
@@ -1186,7 +1194,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Retained hand on the first turn (#509)
         "RINGING_TRIANGLE",
         // Upgrades on pickup (#465, #464)
-        "WHETSTONE", "WAR_PAINT"
+        "WHETSTONE", "WAR_PAINT",
+        // Out of combat, at the rest sites (#475)
+        "GIRYA"
     };
     return ACTIVE_RELICS;
 }
@@ -1358,6 +1368,10 @@ void RunManager::apply_combat_start_relics() {
     // Vajra: start each combat with 1 Strength.
     if (has_relic("VAJRA")) {
         combat.player.add_status(StatusType::STRENGTH, 1);
+    }
+    // Girya: the Strength lifted at the rest sites, one point per lift.
+    if (has_relic("GIRYA") && relic_counter("GIRYA") > 0) {
+        combat.player.add_status(StatusType::STRENGTH, relic_counter("GIRYA"));
     }
     // Statuses to start the combat with. Given once the first turn has started, so that Plating does not lose a
     // point before it has given any Block.
