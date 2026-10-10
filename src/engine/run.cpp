@@ -2,6 +2,7 @@
 #include "engine/relic.h"
 #include "engine/encounter.h"
 #include "engine/rewards.h"
+#include "engine/ancient.h"
 #include <algorithm>
 
 namespace engine {
@@ -647,6 +648,43 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
             if (card_meta(id).rarity == CardRarity::RARE) rares.push_back(id);
         }
         if (!rares.empty()) add_card_to_deck(DeckCard{ rares[next_random() % rares.size()], false });
+    if (relic_id == "NEOWS_BONES" && has_relic("NEOWS_BONES")) {
+        // Two random Neow relics among the ones Neow offers: a relic already owned (this one included) is never drawn.
+        const Ancient& neow = get_ancient(AncientId::NEOW);
+        for (int i = 0; i < 2 && relics.size() < relics.capacity(); ++i) {
+            uint32_t count = 0;
+            for (const AncientSlot& slot : neow.slots) {
+                for (const AncientRelic& option : slot.options) {
+                    if (!has_relic(option.id)) ++count;
+                }
+            }
+            if (count == 0) break;
+            uint32_t pick = next_random() % count;
+            std::string_view chosen;
+            for (const AncientSlot& slot : neow.slots) {
+                for (const AncientRelic& option : slot.options) {
+                    if (has_relic(option.id)) continue;
+                    if (pick-- == 0) chosen = option.id;
+                }
+            }
+            add_relic(chosen);
+        }
+        // Then one random curse, drawn from the whole curse pool like Distinguished Cape.
+        const auto is_curse = [](uint16_t id) { return card_meta(static_cast<CardId>(id)).pool == CardPool::CURSE; };
+        uint16_t curse_count = 0;
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (is_curse(id)) ++curse_count;
+        }
+        if (curse_count > 0) {
+            uint16_t pick = next_random() % curse_count;
+            for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+                if (!is_curse(id)) continue;
+                if (pick-- == 0) {
+                    add_card_to_deck(DeckCard{ static_cast<CardId>(id), false });
+                    break;
+                }
+            }
+        }
     }
     if (relic_id == "TANXS_WHISTLE" && has_relic("TANXS_WHISTLE")) add_card_to_deck(DeckCard{ CardId::WHISTLE, false });
     if (relic_id == "STORYBOOK" && has_relic("STORYBOOK")) add_card_to_deck(DeckCard{ CardId::BRIGHTEST_FLAME, false });
