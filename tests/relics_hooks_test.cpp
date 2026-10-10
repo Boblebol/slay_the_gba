@@ -855,6 +855,26 @@ void test_delicate_frond() {
     std::cout << "[PASS] Delicate Frond: every empty potion slot filled at combat start" << std::endl;
 }
 
+void test_circlet() {
+    // Circlet is a fallback relic with no effect in game: a run holding it plays exactly like one without it.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("CIRCLET");
+    enter_room_of_type(with, RoomType::MONSTER);
+
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(without, RoomType::MONSTER);
+
+    assert(with.has_relic("CIRCLET"));
+    assert(!without.has_relic("CIRCLET"));
+    assert(with.max_hp == without.max_hp && with.gold == without.gold);
+    assert(with.combat.player.energy == without.combat.player.energy);
+    assert(with.combat.player.get_status(StatusType::DEXTERITY) == without.combat.player.get_status(StatusType::DEXTERITY));
+    assert(with.combat.player.get_status(StatusType::STRENGTH) == without.combat.player.get_status(StatusType::STRENGTH));
+    std::cout << "[PASS] Circlet: no effect, with or without the relic" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -1868,6 +1888,7 @@ int main() {
     test_cursed_pearl();
     test_calling_bell();
     test_belt_buckle();
+    test_circlet();
     test_reptile_trinket();
     test_ringing_triangle();
     test_pen_nib();

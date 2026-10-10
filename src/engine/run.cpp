@@ -832,6 +832,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "EMPTY_CAGE" && has_relic("EMPTY_CAGE")) request_deck_choice(DeckChoiceKind::REMOVE, 2);
     if (relic_id == "MEMBERSHIP_CARD" && phase == RunPhase::SHOP) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
     if (relic_id == "THE_COURIER" && phase == RunPhase::SHOP) current_shop.apply_discount(THE_COURIER_DISCOUNT);
+    // Circlet (fallback relic): no effect in game, it is only a circlet.
+    if (has_relic("CIRCLET")) {}
 }
 
 void RunManager::count_hook(RunHook hook) {
