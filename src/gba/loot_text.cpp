@@ -189,6 +189,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "YUMMY_COOKIE", "Lorsque vous obtenez cette relique, Améliorez 4 cartes." },
     { "WHETSTONE", "Lorsque vous obtenez cette relique, Améliorez 2 Attaques aléatoires." },
     { "NEOWS_TALISMAN", "Lorsque vous obtenez cette relique, Améliorez 1 de vos Frappes et 1 de vos Défenses." },
+    { "TOXIC_EGG", "Lorsque vous ajoutez une Compétence à votre Deck, Améliorez-la." },
 };
 
 bn::string_view to_bn(std::string_view text)

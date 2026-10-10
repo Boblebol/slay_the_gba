@@ -950,8 +950,10 @@ void RunManager::on_rewards_generated(RoomType) {
     count_hook(RunHook::REWARDS_GENERATED);
 }
 
-void RunManager::on_card_added(DeckCard&) {
+void RunManager::on_card_added(DeckCard& card) {
     count_hook(RunHook::CARD_ADDED);
+    // Toxic Egg: a Skill added to the Deck is Upgraded.
+    if (has_relic("TOXIC_EGG") && CardDef::get(card.id).type == CardType::SKILL) card.upgraded = true;
 }
 
 void RunManager::on_gold_gained(int16_t) {
@@ -1204,7 +1206,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Upgrades on pickup (#465, #464)
         "WHETSTONE", "WAR_PAINT",
         // Colorless cards in the card rewards (#486)
-        "DINGY_RUG"
+        "DINGY_RUG",
+        // Skills added to the Deck are upgraded (#495)
+        "TOXIC_EGG"
     };
     return ACTIVE_RELICS;
 }
