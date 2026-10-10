@@ -853,6 +853,33 @@ void test_golden_pearl() {
     std::cout << "[PASS] Golden Pearl: +150 gold when obtained" << std::endl;
 }
 
+void test_pandoras_box() {
+    // Obtained: every Strike and Defend of the deck is transformed, the other cards stay as they are.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    size_t size = run.master_deck.size();
+    run.add_relic("PANDORAS_BOX");
+    assert(run.has_relic("PANDORAS_BOX"));
+    assert(run.master_deck.size() == size);
+    int left = 0;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (run.master_deck[i].id == CardId::STRIKE || run.master_deck[i].id == CardId::DEFEND) ++left;
+    }
+    assert(left == 0);
+
+    // Without the relic, the starter cards stay.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    plain.add_relic("ANCHOR");
+    int starters = 0;
+    for (size_t i = 0; i < plain.master_deck.size(); ++i) {
+        if (plain.master_deck[i].id == CardId::STRIKE || plain.master_deck[i].id == CardId::DEFEND) ++starters;
+    }
+    assert(!plain.has_relic("PANDORAS_BOX") && starters > 0);
+
+    std::cout << "[PASS] Pandora's Box: every Strike and Defend transformed when obtained" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -876,6 +903,7 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    test_pandoras_box();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

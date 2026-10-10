@@ -625,6 +625,13 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         paels_tooth_picks = deck_choice.remaining;
     }
     if (relic_id == "CLAWS" && has_relic("CLAWS")) request_deck_choice(DeckChoiceKind::TRANSFORM, 6, true, false, CardId::MAUL);
+    if (relic_id == "PANDORAS_BOX" && has_relic("PANDORAS_BOX")) {
+        // Every Strike and Defend of the deck becomes a random card of the hero's pool, in place.
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            const CardId id = master_deck[i].id;
+            if (id == CardId::STRIKE || id == CardId::DEFEND) transform_card_in_deck(static_cast<int>(i));
+        }
+    }
     if (relic_id == "PRESERVED_FOG" && has_relic("PRESERVED_FOG")) {
         // Hubris joins only after the removals, so the Eternal curse can never be picked.
         request_deck_choice(DeckChoiceKind::REMOVE, 3);
