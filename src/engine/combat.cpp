@@ -464,6 +464,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::RAGE:
             if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK) add_block(power.amount);
             break;
+        case PowerId::DAUGHTER_OF_THE_WIND:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK) add_block(power.amount);
+            break;
         case PowerId::VICIOUS:
             if (event == CombatEvent::DEBUFF_APPLIED && info.status == StatusType::VULNERABLE) draw_cards(power.amount);
             break;
@@ -596,6 +599,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::NEUROSURGE:
             if (turn_start) player.receive_status(StatusType::DOOM, power.amount);
+            break;
+        case PowerId::HAND_DRILL:
+            if (event == CombatEvent::BLOCK_BROKEN && foe && foe->is_alive()) afflict(*foe, StatusType::VULNERABLE, power.amount);
             break;
         case PowerId::REAPER_FORM:
             if (event == CombatEvent::UNBLOCKED_DAMAGE_DEALT && foe && foe->is_alive()) {
@@ -821,6 +827,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::GAME_PIECE:
             if (card_played && CardDef::get(info.card.id).type == CardType::POWER) draw_cards(power.amount);
             break;
+        case PowerId::LOST_WISP:
+            if (card_played && CardDef::get(info.card.id).type == CardType::POWER) damage_all_enemies(power.amount);
+            break;
         case PowerId::CENTENNIAL_PUZZLE:
             if (event == CombatEvent::HP_LOST && power.counter == 0) {
                 power.counter = 1;
@@ -942,6 +951,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             }
             break;
         case PowerId::STRIKE_DUMMY:
+        case PowerId::FAKE_STRIKE_DUMMY:
             if (card_played && is_strike(info.card.id)) strike_played_now = true;
             break;
         case PowerId::MINIATURE_CANNON:
@@ -1108,7 +1118,13 @@ void CombatEngine::afflict(Enemy& target, StatusType type, int16_t amount) {
 
 void CombatEngine::damage_enemy(Enemy& target, int16_t amount) {
     if (!target.is_alive()) return;
+    const int16_t block_before = target.block;
     target.take_damage(amount);
+    if (block_before > 0 && target.block == 0) {
+        EventInfo info;
+        info.enemy = index_of(target);
+        emit(CombatEvent::BLOCK_BROKEN, info);
+    }
     settle_deaths();
 }
 
@@ -1445,9 +1461,15 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (attack_double_now) percent *= 2;
     if (resolving_card && triple_next_attack) percent *= 3;
     if (pen_nib_now && resolving_card) percent *= 2;
-    if (strike_played_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY));
+    if (strike_played_now && resolving_card) {
+        base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY) + power_amount(PowerId::FAKE_STRIKE_DUMMY));
+    }
     if (upgraded_attack_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::MINIATURE_CANNON));
-    int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
+    int16_t damage = attack_damage(base, player, target, percent);
+    // The Boot: an Attack hit that would deal 1 to 4 damage (before Block) deals 5 instead.
+    if (damage > 0 && damage <= THE_BOOT_THRESHOLD && has_power(PowerId::THE_BOOT)) damage = THE_BOOT_MINIMUM;
+    const int16_t block_before = target.block;
+    int16_t lost = target.take_damage(damage);
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
         EventInfo info;
@@ -1455,6 +1477,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
         info.amount = lost;
         emit(CombatEvent::ATTACK_HIT, info);
         if (lost > 0) emit(CombatEvent::UNBLOCKED_DAMAGE_DEALT, info);
+        if (block_before > 0 && target.block == 0) emit(CombatEvent::BLOCK_BROKEN, info);
         // The enemy's Thorns hurt the player, once per hit.
         damage_player(target.get_status(StatusType::THORNS));
         settle_deaths();

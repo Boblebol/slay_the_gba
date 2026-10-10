@@ -155,7 +155,9 @@ enum class PowerId : uint8_t {
     ORNAMENTAL_FAN,    // every ORNAMENTAL_FAN_ATTACKS Attacks played in a turn: `amount` Block
     PEN_NIB,           // every PEN_NIB_ATTACKS Attacks played: that Attack deals double damage (counter = Attacks counted)
     STRIKE_DUMMY,      // cards containing "Strike" deal `amount` more damage per hit
+    FAKE_STRIKE_DUMMY, // event copy of STRIKE_DUMMY: cards containing "Strike" deal `amount` more damage per hit
     MINIATURE_CANNON,  // upgraded Attacks deal `amount` more damage per hit
+    THE_BOOT,          // an Attack hit dealing 1 to THE_BOOT_THRESHOLD damage (before Block) deals THE_BOOT_MINIMUM instead
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy
     RED_SKULL,         // HP at RED_SKULL_HP_PERCENT % of Max HP or less: `amount` more Strength (counter = Strength given now)
@@ -233,7 +235,10 @@ enum class PowerId : uint8_t {
     UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
     MR_STRUGGLES,       // start of turn: damage equal to the turn number to every enemy (event relic)
     HISTORY_COURSE,     // start of turn: play a copy of the last Attack played (`amount` = 0, or card id * 2 + upgraded + 1)
-    INFUSED_CORE        // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
+    INFUSED_CORE,       // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
+    DAUGHTER_OF_THE_WIND, // Attack played: `amount` Block (event relic)
+    LOST_WISP,          // Power played: `amount` damage to every enemy (event relic)
+    HAND_DRILL          // an enemy's Block broken by the player's damage: `amount` Vulnerable on that enemy
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -263,6 +268,8 @@ constexpr uint8_t KUNAI_ATTACKS = 3;
 constexpr uint8_t KUSARIGAMA_ATTACKS = 3;
 constexpr uint8_t NUNCHAKU_ATTACKS = 10;
 constexpr uint8_t PEN_NIB_ATTACKS = 10;
+constexpr uint8_t THE_BOOT_THRESHOLD = 4;
+constexpr uint8_t THE_BOOT_MINIMUM = 5;
 constexpr uint8_t SHURIKEN_ATTACKS = 3;
 constexpr uint8_t ORNAMENTAL_FAN_ATTACKS = 3;
 constexpr uint8_t RED_SKULL_HP_PERCENT = 50;
@@ -297,6 +304,7 @@ enum class CombatEvent : uint8_t {
     HP_LOST,                // by the player; `amount`
     ATTACK_HIT,             // one attack hit on an enemy; `enemy`
     UNBLOCKED_DAMAGE_DEALT, // that hit went through the enemy's Block; `enemy`, `amount`
+    BLOCK_BROKEN,           // the player's damage took an enemy's Block to 0; `enemy`
     DEBUFF_APPLIED,         // to an enemy; `enemy`, `status`, `amount`
     ENEMY_KILLED,           // whatever killed it; `enemy`
     OSTY_ATTACKED,          // once per attack of Osty, however many enemies it hits

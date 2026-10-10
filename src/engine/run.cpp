@@ -765,6 +765,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         hp = std::max<int16_t>(1, hp - 15);
         upgrade_random_cards(2);
     }
+    // Bone Tea (event): the next combat is counted on pickup, and its starting hand is upgraded at its start.
+    if (relic_id == "BONE_TEA" && has_relic("BONE_TEA")) set_relic_counter("BONE_TEA", 1);
     // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
     if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
         regenerate_map();
@@ -955,6 +957,10 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "THE_COURIER" && phase == RunPhase::SHOP) current_shop.apply_discount(THE_COURIER_DISCOUNT);
     // Circlet (fallback relic): no effect in game, it is only a circlet.
     if (has_relic("CIRCLET")) {}
+    // Wongo customer appreciation badge (event relic): no effect in game, "Does nothing."
+    if (has_relic("WONGO_CUSTOMER_APPRECIATION_BADGE")) {}
+    // Le tapis du Marchand ??? (event relic): no effect in game, a poor imitation.
+    if (has_relic("FAKE_MERCHANTS_RUG")) {}
 }
 
 void RunManager::count_hook(RunHook hook) {
@@ -1359,6 +1365,7 @@ std::string_view RunManager::draw_treasure_relic() {
 }
 
 static constexpr uint8_t PUMPKIN_CANDLE_COMBATS = 5;
+static constexpr uint8_t EMBER_TEA_COMBATS = 5;
 
 void RunManager::register_relic_powers() {
     // Blessed Antler: one more energy each turn, paid for with three Dazed shuffled into the draw pile.
@@ -1430,6 +1437,12 @@ void RunManager::register_relic_powers() {
         combat.gold = gold;
         combat.add_power(PowerId::SEAL_OF_GOLD, 1);
     }
+    // Tea of Discourtesy (event): at the start of the next combat only, two Dazed shuffled into the draw pile. The
+    // counter marks the tea as drunk.
+    if (has_relic("TEA_OF_DISCOURTESY") && relic_counter("TEA_OF_DISCOURTESY") == 0 &&
+        set_relic_counter("TEA_OF_DISCOURTESY", 1)) {
+        for (int copy = 0; copy < 2; ++copy) combat.create_card(CardId::DAZED, Pile::DRAW);
+    }
     // Pumpkin Candle: one more energy each turn, for the first 5 combats; the counter holds the combats lit so far.
     if (has_relic("PUMPKIN_CANDLE") && relic_counter("PUMPKIN_CANDLE") < PUMPKIN_CANDLE_COMBATS) {
         combat.add_power(PowerId::TURN_ENERGY, 1);
@@ -1444,6 +1457,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("THE_ABACUS")) combat.add_power(PowerId::THE_ABACUS, 6);
     if (has_relic("PERMAFROST")) combat.add_power(PowerId::PERMAFROST, 7);
     if (has_relic("GAME_PIECE")) combat.add_power(PowerId::GAME_PIECE, 1);
+    // Lost Wisp (event relic): each Power played deals 8 damage to every enemy.
+    if (has_relic("LOST_WISP")) combat.add_power(PowerId::LOST_WISP, 8);
     if (has_relic("REPTILE_TRINKET")) combat.add_power(PowerId::REPTILE_TRINKET, 3);
     if (has_relic("CENTENNIAL_PUZZLE")) combat.add_power(PowerId::CENTENNIAL_PUZZLE, 3);
     if (has_relic("LIZARD_TAIL")) combat.add_power(PowerId::LIZARD_TAIL, 50);
@@ -1451,6 +1466,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);
     if (has_relic("TOUGH_BANDAGES")) combat.add_power(PowerId::TOUGH_BANDAGES, 3);
     if (has_relic("TINGSHA")) combat.add_power(PowerId::TINGSHA, 3);
+    // Hand Drill (event relic): breaking an enemy's Block applies 2 Vulnerable to it.
+    if (has_relic("HAND_DRILL")) combat.add_power(PowerId::HAND_DRILL, 2);
     // Hero relics
     if (has_relic("BOUND_PHYLACTERY")) combat.add_power(PowerId::TURN_SUMMON, 1);
     // Phylactery Unbound: Osty is there from the start of the combat, and grows faster.
@@ -1476,7 +1493,11 @@ void RunManager::register_relic_powers() {
     if (has_relic("NUNCHAKU")) combat.add_power(PowerId::NUNCHAKU, 1);
     if (has_relic("PEN_NIB")) combat.add_power(PowerId::PEN_NIB);
     if (has_relic("STRIKE_DUMMY")) combat.add_power(PowerId::STRIKE_DUMMY, 3);
+    // Event copy of Strike Dummy: 1 more damage per Strike.
+    if (has_relic("FAKE_STRIKE_DUMMY")) combat.add_power(PowerId::FAKE_STRIKE_DUMMY, 1);
     if (has_relic("MINIATURE_CANNON")) combat.add_power(PowerId::MINIATURE_CANNON, 3);
+    // The Boot (event relic): an Attack hit of 4 damage or less deals 5 instead.
+    if (has_relic("THE_BOOT")) combat.add_power(PowerId::THE_BOOT);
     // Tungsten Rod: whenever the player would lose HP, 1 less.
     if (has_relic("TUNGSTEN_ROD")) combat.player.hp_loss_reduction = 1;
     if (has_relic("RAINBOW_RING")) combat.add_power(PowerId::RAINBOW_RING, 1);
@@ -1499,6 +1520,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("UNSETTLING_LAMP")) combat.add_power(PowerId::UNSETTLING_LAMP, 1);
     // Infused Core: Lightning orbs deal 1 more damage.
     if (has_relic("INFUSED_CORE")) combat.add_power(PowerId::INFUSED_CORE, 1);
+    // Daughter of the Wind (event relic): every Attack played gives 1 Block.
+    if (has_relic("DAUGHTER_OF_THE_WIND")) combat.add_power(PowerId::DAUGHTER_OF_THE_WIND, 1);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);
@@ -1529,11 +1552,18 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("GIRYA") && relic_counter("GIRYA") > 0) {
         combat.player.add_status(StatusType::STRENGTH, relic_counter("GIRYA"));
     }
+    // Ember Tea (event): 2 Strength at the start of each of the next 5 combats; the counter holds the combats so far.
+    if (has_relic("EMBER_TEA") && relic_counter("EMBER_TEA") < EMBER_TEA_COMBATS) {
+        combat.player.add_status(StatusType::STRENGTH, 2);
+        set_relic_counter("EMBER_TEA", static_cast<uint8_t>(relic_counter("EMBER_TEA") + 1));
+    }
     // Statuses to start the combat with. Given once the first turn has started, so that Plating does not lose a
     // point before it has given any Block.
     if (has_relic("BRONZE_SCALES")) combat.player.add_status(StatusType::THORNS, 3);
     if (has_relic("GORGET")) combat.player.add_status(StatusType::PLATED_ARMOR, 4);
     if (has_relic("AKABEKO")) combat.player.add_status(StatusType::VIGOR, 8);
+    // Sword of Jade (event): start each combat with 3 Strength.
+    if (has_relic("SWORD_OF_JADE")) combat.player.add_status(StatusType::STRENGTH, 3);
     // Ring of the Snake (Silent): draw 2 additional cards on the first turn.
     if (has_relic("RING_OF_THE_SNAKE")) {
         combat.draw_cards(2);
@@ -1551,6 +1581,11 @@ void RunManager::apply_combat_start_relics() {
     // Bellows: the first hand of the combat is upgraded, the cards of Ring of the Snake included.
     if (has_relic("BELLOWS")) {
         for (DeckCard& card : combat.hand) card.upgraded = true;
+    }
+    // Bone Tea (event): the first hand of the next combat is upgraded, once.
+    if (has_relic("BONE_TEA") && relic_counter("BONE_TEA") > 0) {
+        for (DeckCard& card : combat.hand) card.upgraded = true;
+        set_relic_counter("BONE_TEA", 0);
     }
     // Gambling Chip: any number of cards of the first hand are discarded, and as many are drawn.
     if (has_relic("GAMBLING_CHIP")) {
