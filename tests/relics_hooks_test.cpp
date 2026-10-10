@@ -2,10 +2,10 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
-#include "engine/ancient.h"
-#include "engine/card_meta.h"
 #include "engine/combat.h"
 #include "engine/run.h"
+#include "engine/ancient.h"
+#include "engine/card_meta.h"
 
 using namespace engine;
 
@@ -562,27 +562,6 @@ void test_very_hot_cocoa() {
     assert(cocoa.combat.player.energy == plain.combat.player.energy);
 }
 
-void test_nutritious_oyster() {
-    // Obtained: 11 more maximum HP, and the current HP follow.
-    RunManager run;
-    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
-    run.hp = 50;
-    int16_t max_hp = run.max_hp;
-    run.add_relic("NUTRITIOUS_OYSTER");
-    assert(run.has_relic("NUTRITIOUS_OYSTER"));
-    assert(run.max_hp == max_hp + 11 && run.hp == 61);
-
-    // Without the relic, nothing raises the maximum HP.
-    RunManager plain;
-    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
-    plain.hp = 50;
-    plain.add_relic("ANCHOR");
-    assert(!plain.has_relic("NUTRITIOUS_OYSTER"));
-    assert(plain.max_hp == max_hp && plain.hp == 50);
-
-    std::cout << "[PASS] Nutritious Oyster: +11 Max HP when obtained" << std::endl;
-}
-
 void test_strawberry() {
     // Obtained: 7 more maximum HP, and the current HP follow.
     RunManager run;
@@ -626,24 +605,6 @@ void test_strawberry() {
     }
     assert(found);
     std::cout << "[PASS] Strawberry: +7 Max HP when obtained, once, from a chest too" << std::endl;
-}
-
-void test_small_capsule() {
-    // Obtained: one random relic joins the bag, on top of the capsule itself.
-    RunManager run;
-    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
-    size_t before = run.relics.size();
-    run.add_relic("SMALL_CAPSULE");
-    assert(run.has_relic("SMALL_CAPSULE"));
-    assert(run.relics.size() == before + 2);
-
-    // Without the capsule, a relic gives nothing more.
-    RunManager plain;
-    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
-    size_t plain_before = plain.relics.size();
-    plain.add_relic("ANCHOR");
-    assert(plain.relics.size() == plain_before + 1);
-    std::cout << "[PASS] Small Capsule: one random relic when obtained, none without it" << std::endl;
 }
 
 void test_seal_of_gold() {
@@ -741,33 +702,6 @@ void test_paels_tooth() {
     assert(plain.master_deck.size() == deck);
 }
 
-void test_precise_scissors() {
-    RunManager run;
-    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
-    size_t deck = run.master_deck.size();
-    run.add_relic("PRECISE_SCISSORS");
-    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 1);
-    assert(run.resolve_deck_choice(0));
-    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 1);
-void test_empty_cage() {
-    RunManager run;
-    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
-    size_t deck = run.master_deck.size();
-    run.add_relic("EMPTY_CAGE");
-    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 2);
-    assert(run.resolve_deck_choice(0));
-    assert(run.resolve_deck_choice(0));
-    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 2);
-
-    // Without the relic nothing is asked and no card leaves the deck.
-    RunManager plain;
-    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
-    plain.add_relic("ANCHOR");
-    assert(!plain.has_deck_choice());
-    assert(plain.master_deck.size() == deck);
-    std::cout << "[PASS] Empty Cage: pickup asks for 2 cards to remove, nothing without the relic" << std::endl;
-}
-
 void test_membership_card() {
     // Without the card, the prices are the ones the stock is drawn with.
     RunManager plain;
@@ -834,29 +768,6 @@ void test_membership_card() {
     std::cout << "[PASS] Membership Card: every price halved, removal included, at once when bought in the shop" << std::endl;
 }
 
-void test_astrolabe() {
-    // Obtained: three chosen cards are transformed, then upgraded.
-    RunManager run;
-    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
-    size_t size = run.master_deck.size();
-    run.add_relic("ASTROLABE");
-    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::TRANSFORM);
-    assert(run.deck_choice.remaining == 3 && !run.deck_choice.optional && run.deck_choice.upgrade_result);
-    for (int i = 0; i < 3; ++i) {
-        CardId before = run.master_deck[i].id;
-        assert(run.resolve_deck_choice(i));
-        assert(run.master_deck[i].id != before && run.master_deck[i].upgraded);
-    }
-    assert(!run.has_deck_choice() && run.master_deck.size() == size);
-
-    // Without the relic: nothing is asked and no card changes.
-    RunManager plain;
-    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
-    plain.add_relic("ANCHOR");
-    assert(!plain.has_deck_choice());
-    std::cout << "[PASS] Astrolabe: transforms 3 cards then upgrades them when obtained" << std::endl;
-}
-
 void test_yummy_cookie() {
     // Obtained: four cards of the deck are upgraded.
     RunManager run;
@@ -895,57 +806,6 @@ void test_delicate_frond() {
     enter_room_of_type(without, RoomType::MONSTER);
     assert(without.potions.empty());
     std::cout << "[PASS] Delicate Frond: every empty potion slot filled at combat start" << std::endl;
-}
-
-void test_pomander() {
-    // Obtained: one card of the deck is picked to be upgraded.
-    RunManager run;
-    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
-    run.add_relic("POMANDER");
-    assert(run.has_relic("POMANDER"));
-    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::UPGRADE && run.deck_choice.remaining == 1);
-    assert(!run.skip_deck_choice()); // it has to be made
-    assert(run.resolve_deck_choice(0) && run.master_deck[0].upgraded);
-    assert(!run.has_deck_choice());
-
-    // Without the relic: nothing is asked and nothing is upgraded.
-    RunManager plain;
-    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
-    plain.add_relic("ANCHOR");
-    assert(!plain.has_deck_choice());
-    assert(std::none_of(plain.master_deck.begin(), plain.master_deck.end(), [](const DeckCard& c) { return c.upgraded; }));
-    std::cout << "[PASS] Pomander: one card of the deck picked to be upgraded when obtained" << std::endl;
-void test_neows_talisman() {
-    // Obtained: one Strike and one Defend of the deck are upgraded, nothing else.
-    auto upgraded_of = [](const RunManager& r, CardId id) {
-        int n = 0;
-        for (size_t i = 0; i < r.master_deck.size(); ++i) {
-            if (r.master_deck[i].upgraded && r.master_deck[i].id == id) ++n;
-        }
-        return n;
-    };
-    auto upgraded_total = [](const RunManager& r) {
-        int n = 0;
-        for (size_t i = 0; i < r.master_deck.size(); ++i) n += r.master_deck[i].upgraded ? 1 : 0;
-        return n;
-    };
-    RunManager run;
-    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
-    int strikes_before = upgraded_of(run, CardId::STRIKE);
-    int defends_before = upgraded_of(run, CardId::DEFEND);
-    int total_before = upgraded_total(run);
-    run.add_relic("NEOWS_TALISMAN");
-    assert(run.has_relic("NEOWS_TALISMAN"));
-    assert(upgraded_of(run, CardId::STRIKE) == strikes_before + 1);
-    assert(upgraded_of(run, CardId::DEFEND) == defends_before + 1);
-    assert(upgraded_total(run) == total_before + 2);
-
-    // Without the relic: no card is upgraded.
-    RunManager plain;
-    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
-    plain.add_relic("ANCHOR");
-    assert(upgraded_total(plain) == total_before);
-    std::cout << "[PASS] Neow's Talisman: one Strike and one Defend upgraded when obtained" << std::endl;
 }
 
 void test_paels_legion() {
@@ -993,6 +853,8 @@ void test_golden_pearl() {
     assert(!plain.has_relic("GOLDEN_PEARL") && plain.gold == gold);
 
     std::cout << "[PASS] Golden Pearl: +150 gold when obtained" << std::endl;
+}
+
 void test_booming_conch() {
     // Booming Conch: in an Elite room, 2 more cards and 1 more energy on the first turn, nothing after it.
     RunManager plain_elite;
@@ -1018,6 +880,8 @@ void test_booming_conch() {
     // Without the relic, in an Elite room: nothing changes.
     assert(plain_elite.combat.hand.size() == 5);
     std::cout << "[PASS] Booming Conch: 2 cards and 1 energy in an Elite room, first turn only" << std::endl;
+}
+
 void test_arcane_scroll() {
     // With the relic: one random Rare card of the hero's pool joins the deck on pickup.
     RunManager scroll;
@@ -1037,6 +901,8 @@ void test_arcane_scroll() {
     plain.add_relic("STRAWBERRY");
     assert(plain.master_deck.size() == start);
     std::cout << "[PASS] Arcane Scroll: no card without the relic" << std::endl;
+}
+
 void test_lead_paperweight() {
     // Lead Paperweight: on pickup, 2 distinct Colorless cards are offered and one of them is taken.
     RunManager run;
@@ -1057,6 +923,8 @@ void test_lead_paperweight() {
     plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
     plain.add_relic("ANCHOR");
     assert(plain.phase != RunPhase::REWARD_SCREEN && plain.current_card_rewards.empty());
+}
+
 void test_neows_torment() {
     // Obtained: one Neow's Fury is added to the deck.
     RunManager run;
@@ -1079,6 +947,25 @@ void test_neows_torment() {
     plain.add_relic("ANCHOR");
     assert(fury_count(plain) == before);
     std::cout << "[PASS] Neow's Torment: adds 1 Neow's Fury to the deck when obtained" << std::endl;
+}
+
+void test_precise_scissors() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck = run.master_deck.size();
+    run.add_relic("PRECISE_SCISSORS");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 1);
+    assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 1);
+
+    // Without the relic nothing is asked and no card leaves the deck.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    assert(plain.master_deck.size() == deck);
+}
+
 void test_new_leaf() {
     RunManager run;
     run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
@@ -1096,6 +983,47 @@ void test_new_leaf() {
     plain.add_relic("ANCHOR");
     assert(!plain.has_deck_choice() && plain.master_deck[0].id == first);
     std::cout << "[PASS] New Leaf: nothing asked without the relic" << std::endl;
+}
+
+void test_small_capsule() {
+    // Obtained: one random relic joins the bag, on top of the capsule itself.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t before = run.relics.size();
+    run.add_relic("SMALL_CAPSULE");
+    assert(run.has_relic("SMALL_CAPSULE"));
+    assert(run.relics.size() == before + 2);
+
+    // Without the capsule, a relic gives nothing more.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_before = plain.relics.size();
+    plain.add_relic("ANCHOR");
+    assert(plain.relics.size() == plain_before + 1);
+    std::cout << "[PASS] Small Capsule: one random relic when obtained, none without it" << std::endl;
+}
+
+void test_nutritious_oyster() {
+    // Obtained: 11 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("NUTRITIOUS_OYSTER");
+    assert(run.has_relic("NUTRITIOUS_OYSTER"));
+    assert(run.max_hp == max_hp + 11 && run.hp == 61);
+
+    // Without the relic, nothing raises the maximum HP.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("NUTRITIOUS_OYSTER"));
+    assert(plain.max_hp == max_hp && plain.hp == 50);
+
+    std::cout << "[PASS] Nutritious Oyster: +11 Max HP when obtained" << std::endl;
+}
+
 void test_lava_rock() {
     // With the rock, the Act 1 Boss gives 2 new relics when defeated, never the rock nor the same one twice.
     RunManager run;
@@ -1116,6 +1044,8 @@ void test_lava_rock() {
     plain.proceed_after_combat();
     assert(plain.relics.size() == plain_before && !plain.has_relic("LAVA_ROCK"));
     std::cout << "[PASS] Lava Rock: Act 1 Boss gives 2 relics" << std::endl;
+}
+
 void test_stone_humidifier() {
     // With the relic: each Rest raises Max HP by 5 (and heals by the same amount).
     RunManager run;
@@ -1136,6 +1066,61 @@ void test_stone_humidifier() {
     assert(!plain.has_relic("STONE_HUMIDIFIER"));
     assert(plain.max_hp == max_hp);
     std::cout << "[PASS] Stone Humidifier: +5 Max HP at each Rest Site rest" << std::endl;
+}
+
+void test_pomander() {
+    // Obtained: one card of the deck is picked to be upgraded.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("POMANDER");
+    assert(run.has_relic("POMANDER"));
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::UPGRADE && run.deck_choice.remaining == 1);
+    assert(!run.skip_deck_choice()); // it has to be made
+    assert(run.resolve_deck_choice(0) && run.master_deck[0].upgraded);
+    assert(!run.has_deck_choice());
+
+    // Without the relic: nothing is asked and nothing is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    assert(std::none_of(plain.master_deck.begin(), plain.master_deck.end(), [](const DeckCard& c) { return c.upgraded; }));
+    std::cout << "[PASS] Pomander: one card of the deck picked to be upgraded when obtained" << std::endl;
+}
+
+void test_neows_talisman() {
+    // Obtained: one Strike and one Defend of the deck are upgraded, nothing else.
+    auto upgraded_of = [](const RunManager& r, CardId id) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) {
+            if (r.master_deck[i].upgraded && r.master_deck[i].id == id) ++n;
+        }
+        return n;
+    };
+    auto upgraded_total = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) n += r.master_deck[i].upgraded ? 1 : 0;
+        return n;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    int strikes_before = upgraded_of(run, CardId::STRIKE);
+    int defends_before = upgraded_of(run, CardId::DEFEND);
+    int total_before = upgraded_total(run);
+    run.add_relic("NEOWS_TALISMAN");
+    assert(run.has_relic("NEOWS_TALISMAN"));
+    assert(upgraded_of(run, CardId::STRIKE) == strikes_before + 1);
+    assert(upgraded_of(run, CardId::DEFEND) == defends_before + 1);
+    assert(upgraded_total(run) == total_before + 2);
+
+    // Without the relic: no card is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(upgraded_total(plain) == total_before);
+    std::cout << "[PASS] Neow's Talisman: one Strike and one Defend upgraded when obtained" << std::endl;
+}
+
 void test_large_capsule() {
     // Obtained: 2 random relics join the run, and a Strike and a Defend join the deck.
     RunManager run;
@@ -1161,6 +1146,40 @@ void test_large_capsule() {
     assert(strikes_after == strikes + 1 && defends_after == defends + 1);
 
     // Without the relic: no relic and no card is given.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_relics = plain.relics.size();
+    size_t plain_deck = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("LARGE_CAPSULE"));
+    assert(plain.relics.size() == plain_relics + 1);
+    assert(plain.master_deck.size() == plain_deck);
+    std::cout << "[PASS] Large Capsule: 2 random relics and a Strike and a Defend on pickup" << std::endl;
+}
+
+void test_astrolabe() {
+    // Obtained: three chosen cards are transformed, then upgraded.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    size_t size = run.master_deck.size();
+    run.add_relic("ASTROLABE");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::TRANSFORM);
+    assert(run.deck_choice.remaining == 3 && !run.deck_choice.optional && run.deck_choice.upgrade_result);
+    for (int i = 0; i < 3; ++i) {
+        CardId before = run.master_deck[i].id;
+        assert(run.resolve_deck_choice(i));
+        assert(run.master_deck[i].id != before && run.master_deck[i].upgraded);
+    }
+    assert(!run.has_deck_choice() && run.master_deck.size() == size);
+
+    // Without the relic: nothing is asked and no card changes.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    std::cout << "[PASS] Astrolabe: transforms 3 cards then upgrades them when obtained" << std::endl;
+}
+
 void test_neows_bones() {
     // Obtained: 2 more relics among Neow's own, then 1 random curse. Neow's Bones itself is never drawn again.
     auto is_neow_relic = [](std::string_view id) {
@@ -1200,15 +1219,29 @@ void test_neows_bones() {
     plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
     size_t plain_relics = plain.relics.size();
     size_t plain_deck = plain.master_deck.size();
-    plain.add_relic("ANCHOR");
-    assert(!plain.has_relic("LARGE_CAPSULE"));
-    assert(plain.relics.size() == plain_relics + 1);
-    assert(plain.master_deck.size() == plain_deck);
-    std::cout << "[PASS] Large Capsule: 2 random relics and a Strike and a Defend on pickup" << std::endl;
     plain.add_relic("STRAWBERRY");
     assert(plain.relics.size() == plain_relics + 1);
     assert(plain.master_deck.size() == plain_deck);
     assert(count_curses(plain) == 0);
+}
+
+void test_empty_cage() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck = run.master_deck.size();
+    run.add_relic("EMPTY_CAGE");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 2);
+    assert(run.resolve_deck_choice(0));
+    assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 2);
+
+    // Without the relic nothing is asked and no card leaves the deck.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    assert(plain.master_deck.size() == deck);
+    std::cout << "[PASS] Empty Cage: pickup asks for 2 cards to remove, nothing without the relic" << std::endl;
 }
 
 void test_pandoras_box() {
@@ -1238,6 +1271,25 @@ void test_pandoras_box() {
     std::cout << "[PASS] Pandora's Box: every Strike and Defend transformed when obtained" << std::endl;
 }
 
+void test_runic_pyramid() {
+    // Runic Pyramid: the hand stays in hand at the end of the turn, and the next turn draws on top of it.
+    RunManager pyramid = make_relic_run(CharacterId::IRONCLAD, { "RUNIC_PYRAMID" });
+    assert(pyramid.combat.hand.size() == 5);
+    CardId held[5];
+    for (size_t i = 0; i < 5; ++i) held[i] = pyramid.combat.hand[i].id;
+    end_turn_idle(pyramid.combat);
+    assert(pyramid.combat.discard_pile.empty());
+    assert(pyramid.combat.hand.size() >= 5);
+    for (size_t i = 0; i < 5; ++i) assert(pyramid.combat.hand[i].id == held[i]);
+
+    // Without the relic: the hand goes to the discard pile.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.hand.size() == 5);
+    end_turn_idle(plain.combat);
+    assert(plain.combat.discard_pile.size() == 5);
+    std::cout << "[PASS] Runic Pyramid: the hand is kept at the end of the turn" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1251,33 +1303,34 @@ int main() {
     test_paels_blood();
     test_relics_in_a_run();
     test_very_hot_cocoa();
-    test_nutritious_oyster();
     test_strawberry();
-    test_small_capsule();
     test_golden_compass();
     test_paels_tooth();
-    test_precise_scissors();
-    test_empty_cage();
     test_membership_card();
-    test_astrolabe();
     test_yummy_cookie();
     test_delicate_frond();
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();
     test_lead_paperweight();
     test_neows_torment();
+    test_precise_scissors();
     test_new_leaf();
+    test_small_capsule();
+    test_nutritious_oyster();
     test_lava_rock();
     test_stone_humidifier();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();
+    test_astrolabe();
     test_neows_bones();
+    test_empty_cage();
     test_pandoras_box();
-    std::cout << "All relic hook tests passed." << std::endl;
+    test_runic_pyramid();
     return 0;
 }

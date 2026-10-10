@@ -648,6 +648,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
             if (card_meta(id).rarity == CardRarity::RARE) rares.push_back(id);
         }
         if (!rares.empty()) add_card_to_deck(DeckCard{ rares[next_random() % rares.size()], false });
+    }
     if (relic_id == "NEOWS_BONES" && has_relic("NEOWS_BONES")) {
         // Two random Neow relics among the ones Neow offers: a relic already owned (this one included) is never drawn.
         const Ancient& neow = get_ancient(AncientId::NEOW);
