@@ -181,6 +181,7 @@ struct CardChoice {
     // Only cards of this type can be picked, when `any_type` is false (Secret Technique, Secret Weapon).
     bool any_type = true;
     CardType type = CardType::ATTACK;
+    bool free_this_turn = false; // TO_HAND: the cards picked cost 0 this turn (Liquid Memories)
 };
 
 // Where a card goes once it has been played.
