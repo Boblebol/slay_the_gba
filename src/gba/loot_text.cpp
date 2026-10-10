@@ -29,6 +29,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "BLOOD_VIAL", "Au début de chaque combat, récupérez 2 PV." },
     { "BONE_FLUTE", "Chaque fois que Titos attaque, gagnez 2 d'Armure." },
     { "BOOK_REPAIR_KNIFE", "Chaque fois qu'un ennemi non-Serviteur succombe à Fatalité, récupérez 3 PV." },
+    { "BOOKMARK", "À la fin de chaque tour, une carte Retenue aléatoire coûte 1 de moins jusqu'à ce qu'elle soit jouée." },
     { "BREAD", "Au début de votre premier tour, perdez 2 ●. Au début de chaque tour suivant, gagnez 1 ●." },
     { "BRIMSTONE", "Au début de votre tour, vous gagnez 2 de Force et TOUS les ennemis gagnent 1 de Force." },
     { "BRONZE_SCALES", "Démarrez chaque combat avec 3 d'Épines." },
