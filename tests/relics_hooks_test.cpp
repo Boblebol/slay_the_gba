@@ -876,6 +876,25 @@ void test_booming_conch() {
     // Without the relic, in an Elite room: nothing changes.
     assert(plain_elite.combat.hand.size() == 5);
     std::cout << "[PASS] Booming Conch: 2 cards and 1 energy in an Elite room, first turn only" << std::endl;
+void test_arcane_scroll() {
+    // With the relic: one random Rare card of the hero's pool joins the deck on pickup.
+    RunManager scroll;
+    scroll.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t before = scroll.master_deck.size();
+    scroll.add_relic("ARCANE_SCROLL");
+    assert(scroll.has_relic("ARCANE_SCROLL"));
+    assert(scroll.master_deck.size() == before + 1);
+    CardId added = scroll.master_deck[scroll.master_deck.size() - 1].id;
+    assert(card_meta(added).rarity == CardRarity::RARE);
+    std::cout << "[PASS] Arcane Scroll: a random Rare card added to the deck on pickup" << std::endl;
+
+    // Without the relic: nothing is added.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t start = plain.master_deck.size();
+    plain.add_relic("STRAWBERRY");
+    assert(plain.master_deck.size() == start);
+    std::cout << "[PASS] Arcane Scroll: no card without the relic" << std::endl;
 }
 
 int main() {
@@ -902,6 +921,7 @@ int main() {
     test_paels_legion();
     test_golden_pearl();
     test_booming_conch();
+    test_arcane_scroll();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
