@@ -229,6 +229,63 @@ void test_the_hunt() {
     std::cout << "[PASS] Silent: The Hunt" << std::endl;
 }
 
+void test_shadow_step() {
+    for (bool upgraded : { false, true }) {
+        // Shadow Step: 1 energy, free once upgraded. It discards the whole hand.
+        assert(CardDef::get_cost(CardId::SHADOW_STEP, false) == 1 && CardDef::get_cost(CardId::SHADOW_STEP, true) == 0);
+        assert(CardDef::get(CardId::SHADOW_STEP).type == CardType::SKILL);
+        assert(CardDef::get(CardId::SHADOW_STEP).target == TargetType::SELF);
+
+        // One sturdy Jaw Worm, with nothing to soften or deflect the hits.
+        CombatEngine combat;
+        combat.start_combat(EnemyType::JAW_WORM, CharacterId::SILENT);
+        combat.enemies[0].hp = combat.enemies[0].max_hp = 500;
+        combat.enemies[0].block = 0;
+        combat.enemies[0].statuses.clear();
+        combat.player.statuses.clear();
+        combat.hand.clear();
+        combat.draw_pile.clear();
+        combat.discard_pile.clear();
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.hand.push_back(DeckCard(CardId::DEFEND, false));
+        combat.hand.push_back(DeckCard(CardId::SHADOW_STEP, upgraded));
+        combat.player.energy = combat.player.max_energy;
+        assert(combat.play_card(2, -1));
+        assert(combat.hand.empty());
+        assert(combat.player.energy == combat.player.max_energy - (upgraded ? 0 : 1));
+
+        // This turn, Attacks still deal normal damage.
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = combat.player.max_energy;
+        int16_t hp = combat.enemies[0].hp;
+        assert(combat.play_card(0, 0));
+        assert(hp - combat.enemies[0].hp == 6);
+
+        // Next turn, Attacks deal double damage.
+        combat.end_player_turn();
+        combat.enemies[0].block = 0;
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = combat.player.max_energy;
+        hp = combat.enemies[0].hp;
+        assert(combat.play_card(0, 0));
+        assert(hp - combat.enemies[0].hp == 12);
+
+        // The turn after, damage is back to normal.
+        combat.end_player_turn();
+        combat.enemies[0].block = 0;
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = combat.player.max_energy;
+        hp = combat.enemies[0].hp;
+        assert(combat.play_card(0, 0));
+        assert(hp - combat.enemies[0].hp == 6);
+    }
+
+    assert_in_pool(CharacterId::SILENT, { CardId::SHADOW_STEP });
+    std::cout << "[PASS] Silent: Shadow Step" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -239,6 +296,7 @@ int main() {
     test_hand_trick();
     test_tracking();
     test_the_hunt();
+    test_shadow_step();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
