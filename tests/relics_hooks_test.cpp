@@ -1030,6 +1030,26 @@ void test_lava_rock() {
     plain.proceed_after_combat();
     assert(plain.relics.size() == plain_before && !plain.has_relic("LAVA_ROCK"));
     std::cout << "[PASS] Lava Rock: Act 1 Boss gives 2 relics" << std::endl;
+void test_stone_humidifier() {
+    // With the relic: each Rest raises Max HP by 5 (and heals by the same amount).
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("STONE_HUMIDIFIER");
+    run.hp = 40;
+    int16_t max_hp = run.max_hp;
+    run.rest_at_campfire();
+    assert(run.max_hp == max_hp + 5 && run.hp == 40 + max_hp * 3 / 10 + 5);
+    run.rest_at_campfire();
+    assert(run.max_hp == max_hp + 10);
+
+    // Without the relic: a Rest leaves Max HP alone.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 40;
+    plain.rest_at_campfire();
+    assert(!plain.has_relic("STONE_HUMIDIFIER"));
+    assert(plain.max_hp == max_hp);
+    std::cout << "[PASS] Stone Humidifier: +5 Max HP at each Rest Site rest" << std::endl;
 }
 
 int main() {
@@ -1064,6 +1084,7 @@ int main() {
     test_neows_torment();
     test_new_leaf();
     test_lava_rock();
+    test_stone_humidifier();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
