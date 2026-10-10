@@ -71,6 +71,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "KUSARIGAMA", "Chaque fois que vous jouez 3 Attaques en un seul tour, infligez 6 dégâts à un ennemi aléatoire." },
     { "LANTERN", "Démarrez chaque combat avec 1 ● supplémentaire." },
     { "LETTER_OPENER", "Chaque fois que vous jouez 3 Compétences en un seul tour, infligez 5 dégâts à TOUS les ennemis." },
+    { "LAVA_LAMP", "À la fin de chaque combat, si vous n'avez subi aucun dégât, Améliorez toutes les récompenses de carte." },
     { "LIZARD_TAIL", "Lorsque vos PV sont réduits à 0, récupérez 50 % de vos PV max (ne fonctionne qu'une fois)." },
     { "LORDS_PARASOL", "Chez le Marchand, vous obtenez TOUT ce qu'il propose." },
     { "LUNAR_PASTRY", "À la fin de votre tour, gagnez 1 ★." },

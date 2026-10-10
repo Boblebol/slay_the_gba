@@ -2071,6 +2071,47 @@ void test_war_paint() {
     std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
 }
 
+void test_lava_lamp() {
+    // At the end of a fight without HP lost, every card reward of it is upgraded; with HP lost, none is.
+    auto all_upgraded = [](const RunManager& r) {
+        if (r.current_card_rewards.empty()) return false;
+        for (const DeckCard& card : r.current_card_rewards) {
+            if (!card.upgraded) return false;
+        }
+        return true;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 476);
+    run.add_relic("LAVA_LAMP");
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.combat.state = CombatState::VICTORY;
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN && all_upgraded(run));
+    run.skip_card_rewards();
+
+    RunManager hurt;
+    hurt.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 476);
+    hurt.add_relic("LAVA_LAMP");
+    enter_room_of_type(hurt, RoomType::MONSTER);
+    hurt.combat.counters.combat_hp_losses = 1;
+    hurt.combat.state = CombatState::VICTORY;
+    hurt.proceed_after_combat();
+    assert(hurt.phase == RunPhase::REWARD_SCREEN && !hurt.current_card_rewards.empty());
+    for (const DeckCard& card : hurt.current_card_rewards) assert(!card.upgraded);
+    hurt.skip_card_rewards();
+
+    // Without the relic, a fight without HP lost gives no upgraded card.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 476);
+    plain.add_relic("ANCHOR");
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
+    for (const DeckCard& card : plain.current_card_rewards) assert(!card.upgraded);
+    std::cout << "[PASS] Lava Lamp: card rewards upgraded after a fight without HP lost" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2128,6 +2169,7 @@ int main() {
     test_cursed_pearl();
     test_calling_bell();
     test_war_paint();
+    test_lava_lamp();
     test_belt_buckle();
     test_circlet();
     test_beating_remnant();
