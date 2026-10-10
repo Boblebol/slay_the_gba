@@ -2340,6 +2340,42 @@ void test_lava_lamp() {
     std::cout << "[PASS] Lava Lamp: card rewards upgraded after a fight without HP lost" << std::endl;
 }
 
+void test_fragrant_mushroom() {
+    // Obtained: 15 HP are lost (never below 1), then 2 random cards are upgraded.
+    auto upgraded_count = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) {
+            if (r.master_deck[i].upgraded) ++n;
+        }
+        return n;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 511);
+    run.hp = 50;
+    int upgraded_before = upgraded_count(run);
+    run.add_relic("FRAGRANT_MUSHROOM");
+    assert(run.has_relic("FRAGRANT_MUSHROOM"));
+    assert(run.hp == 35);
+    assert(run.max_hp == 80);
+    assert(upgraded_count(run) == upgraded_before + 2);
+
+    // Losing HP never takes the hero below 1.
+    RunManager low;
+    low.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 511);
+    low.hp = 10;
+    low.add_relic("FRAGRANT_MUSHROOM");
+    assert(low.hp == 1);
+
+    // Without the relic, no HP is lost and no card is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 511);
+    plain.hp = 50;
+    int plain_before = upgraded_count(plain);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("FRAGRANT_MUSHROOM") && plain.hp == 50 && upgraded_count(plain) == plain_before);
+    std::cout << "[PASS] Fragrant Mushroom: loses 15 HP and upgrades 2 random cards when obtained" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2401,6 +2437,7 @@ int main() {
     test_cursed_pearl();
     test_calling_bell();
     test_war_paint();
+    test_fragrant_mushroom();
     test_lava_lamp();
     test_belt_buckle();
     test_circlet();
