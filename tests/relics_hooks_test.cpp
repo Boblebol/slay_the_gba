@@ -853,6 +853,25 @@ void test_golden_pearl() {
     std::cout << "[PASS] Golden Pearl: +150 gold when obtained" << std::endl;
 }
 
+void test_runic_pyramid() {
+    // Runic Pyramid: the hand stays in hand at the end of the turn, and the next turn draws on top of it.
+    RunManager pyramid = make_relic_run(CharacterId::IRONCLAD, { "RUNIC_PYRAMID" });
+    assert(pyramid.combat.hand.size() == 5);
+    CardId held[5];
+    for (size_t i = 0; i < 5; ++i) held[i] = pyramid.combat.hand[i].id;
+    end_turn_idle(pyramid.combat);
+    assert(pyramid.combat.discard_pile.empty());
+    assert(pyramid.combat.hand.size() >= 5);
+    for (size_t i = 0; i < 5; ++i) assert(pyramid.combat.hand[i].id == held[i]);
+
+    // Without the relic: the hand goes to the discard pile.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.hand.size() == 5);
+    end_turn_idle(plain.combat);
+    assert(plain.combat.discard_pile.size() == 5);
+    std::cout << "[PASS] Runic Pyramid: the hand is kept at the end of the turn" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -876,6 +895,7 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    test_runic_pyramid();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
