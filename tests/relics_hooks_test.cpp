@@ -2087,6 +2087,28 @@ void test_old_coin() {
     std::cout << "[PASS] Old Coin: +300 gold when obtained" << std::endl;
 }
 
+void test_lucky_fysh() {
+    // With the relic: each card added to the deck, by any source, gains 15 gold.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 484);
+    run.add_relic("LUCKY_FYSH");
+    assert(run.has_relic("LUCKY_FYSH"));
+    int16_t gold = run.gold;
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.gold == gold + 15);
+    run.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    assert(run.gold == gold + 30);
+
+    // Without the relic, adding a card leaves the gold where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 484);
+    plain.add_relic("ANCHOR");
+    int16_t plain_gold = plain.gold;
+    plain.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(!plain.has_relic("LUCKY_FYSH") && plain.gold == plain_gold);
+    std::cout << "[PASS] Lucky Fysh: +15 gold each time a card joins the deck" << std::endl;
+}
+
 void test_whetstone() {
     // Obtained: two random Attacks of the deck are upgraded, never more than the deck holds.
     auto upgraded_attacks = [](const RunManager& r) {
@@ -2263,5 +2285,6 @@ int main() {
     test_whetstone();
     test_dragon_fruit();
     test_amethyst_aubergine();
+    test_lucky_fysh();
     return 0;
 }
