@@ -806,6 +806,39 @@ void test_delicate_frond() {
     std::cout << "[PASS] Delicate Frond: every empty potion slot filled at combat start" << std::endl;
 }
 
+void test_neows_talisman() {
+    // Obtained: one Strike and one Defend of the deck are upgraded, nothing else.
+    auto upgraded_of = [](const RunManager& r, CardId id) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) {
+            if (r.master_deck[i].upgraded && r.master_deck[i].id == id) ++n;
+        }
+        return n;
+    };
+    auto upgraded_total = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) n += r.master_deck[i].upgraded ? 1 : 0;
+        return n;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    int strikes_before = upgraded_of(run, CardId::STRIKE);
+    int defends_before = upgraded_of(run, CardId::DEFEND);
+    int total_before = upgraded_total(run);
+    run.add_relic("NEOWS_TALISMAN");
+    assert(run.has_relic("NEOWS_TALISMAN"));
+    assert(upgraded_of(run, CardId::STRIKE) == strikes_before + 1);
+    assert(upgraded_of(run, CardId::DEFEND) == defends_before + 1);
+    assert(upgraded_total(run) == total_before + 2);
+
+    // Without the relic: no card is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(upgraded_total(plain) == total_before);
+    std::cout << "[PASS] Neow's Talisman: one Strike and one Defend upgraded when obtained" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -857,6 +890,7 @@ int main() {
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
+    test_neows_talisman();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

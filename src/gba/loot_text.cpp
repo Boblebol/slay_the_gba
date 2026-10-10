@@ -132,6 +132,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "VERY_HOT_COCOA", "Démarrez chaque combat avec 4 ● supplémentaires." },
     { "VEXING_PUZZLEBOX", "Au début de chaque combat, ajoutez une carte aléatoire à votre Main. Elle coûte 0 ce tour." },
     { "YUMMY_COOKIE", "Lorsque vous obtenez cette relique, Améliorez 4 cartes." },
+    { "NEOWS_TALISMAN", "Lorsque vous obtenez cette relique, Améliorez 1 de vos Frappes et 1 de vos Défenses." },
 };
 
 bn::string_view to_bn(std::string_view text)
