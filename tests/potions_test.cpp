@@ -18,7 +18,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
-    "ASHWATER", "OROBIC_ACID",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -752,6 +752,29 @@ void test_orobic_acid() {
     std::cout << "[PASS] Orobic Acid: an Attack, a Skill and a Power added to the hand, free this turn" << std::endl;
 }
 
+void test_beetle_juice() {
+    // Chomp 11 x 0.70 = 7 for 4 enemy turns, then back to 11.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.use_potion("BEETLE_JUICE", 0));
+    assert(combat.enemies[0].damage_down_turns == 4);
+    assert(std::string_view(combat.combat_log) == "Beetle Juice!");
+    assert(combat.enemies[0].intent_damage(combat.player) == 7);
+    int hp = combat.player.hp;
+    for (int turn = 0; turn < 4; ++turn) {
+        combat.enemies[0].current_intent = EnemyIntent{};
+        combat.enemies[0].current_intent.type = EnemyIntentType::ATTACK;
+        combat.enemies[0].current_intent.base_damage = 10;
+        assert(combat.enemies[0].intent_damage(combat.player) == 7);
+        combat.end_player_turn();
+        assert(combat.player.hp == hp - 7);
+        hp = combat.player.hp;
+    }
+    combat.enemies[0].current_intent.base_damage = 10;
+    assert(combat.enemies[0].damage_down_turns == 0);
+    assert(combat.enemies[0].intent_damage(combat.player) == 10);
+    std::cout << "[PASS] Beetle Juice: the enemy deals 30% less damage for 4 turns" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -886,6 +909,7 @@ int main() {
     test_duplicator();
     test_droplet_of_precognition();
     test_orobic_acid();
+    test_beetle_juice();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;
