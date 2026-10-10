@@ -1850,6 +1850,32 @@ void test_bookmark() {
     std::cout << "[PASS] Bookmark: a Retained card costs 1 less until played" << std::endl;
 }
 
+void test_war_paint() {
+    // Obtained: two random Skills of the deck are upgraded, never an Attack.
+    auto upgraded_of_type = [](const RunManager& r, CardType type) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) {
+            if (r.master_deck[i].upgraded && CardDef::get(r.master_deck[i].id).type == type) ++n;
+        }
+        return n;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 464);
+    int skills_before = upgraded_of_type(run, CardType::SKILL);
+    int attacks_before = upgraded_of_type(run, CardType::ATTACK);
+    run.add_relic("WAR_PAINT");
+    assert(run.has_relic("WAR_PAINT"));
+    assert(upgraded_of_type(run, CardType::SKILL) == skills_before + 2);
+    assert(upgraded_of_type(run, CardType::ATTACK) == attacks_before);
+
+    // Without the relic, no Skill is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 464);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("WAR_PAINT") && upgraded_of_type(plain, CardType::SKILL) == skills_before);
+    std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1906,6 +1932,7 @@ int main() {
     test_paels_eye();
     test_cursed_pearl();
     test_calling_bell();
+    test_war_paint();
     test_belt_buckle();
     test_circlet();
     test_reptile_trinket();
