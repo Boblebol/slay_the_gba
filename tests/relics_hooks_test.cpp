@@ -1851,6 +1851,22 @@ void test_ringing_triangle() {
     std::cout << "[PASS] Ringing Triangle: the first hand is kept at the end of the first turn" << std::endl;
 }
 
+void test_orange_dough() {
+    // With the relic: 2 random Colorless cards join the hand at the start of the combat, on top of the usual 5.
+    RunManager dough = make_relic_run(CharacterId::REGENT, { "ORANGE_DOUGH" });
+    assert(dough.combat.hand.size() == 7);
+    int colorless = 0;
+    for (const DeckCard& card : dough.combat.hand) {
+        if (card_meta(card.id).pool == CardPool::COLORLESS) ++colorless;
+    }
+    assert(colorless >= 2);
+    std::cout << "[PASS] Orange Dough: 2 random Colorless cards are added to the hand at the start of the combat" << std::endl;
+
+    // Without the relic: the usual 5 cards, no Colorless card added.
+    RunManager plain = make_relic_run(CharacterId::REGENT, {});
+    assert(plain.combat.hand.size() == 5);
+}
+
 void test_toolbox() {
     // With the relic: 3 Colorless cards are offered at the start of the combat, and the one picked joins the hand.
     RunManager toolbox = make_relic_run(CharacterId::IRONCLAD, { "TOOLBOX" });
@@ -2874,6 +2890,7 @@ int main() {
     test_reptile_trinket();
     test_ringing_triangle();
     test_toolbox();
+    test_orange_dough();
     test_pen_nib();
     test_strike_dummy();
     test_miniature_cannon();

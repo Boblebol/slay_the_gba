@@ -1259,7 +1259,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
         "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
-        "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
+        "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL", "ORANGE_DOUGH",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
         "BRONZE_SCALES", "GORGET", "AKABEKO",
@@ -1511,6 +1511,10 @@ void RunManager::apply_combat_start_relics() {
     // Ninja Scroll (Silent): 3 Shivs.
     if (has_relic("NINJA_SCROLL")) {
         combat.add_shivs(3);
+    }
+    // Orange Dough (Regent): 2 random Colorless cards added to the hand at the start of each combat.
+    if (has_relic("ORANGE_DOUGH")) {
+        for (int copy = 0; copy < 2; ++copy) combat.create_random_card(CardFilter(CardPool::COLORLESS), Pile::HAND);
     }
     // Vexing Puzzlebox: a random card of the hero's pool, free this turn unless a full hand sends it to the
     // discard pile.
