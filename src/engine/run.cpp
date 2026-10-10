@@ -1121,6 +1121,10 @@ void RunManager::apply_combat_start_relics() {
             combat.create_card(ethereal[next_random() % ethereal.size()], Pile::HAND);
         }
     }
+    // Radiant Pearl (Orobas): 1 Luminesce in hand.
+    if (has_relic("RADIANT_PEARL")) {
+        combat.create_card(DeckCard(CardId::LUMINESCE), Pile::HAND);
+    }
     // Fencing Manual (Regent): Forge 10.
     if (has_relic("FENCING_MANUAL")) {
         combat.forge(10);
