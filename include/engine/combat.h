@@ -147,7 +147,8 @@ enum class ChoiceKind : uint8_t {
     COPY_ATTACK_OR_POWER, // to the hand, only an Attack or a Power can be picked (Dual Wield)
     COPY_COLORLESS,       // to the hand, only a Colorless card can be picked (Heirloom Hammer)
     COPY_NEXT_TURN,       // to the hand at the start of the next turn (Nightmare)
-    PLAY_REPEATED         // the picked hand card is played `amount` times, then goes where it goes (Decisions, Decisions)
+    PLAY_REPEATED,        // the picked hand card is played `amount` times, then goes where it goes (Decisions, Decisions)
+    MAKE_SLY              // the picked hand card gains Sly until the end of the turn (Hand Trick)
 };
 
 // What follows once the cards are picked: the part of a card's text that comes after its choice.
@@ -361,6 +362,9 @@ public:
     // Effect of a card still in hand at the end of the player's turn (Burn, curses): damage, HP loss, gold loss
     // or a status. Cards without such an effect do nothing.
     void trigger_end_of_turn_in_hand(const DeckCard& card);
+    // Sly cards discarded from the hand during the turn wait here until the action that discarded them is over.
+    FixedVector<DeckCard, 12> sly_pending;
+    void play_sly_pending();
     // Strength or Dexterity until the end of the turn.
     void gain_temporary(StatusType type, int8_t amount);
     // The enemy loses Strength until the end of its turn.

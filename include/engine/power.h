@@ -202,7 +202,9 @@ enum class PowerId : uint8_t {
     CREATIVE_AI,       // start of turn: `amount` random Powers to the hand
     TOOLS_OF_THE_TRADE, // once the hand is drawn: draw `amount` cards, then discard `amount` cards
     // Relics of the Ancients (appended)
-    WHISPERING_EARRING  // Vakuu plays the first turn of the combat (CombatEngine::vakuu_turn_active)
+    WHISPERING_EARRING, // Vakuu plays the first turn of the combat (CombatEngine::vakuu_turn_active)
+    // Sly (appended)
+    MASTER_PLANNER      // the Skills played gain Sly (read by place_played_card)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

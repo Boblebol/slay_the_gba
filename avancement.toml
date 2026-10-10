@@ -37,7 +37,7 @@ items = [
   { name = "Pioche supplémentaire (Salto arrière)", status = "oui" },
   { name = "Défausse au choix (Survivant, Acrobaties)", status = "oui" },
   { name = "Surins : attaques à 0 énergie créées en combat", status = "oui" },
-  { name = "Ruse : carte jouée gratuitement quand elle est défaussée", status = "non", issue = 73 },
+  { name = "Ruse : carte jouée gratuitement quand elle est défaussée", status = "oui", issue = 73 },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
 ]
 
@@ -144,7 +144,7 @@ items = [
   { name = "Éthéré", status = "oui" },
   { name = "Inné", status = "oui" },
   { name = "Retenue", status = "oui" },
-  { name = "Ruse", status = "non", issue = 73 },
+  { name = "Ruse", status = "oui", issue = 73 },
   { name = "Injouable", status = "oui" },
   { name = "Éternel", status = "oui", issue = 95 },
 ]

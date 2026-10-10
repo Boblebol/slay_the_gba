@@ -838,6 +838,22 @@ bn::string_view base_name(engine::CardId id)
         return "Dette";
     case engine::CardId::SPORE_MIND:
         return "Conscience sporique";
+    case engine::CardId::TACTICIAN:
+        return "Tactique";
+    case engine::CardId::ABRASIVE:
+        return "Abrasif";
+    case engine::CardId::MASTER_PLANNER:
+        return "Grands desseins";
+    case engine::CardId::HAND_TRICK:
+        return "Trucage";
+    case engine::CardId::UNTOUCHABLE:
+        return "Intouchable";
+    case engine::CardId::RICOCHET:
+        return "Ricochet";
+    case engine::CardId::REFLEX:
+        return "Réflexes";
+    case engine::CardId::FLICK_FLACK:
+        return "Tic tac";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1604,6 +1620,30 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SPORE_MIND:
         stream << "Épuisement.";
+        break;
+    case engine::CardId::TACTICIAN:
+        stream << "Ruse. Énergie +" << value << ".";
+        break;
+    case engine::CardId::ABRASIVE:
+        stream << "Ruse. Dextérité +1. Épines " << value << ".";
+        break;
+    case engine::CardId::MASTER_PLANNER:
+        stream << "Vos Compétences jouées ont Ruse.";
+        break;
+    case engine::CardId::HAND_TRICK:
+        stream << "Armure " << value << ". Ruse à 1 Compétence ce tour.";
+        break;
+    case engine::CardId::UNTOUCHABLE:
+        stream << "Ruse. Gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::RICOCHET:
+        stream << "Ruse. " << value << " dégâts au hasard " << secondary << " fois.";
+        break;
+    case engine::CardId::REFLEX:
+        stream << "Ruse. Pioche " << value << ".";
+        break;
+    case engine::CardId::FLICK_FLACK:
+        stream << "Ruse. Inflige " << value << " dégâts à TOUS.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:
