@@ -1582,6 +1582,25 @@ void test_paels_eye() {
     std::cout << "[PASS] Pael's Eye: empty first turn exhausts the hand and gives an extra turn" << std::endl;
 }
 
+void test_ringing_triangle() {
+    // With the relic: the hand is kept at the end of the first turn, and only that one.
+    CombatEngine triangle = make_relic_combat(CharacterId::IRONCLAD, PowerId::RINGING_TRIANGLE, 1);
+    assert(triangle.hand.size() == 5);
+    end_turn_idle(triangle);
+    assert(triangle.discard_pile.size() == 0);
+    assert(triangle.hand.size() == 10);
+    end_turn_idle(triangle);
+    assert(triangle.discard_pile.size() == 10);
+
+    // Without the relic: the first hand is discarded at the end of the turn.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    end_turn_idle(plain);
+    assert(plain.discard_pile.size() == 5);
+    assert(plain.hand.size() == 5);
+
+    std::cout << "[PASS] Ringing Triangle: the first hand is kept at the end of the first turn" << std::endl;
+}
+
 void test_cursed_pearl() {
     // Obtained: a Greed curse joins the deck and 333 gold is paid once.
     RunManager run;
@@ -1801,6 +1820,7 @@ int main() {
     test_calling_bell();
     test_belt_buckle();
     test_reptile_trinket();
+    test_ringing_triangle();
     test_pen_nib();
     test_white_beast_statue();
     test_cauldron();

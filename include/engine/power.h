@@ -164,6 +164,7 @@ enum class PowerId : uint8_t {
     SEAL_OF_GOLD,      // start of turn: spend 3 gold (CombatEngine::gold) to gain `amount` energy
     SAI,               // start of turn: `amount` Block
     PAELS_LEGION,      // Block from a card is doubled, then the relic sleeps `amount` turns (counter = turn starts left asleep + 1)
+    RINGING_TRIANGLE,  // turn 1: the hand is kept at the end of the turn (read by the turn start)
     // Damage sent back and statuses lost each turn (appended)
     FLAME_BARRIER,     // until the next turn: each enemy attack deals `amount` damage back to the attacker
     REFLECT,           // until the next turn: the attack damage the player's Block absorbs goes back to the attacker

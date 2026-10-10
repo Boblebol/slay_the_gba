@@ -1130,7 +1130,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Statuses given at the start of the combat (#91, #93)
         "BRONZE_SCALES", "GORGET", "AKABEKO",
         // At the merchant (#487)
-        "THE_COURIER"
+        "THE_COURIER",
+        // Retained hand on the first turn (#509)
+        "RINGING_TRIANGLE"
     };
     return ACTIVE_RELICS;
 }
@@ -1282,6 +1284,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("REGALITE")) combat.add_power(PowerId::REGALITE, 4);
     if (has_relic("IVORY_TILE")) combat.add_power(PowerId::IVORY_TILE, 1);
     if (has_relic("PAELS_LEGION")) combat.add_power(PowerId::PAELS_LEGION, 2);
+    if (has_relic("RINGING_TRIANGLE")) combat.add_power(PowerId::RINGING_TRIANGLE, 1);
     // Confused from the start: the opening hand already gets random costs.
     if (has_relic("FAKE_SNECKO_EYE")) combat.player.add_status(StatusType::CONFUSED, 1);
     if (has_relic("SNECKO_EYE")) {
