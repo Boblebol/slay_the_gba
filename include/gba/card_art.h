@@ -94,23 +94,23 @@
 #include "bn_sprite_items_card_wraith_form.h"
 #include "bn_sprite_items_card_giant_rock_silent.h"
 #include "bn_sprite_items_card_luminesce_silent.h"
-#include "bn_sprite_items_card_apparition_silent.h"
-#include "bn_sprite_items_card_maul_silent.h"
-#include "bn_sprite_items_card_apotheosis_silent.h"
-#include "bn_sprite_items_card_wish_silent.h"
-#include "bn_sprite_items_card_whistle_silent.h"
-#include "bn_sprite_items_card_brightest_flame_silent.h"
+#include "bn_sprite_items_card_apparition.h"
+#include "bn_sprite_items_card_maul.h"
+#include "bn_sprite_items_card_apotheosis.h"
+#include "bn_sprite_items_card_wish.h"
+#include "bn_sprite_items_card_whistle.h"
+#include "bn_sprite_items_card_brightest_flame.h"
 #include "bn_sprite_items_card_folly.h"
 #include "bn_sprite_items_card_enthralled.h"
-#include "bn_sprite_items_card_flash_of_steel_silent.h"
+#include "bn_sprite_items_card_flash_of_steel.h"
 #include "bn_sprite_items_card_peck_silent.h"
-#include "bn_sprite_items_card_production_silent.h"
-#include "bn_sprite_items_card_master_of_strategy_silent.h"
+#include "bn_sprite_items_card_production.h"
+#include "bn_sprite_items_card_master_of_strategy.h"
 #include "bn_sprite_items_card_byrd_swoop_silent.h"
-#include "bn_sprite_items_card_ultimate_strike_silent.h"
-#include "bn_sprite_items_card_ultimate_defend_silent.h"
-#include "bn_sprite_items_card_finesse_silent.h"
-#include "bn_sprite_items_card_prowess_silent.h"
+#include "bn_sprite_items_card_ultimate_strike.h"
+#include "bn_sprite_items_card_ultimate_defend.h"
+#include "bn_sprite_items_card_finesse.h"
+#include "bn_sprite_items_card_prowess.h"
 #include "bn_sprite_items_card_squash_silent.h"
 #include "bn_sprite_items_card_exterminate_silent.h"
 #include "bn_sprite_items_card_feeding_frenzy_silent.h"
@@ -119,52 +119,52 @@
 #include "bn_sprite_items_card_entrench_silent.h"
 #include "bn_sprite_items_card_stack_silent.h"
 #include "bn_sprite_items_card_rip_and_tear_silent.h"
-#include "bn_sprite_items_card_scrawl_silent.h"
-#include "bn_sprite_items_card_mind_blast_silent.h"
-#include "bn_sprite_items_card_shockwave_silent.h"
-#include "bn_sprite_items_card_bolas_silent.h"
-#include "bn_sprite_items_card_thrumming_hatchet_silent.h"
-#include "bn_sprite_items_card_impatience_silent.h"
+#include "bn_sprite_items_card_scrawl.h"
+#include "bn_sprite_items_card_mind_blast.h"
+#include "bn_sprite_items_card_shockwave.h"
+#include "bn_sprite_items_card_bolas.h"
+#include "bn_sprite_items_card_thrumming_hatchet.h"
+#include "bn_sprite_items_card_impatience.h"
 #include "bn_sprite_items_card_clash_silent.h"
-#include "bn_sprite_items_card_volley_silent.h"
-#include "bn_sprite_items_card_omnislice_silent.h"
-#include "bn_sprite_items_card_restlessness_silent.h"
-#include "bn_sprite_items_card_eternal_armor_silent.h"
-#include "bn_sprite_items_card_fasten_silent.h"
+#include "bn_sprite_items_card_volley.h"
+#include "bn_sprite_items_card_omnislice.h"
+#include "bn_sprite_items_card_restlessness.h"
+#include "bn_sprite_items_card_eternal_armor.h"
+#include "bn_sprite_items_card_fasten.h"
 #include "bn_sprite_items_card_rebound_silent.h"
-#include "bn_sprite_items_card_panic_button_silent.h"
-#include "bn_sprite_items_card_gold_axe_silent.h"
-#include "bn_sprite_items_card_anointed_silent.h"
-#include "bn_sprite_items_card_fisticuffs_silent.h"
-#include "bn_sprite_items_card_rend_silent.h"
-#include "bn_sprite_items_card_the_bomb_silent.h"
-#include "bn_sprite_items_card_rolling_boulder_silent.h"
-#include "bn_sprite_items_card_panache_silent.h"
-#include "bn_sprite_items_card_jackpot_silent.h"
-#include "bn_sprite_items_card_beat_down_silent.h"
-#include "bn_sprite_items_card_catastrophe_silent.h"
-#include "bn_sprite_items_card_nostalgia_silent.h"
-#include "bn_sprite_items_card_relax_silent.h"
-#include "bn_sprite_items_card_neows_fury_silent.h"
+#include "bn_sprite_items_card_panic_button.h"
+#include "bn_sprite_items_card_gold_axe.h"
+#include "bn_sprite_items_card_anointed.h"
+#include "bn_sprite_items_card_fisticuffs.h"
+#include "bn_sprite_items_card_rend.h"
+#include "bn_sprite_items_card_the_bomb.h"
+#include "bn_sprite_items_card_rolling_boulder.h"
+#include "bn_sprite_items_card_panache.h"
+#include "bn_sprite_items_card_jackpot.h"
+#include "bn_sprite_items_card_beat_down.h"
+#include "bn_sprite_items_card_catastrophe.h"
+#include "bn_sprite_items_card_nostalgia.h"
+#include "bn_sprite_items_card_relax.h"
+#include "bn_sprite_items_card_neows_fury.h"
 #include "bn_sprite_items_card_metamorphosis_silent.h"
 #include "bn_sprite_items_card_distraction_silent.h"
 #include "bn_sprite_items_card_caltrops_silent.h"
-#include "bn_sprite_items_card_prolong_silent.h"
-#include "bn_sprite_items_card_salvo_silent.h"
-#include "bn_sprite_items_card_thinking_ahead_silent.h"
-#include "bn_sprite_items_card_jack_of_all_trades_silent.h"
+#include "bn_sprite_items_card_prolong.h"
+#include "bn_sprite_items_card_salvo.h"
+#include "bn_sprite_items_card_thinking_ahead.h"
+#include "bn_sprite_items_card_jack_of_all_trades.h"
 #include "bn_sprite_items_card_hello_world_silent.h"
-#include "bn_sprite_items_card_dark_shackles_silent.h"
-#include "bn_sprite_items_card_equilibrium_silent.h"
-#include "bn_sprite_items_card_purity_silent.h"
-#include "bn_sprite_items_card_secret_technique_silent.h"
-#include "bn_sprite_items_card_dramatic_entrance_silent.h"
-#include "bn_sprite_items_card_secret_weapon_silent.h"
-#include "bn_sprite_items_card_mayhem_silent.h"
-#include "bn_sprite_items_card_prep_time_silent.h"
-#include "bn_sprite_items_card_stratagem_silent.h"
-#include "bn_sprite_items_card_calamity_silent.h"
-#include "bn_sprite_items_card_automation_silent.h"
+#include "bn_sprite_items_card_dark_shackles.h"
+#include "bn_sprite_items_card_equilibrium.h"
+#include "bn_sprite_items_card_purity.h"
+#include "bn_sprite_items_card_secret_technique.h"
+#include "bn_sprite_items_card_dramatic_entrance.h"
+#include "bn_sprite_items_card_secret_weapon.h"
+#include "bn_sprite_items_card_mayhem.h"
+#include "bn_sprite_items_card_prep_time.h"
+#include "bn_sprite_items_card_stratagem.h"
+#include "bn_sprite_items_card_calamity.h"
+#include "bn_sprite_items_card_automation.h"
 #include "bn_sprite_items_card_enlightenment_silent.h"
 #include "bn_sprite_items_card_dual_wield_silent.h"
 #include "bn_sprite_items_card_nightmare.h"
@@ -343,39 +343,39 @@ namespace gba::card_art
     case engine::CardId::LUMINESCE:
         return &bn::sprite_items::card_luminesce_silent;
     case engine::CardId::APPARITION:
-        return &bn::sprite_items::card_apparition_silent;
+        return &bn::sprite_items::card_apparition;
     case engine::CardId::MAUL:
-        return &bn::sprite_items::card_maul_silent;
+        return &bn::sprite_items::card_maul;
     case engine::CardId::APOTHEOSIS:
-        return &bn::sprite_items::card_apotheosis_silent;
+        return &bn::sprite_items::card_apotheosis;
     case engine::CardId::WISH:
-        return &bn::sprite_items::card_wish_silent;
+        return &bn::sprite_items::card_wish;
     case engine::CardId::WHISTLE:
-        return &bn::sprite_items::card_whistle_silent;
+        return &bn::sprite_items::card_whistle;
     case engine::CardId::BRIGHTEST_FLAME:
-        return &bn::sprite_items::card_brightest_flame_silent;
+        return &bn::sprite_items::card_brightest_flame;
     case engine::CardId::FOLLY:
         return &bn::sprite_items::card_folly;
     case engine::CardId::ENTHRALLED:
         return &bn::sprite_items::card_enthralled;
     case engine::CardId::FLASH_OF_STEEL:
-        return &bn::sprite_items::card_flash_of_steel_silent;
+        return &bn::sprite_items::card_flash_of_steel;
     case engine::CardId::PECK:
         return &bn::sprite_items::card_peck_silent;
     case engine::CardId::PRODUCTION:
-        return &bn::sprite_items::card_production_silent;
+        return &bn::sprite_items::card_production;
     case engine::CardId::MASTER_OF_STRATEGY:
-        return &bn::sprite_items::card_master_of_strategy_silent;
+        return &bn::sprite_items::card_master_of_strategy;
     case engine::CardId::BYRD_SWOOP:
         return &bn::sprite_items::card_byrd_swoop_silent;
     case engine::CardId::ULTIMATE_STRIKE:
-        return &bn::sprite_items::card_ultimate_strike_silent;
+        return &bn::sprite_items::card_ultimate_strike;
     case engine::CardId::ULTIMATE_DEFEND:
-        return &bn::sprite_items::card_ultimate_defend_silent;
+        return &bn::sprite_items::card_ultimate_defend;
     case engine::CardId::FINESSE:
-        return &bn::sprite_items::card_finesse_silent;
+        return &bn::sprite_items::card_finesse;
     case engine::CardId::PROWESS:
-        return &bn::sprite_items::card_prowess_silent;
+        return &bn::sprite_items::card_prowess;
     case engine::CardId::SQUASH:
         return &bn::sprite_items::card_squash_silent;
     case engine::CardId::EXTERMINATE:
@@ -393,59 +393,59 @@ namespace gba::card_art
     case engine::CardId::RIP_AND_TEAR:
         return &bn::sprite_items::card_rip_and_tear_silent;
     case engine::CardId::SCRAWL:
-        return &bn::sprite_items::card_scrawl_silent;
+        return &bn::sprite_items::card_scrawl;
     case engine::CardId::MIND_BLAST:
-        return &bn::sprite_items::card_mind_blast_silent;
+        return &bn::sprite_items::card_mind_blast;
     case engine::CardId::SHOCKWAVE:
-        return &bn::sprite_items::card_shockwave_silent;
+        return &bn::sprite_items::card_shockwave;
     case engine::CardId::BOLAS:
-        return &bn::sprite_items::card_bolas_silent;
+        return &bn::sprite_items::card_bolas;
     case engine::CardId::THRUMMING_HATCHET:
-        return &bn::sprite_items::card_thrumming_hatchet_silent;
+        return &bn::sprite_items::card_thrumming_hatchet;
     case engine::CardId::IMPATIENCE:
-        return &bn::sprite_items::card_impatience_silent;
+        return &bn::sprite_items::card_impatience;
     case engine::CardId::CLASH:
         return &bn::sprite_items::card_clash_silent;
     case engine::CardId::VOLLEY:
-        return &bn::sprite_items::card_volley_silent;
+        return &bn::sprite_items::card_volley;
     case engine::CardId::OMNISLICE:
-        return &bn::sprite_items::card_omnislice_silent;
+        return &bn::sprite_items::card_omnislice;
     case engine::CardId::RESTLESSNESS:
-        return &bn::sprite_items::card_restlessness_silent;
+        return &bn::sprite_items::card_restlessness;
     case engine::CardId::ETERNAL_ARMOR:
-        return &bn::sprite_items::card_eternal_armor_silent;
+        return &bn::sprite_items::card_eternal_armor;
     case engine::CardId::FASTEN:
-        return &bn::sprite_items::card_fasten_silent;
+        return &bn::sprite_items::card_fasten;
     case engine::CardId::REBOUND:
         return &bn::sprite_items::card_rebound_silent;
     case engine::CardId::PANIC_BUTTON:
-        return &bn::sprite_items::card_panic_button_silent;
+        return &bn::sprite_items::card_panic_button;
     case engine::CardId::GOLD_AXE:
-        return &bn::sprite_items::card_gold_axe_silent;
+        return &bn::sprite_items::card_gold_axe;
     case engine::CardId::ANOINTED:
-        return &bn::sprite_items::card_anointed_silent;
+        return &bn::sprite_items::card_anointed;
     case engine::CardId::FISTICUFFS:
-        return &bn::sprite_items::card_fisticuffs_silent;
+        return &bn::sprite_items::card_fisticuffs;
     case engine::CardId::REND:
-        return &bn::sprite_items::card_rend_silent;
+        return &bn::sprite_items::card_rend;
     case engine::CardId::THE_BOMB:
-        return &bn::sprite_items::card_the_bomb_silent;
+        return &bn::sprite_items::card_the_bomb;
     case engine::CardId::ROLLING_BOULDER:
-        return &bn::sprite_items::card_rolling_boulder_silent;
+        return &bn::sprite_items::card_rolling_boulder;
     case engine::CardId::PANACHE:
-        return &bn::sprite_items::card_panache_silent;
+        return &bn::sprite_items::card_panache;
     case engine::CardId::JACKPOT:
-        return &bn::sprite_items::card_jackpot_silent;
+        return &bn::sprite_items::card_jackpot;
     case engine::CardId::BEAT_DOWN:
-        return &bn::sprite_items::card_beat_down_silent;
+        return &bn::sprite_items::card_beat_down;
     case engine::CardId::CATASTROPHE:
-        return &bn::sprite_items::card_catastrophe_silent;
+        return &bn::sprite_items::card_catastrophe;
     case engine::CardId::NOSTALGIA:
-        return &bn::sprite_items::card_nostalgia_silent;
+        return &bn::sprite_items::card_nostalgia;
     case engine::CardId::RELAX:
-        return &bn::sprite_items::card_relax_silent;
+        return &bn::sprite_items::card_relax;
     case engine::CardId::NEOWS_FURY:
-        return &bn::sprite_items::card_neows_fury_silent;
+        return &bn::sprite_items::card_neows_fury;
     case engine::CardId::METAMORPHOSIS:
         return &bn::sprite_items::card_metamorphosis_silent;
     case engine::CardId::DISTRACTION:
@@ -453,37 +453,37 @@ namespace gba::card_art
     case engine::CardId::CALTROPS:
         return &bn::sprite_items::card_caltrops_silent;
     case engine::CardId::PROLONG:
-        return &bn::sprite_items::card_prolong_silent;
+        return &bn::sprite_items::card_prolong;
     case engine::CardId::SALVO:
-        return &bn::sprite_items::card_salvo_silent;
+        return &bn::sprite_items::card_salvo;
     case engine::CardId::THINKING_AHEAD:
-        return &bn::sprite_items::card_thinking_ahead_silent;
+        return &bn::sprite_items::card_thinking_ahead;
     case engine::CardId::JACK_OF_ALL_TRADES:
-        return &bn::sprite_items::card_jack_of_all_trades_silent;
+        return &bn::sprite_items::card_jack_of_all_trades;
     case engine::CardId::HELLO_WORLD:
         return &bn::sprite_items::card_hello_world_silent;
     case engine::CardId::DARK_SHACKLES:
-        return &bn::sprite_items::card_dark_shackles_silent;
+        return &bn::sprite_items::card_dark_shackles;
     case engine::CardId::EQUILIBRIUM:
-        return &bn::sprite_items::card_equilibrium_silent;
+        return &bn::sprite_items::card_equilibrium;
     case engine::CardId::PURITY:
-        return &bn::sprite_items::card_purity_silent;
+        return &bn::sprite_items::card_purity;
     case engine::CardId::SECRET_TECHNIQUE:
-        return &bn::sprite_items::card_secret_technique_silent;
+        return &bn::sprite_items::card_secret_technique;
     case engine::CardId::DRAMATIC_ENTRANCE:
-        return &bn::sprite_items::card_dramatic_entrance_silent;
+        return &bn::sprite_items::card_dramatic_entrance;
     case engine::CardId::SECRET_WEAPON:
-        return &bn::sprite_items::card_secret_weapon_silent;
+        return &bn::sprite_items::card_secret_weapon;
     case engine::CardId::MAYHEM:
-        return &bn::sprite_items::card_mayhem_silent;
+        return &bn::sprite_items::card_mayhem;
     case engine::CardId::PREP_TIME:
-        return &bn::sprite_items::card_prep_time_silent;
+        return &bn::sprite_items::card_prep_time;
     case engine::CardId::STRATAGEM:
-        return &bn::sprite_items::card_stratagem_silent;
+        return &bn::sprite_items::card_stratagem;
     case engine::CardId::CALAMITY:
-        return &bn::sprite_items::card_calamity_silent;
+        return &bn::sprite_items::card_calamity;
     case engine::CardId::AUTOMATION:
-        return &bn::sprite_items::card_automation_silent;
+        return &bn::sprite_items::card_automation;
     case engine::CardId::ENLIGHTENMENT:
         return &bn::sprite_items::card_enlightenment_silent;
     case engine::CardId::DUAL_WIELD:
@@ -624,23 +624,23 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_buffer.h"
 #include "bn_sprite_items_card_giant_rock_defect.h"
 #include "bn_sprite_items_card_luminesce_defect.h"
-#include "bn_sprite_items_card_apparition_defect.h"
-#include "bn_sprite_items_card_maul_defect.h"
-#include "bn_sprite_items_card_apotheosis_defect.h"
-#include "bn_sprite_items_card_wish_defect.h"
-#include "bn_sprite_items_card_whistle_defect.h"
-#include "bn_sprite_items_card_brightest_flame_defect.h"
+#include "bn_sprite_items_card_apparition.h"
+#include "bn_sprite_items_card_maul.h"
+#include "bn_sprite_items_card_apotheosis.h"
+#include "bn_sprite_items_card_wish.h"
+#include "bn_sprite_items_card_whistle.h"
+#include "bn_sprite_items_card_brightest_flame.h"
 #include "bn_sprite_items_card_folly.h"
 #include "bn_sprite_items_card_enthralled.h"
-#include "bn_sprite_items_card_flash_of_steel_defect.h"
+#include "bn_sprite_items_card_flash_of_steel.h"
 #include "bn_sprite_items_card_peck_defect.h"
-#include "bn_sprite_items_card_production_defect.h"
-#include "bn_sprite_items_card_master_of_strategy_defect.h"
+#include "bn_sprite_items_card_production.h"
+#include "bn_sprite_items_card_master_of_strategy.h"
 #include "bn_sprite_items_card_byrd_swoop_defect.h"
-#include "bn_sprite_items_card_ultimate_strike_defect.h"
-#include "bn_sprite_items_card_ultimate_defend_defect.h"
-#include "bn_sprite_items_card_finesse_defect.h"
-#include "bn_sprite_items_card_prowess_defect.h"
+#include "bn_sprite_items_card_ultimate_strike.h"
+#include "bn_sprite_items_card_ultimate_defend.h"
+#include "bn_sprite_items_card_finesse.h"
+#include "bn_sprite_items_card_prowess.h"
 #include "bn_sprite_items_card_squash_defect.h"
 #include "bn_sprite_items_card_exterminate_defect.h"
 #include "bn_sprite_items_card_feeding_frenzy_defect.h"
@@ -649,52 +649,52 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_entrench_defect.h"
 #include "bn_sprite_items_card_stack_defect.h"
 #include "bn_sprite_items_card_rip_and_tear_defect.h"
-#include "bn_sprite_items_card_scrawl_defect.h"
-#include "bn_sprite_items_card_mind_blast_defect.h"
-#include "bn_sprite_items_card_shockwave_defect.h"
-#include "bn_sprite_items_card_bolas_defect.h"
-#include "bn_sprite_items_card_thrumming_hatchet_defect.h"
-#include "bn_sprite_items_card_impatience_defect.h"
+#include "bn_sprite_items_card_scrawl.h"
+#include "bn_sprite_items_card_mind_blast.h"
+#include "bn_sprite_items_card_shockwave.h"
+#include "bn_sprite_items_card_bolas.h"
+#include "bn_sprite_items_card_thrumming_hatchet.h"
+#include "bn_sprite_items_card_impatience.h"
 #include "bn_sprite_items_card_clash_defect.h"
-#include "bn_sprite_items_card_volley_defect.h"
-#include "bn_sprite_items_card_omnislice_defect.h"
-#include "bn_sprite_items_card_restlessness_defect.h"
-#include "bn_sprite_items_card_eternal_armor_defect.h"
-#include "bn_sprite_items_card_fasten_defect.h"
+#include "bn_sprite_items_card_volley.h"
+#include "bn_sprite_items_card_omnislice.h"
+#include "bn_sprite_items_card_restlessness.h"
+#include "bn_sprite_items_card_eternal_armor.h"
+#include "bn_sprite_items_card_fasten.h"
 #include "bn_sprite_items_card_rebound_defect.h"
-#include "bn_sprite_items_card_panic_button_defect.h"
-#include "bn_sprite_items_card_gold_axe_defect.h"
-#include "bn_sprite_items_card_anointed_defect.h"
-#include "bn_sprite_items_card_fisticuffs_defect.h"
-#include "bn_sprite_items_card_rend_defect.h"
-#include "bn_sprite_items_card_the_bomb_defect.h"
-#include "bn_sprite_items_card_rolling_boulder_defect.h"
-#include "bn_sprite_items_card_panache_defect.h"
-#include "bn_sprite_items_card_jackpot_defect.h"
-#include "bn_sprite_items_card_beat_down_defect.h"
-#include "bn_sprite_items_card_catastrophe_defect.h"
-#include "bn_sprite_items_card_nostalgia_defect.h"
-#include "bn_sprite_items_card_relax_defect.h"
-#include "bn_sprite_items_card_neows_fury_defect.h"
+#include "bn_sprite_items_card_panic_button.h"
+#include "bn_sprite_items_card_gold_axe.h"
+#include "bn_sprite_items_card_anointed.h"
+#include "bn_sprite_items_card_fisticuffs.h"
+#include "bn_sprite_items_card_rend.h"
+#include "bn_sprite_items_card_the_bomb.h"
+#include "bn_sprite_items_card_rolling_boulder.h"
+#include "bn_sprite_items_card_panache.h"
+#include "bn_sprite_items_card_jackpot.h"
+#include "bn_sprite_items_card_beat_down.h"
+#include "bn_sprite_items_card_catastrophe.h"
+#include "bn_sprite_items_card_nostalgia.h"
+#include "bn_sprite_items_card_relax.h"
+#include "bn_sprite_items_card_neows_fury.h"
 #include "bn_sprite_items_card_metamorphosis_defect.h"
 #include "bn_sprite_items_card_distraction_defect.h"
 #include "bn_sprite_items_card_caltrops_defect.h"
-#include "bn_sprite_items_card_prolong_defect.h"
-#include "bn_sprite_items_card_salvo_defect.h"
-#include "bn_sprite_items_card_thinking_ahead_defect.h"
-#include "bn_sprite_items_card_jack_of_all_trades_defect.h"
+#include "bn_sprite_items_card_prolong.h"
+#include "bn_sprite_items_card_salvo.h"
+#include "bn_sprite_items_card_thinking_ahead.h"
+#include "bn_sprite_items_card_jack_of_all_trades.h"
 #include "bn_sprite_items_card_hello_world_defect.h"
-#include "bn_sprite_items_card_dark_shackles_defect.h"
-#include "bn_sprite_items_card_equilibrium_defect.h"
-#include "bn_sprite_items_card_purity_defect.h"
-#include "bn_sprite_items_card_secret_technique_defect.h"
-#include "bn_sprite_items_card_dramatic_entrance_defect.h"
-#include "bn_sprite_items_card_secret_weapon_defect.h"
-#include "bn_sprite_items_card_mayhem_defect.h"
-#include "bn_sprite_items_card_prep_time_defect.h"
-#include "bn_sprite_items_card_stratagem_defect.h"
-#include "bn_sprite_items_card_calamity_defect.h"
-#include "bn_sprite_items_card_automation_defect.h"
+#include "bn_sprite_items_card_dark_shackles.h"
+#include "bn_sprite_items_card_equilibrium.h"
+#include "bn_sprite_items_card_purity.h"
+#include "bn_sprite_items_card_secret_technique.h"
+#include "bn_sprite_items_card_dramatic_entrance.h"
+#include "bn_sprite_items_card_secret_weapon.h"
+#include "bn_sprite_items_card_mayhem.h"
+#include "bn_sprite_items_card_prep_time.h"
+#include "bn_sprite_items_card_stratagem.h"
+#include "bn_sprite_items_card_calamity.h"
+#include "bn_sprite_items_card_automation.h"
 #include "bn_sprite_items_card_enlightenment_defect.h"
 #include "bn_sprite_items_card_dual_wield_defect.h"
 #include "bn_sprite_items_card_white_noise.h"
@@ -891,39 +891,39 @@ namespace gba::card_art
     case engine::CardId::LUMINESCE:
         return &bn::sprite_items::card_luminesce_defect;
     case engine::CardId::APPARITION:
-        return &bn::sprite_items::card_apparition_defect;
+        return &bn::sprite_items::card_apparition;
     case engine::CardId::MAUL:
-        return &bn::sprite_items::card_maul_defect;
+        return &bn::sprite_items::card_maul;
     case engine::CardId::APOTHEOSIS:
-        return &bn::sprite_items::card_apotheosis_defect;
+        return &bn::sprite_items::card_apotheosis;
     case engine::CardId::WISH:
-        return &bn::sprite_items::card_wish_defect;
+        return &bn::sprite_items::card_wish;
     case engine::CardId::WHISTLE:
-        return &bn::sprite_items::card_whistle_defect;
+        return &bn::sprite_items::card_whistle;
     case engine::CardId::BRIGHTEST_FLAME:
-        return &bn::sprite_items::card_brightest_flame_defect;
+        return &bn::sprite_items::card_brightest_flame;
     case engine::CardId::FOLLY:
         return &bn::sprite_items::card_folly;
     case engine::CardId::ENTHRALLED:
         return &bn::sprite_items::card_enthralled;
     case engine::CardId::FLASH_OF_STEEL:
-        return &bn::sprite_items::card_flash_of_steel_defect;
+        return &bn::sprite_items::card_flash_of_steel;
     case engine::CardId::PECK:
         return &bn::sprite_items::card_peck_defect;
     case engine::CardId::PRODUCTION:
-        return &bn::sprite_items::card_production_defect;
+        return &bn::sprite_items::card_production;
     case engine::CardId::MASTER_OF_STRATEGY:
-        return &bn::sprite_items::card_master_of_strategy_defect;
+        return &bn::sprite_items::card_master_of_strategy;
     case engine::CardId::BYRD_SWOOP:
         return &bn::sprite_items::card_byrd_swoop_defect;
     case engine::CardId::ULTIMATE_STRIKE:
-        return &bn::sprite_items::card_ultimate_strike_defect;
+        return &bn::sprite_items::card_ultimate_strike;
     case engine::CardId::ULTIMATE_DEFEND:
-        return &bn::sprite_items::card_ultimate_defend_defect;
+        return &bn::sprite_items::card_ultimate_defend;
     case engine::CardId::FINESSE:
-        return &bn::sprite_items::card_finesse_defect;
+        return &bn::sprite_items::card_finesse;
     case engine::CardId::PROWESS:
-        return &bn::sprite_items::card_prowess_defect;
+        return &bn::sprite_items::card_prowess;
     case engine::CardId::SQUASH:
         return &bn::sprite_items::card_squash_defect;
     case engine::CardId::EXTERMINATE:
@@ -941,59 +941,59 @@ namespace gba::card_art
     case engine::CardId::RIP_AND_TEAR:
         return &bn::sprite_items::card_rip_and_tear_defect;
     case engine::CardId::SCRAWL:
-        return &bn::sprite_items::card_scrawl_defect;
+        return &bn::sprite_items::card_scrawl;
     case engine::CardId::MIND_BLAST:
-        return &bn::sprite_items::card_mind_blast_defect;
+        return &bn::sprite_items::card_mind_blast;
     case engine::CardId::SHOCKWAVE:
-        return &bn::sprite_items::card_shockwave_defect;
+        return &bn::sprite_items::card_shockwave;
     case engine::CardId::BOLAS:
-        return &bn::sprite_items::card_bolas_defect;
+        return &bn::sprite_items::card_bolas;
     case engine::CardId::THRUMMING_HATCHET:
-        return &bn::sprite_items::card_thrumming_hatchet_defect;
+        return &bn::sprite_items::card_thrumming_hatchet;
     case engine::CardId::IMPATIENCE:
-        return &bn::sprite_items::card_impatience_defect;
+        return &bn::sprite_items::card_impatience;
     case engine::CardId::CLASH:
         return &bn::sprite_items::card_clash_defect;
     case engine::CardId::VOLLEY:
-        return &bn::sprite_items::card_volley_defect;
+        return &bn::sprite_items::card_volley;
     case engine::CardId::OMNISLICE:
-        return &bn::sprite_items::card_omnislice_defect;
+        return &bn::sprite_items::card_omnislice;
     case engine::CardId::RESTLESSNESS:
-        return &bn::sprite_items::card_restlessness_defect;
+        return &bn::sprite_items::card_restlessness;
     case engine::CardId::ETERNAL_ARMOR:
-        return &bn::sprite_items::card_eternal_armor_defect;
+        return &bn::sprite_items::card_eternal_armor;
     case engine::CardId::FASTEN:
-        return &bn::sprite_items::card_fasten_defect;
+        return &bn::sprite_items::card_fasten;
     case engine::CardId::REBOUND:
         return &bn::sprite_items::card_rebound_defect;
     case engine::CardId::PANIC_BUTTON:
-        return &bn::sprite_items::card_panic_button_defect;
+        return &bn::sprite_items::card_panic_button;
     case engine::CardId::GOLD_AXE:
-        return &bn::sprite_items::card_gold_axe_defect;
+        return &bn::sprite_items::card_gold_axe;
     case engine::CardId::ANOINTED:
-        return &bn::sprite_items::card_anointed_defect;
+        return &bn::sprite_items::card_anointed;
     case engine::CardId::FISTICUFFS:
-        return &bn::sprite_items::card_fisticuffs_defect;
+        return &bn::sprite_items::card_fisticuffs;
     case engine::CardId::REND:
-        return &bn::sprite_items::card_rend_defect;
+        return &bn::sprite_items::card_rend;
     case engine::CardId::THE_BOMB:
-        return &bn::sprite_items::card_the_bomb_defect;
+        return &bn::sprite_items::card_the_bomb;
     case engine::CardId::ROLLING_BOULDER:
-        return &bn::sprite_items::card_rolling_boulder_defect;
+        return &bn::sprite_items::card_rolling_boulder;
     case engine::CardId::PANACHE:
-        return &bn::sprite_items::card_panache_defect;
+        return &bn::sprite_items::card_panache;
     case engine::CardId::JACKPOT:
-        return &bn::sprite_items::card_jackpot_defect;
+        return &bn::sprite_items::card_jackpot;
     case engine::CardId::BEAT_DOWN:
-        return &bn::sprite_items::card_beat_down_defect;
+        return &bn::sprite_items::card_beat_down;
     case engine::CardId::CATASTROPHE:
-        return &bn::sprite_items::card_catastrophe_defect;
+        return &bn::sprite_items::card_catastrophe;
     case engine::CardId::NOSTALGIA:
-        return &bn::sprite_items::card_nostalgia_defect;
+        return &bn::sprite_items::card_nostalgia;
     case engine::CardId::RELAX:
-        return &bn::sprite_items::card_relax_defect;
+        return &bn::sprite_items::card_relax;
     case engine::CardId::NEOWS_FURY:
-        return &bn::sprite_items::card_neows_fury_defect;
+        return &bn::sprite_items::card_neows_fury;
     case engine::CardId::METAMORPHOSIS:
         return &bn::sprite_items::card_metamorphosis_defect;
     case engine::CardId::DISTRACTION:
@@ -1001,37 +1001,37 @@ namespace gba::card_art
     case engine::CardId::CALTROPS:
         return &bn::sprite_items::card_caltrops_defect;
     case engine::CardId::PROLONG:
-        return &bn::sprite_items::card_prolong_defect;
+        return &bn::sprite_items::card_prolong;
     case engine::CardId::SALVO:
-        return &bn::sprite_items::card_salvo_defect;
+        return &bn::sprite_items::card_salvo;
     case engine::CardId::THINKING_AHEAD:
-        return &bn::sprite_items::card_thinking_ahead_defect;
+        return &bn::sprite_items::card_thinking_ahead;
     case engine::CardId::JACK_OF_ALL_TRADES:
-        return &bn::sprite_items::card_jack_of_all_trades_defect;
+        return &bn::sprite_items::card_jack_of_all_trades;
     case engine::CardId::HELLO_WORLD:
         return &bn::sprite_items::card_hello_world_defect;
     case engine::CardId::DARK_SHACKLES:
-        return &bn::sprite_items::card_dark_shackles_defect;
+        return &bn::sprite_items::card_dark_shackles;
     case engine::CardId::EQUILIBRIUM:
-        return &bn::sprite_items::card_equilibrium_defect;
+        return &bn::sprite_items::card_equilibrium;
     case engine::CardId::PURITY:
-        return &bn::sprite_items::card_purity_defect;
+        return &bn::sprite_items::card_purity;
     case engine::CardId::SECRET_TECHNIQUE:
-        return &bn::sprite_items::card_secret_technique_defect;
+        return &bn::sprite_items::card_secret_technique;
     case engine::CardId::DRAMATIC_ENTRANCE:
-        return &bn::sprite_items::card_dramatic_entrance_defect;
+        return &bn::sprite_items::card_dramatic_entrance;
     case engine::CardId::SECRET_WEAPON:
-        return &bn::sprite_items::card_secret_weapon_defect;
+        return &bn::sprite_items::card_secret_weapon;
     case engine::CardId::MAYHEM:
-        return &bn::sprite_items::card_mayhem_defect;
+        return &bn::sprite_items::card_mayhem;
     case engine::CardId::PREP_TIME:
-        return &bn::sprite_items::card_prep_time_defect;
+        return &bn::sprite_items::card_prep_time;
     case engine::CardId::STRATAGEM:
-        return &bn::sprite_items::card_stratagem_defect;
+        return &bn::sprite_items::card_stratagem;
     case engine::CardId::CALAMITY:
-        return &bn::sprite_items::card_calamity_defect;
+        return &bn::sprite_items::card_calamity;
     case engine::CardId::AUTOMATION:
-        return &bn::sprite_items::card_automation_defect;
+        return &bn::sprite_items::card_automation;
     case engine::CardId::ENLIGHTENMENT:
         return &bn::sprite_items::card_enlightenment_defect;
     case engine::CardId::DUAL_WIELD:
@@ -1168,23 +1168,23 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_manifest_authority.h"
 #include "bn_sprite_items_card_giant_rock_regent.h"
 #include "bn_sprite_items_card_luminesce_regent.h"
-#include "bn_sprite_items_card_apparition_regent.h"
-#include "bn_sprite_items_card_maul_regent.h"
-#include "bn_sprite_items_card_apotheosis_regent.h"
-#include "bn_sprite_items_card_wish_regent.h"
-#include "bn_sprite_items_card_whistle_regent.h"
-#include "bn_sprite_items_card_brightest_flame_regent.h"
+#include "bn_sprite_items_card_apparition.h"
+#include "bn_sprite_items_card_maul.h"
+#include "bn_sprite_items_card_apotheosis.h"
+#include "bn_sprite_items_card_wish.h"
+#include "bn_sprite_items_card_whistle.h"
+#include "bn_sprite_items_card_brightest_flame.h"
 #include "bn_sprite_items_card_folly.h"
 #include "bn_sprite_items_card_enthralled.h"
-#include "bn_sprite_items_card_flash_of_steel_regent.h"
+#include "bn_sprite_items_card_flash_of_steel.h"
 #include "bn_sprite_items_card_peck_regent.h"
-#include "bn_sprite_items_card_production_regent.h"
-#include "bn_sprite_items_card_master_of_strategy_regent.h"
+#include "bn_sprite_items_card_production.h"
+#include "bn_sprite_items_card_master_of_strategy.h"
 #include "bn_sprite_items_card_byrd_swoop_regent.h"
-#include "bn_sprite_items_card_ultimate_strike_regent.h"
-#include "bn_sprite_items_card_ultimate_defend_regent.h"
-#include "bn_sprite_items_card_finesse_regent.h"
-#include "bn_sprite_items_card_prowess_regent.h"
+#include "bn_sprite_items_card_ultimate_strike.h"
+#include "bn_sprite_items_card_ultimate_defend.h"
+#include "bn_sprite_items_card_finesse.h"
+#include "bn_sprite_items_card_prowess.h"
 #include "bn_sprite_items_card_squash_regent.h"
 #include "bn_sprite_items_card_exterminate_regent.h"
 #include "bn_sprite_items_card_feeding_frenzy_regent.h"
@@ -1193,52 +1193,52 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_entrench_regent.h"
 #include "bn_sprite_items_card_stack_regent.h"
 #include "bn_sprite_items_card_rip_and_tear_regent.h"
-#include "bn_sprite_items_card_scrawl_regent.h"
-#include "bn_sprite_items_card_mind_blast_regent.h"
-#include "bn_sprite_items_card_shockwave_regent.h"
-#include "bn_sprite_items_card_bolas_regent.h"
-#include "bn_sprite_items_card_thrumming_hatchet_regent.h"
-#include "bn_sprite_items_card_impatience_regent.h"
+#include "bn_sprite_items_card_scrawl.h"
+#include "bn_sprite_items_card_mind_blast.h"
+#include "bn_sprite_items_card_shockwave.h"
+#include "bn_sprite_items_card_bolas.h"
+#include "bn_sprite_items_card_thrumming_hatchet.h"
+#include "bn_sprite_items_card_impatience.h"
 #include "bn_sprite_items_card_clash_regent.h"
-#include "bn_sprite_items_card_volley_regent.h"
-#include "bn_sprite_items_card_omnislice_regent.h"
-#include "bn_sprite_items_card_restlessness_regent.h"
-#include "bn_sprite_items_card_eternal_armor_regent.h"
-#include "bn_sprite_items_card_fasten_regent.h"
+#include "bn_sprite_items_card_volley.h"
+#include "bn_sprite_items_card_omnislice.h"
+#include "bn_sprite_items_card_restlessness.h"
+#include "bn_sprite_items_card_eternal_armor.h"
+#include "bn_sprite_items_card_fasten.h"
 #include "bn_sprite_items_card_rebound_regent.h"
-#include "bn_sprite_items_card_panic_button_regent.h"
-#include "bn_sprite_items_card_gold_axe_regent.h"
-#include "bn_sprite_items_card_anointed_regent.h"
-#include "bn_sprite_items_card_fisticuffs_regent.h"
-#include "bn_sprite_items_card_rend_regent.h"
-#include "bn_sprite_items_card_the_bomb_regent.h"
-#include "bn_sprite_items_card_rolling_boulder_regent.h"
-#include "bn_sprite_items_card_panache_regent.h"
-#include "bn_sprite_items_card_jackpot_regent.h"
-#include "bn_sprite_items_card_beat_down_regent.h"
-#include "bn_sprite_items_card_catastrophe_regent.h"
-#include "bn_sprite_items_card_nostalgia_regent.h"
-#include "bn_sprite_items_card_relax_regent.h"
-#include "bn_sprite_items_card_neows_fury_regent.h"
+#include "bn_sprite_items_card_panic_button.h"
+#include "bn_sprite_items_card_gold_axe.h"
+#include "bn_sprite_items_card_anointed.h"
+#include "bn_sprite_items_card_fisticuffs.h"
+#include "bn_sprite_items_card_rend.h"
+#include "bn_sprite_items_card_the_bomb.h"
+#include "bn_sprite_items_card_rolling_boulder.h"
+#include "bn_sprite_items_card_panache.h"
+#include "bn_sprite_items_card_jackpot.h"
+#include "bn_sprite_items_card_beat_down.h"
+#include "bn_sprite_items_card_catastrophe.h"
+#include "bn_sprite_items_card_nostalgia.h"
+#include "bn_sprite_items_card_relax.h"
+#include "bn_sprite_items_card_neows_fury.h"
 #include "bn_sprite_items_card_metamorphosis_regent.h"
 #include "bn_sprite_items_card_distraction_regent.h"
 #include "bn_sprite_items_card_caltrops_regent.h"
-#include "bn_sprite_items_card_prolong_regent.h"
-#include "bn_sprite_items_card_salvo_regent.h"
-#include "bn_sprite_items_card_thinking_ahead_regent.h"
-#include "bn_sprite_items_card_jack_of_all_trades_regent.h"
+#include "bn_sprite_items_card_prolong.h"
+#include "bn_sprite_items_card_salvo.h"
+#include "bn_sprite_items_card_thinking_ahead.h"
+#include "bn_sprite_items_card_jack_of_all_trades.h"
 #include "bn_sprite_items_card_hello_world_regent.h"
-#include "bn_sprite_items_card_dark_shackles_regent.h"
-#include "bn_sprite_items_card_equilibrium_regent.h"
-#include "bn_sprite_items_card_purity_regent.h"
-#include "bn_sprite_items_card_secret_technique_regent.h"
-#include "bn_sprite_items_card_dramatic_entrance_regent.h"
-#include "bn_sprite_items_card_secret_weapon_regent.h"
-#include "bn_sprite_items_card_mayhem_regent.h"
-#include "bn_sprite_items_card_prep_time_regent.h"
-#include "bn_sprite_items_card_stratagem_regent.h"
-#include "bn_sprite_items_card_calamity_regent.h"
-#include "bn_sprite_items_card_automation_regent.h"
+#include "bn_sprite_items_card_dark_shackles.h"
+#include "bn_sprite_items_card_equilibrium.h"
+#include "bn_sprite_items_card_purity.h"
+#include "bn_sprite_items_card_secret_technique.h"
+#include "bn_sprite_items_card_dramatic_entrance.h"
+#include "bn_sprite_items_card_secret_weapon.h"
+#include "bn_sprite_items_card_mayhem.h"
+#include "bn_sprite_items_card_prep_time.h"
+#include "bn_sprite_items_card_stratagem.h"
+#include "bn_sprite_items_card_calamity.h"
+#include "bn_sprite_items_card_automation.h"
 #include "bn_sprite_items_card_enlightenment_regent.h"
 #include "bn_sprite_items_card_dual_wield_regent.h"
 #include "bn_sprite_items_card_heirloom_hammer.h"
@@ -1429,39 +1429,39 @@ namespace gba::card_art
     case engine::CardId::LUMINESCE:
         return &bn::sprite_items::card_luminesce_regent;
     case engine::CardId::APPARITION:
-        return &bn::sprite_items::card_apparition_regent;
+        return &bn::sprite_items::card_apparition;
     case engine::CardId::MAUL:
-        return &bn::sprite_items::card_maul_regent;
+        return &bn::sprite_items::card_maul;
     case engine::CardId::APOTHEOSIS:
-        return &bn::sprite_items::card_apotheosis_regent;
+        return &bn::sprite_items::card_apotheosis;
     case engine::CardId::WISH:
-        return &bn::sprite_items::card_wish_regent;
+        return &bn::sprite_items::card_wish;
     case engine::CardId::WHISTLE:
-        return &bn::sprite_items::card_whistle_regent;
+        return &bn::sprite_items::card_whistle;
     case engine::CardId::BRIGHTEST_FLAME:
-        return &bn::sprite_items::card_brightest_flame_regent;
+        return &bn::sprite_items::card_brightest_flame;
     case engine::CardId::FOLLY:
         return &bn::sprite_items::card_folly;
     case engine::CardId::ENTHRALLED:
         return &bn::sprite_items::card_enthralled;
     case engine::CardId::FLASH_OF_STEEL:
-        return &bn::sprite_items::card_flash_of_steel_regent;
+        return &bn::sprite_items::card_flash_of_steel;
     case engine::CardId::PECK:
         return &bn::sprite_items::card_peck_regent;
     case engine::CardId::PRODUCTION:
-        return &bn::sprite_items::card_production_regent;
+        return &bn::sprite_items::card_production;
     case engine::CardId::MASTER_OF_STRATEGY:
-        return &bn::sprite_items::card_master_of_strategy_regent;
+        return &bn::sprite_items::card_master_of_strategy;
     case engine::CardId::BYRD_SWOOP:
         return &bn::sprite_items::card_byrd_swoop_regent;
     case engine::CardId::ULTIMATE_STRIKE:
-        return &bn::sprite_items::card_ultimate_strike_regent;
+        return &bn::sprite_items::card_ultimate_strike;
     case engine::CardId::ULTIMATE_DEFEND:
-        return &bn::sprite_items::card_ultimate_defend_regent;
+        return &bn::sprite_items::card_ultimate_defend;
     case engine::CardId::FINESSE:
-        return &bn::sprite_items::card_finesse_regent;
+        return &bn::sprite_items::card_finesse;
     case engine::CardId::PROWESS:
-        return &bn::sprite_items::card_prowess_regent;
+        return &bn::sprite_items::card_prowess;
     case engine::CardId::SQUASH:
         return &bn::sprite_items::card_squash_regent;
     case engine::CardId::EXTERMINATE:
@@ -1479,59 +1479,59 @@ namespace gba::card_art
     case engine::CardId::RIP_AND_TEAR:
         return &bn::sprite_items::card_rip_and_tear_regent;
     case engine::CardId::SCRAWL:
-        return &bn::sprite_items::card_scrawl_regent;
+        return &bn::sprite_items::card_scrawl;
     case engine::CardId::MIND_BLAST:
-        return &bn::sprite_items::card_mind_blast_regent;
+        return &bn::sprite_items::card_mind_blast;
     case engine::CardId::SHOCKWAVE:
-        return &bn::sprite_items::card_shockwave_regent;
+        return &bn::sprite_items::card_shockwave;
     case engine::CardId::BOLAS:
-        return &bn::sprite_items::card_bolas_regent;
+        return &bn::sprite_items::card_bolas;
     case engine::CardId::THRUMMING_HATCHET:
-        return &bn::sprite_items::card_thrumming_hatchet_regent;
+        return &bn::sprite_items::card_thrumming_hatchet;
     case engine::CardId::IMPATIENCE:
-        return &bn::sprite_items::card_impatience_regent;
+        return &bn::sprite_items::card_impatience;
     case engine::CardId::CLASH:
         return &bn::sprite_items::card_clash_regent;
     case engine::CardId::VOLLEY:
-        return &bn::sprite_items::card_volley_regent;
+        return &bn::sprite_items::card_volley;
     case engine::CardId::OMNISLICE:
-        return &bn::sprite_items::card_omnislice_regent;
+        return &bn::sprite_items::card_omnislice;
     case engine::CardId::RESTLESSNESS:
-        return &bn::sprite_items::card_restlessness_regent;
+        return &bn::sprite_items::card_restlessness;
     case engine::CardId::ETERNAL_ARMOR:
-        return &bn::sprite_items::card_eternal_armor_regent;
+        return &bn::sprite_items::card_eternal_armor;
     case engine::CardId::FASTEN:
-        return &bn::sprite_items::card_fasten_regent;
+        return &bn::sprite_items::card_fasten;
     case engine::CardId::REBOUND:
         return &bn::sprite_items::card_rebound_regent;
     case engine::CardId::PANIC_BUTTON:
-        return &bn::sprite_items::card_panic_button_regent;
+        return &bn::sprite_items::card_panic_button;
     case engine::CardId::GOLD_AXE:
-        return &bn::sprite_items::card_gold_axe_regent;
+        return &bn::sprite_items::card_gold_axe;
     case engine::CardId::ANOINTED:
-        return &bn::sprite_items::card_anointed_regent;
+        return &bn::sprite_items::card_anointed;
     case engine::CardId::FISTICUFFS:
-        return &bn::sprite_items::card_fisticuffs_regent;
+        return &bn::sprite_items::card_fisticuffs;
     case engine::CardId::REND:
-        return &bn::sprite_items::card_rend_regent;
+        return &bn::sprite_items::card_rend;
     case engine::CardId::THE_BOMB:
-        return &bn::sprite_items::card_the_bomb_regent;
+        return &bn::sprite_items::card_the_bomb;
     case engine::CardId::ROLLING_BOULDER:
-        return &bn::sprite_items::card_rolling_boulder_regent;
+        return &bn::sprite_items::card_rolling_boulder;
     case engine::CardId::PANACHE:
-        return &bn::sprite_items::card_panache_regent;
+        return &bn::sprite_items::card_panache;
     case engine::CardId::JACKPOT:
-        return &bn::sprite_items::card_jackpot_regent;
+        return &bn::sprite_items::card_jackpot;
     case engine::CardId::BEAT_DOWN:
-        return &bn::sprite_items::card_beat_down_regent;
+        return &bn::sprite_items::card_beat_down;
     case engine::CardId::CATASTROPHE:
-        return &bn::sprite_items::card_catastrophe_regent;
+        return &bn::sprite_items::card_catastrophe;
     case engine::CardId::NOSTALGIA:
-        return &bn::sprite_items::card_nostalgia_regent;
+        return &bn::sprite_items::card_nostalgia;
     case engine::CardId::RELAX:
-        return &bn::sprite_items::card_relax_regent;
+        return &bn::sprite_items::card_relax;
     case engine::CardId::NEOWS_FURY:
-        return &bn::sprite_items::card_neows_fury_regent;
+        return &bn::sprite_items::card_neows_fury;
     case engine::CardId::METAMORPHOSIS:
         return &bn::sprite_items::card_metamorphosis_regent;
     case engine::CardId::DISTRACTION:
@@ -1539,37 +1539,37 @@ namespace gba::card_art
     case engine::CardId::CALTROPS:
         return &bn::sprite_items::card_caltrops_regent;
     case engine::CardId::PROLONG:
-        return &bn::sprite_items::card_prolong_regent;
+        return &bn::sprite_items::card_prolong;
     case engine::CardId::SALVO:
-        return &bn::sprite_items::card_salvo_regent;
+        return &bn::sprite_items::card_salvo;
     case engine::CardId::THINKING_AHEAD:
-        return &bn::sprite_items::card_thinking_ahead_regent;
+        return &bn::sprite_items::card_thinking_ahead;
     case engine::CardId::JACK_OF_ALL_TRADES:
-        return &bn::sprite_items::card_jack_of_all_trades_regent;
+        return &bn::sprite_items::card_jack_of_all_trades;
     case engine::CardId::HELLO_WORLD:
         return &bn::sprite_items::card_hello_world_regent;
     case engine::CardId::DARK_SHACKLES:
-        return &bn::sprite_items::card_dark_shackles_regent;
+        return &bn::sprite_items::card_dark_shackles;
     case engine::CardId::EQUILIBRIUM:
-        return &bn::sprite_items::card_equilibrium_regent;
+        return &bn::sprite_items::card_equilibrium;
     case engine::CardId::PURITY:
-        return &bn::sprite_items::card_purity_regent;
+        return &bn::sprite_items::card_purity;
     case engine::CardId::SECRET_TECHNIQUE:
-        return &bn::sprite_items::card_secret_technique_regent;
+        return &bn::sprite_items::card_secret_technique;
     case engine::CardId::DRAMATIC_ENTRANCE:
-        return &bn::sprite_items::card_dramatic_entrance_regent;
+        return &bn::sprite_items::card_dramatic_entrance;
     case engine::CardId::SECRET_WEAPON:
-        return &bn::sprite_items::card_secret_weapon_regent;
+        return &bn::sprite_items::card_secret_weapon;
     case engine::CardId::MAYHEM:
-        return &bn::sprite_items::card_mayhem_regent;
+        return &bn::sprite_items::card_mayhem;
     case engine::CardId::PREP_TIME:
-        return &bn::sprite_items::card_prep_time_regent;
+        return &bn::sprite_items::card_prep_time;
     case engine::CardId::STRATAGEM:
-        return &bn::sprite_items::card_stratagem_regent;
+        return &bn::sprite_items::card_stratagem;
     case engine::CardId::CALAMITY:
-        return &bn::sprite_items::card_calamity_regent;
+        return &bn::sprite_items::card_calamity;
     case engine::CardId::AUTOMATION:
-        return &bn::sprite_items::card_automation_regent;
+        return &bn::sprite_items::card_automation;
     case engine::CardId::ENLIGHTENMENT:
         return &bn::sprite_items::card_enlightenment_regent;
     case engine::CardId::DUAL_WIELD:
@@ -1715,23 +1715,23 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_glimpse_beyond.h"
 #include "bn_sprite_items_card_giant_rock_necrobinder.h"
 #include "bn_sprite_items_card_luminesce_necrobinder.h"
-#include "bn_sprite_items_card_apparition_necrobinder.h"
-#include "bn_sprite_items_card_maul_necrobinder.h"
-#include "bn_sprite_items_card_apotheosis_necrobinder.h"
-#include "bn_sprite_items_card_wish_necrobinder.h"
-#include "bn_sprite_items_card_whistle_necrobinder.h"
-#include "bn_sprite_items_card_brightest_flame_necrobinder.h"
+#include "bn_sprite_items_card_apparition.h"
+#include "bn_sprite_items_card_maul.h"
+#include "bn_sprite_items_card_apotheosis.h"
+#include "bn_sprite_items_card_wish.h"
+#include "bn_sprite_items_card_whistle.h"
+#include "bn_sprite_items_card_brightest_flame.h"
 #include "bn_sprite_items_card_folly.h"
 #include "bn_sprite_items_card_enthralled.h"
-#include "bn_sprite_items_card_flash_of_steel_necrobinder.h"
+#include "bn_sprite_items_card_flash_of_steel.h"
 #include "bn_sprite_items_card_peck_necrobinder.h"
-#include "bn_sprite_items_card_production_necrobinder.h"
-#include "bn_sprite_items_card_master_of_strategy_necrobinder.h"
+#include "bn_sprite_items_card_production.h"
+#include "bn_sprite_items_card_master_of_strategy.h"
 #include "bn_sprite_items_card_byrd_swoop_necrobinder.h"
-#include "bn_sprite_items_card_ultimate_strike_necrobinder.h"
-#include "bn_sprite_items_card_ultimate_defend_necrobinder.h"
-#include "bn_sprite_items_card_finesse_necrobinder.h"
-#include "bn_sprite_items_card_prowess_necrobinder.h"
+#include "bn_sprite_items_card_ultimate_strike.h"
+#include "bn_sprite_items_card_ultimate_defend.h"
+#include "bn_sprite_items_card_finesse.h"
+#include "bn_sprite_items_card_prowess.h"
 #include "bn_sprite_items_card_squash_necrobinder.h"
 #include "bn_sprite_items_card_exterminate_necrobinder.h"
 #include "bn_sprite_items_card_feeding_frenzy_necrobinder.h"
@@ -1740,52 +1740,52 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_entrench_necrobinder.h"
 #include "bn_sprite_items_card_stack_necrobinder.h"
 #include "bn_sprite_items_card_rip_and_tear_necrobinder.h"
-#include "bn_sprite_items_card_scrawl_necrobinder.h"
-#include "bn_sprite_items_card_mind_blast_necrobinder.h"
-#include "bn_sprite_items_card_shockwave_necrobinder.h"
-#include "bn_sprite_items_card_bolas_necrobinder.h"
-#include "bn_sprite_items_card_thrumming_hatchet_necrobinder.h"
-#include "bn_sprite_items_card_impatience_necrobinder.h"
+#include "bn_sprite_items_card_scrawl.h"
+#include "bn_sprite_items_card_mind_blast.h"
+#include "bn_sprite_items_card_shockwave.h"
+#include "bn_sprite_items_card_bolas.h"
+#include "bn_sprite_items_card_thrumming_hatchet.h"
+#include "bn_sprite_items_card_impatience.h"
 #include "bn_sprite_items_card_clash_necrobinder.h"
-#include "bn_sprite_items_card_volley_necrobinder.h"
-#include "bn_sprite_items_card_omnislice_necrobinder.h"
-#include "bn_sprite_items_card_restlessness_necrobinder.h"
-#include "bn_sprite_items_card_eternal_armor_necrobinder.h"
-#include "bn_sprite_items_card_fasten_necrobinder.h"
+#include "bn_sprite_items_card_volley.h"
+#include "bn_sprite_items_card_omnislice.h"
+#include "bn_sprite_items_card_restlessness.h"
+#include "bn_sprite_items_card_eternal_armor.h"
+#include "bn_sprite_items_card_fasten.h"
 #include "bn_sprite_items_card_rebound_necrobinder.h"
-#include "bn_sprite_items_card_panic_button_necrobinder.h"
-#include "bn_sprite_items_card_gold_axe_necrobinder.h"
-#include "bn_sprite_items_card_anointed_necrobinder.h"
-#include "bn_sprite_items_card_fisticuffs_necrobinder.h"
-#include "bn_sprite_items_card_rend_necrobinder.h"
-#include "bn_sprite_items_card_the_bomb_necrobinder.h"
-#include "bn_sprite_items_card_rolling_boulder_necrobinder.h"
-#include "bn_sprite_items_card_panache_necrobinder.h"
-#include "bn_sprite_items_card_jackpot_necrobinder.h"
-#include "bn_sprite_items_card_beat_down_necrobinder.h"
-#include "bn_sprite_items_card_catastrophe_necrobinder.h"
-#include "bn_sprite_items_card_nostalgia_necrobinder.h"
-#include "bn_sprite_items_card_relax_necrobinder.h"
-#include "bn_sprite_items_card_neows_fury_necrobinder.h"
+#include "bn_sprite_items_card_panic_button.h"
+#include "bn_sprite_items_card_gold_axe.h"
+#include "bn_sprite_items_card_anointed.h"
+#include "bn_sprite_items_card_fisticuffs.h"
+#include "bn_sprite_items_card_rend.h"
+#include "bn_sprite_items_card_the_bomb.h"
+#include "bn_sprite_items_card_rolling_boulder.h"
+#include "bn_sprite_items_card_panache.h"
+#include "bn_sprite_items_card_jackpot.h"
+#include "bn_sprite_items_card_beat_down.h"
+#include "bn_sprite_items_card_catastrophe.h"
+#include "bn_sprite_items_card_nostalgia.h"
+#include "bn_sprite_items_card_relax.h"
+#include "bn_sprite_items_card_neows_fury.h"
 #include "bn_sprite_items_card_metamorphosis_necrobinder.h"
 #include "bn_sprite_items_card_distraction_necrobinder.h"
 #include "bn_sprite_items_card_caltrops_necrobinder.h"
-#include "bn_sprite_items_card_prolong_necrobinder.h"
-#include "bn_sprite_items_card_salvo_necrobinder.h"
-#include "bn_sprite_items_card_thinking_ahead_necrobinder.h"
-#include "bn_sprite_items_card_jack_of_all_trades_necrobinder.h"
+#include "bn_sprite_items_card_prolong.h"
+#include "bn_sprite_items_card_salvo.h"
+#include "bn_sprite_items_card_thinking_ahead.h"
+#include "bn_sprite_items_card_jack_of_all_trades.h"
 #include "bn_sprite_items_card_hello_world_necrobinder.h"
-#include "bn_sprite_items_card_dark_shackles_necrobinder.h"
-#include "bn_sprite_items_card_equilibrium_necrobinder.h"
-#include "bn_sprite_items_card_purity_necrobinder.h"
-#include "bn_sprite_items_card_secret_technique_necrobinder.h"
-#include "bn_sprite_items_card_dramatic_entrance_necrobinder.h"
-#include "bn_sprite_items_card_secret_weapon_necrobinder.h"
-#include "bn_sprite_items_card_mayhem_necrobinder.h"
-#include "bn_sprite_items_card_prep_time_necrobinder.h"
-#include "bn_sprite_items_card_stratagem_necrobinder.h"
-#include "bn_sprite_items_card_calamity_necrobinder.h"
-#include "bn_sprite_items_card_automation_necrobinder.h"
+#include "bn_sprite_items_card_dark_shackles.h"
+#include "bn_sprite_items_card_equilibrium.h"
+#include "bn_sprite_items_card_purity.h"
+#include "bn_sprite_items_card_secret_technique.h"
+#include "bn_sprite_items_card_dramatic_entrance.h"
+#include "bn_sprite_items_card_secret_weapon.h"
+#include "bn_sprite_items_card_mayhem.h"
+#include "bn_sprite_items_card_prep_time.h"
+#include "bn_sprite_items_card_stratagem.h"
+#include "bn_sprite_items_card_calamity.h"
+#include "bn_sprite_items_card_automation.h"
 #include "bn_sprite_items_card_enlightenment_necrobinder.h"
 #include "bn_sprite_items_card_dual_wield_necrobinder.h"
 #include "bn_sprite_items_card_call_of_the_void.h"
@@ -1983,39 +1983,39 @@ namespace gba::card_art
     case engine::CardId::LUMINESCE:
         return &bn::sprite_items::card_luminesce_necrobinder;
     case engine::CardId::APPARITION:
-        return &bn::sprite_items::card_apparition_necrobinder;
+        return &bn::sprite_items::card_apparition;
     case engine::CardId::MAUL:
-        return &bn::sprite_items::card_maul_necrobinder;
+        return &bn::sprite_items::card_maul;
     case engine::CardId::APOTHEOSIS:
-        return &bn::sprite_items::card_apotheosis_necrobinder;
+        return &bn::sprite_items::card_apotheosis;
     case engine::CardId::WISH:
-        return &bn::sprite_items::card_wish_necrobinder;
+        return &bn::sprite_items::card_wish;
     case engine::CardId::WHISTLE:
-        return &bn::sprite_items::card_whistle_necrobinder;
+        return &bn::sprite_items::card_whistle;
     case engine::CardId::BRIGHTEST_FLAME:
-        return &bn::sprite_items::card_brightest_flame_necrobinder;
+        return &bn::sprite_items::card_brightest_flame;
     case engine::CardId::FOLLY:
         return &bn::sprite_items::card_folly;
     case engine::CardId::ENTHRALLED:
         return &bn::sprite_items::card_enthralled;
     case engine::CardId::FLASH_OF_STEEL:
-        return &bn::sprite_items::card_flash_of_steel_necrobinder;
+        return &bn::sprite_items::card_flash_of_steel;
     case engine::CardId::PECK:
         return &bn::sprite_items::card_peck_necrobinder;
     case engine::CardId::PRODUCTION:
-        return &bn::sprite_items::card_production_necrobinder;
+        return &bn::sprite_items::card_production;
     case engine::CardId::MASTER_OF_STRATEGY:
-        return &bn::sprite_items::card_master_of_strategy_necrobinder;
+        return &bn::sprite_items::card_master_of_strategy;
     case engine::CardId::BYRD_SWOOP:
         return &bn::sprite_items::card_byrd_swoop_necrobinder;
     case engine::CardId::ULTIMATE_STRIKE:
-        return &bn::sprite_items::card_ultimate_strike_necrobinder;
+        return &bn::sprite_items::card_ultimate_strike;
     case engine::CardId::ULTIMATE_DEFEND:
-        return &bn::sprite_items::card_ultimate_defend_necrobinder;
+        return &bn::sprite_items::card_ultimate_defend;
     case engine::CardId::FINESSE:
-        return &bn::sprite_items::card_finesse_necrobinder;
+        return &bn::sprite_items::card_finesse;
     case engine::CardId::PROWESS:
-        return &bn::sprite_items::card_prowess_necrobinder;
+        return &bn::sprite_items::card_prowess;
     case engine::CardId::SQUASH:
         return &bn::sprite_items::card_squash_necrobinder;
     case engine::CardId::EXTERMINATE:
@@ -2033,59 +2033,59 @@ namespace gba::card_art
     case engine::CardId::RIP_AND_TEAR:
         return &bn::sprite_items::card_rip_and_tear_necrobinder;
     case engine::CardId::SCRAWL:
-        return &bn::sprite_items::card_scrawl_necrobinder;
+        return &bn::sprite_items::card_scrawl;
     case engine::CardId::MIND_BLAST:
-        return &bn::sprite_items::card_mind_blast_necrobinder;
+        return &bn::sprite_items::card_mind_blast;
     case engine::CardId::SHOCKWAVE:
-        return &bn::sprite_items::card_shockwave_necrobinder;
+        return &bn::sprite_items::card_shockwave;
     case engine::CardId::BOLAS:
-        return &bn::sprite_items::card_bolas_necrobinder;
+        return &bn::sprite_items::card_bolas;
     case engine::CardId::THRUMMING_HATCHET:
-        return &bn::sprite_items::card_thrumming_hatchet_necrobinder;
+        return &bn::sprite_items::card_thrumming_hatchet;
     case engine::CardId::IMPATIENCE:
-        return &bn::sprite_items::card_impatience_necrobinder;
+        return &bn::sprite_items::card_impatience;
     case engine::CardId::CLASH:
         return &bn::sprite_items::card_clash_necrobinder;
     case engine::CardId::VOLLEY:
-        return &bn::sprite_items::card_volley_necrobinder;
+        return &bn::sprite_items::card_volley;
     case engine::CardId::OMNISLICE:
-        return &bn::sprite_items::card_omnislice_necrobinder;
+        return &bn::sprite_items::card_omnislice;
     case engine::CardId::RESTLESSNESS:
-        return &bn::sprite_items::card_restlessness_necrobinder;
+        return &bn::sprite_items::card_restlessness;
     case engine::CardId::ETERNAL_ARMOR:
-        return &bn::sprite_items::card_eternal_armor_necrobinder;
+        return &bn::sprite_items::card_eternal_armor;
     case engine::CardId::FASTEN:
-        return &bn::sprite_items::card_fasten_necrobinder;
+        return &bn::sprite_items::card_fasten;
     case engine::CardId::REBOUND:
         return &bn::sprite_items::card_rebound_necrobinder;
     case engine::CardId::PANIC_BUTTON:
-        return &bn::sprite_items::card_panic_button_necrobinder;
+        return &bn::sprite_items::card_panic_button;
     case engine::CardId::GOLD_AXE:
-        return &bn::sprite_items::card_gold_axe_necrobinder;
+        return &bn::sprite_items::card_gold_axe;
     case engine::CardId::ANOINTED:
-        return &bn::sprite_items::card_anointed_necrobinder;
+        return &bn::sprite_items::card_anointed;
     case engine::CardId::FISTICUFFS:
-        return &bn::sprite_items::card_fisticuffs_necrobinder;
+        return &bn::sprite_items::card_fisticuffs;
     case engine::CardId::REND:
-        return &bn::sprite_items::card_rend_necrobinder;
+        return &bn::sprite_items::card_rend;
     case engine::CardId::THE_BOMB:
-        return &bn::sprite_items::card_the_bomb_necrobinder;
+        return &bn::sprite_items::card_the_bomb;
     case engine::CardId::ROLLING_BOULDER:
-        return &bn::sprite_items::card_rolling_boulder_necrobinder;
+        return &bn::sprite_items::card_rolling_boulder;
     case engine::CardId::PANACHE:
-        return &bn::sprite_items::card_panache_necrobinder;
+        return &bn::sprite_items::card_panache;
     case engine::CardId::JACKPOT:
-        return &bn::sprite_items::card_jackpot_necrobinder;
+        return &bn::sprite_items::card_jackpot;
     case engine::CardId::BEAT_DOWN:
-        return &bn::sprite_items::card_beat_down_necrobinder;
+        return &bn::sprite_items::card_beat_down;
     case engine::CardId::CATASTROPHE:
-        return &bn::sprite_items::card_catastrophe_necrobinder;
+        return &bn::sprite_items::card_catastrophe;
     case engine::CardId::NOSTALGIA:
-        return &bn::sprite_items::card_nostalgia_necrobinder;
+        return &bn::sprite_items::card_nostalgia;
     case engine::CardId::RELAX:
-        return &bn::sprite_items::card_relax_necrobinder;
+        return &bn::sprite_items::card_relax;
     case engine::CardId::NEOWS_FURY:
-        return &bn::sprite_items::card_neows_fury_necrobinder;
+        return &bn::sprite_items::card_neows_fury;
     case engine::CardId::METAMORPHOSIS:
         return &bn::sprite_items::card_metamorphosis_necrobinder;
     case engine::CardId::DISTRACTION:
@@ -2093,37 +2093,37 @@ namespace gba::card_art
     case engine::CardId::CALTROPS:
         return &bn::sprite_items::card_caltrops_necrobinder;
     case engine::CardId::PROLONG:
-        return &bn::sprite_items::card_prolong_necrobinder;
+        return &bn::sprite_items::card_prolong;
     case engine::CardId::SALVO:
-        return &bn::sprite_items::card_salvo_necrobinder;
+        return &bn::sprite_items::card_salvo;
     case engine::CardId::THINKING_AHEAD:
-        return &bn::sprite_items::card_thinking_ahead_necrobinder;
+        return &bn::sprite_items::card_thinking_ahead;
     case engine::CardId::JACK_OF_ALL_TRADES:
-        return &bn::sprite_items::card_jack_of_all_trades_necrobinder;
+        return &bn::sprite_items::card_jack_of_all_trades;
     case engine::CardId::HELLO_WORLD:
         return &bn::sprite_items::card_hello_world_necrobinder;
     case engine::CardId::DARK_SHACKLES:
-        return &bn::sprite_items::card_dark_shackles_necrobinder;
+        return &bn::sprite_items::card_dark_shackles;
     case engine::CardId::EQUILIBRIUM:
-        return &bn::sprite_items::card_equilibrium_necrobinder;
+        return &bn::sprite_items::card_equilibrium;
     case engine::CardId::PURITY:
-        return &bn::sprite_items::card_purity_necrobinder;
+        return &bn::sprite_items::card_purity;
     case engine::CardId::SECRET_TECHNIQUE:
-        return &bn::sprite_items::card_secret_technique_necrobinder;
+        return &bn::sprite_items::card_secret_technique;
     case engine::CardId::DRAMATIC_ENTRANCE:
-        return &bn::sprite_items::card_dramatic_entrance_necrobinder;
+        return &bn::sprite_items::card_dramatic_entrance;
     case engine::CardId::SECRET_WEAPON:
-        return &bn::sprite_items::card_secret_weapon_necrobinder;
+        return &bn::sprite_items::card_secret_weapon;
     case engine::CardId::MAYHEM:
-        return &bn::sprite_items::card_mayhem_necrobinder;
+        return &bn::sprite_items::card_mayhem;
     case engine::CardId::PREP_TIME:
-        return &bn::sprite_items::card_prep_time_necrobinder;
+        return &bn::sprite_items::card_prep_time;
     case engine::CardId::STRATAGEM:
-        return &bn::sprite_items::card_stratagem_necrobinder;
+        return &bn::sprite_items::card_stratagem;
     case engine::CardId::CALAMITY:
-        return &bn::sprite_items::card_calamity_necrobinder;
+        return &bn::sprite_items::card_calamity;
     case engine::CardId::AUTOMATION:
-        return &bn::sprite_items::card_automation_necrobinder;
+        return &bn::sprite_items::card_automation;
     case engine::CardId::ENLIGHTENMENT:
         return &bn::sprite_items::card_enlightenment_necrobinder;
     case engine::CardId::DUAL_WIELD:
@@ -2262,23 +2262,23 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_flame_barrier.h"
 #include "bn_sprite_items_card_giant_rock_ironclad.h"
 #include "bn_sprite_items_card_luminesce_ironclad.h"
-#include "bn_sprite_items_card_apparition_ironclad.h"
-#include "bn_sprite_items_card_maul_ironclad.h"
-#include "bn_sprite_items_card_apotheosis_ironclad.h"
-#include "bn_sprite_items_card_wish_ironclad.h"
-#include "bn_sprite_items_card_whistle_ironclad.h"
-#include "bn_sprite_items_card_brightest_flame_ironclad.h"
+#include "bn_sprite_items_card_apparition.h"
+#include "bn_sprite_items_card_maul.h"
+#include "bn_sprite_items_card_apotheosis.h"
+#include "bn_sprite_items_card_wish.h"
+#include "bn_sprite_items_card_whistle.h"
+#include "bn_sprite_items_card_brightest_flame.h"
 #include "bn_sprite_items_card_folly.h"
 #include "bn_sprite_items_card_enthralled.h"
-#include "bn_sprite_items_card_flash_of_steel_ironclad.h"
+#include "bn_sprite_items_card_flash_of_steel.h"
 #include "bn_sprite_items_card_peck_ironclad.h"
-#include "bn_sprite_items_card_production_ironclad.h"
-#include "bn_sprite_items_card_master_of_strategy_ironclad.h"
+#include "bn_sprite_items_card_production.h"
+#include "bn_sprite_items_card_master_of_strategy.h"
 #include "bn_sprite_items_card_byrd_swoop_ironclad.h"
-#include "bn_sprite_items_card_ultimate_strike_ironclad.h"
-#include "bn_sprite_items_card_ultimate_defend_ironclad.h"
-#include "bn_sprite_items_card_finesse_ironclad.h"
-#include "bn_sprite_items_card_prowess_ironclad.h"
+#include "bn_sprite_items_card_ultimate_strike.h"
+#include "bn_sprite_items_card_ultimate_defend.h"
+#include "bn_sprite_items_card_finesse.h"
+#include "bn_sprite_items_card_prowess.h"
 #include "bn_sprite_items_card_squash_ironclad.h"
 #include "bn_sprite_items_card_exterminate_ironclad.h"
 #include "bn_sprite_items_card_feeding_frenzy_ironclad.h"
@@ -2287,52 +2287,52 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_entrench_ironclad.h"
 #include "bn_sprite_items_card_stack_ironclad.h"
 #include "bn_sprite_items_card_rip_and_tear_ironclad.h"
-#include "bn_sprite_items_card_scrawl_ironclad.h"
-#include "bn_sprite_items_card_mind_blast_ironclad.h"
-#include "bn_sprite_items_card_shockwave_ironclad.h"
-#include "bn_sprite_items_card_bolas_ironclad.h"
-#include "bn_sprite_items_card_thrumming_hatchet_ironclad.h"
-#include "bn_sprite_items_card_impatience_ironclad.h"
+#include "bn_sprite_items_card_scrawl.h"
+#include "bn_sprite_items_card_mind_blast.h"
+#include "bn_sprite_items_card_shockwave.h"
+#include "bn_sprite_items_card_bolas.h"
+#include "bn_sprite_items_card_thrumming_hatchet.h"
+#include "bn_sprite_items_card_impatience.h"
 #include "bn_sprite_items_card_clash_ironclad.h"
-#include "bn_sprite_items_card_volley_ironclad.h"
-#include "bn_sprite_items_card_omnislice_ironclad.h"
-#include "bn_sprite_items_card_restlessness_ironclad.h"
-#include "bn_sprite_items_card_eternal_armor_ironclad.h"
-#include "bn_sprite_items_card_fasten_ironclad.h"
+#include "bn_sprite_items_card_volley.h"
+#include "bn_sprite_items_card_omnislice.h"
+#include "bn_sprite_items_card_restlessness.h"
+#include "bn_sprite_items_card_eternal_armor.h"
+#include "bn_sprite_items_card_fasten.h"
 #include "bn_sprite_items_card_rebound_ironclad.h"
-#include "bn_sprite_items_card_panic_button_ironclad.h"
-#include "bn_sprite_items_card_gold_axe_ironclad.h"
-#include "bn_sprite_items_card_anointed_ironclad.h"
-#include "bn_sprite_items_card_fisticuffs_ironclad.h"
-#include "bn_sprite_items_card_rend_ironclad.h"
-#include "bn_sprite_items_card_the_bomb_ironclad.h"
-#include "bn_sprite_items_card_rolling_boulder_ironclad.h"
-#include "bn_sprite_items_card_panache_ironclad.h"
-#include "bn_sprite_items_card_jackpot_ironclad.h"
-#include "bn_sprite_items_card_beat_down_ironclad.h"
-#include "bn_sprite_items_card_catastrophe_ironclad.h"
-#include "bn_sprite_items_card_nostalgia_ironclad.h"
-#include "bn_sprite_items_card_relax_ironclad.h"
-#include "bn_sprite_items_card_neows_fury_ironclad.h"
+#include "bn_sprite_items_card_panic_button.h"
+#include "bn_sprite_items_card_gold_axe.h"
+#include "bn_sprite_items_card_anointed.h"
+#include "bn_sprite_items_card_fisticuffs.h"
+#include "bn_sprite_items_card_rend.h"
+#include "bn_sprite_items_card_the_bomb.h"
+#include "bn_sprite_items_card_rolling_boulder.h"
+#include "bn_sprite_items_card_panache.h"
+#include "bn_sprite_items_card_jackpot.h"
+#include "bn_sprite_items_card_beat_down.h"
+#include "bn_sprite_items_card_catastrophe.h"
+#include "bn_sprite_items_card_nostalgia.h"
+#include "bn_sprite_items_card_relax.h"
+#include "bn_sprite_items_card_neows_fury.h"
 #include "bn_sprite_items_card_metamorphosis_ironclad.h"
 #include "bn_sprite_items_card_distraction_ironclad.h"
 #include "bn_sprite_items_card_caltrops_ironclad.h"
-#include "bn_sprite_items_card_prolong_ironclad.h"
-#include "bn_sprite_items_card_salvo_ironclad.h"
-#include "bn_sprite_items_card_thinking_ahead_ironclad.h"
-#include "bn_sprite_items_card_jack_of_all_trades_ironclad.h"
+#include "bn_sprite_items_card_prolong.h"
+#include "bn_sprite_items_card_salvo.h"
+#include "bn_sprite_items_card_thinking_ahead.h"
+#include "bn_sprite_items_card_jack_of_all_trades.h"
 #include "bn_sprite_items_card_hello_world_ironclad.h"
-#include "bn_sprite_items_card_dark_shackles_ironclad.h"
-#include "bn_sprite_items_card_equilibrium_ironclad.h"
-#include "bn_sprite_items_card_purity_ironclad.h"
-#include "bn_sprite_items_card_secret_technique_ironclad.h"
-#include "bn_sprite_items_card_dramatic_entrance_ironclad.h"
-#include "bn_sprite_items_card_secret_weapon_ironclad.h"
-#include "bn_sprite_items_card_mayhem_ironclad.h"
-#include "bn_sprite_items_card_prep_time_ironclad.h"
-#include "bn_sprite_items_card_stratagem_ironclad.h"
-#include "bn_sprite_items_card_calamity_ironclad.h"
-#include "bn_sprite_items_card_automation_ironclad.h"
+#include "bn_sprite_items_card_dark_shackles.h"
+#include "bn_sprite_items_card_equilibrium.h"
+#include "bn_sprite_items_card_purity.h"
+#include "bn_sprite_items_card_secret_technique.h"
+#include "bn_sprite_items_card_dramatic_entrance.h"
+#include "bn_sprite_items_card_secret_weapon.h"
+#include "bn_sprite_items_card_mayhem.h"
+#include "bn_sprite_items_card_prep_time.h"
+#include "bn_sprite_items_card_stratagem.h"
+#include "bn_sprite_items_card_calamity.h"
+#include "bn_sprite_items_card_automation.h"
 #include "bn_sprite_items_card_enlightenment_ironclad.h"
 #include "bn_sprite_items_card_dual_wield_ironclad.h"
 #include "bn_sprite_items_card_infernal_blade.h"
@@ -2529,39 +2529,39 @@ namespace gba::card_art
     case engine::CardId::LUMINESCE:
         return &bn::sprite_items::card_luminesce_ironclad;
     case engine::CardId::APPARITION:
-        return &bn::sprite_items::card_apparition_ironclad;
+        return &bn::sprite_items::card_apparition;
     case engine::CardId::MAUL:
-        return &bn::sprite_items::card_maul_ironclad;
+        return &bn::sprite_items::card_maul;
     case engine::CardId::APOTHEOSIS:
-        return &bn::sprite_items::card_apotheosis_ironclad;
+        return &bn::sprite_items::card_apotheosis;
     case engine::CardId::WISH:
-        return &bn::sprite_items::card_wish_ironclad;
+        return &bn::sprite_items::card_wish;
     case engine::CardId::WHISTLE:
-        return &bn::sprite_items::card_whistle_ironclad;
+        return &bn::sprite_items::card_whistle;
     case engine::CardId::BRIGHTEST_FLAME:
-        return &bn::sprite_items::card_brightest_flame_ironclad;
+        return &bn::sprite_items::card_brightest_flame;
     case engine::CardId::FOLLY:
         return &bn::sprite_items::card_folly;
     case engine::CardId::ENTHRALLED:
         return &bn::sprite_items::card_enthralled;
     case engine::CardId::FLASH_OF_STEEL:
-        return &bn::sprite_items::card_flash_of_steel_ironclad;
+        return &bn::sprite_items::card_flash_of_steel;
     case engine::CardId::PECK:
         return &bn::sprite_items::card_peck_ironclad;
     case engine::CardId::PRODUCTION:
-        return &bn::sprite_items::card_production_ironclad;
+        return &bn::sprite_items::card_production;
     case engine::CardId::MASTER_OF_STRATEGY:
-        return &bn::sprite_items::card_master_of_strategy_ironclad;
+        return &bn::sprite_items::card_master_of_strategy;
     case engine::CardId::BYRD_SWOOP:
         return &bn::sprite_items::card_byrd_swoop_ironclad;
     case engine::CardId::ULTIMATE_STRIKE:
-        return &bn::sprite_items::card_ultimate_strike_ironclad;
+        return &bn::sprite_items::card_ultimate_strike;
     case engine::CardId::ULTIMATE_DEFEND:
-        return &bn::sprite_items::card_ultimate_defend_ironclad;
+        return &bn::sprite_items::card_ultimate_defend;
     case engine::CardId::FINESSE:
-        return &bn::sprite_items::card_finesse_ironclad;
+        return &bn::sprite_items::card_finesse;
     case engine::CardId::PROWESS:
-        return &bn::sprite_items::card_prowess_ironclad;
+        return &bn::sprite_items::card_prowess;
     case engine::CardId::SQUASH:
         return &bn::sprite_items::card_squash_ironclad;
     case engine::CardId::EXTERMINATE:
@@ -2579,59 +2579,59 @@ namespace gba::card_art
     case engine::CardId::RIP_AND_TEAR:
         return &bn::sprite_items::card_rip_and_tear_ironclad;
     case engine::CardId::SCRAWL:
-        return &bn::sprite_items::card_scrawl_ironclad;
+        return &bn::sprite_items::card_scrawl;
     case engine::CardId::MIND_BLAST:
-        return &bn::sprite_items::card_mind_blast_ironclad;
+        return &bn::sprite_items::card_mind_blast;
     case engine::CardId::SHOCKWAVE:
-        return &bn::sprite_items::card_shockwave_ironclad;
+        return &bn::sprite_items::card_shockwave;
     case engine::CardId::BOLAS:
-        return &bn::sprite_items::card_bolas_ironclad;
+        return &bn::sprite_items::card_bolas;
     case engine::CardId::THRUMMING_HATCHET:
-        return &bn::sprite_items::card_thrumming_hatchet_ironclad;
+        return &bn::sprite_items::card_thrumming_hatchet;
     case engine::CardId::IMPATIENCE:
-        return &bn::sprite_items::card_impatience_ironclad;
+        return &bn::sprite_items::card_impatience;
     case engine::CardId::CLASH:
         return &bn::sprite_items::card_clash_ironclad;
     case engine::CardId::VOLLEY:
-        return &bn::sprite_items::card_volley_ironclad;
+        return &bn::sprite_items::card_volley;
     case engine::CardId::OMNISLICE:
-        return &bn::sprite_items::card_omnislice_ironclad;
+        return &bn::sprite_items::card_omnislice;
     case engine::CardId::RESTLESSNESS:
-        return &bn::sprite_items::card_restlessness_ironclad;
+        return &bn::sprite_items::card_restlessness;
     case engine::CardId::ETERNAL_ARMOR:
-        return &bn::sprite_items::card_eternal_armor_ironclad;
+        return &bn::sprite_items::card_eternal_armor;
     case engine::CardId::FASTEN:
-        return &bn::sprite_items::card_fasten_ironclad;
+        return &bn::sprite_items::card_fasten;
     case engine::CardId::REBOUND:
         return &bn::sprite_items::card_rebound_ironclad;
     case engine::CardId::PANIC_BUTTON:
-        return &bn::sprite_items::card_panic_button_ironclad;
+        return &bn::sprite_items::card_panic_button;
     case engine::CardId::GOLD_AXE:
-        return &bn::sprite_items::card_gold_axe_ironclad;
+        return &bn::sprite_items::card_gold_axe;
     case engine::CardId::ANOINTED:
-        return &bn::sprite_items::card_anointed_ironclad;
+        return &bn::sprite_items::card_anointed;
     case engine::CardId::FISTICUFFS:
-        return &bn::sprite_items::card_fisticuffs_ironclad;
+        return &bn::sprite_items::card_fisticuffs;
     case engine::CardId::REND:
-        return &bn::sprite_items::card_rend_ironclad;
+        return &bn::sprite_items::card_rend;
     case engine::CardId::THE_BOMB:
-        return &bn::sprite_items::card_the_bomb_ironclad;
+        return &bn::sprite_items::card_the_bomb;
     case engine::CardId::ROLLING_BOULDER:
-        return &bn::sprite_items::card_rolling_boulder_ironclad;
+        return &bn::sprite_items::card_rolling_boulder;
     case engine::CardId::PANACHE:
-        return &bn::sprite_items::card_panache_ironclad;
+        return &bn::sprite_items::card_panache;
     case engine::CardId::JACKPOT:
-        return &bn::sprite_items::card_jackpot_ironclad;
+        return &bn::sprite_items::card_jackpot;
     case engine::CardId::BEAT_DOWN:
-        return &bn::sprite_items::card_beat_down_ironclad;
+        return &bn::sprite_items::card_beat_down;
     case engine::CardId::CATASTROPHE:
-        return &bn::sprite_items::card_catastrophe_ironclad;
+        return &bn::sprite_items::card_catastrophe;
     case engine::CardId::NOSTALGIA:
-        return &bn::sprite_items::card_nostalgia_ironclad;
+        return &bn::sprite_items::card_nostalgia;
     case engine::CardId::RELAX:
-        return &bn::sprite_items::card_relax_ironclad;
+        return &bn::sprite_items::card_relax;
     case engine::CardId::NEOWS_FURY:
-        return &bn::sprite_items::card_neows_fury_ironclad;
+        return &bn::sprite_items::card_neows_fury;
     case engine::CardId::METAMORPHOSIS:
         return &bn::sprite_items::card_metamorphosis_ironclad;
     case engine::CardId::DISTRACTION:
@@ -2639,37 +2639,37 @@ namespace gba::card_art
     case engine::CardId::CALTROPS:
         return &bn::sprite_items::card_caltrops_ironclad;
     case engine::CardId::PROLONG:
-        return &bn::sprite_items::card_prolong_ironclad;
+        return &bn::sprite_items::card_prolong;
     case engine::CardId::SALVO:
-        return &bn::sprite_items::card_salvo_ironclad;
+        return &bn::sprite_items::card_salvo;
     case engine::CardId::THINKING_AHEAD:
-        return &bn::sprite_items::card_thinking_ahead_ironclad;
+        return &bn::sprite_items::card_thinking_ahead;
     case engine::CardId::JACK_OF_ALL_TRADES:
-        return &bn::sprite_items::card_jack_of_all_trades_ironclad;
+        return &bn::sprite_items::card_jack_of_all_trades;
     case engine::CardId::HELLO_WORLD:
         return &bn::sprite_items::card_hello_world_ironclad;
     case engine::CardId::DARK_SHACKLES:
-        return &bn::sprite_items::card_dark_shackles_ironclad;
+        return &bn::sprite_items::card_dark_shackles;
     case engine::CardId::EQUILIBRIUM:
-        return &bn::sprite_items::card_equilibrium_ironclad;
+        return &bn::sprite_items::card_equilibrium;
     case engine::CardId::PURITY:
-        return &bn::sprite_items::card_purity_ironclad;
+        return &bn::sprite_items::card_purity;
     case engine::CardId::SECRET_TECHNIQUE:
-        return &bn::sprite_items::card_secret_technique_ironclad;
+        return &bn::sprite_items::card_secret_technique;
     case engine::CardId::DRAMATIC_ENTRANCE:
-        return &bn::sprite_items::card_dramatic_entrance_ironclad;
+        return &bn::sprite_items::card_dramatic_entrance;
     case engine::CardId::SECRET_WEAPON:
-        return &bn::sprite_items::card_secret_weapon_ironclad;
+        return &bn::sprite_items::card_secret_weapon;
     case engine::CardId::MAYHEM:
-        return &bn::sprite_items::card_mayhem_ironclad;
+        return &bn::sprite_items::card_mayhem;
     case engine::CardId::PREP_TIME:
-        return &bn::sprite_items::card_prep_time_ironclad;
+        return &bn::sprite_items::card_prep_time;
     case engine::CardId::STRATAGEM:
-        return &bn::sprite_items::card_stratagem_ironclad;
+        return &bn::sprite_items::card_stratagem;
     case engine::CardId::CALAMITY:
-        return &bn::sprite_items::card_calamity_ironclad;
+        return &bn::sprite_items::card_calamity;
     case engine::CardId::AUTOMATION:
-        return &bn::sprite_items::card_automation_ironclad;
+        return &bn::sprite_items::card_automation;
     case engine::CardId::ENLIGHTENMENT:
         return &bn::sprite_items::card_enlightenment_ironclad;
     case engine::CardId::DUAL_WIELD:
