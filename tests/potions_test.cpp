@@ -18,7 +18,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
-    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "AMBERGRIS",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -729,6 +729,26 @@ void test_droplet_of_precognition() {
     std::cout << "[PASS] Droplet of Precognition: add a card of the draw pile to the hand" << std::endl;
 }
 
+void test_ambergris() {
+    // 50% of Max HP healed, and the end of this turn is followed by another player turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.player.hp = 10;
+    const int max_hp = combat.player.max_hp;
+    assert(combat.use_potion("AMBERGRIS"));
+    assert(combat.player.hp == 10 + max_hp / 2);
+    assert(combat.extra_turn_pending);
+    assert(std::string_view(combat.combat_log) == "Ambergris!");
+
+    const int hp = combat.player.hp;
+    combat.end_player_turn();
+    assert(!combat.extra_turn_pending);
+    assert(combat.state == CombatState::PLAYER_TURN);
+    assert(combat.player.hp == hp); // the enemies did not act in between
+    assert(std::string_view(combat.combat_log) == "Extra turn!");
+
+    std::cout << "[PASS] Ambergris: heals 50% Max HP and grants an extra turn" << std::endl;
+}
+
 void test_orobic_acid() {
     // One Attack, one Skill and one Power are added to the hand, free this turn.
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
@@ -982,6 +1002,7 @@ int main() {
     test_duplicator();
     test_droplet_of_precognition();
     test_orobic_acid();
+    test_ambergris();
     test_beetle_juice();
     test_touch_of_insanity();
     test_liquid_memories();

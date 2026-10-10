@@ -1736,6 +1736,7 @@ void CombatEngine::reset_combat_state() {
     clear_offers();
     turn_picks_from_draw_ = 0;
     end_turn_requested = false;
+    extra_turn_pending = false;
     event_depth_ = 0;
     autoplay_depth_ = 0;
     vakuu_turn_active = false;
@@ -6007,7 +6008,8 @@ void CombatEngine::end_player_turn() {
 
     // Pael's Eye: the first turn of the combat ended without a card played exhausts the hand and gives an
     // extra turn, the enemies do not act in between.
-    bool extra_turn = false;
+    bool extra_turn = extra_turn_pending;
+    extra_turn_pending = false;
     if (counters.cards_played() == 0 && power_amount(PowerId::PAELS_EYE) > 0) {
         for (size_t i = powers.size(); i-- > 0;) {
             if (powers[i].id == PowerId::PAELS_EYE) powers.erase(i);
@@ -6426,6 +6428,10 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
             create_card(made, Pile::HAND);
         }
         set_log("Orobic Acid!");
+    } else if (potion_id == "AMBERGRIS") {
+        player.heal(player.max_hp / 2);
+        extra_turn_pending = true;
+        set_log("Ambergris!");
     } else {
         return false;
     }
