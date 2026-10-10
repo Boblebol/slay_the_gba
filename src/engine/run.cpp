@@ -805,6 +805,8 @@ void RunManager::on_rested() {
     count_hook(RunHook::RESTED);
     // Stone Humidifier: each Rest at a Rest Site raises Max HP by 5.
     if (has_relic("STONE_HUMIDIFIER")) gain_max_hp(5);
+    // Tiny Mailbox: each Rest procures 2 random potions (those that do not fit the full belt are lost).
+    if (has_relic("TINY_MAILBOX")) gain_random_potions(2);
 }
 
 void RunManager::on_shop_opened() {

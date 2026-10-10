@@ -1068,6 +1068,25 @@ void test_stone_humidifier() {
     std::cout << "[PASS] Stone Humidifier: +5 Max HP at each Rest Site rest" << std::endl;
 }
 
+void test_tiny_mailbox() {
+    // With the relic: each Rest procures 2 potions.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("TINY_MAILBOX");
+    size_t before = run.potions.size();
+    run.rest_at_campfire();
+    assert(run.potions.size() == before + 2);
+
+    // Without the relic: a Rest gives no potion.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_before = plain.potions.size();
+    plain.rest_at_campfire();
+    assert(!plain.has_relic("TINY_MAILBOX"));
+    assert(plain.potions.size() == plain_before);
+    std::cout << "[PASS] Tiny Mailbox: 2 potions at each Rest" << std::endl;
+}
+
 void test_pomander() {
     // Obtained: one card of the deck is picked to be upgraded.
     RunManager run;
@@ -1622,6 +1641,7 @@ int main() {
     test_nutritious_oyster();
     test_lava_rock();
     test_stone_humidifier();
+    test_tiny_mailbox();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();
