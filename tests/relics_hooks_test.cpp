@@ -1393,6 +1393,41 @@ void test_glass_eye() {
     assert(!plain.has_relic("GLASS_EYE") && plain.master_deck.size() == plain_size);
 
     std::cout << "[PASS] Glass Eye: 2 Common, 2 Uncommon and 1 Rare cards when obtained" << std::endl;
+void test_prismatic_gem() {
+    // Start of each turn: one more energy, as with Blood Soaked Rose.
+    RunManager gem = make_relic_run(CharacterId::IRONCLAD, { "PRISMATIC_GEM" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(gem.combat.player.energy == plain.combat.player.energy + 1);
+    end_turn_idle(gem.combat);
+    end_turn_idle(plain.combat);
+    assert(gem.combat.player.energy == plain.combat.player.energy + 1);
+
+    // Card rewards: with the relic, some offers come from the other heroes' pools; without it, never.
+    uint32_t other_color = 0, offers = 0;
+    for (uint32_t seed = 1; seed <= 50; ++seed) {
+        RunManager with_gem;
+        with_gem.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with_gem.add_relic("PRISMATIC_GEM");
+        enter_room_of_type(with_gem, RoomType::MONSTER);
+        with_gem.generate_rewards();
+
+        RunManager without_gem;
+        without_gem.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(without_gem, RoomType::MONSTER);
+        without_gem.generate_rewards();
+
+        for (size_t i = 0; i < with_gem.current_card_rewards.size(); ++i) {
+            ++offers;
+            if (!in_pool(CharacterId::IRONCLAD, with_gem.current_card_rewards[i].id)) ++other_color;
+        }
+        for (size_t i = 0; i < without_gem.current_card_rewards.size(); ++i) {
+            assert(in_pool(CharacterId::IRONCLAD, without_gem.current_card_rewards[i].id));
+        }
+    }
+    assert(offers == 150 && other_color > 0);
+
+    std::cout << "[PASS] Prismatic Gem: +1 energy each turn, " << other_color << " of " << offers
+              << " card rewards from other colors" << std::endl;
 }
 
 int main() {
@@ -1423,6 +1458,7 @@ int main() {
     test_dusty_tome();
     test_velvet_choker();
     test_glass_eye();
+    test_prismatic_gem();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();

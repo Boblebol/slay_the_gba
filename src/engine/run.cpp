@@ -502,9 +502,18 @@ void RunManager::generate_rewards() {
 
     // Offer distinct cards drawn at random from the hero's pool.
     current_card_rewards.clear();
-    FixedVector<CardId, 128> candidates;
+    FixedVector<CardId, 512> candidates;
     for (CardId id : card_reward_pool(character)) {
         candidates.push_back(id);
+    }
+    // Prismatic Gem: the other heroes' pools are added too (the pools do not overlap).
+    if (has_relic("PRISMATIC_GEM")) {
+        for (uint8_t hero = 0; hero < static_cast<uint8_t>(CharacterId::COUNT); ++hero) {
+            if (static_cast<CharacterId>(hero) == character) continue;
+            for (CardId id : card_reward_pool(static_cast<CharacterId>(hero))) {
+                candidates.push_back(id);
+            }
+        }
     }
     while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
         size_t pick = (boss ? rng.next() : next_random()) % candidates.size();
@@ -1096,6 +1105,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("ECTOPLASM")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Philosopher's Stone (ancient): one more energy each turn.
     if (has_relic("PHILOSOPHERS_STONE")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    if (has_relic("PRISMATIC_GEM")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Whispering Earring: one more energy each turn, and Vakuu plays the first turn of the combat.
     if (has_relic("WHISPERING_EARRING")) {
         combat.add_power(PowerId::TURN_ENERGY, 1);
