@@ -111,6 +111,9 @@ enum class DelayedType : uint8_t {
 };
 
 constexpr uint8_t NIGHTMARE_COPIES = 3;
+// Cards Vakuu plays at most during his turn (Whispering Earring): cards that come back to the hand, or that
+// make others, cannot keep him playing forever.
+constexpr uint8_t VAKUU_MAX_PLAYS = 50;
 
 struct DelayedEffect {
     DelayedType type = DelayedType::ENERGY;
@@ -230,6 +233,9 @@ public:
     int8_t temp_dexterity = 0;
     int8_t temp_focus = 0;
     int16_t forged = 0;            // total Forged this combat: what the Sovereign Blade gained on top of its damage
+    // Whispering Earring: Vakuu is playing this turn, the first of the combat, instead of the player. Set when
+    // the first turn starts with PowerId::WHISPERING_EARRING registered, cleared when the turn ends.
+    bool vakuu_turn_active = false;
 
     FixedVector<EnemyActionRecord, 3> last_enemy_actions;
 
@@ -397,6 +403,21 @@ public:
     // Plays a card for free that does not come from the hand: the caller has already taken it from where it
     // was. A single-target card goes to `target_index`, or to a random enemy when it is negative.
     void autoplay(DeckCard card, int target_index = -1, AfterPlay destination = AfterPlay::DISCARD);
+    // Vakuu's turn (Whispering Earring). He plays the cards of the hand from left to right, each time the
+    // leftmost one he can play, so the cards drawn or made on the way are played too. He plays a card while it
+    // is playable and paid for (the cards that cost 0 still go once the energy is spent), aims the single-target
+    // ones at the leftmost living enemy, and leaves in hand the Unplayable cards, the ones whose condition
+    // fails, the ones that would ask the player to pick cards (opens_choice) and the X cards with nothing to
+    // spend. He stops after VAKUU_MAX_PLAYS cards.
+    // Whether playing the card asks the player to pick cards of the hand or of a pile.
+    [[nodiscard]] static bool opens_choice(const DeckCard& card);
+    // Index in the hand of the card Vakuu plays next, -1 when his turn must end (or is not his). A choice
+    // asked by something else than his own plays (a power, a relic) is answered for the player first.
+    [[nodiscard]] int vakuu_next_card();
+    // Plays that card. False when there is none: the caller ends the turn (end_player_turn).
+    bool vakuu_step();
+    // Vakuu's whole turn, its end included. Returns the number of cards he played, 0 when it is not his turn.
+    int vakuu_play_turn();
     // Energy the card costs right now, COST_X for an X card.
     int effective_cost(const DeckCard& card) const;
     void end_player_turn();
@@ -450,6 +471,7 @@ private:
     void settle_choices();
     void change_cost_of_copies(CardId id, int delta);
     uint8_t autoplay_depth_ = 0;
+    uint8_t vakuu_plays_ = 0;     // cards Vakuu has played this turn
     // Orb value once Focus is applied, never negative.
     int16_t with_focus(int16_t base) const;
     // Raises ENEMY_KILLED for every enemy that died since the last call, whatever killed it.
