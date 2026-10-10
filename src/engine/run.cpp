@@ -719,6 +719,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     if (relic_id == "MANGO" && has_relic("MANGO")) gain_max_hp(14);
     if (relic_id == "PEAR" && has_relic("PEAR")) gain_max_hp(10);
+    if (relic_id == "FAKE_MANGO" && has_relic("FAKE_MANGO")) gain_max_hp(3);
     if (relic_id == "LARGE_CAPSULE" && has_relic("LARGE_CAPSULE")) {
         gain_random_relics(2);
         add_card_to_deck(DeckCard{ CardId::STRIKE, false });

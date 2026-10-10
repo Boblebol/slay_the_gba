@@ -2184,6 +2184,26 @@ void test_mango() {
     std::cout << "[PASS] Mango: 14 more max HP on pickup" << std::endl;
 }
 
+void test_fake_mango() {
+    // Event relic, obtained: 3 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 514);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("FAKE_MANGO");
+    assert(run.has_relic("FAKE_MANGO"));
+    assert(run.max_hp == max_hp + 3 && run.hp == 53);
+
+    // Without the relic, nothing raises the maximum HP.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 514);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("FAKE_MANGO"));
+    assert(plain.max_hp == max_hp && plain.hp == 50);
+    std::cout << "[PASS] Fake Mango: 3 more max HP on pickup" << std::endl;
+}
+
 void test_old_coin() {
     // Obtained: 300 gold, paid once.
     RunManager run;
@@ -2627,6 +2647,7 @@ int main() {
     test_bookmark();
     test_tungsten_rod();
     test_mango();
+    test_fake_mango();
     test_old_coin();
     test_pear();
     test_whetstone();
