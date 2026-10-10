@@ -605,6 +605,24 @@ void test_strawberry() {
     std::cout << "[PASS] Strawberry: +7 Max HP when obtained, once, from a chest too" << std::endl;
 }
 
+void test_small_capsule() {
+    // Obtained: one random relic joins the bag, on top of the capsule itself.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t before = run.relics.size();
+    run.add_relic("SMALL_CAPSULE");
+    assert(run.has_relic("SMALL_CAPSULE"));
+    assert(run.relics.size() == before + 2);
+
+    // Without the capsule, a relic gives nothing more.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_before = plain.relics.size();
+    plain.add_relic("ANCHOR");
+    assert(plain.relics.size() == plain_before + 1);
+    std::cout << "[PASS] Small Capsule: one random relic when obtained, none without it" << std::endl;
+}
+
 void test_seal_of_gold() {
     // With the relic: the turn start costs 3 gold and gives 1 energy.
     RunManager run;
@@ -849,6 +867,7 @@ int main() {
     test_relics_in_a_run();
     test_very_hot_cocoa();
     test_strawberry();
+    test_small_capsule();
     test_golden_compass();
     test_paels_tooth();
     test_membership_card();
