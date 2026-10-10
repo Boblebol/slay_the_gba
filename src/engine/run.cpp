@@ -603,6 +603,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         add_card_to_deck(DeckCard{ CardId::DEFEND, false });
     }
     if (relic_id == "YUMMY_COOKIE" && has_relic("YUMMY_COOKIE")) upgrade_random_cards(4);
+    if (relic_id == "SAND_CASTLE" && has_relic("SAND_CASTLE")) upgrade_random_cards(6);
     // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
     if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
         regenerate_map();
@@ -735,6 +736,9 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
                 }
             }
         }
+    }
+    if (relic_id == "PAELS_HORN" && has_relic("PAELS_HORN")) {
+        for (int i = 0; i < 2; ++i) add_card_to_deck(DeckCard{ CardId::RELAX, false });
     }
     if (relic_id == "TANXS_WHISTLE" && has_relic("TANXS_WHISTLE")) add_card_to_deck(DeckCard{ CardId::WHISTLE, false });
     if (relic_id == "STORYBOOK" && has_relic("STORYBOOK")) add_card_to_deck(DeckCard{ CardId::BRIGHTEST_FLAME, false });
@@ -1119,6 +1123,8 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::TURN_ENERGY, 1);
         combat.add_power(PowerId::VELVET_CHOKER, VELVET_CHOKER_CARDS);
     }
+    // Pael's Eye: the first turn ended without playing a card is followed by an extra turn.
+    if (has_relic("PAELS_EYE")) combat.add_power(PowerId::PAELS_EYE, 1);
     // Start of turn
     if (has_relic("CAPTAINS_WHEEL")) combat.add_power(PowerId::CAPTAINS_WHEEL, 18);
     if (has_relic("HORN_CLEAT")) combat.add_power(PowerId::HORN_CLEAT, 14);
@@ -1294,6 +1300,10 @@ void RunManager::apply_combat_start_relics() {
         for (int n = 0; n < 2 && !ethereal.empty(); ++n) {
             combat.create_card(ethereal[next_random() % ethereal.size()], Pile::HAND);
         }
+    }
+    // Radiant Pearl (Orobas): 1 Luminesce in hand.
+    if (has_relic("RADIANT_PEARL")) {
+        combat.create_card(DeckCard(CardId::LUMINESCE), Pile::HAND);
     }
     // Fencing Manual (Regent): Forge 10.
     if (has_relic("FENCING_MANUAL")) {

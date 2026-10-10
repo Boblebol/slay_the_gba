@@ -1442,6 +1442,99 @@ void test_prismatic_gem() {
               << " card rewards from other colors" << std::endl;
 }
 
+void test_radiant_pearl() {
+    // Radiant Pearl: 1 Luminesce added to the hand at the start of the combat, on top of the usual draw.
+    RunManager pearl = make_relic_run(CharacterId::REGENT, { "RADIANT_PEARL" });
+    size_t luminesces = 0;
+    for (const DeckCard& card : pearl.combat.hand) {
+        if (card.id == CardId::LUMINESCE) ++luminesces;
+    }
+    assert(luminesces == 1 && pearl.combat.hand.back().id == CardId::LUMINESCE);
+    assert(pearl.combat.hand.back().deck_index == NOT_IN_DECK);
+    assert(pearl.combat.hand.size() == 6);
+
+    // Without the relic: no Luminesce, the usual 5 cards.
+    RunManager plain = make_relic_run(CharacterId::REGENT, {});
+    for (const DeckCard& card : plain.combat.hand) assert(card.id != CardId::LUMINESCE);
+    assert(plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Radiant Pearl: 1 Luminesce in hand at the start of combat" << std::endl;
+}
+
+void test_sand_castle() {
+    // Obtained: six cards of the deck are upgraded, never more than the deck holds.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    auto upgraded_count = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) n += r.master_deck[i].upgraded ? 1 : 0;
+        return n;
+    };
+    int before = upgraded_count(run);
+    run.add_relic("SAND_CASTLE");
+    assert(run.has_relic("SAND_CASTLE"));
+    assert(upgraded_count(run) == std::min(before + 6, static_cast<int>(run.master_deck.size())));
+
+    // Without the relic, no card is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("SAND_CASTLE") && upgraded_count(plain) == before);
+    std::cout << "[PASS] Sand Castle: upgrades 6 random cards when obtained" << std::endl;
+}
+
+void test_paels_horn() {
+    // Obtained: two Relax join the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck = run.master_deck.size();
+    run.add_relic("PAELS_HORN");
+    assert(run.has_relic("PAELS_HORN"));
+    assert(run.master_deck.size() == deck + 2);
+    assert(run.master_deck[deck].id == CardId::RELAX && run.master_deck[deck + 1].id == CardId::RELAX);
+
+    // Without the relic, the deck stays where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_deck = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("PAELS_HORN") && plain.master_deck.size() == plain_deck);
+
+    std::cout << "[PASS] Paël's Horn: 2 Relax added to the deck when obtained" << std::endl;
+}
+
+void test_paels_eye() {
+    // With the relic: ending the first turn without a card exhausts the hand and gives an extra turn.
+    CombatEngine eye = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_EYE, 1);
+    int16_t hp = eye.player.hp;
+    size_t exhausted = eye.exhaust_pile.size();
+    size_t hand_size = eye.hand.size();
+    assert(hand_size > 0);
+    end_turn_attacked(eye, 11);
+    assert(eye.state == CombatState::PLAYER_TURN);
+    assert(eye.player.hp == hp); // the enemies did not act
+    assert(eye.exhaust_pile.size() == exhausted + hand_size);
+    assert(eye.hand.size() > 0);
+    // Once per combat: the next empty turn is a normal one.
+    end_turn_attacked(eye, 11);
+    assert(eye.player.hp == hp - 11);
+
+    // A turn with a card played gives nothing.
+    CombatEngine played = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_EYE, 1);
+    play(played, CardId::DEFEND);
+    hp = played.player.hp;
+    end_turn_attacked(played, 11);
+    assert(played.player.hp < hp);
+    assert(played.exhaust_pile.empty());
+
+    // Without the relic: the enemies act.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    hp = plain.player.hp;
+    end_turn_attacked(plain, 11);
+    assert(plain.player.hp == hp - 11);
+    assert(plain.exhaust_pile.empty());
+    std::cout << "[PASS] Pael's Eye: empty first turn exhausts the hand and gives an extra turn" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1490,5 +1583,9 @@ int main() {
     test_velvet_choker();
     test_glass_eye();
     test_prismatic_gem();
+    test_radiant_pearl();
+    test_sand_castle();
+    test_paels_horn();
+    test_paels_eye();
     return 0;
 }
