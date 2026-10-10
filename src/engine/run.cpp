@@ -663,7 +663,8 @@ void RunManager::generate_rewards() {
     // A potion the hero can use, in 40 % of the fights; White Beast Statue makes it certain.
     potion_reward = {};
     bool potion_roll = rng.below(100) < POTION_REWARD_CHANCE;
-    if (potion_roll || has_relic("WHITE_BEAST_STATUE")) {
+    // Sozu: no potion can be obtained any more.
+    if (!has_relic("SOZU") && (potion_roll || has_relic("WHITE_BEAST_STATUE"))) {
         potion_reward = draw_potion(rng, character);
     }
 
@@ -680,7 +681,7 @@ void RunManager::generate_rewards() {
 }
 
 bool RunManager::take_potion_reward(int replace_index) {
-    if (phase != RunPhase::REWARD_SCREEN || potion_reward.empty()) return false;
+    if (phase != RunPhase::REWARD_SCREEN || potion_reward.empty() || has_relic("SOZU")) return false;
     if (!potion_belt_full()) {
         potions.push_back(potion_reward);
     } else if (replace_index >= 0 && static_cast<size_t>(replace_index) < potions.size()) {
@@ -1211,6 +1212,7 @@ int RunManager::gain_random_relics(int count) {
 }
 
 int RunManager::gain_random_potions(int count) {
+    if (has_relic("SOZU")) return 0;
     RewardRng rng(next_random());
     int gained = 0;
     while (gained < count && !potion_belt_full()) {
@@ -1401,6 +1403,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("BLOOD_SOAKED_ROSE")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Ectoplasm: one more energy each turn.
     if (has_relic("ECTOPLASM")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Sozu (ancient): one more energy each turn.
+    if (has_relic("SOZU")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Philosopher's Stone (ancient): one more energy each turn.
     if (has_relic("PHILOSOPHERS_STONE")) combat.add_power(PowerId::TURN_ENERGY, 1);
     if (has_relic("PRISMATIC_GEM")) combat.add_power(PowerId::TURN_ENERGY, 1);
@@ -1579,7 +1583,7 @@ void RunManager::apply_combat_start_relics() {
     // Delicate Frond: fill every empty potion slot with a random potion.
     if (has_relic("DELICATE_FROND")) gain_random_potions(MAX_POTION_SLOTS);
     // Petrified Toad: procure a Potion-Shaped Rock at the start of each combat (lost if the belt is full).
-    if (has_relic("PETRIFIED_TOAD") && !potion_belt_full()) potions.push_back("POTION_SHAPED_ROCK");
+    if (has_relic("PETRIFIED_TOAD") && !has_relic("SOZU") && !potion_belt_full()) potions.push_back("POTION_SHAPED_ROCK");
     // Vajra: start each combat with 1 Strength.
     if (has_relic("VAJRA")) {
         combat.player.add_status(StatusType::STRENGTH, 1);

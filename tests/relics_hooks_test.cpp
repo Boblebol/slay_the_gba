@@ -1766,6 +1766,28 @@ void test_ectoplasm() {
     std::cout << "[PASS] Ectoplasm: no gold gained, +1 energy each turn" << std::endl;
 }
 
+void test_sozu() {
+    RunManager sozu = make_relic_run(CharacterId::IRONCLAD, { "SOZU" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    // One more energy at the start of each turn, only with the relic.
+    assert(sozu.combat.player.energy == plain.combat.player.energy + 1);
+    end_turn_idle(sozu.combat);
+    end_turn_idle(plain.combat);
+    assert(sozu.combat.player.energy == plain.combat.player.energy + 1);
+
+    // No potion can be obtained with the relic; without it they come in.
+    assert(sozu.gain_random_potions(2) == 0 && sozu.potions.empty());
+    assert(plain.gain_random_potions(2) == 2 && plain.potions.size() == 2);
+    sozu.potion_reward = "FIRE_POTION";
+    sozu.phase = RunPhase::REWARD_SCREEN;
+    assert(!sozu.take_potion_reward() && sozu.potions.empty());
+    plain.potions.clear();
+    plain.potion_reward = "FIRE_POTION";
+    plain.phase = RunPhase::REWARD_SCREEN;
+    assert(plain.take_potion_reward() && plain.potions.size() == 1);
+    std::cout << "[PASS] Sozu: 1 energy each turn, no potion obtained" << std::endl;
+}
+
 void test_philosophers_stone() {
     // Every enemy starts the combat with 1 Strength, the player does not.
     RunManager stone = make_relic_run(CharacterId::IRONCLAD, { "PHILOSOPHERS_STONE" });
@@ -3734,6 +3756,7 @@ int main() {
     test_runic_pyramid();
     test_ectoplasm();
     test_philosophers_stone();
+    test_sozu();
     test_dusty_tome();
     test_velvet_choker();
     test_glass_eye();
