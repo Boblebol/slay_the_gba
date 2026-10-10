@@ -92,11 +92,50 @@ void test_expose() {
     std::cout << "[PASS] Silent: Expose" << std::endl;
 }
 
+void test_hand_trick() {
+    for (bool upgraded : { false, true }) {
+        assert(CardDef::get_cost(CardId::HAND_TRICK, upgraded) == 1);
+        assert(CardDef::get(CardId::HAND_TRICK).type == CardType::SKILL);
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::HAND_TRICK, upgraded));
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.hand.push_back(DeckCard(CardId::DEFEND, false));
+        combat.player.energy = combat.player.max_energy;
+        combat.player.block = 0;
+        assert(combat.play_card(0, 0));
+        assert(combat.player.block == (upgraded ? 10 : 7));
+        // Defend is the only Skill left in hand: it gains Sly until the end of the turn (picked by the player if asked).
+        if (combat.choice_pending()) {
+            for (size_t i = 0; i < combat.hand.size(); ++i) {
+                if (combat.hand[i].id == CardId::STRIKE) assert(!combat.choice_allows(i));
+            }
+            for (size_t i = 0; i < combat.hand.size(); ++i) {
+                if (combat.hand[i].id == CardId::DEFEND) {
+                    const uint8_t pick[] = { static_cast<uint8_t>(i) };
+                    assert(combat.resolve_choice(std::span<const uint8_t>(pick, 1)));
+                    break;
+                }
+            }
+        }
+        bool defend_sly = false;
+        bool strike_sly = false;
+        for (size_t i = 0; i < combat.hand.size(); ++i) {
+            if (combat.hand[i].id == CardId::DEFEND) defend_sly = CardDef::is_sly(combat.hand[i]);
+            if (combat.hand[i].id == CardId::STRIKE) strike_sly = CardDef::is_sly(combat.hand[i]);
+        }
+        assert(defend_sly && !strike_sly);
+    }
+    assert_in_pool(CharacterId::SILENT, { CardId::HAND_TRICK });
+    std::cout << "[PASS] Silent: Hand Trick" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Silent Cards ===" << std::endl;
     test_expose();
+    test_hand_trick();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
