@@ -583,6 +583,8 @@ void RunManager::generate_rewards() {
     bool boss = room == RoomType::BOSS;
 
     draw_card_rewards(boss, rng);
+    // Prayer Wheel: a normal enemy gives one more set of cards, after the first one (as The Hunt does).
+    if (room == RoomType::MONSTER && has_relic("PRAYER_WHEEL")) extra_card_rewards = static_cast<uint8_t>(std::min(255, extra_card_rewards + 1));
 
     // A boss gives 95 to 105 gold.
     gold_reward = boss ? static_cast<int16_t>(95 + rng.below(11)) : 15 + static_cast<int16_t>(next_random() % 15);
@@ -1186,7 +1188,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Retained hand on the first turn (#509)
         "RINGING_TRIANGLE",
         // Upgrades on pickup (#465, #464)
-        "WHETSTONE", "WAR_PAINT"
+        "WHETSTONE", "WAR_PAINT",
+        // Extra card reward after a normal fight (#479)
+        "PRAYER_WHEEL"
     };
     return ACTIVE_RELICS;
 }
