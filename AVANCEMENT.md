@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 66,1 %** — 812 faits, 20 partiels, 412 à faire (35 hors périmètre).
+**Avancement global : 67,1 %** — 825 faits, 20 partiels, 399 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 91 | 1 | 8 | 91,5 % |
 | [La Nécrolieuse](#necrobinder) | 94 | 1 | 7 | 92,6 % |
 | [Cartes communes aux cinq éditions](#cartes) | 102 | 0 | 18 | 85,0 % |
-| [Reliques et potions](#reliques) | 153 | 0 | 168 | 47,7 % |
+| [Reliques et potions](#reliques) | 166 | 0 | 155 | 51,7 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 39 | 1 | 17 | 69,3 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **812** | **20** | **412** | **66,1 %** |
+| **Total** | **825** | **20** | **399** | **67,1 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 47,7 %
+## Reliques et potions — 51,7 %
 
 ### Reliques partagées — 51,3 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 47,1 %
+### Reliques des Anciens — 58,8 %
 
-48 faits, 0 partiel, 54 à faire.
+60 faits, 0 partiel, 42 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1060,13 +1060,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Cataplasme | Ancienne | Non |  |
 | Chair de Paël | Ancienne | Non |  |
 | Chocolat très chaud | Ancienne | Oui |  |
-| Château de sable | Ancienne | Non |  |
+| Château de sable | Ancienne | Oui |  |
 | Ciseaux précis | Ancienne | Oui |  |
-| Cloche d'appel | Ancienne | Non |  |
+| Cloche d'appel | Ancienne | Oui |  |
 | Coffre à bijoux | Ancienne | Oui |  |
 | Coffret perdu | Ancienne | Non |  |
 | Conque retentissante | Ancienne | Oui |  |
-| Corne de Paël | Ancienne | Non |  |
+| Corne de Paël | Ancienne | Oui |  |
 | Couperet à viande | Ancienne | Oui |  |
 | Creuset en argent | Ancienne | Non |  |
 | Crevaite électrique | Ancienne | Non |  |
@@ -1074,7 +1074,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Dent de Paël | Ancienne | Oui |  |
 | Diadème de diamant | Ancienne | Non |  |
 | Délicieux biscuit | Ancienne | Oui |  |
-| Ectoplasme | Ancienne | Non |  |
+| Ectoplasme | Ancienne | Oui |  |
 | Embarras du choix | Ancienne | Non |  |
 | Excroissance de Paël | Ancienne | Non |  |
 | Forces précaires | Ancienne | Non |  |
@@ -1085,12 +1085,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Grande capsule | Ancienne | Oui |  |
 | Griffe de Paël | Ancienne | Non |  |
 | Griffes | Ancienne | Oui |  |
-| Grimoire poussiéreux | Ancienne | Non |  |
+| Grimoire poussiéreux | Ancienne | Oui |  |
 | Grooos câlin | Ancienne | Non |  |
 | Hache de lancer | Ancienne | Non |  |
 | Humidificateur en pierre | Ancienne | Oui |  |
 | Huître nourrissante | Ancienne | Oui |  |
-| Joyau prismatique | Ancienne | Non |  |
+| Joyau prismatique | Ancienne | Oui |  |
 | Kaléidoscope | Ancienne | Non |  |
 | Lanterne-citrouille | Ancienne | Oui |  |
 | Larmes de Paël | Ancienne | Oui |  |
@@ -1107,15 +1107,15 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Parchemin arcanique | Ancienne | Oui |  |
 | Parchemin énorme | Ancienne | Non |  |
 | Perle dorée | Ancienne | Oui |  |
-| Perle maudite | Ancienne | Non |  |
-| Perle radieuse | Ancienne | Non |  |
+| Perle maudite | Ancienne | Oui |  |
+| Perle radieuse | Ancienne | Oui |  |
 | Petite capsule | Ancienne | Oui |  |
-| Pierre philosophale | Ancienne | Non |  |
+| Pierre philosophale | Ancienne | Oui |  |
 | Pierre volcanique | Ancienne | Oui |  |
 | Pommandre | Ancienne | Oui |  |
 | Presse-papier en plomb | Ancienne | Oui |  |
 | Pyramide runique | Ancienne | Oui |  |
-| Ras du cou en velours | Ancienne | Non |  |
+| Ras du cou en velours | Ancienne | Oui |  |
 | Rose sanguinolente | Ancienne | Oui |  |
 | Sacrifice de Neow | Ancienne | Non |  |
 | Sang de Paël | Ancienne | Oui |  |
@@ -1136,13 +1136,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Écharpe étincelante | Ancienne | Non |  |
 | Étoile noire | Ancienne | Non |  |
 | Étui à fioles | Ancienne | Non |  |
-| Œil de Paël | Ancienne | Non |  |
+| Œil de Paël | Ancienne | Oui |  |
 | Œil de geckobra | Ancienne | Oui |  |
-| Œil de verre | Ancienne | Non |  |
+| Œil de verre | Ancienne | Oui |  |
 
-### Potions — 68,3 %
+### Potions — 69,8 %
 
-43 faits, 0 partiel, 20 à faire.
+44 faits, 0 partiel, 19 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1195,7 +1195,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Fantôme dans un bocal | Rare | Oui |  |
 | Fée en bouteille | Rare | Non |  |
 | Goules en bouteille | Rare | Oui |  |
-| Goutte de prescience | Rare | Non |  |
+| Goutte de prescience | Rare | Oui |  |
 | Huile de geckobra | Rare | Non |  |
 | Jus de coléoptère | Rare | Non |  |
 | Jus de fruits | Rare | Non |  |
