@@ -1687,6 +1687,8 @@ void RunManager::proceed_after_combat() {
     if (has_relic("MEAT_ON_THE_BONE") && hp * 2 <= max_hp) {
         hp = std::min<int16_t>(max_hp, hp + 12);
     }
+    // Black Blood (event relic): 12 HP after every fight.
+    if (has_relic("BLACK_BLOOD")) hp = std::min<int16_t>(max_hp, hp + 12);
 
     // Every enemy ran away: the fight is over, but there is nothing to take.
     if (combat.every_enemy_escaped()) {
