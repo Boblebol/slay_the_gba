@@ -1850,6 +1850,26 @@ void test_bookmark() {
     std::cout << "[PASS] Bookmark: a Retained card costs 1 less until played" << std::endl;
 }
 
+void test_lees_waffle() {
+    // Obtained: 7 more maximum HP, and all of the HP is restored.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 455);
+    run.hp = 20;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("LEES_WAFFLE");
+    assert(run.has_relic("LEES_WAFFLE"));
+    assert(run.max_hp == max_hp + 7 && run.hp == max_hp + 7);
+
+    // Without the relic: the maximum HP and the current HP stay as they are.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 455);
+    plain.hp = 20;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("LEES_WAFFLE"));
+    assert(plain.max_hp == max_hp && plain.hp == 20);
+    std::cout << "[PASS] Lee's Waffle: +7 Max HP and full heal on pickup" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1914,6 +1934,7 @@ int main() {
     test_strike_dummy();
     test_white_beast_statue();
     test_cauldron();
+    test_lees_waffle();
     test_bookmark();
     return 0;
 }

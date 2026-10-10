@@ -639,6 +639,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     if (relic_id == "LOOMING_FRUIT" && has_relic("LOOMING_FRUIT")) gain_max_hp(31);
     if (relic_id == "NUTRITIOUS_OYSTER" && has_relic("NUTRITIOUS_OYSTER")) gain_max_hp(11);
+    // Shared shop relic: 7 more maximum HP, then every point of HP is restored.
+    if (relic_id == "LEES_WAFFLE" && has_relic("LEES_WAFFLE")) {
+        gain_max_hp(7);
+        hp = max_hp;
+    }
     if (relic_id == "LARGE_CAPSULE" && has_relic("LARGE_CAPSULE")) {
         gain_random_relics(2);
         add_card_to_deck(DeckCard{ CardId::STRIKE, false });
@@ -1128,7 +1133,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "LEES_WAFFLE", // Shared, out of combat
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
