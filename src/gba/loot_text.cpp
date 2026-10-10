@@ -40,6 +40,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "CHANDELIER", "Au début de votre 3ème tour, gagnez 3 ●." },
     { "CHARONS_ASHES", "Chaque fois que vous Épuisez une carte, infligez 3 dégâts à TOUS les ennemis." },
     { "CIRCLET", "C'est un diadème." },
+    { "DINGY_RUG", "Les récompenses de carte peuvent proposer des cartes Incolores." },
     { "CLOAK_CLASP", "À la fin de votre tour, gagnez 1 d'Armure pour chaque carte dans votre Main." },
     { "DATA_DISK", "Commencez chaque combat avec 1 de Focalisation." },
     { "DRAGON_FRUIT", "Chaque fois que vous gagnez des Pièces d'or, augmentez vos PV Max de 1." },

@@ -570,6 +570,12 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng) {
             }
         }
     }
+    // Dingy Rug: the Colorless cards are offered too.
+    if (has_relic("DINGY_RUG")) {
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (card_meta(static_cast<CardId>(id)).pool == CardPool::COLORLESS) candidates.push_back(static_cast<CardId>(id));
+        }
+    }
     while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
         size_t pick = (boss ? rng.next() : next_random()) % candidates.size();
         current_card_rewards.push_back(DeckCard(candidates[pick], false));
@@ -1195,6 +1201,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         "RINGING_TRIANGLE",
         // Upgrades on pickup (#465, #464)
         "WHETSTONE", "WAR_PAINT"
+        "RINGING_TRIANGLE",
+        // Colorless cards in the card rewards (#486)
+        "DINGY_RUG"
     };
     return ACTIVE_RELICS;
 }
