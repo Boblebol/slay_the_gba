@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 69,8 %** — 859 faits, 20 partiels, 366 à faire (35 hors périmètre).
+**Avancement global : 70,9 %** — 874 faits, 20 partiels, 352 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -15,18 +15,18 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
 | [Soldat de Fer](#ironclad) | 98 | 1 | 3 | 96,6 % |
-| [La Silencieuse](#silent) | 98 | 1 | 2 | 97,5 % |
+| [La Silencieuse](#silent) | 99 | 1 | 1 | 98,5 % |
 | [Le Défectueux](#defect) | 100 | 1 | 4 | 95,7 % |
-| [Le Régent](#regent) | 91 | 1 | 8 | 91,5 % |
-| [La Nécrolieuse](#necrobinder) | 97 | 1 | 4 | 95,6 % |
-| [Cartes communes aux cinq éditions](#cartes) | 103 | 0 | 17 | 85,8 % |
-| [Reliques et potions](#reliques) | 177 | 0 | 144 | 55,1 % |
-| [Bestiaire](#bestiaire) | 14 | 1 | 89 | 13,9 % |
+| [Le Régent](#regent) | 92 | 1 | 7 | 92,5 % |
+| [La Nécrolieuse](#necrobinder) | 98 | 1 | 3 | 96,6 % |
+| [Cartes communes aux cinq éditions](#cartes) | 106 | 0 | 14 | 88,3 % |
+| [Reliques et potions](#reliques) | 180 | 0 | 141 | 56,1 % |
+| [Bestiaire](#bestiaire) | 19 | 1 | 84 | 18,8 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 42 | 1 | 15 | 73,3 % |
+| [Règles de combat](#regles) | 43 | 1 | 15 | 73,7 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **859** | **20** | **366** | **69,8 %** |
+| **Total** | **874** | **20** | **352** | **70,9 %** |
 
 <a id="ironclad"></a>
 
@@ -161,11 +161,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="silent"></a>
 
-## La Silencieuse — 97,5 %
+## La Silencieuse — 98,5 %
 
-### Cartes — 98,8 %
+### Cartes — 100,0 %
 
-85 faits, 0 partiel, 1 à faire (5 hors périmètre).
+86 faits, 0 partiel, 0 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -245,7 +245,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Furtif | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Grands desseins | Rare · Pouvoir | Oui |  |
 | Image rémanente | Rare · Pouvoir | Oui |  |
-| La traque | Rare · Attaque | Non |  |
+| La traque | Rare · Attaque | Oui |  |
 | Lame d'encre | Rare · Compétence | Oui |  |
 | Malaise | Rare · Compétence | Oui |  |
 | Meurtre | Rare · Attaque | Oui |  |
@@ -427,11 +427,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regent"></a>
 
-## Le Régent — 91,5 %
+## Le Régent — 92,5 %
 
-### Cartes — 94,2 %
+### Cartes — 95,3 %
 
-81 faits, 0 partiel, 5 à faire (5 hors périmètre).
+82 faits, 0 partiel, 4 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -519,7 +519,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Marteau d'héritage | Rare · Attaque | Oui |  |
 | Pléiades | Rare · Attaque | Oui |  |
 | Regard monarchique | Rare · Pouvoir | Oui |  |
-| Royalties | Rare · Pouvoir | Non |  |
+| Royalties | Rare · Pouvoir | Oui |  |
 | Sage à l'épée | Rare · Pouvoir | Oui |  |
 | Tyran | Rare · Pouvoir | Oui |  |
 | Égide à neutrons | Rare · Pouvoir | Oui |  |
@@ -557,11 +557,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 95,6 %
+## La Nécrolieuse — 96,6 %
 
-### Cartes — 96,6 %
+### Cartes — 97,7 %
 
-84 faits, 0 partiel, 3 à faire (4 hors périmètre).
+85 faits, 0 partiel, 2 à faire (4 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -654,7 +654,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Transfiguration | Rare · Compétence | Non |  |
 | Vision de l'au-delà | Rare · Compétence | Oui |  |
 | Éradication | Rare · Attaque | Oui |  |
-| Grimoire interdit | Ancienne · Pouvoir | Non |  |
+| Grimoire interdit | Ancienne · Pouvoir | Oui |  |
 | Protecteur | Ancienne · Attaque | Oui |  |
 
 ### Reliques — 87,5 %
@@ -688,11 +688,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 85,8 %
+## Cartes communes aux cinq éditions — 88,3 %
 
-### Cartes incolores — 86,8 %
+### Cartes incolores — 92,5 %
 
-46 faits, 0 partiel, 7 à faire (12 hors périmètre).
+49 faits, 0 partiel, 4 à faire (12 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -736,7 +736,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Éclair d'acier | Peu commune · Attaque | Oui |  |
 | Épuration | Peu commune · Compétence | Oui |  |
 | Équilibre | Peu commune · Compétence | Oui |  |
-| Alchimie | Rare · Compétence | Non |  |
+| Alchimie | Rare · Compétence | Oui |  |
 | Arme secrète | Rare · Compétence | Oui |  |
 | Armure éternelle | Rare · Pouvoir | Oui |  |
 | Balise d'espoir | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
@@ -750,8 +750,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Imitation | Rare · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Jackpot | Rare · Attaque | Oui |  |
 | Joyau caché | Rare · Compétence | Non |  |
-| La grande manœuvre | Rare · Compétence | Non |  |
-| Main de la cupidité | Rare · Attaque | Non |  |
+| La grande manœuvre | Rare · Compétence | Oui |  |
+| Main de la cupidité | Rare · Attaque | Oui |  |
 | Maître stratège | Rare · Compétence | Oui |  |
 | Nostalgie | Rare · Pouvoir | Oui |  |
 | Passage à tabac | Rare · Compétence | Oui |  |
@@ -859,11 +859,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 55,1 %
+## Reliques et potions — 56,1 %
 
-### Reliques partagées — 57,3 %
+### Reliques partagées — 59,8 %
 
-67 faits, 0 partiel, 50 à faire.
+70 faits, 0 partiel, 47 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -877,7 +877,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Gorgerette | Commune | Oui |  |
 | Lanterne | Commune | Oui |  |
 | Livre des cinq anneaux | Commune | Non |  |
-| Mannequin d'entraînement | Commune | Non |  |
+| Mannequin d'entraînement | Commune | Oui |  |
 | Masque rouge | Commune | Oui |  |
 | Oreiller royal | Commune | Non |  |
 | Peinture de guerre | Commune | Non |  |
@@ -981,9 +981,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sceau royal | Boutique | Non |  |
 | Tapis miteux | Boutique | Non |  |
 | Tente miniature | Boutique | Non |  |
-| Triangle résonnant | Boutique | Non |  |
+| Triangle résonnant | Boutique | Oui |  |
 | Lentille de Fresnel | Évènement | Non |  |
-| Diadème | Secours | Non |  |
+| Diadème | Secours | Oui |  |
 
 ### Reliques d'évènement — 5,1 %
 
@@ -1212,25 +1212,25 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 13,9 %
+## Bestiaire — 18,8 %
 
-### Monstres — 19,4 %
+### Monstres — 26,4 %
 
-14 faits, 0 partiel, 58 à faire.
+19 faits, 0 partiel, 53 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Assemblage Cubex | Monstre · Acte 1 (A) · Acte 3 | Non |  |
+| Assemblage Cubex | Monstre · Acte 1 (A) · Acte 3 | Oui |  |
 | Bourbelianes | Monstre · Acte 1 (A) | Oui |  |
-| Encrelin | Monstre · Acte 1 (A) | Non |  |
+| Encrelin | Monstre · Acte 1 (A) | Oui |  |
 | Fongibrume | Monstre · Acte 1 (A) | Non |  |
-| Grignotin | Monstre · Acte 1 (A) | Non |  |
+| Grignotin | Monstre · Acte 1 (A) | Oui |  |
 | Jaxier à clapet | Monstre · Acte 1 (A) | Non |  |
 | Limon brindille (M) | Monstre · Acte 1 (A) | Non |  |
 | Limon brindille (S) | Monstre · Acte 1 (A) | Non |  |
 | Limon feuillu (M) | Monstre · Acte 1 (A) | Non |  |
 | Limon feuillu (S) | Monstre · Acte 1 (A) | Non |  |
-| Mycoptère | Monstre · Acte 1 (A) | Non |  |
+| Mycoptère | Monstre · Acte 1 (A) | Oui |  |
 | Oizillon | Invocation · Acte 1 (A) | Non |  |
 | Rampeluche | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur Arbalétrier | Monstre · Acte 1 (A) | Oui |  |
@@ -1291,7 +1291,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Parchemord | Monstre · Acte 3 | Non |  |
 | Poignard-bot | Invocation · Acte 3 | Oui |  |
 | Sculpteur dévoué | Faible · Acte 3 | Non |  |
-| Sonobot | Invocation · Acte 3 | Non |  |
+| Sonobot | Invocation · Acte 3 | Oui |  |
 
 ### Élites — 0,0 %
 
@@ -1424,11 +1424,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regles"></a>
 
-## Règles de combat — 73,3 %
+## Règles de combat — 73,7 %
 
-### Déroulement du combat — 93,2 %
+### Déroulement du combat — 93,5 %
 
-20 faits, 1 partiel, 1 à faire.
+21 faits, 1 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1439,6 +1439,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Intentions ennemies affichées |  | Oui |  |
 | Calcul des dégâts (Force, Affaibli, Vulnérable) |  | Oui |  |
 | Modificateurs en pourcentage : dégâts (+25 %, +50 %, double), Armure doublée, Vulnérable et Affaibli renforcés |  | Oui | [#89](https://github.com/Boblebol/slay_the_gba/issues/89) |
+| Effets qui dépassent le combat : or, potion, récompense de carte, retrait de carte du deck |  | Oui | [#94](https://github.com/Boblebol/slay_the_gba/issues/94) |
 | Attaques de zone et attaques en plusieurs coups |  | Oui |  |
 | Cartes qui font piocher |  | Oui |  |
 | Amélioration de cartes pendant le combat |  | Oui |  |
