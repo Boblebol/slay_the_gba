@@ -1101,6 +1101,40 @@ void test_stone_humidifier() {
     assert(!plain.has_relic("STONE_HUMIDIFIER"));
     assert(plain.max_hp == max_hp);
     std::cout << "[PASS] Stone Humidifier: +5 Max HP at each Rest Site rest" << std::endl;
+void test_large_capsule() {
+    // Obtained: 2 random relics join the run, and a Strike and a Defend join the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t relics = run.relics.size();
+    size_t deck = run.master_deck.size();
+    int strikes = 0;
+    int defends = 0;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (run.master_deck[i].id == CardId::STRIKE) ++strikes;
+        if (run.master_deck[i].id == CardId::DEFEND) ++defends;
+    }
+    run.add_relic("LARGE_CAPSULE");
+    assert(run.has_relic("LARGE_CAPSULE"));
+    assert(run.relics.size() == relics + 3);
+    assert(run.master_deck.size() == deck + 2);
+    int strikes_after = 0;
+    int defends_after = 0;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (run.master_deck[i].id == CardId::STRIKE) ++strikes_after;
+        if (run.master_deck[i].id == CardId::DEFEND) ++defends_after;
+    }
+    assert(strikes_after == strikes + 1 && defends_after == defends + 1);
+
+    // Without the relic: no relic and no card is given.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_relics = plain.relics.size();
+    size_t plain_deck = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("LARGE_CAPSULE"));
+    assert(plain.relics.size() == plain_relics + 1);
+    assert(plain.master_deck.size() == plain_deck);
+    std::cout << "[PASS] Large Capsule: 2 random relics and a Strike and a Defend on pickup" << std::endl;
 }
 
 int main() {
@@ -1138,6 +1172,7 @@ int main() {
     test_stone_humidifier();
     test_pomander();
     test_neows_talisman();
+    test_large_capsule();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
