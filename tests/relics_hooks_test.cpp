@@ -2012,6 +2012,37 @@ void test_old_coin() {
     std::cout << "[PASS] Old Coin: +300 gold when obtained" << std::endl;
 }
 
+void test_whetstone() {
+    // Obtained: two random Attacks of the deck are upgraded, never more than the deck holds.
+    auto upgraded_attacks = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) {
+            if (r.master_deck[i].upgraded && CardDef::get(r.master_deck[i].id).type == CardType::ATTACK) ++n;
+        }
+        return n;
+    };
+    auto attacks = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) {
+            if (CardDef::get(r.master_deck[i].id).type == CardType::ATTACK) ++n;
+        }
+        return n;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 465);
+    int before = upgraded_attacks(run);
+    run.add_relic("WHETSTONE");
+    assert(run.has_relic("WHETSTONE"));
+    assert(upgraded_attacks(run) == std::min(before + 2, attacks(run)));
+
+    // Without the relic, no Attack is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 465);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("WHETSTONE") && upgraded_attacks(plain) == before);
+    std::cout << "[PASS] Whetstone: upgrades 2 random Attacks when obtained" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2084,5 +2115,6 @@ int main() {
     test_mango();
     test_old_coin();
     test_pear();
+    test_whetstone();
     return 0;
 }

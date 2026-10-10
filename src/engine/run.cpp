@@ -669,6 +669,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     if (relic_id == "YUMMY_COOKIE" && has_relic("YUMMY_COOKIE")) upgrade_random_cards(4);
     if (relic_id == "SAND_CASTLE" && has_relic("SAND_CASTLE")) upgrade_random_cards(6);
+    if (relic_id == "WHETSTONE" && has_relic("WHETSTONE")) upgrade_random_cards(2, CardType::ATTACK);
     // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
     if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
         regenerate_map();
@@ -1167,7 +1168,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // At the merchant (#487)
         "THE_COURIER",
         // Retained hand on the first turn (#509)
-        "RINGING_TRIANGLE"
+        "RINGING_TRIANGLE",
+        // Upgrades on pickup (#465)
+        "WHETSTONE"
     };
     return ACTIVE_RELICS;
 }
