@@ -599,7 +599,9 @@ void test_strawberry() {
         if (chest.last_treasure_relic == "STRAWBERRY") {
             found = true;
             assert(chest.max_hp == before + 7);
-        } else {
+        } else if (chest.last_treasure_relic != "MANGO" && chest.last_treasure_relic != "PEAR" &&
+                   chest.last_treasure_relic != "LEES_WAFFLE") {
+            // The other relics that raise the maximum HP on pickup aside.
             assert(chest.max_hp == before);
         }
     }

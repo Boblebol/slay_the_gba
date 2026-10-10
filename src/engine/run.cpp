@@ -1159,10 +1159,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "LEES_WAFFLE", // Shared, out of combat
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "MANGO", // Shared, out of combat
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "OLD_COIN", // Shared, out of combat
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "PEAR", // Shared, out of combat
+        "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR",                                   // Shared, out of combat
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
@@ -1171,11 +1168,8 @@ std::span<const std::string_view> RunManager::active_relics() {
         "THE_COURIER",
         // Retained hand on the first turn (#509)
         "RINGING_TRIANGLE",
-        // Upgrades on pickup (#465)
-        "WHETSTONE"
-        "RINGING_TRIANGLE",
-        // Upgrades on pickup (#464)
-        "WAR_PAINT"
+        // Upgrades on pickup (#465, #464)
+        "WHETSTONE", "WAR_PAINT"
     };
     return ACTIVE_RELICS;
 }
