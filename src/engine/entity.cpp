@@ -88,6 +88,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Œil denté";
         max_hp = 6;
         hp = 6;
+    } else if (type == EnemyType::FLYCONID) {
+        name = "Mycoptère";
+        max_hp = 47;
+        hp = 47;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -99,6 +103,7 @@ void Enemy::init(EnemyType enemy_type) {
 
 uint8_t Enemy::hp_spread() const {
     switch (type) {
+        case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
         default: return 0;
     }
@@ -128,6 +133,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::LIVING_SHIELD: return 65;
         case EnemyType::FAT_GREMLIN: return 14;
         case EnemyType::VINE_SHAMBLER: return 64;
+        case EnemyType::FLYCONID: return 51;
         default: return 0;
     }
 }
@@ -462,6 +468,34 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.status_cards = 3;
         current_intent.status_pile = Pile::DISCARD;
         current_intent.description = "Distraction (3 Hébété)";
+    } else if (type == EnemyType::FLYCONID) {
+        // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the
+        // next phase with Vulnerable Spores, then draws among the three moves, never the same twice in a row.
+        enum Move : uint8_t { VULNERABLE_SPORES, FRAIL_SPORES, SMASH };
+        if (phase == 0 && hp < max_hp && enter_phase(1)) {
+            phase_turn = 1;
+            use_move(VULNERABLE_SPORES);
+        } else if (phase == 0) {
+            static constexpr MoveOption OPENING[] = { { FRAIL_SPORES }, { SMASH } };
+            use_move(draw_move(OPENING));
+        } else if (phase_turn > 1) {
+            static constexpr MoveOption ANY[] = { { VULNERABLE_SPORES }, { FRAIL_SPORES }, { SMASH } };
+            use_move(draw_move(ANY));
+        }
+        if (last_move == VULNERABLE_SPORES) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::VULNERABLE, 2 };
+            current_intent.description = "Spores fragilisantes (Vulnérable 2)";
+        } else if (last_move == FRAIL_SPORES) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
+            current_intent.description = "Spores fragilisantes (8 dmg, Fragilisé 2)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 12 : 11;
+            current_intent.description = "Fracas (11 dmg)";
+        }
     }
 }
 

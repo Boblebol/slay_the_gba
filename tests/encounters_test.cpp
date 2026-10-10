@@ -41,6 +41,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::FAT_GREMLIN: return "FAT_GREMLIN";
         case EnemyType::VINE_SHAMBLER: return "VINE_SHAMBLER";
         case EnemyType::EYE_WITH_TEETH: return "EYE_WITH_TEETH";
+        case EnemyType::FLYCONID: return "FLYCONID";
     }
     return {};
 }
@@ -156,7 +157,7 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::WEAK)) ==
            std::set<std::string_view>{ "FuzzyWurmCrawlerWeak" });
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal" }));
+           (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "FlyconidNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal" }));
     for (ActZone zone : ZONES) {
@@ -309,8 +310,8 @@ void test_same_seed_same_fights() {
         } else if (fight.starts_with("RubyRaidersNormal")) {
             ++raiders;
         } else {
-            assert(fight == "VineShamblerNormal VINE_SHAMBLER");
-            ++shamblers;
+            assert(fight == "VineShamblerNormal VINE_SHAMBLER" || fight == "FlyconidNormal FLYCONID");
+            if (fight.starts_with("VineShamblerNormal")) ++shamblers;
         }
     }
     assert(raiders > 0 && shamblers > 0);
