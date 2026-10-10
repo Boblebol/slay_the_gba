@@ -1760,6 +1760,25 @@ static void test_pen_nib() {
     std::cout << "[PASS] Pen Nib doubles every 10th Attack" << std::endl;
 }
 
+void test_strike_dummy() {
+    // With the relic, every card containing "Strike" deals 3 more damage per hit; other cards do not.
+    CombatEngine dummy = make_relic_combat(CharacterId::IRONCLAD, PowerId::STRIKE_DUMMY, 3);
+    dummy.enemies[0].hp = 200;
+    play(dummy, CardId::STRIKE);
+    assert(dummy.enemies[0].hp == 200 - 9);
+    play(dummy, CardId::TWIN_STRIKE);
+    assert(dummy.enemies[0].hp == 200 - 9 - 2 * 8);
+    play(dummy, CardId::BASH);
+    assert(dummy.enemies[0].hp == 200 - 9 - 2 * 8 - 8);
+
+    // Without it, a Strike deals its ordinary damage.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 200;
+    play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].hp == 200 - 6);
+    std::cout << "[PASS] Strike Dummy: cards containing Strike deal 3 more damage" << std::endl;
+}
+
 void test_white_beast_statue() {
     // With the statue, every combat reward holds a potion; without it, some do not.
     uint32_t plain_without = 0;
@@ -1892,6 +1911,7 @@ int main() {
     test_reptile_trinket();
     test_ringing_triangle();
     test_pen_nib();
+    test_strike_dummy();
     test_white_beast_statue();
     test_cauldron();
     test_bookmark();

@@ -151,6 +151,7 @@ enum class PowerId : uint8_t {
     SHURIKEN,          // every SHURIKEN_ATTACKS Attacks played in a turn: `amount` Strength
     ORNAMENTAL_FAN,    // every ORNAMENTAL_FAN_ATTACKS Attacks played in a turn: `amount` Block
     PEN_NIB,           // every PEN_NIB_ATTACKS Attacks played: that Attack deals double damage (counter = Attacks counted)
+    STRIKE_DUMMY,      // cards containing "Strike" deal `amount` more damage per hit
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy
     RED_SKULL,         // HP at RED_SKULL_HP_PERCENT % of Max HP or less: `amount` more Strength (counter = Strength given now)
