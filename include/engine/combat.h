@@ -205,6 +205,10 @@ public:
     FixedVector<Enemy, 3> enemies; // Multi-enemy field (Yu-Gi-Oh / Slay style: 1 to 3 enemies)
     int selected_target_index = 0;
     int16_t gold_lost = 0; // gold taken during the combat (curses in hand at the end of a turn), paid by the run after it
+    int16_t gold_gained = 0; // gold earned during the combat (Hand of Greed), paid by the run after it
+    uint8_t extra_card_rewards = 0; // extra card rewards earned during the combat (The Hunt)
+    uint8_t potions_gained = 0;     // random potions earned during the combat (Alchemize)
+    bool gambit_active = false;     // taking unblocked attack damage ends the combat in defeat (The Gambit)
     int16_t gold = 0; // the run's gold, lent to the combat for the relics that spend it (Seal of Gold)
     CharacterId current_character = CharacterId::IRONCLAD;
     

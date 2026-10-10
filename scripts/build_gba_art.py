@@ -758,6 +758,12 @@ CARDS: list[CardArt] = [
     CardArt("lethality", "necrobinder", "lethality", "power", (1, 1)),
     CardArt("shadow_step", "silent", "shadow_step", "skill", (1, 0)),
     CardArt("debilitate", "necrobinder", "debilitate", "attack", (1, 1)),
+    CardArt("hand_of_greed", "colorless", "hand_of_greed", "attack", (2, 2)),
+    CardArt("the_hunt", "silent", "the_hunt", "attack", (1, 1)),
+    CardArt("royalties", "regent", "royalties", "power", (1, 1)),
+    CardArt("forbidden_grimoire", "necrobinder", "forbidden_grimoire", "power", (2, 2)),
+    CardArt("alchemize", "colorless", "alchemize", "skill", (1, 1)),
+    CardArt("the_gambit", "colorless", "the_gambit", "skill", (0, 0)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

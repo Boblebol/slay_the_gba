@@ -619,6 +619,12 @@ enum class CardId : uint16_t {
     LETHALITY,
     SHADOW_STEP,
     DEBILITATE,
+    HAND_OF_GREED,
+    THE_HUNT,
+    ROYALTIES,
+    FORBIDDEN_GRIMOIRE,
+    ALCHEMIZE,
+    THE_GAMBIT,
     COUNT
 };
 

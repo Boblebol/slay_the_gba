@@ -6,6 +6,7 @@
 #include "engine/card.h"
 #include "engine/map.h"
 #include "engine/combat.h"
+#include "engine/rewards.h"
 #include "engine/shop.h"
 #include "engine/event_manager.h"
 
@@ -108,6 +109,7 @@ public:
     CombatEngine combat;
     FixedVector<DeckCard, 3> current_card_rewards;
     int16_t gold_reward = 0;
+    uint8_t extra_card_rewards = 0; // card rewards still to offer after this one (The Hunt)
     // Potion and relic offered on the reward screen, empty when the fight gave none or once taken.
     std::string_view potion_reward;
     std::string_view relic_reward;
@@ -248,6 +250,8 @@ private:
     uint32_t reward_seed() const;
     // Leaves the reward screen: the gold is paid, and a boss opens the next act.
     void finish_rewards();
+    void draw_card_rewards(bool boss, RewardRng& rng);
+    void next_card_reward_or_finish();
     // What a relic does when obtained.
     void on_relic_obtained(std::string_view relic_id);
     // Hooks of the relics that act outside the fights (see RunHook). A relic is added to the hook of its

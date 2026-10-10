@@ -870,6 +870,18 @@ bn::string_view base_name(engine::CardId id)
         return "Pas de l'ombre";
     case engine::CardId::DEBILITATE:
         return "Amoindrissement";
+    case engine::CardId::HAND_OF_GREED:
+        return "Main de la cupidité";
+    case engine::CardId::THE_HUNT:
+        return "La traque";
+    case engine::CardId::ROYALTIES:
+        return "Royalties";
+    case engine::CardId::FORBIDDEN_GRIMOIRE:
+        return "Grimoire interdit";
+    case engine::CardId::ALCHEMIZE:
+        return "Alchimie";
+    case engine::CardId::THE_GAMBIT:
+        return "La grande manœuvre";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1684,6 +1696,24 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::DEBILITATE:
         stream << "Inflige " << value << ". Vuln. et Aff. x2, " << secondary << " tours.";
+        break;
+    case engine::CardId::HAND_OF_GREED:
+        stream << "Inflige " << value << ". Coup de grâce : +" << value << " Or.";
+        break;
+    case engine::CardId::THE_HUNT:
+        stream << "Inflige " << value << ". Coup de grâce : +1 carte.";
+        break;
+    case engine::CardId::ROYALTIES:
+        stream << "Fin de combat : +" << value << " Or.";
+        break;
+    case engine::CardId::FORBIDDEN_GRIMOIRE:
+        stream << "Éternel. Fin de combat : retire 1 carte.";
+        break;
+    case engine::CardId::ALCHEMIZE:
+        stream << "Obtenez une potion au hasard. Épuisement.";
+        break;
+    case engine::CardId::THE_GAMBIT:
+        stream << "Armure " << value << ". Dégât subi : mort.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:

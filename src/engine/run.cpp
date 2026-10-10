@@ -396,7 +396,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::DAGGER_THROW, CardId::PREPARED, CardId::HIDDEN_DAGGERS,
                                               CardId::EXPOSE, CardId::TACTICIAN, CardId::ABRASIVE,
                                               CardId::MASTER_PLANNER, CardId::HAND_TRICK, CardId::UNTOUCHABLE,
-                                              CardId::RICOCHET, CardId::REFLEX, CardId::FLICK_FLACK, CardId::SHADOWMELD, CardId::TRACKING, CardId::SHADOW_STEP };
+                                              CardId::RICOCHET, CardId::REFLEX, CardId::FLICK_FLACK, CardId::SHADOWMELD, CardId::TRACKING, CardId::SHADOW_STEP, CardId::THE_HUNT };
     static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
                                               CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
                                               CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,
@@ -450,7 +450,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::FURNACE, CardId::PARRY, CardId::SUMMON_FORTH,
                                               CardId::BEAT_INTO_SHAPE, CardId::BIG_BANG, CardId::SEEKING_EDGE,
                                               CardId::SWORD_SAGE, CardId::THE_SMITH,
-                                              CardId::MANIFEST_AUTHORITY };
+                                              CardId::MANIFEST_AUTHORITY, CardId::ROYALTIES };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
@@ -479,7 +479,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::REAVE, CardId::GRAVE_WARDEN, CardId::CAPTURE_SPIRIT,
                                                    CardId::SEVERANCE, CardId::DIRGE, CardId::HAUNT,
                                                    CardId::DEVOUR_LIFE, CardId::SOUL_STORM,
-                                                   CardId::GLIMPSE_BEYOND, CardId::LETHALITY, CardId::DEBILITATE };
+                                                   CardId::GLIMPSE_BEYOND, CardId::LETHALITY, CardId::DEBILITATE, CardId::FORBIDDEN_GRIMOIRE };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;
@@ -495,13 +495,7 @@ uint32_t RunManager::reward_seed() const {
            (static_cast<uint32_t>(current_node_index + 1) * 0xC2B2AE35u);
 }
 
-void RunManager::generate_rewards() {
-    RoomType room = current_node_index >= 0 ? map.nodes[current_node_index].type : RoomType::MONSTER;
-    // Potions, relics and what a boss gives are drawn from the stream of the room, so the run's own sequence
-    // is the one it was before fights gave them.
-    RewardRng rng(reward_seed());
-    bool boss = room == RoomType::BOSS;
-
+void RunManager::draw_card_rewards(bool boss, RewardRng& rng) {
     // Offer distinct cards drawn at random from the hero's pool.
     current_card_rewards.clear();
     FixedVector<CardId, 512> candidates;
@@ -522,6 +516,16 @@ void RunManager::generate_rewards() {
         current_card_rewards.push_back(DeckCard(candidates[pick], false));
         candidates.erase(pick);
     }
+}
+
+void RunManager::generate_rewards() {
+    RoomType room = current_node_index >= 0 ? map.nodes[current_node_index].type : RoomType::MONSTER;
+    // Potions, relics and what a boss gives are drawn from the stream of the room, so the run's own sequence
+    // is the one it was before fights gave them.
+    RewardRng rng(reward_seed());
+    bool boss = room == RoomType::BOSS;
+
+    draw_card_rewards(boss, rng);
 
     // A boss gives 95 to 105 gold.
     gold_reward = boss ? static_cast<int16_t>(95 + rng.below(11)) : 15 + static_cast<int16_t>(next_random() % 15);
@@ -580,10 +584,21 @@ void RunManager::pick_card_reward(int reward_index) {
     if (reward_index >= 0 && static_cast<size_t>(reward_index) < current_card_rewards.size()) {
         add_card_to_deck(current_card_rewards[reward_index]);
     }
-    finish_rewards();
+    next_card_reward_or_finish();
 }
 
 void RunManager::skip_card_rewards() {
+    next_card_reward_or_finish();
+}
+
+void RunManager::next_card_reward_or_finish() {
+    // The Hunt: one more set of cards is offered before the rewards are over.
+    if (extra_card_rewards > 0) {
+        --extra_card_rewards;
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng);
+        return;
+    }
     finish_rewards();
 }
 
@@ -1423,6 +1438,18 @@ void RunManager::proceed_after_combat() {
     }
     combat.permanent_gains.clear();
     if (has_relic("SEAL_OF_GOLD")) gold = combat.gold;
+    // What the cards of the fight leave to the run: gold (Hand of Greed, Royalties), potions (Alchemize), an extra
+    // card reward (The Hunt), a card to remove from the deck (Forbidden Grimoire).
+    const bool won = combat.state == CombatState::VICTORY;
+    if (won) {
+        gain_gold(static_cast<int16_t>(combat.gold_gained + combat.power_amount(PowerId::ROYALTIES)));
+        gain_random_potions(combat.potions_gained);
+        extra_card_rewards = combat.extra_card_rewards;
+        if (combat.has_power(PowerId::FORBIDDEN_GRIMOIRE)) request_deck_choice(DeckChoiceKind::REMOVE, 1, true);
+    }
+    combat.gold_gained = 0;
+    combat.potions_gained = 0;
+    combat.extra_card_rewards = 0;
     // Gold taken by the cards left in hand at the end of a turn (curses).
     gold = static_cast<decltype(gold)>(std::max(0, static_cast<int>(gold) - combat.gold_lost));
     combat.gold_lost = 0;
