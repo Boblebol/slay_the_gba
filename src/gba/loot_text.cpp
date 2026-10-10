@@ -151,6 +151,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "WHITE_BEAST_STATUE", "Vous obtenez toujours une Potion dans les récompenses de combat." },
     { "WAR_HAMMER", "Lorsque vous tuez un Élite, Améliorez 4 cartes aléatoires." },
     { "STRAWBERRY", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 7." },
+    { "PEAR", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 10." },
     { "SMALL_CAPSULE", "Lorsque vous obtenez cette relique, obtenez une Relique aléatoire." },
     { "LOOMING_FRUIT", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 31." },
     { "NUTRITIOUS_OYSTER", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 11." },
