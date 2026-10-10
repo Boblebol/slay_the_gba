@@ -1185,6 +1185,32 @@ void test_stone_humidifier() {
     std::cout << "[PASS] Stone Humidifier: +5 Max HP at each Rest Site rest" << std::endl;
 }
 
+void test_meal_ticket() {
+    // With the relic: entering a shop heals 15 HP, capped at Max HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("MEAL_TICKET");
+    run.hp = 10;
+    enter_room_of_type(run, RoomType::SHOP);
+    assert(run.hp == 25);
+    run.hp = run.max_hp - 5;
+    enter_room_of_type(run, RoomType::SHOP);
+    assert(run.hp == run.max_hp);
+
+    // Entering another room heals nothing.
+    run.hp = 10;
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.hp == 10);
+
+    // Without the relic: a shop heals nothing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 10;
+    enter_room_of_type(plain, RoomType::SHOP);
+    assert(!plain.has_relic("MEAL_TICKET") && plain.hp == 10);
+    std::cout << "[PASS] Meal Ticket: 15 HP when entering a shop" << std::endl;
+}
+
 void test_tiny_mailbox() {
     // With the relic: each Rest procures 2 potions.
     RunManager run;
@@ -2405,6 +2431,7 @@ int main() {
     test_regal_pillow();
     test_eternal_feather();
     test_planisphere();
+    test_meal_ticket();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();
