@@ -835,6 +835,27 @@ void test_paels_legion() {
     std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
 }
 
+void test_arcane_scroll() {
+    // With the relic: one random Rare card of the hero's pool joins the deck on pickup.
+    RunManager scroll;
+    scroll.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t before = scroll.master_deck.size();
+    scroll.add_relic("ARCANE_SCROLL");
+    assert(scroll.has_relic("ARCANE_SCROLL"));
+    assert(scroll.master_deck.size() == before + 1);
+    CardId added = scroll.master_deck[scroll.master_deck.size() - 1].id;
+    assert(card_meta(added).rarity == CardRarity::RARE);
+    std::cout << "[PASS] Arcane Scroll: a random Rare card added to the deck on pickup" << std::endl;
+
+    // Without the relic: nothing is added.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t start = plain.master_deck.size();
+    plain.add_relic("STRAWBERRY");
+    assert(plain.master_deck.size() == start);
+    std::cout << "[PASS] Arcane Scroll: no card without the relic" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -857,6 +878,7 @@ int main() {
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
+    test_arcane_scroll();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

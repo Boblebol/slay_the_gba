@@ -616,6 +616,14 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
         for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::APPARITION, false });
     }
+    if (relic_id == "ARCANE_SCROLL" && has_relic("ARCANE_SCROLL")) {
+        // One random Rare card of the hero's pool, drawn the way a card reward is.
+        FixedVector<CardId, 128> rares;
+        for (CardId id : card_reward_pool(character)) {
+            if (card_meta(id).rarity == CardRarity::RARE) rares.push_back(id);
+        }
+        if (!rares.empty()) add_card_to_deck(DeckCard{ rares[next_random() % rares.size()], false });
+    }
     if (relic_id == "TANXS_WHISTLE" && has_relic("TANXS_WHISTLE")) add_card_to_deck(DeckCard{ CardId::WHISTLE, false });
     if (relic_id == "STORYBOOK" && has_relic("STORYBOOK")) add_card_to_deck(DeckCard{ CardId::BRIGHTEST_FLAME, false });
     if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
