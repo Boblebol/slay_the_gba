@@ -1433,6 +1433,12 @@ void RunManager::register_relic_powers() {
         combat.gold = gold;
         combat.add_power(PowerId::SEAL_OF_GOLD, 1);
     }
+    // Tea of Discourtesy (event): at the start of the next combat only, two Dazed shuffled into the draw pile. The
+    // counter marks the tea as drunk.
+    if (has_relic("TEA_OF_DISCOURTESY") && relic_counter("TEA_OF_DISCOURTESY") == 0 &&
+        set_relic_counter("TEA_OF_DISCOURTESY", 1)) {
+        for (int copy = 0; copy < 2; ++copy) combat.create_card(CardId::DAZED, Pile::DRAW);
+    }
     // Pumpkin Candle: one more energy each turn, for the first 5 combats; the counter holds the combats lit so far.
     if (has_relic("PUMPKIN_CANDLE") && relic_counter("PUMPKIN_CANDLE") < PUMPKIN_CANDLE_COMBATS) {
         combat.add_power(PowerId::TURN_ENERGY, 1);
