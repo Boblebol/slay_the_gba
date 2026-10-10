@@ -744,6 +744,10 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     if (relic_id == "PAELS_HORN" && has_relic("PAELS_HORN")) {
         for (int i = 0; i < 2; ++i) add_card_to_deck(DeckCard{ CardId::RELAX, false });
+    // Calling Bell (Ancient): the unique Curse of the Bell joins the deck, then 3 random relics.
+    if (relic_id == "CALLING_BELL" && has_relic("CALLING_BELL")) {
+        add_card_to_deck(DeckCard{ CardId::CURSE_OF_THE_BELL, false });
+        gain_random_relics(3);
     }
     if (relic_id == "TANXS_WHISTLE" && has_relic("TANXS_WHISTLE")) add_card_to_deck(DeckCard{ CardId::WHISTLE, false });
     if (relic_id == "STORYBOOK" && has_relic("STORYBOOK")) add_card_to_deck(DeckCard{ CardId::BRIGHTEST_FLAME, false });
