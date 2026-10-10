@@ -1176,6 +1176,27 @@ void test_tiny_mailbox() {
     std::cout << "[PASS] Tiny Mailbox: 2 potions at each Rest" << std::endl;
 }
 
+void test_regal_pillow() {
+    // With the relic: each Rest heals 15 HP more than the usual 30% of Max HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("REGAL_PILLOW");
+    run.max_hp = 80;
+    run.hp = 20;
+    run.rest_at_campfire();
+    assert(run.hp == 59);  // 20 + 24 (30%) + 15
+
+    // Without the relic: a Rest heals only the usual 30% of Max HP.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.max_hp = 80;
+    plain.hp = 20;
+    plain.rest_at_campfire();
+    assert(!plain.has_relic("REGAL_PILLOW"));
+    assert(plain.hp == 44);  // 20 + 24
+    std::cout << "[PASS] Regal Pillow: 15 extra HP at each Rest" << std::endl;
+}
+
 void test_pomander() {
     // Obtained: one card of the deck is picked to be upgraded.
     RunManager run;
@@ -2107,6 +2128,7 @@ int main() {
     test_lava_rock();
     test_stone_humidifier();
     test_tiny_mailbox();
+    test_regal_pillow();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();
