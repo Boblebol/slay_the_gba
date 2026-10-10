@@ -630,6 +630,9 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
                     add_card_to_deck(DeckCard{ static_cast<CardId>(id), false });
                     break;
                 }
+            }
+        }
+    }
     // Glass Eye (Ancient): 2 random Common, 2 Uncommon and 1 Rare cards of the hero's pool, all distinct.
     if (relic_id == "GLASS_EYE" && has_relic("GLASS_EYE")) {
         struct EyeDraw {

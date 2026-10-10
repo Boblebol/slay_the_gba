@@ -1288,6 +1288,8 @@ void test_runic_pyramid() {
     end_turn_idle(plain.combat);
     assert(plain.combat.discard_pile.size() == 5);
     std::cout << "[PASS] Runic Pyramid: the hand is kept at the end of the turn" << std::endl;
+}
+
 void test_ectoplasm() {
     // With the relic, no gold is gained: the Golden Pearl's 150 do not come in.
     RunManager run;
@@ -1312,6 +1314,8 @@ void test_ectoplasm() {
     assert(run.combat.player.energy == plain.combat.player.energy + 1);
 
     std::cout << "[PASS] Ectoplasm: no gold gained, +1 energy each turn" << std::endl;
+}
+
 void test_philosophers_stone() {
     // Every enemy starts the combat with 1 Strength, the player does not.
     RunManager stone = make_relic_run(CharacterId::IRONCLAD, { "PHILOSOPHERS_STONE" });
@@ -1329,6 +1333,8 @@ void test_philosophers_stone() {
     end_turn_idle(plain.combat);
     assert(stone.combat.player.energy == plain.combat.player.energy + 1);
     std::cout << "[PASS] Philosopher's Stone: 1 energy each turn, 1 Strength for every enemy" << std::endl;
+}
+
 void test_dusty_tome() {
     // Obtained: one card joins the deck, an Ancient card of the hero.
     RunManager run;
@@ -1347,6 +1353,8 @@ void test_dusty_tome() {
     assert(!plain.has_relic("DUSTY_TOME") && plain.master_deck.size() == deck_size);
 
     std::cout << "[PASS] Dusty Tome: an Ancient card of the hero when obtained" << std::endl;
+}
+
 void test_velvet_choker() {
     // With the relic: one more energy at the start of each turn, and six cards at most played each turn.
     RunManager run = make_relic_run(CharacterId::IRONCLAD, { "VELVET_CHOKER" });
@@ -1368,6 +1376,8 @@ void test_velvet_choker() {
     for (int i = 0; i < 7; ++i) assert(plain.combat.play_card(0, -1));
     assert(!plain.combat.has_power(PowerId::VELVET_CHOKER));
     std::cout << "[PASS] Velvet Choker: +1 energy each turn, no more than 6 cards played" << std::endl;
+}
+
 void test_glass_eye() {
     // Obtained: 2 Common, 2 Uncommon and 1 Rare cards join the deck.
     RunManager run;
@@ -1393,6 +1403,8 @@ void test_glass_eye() {
     assert(!plain.has_relic("GLASS_EYE") && plain.master_deck.size() == plain_size);
 
     std::cout << "[PASS] Glass Eye: 2 Common, 2 Uncommon and 1 Rare cards when obtained" << std::endl;
+}
+
 void test_prismatic_gem() {
     // Start of each turn: one more energy, as with Blood Soaked Rose.
     RunManager gem = make_relic_run(CharacterId::IRONCLAD, { "PRISMATIC_GEM" });
@@ -1453,12 +1465,6 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
-    test_ectoplasm();
-    test_philosophers_stone();
-    test_dusty_tome();
-    test_velvet_choker();
-    test_glass_eye();
-    test_prismatic_gem();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();
@@ -1478,5 +1484,11 @@ int main() {
     test_empty_cage();
     test_pandoras_box();
     test_runic_pyramid();
+    test_ectoplasm();
+    test_philosophers_stone();
+    test_dusty_tome();
+    test_velvet_choker();
+    test_glass_eye();
+    test_prismatic_gem();
     return 0;
 }
