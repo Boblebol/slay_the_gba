@@ -3199,6 +3199,25 @@ void test_infused_core() {
     std::cout << "[PASS] Infused Core: 3 Lightning orbs at the start of each combat, each 1 damage more" << std::endl;
 }
 
+void test_crossbow() {
+    // With the relic: the start of the next turn adds one random free Attack to the hand.
+    CombatEngine with = make_relic_combat(CharacterId::IRONCLAD, PowerId::CROSSBOW, 1);
+    end_turn_idle(with);
+    assert(with.state == CombatState::PLAYER_TURN);
+    int free_attacks = 0;
+    for (size_t i = 0; i < with.hand.size(); ++i) {
+        if (with.hand[i].free_this_turn && CardDef::get(with.hand[i].id).type == CardType::ATTACK) ++free_attacks;
+    }
+    assert(free_attacks == 1);
+
+    // Without the relic, no free card appears.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    end_turn_idle(plain);
+    for (size_t i = 0; i < plain.hand.size(); ++i) assert(!plain.hand[i].free_this_turn);
+
+    std::cout << "[PASS] Crossbow: a random free Attack joins the hand at the start of the turn" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3316,6 +3335,7 @@ int main() {
     test_maw_bank();
     test_fake_happy_flower();
     test_history_course();
+    test_crossbow();
     test_pollinous_core();
     test_chosen_cheese();
     test_fake_blood_vial();

@@ -218,6 +218,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "TOUGH_BANDAGES", "Chaque fois que vous défaussez une carte pendant votre tour, gagnez 3 d'Armure." },
     { "TUNING_FORK", "Toutes les 10 Compétences que vous jouez, vous gagnez 7 d'Armure." },
     { "TWISTED_FUNNEL", "Au début de chaque combat, appliquez 4 de Poison à TOUS les ennemis." },
+    { "CROSSBOW", "Au début de votre tour, ajoutez une Attaque aléatoire à votre Main. Elle coûte 0 ce tour." },
     { "HISTORY_COURSE", "Au début de votre tour, jouez une copie de la dernière Attaque que vous avez jouée." },
     { "UNCEASING_TOP", "Chaque fois que votre Main est vide pendant votre tour, piochez une carte." },
     { "VAJRA", "Démarrez chaque combat avec 1 de Force." },

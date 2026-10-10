@@ -1447,6 +1447,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("REPTILE_TRINKET")) combat.add_power(PowerId::REPTILE_TRINKET, 3);
     if (has_relic("CENTENNIAL_PUZZLE")) combat.add_power(PowerId::CENTENNIAL_PUZZLE, 3);
     if (has_relic("LIZARD_TAIL")) combat.add_power(PowerId::LIZARD_TAIL, 50);
+    if (has_relic("CROSSBOW")) combat.add_power(PowerId::CROSSBOW, 1);
     if (has_relic("HISTORY_COURSE")) combat.add_power(PowerId::HISTORY_COURSE, 0);
     if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);
     if (has_relic("TOUGH_BANDAGES")) combat.add_power(PowerId::TOUGH_BANDAGES, 3);
