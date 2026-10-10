@@ -718,6 +718,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         hp = max_hp;
     }
     if (relic_id == "MANGO" && has_relic("MANGO")) gain_max_hp(14);
+    // Event relic (Fake Lee's Waffle): heals 10% of the max HP on pickup.
+    if (relic_id == "FAKE_LEES_WAFFLE" && has_relic("FAKE_LEES_WAFFLE")) heal(max_hp * 10 / 100);
     if (relic_id == "PEAR" && has_relic("PEAR")) gain_max_hp(10);
     if (relic_id == "LARGE_CAPSULE" && has_relic("LARGE_CAPSULE")) {
         gain_random_relics(2);
