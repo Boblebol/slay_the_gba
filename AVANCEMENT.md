@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 71,4 %** — 880 faits, 20 partiels, 346 à faire (35 hors périmètre).
+**Avancement global : 72,3 %** — 891 faits, 20 partiels, 335 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 92 | 1 | 7 | 92,5 % |
 | [La Nécrolieuse](#necrobinder) | 98 | 1 | 3 | 96,6 % |
 | [Cartes communes aux cinq éditions](#cartes) | 106 | 0 | 14 | 88,3 % |
-| [Reliques et potions](#reliques) | 186 | 0 | 135 | 57,9 % |
+| [Reliques et potions](#reliques) | 197 | 0 | 124 | 61,4 % |
 | [Bestiaire](#bestiaire) | 19 | 1 | 84 | 18,8 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 43 | 1 | 15 | 73,7 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **880** | **20** | **346** | **71,4 %** |
+| **Total** | **891** | **20** | **335** | **72,3 %** |
 
 <a id="ironclad"></a>
 
@@ -859,16 +859,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 57,9 %
+## Reliques et potions — 61,4 %
 
-### Reliques partagées — 62,4 %
+### Reliques partagées — 71,8 %
 
-73 faits, 0 partiel, 44 à faire.
+84 faits, 0 partiel, 33 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Ancre | Commune | Oui |  |
-| Aubergine d'améthyste | Commune | Non |  |
+| Aubergine d'améthyste | Commune | Oui |  |
 | Bracelet Juzu | Commune | Non |  |
 | Ceinture à potions | Commune | Non |  |
 | Fiole de sang | Commune | Oui |  |
@@ -879,10 +879,10 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Livre des cinq anneaux | Commune | Non |  |
 | Mannequin d'entraînement | Commune | Oui |  |
 | Masque rouge | Commune | Oui |  |
-| Oreiller royal | Commune | Non |  |
-| Peinture de guerre | Commune | Non |  |
+| Oreiller royal | Commune | Oui |  |
+| Peinture de guerre | Commune | Oui |  |
 | Pendule | Commune | Oui |  |
-| Pierre à aiguiser | Commune | Non |  |
+| Pierre à aiguiser | Commune | Oui |  |
 | Pierre étrangement lisse | Commune | Oui |  |
 | Puzzle centenaire | Commune | Oui |  |
 | Pétard de fête | Commune | Oui |  |
@@ -901,7 +901,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Breloque reptile | Peu commune | Oui |  |
 | Candélabre | Peu commune | Oui |  |
 | Canon miniature | Peu commune | Non |  |
-| Chapeau melon | Peu commune | Non |  |
+| Chapeau melon | Peu commune | Oui |  |
 | Corne de diablotin | Peu commune | Oui |  |
 | Coupe-papier | Peu commune | Oui |  |
 | Crapaud pétrifié | Peu commune | Non |  |
@@ -917,7 +917,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Planisphère | Peu commune | Non |  |
 | Plume éternelle | Peu commune | Non |  |
 | Pointe de stylo | Peu commune | Oui |  |
-| Poire | Peu commune | Non |  |
+| Poire | Peu commune | Oui |  |
 | Poisson chanceux | Peu commune | Non |  |
 | Sablier de mercure | Peu commune | Oui |  |
 | Taquet d'amarrage | Peu commune | Oui |  |
@@ -938,14 +938,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Lampe inquiétante | Rare | Non |  |
 | Le Coursier | Rare | Oui |  |
 | Main momifiée | Rare | Oui |  |
-| Mangue | Rare | Non |  |
+| Mangue | Rare | Oui |  |
 | Montre à gousset | Rare | Oui |  |
 | Moulin à prières | Rare | Non |  |
 | Os à viande | Rare | Oui |  |
 | Pelle | Rare | Non |  |
 | Pince robuste | Rare | Oui |  |
 | Pion | Rare | Oui |  |
-| Pièce antique | Rare | Non |  |
+| Pièce antique | Rare | Oui |  |
 | Queue de lézard | Rare | Oui |  |
 | Shuriken | Rare | Oui |  |
 | Soufflet | Rare | Oui |  |
@@ -966,8 +966,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Chaudron | Boutique | Oui |  |
 | Composé X | Boutique | Non |  |
 | Fronde du courage | Boutique | Oui |  |
-| Fruit du dragon | Boutique | Non |  |
-| Gaufre de Lee | Boutique | Non |  |
+| Fruit du dragon | Boutique | Oui |  |
+| Gaufre de Lee | Boutique | Oui |  |
 | Graine fantôme | Boutique | Oui |  |
 | Kifuda | Boutique | Non |  |
 | L'Abaque | Boutique | Oui |  |
@@ -979,7 +979,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Planétaire | Boutique | Non |  |
 | Poignard | Boutique | Non |  |
 | Sceau royal | Boutique | Non |  |
-| Tapis miteux | Boutique | Non |  |
+| Tapis miteux | Boutique | Oui |  |
 | Tente miniature | Boutique | Non |  |
 | Triangle résonnant | Boutique | Oui |  |
 | Lentille de Fresnel | Évènement | Non |  |

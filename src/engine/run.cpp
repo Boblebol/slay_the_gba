@@ -729,6 +729,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "WHETSTONE" && has_relic("WHETSTONE")) upgrade_random_cards(2, CardType::ATTACK);
     // War Paint: upgrades 2 random Skills when obtained.
     if (relic_id == "WAR_PAINT" && has_relic("WAR_PAINT")) upgrade_random_cards(2, CardType::SKILL);
+    // Fragrant Mushroom (Event): loses 15 HP, never below 1, then upgrades 2 random cards.
+    if (relic_id == "FRAGRANT_MUSHROOM" && has_relic("FRAGRANT_MUSHROOM")) {
+        hp = std::max<int16_t>(1, hp - 15);
+        upgrade_random_cards(2);
+    }
     // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
     if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
         regenerate_map();
