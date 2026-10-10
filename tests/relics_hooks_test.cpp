@@ -862,6 +862,26 @@ void test_delicate_frond() {
     std::cout << "[PASS] Delicate Frond: every empty potion slot filled at combat start" << std::endl;
 }
 
+void test_pomander() {
+    // Obtained: one card of the deck is picked to be upgraded.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("POMANDER");
+    assert(run.has_relic("POMANDER"));
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::UPGRADE && run.deck_choice.remaining == 1);
+    assert(!run.skip_deck_choice()); // it has to be made
+    assert(run.resolve_deck_choice(0) && run.master_deck[0].upgraded);
+    assert(!run.has_deck_choice());
+
+    // Without the relic: nothing is asked and nothing is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    assert(std::none_of(plain.master_deck.begin(), plain.master_deck.end(), [](const DeckCard& c) { return c.upgraded; }));
+    std::cout << "[PASS] Pomander: one card of the deck picked to be upgraded when obtained" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -1085,6 +1105,7 @@ int main() {
     test_new_leaf();
     test_lava_rock();
     test_stone_humidifier();
+    test_pomander();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
