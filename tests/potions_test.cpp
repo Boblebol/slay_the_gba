@@ -18,6 +18,8 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
+    "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION",
+    "ASHWATER",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -754,6 +756,37 @@ void test_stable_serum() {
     assert(combat.hand.size() == 5);
 
     std::cout << "[PASS] Stable Serum: retain the hand for 2 turns" << std::endl;
+void test_ashwater() {
+    // Exhaust any number of cards of the hand: the choice is optional and capped by the hand size.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.hand.size() == 5);
+    assert(combat.use_potion("ASHWATER"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].kind == ChoiceKind::EXHAUST);
+    assert(combat.pending_choices[0].source == Pile::HAND);
+    assert(combat.pending_choices[0].optional);
+    assert(combat.choice_size() == 5);
+    assert(std::string_view(combat.combat_log) == "Ashwater!");
+    assert(combat.player.energy == 3);
+
+    const CardId first = combat.hand[0].id;
+    const CardId third = combat.hand[2].id;
+    const uint8_t pick[] = { 0, 2 };
+    assert(combat.resolve_choice(pick));
+    assert(!combat.choice_pending());
+    assert(combat.hand.size() == 3);
+    assert(combat.exhaust_pile.size() == 2);
+    assert((combat.exhaust_pile[0].id == first && combat.exhaust_pile[1].id == third)
+        || (combat.exhaust_pile[0].id == third && combat.exhaust_pile[1].id == first));
+    assert(combat.discard_pile.empty() && combat.draw_pile.size() == 5);
+
+    // Picking nothing is allowed.
+    CombatEngine none = make_combat(CharacterId::IRONCLAD);
+    assert(none.use_potion("ASHWATER"));
+    assert(none.resolve_choice(std::span<const uint8_t>{}));
+    assert(none.hand.size() == 5 && none.exhaust_pile.empty());
+
+    std::cout << "[PASS] Ashwater: exhaust any number of cards of the hand" << std::endl;
 }
 
 void test_unknown_potion() {
@@ -829,6 +862,7 @@ int main() {
     test_duplicator();
     test_droplet_of_precognition();
     test_stable_serum();
+    test_ashwater();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;

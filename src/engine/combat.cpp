@@ -6178,6 +6178,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "DUPLICATOR") {
         add_power(PowerId::DUPLICATION, 1, true);
         set_log("Duplicator!");
+    } else if (potion_id == "ASHWATER") {
+        ask_choice(CardChoice{ ChoiceKind::EXHAUST, 10, true });
+        set_log("Ashwater!");
     } else if (potion_id == "DROPLET_OF_PRECOGNITION") {
         ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, 1);
         set_log("Droplet of Precognition!");

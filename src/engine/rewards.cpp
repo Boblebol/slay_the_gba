@@ -19,6 +19,7 @@ constexpr uint32_t mix(uint32_t value) {
 }
 
 constexpr ActivePotion ACTIVE_POTIONS[] = {
+    { "ASHWATER" },
     { "BLESSING_OF_THE_FORGE" }, { "BLOCK_POTION" }, { "BLOOD_POTION" },
     { "BONE_BREW", false, CharacterId::NECROBINDER },
     { "BOTTLED_POTENTIAL" }, { "CLARITY" }, { "CUNNING_POTION" }, { "CURE_ALL" }, { "DEXTERITY_POTION" },
