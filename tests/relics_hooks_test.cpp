@@ -853,6 +853,39 @@ void test_golden_pearl() {
     std::cout << "[PASS] Golden Pearl: +150 gold when obtained" << std::endl;
 }
 
+void test_paels_eye() {
+    // With the relic: ending the first turn without a card exhausts the hand and gives an extra turn.
+    CombatEngine eye = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_EYE, 1);
+    int16_t hp = eye.player.hp;
+    size_t exhausted = eye.exhaust_pile.size();
+    size_t hand_size = eye.hand.size();
+    assert(hand_size > 0);
+    end_turn_attacked(eye, 11);
+    assert(eye.state == CombatState::PLAYER_TURN);
+    assert(eye.player.hp == hp); // the enemies did not act
+    assert(eye.exhaust_pile.size() == exhausted + hand_size);
+    assert(eye.hand.size() > 0);
+    // Once per combat: the next empty turn is a normal one.
+    end_turn_attacked(eye, 11);
+    assert(eye.player.hp == hp - 11);
+
+    // A turn with a card played gives nothing.
+    CombatEngine played = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_EYE, 1);
+    play(played, CardId::DEFEND);
+    hp = played.player.hp;
+    end_turn_attacked(played, 11);
+    assert(played.player.hp < hp);
+    assert(played.exhaust_pile.empty());
+
+    // Without the relic: the enemies act.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    hp = plain.player.hp;
+    end_turn_attacked(plain, 11);
+    assert(plain.player.hp == hp - 11);
+    assert(plain.exhaust_pile.empty());
+    std::cout << "[PASS] Pael's Eye: empty first turn exhausts the hand and gives an extra turn" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -876,6 +909,7 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    test_paels_eye();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

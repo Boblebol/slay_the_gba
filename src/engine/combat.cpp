@@ -5611,6 +5611,17 @@ void CombatEngine::end_player_turn() {
         card.cost_one_this_turn = false;
     }
 
+    // Pael's Eye: the first turn of the combat ended without a card played exhausts the hand and gives an
+    // extra turn, the enemies do not act in between.
+    bool extra_turn = false;
+    if (counters.cards_played() == 0 && power_amount(PowerId::PAELS_EYE) > 0) {
+        for (size_t i = powers.size(); i-- > 0;) {
+            if (powers[i].id == PowerId::PAELS_EYE) powers.erase(i);
+        }
+        extra_turn = true;
+        while (!hand.empty()) exhaust_from_hand(hand.size() - 1);
+    }
+
     // Cards that hurt while they are still in hand (Burn, curses).
     for (size_t i = 0; i < hand.size() && player.is_alive(); ++i) trigger_end_of_turn_in_hand(hand[i]);
     if (!player.is_alive()) {
@@ -5680,6 +5691,12 @@ void CombatEngine::end_player_turn() {
     if (!has_alive_enemies()) {
         state = CombatState::VICTORY;
         set_log("Victory!");
+        return;
+    }
+
+    if (extra_turn) {
+        start_player_turn();
+        set_log("Extra turn!");
         return;
     }
 
