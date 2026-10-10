@@ -96,6 +96,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Sonobot";
         max_hp = 18;
         hp = 18;
+    } else if (type == EnemyType::CUBEX_CONSTRUCT) {
+        name = "Assemblage Cubex";
+        max_hp = 65;
+        hp = 65;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -140,6 +144,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::VINE_SHAMBLER: return 64;
         case EnemyType::STABBOT: return 19;
         case EnemyType::NOISEBOT: return 19;
+        case EnemyType::CUBEX_CONSTRUCT: return 70;
         default: return 0;
     }
 }
@@ -487,6 +492,25 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.status_cards = 2;
         current_intent.status_pile = Pile::DISCARD;
         current_intent.description = "Ébruitement (2 Hébété)";
+    } else if (type == EnemyType::CUBEX_CONSTRUCT) {
+        // Charge Up, two Repeater Blasts, Expel, then the blasts and Expel again.
+        current_intent.status_type = StatusType::STRENGTH;
+        current_intent.status_amount = 2;
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.description = "Chargement (+2 Force)";
+        } else if ((turn_number - 2) % 3 != 2) {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.description = "Tir répéteur (7 dmg, +2 Force)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 6 : 5;
+            current_intent.hits = 2;
+            current_intent.status_type = StatusType::NONE;
+            current_intent.status_amount = 0;
+            current_intent.description = "Éjection (5 dmg x2)";
+        }
     }
 }
 

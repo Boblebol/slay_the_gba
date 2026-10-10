@@ -173,6 +173,7 @@ MONSTERS: dict[str, str] = {
     "eye_with_teeth": "eye_with_teeth",
     "stabbot": "stabbot",
     "noisebot": "noisebot",
+    "cubex_construct": "cubex_construct",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.

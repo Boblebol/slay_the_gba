@@ -358,7 +358,8 @@ enum class EnemyType : uint8_t {
     VINE_SHAMBLER,
     EYE_WITH_TEETH,
     STABBOT,
-    NOISEBOT
+    NOISEBOT,
+    CUBEX_CONSTRUCT
 };
 
 // What a monster sees of the fight when it chooses its next move.

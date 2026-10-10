@@ -43,6 +43,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::EYE_WITH_TEETH: return "EYE_WITH_TEETH";
         case EnemyType::STABBOT: return "STABBOT";
         case EnemyType::NOISEBOT: return "NOISEBOT";
+        case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
     }
     return {};
 }
@@ -158,7 +159,7 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::WEAK)) ==
            std::set<std::string_view>{ "FuzzyWurmCrawlerWeak" });
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal" }));
+           (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal" }));
     for (ActZone zone : ZONES) {
@@ -313,7 +314,7 @@ void test_same_seed_same_fights() {
         } else if (fight.starts_with("RubyRaidersNormal")) {
             ++raiders;
         } else {
-            assert(fight == "VineShamblerNormal VINE_SHAMBLER");
+            assert(fight == "VineShamblerNormal VINE_SHAMBLER" || fight == "CubexConstructNormal CUBEX_CONSTRUCT");
             ++shamblers;
         }
     }
