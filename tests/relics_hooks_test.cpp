@@ -853,6 +853,26 @@ void test_golden_pearl() {
     std::cout << "[PASS] Golden Pearl: +150 gold when obtained" << std::endl;
 }
 
+void test_dusty_tome() {
+    // Obtained: one card joins the deck, an Ancient card of the hero.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck_size = run.master_deck.size();
+    run.add_relic("DUSTY_TOME");
+    assert(run.has_relic("DUSTY_TOME"));
+    assert(run.master_deck.size() == deck_size + 1);
+    const CardMeta& gained = card_meta(run.master_deck[run.master_deck.size() - 1].id);
+    assert(gained.rarity == CardRarity::ANCIENT && gained.pool == CardPool::IRONCLAD);
+
+    // Without the relic, the deck stays where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("DUSTY_TOME") && plain.master_deck.size() == deck_size);
+
+    std::cout << "[PASS] Dusty Tome: an Ancient card of the hero when obtained" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -876,6 +896,7 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    test_dusty_tome();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
