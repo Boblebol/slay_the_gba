@@ -2280,6 +2280,33 @@ void test_mango() {
     std::cout << "[PASS] Mango: 14 more max HP on pickup" << std::endl;
 }
 
+void test_fake_lees_waffle() {
+    // Obtained: heals 10% of the max HP, capped at the max HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 512);
+    int16_t max_hp = run.max_hp;
+    run.hp = 20;
+    run.add_relic("FAKE_LEES_WAFFLE");
+    assert(run.has_relic("FAKE_LEES_WAFFLE"));
+    assert(run.hp == 20 + max_hp * 10 / 100);
+    assert(run.max_hp == max_hp);
+
+    RunManager near_full;
+    near_full.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 512);
+    near_full.hp = static_cast<int16_t>(near_full.max_hp - 1);
+    near_full.add_relic("FAKE_LEES_WAFFLE");
+    assert(near_full.hp == near_full.max_hp);
+
+    // Without the relic, the HP stays as it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 512);
+    plain.hp = 20;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("FAKE_LEES_WAFFLE"));
+    assert(plain.hp == 20);
+    std::cout << "[PASS] Fake Lee's Waffle: heals 10% of the max HP on pickup" << std::endl;
+}
+
 void test_old_coin() {
     // Obtained: 300 gold, paid once.
     RunManager run;
@@ -2907,6 +2934,7 @@ int main() {
     test_bookmark();
     test_tungsten_rod();
     test_mango();
+    test_fake_lees_waffle();
     test_old_coin();
     test_pear();
     test_whetstone();
