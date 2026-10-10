@@ -1010,6 +1010,26 @@ void test_new_leaf() {
     plain.add_relic("ANCHOR");
     assert(!plain.has_deck_choice() && plain.master_deck[0].id == first);
     std::cout << "[PASS] New Leaf: nothing asked without the relic" << std::endl;
+void test_lava_rock() {
+    // With the rock, the Act 1 Boss gives 2 new relics when defeated, never the rock nor the same one twice.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("LAVA_ROCK");
+    size_t before = run.relics.size();
+    enter_room_of_type(run, RoomType::BOSS);
+    run.proceed_after_combat();
+    assert(run.relics.size() == before + 2);
+    assert(run.relics[before] != run.relics[before + 1]);
+    assert(run.relics[before] != "LAVA_ROCK" && run.relics[before + 1] != "LAVA_ROCK");
+
+    // Without it, the Act 1 Boss adds no relic to the run.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_before = plain.relics.size();
+    enter_room_of_type(plain, RoomType::BOSS);
+    plain.proceed_after_combat();
+    assert(plain.relics.size() == plain_before && !plain.has_relic("LAVA_ROCK"));
+    std::cout << "[PASS] Lava Rock: Act 1 Boss gives 2 relics" << std::endl;
 }
 
 int main() {
@@ -1043,6 +1063,7 @@ int main() {
     test_lead_paperweight();
     test_neows_torment();
     test_new_leaf();
+    test_lava_rock();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
