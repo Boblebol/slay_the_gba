@@ -92,11 +92,31 @@ void test_expose() {
     std::cout << "[PASS] Silent: Expose" << std::endl;
 }
 
+void test_untouchable() {
+    for (bool upgraded : { false, true }) {
+        // Untouchable: 2 energy, Gain 6 Block, or 9 once upgraded.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        play(combat, DeckCard(CardId::UNTOUCHABLE, upgraded));
+        assert(combat.player.block == (upgraded ? 9 : 6));
+        assert(combat.player.energy == combat.player.max_energy - 2);
+        assert(count_in(combat.discard_pile, CardId::UNTOUCHABLE) == 1);
+    }
+
+    // Base and upgraded definitions: 2 energy, 6 then 9 Block.
+    assert(CardDef::get_cost(CardId::UNTOUCHABLE, false) == 2 && CardDef::get_cost(CardId::UNTOUCHABLE, true) == 2);
+    assert(CardDef::get_value(CardId::UNTOUCHABLE, false) == 6 && CardDef::get_value(CardId::UNTOUCHABLE, true) == 9);
+    assert(CardDef::get(CardId::UNTOUCHABLE).type == CardType::SKILL);
+
+    assert_in_pool(CharacterId::SILENT, { CardId::UNTOUCHABLE });
+    std::cout << "[PASS] Silent: Untouchable" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Silent Cards ===" << std::endl;
     test_expose();
+    test_untouchable();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
