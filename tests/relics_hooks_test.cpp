@@ -853,6 +853,32 @@ void test_golden_pearl() {
     std::cout << "[PASS] Golden Pearl: +150 gold when obtained" << std::endl;
 }
 
+void test_ectoplasm() {
+    // With the relic, no gold is gained: the Golden Pearl's 150 do not come in.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    int16_t gold = run.gold;
+    run.add_relic("ECTOPLASM");
+    assert(run.has_relic("ECTOPLASM"));
+    run.add_relic("GOLDEN_PEARL");
+    assert(run.has_relic("GOLDEN_PEARL") && run.gold == gold);
+
+    // Without the relic, the same pearl gives its gold.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("GOLDEN_PEARL");
+    assert(!plain.has_relic("ECTOPLASM") && plain.gold == gold + 150);
+
+    // One more energy at the start of each turn, only with the relic.
+    run.map.nodes[0].type = RoomType::MONSTER;
+    run.enter_room(0);
+    plain.map.nodes[0].type = RoomType::MONSTER;
+    plain.enter_room(0);
+    assert(run.combat.player.energy == plain.combat.player.energy + 1);
+
+    std::cout << "[PASS] Ectoplasm: no gold gained, +1 energy each turn" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -876,6 +902,7 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    test_ectoplasm();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
