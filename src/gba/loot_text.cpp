@@ -95,6 +95,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "REGALITE", "La première fois que vous créez une carte chaque tour, gagnez 4 d'Armure." },
     { "RIPPLE_BASIN", "Si vous n'avez pas joué d'Attaques pendant votre tour, gagnez 4 d'Armure." },
     { "RUNIC_CAPACITOR", "Démarrez chaque combat avec 3 Emplacements d'Orbe supplémentaires." },
+    { "SAND_CASTLE", "Lorsque vous obtenez cette relique, Améliorez 6 cartes aléatoires." },
     { "SCREAMING_FLAGON", "Si votre Main est vide à la fin de votre tour, infligez 20 dégâts à TOUS les ennemis." },
     { "SELF_FORMING_CLAY", "Chaque fois que vous perdez des PV en combat, gagnez 3 d'Armure au tour suivant." },
     { "DISTINGUISHED_CAPE", "Lorsque vous obtenez cette relique, ajoutez 2 Malédictions aléatoires et 3 Apparitions à votre Deck." },
