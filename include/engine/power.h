@@ -149,6 +149,7 @@ enum class PowerId : uint8_t {
     BURNING_STICKS,    // first Skill exhausted: a copy of it comes to the hand
     SHURIKEN,          // every SHURIKEN_ATTACKS Attacks played in a turn: `amount` Strength
     ORNAMENTAL_FAN,    // every ORNAMENTAL_FAN_ATTACKS Attacks played in a turn: `amount` Block
+    PEN_NIB,           // every PEN_NIB_ATTACKS Attacks played: that Attack deals double damage (counter = Attacks counted)
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy
     RED_SKULL,         // HP at RED_SKULL_HP_PERCENT % of Max HP or less: `amount` more Strength (counter = Strength given now)
@@ -238,6 +239,7 @@ constexpr uint8_t TUNING_FORK_SKILLS = 10;
 constexpr uint8_t KUNAI_ATTACKS = 3;
 constexpr uint8_t KUSARIGAMA_ATTACKS = 3;
 constexpr uint8_t NUNCHAKU_ATTACKS = 10;
+constexpr uint8_t PEN_NIB_ATTACKS = 10;
 constexpr uint8_t SHURIKEN_ATTACKS = 3;
 constexpr uint8_t ORNAMENTAL_FAN_ATTACKS = 3;
 constexpr uint8_t RED_SKULL_HP_PERCENT = 50;

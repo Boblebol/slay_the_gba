@@ -910,6 +910,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 player.add_status(StatusType::STRENGTH, power.amount);
             }
             break;
+        case PowerId::PEN_NIB:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK && ++power.counter == PEN_NIB_ATTACKS) {
+                power.counter = 0;
+                pen_nib_now = true;
+            }
+            break;
         case PowerId::ORNAMENTAL_FAN:
             if (completes(CardType::ATTACK, counters.attacks_played, ORNAMENTAL_FAN_ATTACKS)) add_block(power.amount);
             break;
@@ -1389,6 +1395,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (target.get_status(StatusType::WEAK) > 0) percent += power_amount(PowerId::TRACKING);
     if (resolving_card && counters.attacks_played == 0) percent += power_amount(PowerId::LETHALITY);
     if (attack_double_now) percent *= 2;
+    if (pen_nib_now && resolving_card) percent *= 2;
     int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
@@ -2097,6 +2104,7 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         resolving_card = true;
         resolve_effect(card, target_idx, x_value, after_play);
         resolving_card = false;
+        pen_nib_now = false;
         // Vigor goes to the first Attack played, all its hits included.
         if (played_type == CardType::ATTACK) player.clear_status(StatusType::VIGOR);
 
