@@ -502,9 +502,18 @@ void RunManager::generate_rewards() {
 
     // Offer distinct cards drawn at random from the hero's pool.
     current_card_rewards.clear();
-    FixedVector<CardId, 128> candidates;
+    FixedVector<CardId, 512> candidates;
     for (CardId id : card_reward_pool(character)) {
         candidates.push_back(id);
+    }
+    // Prismatic Gem: the other heroes' pools are added too (the pools do not overlap).
+    if (has_relic("PRISMATIC_GEM")) {
+        for (uint8_t hero = 0; hero < static_cast<uint8_t>(CharacterId::COUNT); ++hero) {
+            if (static_cast<CharacterId>(hero) == character) continue;
+            for (CardId id : card_reward_pool(static_cast<CharacterId>(hero))) {
+                candidates.push_back(id);
+            }
+        }
     }
     while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
         size_t pick = (boss ? rng.next() : next_random()) % candidates.size();
@@ -602,6 +611,46 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "SIGNET_RING" && has_relic("SIGNET_RING")) gain_gold(888);
     // Relic of the Ancients: the gold comes once, when the pearl is obtained.
     if (relic_id == "GOLDEN_PEARL" && has_relic("GOLDEN_PEARL")) gain_gold(150);
+    // Relic of the Ancients: one Ancient card of the hero, drawn at random with the run's generator.
+    if (relic_id == "DUSTY_TOME" && has_relic("DUSTY_TOME")) {
+        const auto hero_pool = static_cast<CardPool>(static_cast<uint8_t>(character) + 1);
+        const auto is_ancient = [&](uint16_t id) {
+            const CardMeta& meta = card_meta(static_cast<CardId>(id));
+            return meta.rarity == CardRarity::ANCIENT && meta.pool == hero_pool;
+        };
+        uint16_t count = 0;
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (is_ancient(id)) ++count;
+        }
+        if (count > 0) {
+            uint16_t pick = next_random() % count;
+            for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+                if (!is_ancient(id)) continue;
+                if (pick-- == 0) {
+                    add_card_to_deck(DeckCard{ static_cast<CardId>(id), false });
+                    break;
+                }
+            }
+        }
+    }
+    // Glass Eye (Ancient): 2 random Common, 2 Uncommon and 1 Rare cards of the hero's pool, all distinct.
+    if (relic_id == "GLASS_EYE" && has_relic("GLASS_EYE")) {
+        struct EyeDraw {
+            CardRarity rarity;
+            int count;
+        };
+        for (EyeDraw draw : { EyeDraw{ CardRarity::COMMON, 2 }, EyeDraw{ CardRarity::UNCOMMON, 2 }, EyeDraw{ CardRarity::RARE, 1 } }) {
+            FixedVector<CardId, 128> candidates;
+            for (CardId id : card_reward_pool(character)) {
+                if (card_meta(id).rarity == draw.rarity) candidates.push_back(id);
+            }
+            for (int n = 0; n < draw.count && !candidates.empty(); ++n) {
+                size_t pick = next_random() % candidates.size();
+                add_card_to_deck(DeckCard{ candidates[pick], false });
+                candidates.erase(pick);
+            }
+        }
+    }
     if (relic_id == "SERE_TALON" && has_relic("SERE_TALON")) {
         lose_max_hp(9);
         for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::WISH, false });
@@ -831,6 +880,8 @@ void RunManager::heal(int16_t amount) {
 
 void RunManager::gain_gold(int16_t amount) {
     if (amount <= 0) return;
+    // Ectoplasm: no gold can be gained, from a fight, a treasure, an event or a relic.
+    if (has_relic("ECTOPLASM")) return;
     gold = static_cast<int16_t>(std::min<int>(9999, gold + amount));
     on_gold_gained(amount);
 }
@@ -1053,10 +1104,20 @@ void RunManager::register_relic_powers() {
         for (int copy = 0; copy < 3; ++copy) combat.create_card(CardId::DAZED, Pile::DRAW);
     }
     if (has_relic("BLOOD_SOAKED_ROSE")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Ectoplasm: one more energy each turn.
+    if (has_relic("ECTOPLASM")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Philosopher's Stone (ancient): one more energy each turn.
+    if (has_relic("PHILOSOPHERS_STONE")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    if (has_relic("PRISMATIC_GEM")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Whispering Earring: one more energy each turn, and Vakuu plays the first turn of the combat.
     if (has_relic("WHISPERING_EARRING")) {
         combat.add_power(PowerId::TURN_ENERGY, 1);
         combat.add_power(PowerId::WHISPERING_EARRING, 1);
+    }
+    // Velvet Choker: one more energy each turn, and no more than VELVET_CHOKER_CARDS cards played each turn.
+    if (has_relic("VELVET_CHOKER")) {
+        combat.add_power(PowerId::TURN_ENERGY, 1);
+        combat.add_power(PowerId::VELVET_CHOKER, VELVET_CHOKER_CARDS);
     }
     // Start of turn
     if (has_relic("CAPTAINS_WHEEL")) combat.add_power(PowerId::CAPTAINS_WHEEL, 18);
@@ -1312,6 +1373,8 @@ void RunManager::apply_combat_start_relics() {
         if (has_relic("BAG_OF_MARBLES")) foe.add_status(StatusType::VULNERABLE, 1);
         if (has_relic("TWISTED_FUNNEL")) combat.afflict(foe, StatusType::POISON, 4);
         if (has_relic("FESTIVE_POPPER")) foe.take_damage(9);
+        // Philosopher's Stone (ancient): every enemy starts the combat with 1 Strength.
+        if (has_relic("PHILOSOPHERS_STONE")) foe.add_status(StatusType::STRENGTH, 1);
     }
     combat.enemy = combat.enemies[0];
     if (!combat.has_alive_enemies()) {

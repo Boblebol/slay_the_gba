@@ -1794,6 +1794,10 @@ PlayBlocker CombatEngine::play_blocker(int index) const {
             return PlayBlocker::PLAY_LIMIT;
         }
     }
+    // Velvet Choker: the card limit of the turn.
+    if (has_power(PowerId::VELVET_CHOKER) && counters.cards_played() >= power_amount(PowerId::VELVET_CHOKER)) {
+        return PlayBlocker::PLAY_LIMIT;
+    }
     if (!play_condition_met(CardDef::get(card.id).condition)) return PlayBlocker::CONDITION;
 
     // An X card can be played for X = 0, in energy as in Stars.

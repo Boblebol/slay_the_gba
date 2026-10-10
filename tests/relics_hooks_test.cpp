@@ -1290,6 +1290,158 @@ void test_runic_pyramid() {
     std::cout << "[PASS] Runic Pyramid: the hand is kept at the end of the turn" << std::endl;
 }
 
+void test_ectoplasm() {
+    // With the relic, no gold is gained: the Golden Pearl's 150 do not come in.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    int16_t gold = run.gold;
+    run.add_relic("ECTOPLASM");
+    assert(run.has_relic("ECTOPLASM"));
+    run.add_relic("GOLDEN_PEARL");
+    assert(run.has_relic("GOLDEN_PEARL") && run.gold == gold);
+
+    // Without the relic, the same pearl gives its gold.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("GOLDEN_PEARL");
+    assert(!plain.has_relic("ECTOPLASM") && plain.gold == gold + 150);
+
+    // One more energy at the start of each turn, only with the relic.
+    run.map.nodes[0].type = RoomType::MONSTER;
+    run.enter_room(0);
+    plain.map.nodes[0].type = RoomType::MONSTER;
+    plain.enter_room(0);
+    assert(run.combat.player.energy == plain.combat.player.energy + 1);
+
+    std::cout << "[PASS] Ectoplasm: no gold gained, +1 energy each turn" << std::endl;
+}
+
+void test_philosophers_stone() {
+    // Every enemy starts the combat with 1 Strength, the player does not.
+    RunManager stone = make_relic_run(CharacterId::IRONCLAD, { "PHILOSOPHERS_STONE" });
+    for (const Enemy& foe : stone.combat.enemies) assert(foe.get_status(StatusType::STRENGTH) == 1);
+    assert(stone.combat.player.get_status(StatusType::STRENGTH) == 0);
+    RunManager stone_pack = make_relic_run(CharacterId::IRONCLAD, { "PHILOSOPHERS_STONE" });
+    assert(stone_pack.combat.enemy.get_status(StatusType::STRENGTH) == 1);
+
+    // One more energy at the start of each turn: 1 more on the first turn than without the relic.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    for (const Enemy& foe : plain.combat.enemies) assert(foe.get_status(StatusType::STRENGTH) == 0);
+    const int plain_energy = plain.combat.player.energy;
+    assert(stone.combat.player.energy == plain_energy + 1);
+    end_turn_idle(stone.combat);
+    end_turn_idle(plain.combat);
+    assert(stone.combat.player.energy == plain.combat.player.energy + 1);
+    std::cout << "[PASS] Philosopher's Stone: 1 energy each turn, 1 Strength for every enemy" << std::endl;
+}
+
+void test_dusty_tome() {
+    // Obtained: one card joins the deck, an Ancient card of the hero.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck_size = run.master_deck.size();
+    run.add_relic("DUSTY_TOME");
+    assert(run.has_relic("DUSTY_TOME"));
+    assert(run.master_deck.size() == deck_size + 1);
+    const CardMeta& gained = card_meta(run.master_deck[run.master_deck.size() - 1].id);
+    assert(gained.rarity == CardRarity::ANCIENT && gained.pool == CardPool::IRONCLAD);
+
+    // Without the relic, the deck stays where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("DUSTY_TOME") && plain.master_deck.size() == deck_size);
+
+    std::cout << "[PASS] Dusty Tome: an Ancient card of the hero when obtained" << std::endl;
+}
+
+void test_velvet_choker() {
+    // With the relic: one more energy at the start of each turn, and six cards at most played each turn.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "VELVET_CHOKER" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(run.combat.has_power(PowerId::VELVET_CHOKER));
+    assert(run.combat.player.energy == plain.combat.player.energy + 1);
+
+    run.combat.hand.clear();
+    for (int i = 0; i < 7; ++i) run.combat.hand.push_back(DeckCard{ CardId::DEFEND, false });
+    run.combat.player.energy = 10;
+    for (int i = 0; i < 6; ++i) assert(run.combat.play_card(0, -1));
+    assert(run.combat.play_blocker(0) == PlayBlocker::PLAY_LIMIT);
+    assert(!run.combat.play_card(0, -1) && run.combat.hand.size() == 1);
+
+    // Without the relic: the seventh card is played too.
+    plain.combat.hand.clear();
+    for (int i = 0; i < 7; ++i) plain.combat.hand.push_back(DeckCard{ CardId::DEFEND, false });
+    plain.combat.player.energy = 10;
+    for (int i = 0; i < 7; ++i) assert(plain.combat.play_card(0, -1));
+    assert(!plain.combat.has_power(PowerId::VELVET_CHOKER));
+    std::cout << "[PASS] Velvet Choker: +1 energy each turn, no more than 6 cards played" << std::endl;
+}
+
+void test_glass_eye() {
+    // Obtained: 2 Common, 2 Uncommon and 1 Rare cards join the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    size_t size = run.master_deck.size();
+    run.add_relic("GLASS_EYE");
+    assert(run.has_relic("GLASS_EYE"));
+    assert(run.master_deck.size() == size + 5);
+    int commons = 0, uncommons = 0, rares = 0;
+    for (size_t i = size; i < run.master_deck.size(); ++i) {
+        CardRarity rarity = card_meta(run.master_deck[i].id).rarity;
+        if (rarity == CardRarity::COMMON) ++commons;
+        if (rarity == CardRarity::UNCOMMON) ++uncommons;
+        if (rarity == CardRarity::RARE) ++rares;
+    }
+    assert(commons == 2 && uncommons == 2 && rares == 1);
+
+    // Without the relic, the deck stays where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    size_t plain_size = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("GLASS_EYE") && plain.master_deck.size() == plain_size);
+
+    std::cout << "[PASS] Glass Eye: 2 Common, 2 Uncommon and 1 Rare cards when obtained" << std::endl;
+}
+
+void test_prismatic_gem() {
+    // Start of each turn: one more energy, as with Blood Soaked Rose.
+    RunManager gem = make_relic_run(CharacterId::IRONCLAD, { "PRISMATIC_GEM" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(gem.combat.player.energy == plain.combat.player.energy + 1);
+    end_turn_idle(gem.combat);
+    end_turn_idle(plain.combat);
+    assert(gem.combat.player.energy == plain.combat.player.energy + 1);
+
+    // Card rewards: with the relic, some offers come from the other heroes' pools; without it, never.
+    uint32_t other_color = 0, offers = 0;
+    for (uint32_t seed = 1; seed <= 50; ++seed) {
+        RunManager with_gem;
+        with_gem.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with_gem.add_relic("PRISMATIC_GEM");
+        enter_room_of_type(with_gem, RoomType::MONSTER);
+        with_gem.generate_rewards();
+
+        RunManager without_gem;
+        without_gem.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(without_gem, RoomType::MONSTER);
+        without_gem.generate_rewards();
+
+        for (size_t i = 0; i < with_gem.current_card_rewards.size(); ++i) {
+            ++offers;
+            if (!in_pool(CharacterId::IRONCLAD, with_gem.current_card_rewards[i].id)) ++other_color;
+        }
+        for (size_t i = 0; i < without_gem.current_card_rewards.size(); ++i) {
+            assert(in_pool(CharacterId::IRONCLAD, without_gem.current_card_rewards[i].id));
+        }
+    }
+    assert(offers == 150 && other_color > 0);
+
+    std::cout << "[PASS] Prismatic Gem: +1 energy each turn, " << other_color << " of " << offers
+              << " card rewards from other colors" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1332,5 +1484,11 @@ int main() {
     test_empty_cage();
     test_pandoras_box();
     test_runic_pyramid();
+    test_ectoplasm();
+    test_philosophers_stone();
+    test_dusty_tome();
+    test_velvet_choker();
+    test_glass_eye();
+    test_prismatic_gem();
     return 0;
 }
