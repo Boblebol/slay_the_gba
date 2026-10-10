@@ -3459,6 +3459,35 @@ void test_hand_drill() {
     std::cout << "[PASS] Hand Drill: breaking an enemy's Block applies 2 Vulnerable" << std::endl;
 }
 
+void test_precarious_shears() {
+    // Obtained: 2 cards are chosen to leave the deck, then 16 HP are lost (never below 1).
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.hp = 50;
+    size_t deck = run.master_deck.size();
+    run.add_relic("PRECARIOUS_SHEARS");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 2);
+    assert(run.hp == 34);
+    assert(run.resolve_deck_choice(0));
+    assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 2);
+
+    // Losing HP never takes the hero below 1.
+    RunManager low;
+    low.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    low.hp = 10;
+    low.add_relic("PRECARIOUS_SHEARS");
+    assert(low.hp == 1);
+
+    // Without the relic nothing is asked, no card leaves the deck and no HP is lost.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice() && plain.master_deck.size() == deck && plain.hp == 50);
+    std::cout << "[PASS] Precarious Shears: pickup asks for 2 cards to remove and costs 16 HP, nothing without the relic" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3496,6 +3525,7 @@ int main() {
     test_lead_paperweight();
     test_neows_torment();
     test_precise_scissors();
+    test_precarious_shears();
     test_new_leaf();
     test_small_capsule();
     test_nutritious_oyster();
