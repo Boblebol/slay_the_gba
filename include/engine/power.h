@@ -237,8 +237,7 @@ enum class PowerId : uint8_t {
     HISTORY_COURSE,     // start of turn: play a copy of the last Attack played (`amount` = 0, or card id * 2 + upgraded + 1)
     INFUSED_CORE,       // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
     DAUGHTER_OF_THE_WIND, // Attack played: `amount` Block (event relic)
-    LOST_WISP           // Power played: `amount` damage to every enemy (event relic)
-    UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
+    LOST_WISP,          // Power played: `amount` damage to every enemy (event relic)
     HAND_DRILL          // an enemy's Block broken by the player's damage: `amount` Vulnerable on that enemy
 };
 
