@@ -23,6 +23,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
 constexpr int COOK_REMOVALS = 2; // cards removed by Cook (Meat Cleaver)
 constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
+constexpr int LAVA_ROCK_RELICS = 2; // relics the Act 1 Boss gives to Lava Rock when defeated
 
 constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 0, "Normal", "Difficulté standard de l'Ascension." },
@@ -667,6 +668,16 @@ void RunManager::on_combat_won(RoomType room) {
         CardId id = paels_tooth_cards[pick];
         paels_tooth_cards.erase(pick);
         add_card_to_deck(DeckCard{ id, true });
+    }
+    // Lava Rock: the Act 1 Boss gives 2 relics when it is defeated, drawn as a boss relic is.
+    if (room == RoomType::BOSS && current_act == 1 && has_relic("LAVA_ROCK")) {
+        RewardRng rng(reward_seed() ^ 0x4C41A0C4u); // own salt, apart from the boss rewards of the same room
+        for (int i = 0; i < LAVA_ROCK_RELICS && relics.size() < relics.capacity(); ++i) {
+            std::string_view id = draw_relic(rng, character, RelicSource::BOSS,
+                                             std::span<const std::string_view>(relics.begin(), relics.size()));
+            if (id.empty()) break;
+            add_relic(id);
+        }
     }
 }
 

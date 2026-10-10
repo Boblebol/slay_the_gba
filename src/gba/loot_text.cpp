@@ -100,6 +100,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "DISTINGUISHED_CAPE", "Lorsque vous obtenez cette relique, ajoutez 2 Malédictions aléatoires et 3 Apparitions à votre Deck." },
     { "BLOOD_SOAKED_ROSE", "Lorsque vous obtenez cette relique, ajoutez 1 Assuétude à votre Deck. Gagnez 1 ● au début de chaque tour." },
     { "WHISPERING_EARRING", "Gagnez 1 ● au début de chaque tour. Vakuu joue votre premier tour à votre place." },
+    { "LAVA_ROCK", "Le Boss de l'Acte 1 octroie 2 Reliques lorsqu'il est vaincu." },
     { "JEWELRY_BOX", "Lorsque vous obtenez cette relique, ajoutez 1 Apothéose à votre Deck." },
     { "TANXS_WHISTLE", "Lorsque vous obtenez cette relique, ajoutez 1 Sifflet à votre Deck." },
     { "STORYBOOK", "Lorsque vous obtenez cette relique, ajoutez 1 Flamme éclatante à votre Deck." },

@@ -835,6 +835,28 @@ void test_paels_legion() {
     std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
 }
 
+void test_lava_rock() {
+    // With the rock, the Act 1 Boss gives 2 new relics when defeated, never the rock nor the same one twice.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("LAVA_ROCK");
+    size_t before = run.relics.size();
+    enter_room_of_type(run, RoomType::BOSS);
+    run.proceed_after_combat();
+    assert(run.relics.size() == before + 2);
+    assert(run.relics[before] != run.relics[before + 1]);
+    assert(run.relics[before] != "LAVA_ROCK" && run.relics[before + 1] != "LAVA_ROCK");
+
+    // Without it, the Act 1 Boss adds no relic to the run.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_before = plain.relics.size();
+    enter_room_of_type(plain, RoomType::BOSS);
+    plain.proceed_after_combat();
+    assert(plain.relics.size() == plain_before && !plain.has_relic("LAVA_ROCK"));
+    std::cout << "[PASS] Lava Rock: Act 1 Boss gives 2 relics" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -857,6 +879,7 @@ int main() {
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
+    test_lava_rock();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
