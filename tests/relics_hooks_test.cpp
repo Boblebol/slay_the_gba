@@ -2489,6 +2489,31 @@ void test_venerable_tea_set() {
     std::cout << "[PASS] Venerable Tea Set: 2 energy per Rest Site entered, for the next combat" << std::endl;
 }
 
+void test_bone_tea() {
+    // With the relic: the starting hand of the next combat is upgraded, once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("BONE_TEA");
+    assert(run.relic_counter("BONE_TEA") == 1);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(!run.combat.hand.empty());
+    for (const DeckCard& card : run.combat.hand) assert(card.upgraded);
+    assert(run.relic_counter("BONE_TEA") == 0);
+    run.proceed_after_combat();
+    enter_room_of_type(run, RoomType::MONSTER);
+    bool any_upgraded = false;
+    for (const DeckCard& card : run.combat.hand) any_upgraded = any_upgraded || card.upgraded;
+    assert(!any_upgraded);
+
+    // Without the relic: the starting hand stays as it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(!plain.has_relic("BONE_TEA"));
+    for (const DeckCard& card : plain.combat.hand) assert(!card.upgraded);
+    std::cout << "[PASS] Bone Tea: the starting hand of the next combat is upgraded" << std::endl;
+}
+
 void test_lava_lamp() {
     // At the end of a fight without HP lost, every card reward of it is upgraded; with HP lost, none is.
     auto all_upgraded = [](const RunManager& r) {
@@ -2701,6 +2726,7 @@ int main() {
     test_paels_legion();
     test_golden_pearl();
     test_venerable_tea_set();
+    test_bone_tea();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();

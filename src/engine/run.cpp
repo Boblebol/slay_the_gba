@@ -729,6 +729,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "WHETSTONE" && has_relic("WHETSTONE")) upgrade_random_cards(2, CardType::ATTACK);
     // War Paint: upgrades 2 random Skills when obtained.
     if (relic_id == "WAR_PAINT" && has_relic("WAR_PAINT")) upgrade_random_cards(2, CardType::SKILL);
+    // Bone Tea (event): the next combat is counted on pickup, and its starting hand is upgraded at its start.
+    if (relic_id == "BONE_TEA" && has_relic("BONE_TEA")) set_relic_counter("BONE_TEA", 1);
     // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
     if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
         regenerate_map();
@@ -1488,6 +1490,11 @@ void RunManager::apply_combat_start_relics() {
     // Bellows: the first hand of the combat is upgraded, the cards of Ring of the Snake included.
     if (has_relic("BELLOWS")) {
         for (DeckCard& card : combat.hand) card.upgraded = true;
+    }
+    // Bone Tea (event): the first hand of the next combat is upgraded, once.
+    if (has_relic("BONE_TEA") && relic_counter("BONE_TEA") > 0) {
+        for (DeckCard& card : combat.hand) card.upgraded = true;
+        set_relic_counter("BONE_TEA", 0);
     }
     // Gambling Chip: any number of cards of the first hand are discarded, and as many are drawn.
     if (has_relic("GAMBLING_CHIP")) {
