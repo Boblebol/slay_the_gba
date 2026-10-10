@@ -223,7 +223,8 @@ enum class PowerId : uint8_t {
     // Potions (appended)
     STABLE_SERUM,       // the hand is kept at the end of the next `amount` turns (read by end_player_turn)
     // Relics (appended)
-    BEATING_REMNANT     // the player loses no more than `amount` HP each turn (CombatEntity::hp_loss_budget)
+    BEATING_REMNANT,    // the player loses no more than `amount` HP each turn (CombatEntity::hp_loss_budget)
+    MR_STRUGGLES        // start of turn: damage equal to the turn number to every enemy (event relic)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

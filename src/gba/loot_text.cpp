@@ -81,6 +81,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "MEAT_ON_THE_BONE", "Si vous avez 50% ou moins de vos PV Max à la fin d'un combat, récupérez 12 PV." },
     { "MEMBERSHIP_CARD", "50% de remise sur tous les produits !" },
     { "MERCURY_HOURGLASS", "Au début de votre tour, infligez 3 dégâts à TOUS les ennemis." },
+    { "MR_STRUGGLES", "Au début de votre tour, infligez des dégâts égaux au numéro du tour à TOUS les ennemis." },
     { "METRONOME", "La première fois que vous Canalisez 7 Orbes dans un combat, infligez 30 dégâts à TOUS les ennemis." },
     { "MINI_REGENT", "La première fois que vous dépensez des ★ chaque tour, gagnez 1 de Force." },
     { "MUMMIFIED_HAND", "Chaque fois que vous jouez un Pouvoir, le coût d'une carte aléatoire de votre Main est réduit à 0 jusqu'à la fin du tour." },

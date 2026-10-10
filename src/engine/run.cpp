@@ -1299,6 +1299,8 @@ void RunManager::register_relic_powers() {
     }
     if (has_relic("PAELS_BLOOD")) combat.add_power(PowerId::TURN_DRAW, 1);
     if (has_relic("MERCURY_HOURGLASS")) combat.add_power(PowerId::MERCURY_HOURGLASS, 3);
+    // Monsieur Carnage (event): at the start of each turn, the turn number in damage to every enemy.
+    if (has_relic("MR_STRUGGLES")) combat.add_power(PowerId::MR_STRUGGLES, 1);
     // End of turn
     if (has_relic("CLOAK_CLASP")) combat.add_power(PowerId::CLOAK_CLASP, 1);
     if (has_relic("POCKETWATCH")) combat.add_power(PowerId::POCKETWATCH, 3);

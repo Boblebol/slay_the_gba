@@ -897,6 +897,23 @@ void test_beating_remnant() {
     std::cout << "[PASS] Beating Remnant: no more than 20 HP lost per turn" << std::endl;
 }
 
+void test_mr_struggles() {
+    // With the relic: at the start of each turn, damage equal to the turn number to every enemy (1, then 2, then 3).
+    CombatEngine carnage = make_relic_combat(CharacterId::IRONCLAD, PowerId::MR_STRUGGLES, 1, true);
+    assert(carnage.enemies[0].hp == 17 && carnage.enemies[2].hp == 41);
+    end_turn_idle(carnage);
+    assert(carnage.enemies[0].hp == 15 && carnage.enemies[2].hp == 39);
+    end_turn_idle(carnage);
+    assert(carnage.enemies[0].hp == 12 && carnage.enemies[2].hp == 36);
+
+    // Without the relic: the enemies lose no HP at the start of a turn.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {}, true);
+    assert(plain.enemies[0].hp == 18 && plain.enemies[2].hp == 42);
+    end_turn_idle(plain);
+    assert(plain.enemies[0].hp == 18 && plain.enemies[2].hp == 42);
+    std::cout << "[PASS] Monsieur Carnage: turn number in damage to every enemy at the start of each turn" << std::endl;
+}
+
 void test_dingy_rug() {
     // Card rewards: with the relic, some offers are Colorless cards; without it, never.
     uint32_t colorless = 0, offers = 0;
@@ -2402,6 +2419,7 @@ int main() {
     test_calling_bell();
     test_war_paint();
     test_lava_lamp();
+    test_mr_struggles();
     test_belt_buckle();
     test_circlet();
     test_dingy_rug();
