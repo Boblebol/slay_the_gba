@@ -37,7 +37,7 @@ constexpr ActivePotion ACTIVE_POTIONS[] = {
     { "RADIANT_TINCTURE" }, { "REGEN_POTION" }, { "SHACKLING_POTION" },
     { "SHIP_IN_A_BOTTLE" }, { "SPEED_POTION" }, { "STABLE_SERUM" },
     { "STAR_POTION", false, CharacterId::REGENT },
-    { "STRENGTH_POTION" }, { "SWIFT_POTION" }, { "VULNERABLE_POTION" }, { "WEAK_POTION" },
+    { "STRENGTH_POTION" }, { "TOUCH_OF_INSANITY" }, { "SWIFT_POTION" }, { "VULNERABLE_POTION" }, { "WEAK_POTION" },
 };
 
 // Rarities a draw falls back on, in this order, when the one it rolled has no candidate left.

@@ -148,7 +148,8 @@ enum class ChoiceKind : uint8_t {
     COPY_COLORLESS,       // to the hand, only a Colorless card can be picked (Heirloom Hammer)
     COPY_NEXT_TURN,       // to the hand at the start of the next turn (Nightmare)
     PLAY_REPEATED,        // the picked hand card is played `amount` times, then goes where it goes (Decisions, Decisions)
-    MAKE_SLY              // the picked hand card gains Sly until the end of the turn (Hand Trick)
+    MAKE_SLY,             // the picked hand card gains Sly until the end of the turn (Hand Trick)
+    MAKE_FREE             // the picked hand card costs 0 for the rest of the combat (Touch of Insanity)
 };
 
 // What follows once the cards are picked: the part of a card's text that comes after its choice.

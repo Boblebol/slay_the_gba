@@ -1823,6 +1823,9 @@ void CombatScene::_refresh_choice_banner()
     case engine::ChoiceKind::MAKE_SLY:
         stream << "Ruse ce tour";
         break;
+    case engine::ChoiceKind::MAKE_FREE:
+        stream << "Coûte 0";
+        break;
     case engine::ChoiceKind::COPY_ATTACK_OR_POWER:
     case engine::ChoiceKind::COPY_COLORLESS:
         stream << "Copie";

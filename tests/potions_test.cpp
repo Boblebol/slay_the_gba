@@ -18,7 +18,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
-    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -775,6 +775,31 @@ void test_beetle_juice() {
     std::cout << "[PASS] Beetle Juice: the enemy deals 30% less damage for 4 turns" << std::endl;
 }
 
+void test_touch_of_insanity() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.hand.clear();
+    combat.hand.push_back(DeckCard(CardId::BASH));   // cost 2
+    combat.hand.push_back(DeckCard(CardId::DEFEND)); // cost 1
+    assert(combat.use_potion("TOUCH_OF_INSANITY"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].kind == ChoiceKind::MAKE_FREE);
+    const uint8_t pick[] = { 0 };
+    assert(combat.resolve_choice(pick));
+    assert(!combat.choice_pending());
+    assert(combat.effective_cost(combat.hand[0]) == 0);
+    assert(combat.effective_cost(combat.hand[1]) == 1);
+    assert(std::string_view(combat.combat_log) == "Touch of Insanity!");
+
+    // It lasts the whole combat, past the end of the turn.
+    end_turn_idle(combat);
+    int free_bash = 0;
+    for (const DeckCard& card : combat.hand) free_bash += card.id == CardId::BASH && combat.effective_cost(card) == 0;
+    for (const DeckCard& card : combat.discard_pile) free_bash += card.id == CardId::BASH && combat.effective_cost(card) == 0;
+    assert(free_bash >= 1);
+
+    std::cout << "[PASS] Touch of Insanity: a hand card costs 0 for the combat" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -910,6 +935,7 @@ int main() {
     test_droplet_of_precognition();
     test_orobic_acid();
     test_beetle_juice();
+    test_touch_of_insanity();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;
