@@ -636,7 +636,9 @@ bool RunManager::take_relic_reward() {
 }
 
 void RunManager::finish_rewards() {
-    gain_gold(gold_reward);
+    // Bowler Hat: 25 % more gold from the rewards of the fight.
+    const int bonus = has_relic("BOWLER_HAT") ? gold_reward / 4 : 0;
+    gain_gold(static_cast<int16_t>(gold_reward + bonus));
     gold_reward = 0;
     potion_reward = {};
     relic_reward = {};
@@ -1185,7 +1187,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", // Shared, out of combat
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR",                                   // Shared, out of combat

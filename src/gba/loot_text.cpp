@@ -46,6 +46,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "DRAGON_FRUIT", "Chaque fois que vous gagnez des Pièces d'or, augmentez vos PV Max de 1." },
     { "BEATING_REMNANT", "Vous ne pouvez perdre plus de 20 PV en un seul tour." },
     { "BELT_BUCKLE", "Sans Potion, vous avez 2 de Dextérité supplémentaire." },
+    { "BOWLER_HAT", "Recevez 25 % de Pièces d'or supplémentaires." },
     { "DELICATE_FROND", "Au début de chaque combat, remplissez vos emplacements de potion vides avec des Potions aléatoires." },
     { "DEMON_TONGUE", "La première fois que vous perdez des PV pendant votre tour, vous récupérez autant de PV." },
     { "EMOTION_CHIP", "Si vous avez perdu des PV lors du tour précédent, déclenchez la capacité passive de chacun de vos Orbes au début de votre tour." },
