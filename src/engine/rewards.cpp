@@ -33,7 +33,7 @@ constexpr ActivePotion ACTIVE_POTIONS[] = {
     { "POTION_OF_CAPACITY", false, CharacterId::DEFECT },
     { "POTION_OF_DOOM" },
     { "POT_OF_GHOULS", false, CharacterId::NECROBINDER },
-    { "POWDERED_DEMISE" },
+    { "POWDERED_DEMISE" }, { "POWER_POTION" },
     { "RADIANT_TINCTURE" }, { "REGEN_POTION" }, { "SHACKLING_POTION" },
     // Event rarity: no draw rolls it; only the Petrified Toad procures it (#497)
     { "POTION_SHAPED_ROCK" },

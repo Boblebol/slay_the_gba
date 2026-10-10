@@ -6417,6 +6417,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         choice.free_this_turn = true;
         ask_choice(choice);
         set_log("Liquid Memories!");
+    } else if (potion_id == "POWER_POTION") {
+        offer_random_cards(CardFilter(CardType::POWER), 3, false, true);
+        set_log("Power Potion!");
     } else if (potion_id == "OROBIC_ACID") {
         for (CardType type : { CardType::ATTACK, CardType::SKILL, CardType::POWER }) {
             const CardId card = random_card(CardFilter(type));
