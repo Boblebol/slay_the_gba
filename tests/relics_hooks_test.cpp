@@ -2676,6 +2676,32 @@ void test_chemical_x() {
     std::cout << "[PASS] Chemical X: X cards get 2 more X, the energy spent is unchanged" << std::endl;
 }
 
+void test_fake_blood_vial() {
+    // With the relic: 1 HP back at the start of each fight, up to the maximum.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.hp = 50;
+    run.add_relic("FAKE_BLOOD_VIAL");
+    assert(run.has_relic("FAKE_BLOOD_VIAL"));
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.hp == 51);
+
+    // Without the relic: no heal.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 50;
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.combat.player.hp == 50);
+
+    // Full HP stays at the maximum.
+    RunManager full;
+    full.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    full.add_relic("FAKE_BLOOD_VIAL");
+    enter_room_of_type(full, RoomType::MONSTER);
+    assert(full.combat.player.hp == full.max_hp);
+    std::cout << "[PASS] Fake Blood Vial: heals 1 HP at the start of each combat" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2775,5 +2801,6 @@ int main() {
     test_shovel();
     test_white_star();
     test_chemical_x();
+    test_fake_blood_vial();
     return 0;
 }

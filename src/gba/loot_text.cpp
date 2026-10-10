@@ -52,6 +52,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "DELICATE_FROND", "Au début de chaque combat, remplissez vos emplacements de potion vides avec des Potions aléatoires." },
     { "DEMON_TONGUE", "La première fois que vous perdez des PV pendant votre tour, vous récupérez autant de PV." },
     { "EMOTION_CHIP", "Si vous avez perdu des PV lors du tour précédent, déclenchez la capacité passive de chacun de vos Orbes au début de votre tour." },
+    { "FAKE_BLOOD_VIAL", "Au début de chaque combat, récupérez 1 PV." },
     { "FENCING_MANUAL", "Au début de chaque combat, Forgez 10." },
     { "FESTIVE_POPPER", "Au début de chaque combat, infligez 9 dégâts à TOUS les ennemis." },
     { "FUNERARY_MASK", "Au début de chaque combat, ajoutez 3 Âmes à votre Pioche." },
