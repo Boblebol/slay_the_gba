@@ -203,6 +203,32 @@ void test_tracking() {
     std::cout << "[PASS] Silent: Tracking" << std::endl;
 }
 
+void test_the_hunt() {
+    for (bool upgraded : { false, true }) {
+        const int16_t damage = upgraded ? 15 : 10;
+        assert(CardDef::get_cost(CardId::THE_HUNT, upgraded) == 1);
+        assert(CardDef::get(CardId::THE_HUNT).type == CardType::ATTACK);
+        assert(CardDef::has_keyword(CardId::THE_HUNT, upgraded, KEYWORD_EXHAUST));
+
+        // A survivor takes the damage and earns no extra reward; the card is exhausted.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        int16_t hp = combat.enemies[2].hp;
+        play(combat, DeckCard(CardId::THE_HUNT, upgraded), 2);
+        assert(combat.enemies[2].hp == hp - damage);
+        assert(combat.extra_card_rewards == 0);
+        assert(combat.exhaust_pile.size() == 1);
+
+        // A kill (Fatal) earns one extra card reward.
+        CombatEngine kill = make_pack(CharacterId::SILENT);
+        kill.enemies[0].hp = damage;
+        play(kill, DeckCard(CardId::THE_HUNT, upgraded), 0);
+        assert(!kill.enemies[0].is_alive());
+        assert(kill.extra_card_rewards == 1);
+    }
+    assert_in_pool(CharacterId::SILENT, { CardId::THE_HUNT });
+    std::cout << "[PASS] Silent: The Hunt" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -212,6 +238,7 @@ int main() {
     test_master_planner();
     test_hand_trick();
     test_tracking();
+    test_the_hunt();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
