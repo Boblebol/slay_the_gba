@@ -14,6 +14,8 @@ bn::unique_ptr<Scene> create_scene(SceneId id, GameContext& context)
 {
     switch(id)
     {
+    case SceneId::SPLASH:
+        return make_splash_scene(context);
     case SceneId::MAP:
         return make_map_scene(context);
     case SceneId::DECK:

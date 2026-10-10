@@ -61,7 +61,7 @@ int main()
     gba::init_save();
 
     auto* context = new gba::GameContext();
-    gba::SceneId next = gba::SceneId::TITLE;
+    gba::SceneId next = gba::SceneId::SPLASH;
     gba::set_screen_fade(1);
 
     while(true)
