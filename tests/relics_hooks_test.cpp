@@ -3525,6 +3525,53 @@ void test_paper_phrog() {
     std::cout << "[PASS] Paper Phrog: Vulnerable enemies take 25% more damage from attacks" << std::endl;
 }
 
+void test_silver_crucible() {
+    // The first 3 card rewards seen are Upgraded, the next ones are not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 728);
+    run.add_relic("SILVER_CRUCIBLE");
+    assert(run.has_relic("SILVER_CRUCIBLE"));
+    for (int reward = 0; reward < 4; ++reward) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+        for (const DeckCard& card : run.current_card_rewards) assert(card.upgraded == (reward < 3));
+        run.skip_card_rewards();
+    }
+
+    // Without the relic, no card reward is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 728);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
+    for (const DeckCard& card : plain.current_card_rewards) assert(!card.upgraded);
+    plain.skip_card_rewards();
+
+    // The first Treasure Chest opened is empty; with the relic, a seed whose chest holds a relic without it
+    // holds none on the first chest, and a later chest can still hold one.
+    bool checked = false;
+    bool later_relic = false;
+    for (uint32_t seed = 1; seed < 400 && !(checked && later_relic); ++seed) {
+        RunManager chest;
+        chest.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(chest, RoomType::TREASURE);
+        if (chest.last_treasure_relic.empty()) continue;
+        checked = true;
+        RunManager crucible;
+        crucible.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, seed);
+        crucible.add_relic("SILVER_CRUCIBLE");
+        enter_room_of_type(crucible, RoomType::TREASURE);
+        assert(crucible.last_treasure_relic.empty() && !crucible.has_relic(chest.last_treasure_relic));
+        enter_room_of_type(crucible, RoomType::TREASURE);
+        later_relic = later_relic || !crucible.last_treasure_relic.empty();
+    }
+    assert(checked && later_relic);
+    std::cout << "[PASS] Silver Crucible: first 3 card rewards upgraded, first Treasure Chest empty" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3660,5 +3707,6 @@ int main() {
     test_the_boot();
     test_hand_drill();
     test_paper_phrog();
+    test_silver_crucible();
     return 0;
 }
