@@ -1202,8 +1202,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Retained hand on the first turn (#509)
         "RINGING_TRIANGLE",
         // Upgrades on pickup (#465, #464)
-        "WHETSTONE", "WAR_PAINT"
-        "RINGING_TRIANGLE",
+        "WHETSTONE", "WAR_PAINT",
         // Colorless cards in the card rewards (#486)
         "DINGY_RUG"
     };
