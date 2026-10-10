@@ -1447,6 +1447,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("THE_ABACUS")) combat.add_power(PowerId::THE_ABACUS, 6);
     if (has_relic("PERMAFROST")) combat.add_power(PowerId::PERMAFROST, 7);
     if (has_relic("GAME_PIECE")) combat.add_power(PowerId::GAME_PIECE, 1);
+    // Lost Wisp (event relic): each Power played deals 8 damage to every enemy.
+    if (has_relic("LOST_WISP")) combat.add_power(PowerId::LOST_WISP, 8);
     if (has_relic("REPTILE_TRINKET")) combat.add_power(PowerId::REPTILE_TRINKET, 3);
     if (has_relic("CENTENNIAL_PUZZLE")) combat.add_power(PowerId::CENTENNIAL_PUZZLE, 3);
     if (has_relic("LIZARD_TAIL")) combat.add_power(PowerId::LIZARD_TAIL, 50);

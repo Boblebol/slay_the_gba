@@ -236,6 +236,9 @@ enum class PowerId : uint8_t {
     INFUSED_CORE        // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
     UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
     DAUGHTER_OF_THE_WIND // Attack played: `amount` Block (event relic)
+    UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
+    // Event relics (appended)
+    LOST_WISP           // Power played: `amount` damage to every enemy
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

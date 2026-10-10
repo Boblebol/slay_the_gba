@@ -824,6 +824,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::GAME_PIECE:
             if (card_played && CardDef::get(info.card.id).type == CardType::POWER) draw_cards(power.amount);
             break;
+        case PowerId::LOST_WISP:
+            if (card_played && CardDef::get(info.card.id).type == CardType::POWER) damage_all_enemies(power.amount);
+            break;
         case PowerId::CENTENNIAL_PUZZLE:
             if (event == CombatEvent::HP_LOST && power.counter == 0) {
                 power.counter = 1;
