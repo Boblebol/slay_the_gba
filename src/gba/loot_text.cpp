@@ -99,6 +99,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "SELF_FORMING_CLAY", "Chaque fois que vous perdez des PV en combat, gagnez 3 d'Armure au tour suivant." },
     { "DISTINGUISHED_CAPE", "Lorsque vous obtenez cette relique, ajoutez 2 Malédictions aléatoires et 3 Apparitions à votre Deck." },
     { "BLOOD_SOAKED_ROSE", "Lorsque vous obtenez cette relique, ajoutez 1 Assuétude à votre Deck. Gagnez 1 ● au début de chaque tour." },
+    { "GOLDEN_PEARL", "Lorsque vous obtenez cette relique, gagnez 150 Pièces d'or." },
     { "WHISPERING_EARRING", "Gagnez 1 ● au début de chaque tour. Vakuu joue votre premier tour à votre place." },
     { "JEWELRY_BOX", "Lorsque vous obtenez cette relique, ajoutez 1 Apothéose à votre Deck." },
     { "TANXS_WHISTLE", "Lorsque vous obtenez cette relique, ajoutez 1 Sifflet à votre Deck." },

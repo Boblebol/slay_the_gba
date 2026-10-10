@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 63,1 %** — 775 faits, 20 partiels, 449 à faire (35 hors périmètre).
+**Avancement global : 63,2 %** — 776 faits, 20 partiels, 448 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 91 | 1 | 8 | 91,5 % |
 | [La Nécrolieuse](#necrobinder) | 94 | 1 | 7 | 92,6 % |
 | [Cartes communes aux cinq éditions](#cartes) | 87 | 0 | 33 | 72,5 % |
-| [Reliques et potions](#reliques) | 132 | 0 | 189 | 41,1 % |
+| [Reliques et potions](#reliques) | 133 | 0 | 188 | 41,4 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 38 | 1 | 18 | 67,5 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **775** | **20** | **449** | **63,1 %** |
+| **Total** | **776** | **20** | **448** | **63,2 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 41,1 %
+## Reliques et potions — 41,4 %
 
 ### Reliques partagées — 51,3 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 26,5 %
+### Reliques des Anciens — 27,5 %
 
-27 faits, 0 partiel, 75 à faire.
+28 faits, 0 partiel, 74 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1067,7 +1067,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Coffret perdu | Ancienne | Non |  |
 | Conque retentissante | Ancienne | Non |  |
 | Corne de Paël | Ancienne | Non |  |
-| Couperet à viande | Ancienne | Non |  |
+| Couperet à viande | Ancienne | Oui |  |
 | Creuset en argent | Ancienne | Non |  |
 | Crevaite électrique | Ancienne | Non |  |
 | Dent archaïque | Ancienne | Non |  |
