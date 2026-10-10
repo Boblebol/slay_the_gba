@@ -27,7 +27,7 @@ constexpr ActivePotion ACTIVE_POTIONS[] = {
     { "ESSENCE_OF_DARKNESS", false, CharacterId::DEFECT },
     { "EXPLOSIVE_AMPOULE" }, { "FIRE_POTION" }, { "FLEX_POTION" },
     { "FOCUS_POTION", false, CharacterId::DEFECT },
-    { "FORTIFIER" }, { "FYSH_OIL" }, { "GAMBLERS_BREW" }, { "GHOST_IN_A_JAR" }, { "GIGANTIFICATION_POTION" }, { "GLOWWATER_POTION" }, { "HEART_OF_IRON" },
+    { "FAIRY_IN_A_BOTTLE" }, { "FORTIFIER" }, { "FYSH_OIL" }, { "GAMBLERS_BREW" }, { "GHOST_IN_A_JAR" }, { "GIGANTIFICATION_POTION" }, { "GLOWWATER_POTION" }, { "HEART_OF_IRON" },
     { "KINGS_COURAGE", false, CharacterId::REGENT },
     { "LIQUID_BRONZE" }, { "LIQUID_MEMORIES" }, { "LUCKY_TONIC" }, { "MAZALETHS_GIFT" }, { "OROBIC_ACID" }, { "POISON_POTION" }, { "POTION_OF_BINDING" },
     { "POTION_OF_CAPACITY", false, CharacterId::DEFECT },

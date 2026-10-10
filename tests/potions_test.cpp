@@ -18,7 +18,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
-    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "FAIRY_IN_A_BOTTLE",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -883,6 +883,20 @@ void test_gigantification_potion() {
     std::cout << "[PASS] Gigantification Potion: the next Attack deals triple damage, only once" << std::endl;
 }
 
+void test_fairy_in_a_bottle() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.use_potion("FAIRY_IN_A_BOTTLE")); // made ready
+    assert(combat.fairy_bottles == 1);
+    int16_t max_hp = combat.player.max_hp;
+    combat.damage_player(static_cast<int16_t>(max_hp + 50));
+    assert(combat.player.hp == max_hp * 30 / 100);
+    assert(combat.state == CombatState::PLAYER_TURN);
+    assert(combat.fairy_bottles == 0 && combat.fairy_used == 1);
+    combat.damage_player(static_cast<int16_t>(max_hp)); // no second fairy
+    assert(combat.state == CombatState::DEFEAT);
+    std::cout << "[PASS] Fairy in a Bottle: revives at 30 % of Max HP, once" << std::endl;
+}
+
 } // namespace
 
 void test_stable_serum() {
@@ -949,6 +963,7 @@ void test_ashwater() {
 int main() {
     std::cout << "=== Potions ===" << std::endl;
     test_gigantification_potion();
+    test_fairy_in_a_bottle();
     test_explosive_ampoule();
     test_weak_potion();
     test_swift_potion();

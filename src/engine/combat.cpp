@@ -1544,6 +1544,12 @@ void CombatEngine::note_player_hp_lost(int16_t amount) {
             player.hp = static_cast<int16_t>(player.max_hp * tail->amount / 100);
         }
     }
+    if (player.hp <= 0 && fairy_bottles > 0) {
+        // Fairy in a Bottle: the potion is discarded and heals to 30 % of Max HP.
+        --fairy_bottles;
+        fairy_used = static_cast<uint8_t>(fairy_used + 1);
+        player.hp = static_cast<int16_t>(std::max(1, player.max_hp * 30 / 100));
+    }
     EventInfo info;
     info.amount = amount;
     emit(CombatEvent::HP_LOST, info);
@@ -6233,6 +6239,10 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         }
         damage_enemy(enemies[target_index], 20);
         set_log("Fire Potion!");
+    } else if (potion_id == "FAIRY_IN_A_BOTTLE") {
+        // Automatic: drunk by hand, it is simply made ready to trigger when HP would reach 0.
+        fairy_bottles = static_cast<uint8_t>(fairy_bottles + 1);
+        set_log("Fairy in a Bottle!");
     } else if (potion_id == "POTION_SHAPED_ROCK") {
         damage_enemy(aimed_enemy(), 15);
         set_log("Potion-Shaped Rock!");

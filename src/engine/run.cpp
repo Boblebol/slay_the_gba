@@ -414,6 +414,7 @@ bool RunManager::buy_shop_potion(int index, int replace_index) {
 bool RunManager::use_potion(int index, int target_index) {
     if (phase != RunPhase::IN_COMBAT) return false;
     if (index < 0 || static_cast<size_t>(index) >= potions.size()) return false;
+    if (potions[index] == "FAIRY_IN_A_BOTTLE") return false; // automatic: triggers by itself when HP reaches 0
     if (!combat.use_potion(potions[index], target_index)) return false;
     potions.erase(index);
     refresh_belt_buckle();
@@ -1446,6 +1447,9 @@ void RunManager::register_relic_powers() {
     if (has_relic("GAME_PIECE")) combat.add_power(PowerId::GAME_PIECE, 1);
     if (has_relic("REPTILE_TRINKET")) combat.add_power(PowerId::REPTILE_TRINKET, 3);
     if (has_relic("CENTENNIAL_PUZZLE")) combat.add_power(PowerId::CENTENNIAL_PUZZLE, 3);
+    for (size_t i = 0; i < potions.size(); ++i) {
+        if (potions[i] == "FAIRY_IN_A_BOTTLE") combat.fairy_bottles = static_cast<uint8_t>(combat.fairy_bottles + 1);
+    }
     if (has_relic("LIZARD_TAIL")) combat.add_power(PowerId::LIZARD_TAIL, 50);
     if (has_relic("HISTORY_COURSE")) combat.add_power(PowerId::HISTORY_COURSE, 0);
     if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);
@@ -1728,6 +1732,17 @@ void RunManager::refresh_belt_buckle() {
 }
 
 void RunManager::proceed_after_combat() {
+    // Each Fairy in a Bottle that revived its owner is discarded.
+    for (int spent = combat.fairy_used; spent > 0; --spent) {
+        for (size_t i = 0; i < potions.size(); ++i) {
+            if (potions[i] == "FAIRY_IN_A_BOTTLE") {
+                potions.erase(i);
+                break;
+            }
+        }
+    }
+    combat.fairy_used = 0;
+    refresh_belt_buckle();
     // Lizard Tail only works once: it leaves the run when it saved its owner.
     if (combat.power_counter(PowerId::LIZARD_TAIL) > 0) {
         for (size_t i = 0; i < relics.size(); ++i) {
