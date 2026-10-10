@@ -455,6 +455,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::RAGE:
             if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK) add_block(power.amount);
             break;
+        case PowerId::DAUGHTER_OF_THE_WIND:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK) add_block(power.amount);
+            break;
         case PowerId::VICIOUS:
             if (event == CombatEvent::DEBUFF_APPLIED && info.status == StatusType::VULNERABLE) draw_cards(power.amount);
             break;

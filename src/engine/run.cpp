@@ -1436,6 +1436,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("CHEMICAL_X")) combat.add_power(PowerId::CHEMICAL_X, CHEMICAL_X_INCREASE);
     // Unsettling Lamp: the first card of the fight that debuffs an enemy has its debuffs doubled.
     if (has_relic("UNSETTLING_LAMP")) combat.add_power(PowerId::UNSETTLING_LAMP, 1);
+    // Daughter of the Wind (event relic): every Attack played gives 1 Block.
+    if (has_relic("DAUGHTER_OF_THE_WIND")) combat.add_power(PowerId::DAUGHTER_OF_THE_WIND, 1);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);
