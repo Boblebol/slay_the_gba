@@ -12,6 +12,7 @@ namespace gba
 
 enum class SceneId : uint8_t
 {
+    SPLASH, // boot credits, shown once before the title
     TITLE,
     MAP,
     DECK,
