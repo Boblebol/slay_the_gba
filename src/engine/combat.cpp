@@ -6504,6 +6504,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         player.heal(player.max_hp / 2);
         extra_turn_pending = true;
         set_log("Ambergris!");
+    } else if (potion_id == "COSMIC_CONCOCTION") {
+        for (int copy = 0; copy < 3; ++copy) create_random_card(CardFilter(CardPool::COLORLESS), Pile::HAND, true);
+        set_log("Cosmic Concoction!");
     } else {
         return false;
     }
