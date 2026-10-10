@@ -647,6 +647,10 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::PENDULUM:
             if (turn_start && power.turns % 3 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;
+        case PowerId::RINGING_TRIANGLE:
+            // Set after the turn start has cleared retain_hand: the hand is kept at the end of the first turn only.
+            if (turn_start && power.turns == 1) retain_hand = true;
+            break;
         case PowerId::VERY_HOT_COCOA:
             if (turn_start && power.turns == 1) player.energy = static_cast<int8_t>(player.energy + power.amount);
             break;
@@ -910,6 +914,15 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 player.add_status(StatusType::STRENGTH, power.amount);
             }
             break;
+        case PowerId::PEN_NIB:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK && ++power.counter == PEN_NIB_ATTACKS) {
+                power.counter = 0;
+                pen_nib_now = true;
+            }
+            break;
+        case PowerId::STRIKE_DUMMY:
+            if (card_played && is_strike(info.card.id)) strike_played_now = true;
+            break;
         case PowerId::ORNAMENTAL_FAN:
             if (completes(CardType::ATTACK, counters.attacks_played, ORNAMENTAL_FAN_ATTACKS)) add_block(power.amount);
             break;
@@ -995,7 +1008,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         default:
             // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
             // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE,
-            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM, DEMISE, DUPLICATION.
+            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM, DEMISE, DUPLICATION, STABLE_SERUM.
             break;
     }
 }
@@ -1390,6 +1403,8 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (resolving_card && counters.attacks_played == 0) percent += power_amount(PowerId::LETHALITY);
     if (attack_double_now) percent *= 2;
     if (resolving_card && triple_next_attack) percent *= 3;
+    if (pen_nib_now && resolving_card) percent *= 2;
+    if (strike_played_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY));
     int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
@@ -1676,6 +1691,7 @@ void CombatEngine::reset_combat_state() {
     powers_in_play.clear();
     permanent_gains.clear();
     pending_choices.clear();
+    clear_offers();
     turn_picks_from_draw_ = 0;
     end_turn_requested = false;
     event_depth_ = 0;
@@ -1754,7 +1770,7 @@ void CombatEngine::start_player_turn() {
     player.halve_vulnerable_damage = false;
     for (Enemy& foe : enemies) {
         if (foe.debilitate_turns > 0) --foe.debilitate_turns;
-        if (foe.softened_turns > 0) --foe.softened_turns;
+        if (foe.damage_down_turns > 0) --foe.damage_down_turns;
     }
     if (no_card_block_turns > 0) --no_card_block_turns;
     trigger_turn_passives(true);
@@ -1879,7 +1895,7 @@ int CombatEngine::effective_cost(const DeckCard& card) const {
     if (printed == COST_X) return COST_X;
     if (costs_nothing(card)) return 0;
 
-    int cost = printed + card.cost_delta;
+    int cost = printed + card.cost_delta - card.bookmark_discount;
     switch (card.id) {
         case CardId::MIDNIGHT:
             cost -= static_cast<int>(exhaust_pile.size());
@@ -1997,6 +2013,7 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::PURITY:
         case CardId::SECRET_TECHNIQUE:
         case CardId::SECRET_WEAPON:
+        case CardId::SEEKER_STRIKE:
         case CardId::DUAL_WIELD:
         case CardId::HEIRLOOM_HAMMER:
         case CardId::NIGHTMARE:
@@ -2100,6 +2117,8 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         resolving_card = true;
         resolve_effect(card, target_idx, x_value, after_play);
         resolving_card = false;
+        pen_nib_now = false;
+        strike_played_now = false;
         // Vigor goes to the first Attack played, all its hits included.
         if (played_type == CardType::ATTACK) {
             player.clear_status(StatusType::VIGOR);
@@ -2162,6 +2181,7 @@ void CombatEngine::place_played_card(const DeckCard& card, AfterPlay after_play)
     // Where it goes is decided by the card as it was played; Razor Tooth upgrades the copy that comes back.
     DeckCard kept_card = card;
     kept_card.free_this_turn = false;
+    kept_card.bookmark_discount = 0;
     kept_card.cost_one_this_turn = false;
     kept_card.sly_this_turn = false;
     if (played_type == CardType::SKILL && has_power(PowerId::MASTER_PLANNER)) kept_card.sly_combat = true;
@@ -2232,11 +2252,21 @@ bool CombatEngine::can_be_picked(const DeckCard& card, const CardChoice& choice)
 }
 
 size_t CombatEngine::pile_size(Pile pile) const {
-    return pile == Pile::HAND ? hand.size() : pile == Pile::DRAW ? draw_pile.size() : discard_pile.size();
+    switch (pile) {
+        case Pile::HAND: return hand.size();
+        case Pile::DRAW: return draw_pile.size();
+        case Pile::OFFERS: return offers.size();
+        default: return discard_pile.size();
+    }
 }
 
 const DeckCard& CombatEngine::pile_card(Pile pile, size_t index) const {
-    return pile == Pile::HAND ? hand[index] : pile == Pile::DRAW ? draw_pile[index] : discard_pile[index];
+    switch (pile) {
+        case Pile::HAND: return hand[index];
+        case Pile::DRAW: return draw_pile[index];
+        case Pile::OFFERS: return offers[index];
+        default: return discard_pile[index];
+    }
 }
 
 size_t CombatEngine::choice_pool(const CardChoice& choice) const {
@@ -2290,8 +2320,63 @@ void CombatEngine::ask_pile_choice(Pile source, ChoiceKind kind, uint8_t count) 
     ask_choice(choice);
 }
 
+void CombatEngine::offer_from_draw(uint8_t count) {
+    CardChoice choice;
+    choice.kind = ChoiceKind::TO_HAND;
+    choice.source = Pile::OFFERS;
+    choice.amount = count;
+    ask_choice(choice);
+}
+
+void CombatEngine::offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded, bool free_this_turn) {
+    CardChoice choice;
+    choice.kind = ChoiceKind::TO_HAND;
+    choice.source = Pile::OFFERS;
+    choice.amount = count;
+    choice.upgraded = upgraded;
+    choice.offer_from_draw = false;
+    choice.offer_free = free_this_turn;
+    choice.offer_filter = filter;
+    ask_choice(choice);
+}
+
+void CombatEngine::clear_offers() {
+    offers.clear();
+    offer_origins.clear();
+}
+
+void CombatEngine::deal_offers(const CardChoice& choice) {
+    clear_offers();
+    const size_t wanted = std::min<size_t>(choice.amount, offers.capacity());
+    if (choice.offer_from_draw) {
+        // Different cards of the draw pile, at random: its order stays hidden.
+        FixedVector<uint8_t, 50> left;
+        for (size_t i = 0; i < draw_pile.size(); ++i) left.push_back(static_cast<uint8_t>(i));
+        while (offers.size() < wanted && !left.empty()) {
+            const size_t pick = next_random() % left.size();
+            offers.push_back(draw_pile[left[pick]]);
+            offer_origins.push_back(left[pick]);
+            left.erase(pick);
+        }
+        return;
+    }
+    // Different cards: a card drawn twice is drawn again, a few times at most when the filter has few cards.
+    for (size_t tries = 0; offers.size() < wanted && tries < wanted * 8; ++tries) {
+        const CardId id = random_card(choice.offer_filter);
+        if (id == CardId::NONE) break;
+        bool offered = false;
+        for (const DeckCard& card : offers) offered = offered || card.id == id;
+        if (offered) continue;
+        DeckCard card(id, choice.upgraded);
+        card.free_this_turn = choice.offer_free;
+        offers.push_back(card);
+        offer_origins.push_back(NOT_IN_PILE);
+    }
+}
+
 void CombatEngine::settle_choices() {
     while (choice_pending()) {
+        if (pending_choices[0].source == Pile::OFFERS && offers.empty()) deal_offers(pending_choices[0]);
         const CardChoice choice = pending_choices[0];
         FixedVector<uint8_t, 50> pickable;
         for (size_t i = 0, pool = choice_pool(choice); i < pool; ++i) {
@@ -2313,6 +2398,20 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
     uint8_t taken_from_discard = 0;
     for (uint8_t index : picks) {
         if (index >= pile_size(choice.source)) continue;
+        if (choice.source == Pile::OFFERS) {
+            const uint8_t origin = offer_origins[index];
+            if (origin == NOT_IN_PILE) {
+                create_card(offers[index], Pile::HAND); // to the discard pile when the hand is full
+            } else if (origin < draw_pile.size() && hand.size() < hand.capacity()) {
+                // A card of the draw pile stays there when the hand is full.
+                hand.push_back(draw_pile[origin]);
+                draw_pile.erase(origin);
+                for (uint8_t& other : offer_origins) {
+                    if (other != NOT_IN_PILE && other > origin) --other;
+                }
+            }
+            continue;
+        }
         if (choice.source == Pile::HAND) {
             switch (choice.kind) {
                 case ChoiceKind::DISCARD:
@@ -2403,6 +2502,8 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                 break;
         }
     }
+    // The offers not picked are left out: the next offer deals its own.
+    if (choice.source == Pile::OFFERS) clear_offers();
     // The choices still waiting on the discard pile are about the same cards, fewer now.
     for (CardChoice& waiting : pending_choices) {
         if (waiting.source == Pile::DISCARD && waiting.pool != WHOLE_PILE) {
@@ -2453,7 +2554,10 @@ void CombatEngine::resolve_choice_default() {
             if (choice_allows(i)) picks.push_back(static_cast<uint8_t>(i));
         }
     }
-    if (!resolve_choice(std::span<const uint8_t>(picks.begin(), picks.size()))) pending_choices.erase(0);
+    if (!resolve_choice(std::span<const uint8_t>(picks.begin(), picks.size()))) {
+        if (pending_choices[0].source == Pile::OFFERS) clear_offers();
+        pending_choices.erase(0);
+    }
 }
 
 void CombatEngine::boost_copies(CardId id, int amount) {
@@ -3560,6 +3664,12 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             choice.optional = true;
             ask_choice(choice);
             set_log(upgraded ? "Played Purity+!"sv : "Played Purity!"sv);
+            break;
+        }
+        case CardId::SEEKER_STRIKE: {
+            hit(current_target, base_value);
+            offer_from_draw(secondary_value);
+            set_log(upgraded ? "Played Seeker Strike+!"sv : "Played Seeker Strike!"sv);
             break;
         }
         case CardId::SECRET_TECHNIQUE:
@@ -5825,7 +5935,7 @@ void CombatEngine::end_player_turn() {
         if (i < hand.size() && CardDef::has_keyword(hand[i], KEYWORD_ETHEREAL)) exhaust_from_hand(i);
     }
     // The rest is discarded, except the cards with Retain.
-    const bool keep_hand = retain_hand || has_power(PowerId::KEEP_HAND);
+    const bool keep_hand = retain_hand || has_power(PowerId::KEEP_HAND) || has_power(PowerId::STABLE_SERUM);
     for (size_t i = hand.size(); i-- > 0;) {
         // Phantom Blades keeps the Shivs.
         const bool kept_shiv = hand[i].id == CardId::SHIV && has_power(PowerId::PHANTOM_BLADES);
@@ -5836,6 +5946,18 @@ void CombatEngine::end_player_turn() {
         }
         discard_pile.push_back(hand[i]);
         hand.erase(i);
+    }
+    // Stable Serum: one of its turns is spent.
+    for (size_t i = powers.size(); i-- > 0;) {
+        if (powers[i].id != PowerId::STABLE_SERUM) continue;
+        if (--powers[i].amount <= 0) powers.erase(i);
+    }
+
+    // Bookmark: a random card kept in hand costs 1 less until it is played.
+    if (has_power(PowerId::BOOKMARK) && !hand.empty()) {
+        DeckCard& kept = hand[next_random() % hand.size()];
+        const uint8_t printed = CardDef::get_cost(kept.id, kept.upgraded);
+        if (printed != COST_X && effective_cost(kept) > 0) ++kept.bookmark_discount;
     }
 
     // Effects that only lasted this turn are over.
@@ -6015,9 +6137,6 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         }
         damage_enemy(enemies[target_index], 20);
         set_log("Fire Potion!");
-    } else if (potion_id == "BEETLE_JUICE") {
-        aimed_enemy().softened_turns = 4;
-        set_log("Beetle Juice!");
     } else if (potion_id == "GIGANTIFICATION_POTION") {
         triple_next_attack = true;
         set_log("Gigantification Potion!");
@@ -6177,9 +6296,18 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "DUPLICATOR") {
         add_power(PowerId::DUPLICATION, 1, true);
         set_log("Duplicator!");
+    } else if (potion_id == "ASHWATER") {
+        ask_choice(CardChoice{ ChoiceKind::EXHAUST, 10, true });
+        set_log("Ashwater!");
+    } else if (potion_id == "BEETLE_JUICE") {
+        aimed_enemy().damage_down_turns = 4;
+        set_log("Beetle Juice!");
     } else if (potion_id == "DROPLET_OF_PRECOGNITION") {
         ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, 1);
         set_log("Droplet of Precognition!");
+    } else if (potion_id == "STABLE_SERUM") {
+        add_power(PowerId::STABLE_SERUM, 2);
+        set_log("Stable Serum!");
     } else if (potion_id == "OROBIC_ACID") {
         for (CardType type : { CardType::ATTACK, CardType::SKILL, CardType::POWER }) {
             const CardId card = random_card(CardFilter(type));
@@ -6192,6 +6320,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else {
         return false;
     }
+
+    // Reptile Trinket: a potion drunk gives Strength until the end of the turn.
+    if (has_power(PowerId::REPTILE_TRINKET)) gain_temporary(StatusType::STRENGTH, power_amount(PowerId::REPTILE_TRINKET));
 
     // Keep primary enemy in sync
     if (!enemies.empty()) {

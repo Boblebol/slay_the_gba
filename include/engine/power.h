@@ -105,6 +105,7 @@ enum class PowerId : uint8_t {
     HAPPY_FLOWER,      // every 3 turns: `amount` energy
     PENDULUM,          // every 3 turns: draw `amount` more
     VERY_HOT_COCOA,    // turn 1: `amount` more energy
+    BOOKMARK,          // end of turn: a random Retained card in hand costs 1 less until played
     BREAD,             // turn 1: lose BREAD_ENERGY_LOST energy; later turns: `amount` energy
     FIDDLE,            // marker: no card is drawn after the opening draw of the turn (the bonus is a TURN_DRAW)
     MERCURY_HOURGLASS, // start of turn: `amount` damage to every enemy
@@ -122,6 +123,7 @@ enum class PowerId : uint8_t {
     THE_ABACUS,        // draw pile shuffled: `amount` Block
     PERMAFROST,        // first Power played: `amount` Block
     GAME_PIECE,        // Power played: draw `amount`
+    REPTILE_TRINKET,   // potion used: `amount` Strength until the end of the turn
     CENTENNIAL_PUZZLE, // first HP loss: draw `amount`
     LIZARD_TAIL,       // HP reduced to 0: back to `amount` % of Max HP, once (counter = 1 when spent)
     UNCEASING_TOP,     // hand empty during the turn: draw 1
@@ -148,6 +150,8 @@ enum class PowerId : uint8_t {
     BURNING_STICKS,    // first Skill exhausted: a copy of it comes to the hand
     SHURIKEN,          // every SHURIKEN_ATTACKS Attacks played in a turn: `amount` Strength
     ORNAMENTAL_FAN,    // every ORNAMENTAL_FAN_ATTACKS Attacks played in a turn: `amount` Block
+    PEN_NIB,           // every PEN_NIB_ATTACKS Attacks played: that Attack deals double damage (counter = Attacks counted)
+    STRIKE_DUMMY,      // cards containing "Strike" deal `amount` more damage per hit
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy
     RED_SKULL,         // HP at RED_SKULL_HP_PERCENT % of Max HP or less: `amount` more Strength (counter = Strength given now)
@@ -162,6 +166,7 @@ enum class PowerId : uint8_t {
     SEAL_OF_GOLD,      // start of turn: spend 3 gold (CombatEngine::gold) to gain `amount` energy
     SAI,               // start of turn: `amount` Block
     PAELS_LEGION,      // Block from a card is doubled, then the relic sleeps `amount` turns (counter = turn starts left asleep + 1)
+    RINGING_TRIANGLE,  // turn 1: the hand is kept at the end of the turn (read by the turn start)
     // Damage sent back and statuses lost each turn (appended)
     FLAME_BARRIER,     // until the next turn: each enemy attack deals `amount` damage back to the attacker
     REFLECT,           // until the next turn: the attack damage the player's Block absorbs goes back to the attacker
@@ -211,7 +216,9 @@ enum class PowerId : uint8_t {
     CRUELTY,            // Vulnerable enemies take `amount` % more damage from attacks (read by hit)
     UNMOVABLE,          // the first Block a card gives each turn is doubled (read by gain_block)
     TRACKING,           // Weak enemies take `amount` % more damage from attacks (read by hit)
-    LETHALITY           // the first Attack each turn deals `amount` % more damage (read by hit)
+    LETHALITY,          // the first Attack each turn deals `amount` % more damage (read by hit)
+    // Potions (appended)
+    STABLE_SERUM        // the hand is kept at the end of the next `amount` turns (read by end_player_turn)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -237,6 +244,7 @@ constexpr uint8_t TUNING_FORK_SKILLS = 10;
 constexpr uint8_t KUNAI_ATTACKS = 3;
 constexpr uint8_t KUSARIGAMA_ATTACKS = 3;
 constexpr uint8_t NUNCHAKU_ATTACKS = 10;
+constexpr uint8_t PEN_NIB_ATTACKS = 10;
 constexpr uint8_t SHURIKEN_ATTACKS = 3;
 constexpr uint8_t ORNAMENTAL_FAN_ATTACKS = 3;
 constexpr uint8_t RED_SKULL_HP_PERCENT = 50;

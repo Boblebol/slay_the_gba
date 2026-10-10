@@ -104,7 +104,7 @@ items = [
   { name = "Cartes Pouvoir : restent en jeu jusqu'à la fin du combat", status = "oui" },
   { name = "Choix de cartes en main (défausser, épuiser, améliorer, remettre sur la Pioche)", status = "oui" },
   { name = "Choix de cartes dans la Pioche ou la Défausse", status = "oui" },
-  { name = "Choix d'une carte parmi 3 propositions (Découverte, etc.)", status = "non", issue = 72 },
+  { name = "Choix d'une carte parmi 3 propositions (Découverte, etc.)", status = "oui", issue = 72 },
   { name = "Cartes à coût X", status = "oui" },
   { name = "Écho : rejouer une carte", status = "partiel", issue = 86 },
   { name = "Cartes jouées automatiquement (Pioche, pile d'épuisement, fin de tour)", status = "oui" },

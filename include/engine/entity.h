@@ -23,7 +23,6 @@ public:
     // Vulnerable, Weak and Frail received during the enemies' turn (one bit each): they are not worn down by the
     // end of that same round, or a debuff of 1 turn would be gone before it did anything.
     uint8_t fresh_debuffs = 0;
-    uint8_t softened_turns = 0;            // enemy turns left where its attacks deal 30% less damage (Beetle Juice)
     uint8_t debilitate_turns = 0;          // turns left where this entity's Vulnerable and Weak are twice as effective
     bool halve_vulnerable_damage = false;  // takes 50% less damage from Vulnerable enemies until its next turn (Colossus)
 
@@ -358,7 +357,12 @@ enum class EnemyType : uint8_t {
     FAT_GREMLIN,
     VINE_SHAMBLER,
     EYE_WITH_TEETH,
-    STABBOT
+    STABBOT,
+    NOISEBOT,
+    CUBEX_CONSTRUCT,
+    INKLET,
+    NIBBIT,
+    FLYCONID
 };
 
 // What a monster sees of the fight when it chooses its next move.
@@ -383,6 +387,7 @@ public:
     std::string_view name = "Cultist";
     EnemyIntent current_intent;
     int16_t damage_percent = 100; // Ascension bonus on attack damage
+    uint8_t damage_down_turns = 0; // enemy turns left where its attacks deal 30% less damage (Beetle Juice)
     int16_t temp_strength_loss = 0; // Strength taken away until the end of this enemy's turn
     bool minion = false; // summoned by another enemy: killing it triggers no Fatal effect
     uint8_t hang_marks = 0; // Hang cards already played on this enemy: each one doubles the next

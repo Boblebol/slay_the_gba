@@ -855,6 +855,26 @@ void test_delicate_frond() {
     std::cout << "[PASS] Delicate Frond: every empty potion slot filled at combat start" << std::endl;
 }
 
+void test_circlet() {
+    // Circlet is a fallback relic with no effect in game: a run holding it plays exactly like one without it.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("CIRCLET");
+    enter_room_of_type(with, RoomType::MONSTER);
+
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(without, RoomType::MONSTER);
+
+    assert(with.has_relic("CIRCLET"));
+    assert(!without.has_relic("CIRCLET"));
+    assert(with.max_hp == without.max_hp && with.gold == without.gold);
+    assert(with.combat.player.energy == without.combat.player.energy);
+    assert(with.combat.player.get_status(StatusType::DEXTERITY) == without.combat.player.get_status(StatusType::DEXTERITY));
+    assert(with.combat.player.get_status(StatusType::STRENGTH) == without.combat.player.get_status(StatusType::STRENGTH));
+    std::cout << "[PASS] Circlet: no effect, with or without the relic" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -1113,6 +1133,25 @@ void test_stone_humidifier() {
     assert(!plain.has_relic("STONE_HUMIDIFIER"));
     assert(plain.max_hp == max_hp);
     std::cout << "[PASS] Stone Humidifier: +5 Max HP at each Rest Site rest" << std::endl;
+}
+
+void test_tiny_mailbox() {
+    // With the relic: each Rest procures 2 potions.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("TINY_MAILBOX");
+    size_t before = run.potions.size();
+    run.rest_at_campfire();
+    assert(run.potions.size() == before + 2);
+
+    // Without the relic: a Rest gives no potion.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_before = plain.potions.size();
+    plain.rest_at_campfire();
+    assert(!plain.has_relic("TINY_MAILBOX"));
+    assert(plain.potions.size() == plain_before);
+    std::cout << "[PASS] Tiny Mailbox: 2 potions at each Rest" << std::endl;
 }
 
 void test_pomander() {
@@ -1582,6 +1621,25 @@ void test_paels_eye() {
     std::cout << "[PASS] Pael's Eye: empty first turn exhausts the hand and gives an extra turn" << std::endl;
 }
 
+void test_ringing_triangle() {
+    // With the relic: the hand is kept at the end of the first turn, and only that one.
+    CombatEngine triangle = make_relic_combat(CharacterId::IRONCLAD, PowerId::RINGING_TRIANGLE, 1);
+    assert(triangle.hand.size() == 5);
+    end_turn_idle(triangle);
+    assert(triangle.discard_pile.size() == 0);
+    assert(triangle.hand.size() == 10);
+    end_turn_idle(triangle);
+    assert(triangle.discard_pile.size() == 10);
+
+    // Without the relic: the first hand is discarded at the end of the turn.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    end_turn_idle(plain);
+    assert(plain.discard_pile.size() == 5);
+    assert(plain.hand.size() == 5);
+
+    std::cout << "[PASS] Ringing Triangle: the first hand is kept at the end of the first turn" << std::endl;
+}
+
 void test_cursed_pearl() {
     // Obtained: a Greed curse joins the deck and 333 gold is paid once.
     RunManager run;
@@ -1635,6 +1693,113 @@ void test_calling_bell() {
     std::cout << "[PASS] Calling Bell: Curse of the Bell and 3 random relics on pickup" << std::endl;
 }
 
+void test_belt_buckle() {
+    // With the relic and no potion: 2 additional Dexterity, lost as soon as a potion is held.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("BELT_BUCKLE");
+    with.potions.clear();
+    enter_room_of_type(with, RoomType::MONSTER);
+    assert(with.combat.player.get_status(StatusType::DEXTERITY) == 2);
+
+    // Holding a potion at the start: no Dexterity; drinking it gives the Dexterity.
+    RunManager held;
+    held.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    held.add_relic("BELT_BUCKLE");
+    held.potions.clear();
+    held.potions.push_back("FIRE_POTION");
+    enter_room_of_type(held, RoomType::MONSTER);
+    assert(held.combat.player.get_status(StatusType::DEXTERITY) == 0);
+    assert(held.use_potion(0, 0));
+    assert(held.combat.player.get_status(StatusType::DEXTERITY) == 2);
+
+    // Without the relic: nothing.
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    without.potions.clear();
+    enter_room_of_type(without, RoomType::MONSTER);
+    assert(without.combat.player.get_status(StatusType::DEXTERITY) == 0);
+    std::cout << "[PASS] Belt Buckle: 2 Dexterity while the potion belt is empty" << std::endl;
+}
+
+void test_reptile_trinket() {
+    // With the relic: a potion drunk gives 3 Strength until the end of the turn.
+    CombatEngine trinket = make_relic_combat(CharacterId::IRONCLAD, PowerId::REPTILE_TRINKET, 3);
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 0);
+    assert(trinket.use_potion("BLOCK_POTION"));
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 3);
+    assert(trinket.use_potion("BLOCK_POTION"));
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 6);
+    end_turn_attacked(trinket, 11);
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 0);
+
+    // Without the relic: no Strength.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    assert(plain.use_potion("BLOCK_POTION"));
+    assert(plain.player.get_status(StatusType::STRENGTH) == 0);
+
+    std::cout << "[PASS] Reptile Trinket: 3 Strength this turn per potion used" << std::endl;
+}
+
+static void test_pen_nib() {
+    // With the relic, the 10th Attack deals double damage and the count starts over.
+    CombatEngine nib = make_relic_combat(CharacterId::IRONCLAD, PowerId::PEN_NIB, 1);
+    nib.enemies[0].hp = 200;
+    for (int i = 0; i < 9; ++i) play(nib, CardId::STRIKE);
+    assert(nib.enemies[0].hp == 200 - 9 * 6);
+    play(nib, CardId::STRIKE);
+    assert(nib.enemies[0].hp == 200 - 9 * 6 - 12 && nib.power_counter(PowerId::PEN_NIB) == 0);
+    play(nib, CardId::STRIKE);
+    assert(nib.enemies[0].hp == 200 - 9 * 6 - 12 - 6);
+
+    // Without it, the 10th Attack is an ordinary one.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::NUNCHAKU, 1);
+    plain.enemies[0].hp = 200;
+    for (int i = 0; i < 10; ++i) play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].hp == 200 - 10 * 6);
+    std::cout << "[PASS] Pen Nib doubles every 10th Attack" << std::endl;
+}
+
+void test_strike_dummy() {
+    // With the relic, every card containing "Strike" deals 3 more damage per hit; other cards do not.
+    CombatEngine dummy = make_relic_combat(CharacterId::IRONCLAD, PowerId::STRIKE_DUMMY, 3);
+    dummy.enemies[0].hp = 200;
+    play(dummy, CardId::STRIKE);
+    assert(dummy.enemies[0].hp == 200 - 9);
+    play(dummy, CardId::TWIN_STRIKE);
+    assert(dummy.enemies[0].hp == 200 - 9 - 2 * 8);
+    play(dummy, CardId::BASH);
+    assert(dummy.enemies[0].hp == 200 - 9 - 2 * 8 - 8);
+
+    // Without it, a Strike deals its ordinary damage.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 200;
+    play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].hp == 200 - 6);
+    std::cout << "[PASS] Strike Dummy: cards containing Strike deal 3 more damage" << std::endl;
+}
+
+void test_white_beast_statue() {
+    // With the statue, every combat reward holds a potion; without it, some do not.
+    uint32_t plain_without = 0;
+    for (uint32_t seed = 1; seed <= 50; ++seed) {
+        RunManager with;
+        with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with.add_relic("WHITE_BEAST_STATUE");
+        enter_room_of_type(with, RoomType::MONSTER);
+        with.generate_rewards();
+        assert(!with.potion_reward.empty());
+
+        RunManager plain;
+        plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(plain, RoomType::MONSTER);
+        plain.generate_rewards();
+        if (plain.potion_reward.empty()) ++plain_without;
+    }
+    assert(plain_without > 0);
+    std::cout << "[PASS] White Beast Statue: a potion in every combat reward, not always without it" << std::endl;
+}
+
 void test_cauldron() {
     // Obtained: 5 random potions are brewed into the belt.
     RunManager run;
@@ -1654,6 +1819,35 @@ void test_cauldron() {
     assert(!plain.has_relic("CAULDRON"));
     assert(plain.potions.empty());
     std::cout << "[PASS] Cauldron: 5 random potions brewed on pickup" << std::endl;
+}
+
+void test_bookmark() {
+    // With the relic: the Retained card in hand costs 1 less at the end of the turn, until it is played.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.add_power(PowerId::BOOKMARK, 1);
+    combat.hand.clear();
+    DeckCard kept(CardId::BASH);
+    kept.added_keywords |= KEYWORD_RETAIN;
+    combat.hand.push_back(kept);
+    combat.hand.push_back(DeckCard(CardId::STRIKE));
+    assert(combat.effective_cost(combat.hand[0]) == 2);
+    combat.end_player_turn();
+    int discounted = 0;
+    for (size_t i = 0; i < combat.hand.size(); ++i) {
+        if (combat.hand[i].bookmark_discount > 0) {
+            ++discounted;
+            assert(combat.hand[i].id == CardId::BASH && combat.effective_cost(combat.hand[i]) == 1);
+        }
+    }
+    assert(discounted == 1);
+
+    // Without the relic: the Retained card keeps its cost.
+    CombatEngine plain = make_combat(CharacterId::IRONCLAD);
+    plain.hand.clear();
+    plain.hand.push_back(kept);
+    plain.end_player_turn();
+    for (size_t i = 0; i < plain.hand.size(); ++i) assert(plain.hand[i].bookmark_discount == 0);
+    std::cout << "[PASS] Bookmark: a Retained card costs 1 less until played" << std::endl;
 }
 
 int main() {
@@ -1691,6 +1885,7 @@ int main() {
     test_nutritious_oyster();
     test_lava_rock();
     test_stone_humidifier();
+    test_tiny_mailbox();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();
@@ -1711,6 +1906,14 @@ int main() {
     test_paels_eye();
     test_cursed_pearl();
     test_calling_bell();
+    test_belt_buckle();
+    test_circlet();
+    test_reptile_trinket();
+    test_ringing_triangle();
+    test_pen_nib();
+    test_strike_dummy();
+    test_white_beast_statue();
     test_cauldron();
+    test_bookmark();
     return 0;
 }
