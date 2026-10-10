@@ -1021,6 +1021,8 @@ int RunManager::upgrade_random_cards(int count, bool any_type, CardType type) {
 bool RunManager::add_card_to_deck(DeckCard card) {
     if (master_deck.size() >= master_deck.capacity()) return false;
     on_card_added(card);
+    // Molten Egg: an Attack added to the deck comes in upgraded.
+    if (has_relic("MOLTEN_EGG") && CardDef::get(card.id).type == CardType::ATTACK) card.upgraded = true;
     return master_deck.push_back(card);
 }
 
@@ -1186,7 +1188,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Retained hand on the first turn (#509)
         "RINGING_TRIANGLE",
         // Upgrades on pickup (#465, #464)
-        "WHETSTONE", "WAR_PAINT"
+        "WHETSTONE", "WAR_PAINT",
+        // Upgrades the Attacks added to the deck (#493)
+        "MOLTEN_EGG"
     };
     return ACTIVE_RELICS;
 }
