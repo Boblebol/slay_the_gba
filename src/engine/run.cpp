@@ -1021,7 +1021,10 @@ int RunManager::upgrade_random_cards(int count, bool any_type, CardType type) {
 bool RunManager::add_card_to_deck(DeckCard card) {
     if (master_deck.size() >= master_deck.capacity()) return false;
     on_card_added(card);
-    return master_deck.push_back(card);
+    if (!master_deck.push_back(card)) return false;
+    // Lucky Fysh: each card that joins the deck gains gold, whatever the source (reward, shop, event).
+    if (has_relic("LUCKY_FYSH")) gain_gold(15);
+    return true;
 }
 
 bool RunManager::transform_card_in_deck(int deck_index, bool upgraded, CardId into) {
@@ -1176,7 +1179,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
-        "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR",                                   // Shared, out of combat
+        "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
