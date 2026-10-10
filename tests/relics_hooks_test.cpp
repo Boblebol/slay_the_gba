@@ -1850,6 +1850,26 @@ void test_bookmark() {
     std::cout << "[PASS] Bookmark: a Retained card costs 1 less until played" << std::endl;
 }
 
+void test_mango() {
+    // Obtained: 14 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 457);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("MANGO");
+    assert(run.has_relic("MANGO"));
+    assert(run.max_hp == max_hp + 14 && run.hp == 64);
+
+    // Without the relic, nothing raises the maximum HP.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 457);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("MANGO"));
+    assert(plain.max_hp == max_hp && plain.hp == 50);
+    std::cout << "[PASS] Mango: 14 more max HP on pickup" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1915,5 +1935,6 @@ int main() {
     test_white_beast_statue();
     test_cauldron();
     test_bookmark();
+    test_mango();
     return 0;
 }
