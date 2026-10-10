@@ -602,6 +602,28 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "SIGNET_RING" && has_relic("SIGNET_RING")) gain_gold(888);
     // Relic of the Ancients: the gold comes once, when the pearl is obtained.
     if (relic_id == "GOLDEN_PEARL" && has_relic("GOLDEN_PEARL")) gain_gold(150);
+    // Relic of the Ancients: one Ancient card of the hero, drawn at random with the run's generator.
+    if (relic_id == "DUSTY_TOME" && has_relic("DUSTY_TOME")) {
+        const auto hero_pool = static_cast<CardPool>(static_cast<uint8_t>(character) + 1);
+        const auto is_ancient = [&](uint16_t id) {
+            const CardMeta& meta = card_meta(static_cast<CardId>(id));
+            return meta.rarity == CardRarity::ANCIENT && meta.pool == hero_pool;
+        };
+        uint16_t count = 0;
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (is_ancient(id)) ++count;
+        }
+        if (count > 0) {
+            uint16_t pick = next_random() % count;
+            for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+                if (!is_ancient(id)) continue;
+                if (pick-- == 0) {
+                    add_card_to_deck(DeckCard{ static_cast<CardId>(id), false });
+                    break;
+                }
+            }
+        }
+    }
     if (relic_id == "SERE_TALON" && has_relic("SERE_TALON")) {
         lose_max_hp(9);
         for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::WISH, false });
