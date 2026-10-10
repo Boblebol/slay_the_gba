@@ -112,6 +112,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "FAKE_STRIKE_DUMMY", "Les cartes contenant « Frappe » infligent 1 dégât supplémentaire." },
     { "MINIATURE_CANNON", "Les Attaques améliorées infligent 3 dégâts supplémentaires." },
     { "TUNGSTEN_ROD", "Vous perdez 1 PV de moins chaque fois que vous perdriez des PV." },
+    { "PAPER_KRANE", "Les ennemis Affaiblis vous infligent 40% de dégâts en moins plutôt que 25%." },
     { "AMETHYST_AUBERGINE", "Les ennemis donnent 15 Pièces d'or supplémentaires." },
     { "FIDDLE", "Au début de chaque tour, piochez 2 cartes supplémentaires. Vous ne pouvez plus piocher de cartes pendant votre tour." },
     { "PAELS_BLOOD", "Au début de votre tour, piochez 1 carte supplémentaire." },

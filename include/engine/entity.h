@@ -28,6 +28,7 @@ public:
     // HP this entity may still lose this turn, -1 for no limit (Beating Remnant, set at the start of the player's turn)
     int16_t hp_loss_budget = -1;
     uint8_t hp_loss_reduction = 0;         // every HP loss is this much smaller (Tungsten Rod, the player only)
+    bool paper_krane = false;              // Weak enemies deal 40% less damage to it instead of 25% (Paper Krane, the player only)
 
     bool is_alive() const { return hp > 0; }
 
@@ -233,6 +234,7 @@ public:
         minion_block = 0;
         minion_max_hp = 0;
         hp_loss_reduction = 0;
+        paper_krane = false;
     }
 
     void reset_turn() {
@@ -276,18 +278,19 @@ public:
     int16_t kill_minion();
 };
 
-// Attack damage as in Slay the Spire: (base + Strength + Vigor), x0.75 when the attacker is Weak, x1.5 when the
-// target is Vulnerable, rounded down once at the end, and 1 at most against an Intangible target.
-// `percent` is the total of the other multipliers (Cruelty, Tracking, Lethality, Shadow Step), 100 = none. Debilitate
-// makes Weak x0.5 and Vulnerable x2 on the entity that carries it.
+// Attack damage as in Slay the Spire: (base + Strength + Vigor), x0.75 when the attacker is Weak (x0.6 against a target
+// with Paper Krane), x1.5 when the target is Vulnerable, rounded down once at the end, and 1 at most against an
+// Intangible target. `percent` is the total of the other multipliers (Cruelty, Tracking, Lethality, Shadow Step), 100 =
+// none. Debilitate makes Weak x0.5 and Vulnerable x2 on the entity that carries it.
 inline int16_t attack_damage(int16_t base, const CombatEntity& attacker, const CombatEntity& target, int32_t percent = 100) {
     int32_t damage = base + attacker.get_status(StatusType::STRENGTH) + attacker.get_status(StatusType::VIGOR);
     if (damage <= 0) return 0;
-    int32_t weak = attacker.debilitate_turns > 0 ? 2 : 3;
+    // Weak in twentieths (20 = no Weak), Vulnerable in halves (2 = no Vulnerable): the total is divided by 40.
+    int32_t weak = attacker.debilitate_turns > 0 ? 10 : (target.paper_krane ? 12 : 15);
     int32_t vulnerable = target.debilitate_turns > 0 ? 4 : 3;
-    damage *= attacker.get_status(StatusType::WEAK) > 0 ? weak : 4;
+    damage *= attacker.get_status(StatusType::WEAK) > 0 ? weak : 20;
     damage *= target.get_status(StatusType::VULNERABLE) > 0 ? vulnerable : 2;
-    damage /= 8;
+    damage /= 40;
     if (percent != 100) damage = damage * percent / 100;
     if (damage > 1 && target.get_status(StatusType::INTANGIBLE) > 0) damage = 1;
     return static_cast<int16_t>(damage);

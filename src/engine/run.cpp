@@ -1327,6 +1327,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "VAMBRACE",                           // Shared, uncommon: the first Block of a card each combat is doubled
         "BEATING_REMNANT", "UNSETTLING_LAMP", // Shared, rare: caps the HP lost each turn, doubles the first debuff of the fight
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
+        "PAPER_KRANE",                        // Silent, rare: Weak enemies deal 40% less damage to the player
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
         "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL", "ORANGE_DOUGH",   // Regent
@@ -1528,6 +1529,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("THE_BOOT")) combat.add_power(PowerId::THE_BOOT);
     // Tungsten Rod: whenever the player would lose HP, 1 less.
     if (has_relic("TUNGSTEN_ROD")) combat.player.hp_loss_reduction = 1;
+    // Paper Krane: enemies with Weak deal 40% less damage to the player rather than 25%.
+    if (has_relic("PAPER_KRANE")) combat.player.paper_krane = true;
     if (has_relic("RAINBOW_RING")) combat.add_power(PowerId::RAINBOW_RING, 1);
     if (has_relic("RIPPLE_BASIN")) combat.add_power(PowerId::RIPPLE_BASIN, 4);
     if (has_relic("BURNING_STICKS")) combat.add_power(PowerId::BURNING_STICKS);
