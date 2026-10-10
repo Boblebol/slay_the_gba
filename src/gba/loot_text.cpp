@@ -27,6 +27,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "BELLOWS", "La première Main que vous piochez chaque combat est Améliorée." },
     { "BIG_HAT", "Au début de chaque combat, ajoutez 2 cartes Éthérées aléatoires à votre Main." },
     { "BLOOD_VIAL", "Au début de chaque combat, récupérez 2 PV." },
+    { "ROYAL_POISON", "Au début de chaque combat, perdez 4 PV." },
     { "BONE_FLUTE", "Chaque fois que Titos attaque, gagnez 2 d'Armure." },
     { "BOOK_REPAIR_KNIFE", "Chaque fois qu'un ennemi non-Serviteur succombe à Fatalité, récupérez 3 PV." },
     { "BOOKMARK", "À la fin de chaque tour, une carte Retenue aléatoire coûte 1 de moins jusqu'à ce qu'elle soit jouée." },
