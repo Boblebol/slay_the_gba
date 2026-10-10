@@ -394,6 +394,16 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 autoplay(copy, -1, AfterPlay::NOWHERE);
             }
             break;
+        case PowerId::CROSSBOW:
+            if (turn_start && my_turn) {
+                const CardId id = random_card(CardFilter(CardType::ATTACK));
+                if (id != CardId::NONE) {
+                    DeckCard gift(id);
+                    gift.free_this_turn = hand.size() < hand.capacity();
+                    create_card(gift, Pile::HAND);
+                }
+            }
+            break;
         case PowerId::HELLRAISER:
             // The card just drawn is the last one of the hand.
             if (event == CombatEvent::CARD_DRAWN && is_strike(info.card.id) && !hand.empty() && hand.back().id == info.card.id) {

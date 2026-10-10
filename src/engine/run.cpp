@@ -1496,6 +1496,7 @@ void RunManager::register_relic_powers() {
         if (potions[i] == "FAIRY_IN_A_BOTTLE") combat.fairy_bottles = static_cast<uint8_t>(combat.fairy_bottles + 1);
     }
     if (has_relic("LIZARD_TAIL")) combat.add_power(PowerId::LIZARD_TAIL, 50);
+    if (has_relic("CROSSBOW")) combat.add_power(PowerId::CROSSBOW, 1);
     if (has_relic("HISTORY_COURSE")) combat.add_power(PowerId::HISTORY_COURSE, 0);
     if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);
     if (has_relic("TOUGH_BANDAGES")) combat.add_power(PowerId::TOUGH_BANDAGES, 3);
