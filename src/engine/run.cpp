@@ -648,6 +648,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         paels_tooth_picks = deck_choice.remaining;
     }
     if (relic_id == "CLAWS" && has_relic("CLAWS")) request_deck_choice(DeckChoiceKind::TRANSFORM, 6, true, false, CardId::MAUL);
+    if (relic_id == "NEW_LEAF" && has_relic("NEW_LEAF")) request_deck_choice(DeckChoiceKind::TRANSFORM, 1);
     if (relic_id == "PRESERVED_FOG" && has_relic("PRESERVED_FOG")) {
         // Hubris joins only after the removals, so the Eternal curse can never be picked.
         request_deck_choice(DeckChoiceKind::REMOVE, 3);

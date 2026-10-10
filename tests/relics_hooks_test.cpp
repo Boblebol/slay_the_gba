@@ -954,6 +954,23 @@ void test_neows_torment() {
     plain.add_relic("ANCHOR");
     assert(fury_count(plain) == before);
     std::cout << "[PASS] Neow's Torment: adds 1 Neow's Fury to the deck when obtained" << std::endl;
+void test_new_leaf() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    CardId first = run.master_deck[0].id;
+    run.add_relic("NEW_LEAF");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::TRANSFORM && run.deck_choice.remaining == 1);
+    assert(!run.deck_choice.optional && run.deck_choice.transform_into == CardId::NONE);
+    assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck[0].id != first);
+    std::cout << "[PASS] New Leaf: one chosen card transformed on pickup" << std::endl;
+
+    // Without the relic nothing is asked.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice() && plain.master_deck[0].id == first);
+    std::cout << "[PASS] New Leaf: nothing asked without the relic" << std::endl;
 }
 
 int main() {
@@ -984,6 +1001,7 @@ int main() {
     test_arcane_scroll();
     test_lead_paperweight();
     test_neows_torment();
+    test_new_leaf();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
