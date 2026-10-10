@@ -180,6 +180,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "MANGO", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 14." },
     { "FAKE_LEES_WAFFLE", "Lorsque vous obtenez cette relique, récupérez 10% de vos PV." },
     { "FAKE_MANGO", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 3." },
+    { "CHOSEN_CHEESE", "À la fin de chaque combat, augmentez vos PV Max de 1." },
     { "STONE_HUMIDIFIER", "Lorsque vous vous Reposez à un Site de repos, augmentez vos PV Max de 5." },
     { "TINY_MAILBOX", "Lorsque vous vous Reposez, obtenez 2 Potions aléatoires." },
     { "DREAM_CATCHER", "Lorsque vous vous Reposez, vous pouvez ajouter une carte à votre Deck." },
