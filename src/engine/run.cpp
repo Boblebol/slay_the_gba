@@ -1242,7 +1242,6 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", "VENERABLE_TEA_SET", "PLANISPHERE", "MEAL_TICKET", "SHOVEL", // Shared, out of combat
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
         "WHITE_STAR",                         // Shared, rare: an Elite gives one more set of Rare cards
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
