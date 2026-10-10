@@ -28,6 +28,10 @@ constexpr int COOK_REMOVALS = 2; // cards removed by Cook (Meat Cleaver)
 constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
 constexpr int LAVA_ROCK_RELICS = 2; // relics the Act 1 Boss gives to Lava Rock when defeated
 constexpr uint8_t GIRYA_LIFTS = 3;  // most Strength Girya gives, one lift each
+// Silver Crucible keeps its state in its relic counter: the card rewards upgraded so far (low bits, up to 3),
+// and the flag of the first Treasure Chest opened.
+constexpr uint8_t SILVER_CRUCIBLE_REWARDS = 3;
+constexpr uint8_t SILVER_CRUCIBLE_CHEST_OPENED = 4;
 
 constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 0, "Normal", "Difficulté standard de l'Ascension." },
@@ -220,7 +224,13 @@ void RunManager::enter_room(int node_index) {
             break;
         case RoomType::TREASURE: {
             gain_gold(50);
-            last_treasure_relic = draw_treasure_relic();
+            last_treasure_relic = {};
+            // Silver Crucible: the first Treasure Chest opened is empty.
+            if (has_relic("SILVER_CRUCIBLE") && (relic_counter("SILVER_CRUCIBLE") & SILVER_CRUCIBLE_CHEST_OPENED) == 0) {
+                set_relic_counter("SILVER_CRUCIBLE", static_cast<uint8_t>(relic_counter("SILVER_CRUCIBLE") | SILVER_CRUCIBLE_CHEST_OPENED));
+            } else {
+                last_treasure_relic = draw_treasure_relic();
+            }
             if (!last_treasure_relic.empty()) {
                 add_relic(last_treasure_relic);
             }
@@ -572,6 +582,12 @@ uint32_t RunManager::reward_seed() const {
 void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity) {
     // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked.
     current_card_rewards.clear();
+    // Silver Crucible: the first card rewards seen are Upgraded.
+    bool upgraded = card_rewards_upgraded;
+    if (has_relic("SILVER_CRUCIBLE") && (relic_counter("SILVER_CRUCIBLE") % SILVER_CRUCIBLE_CHEST_OPENED) < SILVER_CRUCIBLE_REWARDS) {
+        upgraded = true;
+        set_relic_counter("SILVER_CRUCIBLE", static_cast<uint8_t>(relic_counter("SILVER_CRUCIBLE") + 1));
+    }
     FixedVector<CardId, 512> candidates;
     auto keep = [rarity](CardId id) { return rarity == CardRarity::NONE || card_meta(id).rarity == rarity; };
     for (CardId id : card_reward_pool(character)) {
@@ -594,7 +610,7 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity)
     }
     while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
         size_t pick = (boss ? rng.next() : next_random()) % candidates.size();
-        current_card_rewards.push_back(DeckCard(candidates[pick], card_rewards_upgraded));
+        current_card_rewards.push_back(DeckCard(candidates[pick], upgraded));
         candidates.erase(pick);
     }
 }
