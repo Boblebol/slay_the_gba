@@ -1752,6 +1752,7 @@ void CombatEngine::start_player_turn() {
     player.halve_vulnerable_damage = false;
     for (Enemy& foe : enemies) {
         if (foe.debilitate_turns > 0) --foe.debilitate_turns;
+        if (foe.damage_down_turns > 0) --foe.damage_down_turns;
     }
     if (no_card_block_turns > 0) --no_card_block_turns;
     trigger_turn_passives(true);
@@ -6165,6 +6166,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "DUPLICATOR") {
         add_power(PowerId::DUPLICATION, 1, true);
         set_log("Duplicator!");
+    } else if (potion_id == "BEETLE_JUICE") {
+        aimed_enemy().damage_down_turns = 4;
+        set_log("Beetle Juice!");
     } else if (potion_id == "DROPLET_OF_PRECOGNITION") {
         ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, 1);
         set_log("Droplet of Precognition!");

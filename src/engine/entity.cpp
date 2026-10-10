@@ -8,6 +8,7 @@ void Enemy::init(EnemyType enemy_type) {
     statuses.clear();
     block = 0;
     damage_percent = 100;
+    damage_down_turns = 0;
     stolen = {};
     ascended_damage = false;
     escaped = false;
@@ -546,7 +547,7 @@ int16_t Enemy::intent_damage(const CombatEntity& target) const {
     if (current_intent.damage_status != StatusType::NONE) {
         base = static_cast<int16_t>(std::max(0, base + get_status(current_intent.damage_status)));
     }
-    int16_t damage = attack_damage(base, *this, target);
+    int16_t damage = attack_damage(base, *this, target, damage_down_turns > 0 ? 70 : 100);
     if (target.halve_vulnerable_damage && get_status(StatusType::VULNERABLE) > 0) damage = static_cast<int16_t>(damage / 2);
     return damage;
 }
