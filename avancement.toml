@@ -146,7 +146,7 @@ items = [
   { name = "Retenue", status = "oui" },
   { name = "Ruse", status = "non", issue = 73 },
   { name = "Injouable", status = "oui" },
-  { name = "Éternel", status = "non", issue = 95 },
+  { name = "Éternel", status = "oui", issue = 95 },
 ]
 
 [[category]]

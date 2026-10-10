@@ -586,6 +586,22 @@ enum class CardId : uint16_t {
     TOOLS_OF_THE_TRADE,
     INFERNAL_BLADE,
     STOKE,
+    // Curses on existing mechanics (Unplayable, Eternal, end-of-turn effects in hand)
+    INJURY,
+    GREED,
+    CLUMSY,
+    ASCENDERS_BANE,
+    CURSE_OF_THE_BELL,
+    POOR_SLEEP,
+    WRITHE,
+    NORMALITY,
+    DOUBT,
+    SHAME,
+    DECAY,
+    REGRET,
+    BAD_LUCK,
+    DEBT,
+    SPORE_MIND,
     COUNT
 };
 
