@@ -126,6 +126,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ASTROLABE", "Lorsque vous obtenez cette relique, Transformez 3 cartes, puis Améliorez-les." },
     { "PRESERVED_FOG", "Retirez 3 cartes de votre Deck. Ajoutez Hubris à votre Deck." },
     { "PRECISE_SCISSORS", "Lorsque vous obtenez cette relique, retirez 1 carte de votre Deck." },
+    { "EMPTY_CAGE", "Lorsque vous obtenez cette relique, retirez 2 cartes de votre Deck." },
     { "PAELS_TOOTH", "Retirez 5 cartes de votre Deck. Après chaque combat, rajoutez-en 1 aléatoirement ; elle est Améliorée." },
     { "WAR_HAMMER", "Lorsque vous tuez un Élite, Améliorez 4 cartes aléatoires." },
     { "STRAWBERRY", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 7." },

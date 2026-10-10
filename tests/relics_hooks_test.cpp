@@ -749,6 +749,15 @@ void test_precise_scissors() {
     assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 1);
     assert(run.resolve_deck_choice(0));
     assert(!run.has_deck_choice() && run.master_deck.size() == deck - 1);
+void test_empty_cage() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck = run.master_deck.size();
+    run.add_relic("EMPTY_CAGE");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 2);
+    assert(run.resolve_deck_choice(0));
+    assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 2);
 
     // Without the relic nothing is asked and no card leaves the deck.
     RunManager plain;
@@ -756,6 +765,7 @@ void test_precise_scissors() {
     plain.add_relic("ANCHOR");
     assert(!plain.has_deck_choice());
     assert(plain.master_deck.size() == deck);
+    std::cout << "[PASS] Empty Cage: pickup asks for 2 cards to remove, nothing without the relic" << std::endl;
 }
 
 void test_membership_card() {
@@ -1220,6 +1230,7 @@ int main() {
     test_golden_compass();
     test_paels_tooth();
     test_precise_scissors();
+    test_empty_cage();
     test_membership_card();
     test_astrolabe();
     test_yummy_cookie();

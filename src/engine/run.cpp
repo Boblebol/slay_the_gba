@@ -715,6 +715,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
             if (!candidates.empty()) master_deck[candidates[next_random() % candidates.size()]].upgraded = true;
         }
     }
+    if (relic_id == "EMPTY_CAGE" && has_relic("EMPTY_CAGE")) request_deck_choice(DeckChoiceKind::REMOVE, 2);
     if (relic_id == "MEMBERSHIP_CARD" && phase == RunPhase::SHOP) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
 }
 
