@@ -88,6 +88,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Œil denté";
         max_hp = 6;
         hp = 6;
+    } else if (type == EnemyType::STABBOT) {
+        name = "Poignard-bot";
+        max_hp = 18;
+        hp = 18;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -100,6 +104,7 @@ void Enemy::init(EnemyType enemy_type) {
 uint8_t Enemy::hp_spread() const {
     switch (type) {
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
+        case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
         default: return 0;
     }
 }
@@ -128,6 +133,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::LIVING_SHIELD: return 65;
         case EnemyType::FAT_GREMLIN: return 14;
         case EnemyType::VINE_SHAMBLER: return 64;
+        case EnemyType::STABBOT: return 19;
         default: return 0;
     }
 }
@@ -462,6 +468,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.status_cards = 3;
         current_intent.status_pile = Pile::DISCARD;
         current_intent.description = "Distraction (3 Hébété)";
+    } else if (type == EnemyType::STABBOT) {
+        // Stab every turn: 1 Frail.
+        current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+        current_intent.base_damage = ascended_damage ? 12 : 11;
+        current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
+        current_intent.description = "Coup de poignard (11 dmg, Fragilisé)";
     }
 }
 

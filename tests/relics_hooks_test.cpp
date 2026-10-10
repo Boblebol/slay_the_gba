@@ -768,6 +768,53 @@ void test_membership_card() {
     std::cout << "[PASS] Membership Card: every price halved, removal included, at once when bought in the shop" << std::endl;
 }
 
+void test_the_courier() {
+    // Without the relic: full prices, and what is bought stays bought.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.gold = 999;
+    plain.open_shop();
+    assert(!plain.has_relic("THE_COURIER"));
+    int16_t full_card = plain.current_shop.cards[0].cost;
+    assert(plain.buy_shop_card(0) && plain.current_shop.cards[0].purchased);
+    assert(plain.buy_shop_potion(0) && plain.current_shop.potions[0].purchased);
+
+    // With it: the same shelves 20 % cheaper, and what is bought is renewed at once.
+    RunManager courier;
+    courier.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    courier.add_relic("THE_COURIER");
+    courier.gold = 999;
+    courier.open_shop();
+    auto fifth_off = [](int16_t cost) { return static_cast<int16_t>((cost * 80 + 50) / 100); };
+    assert(courier.current_shop.cards[0].cost == fifth_off(full_card));
+    assert(courier.current_shop.card_removal_cost == fifth_off(75));
+    int16_t price = courier.current_shop.cards[0].cost;
+    assert(courier.buy_shop_card(0) && courier.gold == 999 - price && !courier.current_shop.cards[0].purchased);
+    assert(courier.buy_shop_card(0));
+
+    std::string_view bought_relic = courier.current_shop.relics[0].relic_id;
+    int16_t relic_price = courier.current_shop.relics[0].cost;
+    int gold = courier.gold;
+    assert(courier.buy_shop_relic(0) && courier.gold == gold - relic_price && courier.has_relic(bought_relic));
+    assert(!courier.current_shop.relics[0].purchased && courier.current_shop.relics[0].relic_id != bought_relic);
+
+    std::string_view bought_potion = courier.current_shop.potions[0].potion_id;
+    assert(courier.buy_shop_potion(0));
+    assert(!courier.current_shop.potions[0].purchased && !courier.current_shop.potions[0].potion_id.empty());
+    (void)bought_potion;
+
+    // Bought from the merchant himself: the shelves are cheaper at once.
+    RunManager buyer;
+    buyer.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    buyer.gold = 999;
+    buyer.open_shop();
+    buyer.current_shop.relics[2] = ShopRelic{ "THE_COURIER", 100, false };
+    int16_t card_cost = buyer.current_shop.cards[0].cost;
+    assert(buyer.buy_shop_relic(2) && buyer.has_relic("THE_COURIER"));
+    assert(buyer.current_shop.cards[0].cost == fifth_off(card_cost) && buyer.current_shop.card_removal_cost == fifth_off(75));
+    std::cout << "[PASS] The Courier: prices -20%, bought cards, relics and potions renewed at once" << std::endl;
+}
+
 void test_yummy_cookie() {
     // Obtained: four cards of the deck are upgraded.
     RunManager run;
@@ -1588,6 +1635,27 @@ void test_calling_bell() {
     std::cout << "[PASS] Calling Bell: Curse of the Bell and 3 random relics on pickup" << std::endl;
 }
 
+void test_cauldron() {
+    // Obtained: 5 random potions are brewed into the belt.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 463);
+    run.add_potion_slots(5);
+    run.potions.clear();
+    run.add_relic("CAULDRON");
+    assert(run.has_relic("CAULDRON"));
+    assert(run.potions.size() == 5);
+
+    // Without the relic: no potion is brewed.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 463);
+    plain.add_potion_slots(5);
+    plain.potions.clear();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("CAULDRON"));
+    assert(plain.potions.empty());
+    std::cout << "[PASS] Cauldron: 5 random potions brewed on pickup" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1605,6 +1673,7 @@ int main() {
     test_golden_compass();
     test_paels_tooth();
     test_membership_card();
+    test_the_courier();
     test_yummy_cookie();
     test_delicate_frond();
     test_seal_of_gold();
@@ -1642,5 +1711,6 @@ int main() {
     test_paels_eye();
     test_cursed_pearl();
     test_calling_bell();
+    test_cauldron();
     return 0;
 }

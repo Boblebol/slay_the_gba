@@ -6180,6 +6180,15 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "DROPLET_OF_PRECOGNITION") {
         ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, 1);
         set_log("Droplet of Precognition!");
+    } else if (potion_id == "OROBIC_ACID") {
+        for (CardType type : { CardType::ATTACK, CardType::SKILL, CardType::POWER }) {
+            const CardId card = random_card(CardFilter(type));
+            if (card == CardId::NONE) continue;
+            DeckCard made(card);
+            made.free_this_turn = true;
+            create_card(made, Pile::HAND);
+        }
+        set_log("Orobic Acid!");
     } else {
         return false;
     }
