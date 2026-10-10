@@ -18,7 +18,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
-    "ASHWATER", "OROBIC_ACID",
+    "ASHWATER", "OROBIC_ACID", "GIGANTIFICATION_POTION",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -752,6 +752,31 @@ void test_orobic_acid() {
     std::cout << "[PASS] Orobic Acid: an Attack, a Skill and a Power added to the hand, free this turn" << std::endl;
 }
 
+void test_gigantification_potion() {
+    // The next Attack played deals triple damage, all its hits included; Skills do not use it up.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.use_potion("GIGANTIFICATION_POTION"));
+    assert(std::string_view(combat.combat_log) == "Gigantification Potion!");
+    assert(combat.enemies[0].hp == 42);
+    play(combat, CardId::DEFEND);
+    assert(combat.enemies[0].hp == 42);
+
+    // Still held at the next turn: Strike 6 x 3 = 18, then the second Strike is normal (6).
+    end_turn_idle(combat);
+    play(combat, CardId::STRIKE, 0);
+    assert(combat.enemies[0].hp == 42 - 18);
+    play(combat, CardId::STRIKE, 0);
+    assert(combat.enemies[0].hp == 42 - 18 - 6);
+
+    // A multi-hit Attack: Twin Strike 5 x 2, each hit tripled to 15 (30 in total).
+    CombatEngine twin = make_combat(CharacterId::IRONCLAD);
+    assert(twin.use_potion("GIGANTIFICATION_POTION"));
+    play(twin, CardId::TWIN_STRIKE, 0);
+    assert(twin.enemies[0].hp == 42 - 30);
+
+    std::cout << "[PASS] Gigantification Potion: the next Attack deals triple damage" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -886,6 +911,7 @@ int main() {
     test_duplicator();
     test_droplet_of_precognition();
     test_orobic_acid();
+    test_gigantification_potion();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;
