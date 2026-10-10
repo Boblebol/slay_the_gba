@@ -203,6 +203,19 @@ void test_eternal_stays_in_the_deck() {
     std::cout << "[PASS] Eternal curses cannot be removed from the deck, the others can" << std::endl;
 }
 
+void test_decay() {
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::DECAY, up);
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+        combat.player.block = 0;
+        const int16_t hp = combat.player.hp;
+        combat.end_player_turn();
+        assert(combat.player.hp <= static_cast<int16_t>(hp - 2));
+    }
+    std::cout << "[PASS] Decay: X cost, Curse, Unplayable, 2 damage at end of turn while in hand, same upgraded" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -211,6 +224,7 @@ int main() {
     test_ethereal_and_retain();
     test_innate();
     test_end_of_turn_effects();
+    test_decay();
     test_normality();
     test_spore_mind();
     test_eternal_stays_in_the_deck();
