@@ -3407,6 +3407,38 @@ void test_the_boot() {
     std::cout << "[PASS] The Boot: attacks of 4 damage or less deal 5 instead" << std::endl;
 }
 
+void test_hand_drill() {
+    // With the relic: breaking an enemy's Block (6 Block, Strike for 6) applies 2 Vulnerable.
+    CombatEngine drill = make_relic_combat(CharacterId::IRONCLAD, PowerId::HAND_DRILL, 2);
+    drill.enemies[0].hp = 100;
+    drill.enemies[0].block = 6;
+    play(drill, CardId::STRIKE);
+    assert(drill.enemies[0].block == 0 && drill.enemies[0].hp == 100);
+    assert(drill.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+
+    // A hit that only lowers the Block does not break it: no Vulnerable.
+    CombatEngine held = make_relic_combat(CharacterId::IRONCLAD, PowerId::HAND_DRILL, 2);
+    held.enemies[0].hp = 100;
+    held.enemies[0].block = 10;
+    play(held, CardId::STRIKE);
+    assert(held.enemies[0].block == 4 && held.enemies[0].get_status(StatusType::VULNERABLE) == 0);
+
+    // A hit on an enemy with no Block: no Vulnerable.
+    CombatEngine bare = make_relic_combat(CharacterId::IRONCLAD, PowerId::HAND_DRILL, 2);
+    bare.enemies[0].hp = 100;
+    bare.enemies[0].block = 0;
+    play(bare, CardId::STRIKE);
+    assert(bare.enemies[0].get_status(StatusType::VULNERABLE) == 0);
+
+    // Without the relic: the Block is broken, and no Vulnerable is applied.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 100;
+    plain.enemies[0].block = 6;
+    play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].block == 0 && plain.enemies[0].get_status(StatusType::VULNERABLE) == 0);
+    std::cout << "[PASS] Hand Drill: breaking an enemy's Block applies 2 Vulnerable" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3537,5 +3569,6 @@ int main() {
     test_lost_wisp();
     test_tea_of_discourtesy();
     test_the_boot();
+    test_hand_drill();
     return 0;
 }

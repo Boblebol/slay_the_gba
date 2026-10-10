@@ -600,6 +600,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::NEUROSURGE:
             if (turn_start) player.receive_status(StatusType::DOOM, power.amount);
             break;
+        case PowerId::HAND_DRILL:
+            if (event == CombatEvent::BLOCK_BROKEN && foe && foe->is_alive()) afflict(*foe, StatusType::VULNERABLE, power.amount);
+            break;
         case PowerId::REAPER_FORM:
             if (event == CombatEvent::UNBLOCKED_DAMAGE_DEALT && foe && foe->is_alive()) {
                 afflict(*foe, StatusType::DOOM, info.amount);
@@ -1115,7 +1118,13 @@ void CombatEngine::afflict(Enemy& target, StatusType type, int16_t amount) {
 
 void CombatEngine::damage_enemy(Enemy& target, int16_t amount) {
     if (!target.is_alive()) return;
+    const int16_t block_before = target.block;
     target.take_damage(amount);
+    if (block_before > 0 && target.block == 0) {
+        EventInfo info;
+        info.enemy = index_of(target);
+        emit(CombatEvent::BLOCK_BROKEN, info);
+    }
     settle_deaths();
 }
 
@@ -1460,6 +1469,8 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     // The Boot: an Attack hit that would deal 1 to 4 damage (before Block) deals 5 instead.
     if (damage > 0 && damage <= THE_BOOT_THRESHOLD && has_power(PowerId::THE_BOOT)) damage = THE_BOOT_MINIMUM;
     int16_t lost = target.take_damage(damage);
+    const int16_t block_before = target.block;
+    int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
         EventInfo info;
@@ -1467,6 +1478,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
         info.amount = lost;
         emit(CombatEvent::ATTACK_HIT, info);
         if (lost > 0) emit(CombatEvent::UNBLOCKED_DAMAGE_DEALT, info);
+        if (block_before > 0 && target.block == 0) emit(CombatEvent::BLOCK_BROKEN, info);
         // The enemy's Thorns hurt the player, once per hit.
         damage_player(target.get_status(StatusType::THORNS));
         settle_deaths();

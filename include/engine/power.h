@@ -238,6 +238,8 @@ enum class PowerId : uint8_t {
     INFUSED_CORE,       // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
     DAUGHTER_OF_THE_WIND, // Attack played: `amount` Block (event relic)
     LOST_WISP           // Power played: `amount` damage to every enemy (event relic)
+    UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
+    HAND_DRILL          // an enemy's Block broken by the player's damage: `amount` Vulnerable on that enemy
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -303,6 +305,7 @@ enum class CombatEvent : uint8_t {
     HP_LOST,                // by the player; `amount`
     ATTACK_HIT,             // one attack hit on an enemy; `enemy`
     UNBLOCKED_DAMAGE_DEALT, // that hit went through the enemy's Block; `enemy`, `amount`
+    BLOCK_BROKEN,           // the player's damage took an enemy's Block to 0; `enemy`
     DEBUFF_APPLIED,         // to an enemy; `enemy`, `status`, `amount`
     ENEMY_KILLED,           // whatever killed it; `enemy`
     OSTY_ATTACKED,          // once per attack of Osty, however many enemies it hits
