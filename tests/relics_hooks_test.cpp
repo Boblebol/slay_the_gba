@@ -2178,6 +2178,26 @@ void test_lucky_fysh() {
     std::cout << "[PASS] Lucky Fysh: +15 gold each time a card joins the deck" << std::endl;
 }
 
+void test_molten_egg() {
+    // With the relic, every Attack added to the deck is upgraded; other cards are left as they are.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 493);
+    run.add_relic("MOLTEN_EGG");
+    assert(run.has_relic("MOLTEN_EGG"));
+    run.add_card_to_deck(DeckCard{ CardId::BASH, false });
+    assert(run.master_deck[run.master_deck.size() - 1].upgraded);
+    run.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    assert(!run.master_deck[run.master_deck.size() - 1].upgraded);
+
+    // Without the relic, an Attack added to the deck stays as it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 493);
+    plain.add_relic("ANCHOR");
+    plain.add_card_to_deck(DeckCard{ CardId::BASH, false });
+    assert(!plain.has_relic("MOLTEN_EGG") && !plain.master_deck[plain.master_deck.size() - 1].upgraded);
+    std::cout << "[PASS] Molten Egg: upgrades an Attack added to the deck" << std::endl;
+}
+
 void test_whetstone() {
     // Obtained: two random Attacks of the deck are upgraded, never more than the deck holds.
     auto upgraded_attacks = [](const RunManager& r) {
@@ -2478,5 +2498,6 @@ int main() {
     test_lucky_fysh();
     test_book_of_five_rings();
     test_prayer_wheel();
+    test_molten_egg();
     return 0;
 }

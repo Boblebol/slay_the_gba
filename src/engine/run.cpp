@@ -1060,6 +1060,9 @@ bool RunManager::add_card_to_deck(DeckCard card) {
         heal(BOOK_OF_FIVE_RINGS_HEAL);
     }
     return true;
+    // Molten Egg: an Attack added to the deck comes in upgraded.
+    if (has_relic("MOLTEN_EGG") && CardDef::get(card.id).type == CardType::ATTACK) card.upgraded = true;
+    return master_deck.push_back(card);
 }
 
 bool RunManager::transform_card_in_deck(int deck_index, bool upgraded, CardId into) {
@@ -1235,6 +1238,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         "WHETSTONE", "WAR_PAINT",
         // Extra card reward after a normal fight (#479)
         "PRAYER_WHEEL"
+        "WHETSTONE", "WAR_PAINT",
+        // Upgrades the Attacks added to the deck (#493)
+        "MOLTEN_EGG"
     };
     return ACTIVE_RELICS;
 }

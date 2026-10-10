@@ -196,6 +196,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "VEXING_PUZZLEBOX", "Au début de chaque combat, ajoutez une carte aléatoire à votre Main. Elle coûte 0 ce tour." },
     { "YUMMY_COOKIE", "Lorsque vous obtenez cette relique, Améliorez 4 cartes." },
     { "WHETSTONE", "Lorsque vous obtenez cette relique, Améliorez 2 Attaques aléatoires." },
+    { "MOLTEN_EGG", "Lorsque vous ajoutez une Attaque à votre Deck, Améliorez-la." },
     { "NEOWS_TALISMAN", "Lorsque vous obtenez cette relique, Améliorez 1 de vos Frappes et 1 de vos Défenses." },
 };
 
