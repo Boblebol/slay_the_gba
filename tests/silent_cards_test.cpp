@@ -92,11 +92,35 @@ void test_expose() {
     std::cout << "[PASS] Silent: Expose" << std::endl;
 }
 
+void test_reflex() {
+    for (bool upgraded : { false, true }) {
+        // Reflex: Sly, costs 3, draws 2 cards (3 when upgraded).
+        assert(CardDef::get_cost(CardId::REFLEX, false) == 3 && CardDef::get_cost(CardId::REFLEX, true) == 3);
+        assert(CardDef::get_secondary(CardId::REFLEX, false) == 0 && CardDef::get_secondary(CardId::REFLEX, true) == 0);
+        assert(CardDef::get_value(CardId::REFLEX, false) == 2 && CardDef::get_value(CardId::REFLEX, true) == 3);
+        assert(CardDef::get(CardId::REFLEX).type == CardType::SKILL);
+        assert(CardDef::get(CardId::REFLEX).target == TargetType::SELF);
+
+        CombatEngine reflex = make_pack(CharacterId::SILENT);
+        reflex.draw_pile.clear();
+        reflex.draw_pile.push_back(DeckCard(CardId::STRIKE, false));
+        reflex.draw_pile.push_back(DeckCard(CardId::DEFEND, false));
+        reflex.draw_pile.push_back(DeckCard(CardId::STRIKE, false));
+        play(reflex, DeckCard(CardId::REFLEX, upgraded));
+        assert(reflex.player.energy == reflex.player.max_energy - 3);
+        assert(reflex.hand.size() == (upgraded ? 3u : 2u));
+    }
+
+    assert_in_pool(CharacterId::SILENT, { CardId::REFLEX });
+    std::cout << "[PASS] Silent: Reflex" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Silent Cards ===" << std::endl;
     test_expose();
+    test_reflex();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
