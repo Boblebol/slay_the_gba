@@ -835,6 +835,28 @@ void test_paels_legion() {
     std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
 }
 
+void test_lead_paperweight() {
+    // Lead Paperweight: on pickup, 2 distinct Colorless cards are offered and one of them is taken.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t deck = run.master_deck.size();
+    run.add_relic("LEAD_PAPERWEIGHT");
+    assert(run.phase == RunPhase::REWARD_SCREEN && run.current_card_rewards.size() == 2);
+    for (size_t i = 0; i < run.current_card_rewards.size(); ++i) {
+        assert(card_meta(run.current_card_rewards[i].id).pool == CardPool::COLORLESS);
+    }
+    assert(run.current_card_rewards[0].id != run.current_card_rewards[1].id);
+    run.pick_card_reward(1);
+    assert(run.master_deck.size() == deck + 1);
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic nothing is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(plain.phase != RunPhase::REWARD_SCREEN && plain.current_card_rewards.empty());
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -857,6 +879,7 @@ int main() {
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
+    test_lead_paperweight();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

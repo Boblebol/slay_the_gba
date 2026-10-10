@@ -597,6 +597,20 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     if (relic_id == "BLOOD_SOAKED_ROSE" && has_relic("BLOOD_SOAKED_ROSE")) add_card_to_deck(DeckCard{ CardId::ENTHRALLED, false });
     if (relic_id == "JEWELRY_BOX" && has_relic("JEWELRY_BOX")) add_card_to_deck(DeckCard{ CardId::APOTHEOSIS, false });
+    // Lead Paperweight: choose 1 Colorless card out of 2. The offer is the card reward screen with two cards.
+    if (relic_id == "LEAD_PAPERWEIGHT" && has_relic("LEAD_PAPERWEIGHT")) {
+        FixedVector<CardId, 64> colorless;
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (card_meta(static_cast<CardId>(id)).pool == CardPool::COLORLESS) colorless.push_back(static_cast<CardId>(id));
+        }
+        current_card_rewards.clear();
+        for (int n = 0; n < 2 && !colorless.empty(); ++n) {
+            size_t pick = next_random() % colorless.size();
+            current_card_rewards.push_back(DeckCard(colorless[pick], false));
+            colorless.erase(pick);
+        }
+        phase = RunPhase::REWARD_SCREEN;
+    }
     if (relic_id == "DISTINGUISHED_CAPE" && has_relic("DISTINGUISHED_CAPE")) {
         // Two random curses (repetition allowed) drawn from the whole curse pool, then three Apparitions.
         const auto is_curse = [](uint16_t id) { return card_meta(static_cast<CardId>(id)).pool == CardPool::CURSE; };
