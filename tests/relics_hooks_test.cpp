@@ -599,7 +599,9 @@ void test_strawberry() {
         if (chest.last_treasure_relic == "STRAWBERRY") {
             found = true;
             assert(chest.max_hp == before + 7);
-        } else {
+        } else if (chest.last_treasure_relic != "MANGO" && chest.last_treasure_relic != "PEAR" &&
+                   chest.last_treasure_relic != "LEES_WAFFLE") {
+            // The other relics that raise the maximum HP on pickup aside.
             assert(chest.max_hp == before);
         }
     }
@@ -1874,6 +1876,26 @@ void test_cauldron() {
     std::cout << "[PASS] Cauldron: 5 random potions brewed on pickup" << std::endl;
 }
 
+void test_pear() {
+    // Obtained: 10 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 468);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("PEAR");
+    assert(run.has_relic("PEAR"));
+    assert(run.max_hp == max_hp + 10 && run.hp == 60);
+
+    // Without the relic: the maximum HP is left alone.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 468);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("PEAR"));
+    assert(plain.max_hp == max_hp && plain.hp == 50);
+    std::cout << "[PASS] Pear: 10 more max HP on pickup" << std::endl;
+}
+
 void test_bookmark() {
     // With the relic: the Retained card in hand costs 1 less at the end of the turn, until it is played.
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
@@ -1935,6 +1957,120 @@ void test_tungsten_rod() {
     std::cout << "[PASS] Tungsten Rod: 1 less HP lost each time" << std::endl;
 }
 
+void test_lees_waffle() {
+    // Obtained: 7 more maximum HP, and all of the HP is restored.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 455);
+    run.hp = 20;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("LEES_WAFFLE");
+    assert(run.has_relic("LEES_WAFFLE"));
+    assert(run.max_hp == max_hp + 7 && run.hp == max_hp + 7);
+
+    // Without the relic: the maximum HP and the current HP stay as they are.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 455);
+    plain.hp = 20;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("LEES_WAFFLE"));
+    assert(plain.max_hp == max_hp && plain.hp == 20);
+    std::cout << "[PASS] Lee's Waffle: +7 Max HP and full heal on pickup" << std::endl;
+}
+
+void test_mango() {
+    // Obtained: 14 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 457);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("MANGO");
+    assert(run.has_relic("MANGO"));
+    assert(run.max_hp == max_hp + 14 && run.hp == 64);
+
+    // Without the relic, nothing raises the maximum HP.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 457);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("MANGO"));
+    assert(plain.max_hp == max_hp && plain.hp == 50);
+    std::cout << "[PASS] Mango: 14 more max HP on pickup" << std::endl;
+}
+
+void test_old_coin() {
+    // Obtained: 300 gold, paid once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 466);
+    int16_t gold = run.gold;
+    run.add_relic("OLD_COIN");
+    assert(run.has_relic("OLD_COIN"));
+    assert(run.gold == gold + 300);
+
+    // Without the relic, the gold stays where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 466);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("OLD_COIN") && plain.gold == gold);
+    std::cout << "[PASS] Old Coin: +300 gold when obtained" << std::endl;
+}
+
+void test_whetstone() {
+    // Obtained: two random Attacks of the deck are upgraded, never more than the deck holds.
+    auto upgraded_attacks = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) {
+            if (r.master_deck[i].upgraded && CardDef::get(r.master_deck[i].id).type == CardType::ATTACK) ++n;
+        }
+        return n;
+    };
+    auto attacks = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) {
+            if (CardDef::get(r.master_deck[i].id).type == CardType::ATTACK) ++n;
+        }
+        return n;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 465);
+    int before = upgraded_attacks(run);
+    run.add_relic("WHETSTONE");
+    assert(run.has_relic("WHETSTONE"));
+    assert(upgraded_attacks(run) == std::min(before + 2, attacks(run)));
+
+    // Without the relic, no Attack is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 465);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("WHETSTONE") && upgraded_attacks(plain) == before);
+    std::cout << "[PASS] Whetstone: upgrades 2 random Attacks when obtained" << std::endl;
+}
+
+void test_war_paint() {
+    // Obtained: two random Skills of the deck are upgraded, never an Attack.
+    auto upgraded_of_type = [](const RunManager& r, CardType type) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) {
+            if (r.master_deck[i].upgraded && CardDef::get(r.master_deck[i].id).type == type) ++n;
+        }
+        return n;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 464);
+    int skills_before = upgraded_of_type(run, CardType::SKILL);
+    int attacks_before = upgraded_of_type(run, CardType::ATTACK);
+    run.add_relic("WAR_PAINT");
+    assert(run.has_relic("WAR_PAINT"));
+    assert(upgraded_of_type(run, CardType::SKILL) == skills_before + 2);
+    assert(upgraded_of_type(run, CardType::ATTACK) == attacks_before);
+
+    // Without the relic, no Skill is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 464);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("WAR_PAINT") && upgraded_of_type(plain, CardType::SKILL) == skills_before);
+    std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1991,6 +2127,7 @@ int main() {
     test_paels_eye();
     test_cursed_pearl();
     test_calling_bell();
+    test_war_paint();
     test_belt_buckle();
     test_circlet();
     test_beating_remnant();
@@ -2001,7 +2138,12 @@ int main() {
     test_strike_dummy();
     test_white_beast_statue();
     test_cauldron();
+    test_lees_waffle();
     test_bookmark();
     test_tungsten_rod();
+    test_mango();
+    test_old_coin();
+    test_pear();
+    test_whetstone();
     return 0;
 }
