@@ -1281,6 +1281,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         "DINGY_RUG",
         // Skills added to the Deck are upgraded (#495)
         "TOXIC_EGG"
+        "DINGY_RUG",
+        // At the merchant (#503)
+        "CHEMICAL_X"
     };
     return ACTIVE_RELICS;
 }
@@ -1432,6 +1435,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("BEATING_REMNANT")) combat.add_power(PowerId::BEATING_REMNANT, BEATING_REMNANT_HP_LOSS);
     // Vambrace: the first Block a card gives each combat is doubled.
     if (has_relic("VAMBRACE")) combat.add_power(PowerId::VAMBRACE, 1);
+    if (has_relic("CHEMICAL_X")) combat.add_power(PowerId::CHEMICAL_X, CHEMICAL_X_INCREASE);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);

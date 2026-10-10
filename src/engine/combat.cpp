@@ -1976,6 +1976,7 @@ bool CombatEngine::play_card(int index, int target_index) {
 
     // Pay energy. An X card spends everything left: `x_value` is what it spent, or what is there when it is free.
     int x_value = 0;
+    const bool x_card = cost == COST_X || CardDef::get_star_cost(played_card.id, played_card.upgraded) == COST_X;
     if (cost == COST_X) {
         x_value = std::max<int>(player.energy, 0);
         cost = costs_nothing(played_card) ? 0 : x_value;
@@ -1988,6 +1989,8 @@ bool CombatEngine::play_card(int index, int target_index) {
         star_cost = player.sovereign_stars;
     }
     spend_stars(star_cost);
+    // Chemical X: the effect of an X card is raised, the energy it spends is not.
+    if (x_card) x_value += power_amount(PowerId::CHEMICAL_X);
 
     hand.erase(index);
     // Void Form counts the cards played from the hand, not their replays.
@@ -2010,7 +2013,9 @@ void CombatEngine::autoplay(DeckCard card, int target_index, AfterPlay destinati
     AfterPlay after_play = destination;
     // An X card played for free takes the energy that is there without spending it.
     int x_value = CardDef::is_x_cost(card.id, card.upgraded) ? std::max<int>(player.energy, 0) : 0;
-    if (CardDef::get_star_cost(card.id, card.upgraded) == COST_X) x_value = player.sovereign_stars;
+    const bool star_x = CardDef::get_star_cost(card.id, card.upgraded) == COST_X;
+    if (star_x) x_value = player.sovereign_stars;
+    if (CardDef::is_x_cost(card.id, card.upgraded) || star_x) x_value += power_amount(PowerId::CHEMICAL_X);
     run_card(card, target_index, target_index < 0, x_value, 0, after_play);
     // The destination asked by whoever plays the card wins over the card's own (Havoc exhausts).
     if (destination != AfterPlay::DISCARD) after_play = destination;

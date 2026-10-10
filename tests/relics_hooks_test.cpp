@@ -2624,6 +2624,37 @@ void test_white_star() {
     std::cout << "[PASS] White Star: an Elite offers one more set of Rare cards" << std::endl;
 }
 
+void test_chemical_x() {
+    // With the relic: an X card gets 2 more X for the same energy spent (Skewer: a hit of 8 per X).
+    RunManager run = make_relic_run(CharacterId::SILENT, { "CHEMICAL_X" });
+    assert(run.combat.has_power(PowerId::CHEMICAL_X));
+    CombatEngine with = make_relic_combat(CharacterId::SILENT, PowerId::CHEMICAL_X, 2);
+    with.enemies[0].hp = 100;
+    with.hand.clear();
+    with.hand.push_back(DeckCard(CardId::SKEWER, false));
+    with.player.energy = 3;
+    assert(with.play_card(0, 0));
+    assert(with.enemies[0].hp == 100 - 5 * 8 && with.player.energy == 0);
+    assert(with.counters.energy_spent == 3 && with.counters.hits_dealt == 5);
+
+    // Played with no energy, the X is still raised: 2 hits.
+    with.hand.clear();
+    with.hand.push_back(DeckCard(CardId::SKEWER, false));
+    with.player.energy = 0;
+    assert(with.play_card(0, 0));
+    assert(with.enemies[0].hp == 100 - 5 * 8 - 2 * 8);
+
+    // Without the relic: 3 hits for 3 energy, and no X card is changed by it.
+    CombatEngine plain = make_relic_combat(CharacterId::SILENT, PowerId::NUNCHAKU, 1);
+    plain.enemies[0].hp = 100;
+    plain.hand.clear();
+    plain.hand.push_back(DeckCard(CardId::SKEWER, false));
+    plain.player.energy = 3;
+    assert(plain.play_card(0, 0));
+    assert(plain.enemies[0].hp == 100 - 3 * 8 && plain.counters.hits_dealt == 3);
+    std::cout << "[PASS] Chemical X: X cards get 2 more X, the energy spent is unchanged" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2721,5 +2752,6 @@ int main() {
     test_girya();
     test_shovel();
     test_white_star();
+    test_chemical_x();
     return 0;
 }

@@ -179,6 +179,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "LARGE_CAPSULE", "Lorsque vous obtenez cette relique, obtenez 2 Reliques aléatoires. Ajoutez une Frappe et une Défense à votre Deck." },
     { "CALLING_BELL", "Lorsque vous obtenez cette relique, obtenez une Malédiction spéciale et 3 Reliques." },
     { "CAULDRON", "Lorsque vous obtenez cette relique, concoctez 5 Potions aléatoires." },
+    { "CHEMICAL_X", "Les effets de vos cartes de coût X sont augmentés de 2." },
     { "OLD_COIN", "Lorsque vous obtenez cette relique, obtenez 300 Pièces d'or." },
     { "LUCKY_FYSH", "Chaque fois que vous ajoutez une carte à votre Deck, obtenez 15 Pièces d'or." },
     { "BOOK_OF_FIVE_RINGS", "Chaque fois que vous ajoutez 5 cartes à votre Deck, récupérez 20 PV." },
