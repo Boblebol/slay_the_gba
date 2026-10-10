@@ -232,8 +232,7 @@ enum class PowerId : uint8_t {
     CHEMICAL_X,         // the X cards played get `amount` more X (CombatEngine::play_card, autoplay)
     UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
     MR_STRUGGLES,       // start of turn: damage equal to the turn number to every enemy (event relic)
-    HISTORY_COURSE      // start of turn: play a copy of the last Attack played (`amount` = 0, or card id * 2 + upgraded + 1)
-    UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
+    HISTORY_COURSE,     // start of turn: play a copy of the last Attack played (`amount` = 0, or card id * 2 + upgraded + 1)
     INFUSED_CORE        // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
 };
 
