@@ -6419,6 +6419,11 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "ENTROPIC_BREW") {
         fill_potion_belt = true; // the run owns the belt: RunManager::use_potion fills it once this potion is gone
         set_log("Entropic Brew!");
+    } else if (potion_id == "FOUL_POTION") {
+        // Damage to every player and enemy: Block absorbs it, Strength and Vulnerable do not change it.
+        damage_all_enemies(12);
+        damage_player(12);
+        set_log("Foul Potion!");
     } else {
         return false;
     }

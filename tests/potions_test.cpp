@@ -21,6 +21,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION",
     "ENTROPIC_BREW",
     "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "FRUIT_JUICE",
+    "FOUL_POTION",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -110,6 +111,41 @@ void test_explosive_ampoule() {
     assert(lethal.use_potion("EXPLOSIVE_AMPOULE"));
     assert(lethal.state == CombatState::VICTORY);
     std::cout << "[PASS] Explosive Ampoule: 10 damage to every enemy, absorbed by Block, victory" << std::endl;
+}
+
+void test_foul_potion() {
+    // 12 damage to every enemy and to the player; Block absorbs it on each of them.
+    CombatEngine combat = make_pack(CharacterId::IRONCLAD);
+    const int16_t hp_before = combat.player.hp;
+    combat.enemies[1].block = 4;
+    combat.player.block = 5;
+    assert(combat.use_potion("FOUL_POTION"));
+    assert(combat.enemies[0].hp == 18 - 12 && combat.enemies[2].hp == 42 - 12);
+    assert(combat.enemies[1].hp == 18 - 8 && combat.enemies[1].block == 0);
+    assert(combat.player.hp == hp_before - 7 && combat.player.block == 0);
+
+    // It is not an attack: Strength and Vulnerable change nothing.
+    CombatEngine plain = make_combat(CharacterId::IRONCLAD);
+    const int16_t plain_hp = plain.player.hp;
+    plain.player.add_status(StatusType::STRENGTH, 3);
+    plain.enemies[0].add_status(StatusType::VULNERABLE, 2);
+    assert(plain.use_potion("FOUL_POTION"));
+    assert(plain.enemies[0].hp == 42 - 12 && plain.player.hp == plain_hp - 12);
+
+    // Killing every enemy wins the fight, and the player dropping to 0 loses it.
+    CombatEngine lethal = make_pack(CharacterId::IRONCLAD);
+    lethal.enemies[2].hp = 10;
+    assert(lethal.use_potion("FOUL_POTION"));
+    assert(lethal.enemies[0].hp == 6 && lethal.state == CombatState::PLAYER_TURN);
+    lethal.enemies[0].hp = 6;
+    lethal.enemies[1].hp = 6;
+    assert(lethal.use_potion("FOUL_POTION"));
+    assert(lethal.state == CombatState::VICTORY);
+    CombatEngine doomed = make_combat(CharacterId::IRONCLAD);
+    doomed.player.hp = 12;
+    assert(doomed.use_potion("FOUL_POTION"));
+    assert(doomed.state == CombatState::DEFEAT);
+    std::cout << "[PASS] Foul Potion: 12 damage to the player and every enemy, Block absorbs it, defeat and victory" << std::endl;
 }
 
 void test_weak_potion() {
@@ -976,6 +1012,7 @@ int main() {
     test_gigantification_potion();
     test_entropic_brew();
     test_explosive_ampoule();
+    test_foul_potion();
     test_weak_potion();
     test_swift_potion();
     test_dexterity_potion();
