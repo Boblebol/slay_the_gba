@@ -203,6 +203,8 @@ enum class PowerId : uint8_t {
     TOOLS_OF_THE_TRADE, // once the hand is drawn: draw `amount` cards, then discard `amount` cards
     // Relics of the Ancients (appended)
     WHISPERING_EARRING, // Vakuu plays the first turn of the combat (CombatEngine::vakuu_turn_active)
+    VELVET_CHOKER,      // no more than `amount` cards played each turn (CombatEngine::play_blocker)
+    PAELS_EYE,          // first turn ended with no card played: exhaust the hand, take an extra turn (removed once used)
     // Sly (appended)
     MASTER_PLANNER      // the Skills played gain Sly (read by place_played_card)
 };
@@ -235,6 +237,7 @@ constexpr uint8_t ORNAMENTAL_FAN_ATTACKS = 3;
 constexpr uint8_t RED_SKULL_HP_PERCENT = 50;
 constexpr uint8_t GALACTIC_DUST_STARS = 10;
 constexpr uint8_t IVORY_TILE_COST = 3;
+constexpr uint8_t VELVET_CHOKER_CARDS = 6;
 
 struct ActivePower {
     PowerId id = PowerId::NONE;
