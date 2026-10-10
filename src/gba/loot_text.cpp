@@ -193,6 +193,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "SAI", "Au début de votre tour, gagnez 7 d'Armure." },
     { "SEAL_OF_GOLD", "Au début de votre tour, dépensez 3 Pièces d'or pour gagner 1 ●." },
     { "SYMBIOTIC_VIRUS", "Au début de chaque combat, Canalisez 1 Orbe ténébreux." },
+    { "THE_BOOT", "Chaque fois que vous auriez infligé 4 dégâts d'attaque ou moins (sans armure), vous infligez 5 dégâts à la place." },
     { "THE_COURIER", "Le Marchand renouvelle ce que vous achetez. Prix -20%." },
     { "THE_ABACUS", "Chaque fois que la Pioche est mélangée, gagnez 6 d'Armure." },
     { "TINGSHA", "Pour chaque carte que vous défaussez pendant votre tour, infligez 3 dégâts à un ennemi aléatoire." },

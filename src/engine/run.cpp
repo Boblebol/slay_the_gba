@@ -1416,6 +1416,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("PEN_NIB")) combat.add_power(PowerId::PEN_NIB);
     if (has_relic("STRIKE_DUMMY")) combat.add_power(PowerId::STRIKE_DUMMY, 3);
     if (has_relic("MINIATURE_CANNON")) combat.add_power(PowerId::MINIATURE_CANNON, 3);
+    // The Boot (event relic): an Attack hit of 4 damage or less deals 5 instead.
+    if (has_relic("THE_BOOT")) combat.add_power(PowerId::THE_BOOT);
     // Tungsten Rod: whenever the player would lose HP, 1 less.
     if (has_relic("TUNGSTEN_ROD")) combat.player.hp_loss_reduction = 1;
     if (has_relic("RAINBOW_RING")) combat.add_power(PowerId::RAINBOW_RING, 1);

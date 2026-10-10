@@ -2676,6 +2676,32 @@ void test_chemical_x() {
     std::cout << "[PASS] Chemical X: X cards get 2 more X, the energy spent is unchanged" << std::endl;
 }
 
+void test_the_boot() {
+    // Neutralize deals 3 damage: with the relic it deals 5, without it 3. A Strike (6) is not changed.
+    CombatEngine boot = make_relic_combat(CharacterId::SILENT, PowerId::THE_BOOT);
+    boot.enemies[0].hp = 100;
+    play(boot, CardId::NEUTRALIZE);
+    assert(boot.enemies[0].hp == 100 - 5);
+
+    CombatEngine plain = make_relic_combat(CharacterId::SILENT, {});
+    plain.enemies[0].hp = 100;
+    play(plain, CardId::NEUTRALIZE);
+    assert(plain.enemies[0].hp == 100 - 3);
+
+    CombatEngine strike = make_relic_combat(CharacterId::IRONCLAD, PowerId::THE_BOOT);
+    strike.enemies[0].hp = 100;
+    play(strike, CardId::STRIKE);
+    assert(strike.enemies[0].hp == 100 - 6);
+
+    // The damage is raised before Block, as the card text says: 5 damage against 10 Block leaves 5 Block.
+    CombatEngine shielded = make_relic_combat(CharacterId::SILENT, PowerId::THE_BOOT);
+    shielded.enemies[0].hp = 100;
+    shielded.enemies[0].block = 10;
+    play(shielded, CardId::NEUTRALIZE);
+    assert(shielded.enemies[0].hp == 100 && shielded.enemies[0].block == 5);
+    std::cout << "[PASS] The Boot: attacks of 4 damage or less deal 5 instead" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2775,5 +2801,6 @@ int main() {
     test_shovel();
     test_white_star();
     test_chemical_x();
+    test_the_boot();
     return 0;
 }
