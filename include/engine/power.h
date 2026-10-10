@@ -227,7 +227,8 @@ enum class PowerId : uint8_t {
     BEATING_REMNANT,    // the player loses no more than `amount` HP each turn (CombatEntity::hp_loss_budget)
     VAMBRACE,           // the first Block a card gives each combat is doubled (counter = 1 once used)
     CHEMICAL_X,         // the X cards played get `amount` more X (CombatEngine::play_card, autoplay)
-    UNSETTLING_LAMP     // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
+    UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
+    HAND_DRILL          // an enemy's Block broken by the player's damage: `amount` Vulnerable on that enemy
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -290,6 +291,7 @@ enum class CombatEvent : uint8_t {
     HP_LOST,                // by the player; `amount`
     ATTACK_HIT,             // one attack hit on an enemy; `enemy`
     UNBLOCKED_DAMAGE_DEALT, // that hit went through the enemy's Block; `enemy`, `amount`
+    BLOCK_BROKEN,           // the player's damage took an enemy's Block to 0; `enemy`
     DEBUFF_APPLIED,         // to an enemy; `enemy`, `status`, `amount`
     ENEMY_KILLED,           // whatever killed it; `enemy`
     OSTY_ATTACKED,          // once per attack of Osty, however many enemies it hits

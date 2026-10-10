@@ -1390,6 +1390,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);
     if (has_relic("TOUGH_BANDAGES")) combat.add_power(PowerId::TOUGH_BANDAGES, 3);
     if (has_relic("TINGSHA")) combat.add_power(PowerId::TINGSHA, 3);
+    // Hand Drill (event relic): breaking an enemy's Block applies 2 Vulnerable to it.
+    if (has_relic("HAND_DRILL")) combat.add_power(PowerId::HAND_DRILL, 2);
     // Hero relics
     if (has_relic("BOUND_PHYLACTERY")) combat.add_power(PowerId::TURN_SUMMON, 1);
     // Phylactery Unbound: Osty is there from the start of the combat, and grows faster.
