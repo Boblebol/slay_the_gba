@@ -895,6 +895,34 @@ void test_beating_remnant() {
     std::cout << "[PASS] Beating Remnant: no more than 20 HP lost per turn" << std::endl;
 }
 
+void test_dingy_rug() {
+    // Card rewards: with the relic, some offers are Colorless cards; without it, never.
+    uint32_t colorless = 0, offers = 0;
+    for (uint32_t seed = 1; seed <= 50; ++seed) {
+        RunManager with_rug;
+        with_rug.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with_rug.add_relic("DINGY_RUG");
+        enter_room_of_type(with_rug, RoomType::MONSTER);
+        with_rug.generate_rewards();
+
+        RunManager without_rug;
+        without_rug.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(without_rug, RoomType::MONSTER);
+        without_rug.generate_rewards();
+
+        for (size_t i = 0; i < with_rug.current_card_rewards.size(); ++i) {
+            ++offers;
+            if (card_meta(with_rug.current_card_rewards[i].id).pool == CardPool::COLORLESS) ++colorless;
+        }
+        for (size_t i = 0; i < without_rug.current_card_rewards.size(); ++i) {
+            assert(card_meta(without_rug.current_card_rewards[i].id).pool != CardPool::COLORLESS);
+        }
+    }
+    assert(offers == 150 && colorless > 0);
+
+    std::cout << "[PASS] Dingy Rug: " << colorless << " of " << offers << " card rewards are Colorless" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -1993,6 +2021,7 @@ int main() {
     test_calling_bell();
     test_belt_buckle();
     test_circlet();
+    test_dingy_rug();
     test_beating_remnant();
     test_ghost_seed();
     test_reptile_trinket();
