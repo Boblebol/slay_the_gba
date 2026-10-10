@@ -217,6 +217,9 @@ enum class PowerId : uint8_t {
     UNMOVABLE,          // the first Block a card gives each turn is doubled (read by gain_block)
     TRACKING,           // Weak enemies take `amount` % more damage from attacks (read by hit)
     LETHALITY,          // the first Attack each turn deals `amount` % more damage (read by hit)
+    // Effects that outlast the combat (appended)
+    ROYALTIES,          // `amount` gold at the end of the combat (read by RunManager::proceed_after_combat)
+    FORBIDDEN_GRIMOIRE, // one card of the deck can be removed at the end of the combat
     // Potions (appended)
     STABLE_SERUM,       // the hand is kept at the end of the next `amount` turns (read by end_player_turn)
     // Relics (appended)

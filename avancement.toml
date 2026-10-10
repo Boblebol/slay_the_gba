@@ -98,6 +98,7 @@ items = [
   { name = "Intentions ennemies affichées", status = "oui" },
   { name = "Calcul des dégâts (Force, Affaibli, Vulnérable)", status = "oui" },
   { name = "Modificateurs en pourcentage : dégâts (+25 %, +50 %, double), Armure doublée, Vulnérable et Affaibli renforcés", status = "oui", issue = 89 },
+  { name = "Effets qui dépassent le combat : or, potion, récompense de carte, retrait de carte du deck", status = "oui", issue = 94 },
   { name = "Attaques de zone et attaques en plusieurs coups", status = "oui" },
   { name = "Cartes qui font piocher", status = "oui" },
   { name = "Amélioration de cartes pendant le combat", status = "oui" },

@@ -521,6 +521,12 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::UNCOMMON, CardPool::NECROBINDER }, // LETHALITY
     { CardRarity::RARE, CardPool::SILENT }, // SHADOW_STEP
     { CardRarity::UNCOMMON, CardPool::NECROBINDER }, // DEBILITATE
+    { CardRarity::RARE, CardPool::COLORLESS }, // HAND_OF_GREED
+    { CardRarity::RARE, CardPool::SILENT }, // THE_HUNT
+    { CardRarity::RARE, CardPool::REGENT }, // ROYALTIES
+    { CardRarity::ANCIENT, CardPool::NECROBINDER }, // FORBIDDEN_GRIMOIRE
+    { CardRarity::RARE, CardPool::COLORLESS }, // ALCHEMIZE
+    { CardRarity::RARE, CardPool::COLORLESS }, // THE_GAMBIT
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // SEEKER_STRIKE
 };
 

@@ -217,6 +217,10 @@ public:
     FixedVector<Enemy, 3> enemies; // Multi-enemy field (Yu-Gi-Oh / Slay style: 1 to 3 enemies)
     int selected_target_index = 0;
     int16_t gold_lost = 0; // gold taken during the combat (curses in hand at the end of a turn), paid by the run after it
+    int16_t gold_gained = 0; // gold earned during the combat (Hand of Greed), paid by the run after it
+    uint8_t extra_card_rewards = 0; // extra card rewards earned during the combat (The Hunt)
+    uint8_t potions_gained = 0;     // random potions earned during the combat (Alchemize)
+    bool gambit_active = false;     // taking unblocked attack damage ends the combat in defeat (The Gambit)
     int16_t gold = 0; // the run's gold, lent to the combat for the relics that spend it (Seal of Gold)
     CharacterId current_character = CharacterId::IRONCLAD;
     
@@ -235,11 +239,10 @@ public:
     bool double_block_turn = false;   // the Block gained this turn is doubled (Shadowmeld)
     bool unmovable_used = false;      // Unmovable already doubled a Block this turn
     bool attack_double_next = false;  // Attacks deal double damage on the next turn (Shadow Step)
+    bool triple_next_attack = false;  // the next Attack played deals triple damage (Gigantification Potion)
     bool attack_double_now = false;   // Attacks deal double damage this turn
     bool pen_nib_now = false;         // the Attack being played deals double damage (Pen Nib)
     bool strike_played_now = false;   // the card being played contains "Strike" (Strike Dummy)
-    bool gigantic_next = false;       // the next Attack played deals triple damage (Gigantification potion)
-    bool gigantic_now = false;        // the Attack being played deals triple damage
     bool rebound_pending = false;    // the next card played this turn goes on top of the draw pile (Rebound)
     uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
     // Active powers, in the order they were gained: every relic a run can hold plus a combat's worth of

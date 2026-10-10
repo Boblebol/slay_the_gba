@@ -619,6 +619,12 @@ enum class CardId : uint16_t {
     LETHALITY,
     SHADOW_STEP,
     DEBILITATE,
+    HAND_OF_GREED,
+    THE_HUNT,
+    ROYALTIES,
+    FORBIDDEN_GRIMOIRE,
+    ALCHEMIZE,
+    THE_GAMBIT,
     // Choose 1 card among N offered (mechanic #72)
     SEEKER_STRIKE,
     COUNT
