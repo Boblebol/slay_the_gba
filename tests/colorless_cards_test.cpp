@@ -189,6 +189,36 @@ void test_offers_cleared_with_the_combat() {
     assert(!combat.choice_pending() && combat.offers.empty() && combat.offer_origins.empty());
 }
 
+// The Gambit: 0 cost Skill, Rare, 50 Block (75 upgraded); unblocked attack damage this combat is fatal.
+void test_the_gambit() {
+    const CardDef& def = CardDef::get(CardId::THE_GAMBIT);
+    assert(def.type == CardType::SKILL);
+    assert(card_meta(CardId::THE_GAMBIT).rarity == CardRarity::RARE);
+    assert(card_meta(CardId::THE_GAMBIT).pool == CardPool::COLORLESS);
+
+    for (bool upgraded : { false, true }) {
+        assert(CardDef::get_cost(CardId::THE_GAMBIT, upgraded) == 0);
+        CombatEngine combat = make_pack();
+        combat.hand.clear();
+        combat.player.energy = 3;
+        combat.player.block = 0;
+        combat.hand.push_back(DeckCard(CardId::THE_GAMBIT, upgraded));
+        assert(combat.play_card(0, 0));
+
+        // Block: 50 (75 upgraded). Still alive: the enemies' attacks this turn are blocked.
+        assert(combat.player.block == (upgraded ? 75 : 50));
+        assert(combat.gambit_active);
+        combat.end_player_turn();
+        assert(combat.player.is_alive() && combat.state != CombatState::DEFEAT);
+
+        // Without Block, the next unblocked attack damage ends the run.
+        combat.player.block = 0;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::DEFEAT || !combat.player.is_alive());
+    }
+    std::cout << "[PASS] The Gambit: 0 cost Skill, 50/75 Block, unblocked attack damage kills\n";
+}
+
 } // namespace
 
 int main() {
@@ -198,6 +228,7 @@ int main() {
     test_offers_in_a_row();
     test_offer_random_cards();
     test_offers_cleared_with_the_combat();
+    test_the_gambit();
     std::cout << "colorless_cards_test: all tests passed\n";
     return 0;
 }

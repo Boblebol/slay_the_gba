@@ -92,11 +92,111 @@ void test_expose() {
     std::cout << "[PASS] Silent: Expose" << std::endl;
 }
 
+void test_untouchable() {
+    for (bool upgraded : { false, true }) {
+        // Untouchable: 2 energy, Gain 6 Block, or 9 once upgraded.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        play(combat, DeckCard(CardId::UNTOUCHABLE, upgraded));
+        assert(combat.player.block == (upgraded ? 9 : 6));
+        assert(combat.player.energy == combat.player.max_energy - 2);
+        assert(count_in(combat.discard_pile, CardId::UNTOUCHABLE) == 1);
+    }
+
+    // Base and upgraded definitions: 2 energy, 6 then 9 Block.
+    assert(CardDef::get_cost(CardId::UNTOUCHABLE, false) == 2 && CardDef::get_cost(CardId::UNTOUCHABLE, true) == 2);
+    assert(CardDef::get_value(CardId::UNTOUCHABLE, false) == 6 && CardDef::get_value(CardId::UNTOUCHABLE, true) == 9);
+    assert(CardDef::get(CardId::UNTOUCHABLE).type == CardType::SKILL);
+
+    assert_in_pool(CharacterId::SILENT, { CardId::UNTOUCHABLE });
+    std::cout << "[PASS] Silent: Untouchable" << std::endl;
+}
+
+void test_ricochet() {
+    for (bool upgraded : { false, true }) {
+        // Ricochet: 3 damage to a random enemy, 4 times (5 when upgraded). It costs 2 energy.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        for (Enemy& enemy : combat.enemies) {
+            enemy.hp = enemy.max_hp = 200;
+            enemy.block = 0;
+        }
+        int hp_before = 0;
+        for (const Enemy& enemy : combat.enemies) hp_before += enemy.hp;
+        play(combat, DeckCard(CardId::RICOCHET, upgraded), 0);
+        assert(combat.player.energy == combat.player.max_energy - 2);
+
+        int hp_after = 0;
+        for (const Enemy& enemy : combat.enemies) hp_after += enemy.hp;
+        assert(hp_before - hp_after == 3 * (upgraded ? 5 : 4));
+        assert(count_in(combat.discard_pile, CardId::RICOCHET) == 1);
+    }
+
+    // Base and upgraded definitions: 2 energy, 3 damage, 4 then 5 hits, Sly.
+    assert(CardDef::get_cost(CardId::RICOCHET, false) == 2 && CardDef::get_cost(CardId::RICOCHET, true) == 2);
+    assert(CardDef::get_value(CardId::RICOCHET, false) == 3 && CardDef::get_value(CardId::RICOCHET, true) == 3);
+    assert(CardDef::get_secondary(CardId::RICOCHET, false) == 4 && CardDef::get_secondary(CardId::RICOCHET, true) == 5);
+    assert(CardDef::get(CardId::RICOCHET).type == CardType::ATTACK);
+    assert(CardDef::has_keyword(CardId::RICOCHET, false, KEYWORD_SLY));
+    assert(CardDef::has_keyword(CardId::RICOCHET, true, KEYWORD_SLY));
+
+    assert_in_pool(CharacterId::SILENT, { CardId::RICOCHET });
+    std::cout << "[PASS] Silent: Ricochet" << std::endl;
+}
+
+void test_reflex() {
+    for (bool upgraded : { false, true }) {
+        // Reflex: Sly, costs 3, draws 2 cards (3 when upgraded).
+        assert(CardDef::get_cost(CardId::REFLEX, false) == 3 && CardDef::get_cost(CardId::REFLEX, true) == 3);
+        assert(CardDef::get_secondary(CardId::REFLEX, false) == 0 && CardDef::get_secondary(CardId::REFLEX, true) == 0);
+        assert(CardDef::get_value(CardId::REFLEX, false) == 2 && CardDef::get_value(CardId::REFLEX, true) == 3);
+        assert(CardDef::get(CardId::REFLEX).type == CardType::SKILL);
+        assert(CardDef::get(CardId::REFLEX).target == TargetType::SELF);
+
+        CombatEngine reflex = make_pack(CharacterId::SILENT);
+        reflex.draw_pile.clear();
+        reflex.draw_pile.push_back(DeckCard(CardId::STRIKE, false));
+        reflex.draw_pile.push_back(DeckCard(CardId::DEFEND, false));
+        reflex.draw_pile.push_back(DeckCard(CardId::STRIKE, false));
+        play(reflex, DeckCard(CardId::REFLEX, upgraded));
+        assert(reflex.player.energy == reflex.player.max_energy - 3);
+        assert(reflex.hand.size() == (upgraded ? 3u : 2u));
+    }
+
+    assert_in_pool(CharacterId::SILENT, { CardId::REFLEX });
+    std::cout << "[PASS] Silent: Reflex" << std::endl;
+}
+
+void test_flick_flack() {
+    for (bool upgraded : { false, true }) {
+        // Flick-Flack: 7 damage to every enemy (9 upgraded). It costs 1 energy.
+        CombatEngine flick = make_pack(CharacterId::SILENT);
+        play(flick, DeckCard(CardId::FLICK_FLACK, upgraded));
+        int damage = upgraded ? 9 : 7;
+        assert(flick.player.energy == flick.player.max_energy - 1);
+        assert(flick.enemies[0].hp == 18 - damage);
+        assert(flick.enemies[1].hp == 18 - damage);
+        assert(flick.enemies[2].hp == 42 - damage);
+        assert(count_in(flick.discard_pile, CardId::FLICK_FLACK) == 1);
+    }
+
+    // Base and upgraded definitions: 1 energy, 7 then 9 damage, Attack against all enemies.
+    assert(CardDef::get_cost(CardId::FLICK_FLACK, false) == 1 && CardDef::get_cost(CardId::FLICK_FLACK, true) == 1);
+    assert(CardDef::get_value(CardId::FLICK_FLACK, false) == 7 && CardDef::get_value(CardId::FLICK_FLACK, true) == 9);
+    assert(CardDef::get(CardId::FLICK_FLACK).type == CardType::ATTACK);
+    assert(CardDef::get(CardId::FLICK_FLACK).target == TargetType::ALL_ENEMIES);
+
+    assert_in_pool(CharacterId::SILENT, { CardId::FLICK_FLACK });
+    std::cout << "[PASS] Silent: Flick-Flack" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Silent Cards ===" << std::endl;
     test_expose();
+    test_untouchable();
+    test_ricochet();
+    test_reflex();
+    test_flick_flack();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
