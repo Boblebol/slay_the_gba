@@ -6184,6 +6184,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         }
         damage_enemy(enemies[target_index], 20);
         set_log("Fire Potion!");
+    } else if (potion_id == "POTION_SHAPED_ROCK") {
+        damage_enemy(aimed_enemy(), 15);
+        set_log("Potion-Shaped Rock!");
     } else if (potion_id == "GIGANTIFICATION_POTION") {
         triple_next_attack = true;
         set_log("Gigantification Potion!");

@@ -1186,7 +1186,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Retained hand on the first turn (#509)
         "RINGING_TRIANGLE",
         // Upgrades on pickup (#465, #464)
-        "WHETSTONE", "WAR_PAINT"
+        "WHETSTONE", "WAR_PAINT",
+        // Potion at the start of each combat (#497)
+        "PETRIFIED_TOAD"
     };
     return ACTIVE_RELICS;
 }
@@ -1355,6 +1357,8 @@ void RunManager::register_relic_powers() {
 void RunManager::apply_combat_start_relics() {
     // Delicate Frond: fill every empty potion slot with a random potion.
     if (has_relic("DELICATE_FROND")) gain_random_potions(MAX_POTION_SLOTS);
+    // Petrified Toad: procure a Potion-Shaped Rock at the start of each combat (lost if the belt is full).
+    if (has_relic("PETRIFIED_TOAD") && !potion_belt_full()) potions.push_back("POTION_SHAPED_ROCK");
     // Vajra: start each combat with 1 Strength.
     if (has_relic("VAJRA")) {
         combat.player.add_status(StatusType::STRENGTH, 1);
