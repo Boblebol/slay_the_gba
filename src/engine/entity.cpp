@@ -100,6 +100,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Assemblage Cubex";
         max_hp = 65;
         hp = 65;
+    } else if (type == EnemyType::INKLET) {
+        name = "Encrelin";
+        max_hp = 11;
+        hp = 11;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -114,6 +118,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
         case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
         case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
+        case EnemyType::INKLET: return 6; // 11 to 17, 12 to 18 at Ascension
         default: return 0;
     }
 }
@@ -145,6 +150,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::STABBOT: return 19;
         case EnemyType::NOISEBOT: return 19;
         case EnemyType::CUBEX_CONSTRUCT: return 70;
+        case EnemyType::INKLET: return 12;
         default: return 0;
     }
 }
@@ -510,6 +516,30 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::NONE;
             current_intent.status_amount = 0;
             current_intent.description = "Éjection (5 dmg x2)";
+        }
+    } else if (type == EnemyType::INKLET) {
+        // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.
+        constexpr uint8_t JAB = 0;
+        constexpr uint8_t WHIRLWIND = 1;
+        constexpr uint8_t PIERCING_GAZE = 2;
+        uint8_t move = JAB;
+        if (turn_number % 2 == 0) {
+            const MoveOption options[] = { { WHIRLWIND }, { PIERCING_GAZE } };
+            move = draw_move(options);
+        } else {
+            use_move(JAB);
+        }
+        current_intent.type = EnemyIntentType::ATTACK;
+        if (move == WHIRLWIND) {
+            current_intent.base_damage = ascended_damage ? 3 : 2;
+            current_intent.hits = 3;
+            current_intent.description = "Tourbillon (2 dmg x3)";
+        } else if (move == PIERCING_GAZE) {
+            current_intent.base_damage = ascended_damage ? 11 : 10;
+            current_intent.description = "Regard perçant (10 dmg)";
+        } else {
+            current_intent.base_damage = ascended_damage ? 4 : 3;
+            current_intent.description = "Coup sec (3 dmg)";
         }
     }
 }

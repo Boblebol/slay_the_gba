@@ -44,6 +44,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::STABBOT: return "STABBOT";
         case EnemyType::NOISEBOT: return "NOISEBOT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
+        case EnemyType::INKLET: return "INKLET";
     }
     return {};
 }
@@ -159,7 +160,8 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::WEAK)) ==
            std::set<std::string_view>{ "FuzzyWurmCrawlerWeak" });
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal" }));
+           (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal",
+                                        "InkletsNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal" }));
     for (ActZone zone : ZONES) {
@@ -181,6 +183,9 @@ void test_reference_encounters() {
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
                                               "RubyRaidersNormal");
     assert(raiders.count == 3 && raiders.random_pool.size() == 4);
+    const Encounter& inklets = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
+                                              "InkletsNormal");
+    assert(inklets.count == 3 && inklets.monsters[0] == EnemyType::INKLET && inklets.monsters[2] == EnemyType::INKLET);
 
     // Every monster of the engine can be met.
     std::set<EnemyType> met;
@@ -307,6 +312,7 @@ void test_same_seed_same_fights() {
     std::vector<std::string> fights = fights_of(seed);
     int raiders = 0;
     int shamblers = 0;
+    int inklets = 0;
     for (size_t floor = 1; floor <= fights.size() - 2; ++floor) {
         std::string_view fight = fights[floor - 1];
         if (floor <= WEAK_ENCOUNTER_FLOORS) {
@@ -314,8 +320,13 @@ void test_same_seed_same_fights() {
         } else if (fight.starts_with("RubyRaidersNormal")) {
             ++raiders;
         } else {
-            assert(fight == "VineShamblerNormal VINE_SHAMBLER" || fight == "CubexConstructNormal CUBEX_CONSTRUCT");
-            ++shamblers;
+            if (fight.starts_with("InkletsNormal")) {
+                assert(fight == "InkletsNormal INKLET INKLET INKLET");
+                ++inklets;
+            } else {
+                assert(fight == "VineShamblerNormal VINE_SHAMBLER" || fight == "CubexConstructNormal CUBEX_CONSTRUCT");
+                ++shamblers;
+            }
         }
     }
     assert(raiders > 0 && shamblers > 0);
