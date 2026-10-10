@@ -835,6 +835,25 @@ void test_paels_legion() {
     std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
 }
 
+void test_new_leaf() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    CardId first = run.master_deck[0].id;
+    run.add_relic("NEW_LEAF");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::TRANSFORM && run.deck_choice.remaining == 1);
+    assert(!run.deck_choice.optional && run.deck_choice.transform_into == CardId::NONE);
+    assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck[0].id != first);
+    std::cout << "[PASS] New Leaf: one chosen card transformed on pickup" << std::endl;
+
+    // Without the relic nothing is asked.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice() && plain.master_deck[0].id == first);
+    std::cout << "[PASS] New Leaf: nothing asked without the relic" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -857,6 +876,7 @@ int main() {
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
+    test_new_leaf();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
