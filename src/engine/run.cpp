@@ -1052,8 +1052,6 @@ bool RunManager::add_card_to_deck(DeckCard card) {
     if (!master_deck.push_back(card)) return false;
     // Lucky Fysh: each card that joins the deck gains gold, whatever the source (reward, shop, event).
     if (has_relic("LUCKY_FYSH")) gain_gold(15);
-    return true;
-    if (!master_deck.push_back(card)) return false;
     if (has_relic("BOOK_OF_FIVE_RINGS") && tick_relic_counter("BOOK_OF_FIVE_RINGS", BOOK_OF_FIVE_RINGS_CARDS)) {
         heal(BOOK_OF_FIVE_RINGS_HEAL);
     }
@@ -1213,7 +1211,6 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
-        "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR",                                   // Shared, out of combat
         "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
@@ -1228,8 +1225,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Upgrades on pickup (#465, #464)
         "WHETSTONE", "WAR_PAINT",
         // Colorless cards in the card rewards (#486)
-        "DINGY_RUG"
-        "WHETSTONE", "WAR_PAINT",
+        "DINGY_RUG",
         // Out of combat, at the end of a fight without HP lost (#476)
         "LAVA_LAMP"
     };
