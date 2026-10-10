@@ -256,6 +256,7 @@ public:
     FixedVector<DeckCard, MAX_OFFERS> offers;
     FixedVector<uint8_t, MAX_OFFERS> offer_origins;
     bool resolving_card = false;     // a card's effect is being resolved (Paël's Legion doubles its Block)
+    bool lamp_doubling = false;      // the card being resolved is the one Unsettling Lamp doubles
     bool end_turn_requested = false; // a card ended the turn (Void Form): the caller ends it once the card is resolved
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;

@@ -1053,6 +1053,15 @@ void CombatEngine::add_block(int16_t amount) {
 
 void CombatEngine::afflict(Enemy& target, StatusType type, int16_t amount) {
     if (amount == 0) return;
+    // Unsettling Lamp: the first card of the fight that debuffs an enemy has every debuff it applies doubled.
+    if (resolving_card && is_debuff(type, amount)) {
+        ActivePower* lamp = find_power(PowerId::UNSETTLING_LAMP);
+        if (lamp != nullptr && lamp->counter == 0) {
+            lamp->counter = 1;
+            lamp_doubling = true;
+        }
+        if (lamp_doubling) amount = static_cast<int16_t>(amount * 2);
+    }
     // Artifact cancels the debuff: nothing was applied, nothing reacts.
     if (!target.receive_status(type, amount)) return;
     if (type == StatusType::DOOM) counters.doom_applied = bump(counters.doom_applied);
@@ -2119,6 +2128,7 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         resolving_card = true;
         resolve_effect(card, target_idx, x_value, after_play);
         resolving_card = false;
+        lamp_doubling = false;
         pen_nib_now = false;
         strike_played_now = false;
         // Vigor goes to the first Attack played, all its hits included.

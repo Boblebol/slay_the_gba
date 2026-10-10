@@ -1904,6 +1904,27 @@ void test_white_beast_statue() {
     std::cout << "[PASS] White Beast Statue: a potion in every combat reward, not always without it" << std::endl;
 }
 
+void test_unsettling_lamp() {
+    // With the relic: the first card of the fight that debuffs an enemy doubles its debuffs, a card without one does not count.
+    CombatEngine lamp = make_relic_combat(CharacterId::IRONCLAD, PowerId::UNSETTLING_LAMP, 1);
+    lamp.enemies[0].hp = 200;
+    play(lamp, CardId::STRIKE);
+    assert(lamp.enemies[0].get_status(StatusType::VULNERABLE) == 0 && lamp.power_counter(PowerId::UNSETTLING_LAMP) == 0);
+    play(lamp, CardId::BASH);
+    assert(lamp.enemies[0].get_status(StatusType::VULNERABLE) == 4);
+    // Only the first one: the next debuff is the plain one.
+    play(lamp, CardId::BASH);
+    assert(lamp.enemies[0].get_status(StatusType::VULNERABLE) == 6);
+
+    // Without the relic: 2 Vulnerable each time.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::NUNCHAKU, 1);
+    plain.enemies[0].hp = 200;
+    play(plain, CardId::BASH);
+    play(plain, CardId::BASH);
+    assert(plain.enemies[0].get_status(StatusType::VULNERABLE) == 4);
+    std::cout << "[PASS] Unsettling Lamp: the first debuffing card of the fight has its debuffs doubled" << std::endl;
+}
+
 void test_bowler_hat() {
     // With the relic: the fight's gold reward is 25 % bigger, and that gold reaches the purse once the rewards are taken.
     // Without it: the plain reward.
@@ -2255,6 +2276,7 @@ int main() {
     test_cauldron();
     test_lees_waffle();
     test_bowler_hat();
+    test_unsettling_lamp();
     test_bookmark();
     test_tungsten_rod();
     test_mango();

@@ -1188,7 +1188,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", // Shared, out of combat
-        "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
+        "BEATING_REMNANT", "UNSETTLING_LAMP", // Shared, rare: caps the HP lost each turn, doubles the first debuff of the fight
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR",                                   // Shared, out of combat
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
@@ -1353,6 +1353,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("RED_SKULL")) combat.add_power(PowerId::RED_SKULL, 3);
     if (has_relic("DEMON_TONGUE")) combat.add_power(PowerId::DEMON_TONGUE);
     if (has_relic("BEATING_REMNANT")) combat.add_power(PowerId::BEATING_REMNANT, BEATING_REMNANT_HP_LOSS);
+    // Unsettling Lamp: the first card of the fight that debuffs an enemy has its debuffs doubled.
+    if (has_relic("UNSETTLING_LAMP")) combat.add_power(PowerId::UNSETTLING_LAMP, 1);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);
