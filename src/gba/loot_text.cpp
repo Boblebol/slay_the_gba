@@ -180,6 +180,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "BOOK_OF_FIVE_RINGS", "Chaque fois que vous ajoutez 5 cartes à votre Deck, récupérez 20 PV." },
     { "WAR_PAINT", "Lorsque vous obtenez cette relique, Améliorez 2 Compétences aléatoires." },
     { "ETERNAL_FEATHER", "Pour toutes les 5 cartes dans votre Deck, récupérez 3 PV lorsque vous entrez dans un Site de repos." },
+    { "FROZEN_EGG", "Lorsque vous ajoutez un Pouvoir à votre Deck, Améliorez-le." },
     { "STURDY_CLAMP", "Vous conservez jusqu'à 10 d'Armure entre chaque tour." },
     { "SAI", "Au début de votre tour, gagnez 7 d'Armure." },
     { "SEAL_OF_GOLD", "Au début de votre tour, dépensez 3 Pièces d'or pour gagner 1 ●." },

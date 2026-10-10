@@ -964,8 +964,10 @@ void RunManager::on_rewards_generated(RoomType) {
     count_hook(RunHook::REWARDS_GENERATED);
 }
 
-void RunManager::on_card_added(DeckCard&) {
+void RunManager::on_card_added(DeckCard& card) {
     count_hook(RunHook::CARD_ADDED);
+    // Frozen Egg: a Power added to the Deck is upgraded.
+    if (has_relic("FROZEN_EGG") && CardDef::get(card.id).type == CardType::POWER) card.upgraded = true;
 }
 
 void RunManager::on_gold_gained(int16_t) {
@@ -1241,6 +1243,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         "WHETSTONE", "WAR_PAINT",
         // Upgrades the Attacks added to the deck (#493)
         "MOLTEN_EGG"
+        "WHETSTONE", "WAR_PAINT",
+        // Upgrades a Power added to the Deck (#494)
+        "FROZEN_EGG"
     };
     return ACTIVE_RELICS;
 }

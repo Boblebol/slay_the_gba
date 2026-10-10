@@ -2411,6 +2411,21 @@ void test_prayer_wheel() {
     std::cout << "[PASS] Prayer Wheel: a normal fight gives an extra card reward" << std::endl;
 }
 
+void test_frozen_egg() {
+    // With the relic: a Power added to the Deck is upgraded, another card is not.
+    RunManager with = make_relic_run(CharacterId::IRONCLAD, { "FROZEN_EGG" });
+    with.add_card_to_deck(DeckCard{ CardId::INFLAME, false });
+    assert(with.master_deck.back().id == CardId::INFLAME && with.master_deck.back().upgraded);
+    with.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(with.master_deck.back().id == CardId::STRIKE && !with.master_deck.back().upgraded);
+
+    // Without the relic: the Power stays as it is.
+    RunManager without = make_relic_run(CharacterId::IRONCLAD, {});
+    without.add_card_to_deck(DeckCard{ CardId::INFLAME, false });
+    assert(without.master_deck.back().id == CardId::INFLAME && !without.master_deck.back().upgraded);
+    std::cout << "[PASS] Frozen Egg: a Power added to the Deck is upgraded" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2499,5 +2514,6 @@ int main() {
     test_book_of_five_rings();
     test_prayer_wheel();
     test_molten_egg();
+    test_frozen_egg();
     return 0;
 }
