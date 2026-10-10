@@ -1144,6 +1144,71 @@ void test_eye_with_teeth() {
     std::cout << "[PASS] Eye With Teeth: 6 HP, Distract (3 Dazed into the discard pile) every turn" << std::endl;
 }
 
+void test_inklet() {
+    // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
+    bool whirlwind = false, gaze = false;
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::INKLET);
+        Enemy& inklet = combat.enemies[0];
+        inklet.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        assert(inklet.type == EnemyType::INKLET && inklet.name == "Encrelin");
+        assert(inklet.hp >= 11 && inklet.hp <= 17 && inklet.max_hp == 11 + inklet.hp_bonus && inklet.hp_spread() == 6);
+        const int16_t hp = inklet.hp;
+        for (int turn = 1; turn <= 8; ++turn) {
+            assert(combat.turn_number == turn);
+            assert(inklet.current_intent.type == ATTACK);
+            int hits = inklet.current_intent.hits;
+            int damage = inklet.intent_damage(combat.player) * hits;
+            if (turn % 2 == 1) {
+                assert(hits == 1 && damage == 3);
+            } else if (hits == 3) {
+                assert(damage == 6);
+                whirlwind = true;
+            } else {
+                assert(hits == 1 && damage == 10);
+                gaze = true;
+            }
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+            assert(combat.state == CombatState::PLAYER_TURN);
+            assert(combat.player.max_hp - combat.player.hp == damage);
+            assert(inklet.block == 0 && inklet.statuses.empty() && inklet.hp == hp);
+        }
+    }
+    assert(whirlwind && gaze);
+    std::cout << "[PASS] Inklet: 11 to 17 HP, Jab 3, then Whirlwind 2x3 or Piercing Gaze 10 at random" << std::endl;
+}
+
+void test_inklet_ascension() {
+    // 12 to 18 HP (11 to 17 plus 1), Jab 4, Whirlwind 3x3 and Piercing Gaze 11 at Ascension.
+    bool whirlwind = false, gaze = false;
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::INKLET);
+        Enemy& inklet = combat.enemies[0];
+        inklet.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = inklet.hp;
+        assert(inklet.ascension_hp() == 12 && base >= 11 && base <= 17);
+        inklet.ascend(true, true);
+        combat.plan_enemies();
+        assert(inklet.hp == base + 1 && inklet.max_hp == base + 1 && inklet.hp >= 12 && inklet.hp <= 18);
+        for (int turn = 1; turn <= 8; ++turn) {
+            if (turn % 2 == 1) {
+                assert(inklet.intent_damage(combat.player) == 4 && inklet.current_intent.hits == 1);
+            } else if (inklet.current_intent.hits == 3) {
+                assert(inklet.intent_damage(combat.player) == 3);
+                whirlwind = true;
+            } else {
+                assert(inklet.current_intent.hits == 1 && inklet.intent_damage(combat.player) == 11);
+                gaze = true;
+            }
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+        }
+    }
+    assert(whirlwind && gaze);
+    std::cout << "[PASS] Inklet: Ascension gives 12 to 18 HP, Jab 4, Whirlwind 3x3, Piercing Gaze 11" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1182,6 +1247,8 @@ int main() {
     test_status_intent();
     test_status_cards_are_not_the_players();
     test_eye_with_teeth();
+    test_inklet();
+    test_inklet_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

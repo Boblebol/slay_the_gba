@@ -27,6 +27,7 @@ constexpr Encounter ACT1A_WEAK[] = {
 constexpr Encounter ACT1A_NORMAL[] = {
     { "RubyRaidersNormal"sv, 3, {}, RUBY_RAIDERS },
     { "VineShamblerNormal"sv, 1, { EnemyType::VINE_SHAMBLER } },
+    { "InkletsNormal"sv, 3, { EnemyType::INKLET, EnemyType::INKLET, EnemyType::INKLET } },
 };
 
 // Act 1 (B): the Underdocks.
