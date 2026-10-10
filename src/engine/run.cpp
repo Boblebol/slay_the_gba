@@ -1245,9 +1245,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", "VENERABLE_TEA_SET", "PLANISPHERE", "MEAL_TICKET", "SHOVEL", // Shared, out of combat
         "WHITE_STAR",                         // Shared, rare: an Elite gives one more set of Rare cards
-        "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "VAMBRACE",                           // Shared, uncommon: the first Block of a card each combat is doubled
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", // Shared, out of combat
         "BEATING_REMNANT", "UNSETTLING_LAMP", // Shared, rare: caps the HP lost each turn, doubles the first debuff of the fight
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
@@ -1279,11 +1277,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Out of combat, at the rest sites (#475)
         "GIRYA",
         // Potion at the start of each combat (#497)
-        "PETRIFIED_TOAD"
-        "DINGY_RUG",
+        "PETRIFIED_TOAD",
         // Skills added to the Deck are upgraded (#495)
-        "TOXIC_EGG"
-        "DINGY_RUG",
+        "TOXIC_EGG",
         // At the merchant (#503)
         "CHEMICAL_X"
     };
