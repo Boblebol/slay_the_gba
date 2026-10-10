@@ -91,6 +91,22 @@ public:
                     _ctx.run.cook_at_campfire();
                     return scene_after_deck_choice(_ctx, SceneId::MAP);
                 }
+                else if(action == engine::CampfireAction::DIG)
+                {
+                    if(_ctx.run.dig_at_campfire())
+                    {
+                        _popups.spawn(0, -20, "Relique trouvée !", TextColor::GREEN);
+                        play_sfx(Sfx::BUFF);
+                        _stage = Stage::DONE;
+                        _done_timer = 0;
+                        _clear_options();
+                    }
+                    else
+                    {
+                        _popups.spawn(0, 10, "Rien à fouiller", TextColor::GRAY);
+                        play_sfx(Sfx::ERROR);
+                    }
+                }
                 else if(action != engine::CampfireAction::SMITH)
                 {
                     // An action the engine does not resolve yet.

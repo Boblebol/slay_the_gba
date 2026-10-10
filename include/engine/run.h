@@ -145,6 +145,8 @@ public:
     // Meat Cleaver: asks for 2 cards of the deck to remove, then gives +5 Max HP and uses up the rest site. With fewer
     // than 2 removable cards it removes what it can and still gives the Max HP. False without the relic.
     bool cook_at_campfire();
+    // Shovel: digs for a random relic at the campfire (false when there is none to find).
+    bool dig_at_campfire();
 
     // Shop actions
     void open_shop();
