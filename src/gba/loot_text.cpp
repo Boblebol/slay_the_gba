@@ -102,6 +102,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "GOLDEN_PEARL", "Lorsque vous obtenez cette relique, gagnez 150 Pièces d'or." },
     { "ECTOPLASM", "Vous ne pouvez plus obtenir de Pièces d'or. Gagnez 1 ● au début de chaque tour." },
     { "DUSTY_TOME", "Lorsque vous obtenez cette relique, obtenez une Carte d'Ancien." },
+    { "GLASS_EYE", "Lorsque vous obtenez cette relique, obtenez 2 cartes Communes, 2 cartes Inhabituelles, et 1 carte Rare." },
     { "WHISPERING_EARRING", "Gagnez 1 ● au début de chaque tour. Vakuu joue votre premier tour à votre place." },
     { "BOOMING_CONCH", "Au début des combats d'Élite, piochez 2 cartes supplémentaires et gagnez 1 ●." },
     { "WHISPERING_EARRING","Gagnez 1 ● au début de chaque tour. Vakuu joue votre premier tour à votre place." },

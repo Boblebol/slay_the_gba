@@ -1368,6 +1368,31 @@ void test_velvet_choker() {
     for (int i = 0; i < 7; ++i) assert(plain.combat.play_card(0, -1));
     assert(!plain.combat.has_power(PowerId::VELVET_CHOKER));
     std::cout << "[PASS] Velvet Choker: +1 energy each turn, no more than 6 cards played" << std::endl;
+void test_glass_eye() {
+    // Obtained: 2 Common, 2 Uncommon and 1 Rare cards join the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    size_t size = run.master_deck.size();
+    run.add_relic("GLASS_EYE");
+    assert(run.has_relic("GLASS_EYE"));
+    assert(run.master_deck.size() == size + 5);
+    int commons = 0, uncommons = 0, rares = 0;
+    for (size_t i = size; i < run.master_deck.size(); ++i) {
+        CardRarity rarity = card_meta(run.master_deck[i].id).rarity;
+        if (rarity == CardRarity::COMMON) ++commons;
+        if (rarity == CardRarity::UNCOMMON) ++uncommons;
+        if (rarity == CardRarity::RARE) ++rares;
+    }
+    assert(commons == 2 && uncommons == 2 && rares == 1);
+
+    // Without the relic, the deck stays where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    size_t plain_size = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("GLASS_EYE") && plain.master_deck.size() == plain_size);
+
+    std::cout << "[PASS] Glass Eye: 2 Common, 2 Uncommon and 1 Rare cards when obtained" << std::endl;
 }
 
 int main() {
@@ -1397,6 +1422,7 @@ int main() {
     test_philosophers_stone();
     test_dusty_tome();
     test_velvet_choker();
+    test_glass_eye();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();

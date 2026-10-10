@@ -621,6 +621,21 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
                     add_card_to_deck(DeckCard{ static_cast<CardId>(id), false });
                     break;
                 }
+    // Glass Eye (Ancient): 2 random Common, 2 Uncommon and 1 Rare cards of the hero's pool, all distinct.
+    if (relic_id == "GLASS_EYE" && has_relic("GLASS_EYE")) {
+        struct EyeDraw {
+            CardRarity rarity;
+            int count;
+        };
+        for (EyeDraw draw : { EyeDraw{ CardRarity::COMMON, 2 }, EyeDraw{ CardRarity::UNCOMMON, 2 }, EyeDraw{ CardRarity::RARE, 1 } }) {
+            FixedVector<CardId, 128> candidates;
+            for (CardId id : card_reward_pool(character)) {
+                if (card_meta(id).rarity == draw.rarity) candidates.push_back(id);
+            }
+            for (int n = 0; n < draw.count && !candidates.empty(); ++n) {
+                size_t pick = next_random() % candidates.size();
+                add_card_to_deck(DeckCard{ candidates[pick], false });
+                candidates.erase(pick);
             }
         }
     }
