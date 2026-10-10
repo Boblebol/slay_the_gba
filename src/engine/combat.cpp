@@ -1424,7 +1424,10 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     bool was_alive = target.is_alive();
     // Percentage modifiers add up; Shadow Step then doubles the total.
     int32_t percent = 100;
-    if (target.get_status(StatusType::VULNERABLE) > 0) percent += power_amount(PowerId::CRUELTY);
+    if (target.get_status(StatusType::VULNERABLE) > 0) {
+        percent += power_amount(PowerId::CRUELTY);
+        percent += power_amount(PowerId::PAPER_PHROG);
+    }
     if (target.get_status(StatusType::WEAK) > 0) percent += power_amount(PowerId::TRACKING);
     if (resolving_card && counters.attacks_played == 0) percent += power_amount(PowerId::LETHALITY);
     if (attack_double_now) percent *= 2;
