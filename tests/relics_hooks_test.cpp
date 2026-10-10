@@ -163,6 +163,25 @@ void test_attack_relics() {
     std::cout << "[PASS] Attack relics: Shuriken, Kunai, Ornamental Fan, Kusarigama, Nunchaku" << std::endl;
 }
 
+static void test_pen_nib() {
+    // With the relic, the 10th Attack deals double damage and the count starts over.
+    CombatEngine nib = make_relic_combat(CharacterId::IRONCLAD, PowerId::PEN_NIB, 1);
+    nib.enemies[0].hp = 200;
+    for (int i = 0; i < 9; ++i) play(nib, CardId::STRIKE);
+    assert(nib.enemies[0].hp == 200 - 9 * 6);
+    play(nib, CardId::STRIKE);
+    assert(nib.enemies[0].hp == 200 - 9 * 6 - 12 && nib.power_counter(PowerId::PEN_NIB) == 0);
+    play(nib, CardId::STRIKE);
+    assert(nib.enemies[0].hp == 200 - 9 * 6 - 12 - 6);
+
+    // Without it, the 10th Attack is an ordinary one.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::NUNCHAKU, 1);
+    plain.enemies[0].hp = 200;
+    for (int i = 0; i < 10; ++i) play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].hp == 200 - 10 * 6);
+    std::cout << "[PASS] Pen Nib doubles every 10th Attack" << std::endl;
+}
+
 void test_skill_and_power_relics() {
     // Letter Opener: every third Skill of the turn hits every enemy.
     CombatEngine opener = make_relic_combat(CharacterId::IRONCLAD, PowerId::LETTER_OPENER, 5, true);
@@ -1642,5 +1661,6 @@ int main() {
     test_paels_eye();
     test_cursed_pearl();
     test_calling_bell();
+    test_pen_nib();
     return 0;
 }
