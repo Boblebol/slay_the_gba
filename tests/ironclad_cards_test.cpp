@@ -108,11 +108,39 @@ void test_juggling() {
     std::cout << "[PASS] Ironclad: Juggling" << std::endl;
 }
 
+void test_unmovable() {
+    for (bool upgraded : { false, true }) {
+        // Unmovable: a Power, 2 energy (1 upgraded).
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+        assert(CardDef::get_cost(CardId::UNMOVABLE, upgraded) == (upgraded ? 1 : 2));
+        play(combat, DeckCard(CardId::UNMOVABLE, upgraded));
+        assert(combat.has_power(PowerId::UNMOVABLE));
+        assert(combat.player.energy == combat.player.max_energy - (upgraded ? 1 : 2));
+
+        // The first Block a card gives each turn is doubled, the next ones are not.
+        combat.player.block = 0;
+        play(combat, CardId::DEFEND);
+        assert(combat.player.block == 10);
+        play(combat, CardId::DEFEND);
+        assert(combat.player.block == 15);
+
+        // It applies again the next turn.
+        end_turn_idle(combat);
+        combat.player.block = 0;
+        play(combat, CardId::DEFEND);
+        assert(combat.player.block == 10);
+    }
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::UNMOVABLE });
+    std::cout << "[PASS] Ironclad: Unmovable" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Ironclad Cards ===" << std::endl;
     test_juggling();
+    test_unmovable();
     std::cout << "=== All Ironclad Cards Passed! ===" << std::endl;
     return 0;
 }
