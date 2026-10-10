@@ -122,6 +122,7 @@ enum class PowerId : uint8_t {
     THE_ABACUS,        // draw pile shuffled: `amount` Block
     PERMAFROST,        // first Power played: `amount` Block
     GAME_PIECE,        // Power played: draw `amount`
+    REPTILE_TRINKET,   // potion used: `amount` Strength until the end of the turn
     CENTENNIAL_PUZZLE, // first HP loss: draw `amount`
     LIZARD_TAIL,       // HP reduced to 0: back to `amount` % of Max HP, once (counter = 1 when spent)
     UNCEASING_TOP,     // hand empty during the turn: draw 1
