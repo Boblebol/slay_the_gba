@@ -2891,6 +2891,48 @@ void test_fake_orichalcum() {
     std::cout << "[PASS] Orichalque ???: without Block at the end of the turn, gain 3 Block" << std::endl;
 }
 
+void test_maw_bank() {
+    // With the relic, each floor climbed gives 12 Gold, until Gold is spent at the merchant.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("MAW_BANK");
+    assert(run.has_relic("MAW_BANK"));
+    int16_t gold = run.gold;
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.gold == gold + 12);
+
+    // Buying a card at the merchant ends the effect: the next floor gives nothing.
+    run.gold = 999;
+    run.open_shop();
+    assert(run.buy_shop_card(0) && run.gold < 999);
+    run.leave_shop();
+    gold = run.gold;
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.gold == gold);
+
+    // Removing a card at the merchant ends it too.
+    RunManager remover;
+    remover.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    remover.add_relic("MAW_BANK");
+    remover.gold = 999;
+    remover.open_shop();
+    assert(remover.remove_card_at_shop(0) && remover.gold < 999);
+    remover.leave_shop();
+    gold = remover.gold;
+    enter_room_of_type(remover, RoomType::MONSTER);
+    assert(remover.gold == gold);
+
+    // Without the relic, a floor gives no Gold.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("MAW_BANK"));
+    gold = plain.gold;
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.gold == gold);
+    std::cout << "[PASS] Maw Bank: 12 Gold on each floor climbed, until Gold is spent at the merchant" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2999,5 +3041,6 @@ int main() {
     test_darkstone_periapt();
     test_big_mushroom();
     test_fake_orichalcum();
+    test_maw_bank();
     return 0;
 }

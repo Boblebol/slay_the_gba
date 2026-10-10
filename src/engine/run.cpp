@@ -28,6 +28,7 @@ constexpr int COOK_REMOVALS = 2; // cards removed by Cook (Meat Cleaver)
 constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
 constexpr int LAVA_ROCK_RELICS = 2; // relics the Act 1 Boss gives to Lava Rock when defeated
 constexpr uint8_t GIRYA_LIFTS = 3;  // most Strength Girya gives, one lift each
+constexpr int16_t MAW_BANK_GOLD = 12; // Gold Maw Bank gives on each floor climbed, until the merchant gets some
 
 constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 0, "Normal", "Difficulté standard de l'Ascension." },
@@ -168,6 +169,8 @@ void RunManager::enter_room(int node_index) {
     const auto& node = map.nodes[node_index];
     current_floor = node.floor + 1;
     on_room_entered(node.type);
+    // Maw Bank: each floor climbed gives Gold, until the run spends some at the merchant (counter set to 1).
+    if (has_relic("MAW_BANK") && relic_counter("MAW_BANK") == 0) gain_gold(MAW_BANK_GOLD);
 
     switch (node.type) {
         case RoomType::MONSTER:
@@ -340,15 +343,24 @@ void RunManager::open_shop() {
     on_shop_opened();
 }
 
+// Maw Bank: the first Gold spent at the merchant ends its effect for the rest of the run.
+static void stop_maw_bank_if_spent(RunManager& run, int16_t gold_before) {
+    if (run.gold < gold_before && run.has_relic("MAW_BANK")) run.set_relic_counter("MAW_BANK", 1);
+}
+
 bool RunManager::buy_shop_card(int index) {
+    const int16_t gold_before = gold;
     if (!current_shop.buy_card(*this, index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
     // The Courier: the card bought is back on the shelf at once.
     if (has_relic("THE_COURIER")) current_shop.cards[index].purchased = false;
     return true;
 }
 
 bool RunManager::buy_shop_relic(int index) {
+    const int16_t gold_before = gold;
     if (!current_shop.buy_relic(*this, index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
     // The Courier: the relic bought is replaced by another one, priced after the discounts in force.
     if (has_relic("THE_COURIER")) {
         RewardRng rng(next_random());
@@ -369,7 +381,9 @@ bool RunManager::buy_shop_relic(int index) {
 }
 
 bool RunManager::buy_shop_potion(int index, int replace_index) {
+    const int16_t gold_before = gold;
     if (!current_shop.buy_potion(*this, index, replace_index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
     // The Courier: the potion bought is replaced by another one, priced after the discounts in force.
     if (has_relic("THE_COURIER")) {
         RewardRng rng(next_random());
@@ -398,7 +412,10 @@ bool RunManager::use_potion(int index, int target_index) {
 }
 
 bool RunManager::remove_card_at_shop(int deck_index) {
-    return current_shop.remove_card(*this, deck_index);
+    const int16_t gold_before = gold;
+    if (!current_shop.remove_card(*this, deck_index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
+    return true;
 }
 
 void RunManager::leave_shop() {
