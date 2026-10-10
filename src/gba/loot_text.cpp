@@ -183,6 +183,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ETERNAL_FEATHER", "Pour toutes les 5 cartes dans votre Deck, récupérez 3 PV lorsque vous entrez dans un Site de repos." },
     { "FROZEN_EGG", "Lorsque vous ajoutez un Pouvoir à votre Deck, Améliorez-le." },
     { "GIRYA", "Aux Sites de repos, vous pouvez gagner 1 de Force. (3 fois maximum)" },
+    { "PETRIFIED_TOAD", "Au début de chaque combat, obtenez une Pierre en forme de potion." },
     { "STURDY_CLAMP", "Vous conservez jusqu'à 10 d'Armure entre chaque tour." },
     { "SAI", "Au début de votre tour, gagnez 7 d'Armure." },
     { "SEAL_OF_GOLD", "Au début de votre tour, dépensez 3 Pièces d'or pour gagner 1 ●." },

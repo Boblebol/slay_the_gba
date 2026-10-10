@@ -2498,6 +2498,22 @@ void test_girya() {
     std::cout << "[PASS] Girya: +1 Strength per lift at a rest site, 3 times max, carried into each combat" << std::endl;
 }
 
+void test_petrified_toad() {
+    // Each combat starts with a Potion-Shaped Rock in the belt; drinking it deals 15 damage.
+    RunManager toad = make_relic_run(CharacterId::IRONCLAD, { "PETRIFIED_TOAD" });
+    assert(toad.has_relic("PETRIFIED_TOAD"));
+    assert(toad.potions.size() == 1 && toad.potions[0] == "POTION_SHAPED_ROCK");
+    toad.combat.enemies[0].hp = 40;
+    assert(toad.use_potion(0, 0));
+    assert(toad.combat.enemies[0].hp == 25);
+    assert(toad.potions.empty());
+
+    // Without the relic, no potion is given at the start of the combat.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(!plain.has_relic("PETRIFIED_TOAD") && plain.potions.empty());
+    std::cout << "[PASS] Petrified Toad: a Potion-Shaped Rock at the start of each combat" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2561,6 +2577,7 @@ int main() {
     test_calling_bell();
     test_war_paint();
     test_lava_lamp();
+    test_petrified_toad();
     test_belt_buckle();
     test_circlet();
     test_dingy_rug();
