@@ -2645,6 +2645,32 @@ void test_white_star() {
     std::cout << "[PASS] White Star: an Elite offers one more set of Rare cards" << std::endl;
 }
 
+void test_chosen_cheese() {
+    // With the relic: each fight won raises Max HP by 1.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("CHOSEN_CHEESE");
+    int16_t max_hp = run.max_hp;
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.combat.state = CombatState::VICTORY;
+    run.proceed_after_combat();
+    assert(run.max_hp == max_hp + 1);
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.combat.state = CombatState::VICTORY;
+    run.proceed_after_combat();
+    assert(run.max_hp == max_hp + 2);
+
+    // Without the relic: a fight leaves Max HP alone.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    assert(!plain.has_relic("CHOSEN_CHEESE"));
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.max_hp == max_hp);
+    std::cout << "[PASS] Chosen Cheese: +1 Max HP at the end of each combat" << std::endl;
+}
+
 void test_chemical_x() {
     // With the relic: an X card gets 2 more X for the same energy spent (Skewer: a hit of 8 per X).
     RunManager run = make_relic_run(CharacterId::SILENT, { "CHEMICAL_X" });
@@ -2775,5 +2801,6 @@ int main() {
     test_shovel();
     test_white_star();
     test_chemical_x();
+    test_chosen_cheese();
     return 0;
 }

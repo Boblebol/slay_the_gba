@@ -1687,6 +1687,8 @@ void RunManager::proceed_after_combat() {
     if (has_relic("MEAT_ON_THE_BONE") && hp * 2 <= max_hp) {
         hp = std::min<int16_t>(max_hp, hp + 12);
     }
+    // Chosen Cheese: 1 Max HP at the end of each fight.
+    if (has_relic("CHOSEN_CHEESE")) gain_max_hp(1);
 
     // Every enemy ran away: the fight is over, but there is nothing to take.
     if (combat.every_enemy_escaped()) {
