@@ -110,6 +110,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "LAVA_ROCK", "Le Boss de l'Acte 1 octroie 2 Reliques lorsqu'il est vaincu." },
     { "RUNIC_PYRAMID", "À la fin de votre tour, vous ne défaussez pas votre Main." },
     { "PHILOSOPHERS_STONE", "Gagnez 1 ● au début de chaque tour. TOUS les ennemis démarrent le combat avec 1 de Force." },
+    { "VELVET_CHOKER", "Gagnez 1 ● au début de chaque tour. Vous ne pouvez pas jouer plus de 6 cartes par tour." },
     { "JEWELRY_BOX", "Lorsque vous obtenez cette relique, ajoutez 1 Apothéose à votre Deck." },
     { "NEOWS_BONES", "Lorsque vous obtenez cette relique, gagnez 2 Reliques de Neow aléatoires. Ajoutez 1 Malédiction aléatoire à votre Deck." },
     { "TANXS_WHISTLE", "Lorsque vous obtenez cette relique, ajoutez 1 Sifflet à votre Deck." },

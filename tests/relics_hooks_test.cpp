@@ -1347,6 +1347,27 @@ void test_dusty_tome() {
     assert(!plain.has_relic("DUSTY_TOME") && plain.master_deck.size() == deck_size);
 
     std::cout << "[PASS] Dusty Tome: an Ancient card of the hero when obtained" << std::endl;
+void test_velvet_choker() {
+    // With the relic: one more energy at the start of each turn, and six cards at most played each turn.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "VELVET_CHOKER" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(run.combat.has_power(PowerId::VELVET_CHOKER));
+    assert(run.combat.player.energy == plain.combat.player.energy + 1);
+
+    run.combat.hand.clear();
+    for (int i = 0; i < 7; ++i) run.combat.hand.push_back(DeckCard{ CardId::DEFEND, false });
+    run.combat.player.energy = 10;
+    for (int i = 0; i < 6; ++i) assert(run.combat.play_card(0, -1));
+    assert(run.combat.play_blocker(0) == PlayBlocker::PLAY_LIMIT);
+    assert(!run.combat.play_card(0, -1) && run.combat.hand.size() == 1);
+
+    // Without the relic: the seventh card is played too.
+    plain.combat.hand.clear();
+    for (int i = 0; i < 7; ++i) plain.combat.hand.push_back(DeckCard{ CardId::DEFEND, false });
+    plain.combat.player.energy = 10;
+    for (int i = 0; i < 7; ++i) assert(plain.combat.play_card(0, -1));
+    assert(!plain.combat.has_power(PowerId::VELVET_CHOKER));
+    std::cout << "[PASS] Velvet Choker: +1 energy each turn, no more than 6 cards played" << std::endl;
 }
 
 int main() {
@@ -1375,6 +1396,7 @@ int main() {
     test_ectoplasm();
     test_philosophers_stone();
     test_dusty_tome();
+    test_velvet_choker();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();
