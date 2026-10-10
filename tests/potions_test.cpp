@@ -19,6 +19,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
     "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION",
+    "SKILL_POTION",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -752,6 +753,31 @@ void test_orobic_acid() {
     std::cout << "[PASS] Orobic Acid: an Attack, a Skill and a Power added to the hand, free this turn" << std::endl;
 }
 
+void test_skill_potion() {
+    // 3 different Skills are offered; the picked one goes to the hand and costs 0 this turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.hand.size() == 5);
+    assert(combat.use_potion("SKILL_POTION"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.offers.size() == 3);
+    for (const DeckCard& card : combat.offers) {
+        assert(CardDef::get(card.id).type == CardType::SKILL);
+        assert(card.free_this_turn);
+    }
+    assert(combat.offers[0].id != combat.offers[1].id && combat.offers[1].id != combat.offers[2].id &&
+           combat.offers[0].id != combat.offers[2].id);
+    const DeckCard picked = combat.offers[1];
+    const uint8_t picks[] = { 1 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending());
+    assert(combat.hand.size() == 6 && combat.hand[5].id == picked.id && combat.hand[5].free_this_turn);
+    assert(combat.player.energy == 3);
+    assert(std::string_view(combat.combat_log) == "Skill Potion!");
+
+    std::cout << "[PASS] Skill Potion: pick 1 of 3 random Skills, added to the hand, free this turn" << std::endl;
+}
+
 void test_beetle_juice() {
     // Chomp 11 x 0.70 = 7 for 4 enemy turns, then back to 11.
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
@@ -982,6 +1008,7 @@ int main() {
     test_duplicator();
     test_droplet_of_precognition();
     test_orobic_acid();
+    test_skill_potion();
     test_beetle_juice();
     test_touch_of_insanity();
     test_liquid_memories();
