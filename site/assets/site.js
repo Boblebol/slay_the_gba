@@ -93,3 +93,28 @@ document.querySelectorAll("[data-progress]").forEach((box) => {
   });
   apply();
 });
+
+// Landing page: edition picker (hero sprites and cartridge tabs) and screenshot gallery.
+const editionButtons = document.querySelectorAll("[data-edition]");
+if (editionButtons.length) {
+  const select = (id) => {
+    document.body.dataset.edition = id;
+    document.body.className = [...document.body.classList].filter((c) => !c.startsWith("hero-")).concat(`hero-${id}`).join(" ");
+    editionButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.edition === id)));
+    document.querySelectorAll("[data-panel]").forEach((p) => { p.hidden = p.dataset.panel !== id; });
+  };
+  editionButtons.forEach((button) => button.addEventListener("click", () => select(button.dataset.edition)));
+}
+
+const galleryMain = document.getElementById("gallery-main");
+if (galleryMain) {
+  const caption = document.getElementById("gallery-caption");
+  document.querySelectorAll(".thumb").forEach((thumb) => {
+    thumb.addEventListener("click", (event) => {
+      event.preventDefault();
+      galleryMain.src = thumb.getAttribute("href");
+      galleryMain.alt = caption.textContent = thumb.dataset.caption;
+      document.querySelectorAll(".thumb").forEach((t) => t.classList.toggle("on", t === thumb));
+    });
+  });
+}

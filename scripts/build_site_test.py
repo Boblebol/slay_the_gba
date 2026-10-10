@@ -240,3 +240,83 @@ def test_build_seo_files_dedupes_pages_and_ranks_them(isolated_site: Path) -> No
     assert "Disallow: /roms/" in robots and f"Sitemap: {base}/sitemap.xml" in robots
     with Image.open(isolated_site / "assets" / "og.png") as og:
         assert og.size == (1200, 630)
+
+
+# --- Landing page ----------------------------------------------------------------------------
+
+
+def make_progress() -> progress.Progress:
+    def item(name: str, status: str, issue: int | None = None) -> progress.Item:
+        return progress.Item(name, name, status, issue=issue)
+
+    sections = [progress.Section(h.slug, h.name, (progress.Category("Mécaniques", (
+        item("Force", progress.DONE), item("Poison", progress.PARTIAL), item("Orbes", progress.DONE))),), h)
+        for h in HEROES]
+    sections += [progress.Section(slug, slug.title(), (progress.Category("Système", (
+        item(f"{slug}-fait", progress.DONE), item(f"{slug}-cours", progress.PARTIAL, 7),
+        item(f"{slug}-todo", progress.TODO, 8))),)) for slug in ("systemes", "interface", "regles", "cartes")]
+    return progress.Progress(tuple(sections))
+
+
+@pytest.mark.parametrize("percent, color", [(100, "#68e868"), (85, "#68e868"), (84.9, "#f8d048"), (55, "#f8d048"),
+                                            (25, "#f0a060"), (24.9, "#f85848"), (0, "#f85848")])
+def test_progress_color_thresholds(percent: float, color: str) -> None:
+    assert build_site.progress_color(percent) == color
+
+
+def test_hero_mechanics_lists_only_done_items_up_to_the_limit() -> None:
+    section = make_progress().section("ironclad")
+    assert build_site.hero_mechanics(section) == ["Force", "Orbes"]
+    assert build_site.hero_mechanics(section, limit=1) == ["Force"]
+
+
+def test_journal_items_keep_priority_sections_and_skip_catalogues() -> None:
+    prog = make_progress()
+    assert [i.name for i in build_site.journal_items(prog, progress.PARTIAL)] == [
+        "systemes-cours", "interface-cours", "regles-cours"]  # "cartes" is an auto catalogue, left out
+
+
+def test_journal_items_are_capped(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(build_site, "JOURNAL_LIMIT", 2)
+    assert len(build_site.journal_items(make_progress(), progress.DONE)) == 2
+
+
+def test_landing_journal_links_issues_and_colours_columns() -> None:
+    out = build_site.landing_journal(make_progress())
+    assert f'href="{progress.ISSUE_URL}7"' in out and ">#8</a>" in out
+    assert "<h3>Fait</h3>" in out and "<h3>En cours</h3>" in out and "<h3>À venir</h3>" in out
+    assert "--jc:#68e868" in out and "--jc:#f8d048" in out and "--jc:#9a98b0" in out
+
+
+def test_landing_progress_has_one_bar_per_section_and_a_detail_link() -> None:
+    prog = make_progress()
+    out = build_site.landing_progress(prog)
+    assert out.count('class="sect"') == len(prog.sections)
+    assert progress.percent_fr(prog.tally.percent) in out and 'href="avancement.html"' in out
+    assert "cnt-done" in out and "cnt-todo" in out
+
+
+def test_launch_sprites_and_tabs_cover_every_edition_with_one_pressed() -> None:
+    for out in (build_site.launch_sprites(), "".join(build_site.edition_tab(h) for h in HEROES)):
+        assert [m for m in out.split('data-edition="')[1:]] and out.count("data-edition=") == len(HEROES)
+        assert out.count('aria-pressed="true"') == 1
+
+
+def test_landing_captures_use_plain_links_so_it_works_without_js() -> None:
+    out = build_site.landing_captures()
+    assert out.count('class="thumb"') == len(build_site.SCREENS)
+    assert 'id="gallery-main"' in out and 'href="assets/screens/title.png"' in out
+
+
+def test_build_index_renders_five_panels_and_keeps_seo_and_nav(isolated_site: Path) -> None:
+    cards = [{"id": cid, "pool": "Ironclad", "name": cid.title()} for h in HEROES for cid, _ in h.starter]
+    relics = [{"id": h.relic_id, "name": f"Relique {h.slug}"} for h in HEROES]
+    build_site.build_index(cards, [{"acts": [1]}], relics, [], [], make_progress())
+    out = (isolated_site / "index.html").read_text()
+    assert out.count("data-panel=") == len(HEROES)
+    assert out.count('" hidden>') == len(HEROES) - 1  # only the default edition is visible without JS
+    assert 'class="hero-ironclad"' in out and 'property="og:title"' in out and 'class="ae-footer"' in out
+    for anchor in ("editions", "avancement", "fait", "captures", "bible", "telecharger", "faq"):
+        assert f'id="{anchor}"' in out
+    assert "<details class='faq'>" in out and "Choisissez votre héros" in out
+    assert f'<link rel="canonical" href="{build_site.SITE_URL}/">' in out
