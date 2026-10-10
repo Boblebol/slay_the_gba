@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include "engine/ancient.h"
+#include "engine/card_meta.h"
 #include "engine/combat.h"
 #include "engine/run.h"
 
@@ -835,6 +837,51 @@ void test_paels_legion() {
     std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
 }
 
+void test_neows_bones() {
+    // Obtained: 2 more relics among Neow's own, then 1 random curse. Neow's Bones itself is never drawn again.
+    auto is_neow_relic = [](std::string_view id) {
+        for (const AncientSlot& slot : get_ancient(AncientId::NEOW).slots) {
+            for (const AncientRelic& option : slot.options) {
+                if (option.id == id) return true;
+            }
+        }
+        return false;
+    };
+    auto count_curses = [](const RunManager& run) {
+        int n = 0;
+        for (size_t i = 0; i < run.master_deck.size(); ++i) {
+            if (card_meta(run.master_deck[i].id).pool == CardPool::CURSE) ++n;
+        }
+        return n;
+    };
+
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t relics_before = run.relics.size();
+    size_t deck_before = run.master_deck.size();
+    int curses_before = count_curses(run);
+    run.add_relic("NEOWS_BONES");
+    assert(run.has_relic("NEOWS_BONES"));
+    assert(run.relics.size() == relics_before + 3);
+    assert(run.master_deck.size() == deck_before + 1);
+    assert(count_curses(run) == curses_before + 1);
+    for (size_t i = relics_before + 1; i < run.relics.size(); ++i) {
+        assert(is_neow_relic(run.relics[i]));
+        assert(run.relics[i] != "NEOWS_BONES");
+    }
+    assert(run.relics[relics_before + 1] != run.relics[relics_before + 2]);
+
+    // Without the relic, no Neow relic and no curse.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_relics = plain.relics.size();
+    size_t plain_deck = plain.master_deck.size();
+    plain.add_relic("STRAWBERRY");
+    assert(plain.relics.size() == plain_relics + 1);
+    assert(plain.master_deck.size() == plain_deck);
+    assert(count_curses(plain) == 0);
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -857,6 +904,7 @@ int main() {
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
+    test_neows_bones();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
