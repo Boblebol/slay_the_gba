@@ -152,6 +152,7 @@ enum class PowerId : uint8_t {
     ORNAMENTAL_FAN,    // every ORNAMENTAL_FAN_ATTACKS Attacks played in a turn: `amount` Block
     PEN_NIB,           // every PEN_NIB_ATTACKS Attacks played: that Attack deals double damage (counter = Attacks counted)
     STRIKE_DUMMY,      // cards containing "Strike" deal `amount` more damage per hit
+    MINIATURE_CANNON,  // upgraded Attacks deal `amount` more damage per hit
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy
     RED_SKULL,         // HP at RED_SKULL_HP_PERCENT % of Max HP or less: `amount` more Strength (counter = Strength given now)
@@ -223,7 +224,10 @@ enum class PowerId : uint8_t {
     // Potions (appended)
     STABLE_SERUM,       // the hand is kept at the end of the next `amount` turns (read by end_player_turn)
     // Relics (appended)
-    BEATING_REMNANT     // the player loses no more than `amount` HP each turn (CombatEntity::hp_loss_budget)
+    BEATING_REMNANT,    // the player loses no more than `amount` HP each turn (CombatEntity::hp_loss_budget)
+    VAMBRACE,           // the first Block a card gives each combat is doubled (counter = 1 once used)
+    CHEMICAL_X,         // the X cards played get `amount` more X (CombatEngine::play_card, autoplay)
+    UNSETTLING_LAMP     // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -238,6 +242,7 @@ constexpr uint8_t ROLLING_BOULDER_GROWTH = 5;
 constexpr uint8_t ORBIT_ENERGY = 4;
 constexpr uint8_t DANSE_MACABRE_COST = 2;
 constexpr uint8_t BEATING_REMNANT_HP_LOSS = 20;
+constexpr uint8_t CHEMICAL_X_INCREASE = 2;
 constexpr uint8_t BREAD_ENERGY_LOST = 2;
 constexpr uint8_t POCKETWATCH_CARDS = 3;
 constexpr uint8_t PARRYING_SHIELD_BLOCK = 10;

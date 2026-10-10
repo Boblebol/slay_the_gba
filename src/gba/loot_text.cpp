@@ -45,8 +45,10 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "DATA_DISK", "Commencez chaque combat avec 1 de Focalisation." },
     { "DRAGON_FRUIT", "Chaque fois que vous gagnez des Pièces d'or, augmentez vos PV Max de 1." },
     { "BEATING_REMNANT", "Vous ne pouvez perdre plus de 20 PV en un seul tour." },
+    { "UNSETTLING_LAMP", "La première carte de chaque combat qui inflige des Effets négatifs à un ennemi voit son effet doublé." },
     { "BELT_BUCKLE", "Sans Potion, vous avez 2 de Dextérité supplémentaire." },
     { "BOWLER_HAT", "Recevez 25 % de Pièces d'or supplémentaires." },
+    { "VAMBRACE", "La première fois de chaque combat qu'une carte vous confère de l'Armure, doublez-en la quantité gagnée." },
     { "DELICATE_FROND", "Au début de chaque combat, remplissez vos emplacements de potion vides avec des Potions aléatoires." },
     { "DEMON_TONGUE", "La première fois que vous perdez des PV pendant votre tour, vous récupérez autant de PV." },
     { "EMOTION_CHIP", "Si vous avez perdu des PV lors du tour précédent, déclenchez la capacité passive de chacun de vos Orbes au début de votre tour." },
@@ -91,6 +93,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ORNAMENTAL_FAN", "Chaque fois que vous jouez 3 Attaques en un seul tour, gagnez 4 d'Armure." },
     { "PEN_NIB", "Toutes les 10 Attaques jouées, la 10ème inflige le double de dégâts." },
     { "STRIKE_DUMMY", "Les cartes contenant « Frappe » infligent 3 dégâts supplémentaires." },
+    { "MINIATURE_CANNON", "Les Attaques améliorées infligent 3 dégâts supplémentaires." },
     { "TUNGSTEN_ROD", "Vous perdez 1 PV de moins chaque fois que vous perdriez des PV." },
     { "AMETHYST_AUBERGINE", "Les ennemis donnent 15 Pièces d'or supplémentaires." },
     { "FIDDLE", "Au début de chaque tour, piochez 2 cartes supplémentaires. Vous ne pouvez plus piocher de cartes pendant votre tour." },
@@ -177,6 +180,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "LARGE_CAPSULE", "Lorsque vous obtenez cette relique, obtenez 2 Reliques aléatoires. Ajoutez une Frappe et une Défense à votre Deck." },
     { "CALLING_BELL", "Lorsque vous obtenez cette relique, obtenez une Malédiction spéciale et 3 Reliques." },
     { "CAULDRON", "Lorsque vous obtenez cette relique, concoctez 5 Potions aléatoires." },
+    { "CHEMICAL_X", "Les effets de vos cartes de coût X sont augmentés de 2." },
     { "OLD_COIN", "Lorsque vous obtenez cette relique, obtenez 300 Pièces d'or." },
     { "LUCKY_FYSH", "Chaque fois que vous ajoutez une carte à votre Deck, obtenez 15 Pièces d'or." },
     { "BOOK_OF_FIVE_RINGS", "Chaque fois que vous ajoutez 5 cartes à votre Deck, récupérez 20 PV." },
@@ -204,6 +208,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "WHETSTONE", "Lorsque vous obtenez cette relique, Améliorez 2 Attaques aléatoires." },
     { "MOLTEN_EGG", "Lorsque vous ajoutez une Attaque à votre Deck, Améliorez-la." },
     { "NEOWS_TALISMAN", "Lorsque vous obtenez cette relique, Améliorez 1 de vos Frappes et 1 de vos Défenses." },
+    { "TOXIC_EGG", "Lorsque vous ajoutez une Compétence à votre Deck, Améliorez-la." },
 };
 
 bn::string_view to_bn(std::string_view text)

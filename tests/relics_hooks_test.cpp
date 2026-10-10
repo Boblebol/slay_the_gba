@@ -897,6 +897,39 @@ void test_beating_remnant() {
     std::cout << "[PASS] Beating Remnant: no more than 20 HP lost per turn" << std::endl;
 }
 
+void test_vambrace() {
+    // With the relic: the first Block a card gives in the combat is doubled; the later ones are not.
+    CombatEngine with = make_relic_combat(CharacterId::IRONCLAD, PowerId::VAMBRACE, 1);
+    int16_t with_start = with.player.block;
+    with.resolving_card = true;
+    with.gain_block(5);
+    assert(with.player.block == with_start + 10);
+    with.gain_block(5);
+    assert(with.player.block == with_start + 15);
+    with.resolving_card = false;
+    with.start_player_turn();
+    with.resolving_card = true;
+    int16_t next_turn = with.player.block;
+    with.gain_block(4);
+    assert(with.player.block == next_turn + 4);
+    with.resolving_card = false;
+
+    // Block that is not from a card (a relic or a power) is never doubled.
+    CombatEngine other = make_relic_combat(CharacterId::IRONCLAD, PowerId::VAMBRACE, 1);
+    int16_t other_start = other.player.block;
+    other.add_block(6);
+    assert(other.player.block == other_start + 6);
+
+    // Without the relic: the Block of a card is the plain amount.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    int16_t plain_start = plain.player.block;
+    plain.resolving_card = true;
+    plain.gain_block(5);
+    assert(plain.player.block == plain_start + 5);
+    plain.resolving_card = false;
+    std::cout << "[PASS] Vambrace: the first Block a card gives each combat is doubled" << std::endl;
+}
+
 void test_dingy_rug() {
     // Card rewards: with the relic, some offers are Colorless cards; without it, never.
     uint32_t colorless = 0, offers = 0;
@@ -1997,6 +2030,31 @@ void test_strike_dummy() {
     std::cout << "[PASS] Strike Dummy: cards containing Strike deal 3 more damage" << std::endl;
 }
 
+void test_miniature_cannon() {
+    // With the relic, an upgraded Attack deals 3 more damage per hit (Twin Strike hits twice); an ordinary one does not.
+    CombatEngine cannon = make_relic_combat(CharacterId::IRONCLAD, PowerId::MINIATURE_CANNON, 3);
+    cannon.enemies[0].hp = 200;
+    play(cannon, DeckCard(CardId::STRIKE, true));
+    const int upgraded_hit = 200 - cannon.enemies[0].hp;
+
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 200;
+    play(plain, DeckCard(CardId::STRIKE, true));
+    assert(200 - plain.enemies[0].hp + 3 == upgraded_hit);
+
+    cannon.enemies[0].hp = 200;
+    play(cannon, DeckCard(CardId::TWIN_STRIKE, true));
+    const int twin_with = 200 - cannon.enemies[0].hp;
+    plain.enemies[0].hp = 200;
+    play(plain, DeckCard(CardId::TWIN_STRIKE, true));
+    assert(twin_with == 200 - plain.enemies[0].hp + 2 * 3);
+
+    cannon.enemies[0].hp = 200;
+    play(cannon, CardId::STRIKE);
+    assert(cannon.enemies[0].hp == 200 - 6);
+    std::cout << "[PASS] Miniature Cannon: upgraded Attacks deal 3 more damage per hit" << std::endl;
+}
+
 void test_white_beast_statue() {
     // With the statue, every combat reward holds a potion; without it, some do not.
     uint32_t plain_without = 0;
@@ -2016,6 +2074,27 @@ void test_white_beast_statue() {
     }
     assert(plain_without > 0);
     std::cout << "[PASS] White Beast Statue: a potion in every combat reward, not always without it" << std::endl;
+}
+
+void test_unsettling_lamp() {
+    // With the relic: the first card of the fight that debuffs an enemy doubles its debuffs, a card without one does not count.
+    CombatEngine lamp = make_relic_combat(CharacterId::IRONCLAD, PowerId::UNSETTLING_LAMP, 1);
+    lamp.enemies[0].hp = 200;
+    play(lamp, CardId::STRIKE);
+    assert(lamp.enemies[0].get_status(StatusType::VULNERABLE) == 0 && lamp.power_counter(PowerId::UNSETTLING_LAMP) == 0);
+    play(lamp, CardId::BASH);
+    assert(lamp.enemies[0].get_status(StatusType::VULNERABLE) == 4);
+    // Only the first one: the next debuff is the plain one.
+    play(lamp, CardId::BASH);
+    assert(lamp.enemies[0].get_status(StatusType::VULNERABLE) == 6);
+
+    // Without the relic: 2 Vulnerable each time.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::NUNCHAKU, 1);
+    plain.enemies[0].hp = 200;
+    play(plain, CardId::BASH);
+    play(plain, CardId::BASH);
+    assert(plain.enemies[0].get_status(StatusType::VULNERABLE) == 4);
+    std::cout << "[PASS] Unsettling Lamp: the first debuffing card of the fight has its debuffs doubled" << std::endl;
 }
 
 void test_bowler_hat() {
@@ -2300,6 +2379,26 @@ void test_war_paint() {
     std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
 }
 
+void test_toxic_egg() {
+    // With the relic: a Skill added to the Deck comes in upgraded; an Attack does not.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 495);
+    with.add_relic("TOXIC_EGG");
+    with.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    with.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(with.master_deck.back().id == CardId::STRIKE && !with.master_deck.back().upgraded);
+    assert(with.master_deck[with.master_deck.size() - 2].id == CardId::DEFEND);
+    assert(with.master_deck[with.master_deck.size() - 2].upgraded);
+
+    // Without the relic: the Skill is added as it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 495);
+    plain.add_relic("ANCHOR");
+    plain.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    assert(!plain.has_relic("TOXIC_EGG") && !plain.master_deck.back().upgraded);
+    std::cout << "[PASS] Toxic Egg: a Skill added to the Deck is upgraded" << std::endl;
+}
+
 void test_dragon_fruit() {
     // With the relic: each gain of Gold raises the Max HP by 1, a gain of 0 changes nothing.
     RunManager with;
@@ -2546,6 +2645,37 @@ void test_white_star() {
     std::cout << "[PASS] White Star: an Elite offers one more set of Rare cards" << std::endl;
 }
 
+void test_chemical_x() {
+    // With the relic: an X card gets 2 more X for the same energy spent (Skewer: a hit of 8 per X).
+    RunManager run = make_relic_run(CharacterId::SILENT, { "CHEMICAL_X" });
+    assert(run.combat.has_power(PowerId::CHEMICAL_X));
+    CombatEngine with = make_relic_combat(CharacterId::SILENT, PowerId::CHEMICAL_X, 2);
+    with.enemies[0].hp = 100;
+    with.hand.clear();
+    with.hand.push_back(DeckCard(CardId::SKEWER, false));
+    with.player.energy = 3;
+    assert(with.play_card(0, 0));
+    assert(with.enemies[0].hp == 100 - 5 * 8 && with.player.energy == 0);
+    assert(with.counters.energy_spent == 3 && with.counters.hits_dealt == 5);
+
+    // Played with no energy, the X is still raised: 2 hits.
+    with.hand.clear();
+    with.hand.push_back(DeckCard(CardId::SKEWER, false));
+    with.player.energy = 0;
+    assert(with.play_card(0, 0));
+    assert(with.enemies[0].hp == 100 - 5 * 8 - 2 * 8);
+
+    // Without the relic: 3 hits for 3 energy, and no X card is changed by it.
+    CombatEngine plain = make_relic_combat(CharacterId::SILENT, PowerId::NUNCHAKU, 1);
+    plain.enemies[0].hp = 100;
+    plain.hand.clear();
+    plain.hand.push_back(DeckCard(CardId::SKEWER, false));
+    plain.player.energy = 3;
+    assert(plain.play_card(0, 0));
+    assert(plain.enemies[0].hp == 100 - 3 * 8 && plain.counters.hits_dealt == 3);
+    std::cout << "[PASS] Chemical X: X cards get 2 more X, the energy spent is unchanged" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2614,16 +2744,19 @@ int main() {
     test_circlet();
     test_dingy_rug();
     test_beating_remnant();
+    test_vambrace();
     test_ghost_seed();
     test_reptile_trinket();
     test_ringing_triangle();
     test_toolbox();
     test_pen_nib();
     test_strike_dummy();
+    test_miniature_cannon();
     test_white_beast_statue();
     test_cauldron();
     test_lees_waffle();
     test_bowler_hat();
+    test_unsettling_lamp();
     test_bookmark();
     test_tungsten_rod();
     test_mango();
@@ -2631,6 +2764,7 @@ int main() {
     test_pear();
     test_whetstone();
     test_dragon_fruit();
+    test_toxic_egg();
     test_amethyst_aubergine();
     test_lucky_fysh();
     test_book_of_five_rings();
@@ -2640,5 +2774,6 @@ int main() {
     test_girya();
     test_shovel();
     test_white_star();
+    test_chemical_x();
     return 0;
 }

@@ -923,6 +923,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::STRIKE_DUMMY:
             if (card_played && is_strike(info.card.id)) strike_played_now = true;
             break;
+        case PowerId::MINIATURE_CANNON:
+            if (card_played && info.card.upgraded && CardDef::get(info.card.id).type == CardType::ATTACK) upgraded_attack_now = true;
+            break;
         case PowerId::ORNAMENTAL_FAN:
             if (completes(CardType::ATTACK, counters.attacks_played, ORNAMENTAL_FAN_ATTACKS)) add_block(power.amount);
             break;
@@ -1026,6 +1029,14 @@ void CombatEngine::gain_block(int16_t amount) {
             legion->counter = static_cast<uint8_t>(legion->amount + 1);
         }
     }
+    // Vambrace: the first Block a card gives each combat is doubled.
+    if (resolving_card && player.block > before) {
+        ActivePower* vambrace = find_power(PowerId::VAMBRACE);
+        if (vambrace != nullptr && vambrace->counter == 0) {
+            player.block = static_cast<int16_t>(player.block + (player.block - before));
+            vambrace->counter = 1;
+        }
+    }
     // Unmovable doubles the first Block a card gives each turn, Shadowmeld every one of the turn.
     if (player.block > before) {
         int factor = 1;
@@ -1053,6 +1064,15 @@ void CombatEngine::add_block(int16_t amount) {
 
 void CombatEngine::afflict(Enemy& target, StatusType type, int16_t amount) {
     if (amount == 0) return;
+    // Unsettling Lamp: the first card of the fight that debuffs an enemy has every debuff it applies doubled.
+    if (resolving_card && is_debuff(type, amount)) {
+        ActivePower* lamp = find_power(PowerId::UNSETTLING_LAMP);
+        if (lamp != nullptr && lamp->counter == 0) {
+            lamp->counter = 1;
+            lamp_doubling = true;
+        }
+        if (lamp_doubling) amount = static_cast<int16_t>(amount * 2);
+    }
     // Artifact cancels the debuff: nothing was applied, nothing reacts.
     if (!target.receive_status(type, amount)) return;
     if (type == StatusType::DOOM) counters.doom_applied = bump(counters.doom_applied);
@@ -1405,6 +1425,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (resolving_card && triple_next_attack) percent *= 3;
     if (pen_nib_now && resolving_card) percent *= 2;
     if (strike_played_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY));
+    if (upgraded_attack_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::MINIATURE_CANNON));
     int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
@@ -1964,6 +1985,7 @@ bool CombatEngine::play_card(int index, int target_index) {
 
     // Pay energy. An X card spends everything left: `x_value` is what it spent, or what is there when it is free.
     int x_value = 0;
+    const bool x_card = cost == COST_X || CardDef::get_star_cost(played_card.id, played_card.upgraded) == COST_X;
     if (cost == COST_X) {
         x_value = std::max<int>(player.energy, 0);
         cost = costs_nothing(played_card) ? 0 : x_value;
@@ -1976,6 +1998,8 @@ bool CombatEngine::play_card(int index, int target_index) {
         star_cost = player.sovereign_stars;
     }
     spend_stars(star_cost);
+    // Chemical X: the effect of an X card is raised, the energy it spends is not.
+    if (x_card) x_value += power_amount(PowerId::CHEMICAL_X);
 
     hand.erase(index);
     // Void Form counts the cards played from the hand, not their replays.
@@ -1998,7 +2022,9 @@ void CombatEngine::autoplay(DeckCard card, int target_index, AfterPlay destinati
     AfterPlay after_play = destination;
     // An X card played for free takes the energy that is there without spending it.
     int x_value = CardDef::is_x_cost(card.id, card.upgraded) ? std::max<int>(player.energy, 0) : 0;
-    if (CardDef::get_star_cost(card.id, card.upgraded) == COST_X) x_value = player.sovereign_stars;
+    const bool star_x = CardDef::get_star_cost(card.id, card.upgraded) == COST_X;
+    if (star_x) x_value = player.sovereign_stars;
+    if (CardDef::is_x_cost(card.id, card.upgraded) || star_x) x_value += power_amount(PowerId::CHEMICAL_X);
     run_card(card, target_index, target_index < 0, x_value, 0, after_play);
     // The destination asked by whoever plays the card wins over the card's own (Havoc exhausts).
     if (destination != AfterPlay::DISCARD) after_play = destination;
@@ -2119,8 +2145,10 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         resolving_card = true;
         resolve_effect(card, target_idx, x_value, after_play);
         resolving_card = false;
+        lamp_doubling = false;
         pen_nib_now = false;
         strike_played_now = false;
+        upgraded_attack_now = false;
         // Vigor goes to the first Attack played, all its hits included.
         if (played_type == CardType::ATTACK) {
             player.clear_status(StatusType::VIGOR);
