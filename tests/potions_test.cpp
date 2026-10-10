@@ -18,7 +18,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
-    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "GIGANTIFICATION_POTION",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -811,6 +811,23 @@ void test_refused_outside_player_turn() {
     std::cout << "[PASS] Potions are refused outside the player's turn: enemy turn, victory, defeat" << std::endl;
 }
 
+void test_gigantification_potion() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.hand.clear();
+    combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+    combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+    combat.hand.push_back(DeckCard(CardId::DEFEND, false));
+    assert(combat.use_potion("GIGANTIFICATION_POTION"));
+    int16_t hp = combat.enemies[0].hp;
+    assert(combat.play_card(2, 0)); // a Skill does not spend the potion
+    assert(combat.play_card(0, 0));
+    assert(hp - combat.enemies[0].hp == 18);
+    hp = combat.enemies[0].hp;
+    assert(combat.play_card(0, 0));
+    assert(hp - combat.enemies[0].hp == 6);
+    std::cout << "[PASS] Gigantification Potion: the next Attack deals triple damage, only once" << std::endl;
+}
+
 } // namespace
 
 void test_stable_serum() {
@@ -876,6 +893,7 @@ void test_ashwater() {
 
 int main() {
     std::cout << "=== Potions ===" << std::endl;
+    test_gigantification_potion();
     test_explosive_ampoule();
     test_weak_potion();
     test_swift_potion();
