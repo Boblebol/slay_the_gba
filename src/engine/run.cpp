@@ -1018,10 +1018,18 @@ int RunManager::upgrade_random_cards(int count, bool any_type, CardType type) {
     return upgraded;
 }
 
+// Book of Five Rings: every 5th card added to the Deck heals 20 HP.
+static constexpr uint8_t BOOK_OF_FIVE_RINGS_CARDS = 5;
+static constexpr int16_t BOOK_OF_FIVE_RINGS_HEAL = 20;
+
 bool RunManager::add_card_to_deck(DeckCard card) {
     if (master_deck.size() >= master_deck.capacity()) return false;
     on_card_added(card);
-    return master_deck.push_back(card);
+    if (!master_deck.push_back(card)) return false;
+    if (has_relic("BOOK_OF_FIVE_RINGS") && tick_relic_counter("BOOK_OF_FIVE_RINGS", BOOK_OF_FIVE_RINGS_CARDS)) {
+        heal(BOOK_OF_FIVE_RINGS_HEAL);
+    }
+    return true;
 }
 
 bool RunManager::transform_card_in_deck(int deck_index, bool upgraded, CardId into) {
@@ -1177,6 +1185,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR",                                   // Shared, out of combat
+        "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)

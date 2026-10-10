@@ -2071,6 +2071,33 @@ void test_war_paint() {
     std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
 }
 
+void test_book_of_five_rings() {
+    // Obtained: every 5th card added to the Deck heals 20 HP, the first four do not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 478);
+    run.hp = 30;
+    run.add_relic("BOOK_OF_FIVE_RINGS");
+    assert(run.has_relic("BOOK_OF_FIVE_RINGS"));
+    for (int card = 1; card <= 4; ++card) run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 30);
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 50);
+    for (int card = 1; card <= 4; ++card) run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 50);
+    for (int card = 1; card <= 5; ++card) run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 70);
+
+    // Without the relic, adding cards never heals.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 478);
+    plain.hp = 30;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("BOOK_OF_FIVE_RINGS"));
+    for (int card = 1; card <= 10; ++card) plain.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(plain.hp == 30);
+    std::cout << "[PASS] Book of Five Rings: heals 20 HP on every 5th card added to the Deck" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2145,5 +2172,6 @@ int main() {
     test_old_coin();
     test_pear();
     test_whetstone();
+    test_book_of_five_rings();
     return 0;
 }
