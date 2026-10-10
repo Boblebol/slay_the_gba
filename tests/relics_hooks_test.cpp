@@ -691,6 +691,28 @@ void test_wongos_mystery_ticket() {
     std::cout << "[PASS] Wongo's Mystery Ticket: 3 random relics after 5 combats" << std::endl;
 }
 
+void test_ember_tea() {
+    // Brewed: 2 Strength at the start of each of the next 5 combats.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("EMBER_TEA");
+    for (int fight = 1; fight <= 5; ++fight) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        assert(run.combat.player.get_status(StatusType::STRENGTH) == 2);
+        assert(run.relic_counter("EMBER_TEA") == fight);
+    }
+    // Spent after the fifth combat.
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.get_status(StatusType::STRENGTH) == 0);
+
+    // Without the relic: no Strength at the start of the combat.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.combat.player.get_status(StatusType::STRENGTH) == 0);
+    std::cout << "[PASS] Ember Tea: 2 Strength at the start of 5 combats" << std::endl;
+}
+
 void test_golden_compass() {
     auto nodes_on_floor = [](const RunManager& r, uint8_t floor) {
         int n = 0;
@@ -3287,6 +3309,7 @@ int main() {
     test_seal_of_gold();
     test_pumpkin_candle();
     test_wongos_mystery_ticket();
+    test_ember_tea();
     test_paels_legion();
     test_golden_pearl();
     test_venerable_tea_set();
