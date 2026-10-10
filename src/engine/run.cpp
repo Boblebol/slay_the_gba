@@ -580,8 +580,26 @@ void RunManager::add_relic(std::string_view relic_id) {
     }
 }
 
+// Ancient version of a starter relic, given by Touch of Orobas (empty when `starter` has none).
+static std::string_view ancient_starter_relic(std::string_view starter) {
+    if (starter == "BURNING_BLOOD") return "BLACK_BLOOD";
+    if (starter == "RING_OF_THE_SNAKE") return "RING_OF_THE_DRAKE";
+    if (starter == "CRACKED_CORE") return "INFUSED_CORE";
+    if (starter == "DIVINE_RIGHT") return "DIVINE_DESTINY";
+    if (starter == "BOUND_PHYLACTERY") return "PHYLACTERY_UNBOUND";
+    return {};
+}
+
 void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
+    // Touch of Orobas: the starter relic is replaced by its Ancient version, when the run still has it.
+    if (relic_id == "TOUCH_OF_OROBAS" && has_relic("TOUCH_OF_OROBAS")) {
+        std::string_view starter = get_character(character).starting_relic_id;
+        std::string_view ancient = ancient_starter_relic(starter);
+        for (size_t i = 0; i < relics.size() && !ancient.empty(); ++i) {
+            if (relics[i] == starter) relics[i] = ancient;
+        }
+    }
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     if (relic_id == "LOOMING_FRUIT" && has_relic("LOOMING_FRUIT")) gain_max_hp(31);
     if (relic_id == "YUMMY_COOKIE" && has_relic("YUMMY_COOKIE")) upgrade_random_cards(4);
