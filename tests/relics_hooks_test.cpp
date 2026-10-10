@@ -1115,6 +1115,25 @@ void test_stone_humidifier() {
     std::cout << "[PASS] Stone Humidifier: +5 Max HP at each Rest Site rest" << std::endl;
 }
 
+void test_tiny_mailbox() {
+    // With the relic: each Rest procures 2 potions.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("TINY_MAILBOX");
+    size_t before = run.potions.size();
+    run.rest_at_campfire();
+    assert(run.potions.size() == before + 2);
+
+    // Without the relic: a Rest gives no potion.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_before = plain.potions.size();
+    plain.rest_at_campfire();
+    assert(!plain.has_relic("TINY_MAILBOX"));
+    assert(plain.potions.size() == plain_before);
+    std::cout << "[PASS] Tiny Mailbox: 2 potions at each Rest" << std::endl;
+}
+
 void test_pomander() {
     // Obtained: one card of the deck is picked to be upgraded.
     RunManager run;
@@ -1744,6 +1763,35 @@ void test_cauldron() {
     std::cout << "[PASS] Cauldron: 5 random potions brewed on pickup" << std::endl;
 }
 
+void test_bookmark() {
+    // With the relic: the Retained card in hand costs 1 less at the end of the turn, until it is played.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.add_power(PowerId::BOOKMARK, 1);
+    combat.hand.clear();
+    DeckCard kept(CardId::BASH);
+    kept.added_keywords |= KEYWORD_RETAIN;
+    combat.hand.push_back(kept);
+    combat.hand.push_back(DeckCard(CardId::STRIKE));
+    assert(combat.effective_cost(combat.hand[0]) == 2);
+    combat.end_player_turn();
+    int discounted = 0;
+    for (size_t i = 0; i < combat.hand.size(); ++i) {
+        if (combat.hand[i].bookmark_discount > 0) {
+            ++discounted;
+            assert(combat.hand[i].id == CardId::BASH && combat.effective_cost(combat.hand[i]) == 1);
+        }
+    }
+    assert(discounted == 1);
+
+    // Without the relic: the Retained card keeps its cost.
+    CombatEngine plain = make_combat(CharacterId::IRONCLAD);
+    plain.hand.clear();
+    plain.hand.push_back(kept);
+    plain.end_player_turn();
+    for (size_t i = 0; i < plain.hand.size(); ++i) assert(plain.hand[i].bookmark_discount == 0);
+    std::cout << "[PASS] Bookmark: a Retained card costs 1 less until played" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1779,6 +1827,7 @@ int main() {
     test_nutritious_oyster();
     test_lava_rock();
     test_stone_humidifier();
+    test_tiny_mailbox();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();
@@ -1804,5 +1853,6 @@ int main() {
     test_pen_nib();
     test_white_beast_statue();
     test_cauldron();
+    test_bookmark();
     return 0;
 }

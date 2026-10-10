@@ -847,6 +847,8 @@ void RunManager::on_rested() {
     count_hook(RunHook::RESTED);
     // Stone Humidifier: each Rest at a Rest Site raises Max HP by 5.
     if (has_relic("STONE_HUMIDIFIER")) gain_max_hp(5);
+    // Tiny Mailbox: each Rest procures 2 random potions (those that do not fit the full belt are lost).
+    if (has_relic("TINY_MAILBOX")) gain_random_potions(2);
 }
 
 void RunManager::on_shop_opened() {
@@ -1109,7 +1111,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "VAJRA", "STRAWBERRY", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK", "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
         "STONE_CRACKER", "PANTOGRAPH", "SLING_OF_COURAGE",
         // Start and end of turn
-        "CAPTAINS_WHEEL", "HORN_CLEAT", "CANDELABRA", "CHANDELIER", "SPARKLING_ROUGE", "HAPPY_FLOWER", "PENDULUM", "BREAD",
+        "CAPTAINS_WHEEL", "HORN_CLEAT", "CANDELABRA", "CHANDELIER", "SPARKLING_ROUGE", "HAPPY_FLOWER", "PENDULUM", "BREAD", "BOOKMARK",
         "MERCURY_HOURGLASS", "CLOAK_CLASP", "POCKETWATCH", "PARRYING_SHIELD", "STONE_CALENDAR", "ART_OF_WAR", "ORICHALCUM",
         "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP", "MEMBERSHIP_CARD", "CAULDRON",
         // Combat events
@@ -1124,7 +1126,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
@@ -1192,6 +1194,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("HAPPY_FLOWER")) combat.add_power(PowerId::HAPPY_FLOWER, 1);
     if (has_relic("PENDULUM")) combat.add_power(PowerId::PENDULUM, 1);
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
+    if (has_relic("BOOKMARK")) combat.add_power(PowerId::BOOKMARK, 1);
     if (has_relic("VERY_HOT_COCOA")) combat.add_power(PowerId::VERY_HOT_COCOA, 4);
     // Paël's Blood: one more card in every opening draw, the first one included.
     // Fiddle: two more cards in every opening draw, then no draw until the next turn.
