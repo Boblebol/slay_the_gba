@@ -251,6 +251,8 @@ FixedVector<CampfireAction, 5> RunManager::campfire_actions() const {
 void RunManager::rest_at_campfire() {
     if (can_rest()) {
         int16_t heal_amount = max_hp * 3 / 10;
+        // Regal Pillow: each Rest heals 15 more HP.
+        if (has_relic("REGAL_PILLOW")) heal_amount += 15;
         hp = std::min<int16_t>(max_hp, hp + heal_amount);
     }
     on_rested();
@@ -1161,7 +1163,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", // Shared, out of combat
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent

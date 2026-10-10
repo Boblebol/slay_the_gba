@@ -103,6 +103,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "RED_MASK", "Au début de chaque combat, appliquez Affaibli (1) à TOUS les ennemis." },
     { "RED_SKULL", "Si vous êtes à 50% de PV ou moins, vous avez 3 de Force supplémentaire." },
     { "REGALITE", "La première fois que vous créez une carte chaque tour, gagnez 4 d'Armure." },
+    { "REGAL_PILLOW", "Lorsque vous vous Reposez, récupérez 15 PV supplémentaires." },
     { "RIPPLE_BASIN", "Si vous n'avez pas joué d'Attaques pendant votre tour, gagnez 4 d'Armure." },
     { "RUNIC_CAPACITOR", "Démarrez chaque combat avec 3 Emplacements d'Orbe supplémentaires." },
     { "SAND_CASTLE", "Lorsque vous obtenez cette relique, Améliorez 6 cartes aléatoires." },
