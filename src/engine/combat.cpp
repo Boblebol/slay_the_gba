@@ -647,6 +647,10 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::PENDULUM:
             if (turn_start && power.turns % 3 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;
+        case PowerId::RINGING_TRIANGLE:
+            // Set after the turn start has cleared retain_hand: the hand is kept at the end of the first turn only.
+            if (turn_start && power.turns == 1) retain_hand = true;
+            break;
         case PowerId::VERY_HOT_COCOA:
             if (turn_start && power.turns == 1) player.energy = static_cast<int8_t>(player.energy + power.amount);
             break;
