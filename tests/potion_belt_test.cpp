@@ -51,9 +51,9 @@ void test_drinking_removes_the_potion_and_keeps_the_order() {
 }
 
 void test_a_potion_the_engine_does_not_resolve_stays_in_the_belt() {
-    RunManager run = fight_with({ "AMBERGRIS", "BLOCK_POTION" });
+    RunManager run = fight_with({ "SNECKO_OIL", "BLOCK_POTION" });
     assert(!run.use_potion(0));
-    assert(run.potions.size() == 2 && run.potions[0] == "AMBERGRIS");
+    assert(run.potions.size() == 2 && run.potions[0] == "SNECKO_OIL");
     assert(run.combat.player.block == 0);
     std::cout << "[PASS] An unresolved potion stays in the belt" << std::endl;
 }

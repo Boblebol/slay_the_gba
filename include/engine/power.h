@@ -240,12 +240,9 @@ enum class PowerId : uint8_t {
     DAUGHTER_OF_THE_WIND, // Attack played: `amount` Block (event relic)
     LOST_WISP,          // Power played: `amount` damage to every enemy (event relic)
     HAND_DRILL,         // an enemy's Block broken by the player's damage: `amount` Vulnerable on that enemy
-    UNDYING_SIGIL       // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
-    INFUSED_CORE,       // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
-    THROWING_AXE        // the first card played in the combat is played once more (removed once used)
-    INFUSED_CORE,       // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
-    IRON_CLUB           // every IRON_CLUB_CARDS cards played: draw `amount` (counter = cards counted)
-    INFUSED_CORE,       // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
+    UNDYING_SIGIL,      // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
+    THROWING_AXE,       // the first card played in the combat is played once more (removed once used)
+    IRON_CLUB,          // every IRON_CLUB_CARDS cards played: draw `amount` (counter = cards counted)
     CROSSBOW            // start of turn: add a random Attack to the hand, free this turn
 };
 
