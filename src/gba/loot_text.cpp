@@ -68,6 +68,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "HELICAL_DART", "Chaque fois que vous jouez un Surin, gagnez 1 de Dextérité jusqu'à la fin du tour." },
     { "HORN_CLEAT", "Au début de votre 2ème tour, gagnez 14 d'Armure." },
     { "PUMPKIN_CANDLE", "Gagnez 1 ● par tour pendant 5 combats." },
+    { "TEA_OF_DISCOURTESY", "Au début du prochain combat, mélangez 2 Hébétement dans votre Pioche." },
     { "ICE_CREAM", "Vous conservez votre Énergie entre chaque tour." },
     { "INTIMIDATING_HELMET", "Lorsque vous jouez une carte qui coûte 2 ● ou plus, gagnez 4 d'Armure." },
     { "IVORY_TILE", "Lorsque vous jouez une carte qui coûte 3 ● ou plus, gagnez 1 ●." },

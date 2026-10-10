@@ -657,6 +657,34 @@ void test_pumpkin_candle() {
     std::cout << "[PASS] Pumpkin Candle: +1 energy per turn for 5 combats" << std::endl;
 }
 
+void test_tea_of_discourtesy() {
+    // Event relic: at the start of the next combat, 2 Dazed in the draw pile, once.
+    auto count_dazed = [](const CombatEngine& combat) {
+        int count = 0;
+        for (const DeckCard& card : combat.hand) count += card.id == CardId::DAZED;
+        for (const DeckCard& card : combat.draw_pile) count += card.id == CardId::DAZED;
+        return count;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("TEA_OF_DISCOURTESY");
+    size_t deck_size = run.master_deck.size();
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(count_dazed(run.combat) == 2 && run.relic_counter("TEA_OF_DISCOURTESY") == 1);
+    assert(run.master_deck.size() == deck_size);
+
+    // Not again in the following combat.
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(count_dazed(run.combat) == 0);
+
+    // Without the relic: no Dazed.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(count_dazed(plain.combat) == 0 && plain.relic_counter("TEA_OF_DISCOURTESY") == 0);
+    std::cout << "[PASS] Tea of Discourtesy: 2 Dazed in the draw pile at the start of the next combat only" << std::endl;
+}
+
 void test_golden_compass() {
     auto nodes_on_floor = [](const RunManager& r, uint8_t floor) {
         int n = 0;
@@ -2775,5 +2803,6 @@ int main() {
     test_shovel();
     test_white_star();
     test_chemical_x();
+    test_tea_of_discourtesy();
     return 0;
 }
