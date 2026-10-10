@@ -1389,6 +1389,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (target.get_status(StatusType::WEAK) > 0) percent += power_amount(PowerId::TRACKING);
     if (resolving_card && counters.attacks_played == 0) percent += power_amount(PowerId::LETHALITY);
     if (attack_double_now) percent *= 2;
+    if (resolving_card && triple_next_attack) percent *= 3;
     int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
@@ -1667,6 +1668,7 @@ void CombatEngine::reset_combat_state() {
     unmovable_used = false;
     attack_double_next = false;
     attack_double_now = false;
+    triple_next_attack = false;
     no_card_block_turns = 0;
     rebound_pending = false;
     fatal_kills = 0;
@@ -1752,6 +1754,7 @@ void CombatEngine::start_player_turn() {
     player.halve_vulnerable_damage = false;
     for (Enemy& foe : enemies) {
         if (foe.debilitate_turns > 0) --foe.debilitate_turns;
+        if (foe.softened_turns > 0) --foe.softened_turns;
     }
     if (no_card_block_turns > 0) --no_card_block_turns;
     trigger_turn_passives(true);
@@ -2098,7 +2101,10 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         resolve_effect(card, target_idx, x_value, after_play);
         resolving_card = false;
         // Vigor goes to the first Attack played, all its hits included.
-        if (played_type == CardType::ATTACK) player.clear_status(StatusType::VIGOR);
+        if (played_type == CardType::ATTACK) {
+            player.clear_status(StatusType::VIGOR);
+            triple_next_attack = false;
+        }
 
         // Keep primary enemy in sync
         if (!enemies.empty()) {
@@ -6009,6 +6015,12 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         }
         damage_enemy(enemies[target_index], 20);
         set_log("Fire Potion!");
+    } else if (potion_id == "BEETLE_JUICE") {
+        aimed_enemy().softened_turns = 4;
+        set_log("Beetle Juice!");
+    } else if (potion_id == "GIGANTIFICATION_POTION") {
+        triple_next_attack = true;
+        set_log("Gigantification Potion!");
     } else if (potion_id == "BLOCK_POTION") {
         add_block(12); // Potion Block is not modified by Dexterity
         set_log("Block Potion!");

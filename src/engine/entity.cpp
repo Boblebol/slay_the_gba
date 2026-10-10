@@ -547,6 +547,7 @@ int16_t Enemy::intent_damage(const CombatEntity& target) const {
         base = static_cast<int16_t>(std::max(0, base + get_status(current_intent.damage_status)));
     }
     int16_t damage = attack_damage(base, *this, target);
+    if (softened_turns > 0) damage = static_cast<int16_t>(damage * 70 / 100);
     if (target.halve_vulnerable_damage && get_status(StatusType::VULNERABLE) > 0) damage = static_cast<int16_t>(damage / 2);
     return damage;
 }

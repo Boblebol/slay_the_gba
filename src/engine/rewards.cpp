@@ -19,14 +19,14 @@ constexpr uint32_t mix(uint32_t value) {
 }
 
 constexpr ActivePotion ACTIVE_POTIONS[] = {
-    { "BLESSING_OF_THE_FORGE" }, { "BLOCK_POTION" }, { "BLOOD_POTION" },
+    { "BEETLE_JUICE" }, { "BLESSING_OF_THE_FORGE" }, { "BLOCK_POTION" }, { "BLOOD_POTION" },
     { "BONE_BREW", false, CharacterId::NECROBINDER },
     { "BOTTLED_POTENTIAL" }, { "CLARITY" }, { "CUNNING_POTION" }, { "CURE_ALL" }, { "DEXTERITY_POTION" },
     { "DISTILLED_CHAOS" }, { "DROPLET_OF_PRECOGNITION" }, { "DUPLICATOR" }, { "ENERGY_POTION" },
     { "ESSENCE_OF_DARKNESS", false, CharacterId::DEFECT },
     { "EXPLOSIVE_AMPOULE" }, { "FIRE_POTION" }, { "FLEX_POTION" },
     { "FOCUS_POTION", false, CharacterId::DEFECT },
-    { "FORTIFIER" }, { "FYSH_OIL" }, { "GAMBLERS_BREW" }, { "GHOST_IN_A_JAR" }, { "GLOWWATER_POTION" }, { "HEART_OF_IRON" },
+    { "FORTIFIER" }, { "FYSH_OIL" }, { "GAMBLERS_BREW" }, { "GHOST_IN_A_JAR" }, { "GIGANTIFICATION_POTION" }, { "GLOWWATER_POTION" }, { "HEART_OF_IRON" },
     { "KINGS_COURAGE", false, CharacterId::REGENT },
     { "LIQUID_BRONZE" }, { "LUCKY_TONIC" }, { "MAZALETHS_GIFT" }, { "POISON_POTION" }, { "POTION_OF_BINDING" },
     { "POTION_OF_CAPACITY", false, CharacterId::DEFECT },

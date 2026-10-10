@@ -223,6 +223,7 @@ public:
     bool double_block_turn = false;   // the Block gained this turn is doubled (Shadowmeld)
     bool unmovable_used = false;      // Unmovable already doubled a Block this turn
     bool attack_double_next = false;  // Attacks deal double damage on the next turn (Shadow Step)
+    bool triple_next_attack = false;  // the next Attack played deals triple damage (Gigantification Potion)
     bool attack_double_now = false;   // Attacks deal double damage this turn
     bool rebound_pending = false;    // the next card played this turn goes on top of the draw pile (Rebound)
     uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
