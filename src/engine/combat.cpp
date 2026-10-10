@@ -2104,6 +2104,20 @@ bool CombatEngine::choice_allows(size_t index) const {
     return index < choice_pool(choice) && can_be_picked(pile_card(choice.source, index), choice);
 }
 
+int CombatEngine::next_pickable_choice(std::span<const uint8_t> order, int from, int step, bool wrap) const {
+    const int count = order.empty() ? choice_pool_size() : static_cast<int>(order.size());
+    if (count <= 0 || (step != 1 && step != -1)) return -1;
+    for (int tried = 0, position = from; tried < count; ++tried, position += step) {
+        if (position < 0 || position >= count) {
+            if (!wrap) return -1;
+            position = (position + count) % count;
+        }
+        const size_t index = order.empty() ? static_cast<size_t>(position) : order[static_cast<size_t>(position)];
+        if (choice_allows(index)) return position;
+    }
+    return -1;
+}
+
 int CombatEngine::choice_pool_size() const {
     return choice_pending() ? static_cast<int>(choice_pool(pending_choices[0])) : 0;
 }
