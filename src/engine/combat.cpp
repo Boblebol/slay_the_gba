@@ -644,6 +644,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::HAPPY_FLOWER:
             if (turn_start && power.turns % 3 == 0) player.energy = static_cast<int8_t>(player.energy + power.amount);
             break;
+        case PowerId::FAKE_HAPPY_FLOWER:
+            if (turn_start && power.turns % 5 == 0) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
         case PowerId::PENDULUM:
             if (turn_start && power.turns % 3 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;

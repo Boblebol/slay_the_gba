@@ -105,6 +105,7 @@ enum class PowerId : uint8_t {
     HAPPY_FLOWER,      // every 3 turns: `amount` energy
     PENDULUM,          // every 3 turns: draw `amount` more
     RING_OF_THE_DRAKE, // start of turns 1 to RING_OF_THE_DRAKE_TURNS: draw `amount` more
+    FAKE_HAPPY_FLOWER, // every 5 turns: `amount` energy
     VERY_HOT_COCOA,    // turn 1: `amount` more energy
     BOOKMARK,          // end of turn: a random Retained card in hand costs 1 less until played
     BREAD,             // turn 1: lose BREAD_ENERGY_LOST energy; later turns: `amount` energy

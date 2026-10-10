@@ -1382,6 +1382,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("CHANDELIER")) combat.add_power(PowerId::CHANDELIER, 3);
     if (has_relic("SPARKLING_ROUGE")) combat.add_power(PowerId::SPARKLING_ROUGE, 1);
     if (has_relic("HAPPY_FLOWER")) combat.add_power(PowerId::HAPPY_FLOWER, 1);
+    if (has_relic("FAKE_HAPPY_FLOWER")) combat.add_power(PowerId::FAKE_HAPPY_FLOWER, 1);
     if (has_relic("PENDULUM")) combat.add_power(PowerId::PENDULUM, 1);
     // Ring of the Drake (event): 2 more cards drawn at the start of each of the first 3 turns.
     if (has_relic("RING_OF_THE_DRAKE")) combat.add_power(PowerId::RING_OF_THE_DRAKE, 2);

@@ -65,6 +65,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "GOLD_PLATED_CABLES", "Votre orbe le plus à droite déclenche sa capacité passive une fois de plus." },
     { "GORGET", "Au début de chaque combat, gagnez 4 de Blindage." },
     { "GREMLIN_HORN", "Chaque fois qu'un ennemi est tué, gagnez 1 ● et piochez 1 carte." },
+    { "FAKE_HAPPY_FLOWER", "Tous les 5 tours, gagnez 1 ●." },
     { "HAPPY_FLOWER", "Tous les 3 tours, gagnez 1 ●." },
     { "HELICAL_DART", "Chaque fois que vous jouez un Surin, gagnez 1 de Dextérité jusqu'à la fin du tour." },
     { "HORN_CLEAT", "Au début de votre 2ème tour, gagnez 14 d'Armure." },
