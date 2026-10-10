@@ -1235,6 +1235,35 @@ void test_stone_humidifier() {
     std::cout << "[PASS] Stone Humidifier: +5 Max HP at each Rest Site rest" << std::endl;
 }
 
+void test_dream_catcher() {
+    // With the relic: each Rest offers one set of cards; taking one adds it to the deck, skipping adds nothing.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("DREAM_CATCHER");
+    run.hp = 40;
+    size_t deck = run.master_deck.size();
+    run.rest_at_campfire();
+    assert(run.phase == RunPhase::REWARD_SCREEN && run.current_card_rewards.size() == 3);
+    run.pick_card_reward(0);
+    assert(run.master_deck.size() == deck + 1);
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+    run.rest_at_campfire();
+    assert(run.phase == RunPhase::REWARD_SCREEN);
+    run.skip_card_rewards();
+    assert(run.master_deck.size() == deck + 1);
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic: a Rest offers no card.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 40;
+    size_t plain_deck = plain.master_deck.size();
+    plain.rest_at_campfire();
+    assert(!plain.has_relic("DREAM_CATCHER"));
+    assert(plain.phase == RunPhase::MAP_NAVIGATION && plain.master_deck.size() == plain_deck);
+    std::cout << "[PASS] Dream Catcher: a card reward after each Rest" << std::endl;
+}
+
 void test_meal_ticket() {
     // With the relic: entering a shop heals 15 HP, capped at Max HP.
     RunManager run;
@@ -2971,6 +3000,7 @@ int main() {
     test_lava_rock();
     test_stone_humidifier();
     test_tiny_mailbox();
+    test_dream_catcher();
     test_regal_pillow();
     test_eternal_feather();
     test_planisphere();

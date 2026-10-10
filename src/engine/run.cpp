@@ -261,6 +261,13 @@ void RunManager::rest_at_campfire() {
     }
     on_rested();
     phase = RunPhase::MAP_NAVIGATION;
+    // Dream Catcher: after a Rest, one set of cards is offered for the deck (the player may skip it).
+    if (has_relic("DREAM_CATCHER")) {
+        card_rewards_upgraded = false; // the Lava Lamp upgrade belongs to the fight's rewards only
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng);
+        phase = RunPhase::REWARD_SCREEN;
+    }
 }
 
 bool RunManager::can_rest() const {
