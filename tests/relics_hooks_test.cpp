@@ -2276,6 +2276,25 @@ void test_book_of_five_rings() {
     std::cout << "[PASS] Book of Five Rings: heals 20 HP on every 5th card added to the Deck" << std::endl;
 }
 
+void test_ring_of_the_drake() {
+    // With the relic: 2 more cards drawn at the start of each of the first 3 turns, then the usual 5.
+    RunManager ring = make_relic_run(CharacterId::IRONCLAD, { "RING_OF_THE_DRAKE" });
+    assert(ring.combat.hand.size() == 7);
+    end_turn_idle(ring.combat);
+    assert(ring.combat.hand.size() == 7);
+    end_turn_idle(ring.combat);
+    assert(ring.combat.hand.size() == 7);
+    end_turn_idle(ring.combat);
+    assert(ring.combat.hand.size() == 5);
+
+    // Without the relic: the usual 5 cards on every turn.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.hand.size() == 5);
+    end_turn_idle(plain.combat);
+    assert(plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Ring of the Drake: 2 more cards drawn on each of the first 3 turns" << std::endl;
+}
+
 void test_venerable_tea_set() {
     // With the relic: each Rest Site entered gives 2 more energy to the next combat, once.
     RunManager run;
@@ -2425,5 +2444,6 @@ int main() {
     test_amethyst_aubergine();
     test_lucky_fysh();
     test_book_of_five_rings();
+    test_ring_of_the_drake();
     return 0;
 }
