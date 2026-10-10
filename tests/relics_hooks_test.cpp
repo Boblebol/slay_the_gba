@@ -2546,6 +2546,33 @@ void test_white_star() {
     std::cout << "[PASS] White Star: an Elite offers one more set of Rare cards" << std::endl;
 }
 
+void test_history_course() {
+    // With the relic: the next turn starts by playing a copy of the last Attack played.
+    CombatEngine history = make_relic_combat(CharacterId::IRONCLAD, PowerId::HISTORY_COURSE, 0);
+    play(history, CardId::STRIKE, 0);
+    int hp_after_play = history.enemies[0].hp;
+    end_turn_idle(history);
+    assert(history.state == CombatState::PLAYER_TURN);
+    assert(history.enemies[0].hp == hp_after_play - 6);
+
+    // A Skill played after the Attack does not replace it.
+    CombatEngine skill = make_relic_combat(CharacterId::IRONCLAD, PowerId::HISTORY_COURSE, 0);
+    play(skill, CardId::STRIKE, 0);
+    play(skill, CardId::DEFEND);
+    int hp_before = skill.enemies[0].hp;
+    end_turn_idle(skill);
+    assert(skill.enemies[0].hp == hp_before - 6);
+
+    // Without the relic, nothing is played.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    play(plain, CardId::STRIKE, 0);
+    int plain_hp = plain.enemies[0].hp;
+    end_turn_idle(plain);
+    assert(plain.enemies[0].hp == plain_hp);
+
+    std::cout << "[PASS] History Course: a copy of the last Attack played at the start of the turn" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2640,5 +2667,6 @@ int main() {
     test_girya();
     test_shovel();
     test_white_star();
+    test_history_course();
     return 0;
 }

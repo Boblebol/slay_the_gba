@@ -385,6 +385,15 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::VOID_FORM:
             if (turn_start) power.counter = 0;
             break;
+        case PowerId::HISTORY_COURSE:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK) {
+                power.amount = static_cast<int16_t>(static_cast<int>(info.card.id) * 2 + (info.card.upgraded ? 1 : 0) + 1);
+            } else if (turn_start && my_turn && power.amount > 0) {
+                DeckCard copy(static_cast<CardId>((power.amount - 1) / 2));
+                copy.upgraded = (power.amount - 1) % 2 == 1;
+                autoplay(copy, -1, AfterPlay::NOWHERE);
+            }
+            break;
         case PowerId::HELLRAISER:
             // The card just drawn is the last one of the hand.
             if (event == CombatEvent::CARD_DRAWN && is_strike(info.card.id) && !hand.empty() && hand.back().id == info.card.id) {
