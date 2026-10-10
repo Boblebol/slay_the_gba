@@ -1853,6 +1853,30 @@ void test_white_beast_statue() {
     std::cout << "[PASS] White Beast Statue: a potion in every combat reward, not always without it" << std::endl;
 }
 
+void test_bowler_hat() {
+    // With the relic: the fight's gold reward is 25 % bigger, and that gold reaches the purse once the rewards are taken.
+    // Without it: the plain reward.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("BOWLER_HAT");
+    enter_room_of_type(with, RoomType::MONSTER);
+    with.generate_rewards();
+
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.generate_rewards();
+
+    assert(plain.gold_reward > 0 && with.gold_reward == plain.gold_reward);
+    const int16_t with_before = with.gold, plain_before = plain.gold;
+    const int16_t reward = plain.gold_reward;
+    with.skip_card_rewards(); // no card taken: the rewards are over, the gold is paid
+    plain.skip_card_rewards();
+    assert(plain.gold == plain_before + reward);
+    assert(with.gold == with_before + reward + reward / 4);
+    std::cout << "[PASS] Bowler Hat: 25 % more gold from fight rewards" << std::endl;
+}
+
 void test_cauldron() {
     // Obtained: 5 random potions are brewed into the belt.
     RunManager run;
@@ -2001,6 +2025,7 @@ int main() {
     test_strike_dummy();
     test_white_beast_statue();
     test_cauldron();
+    test_bowler_hat();
     test_bookmark();
     test_tungsten_rod();
     return 0;
