@@ -111,12 +111,40 @@ void test_abrasive() {
     std::cout << "[PASS] Silent: Abrasive" << std::endl;
 }
 
+void test_master_planner() {
+    // Power, rare: 2 energy, 1 once upgraded. While in play, every Skill played gains Sly (Attacks do not).
+    assert(CardDef::get(CardId::MASTER_PLANNER).type == CardType::POWER);
+    assert(CardDef::get_cost(CardId::MASTER_PLANNER, false) == 2 && CardDef::get_cost(CardId::MASTER_PLANNER, true) == 1);
+    for (bool upgraded : { false, true }) {
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::MASTER_PLANNER, upgraded));
+        combat.hand.push_back(DeckCard(CardId::DEFEND, false));
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = 5;
+        assert(combat.play_card(0, -1));
+        assert(combat.player.energy == (upgraded ? 4 : 3));
+        assert(combat.has_power(PowerId::MASTER_PLANNER));
+        assert(combat.play_card(0, -1)); // Defend, a Skill: it gains Sly
+        assert(combat.play_card(0, 0));  // Strike, an Attack: it does not
+        bool defend_sly = false, strike_sly = false;
+        for (size_t i = 0; i < combat.discard_pile.size(); ++i) {
+            if (combat.discard_pile[i].id == CardId::DEFEND) defend_sly = CardDef::is_sly(combat.discard_pile[i]);
+            if (combat.discard_pile[i].id == CardId::STRIKE) strike_sly = CardDef::is_sly(combat.discard_pile[i]);
+        }
+        assert(defend_sly && !strike_sly);
+    }
+    assert_in_pool(CharacterId::SILENT, { CardId::MASTER_PLANNER });
+    std::cout << "[PASS] Silent: Master Planner" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Silent Cards ===" << std::endl;
     test_expose();
     test_abrasive();
+    test_master_planner();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
