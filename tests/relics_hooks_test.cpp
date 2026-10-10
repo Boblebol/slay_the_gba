@@ -1991,6 +1991,14 @@ void test_calling_bell() {
     std::cout << "[PASS] Calling Bell: Curse of the Bell and 3 random relics on pickup" << std::endl;
 }
 
+void test_royal_poison() {
+    // With the relic: 4 HP lost at the start of the fight. Without it: the same run keeps its HP.
+    RunManager poison = make_relic_run(CharacterId::IRONCLAD, { "ROYAL_POISON" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(poison.combat.player.hp == plain.combat.player.hp - 4);
+    std::cout << "[PASS] Royal Poison: 4 HP lost at the start of each combat" << std::endl;
+}
+
 void test_ghost_seed() {
     // With the relic: the Strikes and Defends of the fight are Ethereal, the other cards are not.
     RunManager with = make_relic_run(CharacterId::IRONCLAD, { "GHOST_SEED" });
@@ -3268,6 +3276,7 @@ int main() {
     test_beating_remnant();
     test_vambrace();
     test_ghost_seed();
+    test_royal_poison();
     test_reptile_trinket();
     test_ringing_triangle();
     test_toolbox();

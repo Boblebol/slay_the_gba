@@ -1679,6 +1679,8 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("FAKE_BLOOD_VIAL")) {
         combat.player.heal(1);
     }
+    // Poison royal (event relic): lose 4 HP at the start of each combat.
+    if (has_relic("ROYAL_POISON")) combat.lose_hp(4);
     // Sling of Courage and Pantograph only act in Elite and Boss rooms.
     RoomType room = current_node_index >= 0 ? map.nodes[current_node_index].type : RoomType::MONSTER;
     if (has_relic("SLING_OF_COURAGE") && room == RoomType::ELITE) {
