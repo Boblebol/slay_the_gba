@@ -2340,8 +2340,33 @@ void test_lava_lamp() {
     std::cout << "[PASS] Lava Lamp: card rewards upgraded after a fight without HP lost" << std::endl;
 }
 
+void test_prayer_wheel() {
+    // A normal fight gives a second set of cards once the first one is taken or skipped.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "PRAYER_WHEEL" });
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN);
+    run.pick_card_reward(0);
+    assert(run.phase == RunPhase::REWARD_SCREEN && run.current_card_rewards.size() > 0);
+    run.skip_card_rewards();
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, a normal fight gives one set only.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    plain.proceed_after_combat();
+    plain.pick_card_reward(0);
+    assert(plain.phase == RunPhase::MAP_NAVIGATION);
+
+    // An elite fight is not a normal fight: one set only.
+    RunManager elite = make_relic_run(CharacterId::IRONCLAD, { "PRAYER_WHEEL" });
+    enter_room_of_type(elite, RoomType::ELITE);
+    elite.proceed_after_combat();
+    elite.pick_card_reward(0);
+    assert(elite.phase == RunPhase::MAP_NAVIGATION);
+    std::cout << "[PASS] Prayer Wheel: a normal fight gives an extra card reward" << std::endl;
+}
+
 int main() {
-    std::cout << "=== Relics on Combat Hooks ===" << std::endl;
+  std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
     test_skill_and_power_relics();
     test_exhaust_and_creation_relics();
@@ -2425,5 +2450,6 @@ int main() {
     test_amethyst_aubergine();
     test_lucky_fysh();
     test_book_of_five_rings();
+    test_prayer_wheel();
     return 0;
 }
