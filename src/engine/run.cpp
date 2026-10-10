@@ -358,6 +358,7 @@ bool RunManager::use_potion(int index, int target_index) {
     if (index < 0 || static_cast<size_t>(index) >= potions.size()) return false;
     if (!combat.use_potion(potions[index], target_index)) return false;
     potions.erase(index);
+    refresh_belt_buckle();
     return true;
 }
 
@@ -564,9 +565,10 @@ void RunManager::generate_rewards() {
     // A boss gives 95 to 105 gold.
     gold_reward = boss ? static_cast<int16_t>(95 + rng.below(11)) : 15 + static_cast<int16_t>(next_random() % 15);
 
-    // A potion the hero can use, in 40 % of the fights.
+    // A potion the hero can use, in 40 % of the fights; White Beast Statue makes it certain.
     potion_reward = {};
-    if (rng.below(100) < POTION_REWARD_CHANCE) {
+    bool potion_roll = rng.below(100) < POTION_REWARD_CHANCE;
+    if (potion_roll || has_relic("WHITE_BEAST_STATUE")) {
         potion_reward = draw_potion(rng, character);
     }
 
@@ -1111,17 +1113,18 @@ std::span<const std::string_view> RunManager::active_relics() {
         "MERCURY_HOURGLASS", "CLOAK_CLASP", "POCKETWATCH", "PARRYING_SHIELD", "STONE_CALENDAR", "ART_OF_WAR", "ORICHALCUM",
         "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP", "MEMBERSHIP_CARD", "CAULDRON",
         // Combat events
-        "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
+        "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "REPTILE_TRINKET", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
         "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA", "GAMBLING_CHIP", "HELICAL_DART", "NINJA_SCROLL",
         // Defect and Necrobinder
         "DATA_DISK", "SYMBIOTIC_VIRUS", "GOLD_PLATED_CABLES", "METRONOME", "RUNIC_CAPACITOR", "POWER_CELL", "EMOTION_CHIP",
         "BOOK_REPAIR_KNIFE", "BONE_FLUTE",
         // On the combat hooks (#299)
         "BAG_OF_PREPARATION", "BURNING_STICKS", "INTIMIDATING_HELMET", "JOSS_PAPER", "KUNAI", "KUSARIGAMA", "LETTER_OPENER",
-        "MEAT_ON_THE_BONE", "MUMMIFIED_HAND", "NUNCHAKU", "ORNAMENTAL_FAN", "RAINBOW_RING", "RIPPLE_BASIN", "SHURIKEN",
+        "MEAT_ON_THE_BONE", "MUMMIFIED_HAND", "NUNCHAKU", "ORNAMENTAL_FAN", "PEN_NIB", "RAINBOW_RING", "RIPPLE_BASIN", "SHURIKEN",
         "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", // Shared, out of combat
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
@@ -1229,6 +1232,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("THE_ABACUS")) combat.add_power(PowerId::THE_ABACUS, 6);
     if (has_relic("PERMAFROST")) combat.add_power(PowerId::PERMAFROST, 7);
     if (has_relic("GAME_PIECE")) combat.add_power(PowerId::GAME_PIECE, 1);
+    if (has_relic("REPTILE_TRINKET")) combat.add_power(PowerId::REPTILE_TRINKET, 3);
     if (has_relic("CENTENNIAL_PUZZLE")) combat.add_power(PowerId::CENTENNIAL_PUZZLE, 3);
     if (has_relic("LIZARD_TAIL")) combat.add_power(PowerId::LIZARD_TAIL, 50);
     if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);
@@ -1257,6 +1261,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("KUSARIGAMA")) combat.add_power(PowerId::KUSARIGAMA, 6);
     if (has_relic("MUMMIFIED_HAND")) combat.add_power(PowerId::MUMMIFIED_HAND);
     if (has_relic("NUNCHAKU")) combat.add_power(PowerId::NUNCHAKU, 1);
+    if (has_relic("PEN_NIB")) combat.add_power(PowerId::PEN_NIB);
     if (has_relic("RAINBOW_RING")) combat.add_power(PowerId::RAINBOW_RING, 1);
     if (has_relic("RIPPLE_BASIN")) combat.add_power(PowerId::RIPPLE_BASIN, 4);
     if (has_relic("BURNING_STICKS")) combat.add_power(PowerId::BURNING_STICKS);
@@ -1445,6 +1450,17 @@ void RunManager::apply_combat_start_relics() {
     if (!combat.has_alive_enemies()) {
         combat.state = CombatState::VICTORY;
     }
+    belt_buckle_active = false;
+    refresh_belt_buckle();
+}
+
+void RunManager::refresh_belt_buckle() {
+    // Belt Buckle: 2 additional Dexterity while the potion belt is empty.
+    if (!has_relic("BELT_BUCKLE")) return;
+    bool should_be_active = potions.empty();
+    if (should_be_active == belt_buckle_active) return;
+    combat.player.add_status(StatusType::DEXTERITY, should_be_active ? 2 : -2);
+    belt_buckle_active = should_be_active;
 }
 
 void RunManager::proceed_after_combat() {

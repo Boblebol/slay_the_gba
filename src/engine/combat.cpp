@@ -910,6 +910,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 player.add_status(StatusType::STRENGTH, power.amount);
             }
             break;
+        case PowerId::PEN_NIB:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK && ++power.counter == PEN_NIB_ATTACKS) {
+                power.counter = 0;
+                pen_nib_now = true;
+            }
+            break;
         case PowerId::ORNAMENTAL_FAN:
             if (completes(CardType::ATTACK, counters.attacks_played, ORNAMENTAL_FAN_ATTACKS)) add_block(power.amount);
             break;
@@ -995,7 +1001,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         default:
             // Rules read where they apply: BARRICADE, KEEP_HAND, ACCELERANT, THUNDER, ICE_CREAM, STURDY_CLAMP,
             // RAZOR_TOOTH, LIZARD_TAIL, UNCEASING_TOP, GOLD_PLATED_CABLES, METRONOME, BOOK_REPAIR_KNIFE,
-            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM, DEMISE, DUPLICATION.
+            // FLAME_BARRIER, REFLECT, CALCIFY, SIC_EM, DEMISE, DUPLICATION, STABLE_SERUM.
             break;
     }
 }
@@ -1389,6 +1395,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (target.get_status(StatusType::WEAK) > 0) percent += power_amount(PowerId::TRACKING);
     if (resolving_card && counters.attacks_played == 0) percent += power_amount(PowerId::LETHALITY);
     if (attack_double_now) percent *= 2;
+    if (pen_nib_now && resolving_card) percent *= 2;
     int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
@@ -2097,6 +2104,7 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         resolving_card = true;
         resolve_effect(card, target_idx, x_value, after_play);
         resolving_card = false;
+        pen_nib_now = false;
         // Vigor goes to the first Attack played, all its hits included.
         if (played_type == CardType::ATTACK) player.clear_status(StatusType::VIGOR);
 
@@ -5819,7 +5827,7 @@ void CombatEngine::end_player_turn() {
         if (i < hand.size() && CardDef::has_keyword(hand[i], KEYWORD_ETHEREAL)) exhaust_from_hand(i);
     }
     // The rest is discarded, except the cards with Retain.
-    const bool keep_hand = retain_hand || has_power(PowerId::KEEP_HAND);
+    const bool keep_hand = retain_hand || has_power(PowerId::KEEP_HAND) || has_power(PowerId::STABLE_SERUM);
     for (size_t i = hand.size(); i-- > 0;) {
         // Phantom Blades keeps the Shivs.
         const bool kept_shiv = hand[i].id == CardId::SHIV && has_power(PowerId::PHANTOM_BLADES);
@@ -5830,6 +5838,11 @@ void CombatEngine::end_player_turn() {
         }
         discard_pile.push_back(hand[i]);
         hand.erase(i);
+    }
+    // Stable Serum: one of its turns is spent.
+    for (size_t i = powers.size(); i-- > 0;) {
+        if (powers[i].id != PowerId::STABLE_SERUM) continue;
+        if (--powers[i].amount <= 0) powers.erase(i);
     }
 
     // Effects that only lasted this turn are over.
@@ -6165,9 +6178,15 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "DUPLICATOR") {
         add_power(PowerId::DUPLICATION, 1, true);
         set_log("Duplicator!");
+    } else if (potion_id == "ASHWATER") {
+        ask_choice(CardChoice{ ChoiceKind::EXHAUST, 10, true });
+        set_log("Ashwater!");
     } else if (potion_id == "DROPLET_OF_PRECOGNITION") {
         ask_pile_choice(Pile::DRAW, ChoiceKind::TO_HAND, 1);
         set_log("Droplet of Precognition!");
+    } else if (potion_id == "STABLE_SERUM") {
+        add_power(PowerId::STABLE_SERUM, 2);
+        set_log("Stable Serum!");
     } else if (potion_id == "OROBIC_ACID") {
         for (CardType type : { CardType::ATTACK, CardType::SKILL, CardType::POWER }) {
             const CardId card = random_card(CardFilter(type));
@@ -6180,6 +6199,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else {
         return false;
     }
+
+    // Reptile Trinket: a potion drunk gives Strength until the end of the turn.
+    if (has_power(PowerId::REPTILE_TRINKET)) gain_temporary(StatusType::STRENGTH, power_amount(PowerId::REPTILE_TRINKET));
 
     // Keep primary enemy in sync
     if (!enemies.empty()) {

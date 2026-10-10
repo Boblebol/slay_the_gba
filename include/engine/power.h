@@ -122,6 +122,7 @@ enum class PowerId : uint8_t {
     THE_ABACUS,        // draw pile shuffled: `amount` Block
     PERMAFROST,        // first Power played: `amount` Block
     GAME_PIECE,        // Power played: draw `amount`
+    REPTILE_TRINKET,   // potion used: `amount` Strength until the end of the turn
     CENTENNIAL_PUZZLE, // first HP loss: draw `amount`
     LIZARD_TAIL,       // HP reduced to 0: back to `amount` % of Max HP, once (counter = 1 when spent)
     UNCEASING_TOP,     // hand empty during the turn: draw 1
@@ -148,6 +149,7 @@ enum class PowerId : uint8_t {
     BURNING_STICKS,    // first Skill exhausted: a copy of it comes to the hand
     SHURIKEN,          // every SHURIKEN_ATTACKS Attacks played in a turn: `amount` Strength
     ORNAMENTAL_FAN,    // every ORNAMENTAL_FAN_ATTACKS Attacks played in a turn: `amount` Block
+    PEN_NIB,           // every PEN_NIB_ATTACKS Attacks played: that Attack deals double damage (counter = Attacks counted)
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy
     RED_SKULL,         // HP at RED_SKULL_HP_PERCENT % of Max HP or less: `amount` more Strength (counter = Strength given now)
@@ -211,7 +213,9 @@ enum class PowerId : uint8_t {
     CRUELTY,            // Vulnerable enemies take `amount` % more damage from attacks (read by hit)
     UNMOVABLE,          // the first Block a card gives each turn is doubled (read by gain_block)
     TRACKING,           // Weak enemies take `amount` % more damage from attacks (read by hit)
-    LETHALITY           // the first Attack each turn deals `amount` % more damage (read by hit)
+    LETHALITY,          // the first Attack each turn deals `amount` % more damage (read by hit)
+    // Potions (appended)
+    STABLE_SERUM        // the hand is kept at the end of the next `amount` turns (read by end_player_turn)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -237,6 +241,7 @@ constexpr uint8_t TUNING_FORK_SKILLS = 10;
 constexpr uint8_t KUNAI_ATTACKS = 3;
 constexpr uint8_t KUSARIGAMA_ATTACKS = 3;
 constexpr uint8_t NUNCHAKU_ATTACKS = 10;
+constexpr uint8_t PEN_NIB_ATTACKS = 10;
 constexpr uint8_t SHURIKEN_ATTACKS = 3;
 constexpr uint8_t ORNAMENTAL_FAN_ATTACKS = 3;
 constexpr uint8_t RED_SKULL_HP_PERCENT = 50;

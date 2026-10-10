@@ -1635,6 +1635,94 @@ void test_calling_bell() {
     std::cout << "[PASS] Calling Bell: Curse of the Bell and 3 random relics on pickup" << std::endl;
 }
 
+void test_belt_buckle() {
+    // With the relic and no potion: 2 additional Dexterity, lost as soon as a potion is held.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("BELT_BUCKLE");
+    with.potions.clear();
+    enter_room_of_type(with, RoomType::MONSTER);
+    assert(with.combat.player.get_status(StatusType::DEXTERITY) == 2);
+
+    // Holding a potion at the start: no Dexterity; drinking it gives the Dexterity.
+    RunManager held;
+    held.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    held.add_relic("BELT_BUCKLE");
+    held.potions.clear();
+    held.potions.push_back("FIRE_POTION");
+    enter_room_of_type(held, RoomType::MONSTER);
+    assert(held.combat.player.get_status(StatusType::DEXTERITY) == 0);
+    assert(held.use_potion(0, 0));
+    assert(held.combat.player.get_status(StatusType::DEXTERITY) == 2);
+
+    // Without the relic: nothing.
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    without.potions.clear();
+    enter_room_of_type(without, RoomType::MONSTER);
+    assert(without.combat.player.get_status(StatusType::DEXTERITY) == 0);
+    std::cout << "[PASS] Belt Buckle: 2 Dexterity while the potion belt is empty" << std::endl;
+}
+
+void test_reptile_trinket() {
+    // With the relic: a potion drunk gives 3 Strength until the end of the turn.
+    CombatEngine trinket = make_relic_combat(CharacterId::IRONCLAD, PowerId::REPTILE_TRINKET, 3);
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 0);
+    assert(trinket.use_potion("BLOCK_POTION"));
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 3);
+    assert(trinket.use_potion("BLOCK_POTION"));
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 6);
+    end_turn_attacked(trinket, 11);
+    assert(trinket.player.get_status(StatusType::STRENGTH) == 0);
+
+    // Without the relic: no Strength.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    assert(plain.use_potion("BLOCK_POTION"));
+    assert(plain.player.get_status(StatusType::STRENGTH) == 0);
+
+    std::cout << "[PASS] Reptile Trinket: 3 Strength this turn per potion used" << std::endl;
+}
+
+static void test_pen_nib() {
+    // With the relic, the 10th Attack deals double damage and the count starts over.
+    CombatEngine nib = make_relic_combat(CharacterId::IRONCLAD, PowerId::PEN_NIB, 1);
+    nib.enemies[0].hp = 200;
+    for (int i = 0; i < 9; ++i) play(nib, CardId::STRIKE);
+    assert(nib.enemies[0].hp == 200 - 9 * 6);
+    play(nib, CardId::STRIKE);
+    assert(nib.enemies[0].hp == 200 - 9 * 6 - 12 && nib.power_counter(PowerId::PEN_NIB) == 0);
+    play(nib, CardId::STRIKE);
+    assert(nib.enemies[0].hp == 200 - 9 * 6 - 12 - 6);
+
+    // Without it, the 10th Attack is an ordinary one.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::NUNCHAKU, 1);
+    plain.enemies[0].hp = 200;
+    for (int i = 0; i < 10; ++i) play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].hp == 200 - 10 * 6);
+    std::cout << "[PASS] Pen Nib doubles every 10th Attack" << std::endl;
+}
+
+void test_white_beast_statue() {
+    // With the statue, every combat reward holds a potion; without it, some do not.
+    uint32_t plain_without = 0;
+    for (uint32_t seed = 1; seed <= 50; ++seed) {
+        RunManager with;
+        with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with.add_relic("WHITE_BEAST_STATUE");
+        enter_room_of_type(with, RoomType::MONSTER);
+        with.generate_rewards();
+        assert(!with.potion_reward.empty());
+
+        RunManager plain;
+        plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(plain, RoomType::MONSTER);
+        plain.generate_rewards();
+        if (plain.potion_reward.empty()) ++plain_without;
+    }
+    assert(plain_without > 0);
+    std::cout << "[PASS] White Beast Statue: a potion in every combat reward, not always without it" << std::endl;
+}
+
 void test_cauldron() {
     // Obtained: 5 random potions are brewed into the belt.
     RunManager run;
@@ -1711,6 +1799,10 @@ int main() {
     test_paels_eye();
     test_cursed_pearl();
     test_calling_bell();
+    test_belt_buckle();
+    test_reptile_trinket();
+    test_pen_nib();
+    test_white_beast_statue();
     test_cauldron();
     return 0;
 }
