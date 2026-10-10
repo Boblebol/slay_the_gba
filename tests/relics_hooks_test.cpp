@@ -1247,6 +1247,27 @@ void test_eternal_feather() {
     std::cout << "[PASS] Eternal Feather: heals 3 HP per 5 cards when entering a Rest Site" << std::endl;
 }
 
+void test_planisphere() {
+    // Entering a ? room heals 5 HP; the other rooms do not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 482);
+    run.add_relic("PLANISPHERE");
+    run.hp = 20;
+    enter_room_of_type(run, RoomType::EVENT);
+    assert(run.hp == 25);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.hp == 25);
+
+    // Without the relic: entering a ? room heals nothing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 482);
+    plain.hp = 20;
+    enter_room_of_type(plain, RoomType::EVENT);
+    assert(!plain.has_relic("PLANISPHERE"));
+    assert(plain.hp == 20);
+    std::cout << "[PASS] Planisphere: 5 HP when entering a ? room" << std::endl;
+}
+
 void test_pomander() {
     // Obtained: one card of the deck is picked to be upgraded.
     RunManager run;
@@ -2317,6 +2338,7 @@ int main() {
     test_tiny_mailbox();
     test_regal_pillow();
     test_eternal_feather();
+    test_planisphere();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();
