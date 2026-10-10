@@ -1309,6 +1309,7 @@ std::string_view RunManager::draw_treasure_relic() {
 }
 
 static constexpr uint8_t PUMPKIN_CANDLE_COMBATS = 5;
+static constexpr uint8_t EMBER_TEA_COMBATS = 5;
 
 void RunManager::register_relic_powers() {
     // Blessed Antler: one more energy each turn, paid for with three Dazed shuffled into the draw pile.
@@ -1465,6 +1466,11 @@ void RunManager::apply_combat_start_relics() {
     // Girya: the Strength lifted at the rest sites, one point per lift.
     if (has_relic("GIRYA") && relic_counter("GIRYA") > 0) {
         combat.player.add_status(StatusType::STRENGTH, relic_counter("GIRYA"));
+    }
+    // Ember Tea (event): 2 Strength at the start of each of the next 5 combats; the counter holds the combats so far.
+    if (has_relic("EMBER_TEA") && relic_counter("EMBER_TEA") < EMBER_TEA_COMBATS) {
+        combat.player.add_status(StatusType::STRENGTH, 2);
+        set_relic_counter("EMBER_TEA", static_cast<uint8_t>(relic_counter("EMBER_TEA") + 1));
     }
     // Statuses to start the combat with. Given once the first turn has started, so that Plating does not lose a
     // point before it has given any Block.
