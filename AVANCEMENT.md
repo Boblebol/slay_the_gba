@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 73,5 %** — 906 faits, 20 partiels, 320 à faire (35 hors périmètre).
+**Avancement global : 74,3 %** — 916 faits, 20 partiels, 310 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 92 | 1 | 7 | 92,5 % |
 | [La Nécrolieuse](#necrobinder) | 98 | 1 | 3 | 96,6 % |
 | [Cartes communes aux cinq éditions](#cartes) | 106 | 0 | 14 | 88,3 % |
-| [Reliques et potions](#reliques) | 212 | 0 | 109 | 66,0 % |
+| [Reliques et potions](#reliques) | 222 | 0 | 99 | 69,2 % |
 | [Bestiaire](#bestiaire) | 19 | 1 | 84 | 18,8 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 43 | 1 | 15 | 73,7 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **906** | **20** | **320** | **73,5 %** |
+| **Total** | **916** | **20** | **310** | **74,3 %** |
 
 <a id="ironclad"></a>
 
@@ -859,11 +859,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 66,0 %
+## Reliques et potions — 69,2 %
 
-### Reliques partagées — 84,6 %
+### Reliques partagées — 88,9 %
 
-99 faits, 0 partiel, 18 à faire.
+104 faits, 0 partiel, 13 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -897,10 +897,10 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Billet funéraire | Peu commune | Oui |  |
 | Bonbon durable | Peu commune | Non |  |
 | Bouclier de parade | Peu commune | Oui |  |
-| Brassard | Peu commune | Non |  |
+| Brassard | Peu commune | Oui |  |
 | Breloque reptile | Peu commune | Oui |  |
 | Candélabre | Peu commune | Oui |  |
-| Canon miniature | Peu commune | Non |  |
+| Canon miniature | Peu commune | Oui |  |
 | Chapeau melon | Peu commune | Oui |  |
 | Corne de diablotin | Peu commune | Oui |  |
 | Coupe-papier | Peu commune | Oui |  |
@@ -935,7 +935,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Jeton de casino | Rare | Oui |  |
 | Kunai | Rare | Oui |  |
 | L'Art de la guerre | Rare | Oui |  |
-| Lampe inquiétante | Rare | Non |  |
+| Lampe inquiétante | Rare | Oui |  |
 | Le Coursier | Rare | Oui |  |
 | Main momifiée | Rare | Oui |  |
 | Mangue | Rare | Oui |  |
@@ -956,7 +956,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Étoile blanche | Rare | Oui |  |
 | Œuf en fusion | Rare | Oui |  |
 | Œuf gelé | Rare | Oui |  |
-| Œuf toxique | Rare | Non |  |
+| Œuf toxique | Rare | Oui |  |
 | Aile fétiche | Boutique | Non |  |
 | Boucle de ceinture | Boutique | Oui |  |
 | Boîte à outils | Boutique | Oui |  |
@@ -964,7 +964,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Bâtonnets enflammés | Boutique | Oui |  |
 | Carte de fidélité | Boutique | Oui |  |
 | Chaudron | Boutique | Oui |  |
-| Composé X | Boutique | Non |  |
+| Composé X | Boutique | Oui |  |
 | Fronde du courage | Boutique | Oui |  |
 | Fruit du dragon | Boutique | Oui |  |
 | Gaufre de Lee | Boutique | Oui |  |
@@ -985,35 +985,35 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Lentille de Fresnel | Évènement | Non |  |
 | Diadème | Secours | Oui |  |
 
-### Reliques d'évènement — 5,1 %
+### Reliques d'évènement — 17,9 %
 
-2 faits, 0 partiel, 37 à faire.
+7 faits, 0 partiel, 32 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Anneau du dragon | Départ | Non |  |
+| Anneau du dragon | Départ | Oui |  |
 | Destin divin | Départ | Non |  |
 | Noyau infusé | Départ | Non |  |
 | Phylactère déchaîné | Départ | Oui |  |
 | Sang noir | Départ | Non |  |
-| Amulette sombrepierre | Évènement | Non |  |
+| Amulette sombrepierre | Évènement | Oui |  |
 | Ancre ??? | Évènement | Non |  |
 | Attrape-rêves | Évènement | Non |  |
 | Bing bong | Évènement | Non |  |
-| Champi aromatique | Évènement | Non |  |
+| Champi aromatique | Évènement | Oui |  |
 | Feu follet perdu | Évènement | Non |  |
 | Fille des vents | Évènement | Non |  |
 | Fiole de sang ??? | Évènement | Non |  |
 | Fleur joyeuse ??? | Évènement | Non |  |
 | Fromage d'élection | Évènement | Non |  |
 | Gaufre de Lee ??? | Évènement | Non |  |
-| Gros champi | Évènement | Non |  |
+| Gros champi | Évènement | Oui |  |
 | La botte | Évènement | Non |  |
 | Le tapis du Marchand ??? | Évènement | Non |  |
 | Mangue ??? | Évènement | Non |  |
 | Mannequin d'entraînement ??? | Évènement | Non |  |
 | Manuel d'Histoire | Évènement | Non |  |
-| Monsieur Carnage | Évènement | Non |  |
+| Monsieur Carnage | Évènement | Oui |  |
 | Noyau pollinique | Évènement | Non |  |
 | Oizillon | Évènement | Non |  |
 | Orichalque ??? | Évènement | Non |  |
