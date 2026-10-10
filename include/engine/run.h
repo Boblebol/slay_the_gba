@@ -109,6 +109,8 @@ public:
 
     CombatEngine combat;
     FixedVector<DeckCard, 3> current_card_rewards;
+    // Lava Lamp: the card rewards of the fight just won are upgraded (it lost no HP). Set when the fight ends.
+    bool card_rewards_upgraded = false;
     int16_t gold_reward = 0;
     uint8_t extra_card_rewards = 0; // card rewards still to offer after this one (The Hunt)
     // Potion and relic offered on the reward screen, empty when the fight gave none or once taken.

@@ -578,7 +578,7 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng) {
     }
     while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
         size_t pick = (boss ? rng.next() : next_random()) % candidates.size();
-        current_card_rewards.push_back(DeckCard(candidates[pick], false));
+        current_card_rewards.push_back(DeckCard(candidates[pick], card_rewards_upgraded));
         candidates.erase(pick);
     }
 }
@@ -1229,6 +1229,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         "WHETSTONE", "WAR_PAINT",
         // Colorless cards in the card rewards (#486)
         "DINGY_RUG"
+        "WHETSTONE", "WAR_PAINT",
+        // Out of combat, at the end of a fight without HP lost (#476)
+        "LAVA_LAMP"
     };
     return ACTIVE_RELICS;
 }
@@ -1625,6 +1628,8 @@ void RunManager::proceed_after_combat() {
         return;
     }
 
+    // Lava Lamp: a fight won without losing HP upgrades all the card rewards it gives.
+    card_rewards_upgraded = won && has_relic("LAVA_LAMP") && combat.counters.combat_hp_losses == 0;
     on_combat_won(map.nodes[current_node_index].type);
 
     if (map.nodes[current_node_index].type == RoomType::BOSS) {
