@@ -141,6 +141,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "PRECISE_SCISSORS", "Lorsque vous obtenez cette relique, retirez 1 carte de votre Deck." },
     { "EMPTY_CAGE", "Lorsque vous obtenez cette relique, retirez 2 cartes de votre Deck." },
     { "PAELS_TOOTH", "Retirez 5 cartes de votre Deck. Après chaque combat, rajoutez-en 1 aléatoirement ; elle est Améliorée." },
+    { "WHITE_BEAST_STATUE", "Vous obtenez toujours une Potion dans les récompenses de combat." },
     { "WAR_HAMMER", "Lorsque vous tuez un Élite, Améliorez 4 cartes aléatoires." },
     { "STRAWBERRY", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 7." },
     { "SMALL_CAPSULE", "Lorsque vous obtenez cette relique, obtenez une Relique aléatoire." },
