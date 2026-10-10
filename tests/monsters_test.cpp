@@ -1144,6 +1144,42 @@ void test_eye_with_teeth() {
     std::cout << "[PASS] Eye With Teeth: 6 HP, Distract (3 Dazed into the discard pile) every turn" << std::endl;
 }
 
+void test_noisebot() {
+    // Noise every turn: 2 Dazed into the discard pile, no damage.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::NOISEBOT);
+    Enemy& bot = combat.enemies[0];
+    assert(bot.type == EnemyType::NOISEBOT && bot.name == "Sonobot");
+    assert(bot.hp >= 18 && bot.hp <= 23 && bot.max_hp == bot.hp && bot.max_hp == 18 + bot.hp_bonus);
+    assert(bot.block == 0 && bot.statuses.empty());
+    for (int turn = 1; turn <= 4; ++turn) {
+        assert(combat.turn_number == turn);
+        assert(bot.current_intent.type == STATUS && bot.current_intent.status_card == CardId::DAZED);
+        assert(bot.current_intent.status_cards == 2 && bot.current_intent.status_pile == Pile::DISCARD);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.hp == combat.player.max_hp && bot.block == 0 && bot.statuses.empty());
+    }
+    std::cout << "[PASS] Noisebot: 18 to 23 HP, Noise (2 Dazed into the discard pile) every turn" << std::endl;
+}
+
+void test_noisebot_ascension() {
+    // 19 to 24 HP (18 to 23 plus 1) at Ascension, same Noise.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::NOISEBOT);
+        Enemy& bot = combat.enemies[0];
+        bot.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = bot.hp;
+        assert(bot.ascension_hp() == 19 && bot.hp_spread() == 5);
+        assert(base >= 18 && base <= 23 && bot.max_hp == 18 + bot.hp_bonus);
+        bot.ascend(true, true);
+        combat.plan_enemies();
+        assert(bot.hp == base + 1 && bot.max_hp == base + 1 && bot.hp >= 19 && bot.hp <= 24);
+        assert(bot.current_intent.type == STATUS && bot.current_intent.status_cards == 2);
+    }
+    std::cout << "[PASS] Noisebot: Ascension gives 19 to 24 HP" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1182,6 +1218,8 @@ int main() {
     test_status_intent();
     test_status_cards_are_not_the_players();
     test_eye_with_teeth();
+    test_noisebot();
+    test_noisebot_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

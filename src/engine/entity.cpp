@@ -88,6 +88,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Œil denté";
         max_hp = 6;
         hp = 6;
+    } else if (type == EnemyType::NOISEBOT) {
+        name = "Sonobot";
+        max_hp = 18;
+        hp = 18;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -100,6 +104,7 @@ void Enemy::init(EnemyType enemy_type) {
 uint8_t Enemy::hp_spread() const {
     switch (type) {
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
+        case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
         default: return 0;
     }
 }
@@ -128,6 +133,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::LIVING_SHIELD: return 65;
         case EnemyType::FAT_GREMLIN: return 14;
         case EnemyType::VINE_SHAMBLER: return 64;
+        case EnemyType::NOISEBOT: return 19;
         default: return 0;
     }
 }
@@ -462,6 +468,13 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.status_cards = 3;
         current_intent.status_pile = Pile::DISCARD;
         current_intent.description = "Distraction (3 Hébété)";
+    } else if (type == EnemyType::NOISEBOT) {
+        // Noise every turn: 2 Dazed into the discard pile.
+        current_intent.type = EnemyIntentType::STATUS;
+        current_intent.status_card = CardId::DAZED;
+        current_intent.status_cards = 2;
+        current_intent.status_pile = Pile::DISCARD;
+        current_intent.description = "Ébruitement (2 Hébété)";
     }
 }
 
