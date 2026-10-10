@@ -642,6 +642,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     if (relic_id == "TANXS_WHISTLE" && has_relic("TANXS_WHISTLE")) add_card_to_deck(DeckCard{ CardId::WHISTLE, false });
     if (relic_id == "STORYBOOK" && has_relic("STORYBOOK")) add_card_to_deck(DeckCard{ CardId::BRIGHTEST_FLAME, false });
+    if (relic_id == "NEOWS_TORMENT" && has_relic("NEOWS_TORMENT")) add_card_to_deck(DeckCard{ CardId::NEOWS_FURY, false });
     if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
         paels_tooth_picks = deck_choice.remaining;
