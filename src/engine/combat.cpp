@@ -1723,6 +1723,8 @@ void CombatEngine::begin_first_turn() {
 
 void CombatEngine::start_player_turn() {
     state = CombatState::PLAYER_TURN;
+    // Beating Remnant: the HP lost from this turn on, until the next one, is capped.
+    player.hp_loss_budget = has_power(PowerId::BEATING_REMNANT) ? power_amount(PowerId::BEATING_REMNANT) : -1;
     int16_t hp_before = player.hp;
     player.apply_poison_tick();
     lost_hp_last_turn_ = counters.hp_lost > 0;

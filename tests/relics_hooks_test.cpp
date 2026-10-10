@@ -855,6 +855,26 @@ void test_delicate_frond() {
     std::cout << "[PASS] Delicate Frond: every empty potion slot filled at combat start" << std::endl;
 }
 
+void test_beating_remnant() {
+    // With the relic: no more than 20 HP lost in a turn; the budget comes back at the start of the next turn.
+    CombatEngine remnant = make_relic_combat(CharacterId::IRONCLAD, PowerId::BEATING_REMNANT, 20);
+    int16_t hp_start = remnant.player.hp;
+    remnant.damage_player(30);
+    assert(remnant.player.hp == hp_start - 20);
+    remnant.damage_player(10);
+    assert(remnant.player.hp == hp_start - 20);
+    remnant.start_player_turn();
+    remnant.damage_player(15);
+    assert(remnant.player.hp == hp_start - 35);
+
+    // Without the relic: all of the HP is lost.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    int16_t plain_start = plain.player.hp;
+    plain.damage_player(30);
+    assert(plain.player.hp == plain_start - 30);
+    std::cout << "[PASS] Beating Remnant: no more than 20 HP lost per turn" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -1800,6 +1820,7 @@ int main() {
     test_cursed_pearl();
     test_calling_bell();
     test_belt_buckle();
+    test_beating_remnant();
     test_reptile_trinket();
     test_pen_nib();
     test_white_beast_statue();
