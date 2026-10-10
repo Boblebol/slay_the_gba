@@ -2645,6 +2645,35 @@ void test_white_star() {
     std::cout << "[PASS] White Star: an Elite offers one more set of Rare cards" << std::endl;
 }
 
+void test_lost_wisp() {
+    // With the relic: each Power played hits every enemy for 8; other cards do not.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "LOST_WISP" });
+    assert(run.combat.has_power(PowerId::LOST_WISP));
+    CombatEngine with = make_relic_combat(CharacterId::IRONCLAD, PowerId::LOST_WISP, 8, true);
+    with.enemies[0].hp = 100;
+    with.enemies[1].hp = 100;
+    with.hand.clear();
+    with.hand.push_back(DeckCard(CardId::INFLAME, false));
+    with.player.energy = 3;
+    assert(with.play_card(0, 0));
+    assert(with.enemies[0].hp == 92 && with.enemies[1].hp == 92);
+    with.hand.clear();
+    with.hand.push_back(DeckCard(CardId::STRIKE, false));
+    with.player.energy = 3;
+    assert(with.play_card(0, 0));
+    assert(with.enemies[0].hp < 92 && with.enemies[1].hp == 92);
+
+    // Without the relic: a Power played deals no damage.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, std::initializer_list<RelicPower>{}, true);
+    plain.enemies[0].hp = 100;
+    plain.enemies[1].hp = 100;
+    plain.hand.clear();
+    plain.hand.push_back(DeckCard(CardId::INFLAME, false));
+    plain.player.energy = 3;
+    assert(plain.play_card(0, 0));
+    assert(!plain.has_power(PowerId::LOST_WISP) && plain.enemies[0].hp == 100 && plain.enemies[1].hp == 100);
+}
+
 void test_chemical_x() {
     // With the relic: an X card gets 2 more X for the same energy spent (Skewer: a hit of 8 per X).
     RunManager run = make_relic_run(CharacterId::SILENT, { "CHEMICAL_X" });
@@ -2775,5 +2804,6 @@ int main() {
     test_shovel();
     test_white_star();
     test_chemical_x();
+    test_lost_wisp();
     return 0;
 }
