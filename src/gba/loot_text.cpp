@@ -167,6 +167,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "CAULDRON", "Lorsque vous obtenez cette relique, concoctez 5 Potions aléatoires." },
     { "OLD_COIN", "Lorsque vous obtenez cette relique, obtenez 300 Pièces d'or." },
     { "WAR_PAINT", "Lorsque vous obtenez cette relique, Améliorez 2 Compétences aléatoires." },
+    { "FROZEN_EGG", "Lorsque vous ajoutez un Pouvoir à votre Deck, Améliorez-le." },
     { "STURDY_CLAMP", "Vous conservez jusqu'à 10 d'Armure entre chaque tour." },
     { "SAI", "Au début de votre tour, gagnez 7 d'Armure." },
     { "SEAL_OF_GOLD", "Au début de votre tour, dépensez 3 Pièces d'or pour gagner 1 ●." },

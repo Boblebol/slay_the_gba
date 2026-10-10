@@ -2071,6 +2071,21 @@ void test_war_paint() {
     std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
 }
 
+void test_frozen_egg() {
+    // With the relic: a Power added to the Deck is upgraded, another card is not.
+    RunManager with = make_relic_run(CharacterId::IRONCLAD, { "FROZEN_EGG" });
+    with.add_card_to_deck(DeckCard{ CardId::INFLAME, false });
+    assert(with.master_deck.back().id == CardId::INFLAME && with.master_deck.back().upgraded);
+    with.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(with.master_deck.back().id == CardId::STRIKE && !with.master_deck.back().upgraded);
+
+    // Without the relic: the Power stays as it is.
+    RunManager without = make_relic_run(CharacterId::IRONCLAD, {});
+    without.add_card_to_deck(DeckCard{ CardId::INFLAME, false });
+    assert(without.master_deck.back().id == CardId::INFLAME && !without.master_deck.back().upgraded);
+    std::cout << "[PASS] Frozen Egg: a Power added to the Deck is upgraded" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2145,5 +2160,6 @@ int main() {
     test_old_coin();
     test_pear();
     test_whetstone();
+    test_frozen_egg();
     return 0;
 }
