@@ -152,6 +152,7 @@ enum class PowerId : uint8_t {
     ORNAMENTAL_FAN,    // every ORNAMENTAL_FAN_ATTACKS Attacks played in a turn: `amount` Block
     PEN_NIB,           // every PEN_NIB_ATTACKS Attacks played: that Attack deals double damage (counter = Attacks counted)
     STRIKE_DUMMY,      // cards containing "Strike" deal `amount` more damage per hit
+    FAKE_STRIKE_DUMMY, // event copy of STRIKE_DUMMY: cards containing "Strike" deal `amount` more damage per hit
     MINIATURE_CANNON,  // upgraded Attacks deal `amount` more damage per hit
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy

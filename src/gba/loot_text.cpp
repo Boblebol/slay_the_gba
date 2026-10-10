@@ -93,6 +93,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ORNAMENTAL_FAN", "Chaque fois que vous jouez 3 Attaques en un seul tour, gagnez 4 d'Armure." },
     { "PEN_NIB", "Toutes les 10 Attaques jouées, la 10ème inflige le double de dégâts." },
     { "STRIKE_DUMMY", "Les cartes contenant « Frappe » infligent 3 dégâts supplémentaires." },
+    { "FAKE_STRIKE_DUMMY", "Les cartes contenant « Frappe » infligent 1 dégât supplémentaire." },
     { "MINIATURE_CANNON", "Les Attaques améliorées infligent 3 dégâts supplémentaires." },
     { "TUNGSTEN_ROD", "Vous perdez 1 PV de moins chaque fois que vous perdriez des PV." },
     { "AMETHYST_AUBERGINE", "Les ennemis donnent 15 Pièces d'or supplémentaires." },

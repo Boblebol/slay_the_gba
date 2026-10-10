@@ -1415,6 +1415,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("NUNCHAKU")) combat.add_power(PowerId::NUNCHAKU, 1);
     if (has_relic("PEN_NIB")) combat.add_power(PowerId::PEN_NIB);
     if (has_relic("STRIKE_DUMMY")) combat.add_power(PowerId::STRIKE_DUMMY, 3);
+    // Event copy of Strike Dummy: 1 more damage per Strike.
+    if (has_relic("FAKE_STRIKE_DUMMY")) combat.add_power(PowerId::FAKE_STRIKE_DUMMY, 1);
     if (has_relic("MINIATURE_CANNON")) combat.add_power(PowerId::MINIATURE_CANNON, 3);
     // Tungsten Rod: whenever the player would lose HP, 1 less.
     if (has_relic("TUNGSTEN_ROD")) combat.player.hp_loss_reduction = 1;
