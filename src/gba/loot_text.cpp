@@ -107,6 +107,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "POWER_CELL", "Au début de chaque combat, ajoutez 2 cartes de coût 0 de votre Pioche à votre Main." },
     { "RINGING_TRIANGLE", "Retenez votre Main le premier tour de chaque combat." },
     { "PRAYER_WHEEL", "Les ennemis normaux donnent une récompense de carte supplémentaire." },
+    { "RING_OF_THE_DRAKE", "Au début de vos 3 premiers tours, piochez 2 cartes supplémentaires." },
     { "RAINBOW_RING", "La première fois de chaque tour que vous jouez une Attaque, une Compétence et un Pouvoir, gagnez 1 de Force et 1 de Dextérité." },
     { "RAZOR_TOOTH", "Chaque fois que vous jouez une Attaque ou une Compétence, Améliorez-la pour le restant du combat." },
     { "RED_MASK", "Au début de chaque combat, appliquez Affaibli (1) à TOUS les ennemis." },

@@ -104,6 +104,7 @@ enum class PowerId : uint8_t {
     SPARKLING_ROUGE,   // start of turn 3: `amount` Strength and Dexterity
     HAPPY_FLOWER,      // every 3 turns: `amount` energy
     PENDULUM,          // every 3 turns: draw `amount` more
+    RING_OF_THE_DRAKE, // start of turns 1 to RING_OF_THE_DRAKE_TURNS: draw `amount` more
     VERY_HOT_COCOA,    // turn 1: `amount` more energy
     BOOKMARK,          // end of turn: a random Retained card in hand costs 1 less until played
     BREAD,             // turn 1: lose BREAD_ENERGY_LOST energy; later turns: `amount` energy
@@ -245,6 +246,7 @@ constexpr uint8_t BEATING_REMNANT_HP_LOSS = 20;
 constexpr uint8_t CHEMICAL_X_INCREASE = 2;
 constexpr uint8_t BREAD_ENERGY_LOST = 2;
 constexpr uint8_t POCKETWATCH_CARDS = 3;
+constexpr uint8_t RING_OF_THE_DRAKE_TURNS = 3;
 constexpr uint8_t PARRYING_SHIELD_BLOCK = 10;
 constexpr uint8_t STONE_CALENDAR_TURN = 7;
 constexpr uint8_t METRONOME_ORBS = 7;
