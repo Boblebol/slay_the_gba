@@ -3504,6 +3504,27 @@ void test_precarious_shears() {
     std::cout << "[PASS] Precarious Shears: pickup asks for 2 cards to remove and costs 16 HP, nothing without the relic" << std::endl;
 }
 
+void test_paper_phrog() {
+    // With the relic, a Strike (6 damage, x1.5 on a Vulnerable enemy = 9) gets 25% more on top: 11. Other enemies do not.
+    CombatEngine phrog = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAPER_PHROG, 25);
+    phrog.enemies[0].hp = 200;
+    phrog.enemies[0].add_status(StatusType::VULNERABLE, 5);
+    phrog.hand.clear();
+    phrog.hand.push_back(DeckCard(CardId::STRIKE, false));
+    assert(phrog.play_card(0, 0));
+    assert(200 - phrog.enemies[0].hp == 11);
+
+    // Without the relic, the same Strike deals its Vulnerable damage only: 9.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 200;
+    plain.enemies[0].add_status(StatusType::VULNERABLE, 5);
+    plain.hand.clear();
+    plain.hand.push_back(DeckCard(CardId::STRIKE, false));
+    assert(plain.play_card(0, 0));
+    assert(200 - plain.enemies[0].hp == 9);
+    std::cout << "[PASS] Paper Phrog: Vulnerable enemies take 25% more damage from attacks" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3638,5 +3659,6 @@ int main() {
     test_tea_of_discourtesy();
     test_the_boot();
     test_hand_drill();
+    test_paper_phrog();
     return 0;
 }

@@ -1304,7 +1304,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BAG_OF_PREPARATION", "BURNING_STICKS", "INTIMIDATING_HELMET", "JOSS_PAPER", "KUNAI", "KUSARIGAMA", "LETTER_OPENER",
         "MEAT_ON_THE_BONE", "MUMMIFIED_HAND", "NUNCHAKU", "ORNAMENTAL_FAN", "PEN_NIB", "RAINBOW_RING", "RIPPLE_BASIN", "SHURIKEN", "STRIKE_DUMMY", "MINIATURE_CANNON",
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
-        "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
+        "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", "PAPER_PHROG", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", "VENERABLE_TEA_SET", "PLANISPHERE", "MEAL_TICKET", "SHOVEL", // Shared, out of combat
         "WHITE_STAR",                         // Shared, rare: an Elite gives one more set of Rare cards
@@ -1499,6 +1499,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("MUMMIFIED_HAND")) combat.add_power(PowerId::MUMMIFIED_HAND);
     if (has_relic("NUNCHAKU")) combat.add_power(PowerId::NUNCHAKU, 1);
     if (has_relic("PEN_NIB")) combat.add_power(PowerId::PEN_NIB);
+    // Paper Phrog (Ironclad, uncommon): Vulnerable enemies take 75% more damage rather than 50%.
+    if (has_relic("PAPER_PHROG")) combat.add_power(PowerId::PAPER_PHROG, 25);
     if (has_relic("STRIKE_DUMMY")) combat.add_power(PowerId::STRIKE_DUMMY, 3);
     // Event copy of Strike Dummy: 1 more damage per Strike.
     if (has_relic("FAKE_STRIKE_DUMMY")) combat.add_power(PowerId::FAKE_STRIKE_DUMMY, 1);
