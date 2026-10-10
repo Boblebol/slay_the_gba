@@ -1069,6 +1069,8 @@ static constexpr int16_t BOOK_OF_FIVE_RINGS_HEAL = 20;
 
 bool RunManager::add_card_to_deck(DeckCard card) {
     if (master_deck.size() >= master_deck.capacity()) return false;
+    // Molten Egg: an Attack added to the deck comes in upgraded.
+    if (has_relic("MOLTEN_EGG") && CardDef::get(card.id).type == CardType::ATTACK) card.upgraded = true;
     on_card_added(card);
     if (!master_deck.push_back(card)) return false;
     // Lucky Fysh: each card that joins the deck gains gold, whatever the source (reward, shop, event).
@@ -1077,9 +1079,6 @@ bool RunManager::add_card_to_deck(DeckCard card) {
         heal(BOOK_OF_FIVE_RINGS_HEAL);
     }
     return true;
-    // Molten Egg: an Attack added to the deck comes in upgraded.
-    if (has_relic("MOLTEN_EGG") && CardDef::get(card.id).type == CardType::ATTACK) card.upgraded = true;
-    return master_deck.push_back(card);
 }
 
 bool RunManager::transform_card_in_deck(int deck_index, bool upgraded, CardId into) {
@@ -1251,23 +1250,17 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Colorless cards in the card rewards (#486)
         "DINGY_RUG",
         // Out of combat, at the end of a fight without HP lost (#476)
-        "LAVA_LAMP"
-        "WHETSTONE", "WAR_PAINT",
+        "LAVA_LAMP",
         // Extra card reward after a normal fight (#479)
-        "PRAYER_WHEEL"
-        "WHETSTONE", "WAR_PAINT",
+        "PRAYER_WHEEL",
         // Upgrades the Attacks added to the deck (#493)
-        "MOLTEN_EGG"
-        "WHETSTONE", "WAR_PAINT",
+        "MOLTEN_EGG",
         // Upgrades a Power added to the Deck (#494)
-        "FROZEN_EGG"
-        "DINGY_RUG",
+        "FROZEN_EGG",
         // A Colorless card offered at the start of the combat (#496)
-        "TOOLBOX"
-        "WHETSTONE", "WAR_PAINT",
+        "TOOLBOX",
         // Out of combat, at the rest sites (#475)
-        "GIRYA"
-        "WHETSTONE", "WAR_PAINT",
+        "GIRYA",
         // Potion at the start of each combat (#497)
         "PETRIFIED_TOAD"
     };
