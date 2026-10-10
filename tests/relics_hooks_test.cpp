@@ -1874,6 +1874,26 @@ void test_cauldron() {
     std::cout << "[PASS] Cauldron: 5 random potions brewed on pickup" << std::endl;
 }
 
+void test_pear() {
+    // Obtained: 10 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 468);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("PEAR");
+    assert(run.has_relic("PEAR"));
+    assert(run.max_hp == max_hp + 10 && run.hp == 60);
+
+    // Without the relic: the maximum HP is left alone.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 468);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("PEAR"));
+    assert(plain.max_hp == max_hp && plain.hp == 50);
+    std::cout << "[PASS] Pear: 10 more max HP on pickup" << std::endl;
+}
+
 void test_bookmark() {
     // With the relic: the Retained card in hand costs 1 less at the end of the turn, until it is played.
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
@@ -2063,5 +2083,6 @@ int main() {
     test_tungsten_rod();
     test_mango();
     test_old_coin();
+    test_pear();
     return 0;
 }
