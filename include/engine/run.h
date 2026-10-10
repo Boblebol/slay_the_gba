@@ -147,6 +147,9 @@ public:
     // Meat Cleaver: asks for 2 cards of the deck to remove, then gives +5 Max HP and uses up the rest site. With fewer
     // than 2 removable cards it removes what it can and still gives the Max HP. False without the relic.
     bool cook_at_campfire();
+    // Girya: gains 1 Strength for every combat of the run, at most 3 times. Uses up the rest site. False without the
+    // relic or once the 3 lifts are done.
+    bool lift_at_campfire();
 
     // Shop actions
     void open_shop();
