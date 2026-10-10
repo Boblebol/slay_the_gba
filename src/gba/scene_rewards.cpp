@@ -242,6 +242,12 @@ private:
             stream << "ACTE " << int(run.current_act) << " : l'ascension continue !";
         }
 
+        // The Hunt: more cards are offered.
+        if(run.phase == engine::RunPhase::REWARD_SCREEN)
+        {
+            return SceneId::REWARDS;
+        }
+
         return SceneId::MAP;
     }
 
