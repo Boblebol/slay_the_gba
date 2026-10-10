@@ -2340,6 +2340,31 @@ void test_lava_lamp() {
     std::cout << "[PASS] Lava Lamp: card rewards upgraded after a fight without HP lost" << std::endl;
 }
 
+void test_darkstone_periapt() {
+    // Obtained cards: each Curse that joins the deck raises the Max HP by 6, other cards do not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 781);
+    run.add_relic("DARKSTONE_PERIAPT");
+    assert(run.has_relic("DARKSTONE_PERIAPT"));
+    run.hp = 40;
+    run.max_hp = 60;
+    run.add_card_to_deck(DeckCard{ CardId::GREED, false });
+    assert(run.max_hp == 66);
+    assert(run.hp == 46);
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.max_hp == 66);
+
+    // Without the relic, a Curse leaves the Max HP alone.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 781);
+    plain.add_relic("ANCHOR");
+    plain.max_hp = 60;
+    plain.add_card_to_deck(DeckCard{ CardId::GREED, false });
+    assert(!plain.has_relic("DARKSTONE_PERIAPT") && plain.max_hp == 60);
+
+    std::cout << "[PASS] Darkstone Periapt: +6 Max HP for each Curse obtained" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2425,5 +2450,6 @@ int main() {
     test_amethyst_aubergine();
     test_lucky_fysh();
     test_book_of_five_rings();
+    test_darkstone_periapt();
     return 0;
 }

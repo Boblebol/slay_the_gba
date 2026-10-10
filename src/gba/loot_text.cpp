@@ -119,6 +119,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "GOLDEN_PEARL", "Lorsque vous obtenez cette relique, gagnez 150 Pièces d'or." },
     { "CURSED_PEARL", "Lorsque vous obtenez cette relique, recevez Cupidité. Obtenez 333 Pièces d'or." },
     { "ECTOPLASM", "Vous ne pouvez plus obtenir de Pièces d'or. Gagnez 1 ● au début de chaque tour." },
+    { "DARKSTONE_PERIAPT", "Chaque fois que vous obtenez une Malédiction, augmentez vos PV Max de 6." },
     { "DUSTY_TOME", "Lorsque vous obtenez cette relique, obtenez une Carte d'Ancien." },
     { "GLASS_EYE", "Lorsque vous obtenez cette relique, obtenez 2 cartes Communes, 2 cartes Inhabituelles, et 1 carte Rare." },
     { "PRISMATIC_GEM", "Gagnez 1 ● au début de chaque tour. Les récompenses de carte contiennent désormais des cartes d'autres couleurs." },

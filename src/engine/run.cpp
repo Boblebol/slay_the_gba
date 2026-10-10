@@ -1052,6 +1052,8 @@ bool RunManager::add_card_to_deck(DeckCard card) {
     if (!master_deck.push_back(card)) return false;
     // Lucky Fysh: each card that joins the deck gains gold, whatever the source (reward, shop, event).
     if (has_relic("LUCKY_FYSH")) gain_gold(15);
+    // Darkstone Periapt: each Curse that joins the deck, whatever the source, raises the Max HP by 6.
+    if (has_relic("DARKSTONE_PERIAPT") && card_meta(card.id).pool == CardPool::CURSE) gain_max_hp(6);
     if (has_relic("BOOK_OF_FIVE_RINGS") && tick_relic_counter("BOOK_OF_FIVE_RINGS", BOOK_OF_FIVE_RINGS_CARDS)) {
         heal(BOOK_OF_FIVE_RINGS_HEAL);
     }
