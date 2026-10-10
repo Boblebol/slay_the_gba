@@ -2071,6 +2071,38 @@ void test_war_paint() {
     std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
 }
 
+void test_white_star() {
+    // With the relic, an Elite offers one more set of Rare cards once its first set is taken or skipped.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 492);
+    run.add_relic("WHITE_STAR");
+    enter_room_of_type(run, RoomType::ELITE);
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN);
+    run.pick_card_reward(0);
+    assert(run.phase == RunPhase::REWARD_SCREEN);
+    assert(!run.current_card_rewards.empty());
+    for (DeckCard card : run.current_card_rewards) assert(card_meta(card.id).rarity == CardRarity::RARE);
+    run.skip_card_rewards();
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, the Elite offers only its first set.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 492);
+    plain.add_relic("ANCHOR");
+    enter_room_of_type(plain, RoomType::ELITE);
+    plain.proceed_after_combat();
+    plain.pick_card_reward(0);
+    assert(plain.phase == RunPhase::MAP_NAVIGATION);
+
+    // With the relic, a Monster room gives no extra set.
+    RunManager monster = make_relic_run(CharacterId::IRONCLAD, { "WHITE_STAR" });
+    monster.proceed_after_combat();
+    monster.pick_card_reward(0);
+    assert(monster.phase == RunPhase::MAP_NAVIGATION);
+    std::cout << "[PASS] White Star: an Elite offers one more set of Rare cards" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2145,5 +2177,6 @@ int main() {
     test_old_coin();
     test_pear();
     test_whetstone();
+    test_white_star();
     return 0;
 }

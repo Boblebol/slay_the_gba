@@ -552,19 +552,20 @@ uint32_t RunManager::reward_seed() const {
            (static_cast<uint32_t>(current_node_index + 1) * 0xC2B2AE35u);
 }
 
-void RunManager::draw_card_rewards(bool boss, RewardRng& rng) {
-    // Offer distinct cards drawn at random from the hero's pool.
+void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity) {
+    // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked.
     current_card_rewards.clear();
     FixedVector<CardId, 512> candidates;
+    auto keep = [rarity](CardId id) { return rarity == CardRarity::NONE || card_meta(id).rarity == rarity; };
     for (CardId id : card_reward_pool(character)) {
-        candidates.push_back(id);
+        if (keep(id)) candidates.push_back(id);
     }
     // Prismatic Gem: the other heroes' pools are added too (the pools do not overlap).
     if (has_relic("PRISMATIC_GEM")) {
         for (uint8_t hero = 0; hero < static_cast<uint8_t>(CharacterId::COUNT); ++hero) {
             if (static_cast<CharacterId>(hero) == character) continue;
             for (CardId id : card_reward_pool(static_cast<CharacterId>(hero))) {
-                candidates.push_back(id);
+                if (keep(id)) candidates.push_back(id);
             }
         }
     }
@@ -600,6 +601,8 @@ void RunManager::generate_rewards() {
         relic_reward = draw_relic(rng, character, boss ? RelicSource::BOSS : RelicSource::ELITE,
                                   std::span<const std::string_view>(relics.begin(), relics.size()));
     }
+    // White Star: an Elite gives one more set of Rare cards, offered once the first set is taken or skipped.
+    extra_rare_card_rewards = room == RoomType::ELITE && has_relic("WHITE_STAR") ? 1 : 0;
     on_rewards_generated(room);
     phase = RunPhase::REWARD_SCREEN;
 }
@@ -630,6 +633,7 @@ void RunManager::finish_rewards() {
     gold_reward = 0;
     potion_reward = {};
     relic_reward = {};
+    extra_rare_card_rewards = 0;
     // The boss of act 1 or 2: its rewards are taken, the next act opens.
     if (current_node_index >= 0 && map.nodes[current_node_index].type == RoomType::BOSS && current_act < 3) {
         advance_act();
@@ -650,6 +654,13 @@ void RunManager::skip_card_rewards() {
 }
 
 void RunManager::next_card_reward_or_finish() {
+    // White Star: one more set of Rare cards after an Elite.
+    if (extra_rare_card_rewards > 0) {
+        --extra_rare_card_rewards;
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng, CardRarity::RARE);
+        return;
+    }
     // The Hunt: one more set of cards is offered before the rewards are over.
     if (extra_card_rewards > 0) {
         --extra_card_rewards;
@@ -1174,6 +1185,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
+        "WHITE_STAR",                         // Shared, rare: an Elite gives one more set of Rare cards
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR",                                   // Shared, out of combat

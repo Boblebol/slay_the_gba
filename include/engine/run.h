@@ -111,6 +111,7 @@ public:
     FixedVector<DeckCard, 3> current_card_rewards;
     int16_t gold_reward = 0;
     uint8_t extra_card_rewards = 0; // card rewards still to offer after this one (The Hunt)
+    uint8_t extra_rare_card_rewards = 0; // Rare card rewards still to offer after this one (White Star)
     // Potion and relic offered on the reward screen, empty when the fight gave none or once taken.
     std::string_view potion_reward;
     std::string_view relic_reward;
@@ -253,7 +254,8 @@ private:
     uint32_t reward_seed() const;
     // Leaves the reward screen: the gold is paid, and a boss opens the next act.
     void finish_rewards();
-    void draw_card_rewards(bool boss, RewardRng& rng);
+    // `rarity` restricts the offer to one rarity; NONE draws from every card of the pool.
+    void draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity = CardRarity::NONE);
     void next_card_reward_or_finish();
     // What a relic does when obtained.
     void on_relic_obtained(std::string_view relic_id);
