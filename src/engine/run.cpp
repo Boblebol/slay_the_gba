@@ -2,6 +2,7 @@
 #include "engine/relic.h"
 #include "engine/encounter.h"
 #include "engine/rewards.h"
+#include "engine/potion.h"
 #include "engine/ancient.h"
 #include <algorithm>
 
@@ -22,6 +23,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 };
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+constexpr int THE_COURIER_DISCOUNT = 20;
 constexpr int COOK_REMOVALS = 2; // cards removed by Cook (Meat Cleaver)
 constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
 constexpr int LAVA_ROCK_RELICS = 2; // relics the Act 1 Boss gives to Lava Rock when defeated
@@ -304,15 +306,51 @@ void RunManager::open_shop() {
 }
 
 bool RunManager::buy_shop_card(int index) {
-    return current_shop.buy_card(*this, index);
+    if (!current_shop.buy_card(*this, index)) return false;
+    // The Courier: the card bought is back on the shelf at once.
+    if (has_relic("THE_COURIER")) current_shop.cards[index].purchased = false;
+    return true;
 }
 
 bool RunManager::buy_shop_relic(int index) {
-    return current_shop.buy_relic(*this, index);
+    if (!current_shop.buy_relic(*this, index)) return false;
+    // The Courier: the relic bought is replaced by another one, priced after the discounts in force.
+    if (has_relic("THE_COURIER")) {
+        RewardRng rng(next_random());
+        FixedVector<std::string_view, 3> stocked;
+        for (const ShopRelic& item : current_shop.relics) {
+            if (&item != &current_shop.relics[index]) stocked.push_back(item.relic_id);
+        }
+        std::string_view id = draw_relic(rng, character, RelicSource::SHOP, std::span<const std::string_view>(relics.begin(), relics.size()),
+                                         std::span<const std::string_view>(stocked.begin(), stocked.size()));
+        if (!id.empty()) {
+            int cost = vary_price(rng, relic_base_price(find_relic(id)->rarity));
+            cost = (cost * (100 - THE_COURIER_DISCOUNT) + 50) / 100;
+            if (has_relic("MEMBERSHIP_CARD")) cost = (cost * (100 - MEMBERSHIP_CARD_DISCOUNT) + 50) / 100;
+            current_shop.relics[index] = ShopRelic{ id, static_cast<int16_t>(cost), false };
+        }
+    }
+    return true;
 }
 
 bool RunManager::buy_shop_potion(int index, int replace_index) {
-    return current_shop.buy_potion(*this, index, replace_index);
+    if (!current_shop.buy_potion(*this, index, replace_index)) return false;
+    // The Courier: the potion bought is replaced by another one, priced after the discounts in force.
+    if (has_relic("THE_COURIER")) {
+        RewardRng rng(next_random());
+        FixedVector<std::string_view, 3> stocked;
+        for (const ShopPotion& item : current_shop.potions) {
+            if (&item != &current_shop.potions[index]) stocked.push_back(item.potion_id);
+        }
+        std::string_view id = draw_potion(rng, character, std::span<const std::string_view>(stocked.begin(), stocked.size()));
+        if (!id.empty()) {
+            int cost = vary_price(rng, potion_base_price(find_potion(id)->rarity));
+            cost = (cost * (100 - THE_COURIER_DISCOUNT) + 50) / 100;
+            if (has_relic("MEMBERSHIP_CARD")) cost = (cost * (100 - MEMBERSHIP_CARD_DISCOUNT) + 50) / 100;
+            current_shop.potions[index] = ShopPotion{ id, static_cast<int16_t>(cost), false };
+        }
+    }
+    return true;
 }
 
 bool RunManager::use_potion(int index, int target_index) {
@@ -790,6 +828,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     if (relic_id == "EMPTY_CAGE" && has_relic("EMPTY_CAGE")) request_deck_choice(DeckChoiceKind::REMOVE, 2);
     if (relic_id == "MEMBERSHIP_CARD" && phase == RunPhase::SHOP) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
+    if (relic_id == "THE_COURIER" && phase == RunPhase::SHOP) current_shop.apply_discount(THE_COURIER_DISCOUNT);
 }
 
 void RunManager::count_hook(RunHook hook) {
@@ -810,6 +849,7 @@ void RunManager::on_rested() {
 void RunManager::on_shop_opened() {
     count_hook(RunHook::SHOP_OPENED);
     if (has_relic("MEMBERSHIP_CARD")) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
+    if (has_relic("THE_COURIER")) current_shop.apply_discount(THE_COURIER_DISCOUNT);
     if (has_relic("LORDS_PARASOL")) {
         // Everything on sale is obtained for free; a potion that does not fit the full belt is left behind.
         current_shop.apply_discount(100);
@@ -1084,7 +1124,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
-        "BRONZE_SCALES", "GORGET", "AKABEKO"
+        "BRONZE_SCALES", "GORGET", "AKABEKO",
+        // At the merchant (#487)
+        "THE_COURIER"
     };
     return ACTIVE_RELICS;
 }
