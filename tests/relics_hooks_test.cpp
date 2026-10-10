@@ -1225,6 +1225,28 @@ void test_regal_pillow() {
     std::cout << "[PASS] Regal Pillow: 15 extra HP at each Rest" << std::endl;
 }
 
+void test_eternal_feather() {
+    // With the relic: entering a Rest Site heals 3 HP per 5 cards of the deck, capped at Max HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("ETERNAL_FEATHER");
+    int expected = static_cast<int>(run.master_deck.size()) / 5 * 3;
+    run.hp = 1;
+    enter_room_of_type(run, RoomType::REST_SITE);
+    assert(run.hp == std::min<int>(run.max_hp, 1 + expected));
+    run.hp = run.max_hp - 1;
+    enter_room_of_type(run, RoomType::REST_SITE);
+    assert(run.hp == run.max_hp);
+
+    // Without the relic: entering a Rest Site heals nothing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 1;
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    assert(!plain.has_relic("ETERNAL_FEATHER") && plain.hp == 1);
+    std::cout << "[PASS] Eternal Feather: heals 3 HP per 5 cards when entering a Rest Site" << std::endl;
+}
+
 void test_pomander() {
     // Obtained: one card of the deck is picked to be upgraded.
     RunManager run;
@@ -2270,6 +2292,7 @@ int main() {
     test_stone_humidifier();
     test_tiny_mailbox();
     test_regal_pillow();
+    test_eternal_feather();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();

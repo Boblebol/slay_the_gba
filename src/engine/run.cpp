@@ -898,8 +898,12 @@ void RunManager::count_hook(RunHook hook) {
     if (runs < UINT16_MAX) ++runs;
 }
 
-void RunManager::on_room_entered(RoomType) {
+void RunManager::on_room_entered(RoomType room) {
     count_hook(RunHook::ROOM_ENTERED);
+    // Eternal Feather: entering a Rest Site heals 3 HP for every 5 cards of the deck.
+    if (room == RoomType::REST_SITE && has_relic("ETERNAL_FEATHER")) {
+        heal(static_cast<int16_t>(master_deck.size() / 5 * 3));
+    }
 }
 
 void RunManager::on_rested() {
@@ -1199,7 +1203,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", // Shared, out of combat
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
