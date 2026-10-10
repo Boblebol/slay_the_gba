@@ -505,6 +505,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::CURSE, CardPool::CURSE }, // BAD_LUCK
     { CardRarity::CURSE, CardPool::CURSE }, // DEBT
     { CardRarity::CURSE, CardPool::CURSE }, // SPORE_MIND
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // SEEKER_STRIKE
 };
 
 } // namespace engine

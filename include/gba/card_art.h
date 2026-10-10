@@ -184,6 +184,7 @@
 #include "bn_sprite_items_card_bad_luck.h"
 #include "bn_sprite_items_card_debt.h"
 #include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_seeker_strike.h"
 
 namespace gba::card_art
 {
@@ -537,6 +538,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_debt;
     case engine::CardId::SPORE_MIND:
         return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::SEEKER_STRIKE:
+        return &bn::sprite_items::card_seeker_strike;
     default:
         return nullptr;
     }
@@ -568,7 +571,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,
     123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
     143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 0, 0, 0, 0, 0, 0, 0,
-    156, 157, 0, 0, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172,
+    156, 157, 0, 0, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -759,6 +762,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_bad_luck.h"
 #include "bn_sprite_items_card_debt.h"
 #include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_seeker_strike.h"
 
 namespace gba::card_art
 {
@@ -1130,6 +1134,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_debt;
     case engine::CardId::SPORE_MIND:
         return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::SEEKER_STRIKE:
+        return &bn::sprite_items::card_seeker_strike;
     default:
         return nullptr;
     }
@@ -1161,7 +1167,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
     132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
     152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 0, 0, 0, 0, 0, 165, 166,
-    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
+    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1350,6 +1356,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_bad_luck.h"
 #include "bn_sprite_items_card_debt.h"
 #include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_seeker_strike.h"
 
 namespace gba::card_art
 {
@@ -1717,6 +1724,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_debt;
     case engine::CardId::SPORE_MIND:
         return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::SEEKER_STRIKE:
+        return &bn::sprite_items::card_seeker_strike;
     default:
         return nullptr;
     }
@@ -1748,7 +1757,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
     128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147,
     148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 0, 161, 162, 163, 164, 0, 0,
-    0, 0, 0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179,
+    0, 0, 0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1939,6 +1948,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_bad_luck.h"
 #include "bn_sprite_items_card_debt.h"
 #include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_seeker_strike.h"
 
 namespace gba::card_art
 {
@@ -2310,6 +2320,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_debt;
     case engine::CardId::SPORE_MIND:
         return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::SEEKER_STRIKE:
+        return &bn::sprite_items::card_seeker_strike;
     default:
         return nullptr;
     }
@@ -2341,7 +2353,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132,
     133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
     153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
+    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -2532,6 +2544,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_bad_luck.h"
 #include "bn_sprite_items_card_debt.h"
 #include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_seeker_strike.h"
 
 namespace gba::card_art
 {
@@ -2903,6 +2916,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_debt;
     case engine::CardId::SPORE_MIND:
         return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::SEEKER_STRIKE:
+        return &bn::sprite_items::card_seeker_strike;
     default:
         return nullptr;
     }
@@ -2934,7 +2949,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
     132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
     152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181,
+    0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.

@@ -838,6 +838,8 @@ bn::string_view base_name(engine::CardId id)
         return "Dette";
     case engine::CardId::SPORE_MIND:
         return "Conscience sporique";
+    case engine::CardId::SEEKER_STRIKE:
+        return "Frappe chercheuse";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1604,6 +1606,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SPORE_MIND:
         stream << "Épuisement.";
+        break;
+    case engine::CardId::SEEKER_STRIKE:
+        stream << value << " dégâts. Pioche : 1 parmi " << secondary << " en main.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:

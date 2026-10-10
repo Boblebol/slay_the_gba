@@ -674,7 +674,8 @@ void CombatScene::_refresh_card_text()
         // Which pile is shown, and where the cursor is in it.
         TextLine place;
         bn::ostringstream place_stream(place);
-        place_stream << (_combat.pending_choices[0].source == engine::Pile::DRAW ? "Pioche " : "Défausse ")
+        engine::Pile source = _combat.pending_choices[0].source;
+        place_stream << (source == engine::Pile::DRAW ? "Pioche " : source == engine::Pile::OFFERS ? "Choix " : "Défausse ")
                      << (_pile_offset + _selected + 1) << "/" << _choice_order.size();
         _line1_right.set(112, LINE1_Y, place, Align::RIGHT, TextColor::GRAY);
     }

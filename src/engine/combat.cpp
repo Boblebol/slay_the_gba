@@ -1629,6 +1629,7 @@ void CombatEngine::reset_combat_state() {
     powers_in_play.clear();
     permanent_gains.clear();
     pending_choices.clear();
+    clear_offers();
     turn_picks_from_draw_ = 0;
     end_turn_requested = false;
     event_depth_ = 0;
@@ -1941,6 +1942,7 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::PURITY:
         case CardId::SECRET_TECHNIQUE:
         case CardId::SECRET_WEAPON:
+        case CardId::SEEKER_STRIKE:
         case CardId::DUAL_WIELD:
         case CardId::HEIRLOOM_HAMMER:
         case CardId::NIGHTMARE:
@@ -2168,11 +2170,21 @@ bool CombatEngine::can_be_picked(const DeckCard& card, const CardChoice& choice)
 }
 
 size_t CombatEngine::pile_size(Pile pile) const {
-    return pile == Pile::HAND ? hand.size() : pile == Pile::DRAW ? draw_pile.size() : discard_pile.size();
+    switch (pile) {
+        case Pile::HAND: return hand.size();
+        case Pile::DRAW: return draw_pile.size();
+        case Pile::OFFERS: return offers.size();
+        default: return discard_pile.size();
+    }
 }
 
 const DeckCard& CombatEngine::pile_card(Pile pile, size_t index) const {
-    return pile == Pile::HAND ? hand[index] : pile == Pile::DRAW ? draw_pile[index] : discard_pile[index];
+    switch (pile) {
+        case Pile::HAND: return hand[index];
+        case Pile::DRAW: return draw_pile[index];
+        case Pile::OFFERS: return offers[index];
+        default: return discard_pile[index];
+    }
 }
 
 size_t CombatEngine::choice_pool(const CardChoice& choice) const {
@@ -2226,8 +2238,63 @@ void CombatEngine::ask_pile_choice(Pile source, ChoiceKind kind, uint8_t count) 
     ask_choice(choice);
 }
 
+void CombatEngine::offer_from_draw(uint8_t count) {
+    CardChoice choice;
+    choice.kind = ChoiceKind::TO_HAND;
+    choice.source = Pile::OFFERS;
+    choice.amount = count;
+    ask_choice(choice);
+}
+
+void CombatEngine::offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded, bool free_this_turn) {
+    CardChoice choice;
+    choice.kind = ChoiceKind::TO_HAND;
+    choice.source = Pile::OFFERS;
+    choice.amount = count;
+    choice.upgraded = upgraded;
+    choice.offer_from_draw = false;
+    choice.offer_free = free_this_turn;
+    choice.offer_filter = filter;
+    ask_choice(choice);
+}
+
+void CombatEngine::clear_offers() {
+    offers.clear();
+    offer_origins.clear();
+}
+
+void CombatEngine::deal_offers(const CardChoice& choice) {
+    clear_offers();
+    const size_t wanted = std::min<size_t>(choice.amount, offers.capacity());
+    if (choice.offer_from_draw) {
+        // Different cards of the draw pile, at random: its order stays hidden.
+        FixedVector<uint8_t, 50> left;
+        for (size_t i = 0; i < draw_pile.size(); ++i) left.push_back(static_cast<uint8_t>(i));
+        while (offers.size() < wanted && !left.empty()) {
+            const size_t pick = next_random() % left.size();
+            offers.push_back(draw_pile[left[pick]]);
+            offer_origins.push_back(left[pick]);
+            left.erase(pick);
+        }
+        return;
+    }
+    // Different cards: a card drawn twice is drawn again, a few times at most when the filter has few cards.
+    for (size_t tries = 0; offers.size() < wanted && tries < wanted * 8; ++tries) {
+        const CardId id = random_card(choice.offer_filter);
+        if (id == CardId::NONE) break;
+        bool offered = false;
+        for (const DeckCard& card : offers) offered = offered || card.id == id;
+        if (offered) continue;
+        DeckCard card(id, choice.upgraded);
+        card.free_this_turn = choice.offer_free;
+        offers.push_back(card);
+        offer_origins.push_back(NOT_IN_PILE);
+    }
+}
+
 void CombatEngine::settle_choices() {
     while (choice_pending()) {
+        if (pending_choices[0].source == Pile::OFFERS && offers.empty()) deal_offers(pending_choices[0]);
         const CardChoice choice = pending_choices[0];
         FixedVector<uint8_t, 50> pickable;
         for (size_t i = 0, pool = choice_pool(choice); i < pool; ++i) {
@@ -2249,6 +2316,20 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
     uint8_t taken_from_discard = 0;
     for (uint8_t index : picks) {
         if (index >= pile_size(choice.source)) continue;
+        if (choice.source == Pile::OFFERS) {
+            const uint8_t origin = offer_origins[index];
+            if (origin == NOT_IN_PILE) {
+                create_card(offers[index], Pile::HAND); // to the discard pile when the hand is full
+            } else if (origin < draw_pile.size() && hand.size() < hand.capacity()) {
+                // A card of the draw pile stays there when the hand is full.
+                hand.push_back(draw_pile[origin]);
+                draw_pile.erase(origin);
+                for (uint8_t& other : offer_origins) {
+                    if (other != NOT_IN_PILE && other > origin) --other;
+                }
+            }
+            continue;
+        }
         if (choice.source == Pile::HAND) {
             switch (choice.kind) {
                 case ChoiceKind::DISCARD:
@@ -2336,6 +2417,8 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                 break;
         }
     }
+    // The offers not picked are left out: the next offer deals its own.
+    if (choice.source == Pile::OFFERS) clear_offers();
     // The choices still waiting on the discard pile are about the same cards, fewer now.
     for (CardChoice& waiting : pending_choices) {
         if (waiting.source == Pile::DISCARD && waiting.pool != WHOLE_PILE) {
@@ -2386,7 +2469,10 @@ void CombatEngine::resolve_choice_default() {
             if (choice_allows(i)) picks.push_back(static_cast<uint8_t>(i));
         }
     }
-    if (!resolve_choice(std::span<const uint8_t>(picks.begin(), picks.size()))) pending_choices.erase(0);
+    if (!resolve_choice(std::span<const uint8_t>(picks.begin(), picks.size()))) {
+        if (pending_choices[0].source == Pile::OFFERS) clear_offers();
+        pending_choices.erase(0);
+    }
 }
 
 void CombatEngine::boost_copies(CardId id, int amount) {
@@ -3493,6 +3579,12 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             choice.optional = true;
             ask_choice(choice);
             set_log(upgraded ? "Played Purity+!"sv : "Played Purity!"sv);
+            break;
+        }
+        case CardId::SEEKER_STRIKE: {
+            hit(current_target, base_value);
+            offer_from_draw(secondary_value);
+            set_log(upgraded ? "Played Seeker Strike+!"sv : "Played Seeker Strike!"sv);
             break;
         }
         case CardId::SECRET_TECHNIQUE:

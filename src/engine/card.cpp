@@ -600,6 +600,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::BAD_LUCK, "Bad Luck", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 13 HP. Eternal.", "Bad Luck+", COST_X, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 13 HP. Eternal.", KEYWORD_UNPLAYABLE | KEYWORD_ETERNAL, KEYWORD_UNPLAYABLE | KEYWORD_ETERNAL },
     { CardId::DEBT, "Debt", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 10 gold.", "Debt+", COST_X, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 10 gold.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
     { CardId::SPORE_MIND, "Spore Mind", 1, CardType::CURSE, TargetType::SELF, 0, 0, "Exhaust.", "Spore Mind+", 1, 0, 0, "Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Choose 1 card among N offered (mechanic #72).
+    { CardId::SEEKER_STRIKE, "Seeker Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 3, "Deal 9 dmg. Choose 1 of 3 cards in your draw pile to add into your hand.", "Seeker Strike+", 1, 12, 3, "Deal 12 dmg. Choose 1 of 3 cards in your draw pile to add into your hand." },
 };
 
 const CardDef& CardDef::get(CardId id) {

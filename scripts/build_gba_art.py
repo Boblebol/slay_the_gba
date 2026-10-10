@@ -742,6 +742,7 @@ CARDS: list[CardArt] = [
     CardArt("bad_luck", "curse", "bad_luck", "status", (NO_COST, NO_COST)),
     CardArt("debt", "curse", "debt", "status", (NO_COST, NO_COST)),
     CardArt("spore_mind", "curse", "spore_mind", "status", (1, 1)),
+    CardArt("seeker_strike", "colorless", "seeker_strike", "attack", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
