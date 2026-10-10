@@ -105,6 +105,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "PANTOGRAPH", "Au début de chaque combat de Boss, récupérez 25 PV." },
     { "PAELS_LEGION", "Double l'Armure reçue d'une carte, puis s'endort pendant 2 tours." },
     { "PARRYING_SHIELD", "Si vous terminez votre tour avec au moins 10 d'Armure, infligez 6 dégâts à un ennemi aléatoire." },
+    { "POLLINOUS_CORE", "Tous les 4 tours, piochez 2 cartes." },
     { "PENDULUM", "Tous les 3 tours, piochez 1 carte." },
     { "PERMAFROST", "La première fois que vous jouez un Pouvoir chaque combat, gagnez 7 d'Armure." },
     { "POCKETWATCH", "Si vous avez joué 3 cartes ou moins durant votre tour, piochez 3 cartes supplémentaires au début du tour suivant." },

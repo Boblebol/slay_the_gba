@@ -1395,6 +1395,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("PENDULUM")) combat.add_power(PowerId::PENDULUM, 1);
     // Ring of the Drake (event): 2 more cards drawn at the start of each of the first 3 turns.
     if (has_relic("RING_OF_THE_DRAKE")) combat.add_power(PowerId::RING_OF_THE_DRAKE, 2);
+    if (has_relic("POLLINOUS_CORE")) combat.add_power(PowerId::POLLINOUS_CORE, 2);
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
     if (has_relic("BOOKMARK")) combat.add_power(PowerId::BOOKMARK, 1);
     if (has_relic("VERY_HOT_COCOA")) combat.add_power(PowerId::VERY_HOT_COCOA, 4);
