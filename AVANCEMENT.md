@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 68,6 %** — 844 faits, 20 partiels, 381 à faire (35 hors périmètre).
+**Avancement global : 68,7 %** — 845 faits, 20 partiels, 380 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 96 | 1 | 5 | 94,6 % |
 | [Cartes communes aux cinq éditions](#cartes) | 102 | 0 | 18 | 85,0 % |
 | [Reliques et potions](#reliques) | 166 | 0 | 155 | 51,7 % |
-| [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
+| [Bestiaire](#bestiaire) | 14 | 1 | 89 | 13,9 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 41 | 1 | 16 | 71,6 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **844** | **20** | **381** | **68,6 %** |
+| **Total** | **845** | **20** | **380** | **68,7 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 13,0 %
+## Bestiaire — 13,9 %
 
-### Monstres — 18,1 %
+### Monstres — 19,4 %
 
-13 faits, 0 partiel, 59 à faire.
+14 faits, 0 partiel, 58 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1289,7 +1289,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Magistrix | Monstre · Acte 3 | Non |  |
 | Opérateur de tourelle | Faible · Acte 3 | Non |  |
 | Parchemord | Monstre · Acte 3 | Non |  |
-| Poignard-bot | Invocation · Acte 3 | Non |  |
+| Poignard-bot | Invocation · Acte 3 | Oui |  |
 | Sculpteur dévoué | Faible · Acte 3 | Non |  |
 | Sonobot | Invocation · Acte 3 | Non |  |
 
