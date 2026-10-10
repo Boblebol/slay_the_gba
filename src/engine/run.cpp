@@ -1497,6 +1497,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("CHEMICAL_X")) combat.add_power(PowerId::CHEMICAL_X, CHEMICAL_X_INCREASE);
     // Unsettling Lamp: the first card of the fight that debuffs an enemy has its debuffs doubled.
     if (has_relic("UNSETTLING_LAMP")) combat.add_power(PowerId::UNSETTLING_LAMP, 1);
+    // Infused Core: Lightning orbs deal 1 more damage.
+    if (has_relic("INFUSED_CORE")) combat.add_power(PowerId::INFUSED_CORE, 1);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);
@@ -1638,6 +1640,10 @@ void RunManager::apply_combat_start_relics() {
     // Cracked Core (Defect): channel 1 Lightning.
     if (has_relic("CRACKED_CORE")) {
         combat.channel_orb(OrbType::LIGHTNING);
+    }
+    // Infused Core (Defect): channel 3 Lightning.
+    if (has_relic("INFUSED_CORE")) {
+        for (int orb = 0; orb < 3; ++orb) combat.channel_orb(OrbType::LIGHTNING);
     }
     // Anchor: start each combat with 10 Block, added after the turn reset and unaffected by Dexterity.
     if (has_relic("ANCHOR")) {
