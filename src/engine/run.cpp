@@ -831,6 +831,8 @@ void RunManager::heal(int16_t amount) {
 
 void RunManager::gain_gold(int16_t amount) {
     if (amount <= 0) return;
+    // Ectoplasm: no gold can be gained, from a fight, a treasure, an event or a relic.
+    if (has_relic("ECTOPLASM")) return;
     gold = static_cast<int16_t>(std::min<int>(9999, gold + amount));
     on_gold_gained(amount);
 }
@@ -1053,6 +1055,8 @@ void RunManager::register_relic_powers() {
         for (int copy = 0; copy < 3; ++copy) combat.create_card(CardId::DAZED, Pile::DRAW);
     }
     if (has_relic("BLOOD_SOAKED_ROSE")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Ectoplasm: one more energy each turn.
+    if (has_relic("ECTOPLASM")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Whispering Earring: one more energy each turn, and Vakuu plays the first turn of the combat.
     if (has_relic("WHISPERING_EARRING")) {
         combat.add_power(PowerId::TURN_ENERGY, 1);
