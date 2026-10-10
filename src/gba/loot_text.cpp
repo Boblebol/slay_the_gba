@@ -46,6 +46,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "CIRCLET", "C'est un diadème." },
     { "DINGY_RUG", "Les récompenses de carte peuvent proposer des cartes Incolores." },
     { "CLOAK_CLASP", "À la fin de votre tour, gagnez 1 d'Armure pour chaque carte dans votre Main." },
+    { "DAUGHTER_OF_THE_WIND", "Chaque fois que vous jouez une Attaque, gagnez 1 d'Armure." },
     { "DATA_DISK", "Commencez chaque combat avec 1 de Focalisation." },
     { "DRAGON_FRUIT", "Chaque fois que vous gagnez des Pièces d'or, augmentez vos PV Max de 1." },
     { "BEATING_REMNANT", "Vous ne pouvez perdre plus de 20 PV en un seul tour." },

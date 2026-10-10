@@ -2185,6 +2185,26 @@ void test_unsettling_lamp() {
     std::cout << "[PASS] Unsettling Lamp: the first debuffing card of the fight has its debuffs doubled" << std::endl;
 }
 
+void test_daughter_of_the_wind() {
+    // With the relic: each Attack played gives 1 Block; a Skill does not.
+    RunManager wind = make_relic_run(CharacterId::IRONCLAD, { "DAUGHTER_OF_THE_WIND" });
+    int16_t start = wind.combat.player.block;
+    play(wind.combat, CardId::STRIKE);
+    assert(wind.combat.player.block == start + 1);
+    play(wind.combat, CardId::DEFEND);
+    assert(wind.combat.player.block == start + 1 + 5);
+    play(wind.combat, CardId::STRIKE);
+    assert(wind.combat.player.block == start + 1 + 5 + 1);
+
+    // Without the relic: a Strike gives no Block.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    int16_t plain_start = plain.combat.player.block;
+    play(plain.combat, CardId::STRIKE);
+    assert(!plain.has_relic("DAUGHTER_OF_THE_WIND"));
+    assert(plain.combat.player.block == plain_start);
+    std::cout << "[PASS] Daughter of the Wind: 1 Block per Attack played" << std::endl;
+}
+
 void test_bowler_hat() {
     // With the relic: the fight's gold reward is 25 % bigger, and that gold reaches the purse once the rewards are taken.
     // Without it: the plain reward.
@@ -3333,6 +3353,7 @@ int main() {
     test_lees_waffle();
     test_bowler_hat();
     test_unsettling_lamp();
+    test_daughter_of_the_wind();
     test_bookmark();
     test_tungsten_rod();
     test_mango();
