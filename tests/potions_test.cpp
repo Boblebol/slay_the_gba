@@ -19,6 +19,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
     "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION",
+    "COSMIC_CONCOCTION",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -830,6 +831,24 @@ void test_liquid_memories() {
     std::cout << "[PASS] Liquid Memories: a card of the discard pile added to the hand, free this turn" << std::endl;
 }
 
+void test_cosmic_concoction() {
+    // Three Colorless cards, all upgraded, are added to the hand.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.hand.size() == 5);
+    assert(combat.use_potion("COSMIC_CONCOCTION"));
+    assert(combat.hand.size() == 8);
+    for (size_t i = 5; i < 8; ++i) {
+        assert(card_meta(combat.hand[i].id).pool == CardPool::COLORLESS);
+        assert(combat.hand[i].upgraded);
+        assert(!combat.hand[i].free_this_turn);
+    }
+    for (size_t i = 0; i < 5; ++i) assert(!combat.hand[i].upgraded);
+    assert(combat.player.energy == 3);
+    assert(std::string_view(combat.combat_log) == "Cosmic Concoction!");
+
+    std::cout << "[PASS] Cosmic Concoction: three upgraded Colorless cards added to the hand" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -982,6 +1001,7 @@ int main() {
     test_duplicator();
     test_droplet_of_precognition();
     test_orobic_acid();
+    test_cosmic_concoction();
     test_beetle_juice();
     test_touch_of_insanity();
     test_liquid_memories();

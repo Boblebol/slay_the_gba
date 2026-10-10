@@ -6449,6 +6449,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
             create_card(made, Pile::HAND);
         }
         set_log("Orobic Acid!");
+    } else if (potion_id == "COSMIC_CONCOCTION") {
+        for (int copy = 0; copy < 3; ++copy) create_random_card(CardFilter(CardPool::COLORLESS), Pile::HAND, true);
+        set_log("Cosmic Concoction!");
     } else {
         return false;
     }
