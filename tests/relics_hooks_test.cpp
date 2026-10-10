@@ -3116,6 +3116,24 @@ void test_pollinous_core() {
     std::cout << "[PASS] Pollinous Core: every 4 turns, draw 2 more cards" << std::endl;
 }
 
+void test_black_blood() {
+    // Black Blood: 12 HP after every fight, capped at the max HP.
+    RunManager blood = make_relic_run(CharacterId::SILENT, { "BLACK_BLOOD" });
+    blood.combat.player.hp = 30;
+    blood.proceed_after_combat();
+    assert(blood.hp == 42);
+    RunManager near_full = make_relic_run(CharacterId::SILENT, { "BLACK_BLOOD" });
+    near_full.combat.player.hp = near_full.max_hp - 5;
+    near_full.proceed_after_combat();
+    assert(near_full.hp == near_full.max_hp);
+    // Without the relic: no heal.
+    RunManager plain = make_relic_run(CharacterId::SILENT, {});
+    plain.combat.player.hp = 30;
+    plain.proceed_after_combat();
+    assert(plain.hp == 30);
+    std::cout << "[PASS] Black Blood" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3128,6 +3146,7 @@ int main() {
     test_combat_start_relics();
     test_paels_blood();
     test_relics_in_a_run();
+    test_black_blood();
     test_very_hot_cocoa();
     test_strawberry();
     test_golden_compass();

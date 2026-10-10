@@ -1763,6 +1763,8 @@ void RunManager::proceed_after_combat() {
     }
     // Chosen Cheese: 1 Max HP at the end of each fight.
     if (has_relic("CHOSEN_CHEESE")) gain_max_hp(1);
+    // Black Blood (event relic): 12 HP after every fight.
+    if (has_relic("BLACK_BLOOD")) hp = std::min<int16_t>(max_hp, hp + 12);
 
     // Every enemy ran away: the fight is over, but there is nothing to take.
     if (combat.every_enemy_escaped()) {

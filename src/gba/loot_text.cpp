@@ -138,6 +138,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "WHISPERING_EARRING","Gagnez 1 ● au début de chaque tour. Vakuu joue votre premier tour à votre place." },
     { "ARCANE_SCROLL", "Lorsque vous obtenez cette relique, ajoutez une Carte Rare aléatoire à votre Deck." },
     { "LEAD_PAPERWEIGHT", "Lorsque vous obtenez cette relique, choisissez 1 carte Incolore parmi 2 à ajouter à votre Deck." },
+    { "BLACK_BLOOD", "À la fin de chaque combat, récupérez 12 PV." },
     { "LAVA_ROCK", "Le Boss de l'Acte 1 octroie 2 Reliques lorsqu'il est vaincu." },
     { "RUNIC_PYRAMID", "À la fin de votre tour, vous ne défaussez pas votre Main." },
     { "PHILOSOPHERS_STONE", "Gagnez 1 ● au début de chaque tour. TOUS les ennemis démarrent le combat avec 1 de Force." },
