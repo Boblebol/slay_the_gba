@@ -203,7 +203,7 @@ enum class PowerId : uint8_t {
     TOOLS_OF_THE_TRADE, // once the hand is drawn: draw `amount` cards, then discard `amount` cards
     // Relics of the Ancients (appended)
     WHISPERING_EARRING, // Vakuu plays the first turn of the combat (CombatEngine::vakuu_turn_active)
-    VELVET_CHOKER       // no more than `amount` cards played each turn (CombatEngine::play_blocker)
+    VELVET_CHOKER,      // no more than `amount` cards played each turn (CombatEngine::play_blocker)
     PAELS_EYE           // first turn ended with no card played: exhaust the hand, take an extra turn (removed once used)
 };
 
