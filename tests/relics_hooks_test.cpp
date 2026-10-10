@@ -877,6 +877,26 @@ void test_circlet() {
     std::cout << "[PASS] Circlet: no effect, with or without the relic" << std::endl;
 }
 
+void test_fake_merchants_rug() {
+    // Le tapis du Marchand ??? is an event relic with no effect in game: a run holding it plays exactly like one without it.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("FAKE_MERCHANTS_RUG");
+    enter_room_of_type(with, RoomType::MONSTER);
+
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(without, RoomType::MONSTER);
+
+    assert(with.has_relic("FAKE_MERCHANTS_RUG"));
+    assert(!without.has_relic("FAKE_MERCHANTS_RUG"));
+    assert(with.max_hp == without.max_hp && with.gold == without.gold);
+    assert(with.combat.player.energy == without.combat.player.energy);
+    assert(with.combat.player.get_status(StatusType::DEXTERITY) == without.combat.player.get_status(StatusType::DEXTERITY));
+    assert(with.combat.player.get_status(StatusType::STRENGTH) == without.combat.player.get_status(StatusType::STRENGTH));
+    std::cout << "[PASS] Fake Merchant's Rug: no effect, with or without the relic" << std::endl;
+}
+
 void test_beating_remnant() {
     // With the relic: no more than 20 HP lost in a turn; the budget comes back at the start of the next turn.
     CombatEngine remnant = make_relic_combat(CharacterId::IRONCLAD, PowerId::BEATING_REMNANT, 20);
@@ -2742,6 +2762,7 @@ int main() {
     test_petrified_toad();
     test_belt_buckle();
     test_circlet();
+    test_fake_merchants_rug();
     test_dingy_rug();
     test_beating_remnant();
     test_vambrace();
