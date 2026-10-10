@@ -2092,6 +2092,28 @@ void test_war_paint() {
     std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
 }
 
+void test_dragon_fruit() {
+    // With the relic: each gain of Gold raises the Max HP by 1, a gain of 0 changes nothing.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("DRAGON_FRUIT");
+    int16_t max_hp = with.max_hp;
+    with.gain_gold(10);
+    assert(with.max_hp == max_hp + 1);
+    with.gain_gold(0);
+    assert(with.max_hp == max_hp + 1);
+    with.gain_gold(25);
+    assert(with.max_hp == max_hp + 2);
+
+    // Without the relic: the Max HP does not move with the gold.
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    int16_t plain_max_hp = without.max_hp;
+    without.gain_gold(10);
+    assert(!without.has_relic("DRAGON_FRUIT") && without.max_hp == plain_max_hp);
+    std::cout << "[PASS] Dragon Fruit: +1 Max HP with each gain of Gold" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2167,5 +2189,6 @@ int main() {
     test_old_coin();
     test_pear();
     test_whetstone();
+    test_dragon_fruit();
     return 0;
 }
