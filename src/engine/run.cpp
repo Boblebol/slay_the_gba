@@ -29,6 +29,8 @@ constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
 constexpr int LAVA_ROCK_RELICS = 2; // relics the Act 1 Boss gives to Lava Rock when defeated
 constexpr uint8_t GIRYA_LIFTS = 3;  // most Strength Girya gives, one lift each
 constexpr int16_t MAW_BANK_GOLD = 12; // Gold Maw Bank gives on each floor climbed, until the merchant gets some
+constexpr uint8_t WONGOS_MYSTERY_TICKET_COMBATS = 5; // fights won before the Ticket pays out
+constexpr int WONGOS_MYSTERY_TICKET_RELICS = 3;      // random relics the Ticket pays out, once
 
 constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 0, "Normal", "Difficulté standard de l'Ascension." },
@@ -1004,6 +1006,13 @@ void RunManager::on_shop_opened() {
 
 void RunManager::on_combat_won(RoomType room) {
     count_hook(RunHook::COMBAT_WON);
+    // Wongo's Mystery Ticket (event): each fight won counts; the fifth one pays 3 random relics, once.
+    if (has_relic("WONGOS_MYSTERY_TICKET") && relic_counter("WONGOS_MYSTERY_TICKET") < WONGOS_MYSTERY_TICKET_COMBATS) {
+        set_relic_counter("WONGOS_MYSTERY_TICKET", static_cast<uint8_t>(relic_counter("WONGOS_MYSTERY_TICKET") + 1));
+        if (relic_counter("WONGOS_MYSTERY_TICKET") == WONGOS_MYSTERY_TICKET_COMBATS) {
+            gain_random_relics(WONGOS_MYSTERY_TICKET_RELICS);
+        }
+    }
     // War Hammer: killing an Elite upgrades 4 random cards of the deck.
     if (room == RoomType::ELITE && has_relic("WAR_HAMMER")) upgrade_random_cards(4);
     // Paël's Tooth gives back one devoured card, upgraded, per fight (chosen at random).

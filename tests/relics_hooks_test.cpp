@@ -657,6 +657,40 @@ void test_pumpkin_candle() {
     std::cout << "[PASS] Pumpkin Candle: +1 energy per turn for 5 combats" << std::endl;
 }
 
+void test_wongos_mystery_ticket() {
+    // With the relic: each fight won counts; the fifth pays 3 random relics, once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("WONGOS_MYSTERY_TICKET");
+    const size_t before = run.relics.size(); // the starter relic is already there
+    for (int fight = 1; fight <= 4; ++fight) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.proceed_after_combat();
+        assert(run.relic_counter("WONGOS_MYSTERY_TICKET") == fight);
+        assert(run.relics.size() == before);
+    }
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.proceed_after_combat();
+    assert(run.relics.size() == before + 3);
+    assert(run.relic_counter("WONGOS_MYSTERY_TICKET") == 5);
+    // Paid out once: later fights add nothing.
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.proceed_after_combat();
+    assert(run.relics.size() == before + 3);
+
+    // Without the relic: five fights give no relic.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    const size_t plain_before = plain.relics.size();
+    for (int fight = 1; fight <= 5; ++fight) {
+        enter_room_of_type(plain, RoomType::MONSTER);
+        plain.proceed_after_combat();
+    }
+    assert(!plain.has_relic("WONGOS_MYSTERY_TICKET"));
+    assert(plain.relics.size() == plain_before);
+    std::cout << "[PASS] Wongo's Mystery Ticket: 3 random relics after 5 combats" << std::endl;
+}
+
 void test_golden_compass() {
     auto nodes_on_floor = [](const RunManager& r, uint8_t floor) {
         int n = 0;
@@ -3057,6 +3091,7 @@ int main() {
     test_delicate_frond();
     test_seal_of_gold();
     test_pumpkin_candle();
+    test_wongos_mystery_ticket();
     test_paels_legion();
     test_golden_pearl();
     test_venerable_tea_set();
