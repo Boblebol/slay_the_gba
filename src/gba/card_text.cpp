@@ -882,6 +882,8 @@ bn::string_view base_name(engine::CardId id)
         return "Alchimie";
     case engine::CardId::THE_GAMBIT:
         return "La grande manœuvre";
+    case engine::CardId::SEEKER_STRIKE:
+        return "Frappe chercheuse";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1714,6 +1716,8 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::THE_GAMBIT:
         stream << "Armure " << value << ". Dégât subi : mort.";
+    case engine::CardId::SEEKER_STRIKE:
+        stream << value << " dégâts. Pioche : 1 parmi " << secondary << " en main.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:

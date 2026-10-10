@@ -160,6 +160,10 @@ enum class ChoiceThen : uint8_t {
 };
 
 constexpr uint8_t WHOLE_PILE = 0xFF;
+// Cards a choice about Pile::OFFERS offers at most (Choices Paradox offers 5).
+constexpr uint8_t MAX_OFFERS = 5;
+// Where an offered card comes from when it was made for the offer, not taken from the draw pile.
+constexpr uint8_t NOT_IN_PILE = 0xFF;
 
 // The Soul (Necrobinder) is a card, not a gauge: a token that costs 0, "Draw 2 cards. Exhaust." (3 cards once
 // upgraded), which other cards add to the piles. This is its id.
@@ -181,6 +185,12 @@ struct CardChoice {
     // Only cards of this type can be picked, when `any_type` is false (Secret Technique, Secret Weapon).
     bool any_type = true;
     CardType type = CardType::ATTACK;
+    // Pile::OFFERS: the `amount` cards offered are dealt when the choice comes first, from the draw pile when
+    // `offer_from_draw`, otherwise made at random from `offer_filter` (upgraded when `upgraded`, costing 0 this
+    // turn when `offer_free`). The picked cards go to the hand, the others stay where they were or vanish.
+    bool offer_from_draw = true;
+    bool offer_free = false;
+    CardFilter offer_filter;
 };
 
 // Where a card goes once it has been played.
@@ -228,6 +238,8 @@ public:
     bool unmovable_used = false;      // Unmovable already doubled a Block this turn
     bool attack_double_next = false;  // Attacks deal double damage on the next turn (Shadow Step)
     bool attack_double_now = false;   // Attacks deal double damage this turn
+    bool pen_nib_now = false;         // the Attack being played deals double damage (Pen Nib)
+    bool strike_played_now = false;   // the card being played contains "Strike" (Strike Dummy)
     bool rebound_pending = false;    // the next card played this turn goes on top of the draw pile (Rebound)
     uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
     // Active powers, in the order they were gained: every relic a run can hold plus a combat's worth of
@@ -236,6 +248,10 @@ public:
     FixedVector<DeckCard, 24> powers_in_play; // Power cards played this combat: they stay in play
     FixedVector<PermanentGain, 16> permanent_gains; // bonuses to write back to the deck after the combat
     FixedVector<CardChoice, 4> pending_choices;      // asked in order, the first one first
+    // Cards offered by the first choice when it is about Pile::OFFERS, and the place of each one in the draw
+    // pile (NOT_IN_PILE for a card made for the offer). Empty when no offer is being asked.
+    FixedVector<DeckCard, MAX_OFFERS> offers;
+    FixedVector<uint8_t, MAX_OFFERS> offer_origins;
     bool resolving_card = false;     // a card's effect is being resolved (Paël's Legion doubles its Block)
     bool end_turn_requested = false; // a card ended the turn (Void Form): the caller ends it once the card is resolved
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
@@ -386,6 +402,12 @@ public:
     void ask_choice(const CardChoice& choice);
     // Same, for cards picked in the draw or the discard pile.
     void ask_pile_choice(Pile source, ChoiceKind kind, uint8_t count = 1);
+    // "Choose 1 of `count` cards in your Draw Pile to add into your Hand" (Seeker Strike): `count` different
+    // cards of the draw pile, at random, are offered; the picked one goes to the hand, the others stay.
+    void offer_from_draw(uint8_t count);
+    // "Choose 1 of `count` random cards to add to your Hand" (Discovery): `count` different random cards of
+    // `filter` are made and offered; the picked one goes to the hand, the others vanish.
+    void offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded = false, bool free_this_turn = false);
     // Cards of a pile, as the choices index them.
     size_t pile_size(Pile pile) const;
     const DeckCard& pile_card(Pile pile, size_t index) const;
@@ -481,6 +503,9 @@ private:
     size_t choice_pool(const CardChoice& choice) const;
     // Answers, without asking, the choices that leave nothing to decide.
     void settle_choices();
+    // Fills `offers` for a choice about Pile::OFFERS.
+    void deal_offers(const CardChoice& choice);
+    void clear_offers();
     void change_cost_of_copies(CardId id, int delta);
     uint8_t autoplay_depth_ = 0;
     uint8_t vakuu_plays_ = 0;     // cards Vakuu has played this turn

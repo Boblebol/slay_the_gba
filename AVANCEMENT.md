@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 68,6 %** — 844 faits, 20 partiels, 381 à faire (35 hors périmètre).
+**Avancement global : 69,8 %** — 859 faits, 20 partiels, 366 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -18,15 +18,15 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Silencieuse](#silent) | 98 | 1 | 2 | 97,5 % |
 | [Le Défectueux](#defect) | 100 | 1 | 4 | 95,7 % |
 | [Le Régent](#regent) | 91 | 1 | 8 | 91,5 % |
-| [La Nécrolieuse](#necrobinder) | 96 | 1 | 5 | 94,6 % |
-| [Cartes communes aux cinq éditions](#cartes) | 102 | 0 | 18 | 85,0 % |
-| [Reliques et potions](#reliques) | 166 | 0 | 155 | 51,7 % |
-| [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
+| [La Nécrolieuse](#necrobinder) | 97 | 1 | 4 | 95,6 % |
+| [Cartes communes aux cinq éditions](#cartes) | 103 | 0 | 17 | 85,8 % |
+| [Reliques et potions](#reliques) | 177 | 0 | 144 | 55,1 % |
+| [Bestiaire](#bestiaire) | 14 | 1 | 89 | 13,9 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 41 | 1 | 16 | 71,6 % |
+| [Règles de combat](#regles) | 42 | 1 | 15 | 73,3 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **844** | **20** | **381** | **68,6 %** |
+| **Total** | **859** | **20** | **366** | **69,8 %** |
 
 <a id="ironclad"></a>
 
@@ -557,7 +557,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 94,6 %
+## La Nécrolieuse — 95,6 %
 
 ### Cartes — 96,6 %
 
@@ -657,9 +657,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Grimoire interdit | Ancienne · Pouvoir | Non |  |
 | Protecteur | Ancienne · Attaque | Oui |  |
 
-### Reliques — 75,0 %
+### Reliques — 87,5 %
 
-6 faits, 0 partiel, 2 à faire.
+7 faits, 0 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -668,7 +668,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Couteau à reliure | Peu commune | Oui |  |
 | Masque funéraire | Peu commune | Oui |  |
 | Grand chapeau | Rare | Oui |  |
-| Marque-page | Rare | Non |  |
+| Marque-page | Rare | Oui |  |
 | Tuile en ivoire | Rare | Oui |  |
 | Sceau immortel | Boutique | Non |  |
 
@@ -688,11 +688,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 85,0 %
+## Cartes communes aux cinq éditions — 85,8 %
 
-### Cartes incolores — 84,9 %
+### Cartes incolores — 86,8 %
 
-45 faits, 0 partiel, 8 à faire (12 hors périmètre).
+46 faits, 0 partiel, 7 à faire (12 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -712,7 +712,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Entraves des ténèbres | Peu commune · Compétence | Oui |  |
 | Entrée fracassante | Peu commune · Attaque | Oui |  |
 | Finesse | Peu commune · Compétence | Oui |  |
-| Frappe chercheuse | Peu commune · Attaque | Non |  |
+| Frappe chercheuse | Peu commune · Attaque | Oui |  |
 | Frappe ultime | Peu commune · Attaque | Oui |  |
 | Grégarité | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Hache sifflante | Peu commune · Attaque | Oui |  |
@@ -859,11 +859,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 51,7 %
+## Reliques et potions — 55,1 %
 
-### Reliques partagées — 51,3 %
+### Reliques partagées — 57,3 %
 
-60 faits, 0 partiel, 57 à faire.
+67 faits, 0 partiel, 50 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -898,7 +898,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Bonbon durable | Peu commune | Non |  |
 | Bouclier de parade | Peu commune | Oui |  |
 | Brassard | Peu commune | Non |  |
-| Breloque reptile | Peu commune | Non |  |
+| Breloque reptile | Peu commune | Oui |  |
 | Candélabre | Peu commune | Oui |  |
 | Canon miniature | Peu commune | Non |  |
 | Chapeau melon | Peu commune | Non |  |
@@ -909,14 +909,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Fard pétillant | Peu commune | Oui |  |
 | Kusarigama | Peu commune | Oui |  |
 | Marteau-piqueur | Peu commune | Oui |  |
-| Minuscule boîte aux lettres | Peu commune | Non |  |
+| Minuscule boîte aux lettres | Peu commune | Oui |  |
 | Nunchaku | Peu commune | Oui |  |
 | Orichalque | Peu commune | Oui |  |
 | Pantographe | Peu commune | Oui |  |
 | Pergélisol | Peu commune | Oui |  |
 | Planisphère | Peu commune | Non |  |
 | Plume éternelle | Peu commune | Non |  |
-| Pointe de stylo | Peu commune | Non |  |
+| Pointe de stylo | Peu commune | Oui |  |
 | Poire | Peu commune | Non |  |
 | Poisson chanceux | Peu commune | Non |  |
 | Sablier de mercure | Peu commune | Oui |  |
@@ -936,7 +936,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Kunai | Rare | Oui |  |
 | L'Art de la guerre | Rare | Oui |  |
 | Lampe inquiétante | Rare | Non |  |
-| Le Coursier | Rare | Non |  |
+| Le Coursier | Rare | Oui |  |
 | Main momifiée | Rare | Oui |  |
 | Mangue | Rare | Non |  |
 | Montre à gousset | Rare | Oui |  |
@@ -949,7 +949,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Queue de lézard | Rare | Oui |  |
 | Shuriken | Rare | Oui |  |
 | Soufflet | Rare | Oui |  |
-| Statue de bête blanche | Rare | Non |  |
+| Statue de bête blanche | Rare | Oui |  |
 | Tige de tungstène | Rare | Non |  |
 | Toupie perpétuelle | Rare | Oui |  |
 | Vestige battant | Rare | Non |  |
@@ -958,12 +958,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Œuf gelé | Rare | Non |  |
 | Œuf toxique | Rare | Non |  |
 | Aile fétiche | Boutique | Non |  |
-| Boucle de ceinture | Boutique | Non |  |
+| Boucle de ceinture | Boutique | Oui |  |
 | Boîte à outils | Boutique | Non |  |
 | Briquet mystique | Boutique | Non |  |
 | Bâtonnets enflammés | Boutique | Oui |  |
 | Carte de fidélité | Boutique | Oui |  |
-| Chaudron | Boutique | Non |  |
+| Chaudron | Boutique | Oui |  |
 | Composé X | Boutique | Non |  |
 | Fronde du courage | Boutique | Oui |  |
 | Fruit du dragon | Boutique | Non |  |
@@ -1140,9 +1140,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Œil de geckobra | Ancienne | Oui |  |
 | Œil de verre | Ancienne | Oui |  |
 
-### Potions — 69,8 %
+### Potions — 76,2 %
 
-44 faits, 0 partiel, 19 à faire.
+48 faits, 0 partiel, 15 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1172,7 +1172,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Cœur de fer | Peu commune | Oui |  |
 | Duplicateur | Peu commune | Oui |  |
 | Décoction du parieur | Peu commune | Oui |  |
-| Eau cendrée | Peu commune | Non |  |
+| Eau cendrée | Peu commune | Oui |  |
 | Extrait de lucidité | Peu commune | Oui |  |
 | Fortifiant | Peu commune | Oui |  |
 | Goutte de folie | Peu commune | Non |  |
@@ -1185,8 +1185,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Potion paralysante | Peu commune | Oui |  |
 | Poudre funeste | Peu commune | Oui |  |
 | Remède universel | Peu commune | Oui |  |
-| Sérum de stabilité | Peu commune | Non |  |
-| Acide orobique | Rare | Non |  |
+| Sérum de stabilité | Peu commune | Oui |  |
+| Acide orobique | Rare | Oui |  |
 | Chaos distillé | Rare | Oui |  |
 | Concoction cosmique | Rare | Non |  |
 | Don de Mazaleth | Rare | Oui |  |
@@ -1197,7 +1197,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Goules en bouteille | Rare | Oui |  |
 | Goutte de prescience | Rare | Oui |  |
 | Huile de geckobra | Rare | Non |  |
-| Jus de coléoptère | Rare | Non |  |
+| Jus de coléoptère | Rare | Oui |  |
 | Jus de fruits | Rare | Non |  |
 | Navire en bouteille | Rare | Oui |  |
 | Philtre chanceux | Rare | Oui |  |
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 13,0 %
+## Bestiaire — 13,9 %
 
-### Monstres — 18,1 %
+### Monstres — 19,4 %
 
-13 faits, 0 partiel, 59 à faire.
+14 faits, 0 partiel, 58 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1289,7 +1289,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Magistrix | Monstre · Acte 3 | Non |  |
 | Opérateur de tourelle | Faible · Acte 3 | Non |  |
 | Parchemord | Monstre · Acte 3 | Non |  |
-| Poignard-bot | Invocation · Acte 3 | Non |  |
+| Poignard-bot | Invocation · Acte 3 | Oui |  |
 | Sculpteur dévoué | Faible · Acte 3 | Non |  |
 | Sonobot | Invocation · Acte 3 | Non |  |
 
@@ -1424,11 +1424,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regles"></a>
 
-## Règles de combat — 71,6 %
+## Règles de combat — 73,3 %
 
-### Déroulement du combat — 88,6 %
+### Déroulement du combat — 93,2 %
 
-19 faits, 1 partiel, 2 à faire.
+20 faits, 1 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1445,7 +1445,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Cartes Pouvoir : restent en jeu jusqu'à la fin du combat |  | Oui |  |
 | Choix de cartes en main (défausser, épuiser, améliorer, remettre sur la Pioche) |  | Oui |  |
 | Choix de cartes dans la Pioche ou la Défausse |  | Oui |  |
-| Choix d'une carte parmi 3 propositions (Découverte, etc.) |  | Non | [#72](https://github.com/Boblebol/slay_the_gba/issues/72) |
+| Choix d'une carte parmi 3 propositions (Découverte, etc.) |  | Oui | [#72](https://github.com/Boblebol/slay_the_gba/issues/72) |
 | Cartes à coût X |  | Oui |  |
 | Écho : rejouer une carte |  | Partiel | [#86](https://github.com/Boblebol/slay_the_gba/issues/86) |
 | Cartes jouées automatiquement (Pioche, pile d'épuisement, fin de tour) |  | Oui |  |

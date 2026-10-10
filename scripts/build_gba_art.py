@@ -172,6 +172,11 @@ MONSTERS: dict[str, str] = {
     "vine_shambler": "vine_shambler",
     "eye_with_teeth": "eye_with_teeth",
     "stabbot": "stabbot",
+    "noisebot": "noisebot",
+    "cubex_construct": "cubex_construct",
+    "inklet": "inklet",
+    "nibbit": "nibbit",
+    "flyconid": "flyconid",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
@@ -765,6 +770,7 @@ CARDS: list[CardArt] = [
     CardArt("forbidden_grimoire", "necrobinder", "forbidden_grimoire", "power", (2, 2)),
     CardArt("alchemize", "colorless", "alchemize", "skill", (1, 1)),
     CardArt("the_gambit", "colorless", "the_gambit", "skill", (0, 0)),
+    CardArt("seeker_strike", "colorless", "seeker_strike", "attack", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

@@ -625,6 +625,8 @@ enum class CardId : uint16_t {
     FORBIDDEN_GRIMOIRE,
     ALCHEMIZE,
     THE_GAMBIT,
+    // Choose 1 card among N offered (mechanic #72)
+    SEEKER_STRIKE,
     COUNT
 };
 
@@ -632,7 +634,8 @@ enum class CardId : uint16_t {
 enum class Pile : uint8_t {
     HAND,
     DRAW, // at a random place
-    DISCARD
+    DISCARD,
+    OFFERS // cards offered by a choice (CombatEngine::offers), only picked from: "Choose 1 of 3 cards"
 };
 
 constexpr uint8_t NOT_IN_DECK = 0xFF;
@@ -651,6 +654,7 @@ struct DeckCard {
     uint8_t bonus = 0; // added to this copy's base value: gained during the combat (Thrash, Rampage) or kept by the deck
     uint8_t added_keywords = 0; // CardKeyword bits (the low eight) given to this copy during the combat, on top of its CardDef
     int8_t cost_delta = 0;      // energy cost change of this copy for the combat (Momentum Strike, Modded)
+    uint8_t bookmark_discount = 0; // energy off this copy until it is played (Bookmark)
     bool free_this_turn = false; // this copy costs 0 until the end of the turn (Bullet Time)
     bool cost_one_this_turn = false; // this copy costs at most 1 until the end of the turn (Enlightenment)
     bool sly_combat = false;    // this copy has Sly for the rest of the combat (Master Planner)

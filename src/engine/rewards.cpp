@@ -19,7 +19,8 @@ constexpr uint32_t mix(uint32_t value) {
 }
 
 constexpr ActivePotion ACTIVE_POTIONS[] = {
-    { "BLESSING_OF_THE_FORGE" }, { "BLOCK_POTION" }, { "BLOOD_POTION" },
+    { "ASHWATER" },
+    { "BLESSING_OF_THE_FORGE" }, { "BLOCK_POTION" }, { "BEETLE_JUICE" }, { "BLOOD_POTION" },
     { "BONE_BREW", false, CharacterId::NECROBINDER },
     { "BOTTLED_POTENTIAL" }, { "CLARITY" }, { "CUNNING_POTION" }, { "CURE_ALL" }, { "DEXTERITY_POTION" },
     { "DISTILLED_CHAOS" }, { "DROPLET_OF_PRECOGNITION" }, { "DUPLICATOR" }, { "ENERGY_POTION" },
@@ -34,7 +35,7 @@ constexpr ActivePotion ACTIVE_POTIONS[] = {
     { "POT_OF_GHOULS", false, CharacterId::NECROBINDER },
     { "POWDERED_DEMISE" },
     { "RADIANT_TINCTURE" }, { "REGEN_POTION" }, { "SHACKLING_POTION" },
-    { "SHIP_IN_A_BOTTLE" }, { "SPEED_POTION" },
+    { "SHIP_IN_A_BOTTLE" }, { "SPEED_POTION" }, { "STABLE_SERUM" },
     { "STAR_POTION", false, CharacterId::REGENT },
     { "STRENGTH_POTION" }, { "SWIFT_POTION" }, { "VULNERABLE_POTION" }, { "WEAK_POTION" },
 };

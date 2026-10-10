@@ -622,6 +622,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::FORBIDDEN_GRIMOIRE, "Forbidden Grimoire", 2, CardType::POWER, TargetType::SELF, 0, 0, "At the end of combat, you may remove a card from your Deck. Eternal.", "Forbidden Grimoire+", 2, 0, 0, "At the end of combat, you may remove a card from your Deck. Eternal.", KEYWORD_ETERNAL, KEYWORD_ETERNAL },
     { CardId::ALCHEMIZE, "Alchemize", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Gain a random potion. Exhaust.", "Alchemize+", 1, 0, 0, "Gain a random potion. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     { CardId::THE_GAMBIT, "The Gambit", 0, CardType::SKILL, TargetType::SELF, 50, 0, "Gain 50 block. If you take unblocked attack damage this combat, you die.", "The Gambit+", 0, 75, 0, "Gain 75 block. If you take unblocked attack damage this combat, you die." },
+    // Choose 1 card among N offered (mechanic #72).
+    { CardId::SEEKER_STRIKE, "Seeker Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 3, "Deal 9 dmg. Choose 1 of 3 cards in your draw pile to add into your hand.", "Seeker Strike+", 1, 12, 3, "Deal 12 dmg. Choose 1 of 3 cards in your draw pile to add into your hand." },
 };
 
 const CardDef& CardDef::get(CardId id) {

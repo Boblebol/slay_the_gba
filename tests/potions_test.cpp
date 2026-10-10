@@ -17,8 +17,8 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "BLESSING_OF_THE_FORGE", "FORTIFIER", "FYSH_OIL", "BONE_BREW", "POTION_OF_BINDING", "CURE_ALL", "CLARITY",
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
-    "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION",
-    "OROBIC_ACID",
+    "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -752,6 +752,29 @@ void test_orobic_acid() {
     std::cout << "[PASS] Orobic Acid: an Attack, a Skill and a Power added to the hand, free this turn" << std::endl;
 }
 
+void test_beetle_juice() {
+    // Chomp 11 x 0.70 = 7 for 4 enemy turns, then back to 11.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.use_potion("BEETLE_JUICE", 0));
+    assert(combat.enemies[0].damage_down_turns == 4);
+    assert(std::string_view(combat.combat_log) == "Beetle Juice!");
+    assert(combat.enemies[0].intent_damage(combat.player) == 7);
+    int hp = combat.player.hp;
+    for (int turn = 0; turn < 4; ++turn) {
+        combat.enemies[0].current_intent = EnemyIntent{};
+        combat.enemies[0].current_intent.type = EnemyIntentType::ATTACK;
+        combat.enemies[0].current_intent.base_damage = 10;
+        assert(combat.enemies[0].intent_damage(combat.player) == 7);
+        combat.end_player_turn();
+        assert(combat.player.hp == hp - 7);
+        hp = combat.player.hp;
+    }
+    combat.enemies[0].current_intent.base_damage = 10;
+    assert(combat.enemies[0].damage_down_turns == 0);
+    assert(combat.enemies[0].intent_damage(combat.player) == 10);
+    std::cout << "[PASS] Beetle Juice: the enemy deals 30% less damage for 4 turns" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -790,6 +813,67 @@ void test_refused_outside_player_turn() {
 
 } // namespace
 
+void test_stable_serum() {
+    // The hand is kept at the end of the next 2 turns, then discarded again.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    pad_draw_pile(combat, 30);
+    assert(combat.use_potion("STABLE_SERUM"));
+    assert(combat.has_power(PowerId::STABLE_SERUM));
+    assert(combat.power_amount(PowerId::STABLE_SERUM) == 2);
+    assert(std::string_view(combat.combat_log) == "Stable Serum!");
+    assert(combat.player.energy == 3 && combat.hand.size() == 5);
+
+    end_turn_idle(combat);
+    // Turn 2: the 5 cards stayed, 5 more were drawn, nothing was discarded.
+    assert(combat.discard_pile.empty());
+    assert(combat.hand.size() == 10);
+    assert(combat.power_amount(PowerId::STABLE_SERUM) == 1);
+
+    end_turn_idle(combat);
+    assert(combat.discard_pile.empty());
+    assert(combat.hand.size() == 10);
+    assert(!combat.has_power(PowerId::STABLE_SERUM));
+
+    end_turn_idle(combat);
+    assert(combat.discard_pile.size() == 10);
+    assert(combat.hand.size() == 5);
+
+    std::cout << "[PASS] Stable Serum: retain the hand for 2 turns" << std::endl;
+}
+
+void test_ashwater() {
+    // Exhaust any number of cards of the hand: the choice is optional and capped by the hand size.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.hand.size() == 5);
+    assert(combat.use_potion("ASHWATER"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].kind == ChoiceKind::EXHAUST);
+    assert(combat.pending_choices[0].source == Pile::HAND);
+    assert(combat.pending_choices[0].optional);
+    assert(combat.choice_size() == 5);
+    assert(std::string_view(combat.combat_log) == "Ashwater!");
+    assert(combat.player.energy == 3);
+
+    const CardId first = combat.hand[0].id;
+    const CardId third = combat.hand[2].id;
+    const uint8_t pick[] = { 0, 2 };
+    assert(combat.resolve_choice(pick));
+    assert(!combat.choice_pending());
+    assert(combat.hand.size() == 3);
+    assert(combat.exhaust_pile.size() == 2);
+    assert((combat.exhaust_pile[0].id == first && combat.exhaust_pile[1].id == third)
+        || (combat.exhaust_pile[0].id == third && combat.exhaust_pile[1].id == first));
+    assert(combat.discard_pile.empty() && combat.draw_pile.size() == 5);
+
+    // Picking nothing is allowed.
+    CombatEngine none = make_combat(CharacterId::IRONCLAD);
+    assert(none.use_potion("ASHWATER"));
+    assert(none.resolve_choice(std::span<const uint8_t>{}));
+    assert(none.hand.size() == 5 && none.exhaust_pile.empty());
+
+    std::cout << "[PASS] Ashwater: exhaust any number of cards of the hand" << std::endl;
+}
+
 int main() {
     std::cout << "=== Potions ===" << std::endl;
     test_explosive_ampoule();
@@ -825,8 +909,11 @@ int main() {
     test_duplicator();
     test_droplet_of_precognition();
     test_orobic_acid();
+    test_beetle_juice();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;
+    test_stable_serum();
+    test_ashwater();
     return 0;
 }

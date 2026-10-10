@@ -8,6 +8,7 @@ void Enemy::init(EnemyType enemy_type) {
     statuses.clear();
     block = 0;
     damage_percent = 100;
+    damage_down_turns = 0;
     stolen = {};
     ascended_damage = false;
     escaped = false;
@@ -92,6 +93,26 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Poignard-bot";
         max_hp = 18;
         hp = 18;
+    } else if (type == EnemyType::NOISEBOT) {
+        name = "Sonobot";
+        max_hp = 18;
+        hp = 18;
+    } else if (type == EnemyType::CUBEX_CONSTRUCT) {
+        name = "Assemblage Cubex";
+        max_hp = 65;
+        hp = 65;
+    } else if (type == EnemyType::INKLET) {
+        name = "Encrelin";
+        max_hp = 11;
+        hp = 11;
+    } else if (type == EnemyType::NIBBIT) {
+        name = "Grignotin";
+        max_hp = 42;
+        hp = 42;
+    } else if (type == EnemyType::FLYCONID) {
+        name = "Mycoptère";
+        max_hp = 47;
+        hp = 47;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -103,8 +124,12 @@ void Enemy::init(EnemyType enemy_type) {
 
 uint8_t Enemy::hp_spread() const {
     switch (type) {
+        case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
         case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
+        case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
+        case EnemyType::INKLET: return 6; // 11 to 17, 12 to 18 at Ascension
+        case EnemyType::NIBBIT: return 4;      // 42 to 46, 44 to 48 at Ascension
         default: return 0;
     }
 }
@@ -134,6 +159,11 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::FAT_GREMLIN: return 14;
         case EnemyType::VINE_SHAMBLER: return 64;
         case EnemyType::STABBOT: return 19;
+        case EnemyType::NOISEBOT: return 19;
+        case EnemyType::CUBEX_CONSTRUCT: return 70;
+        case EnemyType::INKLET: return 12;
+        case EnemyType::NIBBIT: return 44;
+        case EnemyType::FLYCONID: return 51;
         default: return 0;
     }
 }
@@ -474,6 +504,104 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.base_damage = ascended_damage ? 12 : 11;
         current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
         current_intent.description = "Coup de poignard (11 dmg, Fragilisé)";
+    } else if (type == EnemyType::NOISEBOT) {
+        // Noise every turn: 2 Dazed into the discard pile.
+        current_intent.type = EnemyIntentType::STATUS;
+        current_intent.status_card = CardId::DAZED;
+        current_intent.status_cards = 2;
+        current_intent.status_pile = Pile::DISCARD;
+        current_intent.description = "Ébruitement (2 Hébété)";
+    } else if (type == EnemyType::CUBEX_CONSTRUCT) {
+        // Charge Up, two Repeater Blasts, Expel, then the blasts and Expel again.
+        current_intent.status_type = StatusType::STRENGTH;
+        current_intent.status_amount = 2;
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.description = "Chargement (+2 Force)";
+        } else if ((turn_number - 2) % 3 != 2) {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.description = "Tir répéteur (7 dmg, +2 Force)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 6 : 5;
+            current_intent.hits = 2;
+            current_intent.status_type = StatusType::NONE;
+            current_intent.status_amount = 0;
+            current_intent.description = "Éjection (5 dmg x2)";
+        }
+    } else if (type == EnemyType::INKLET) {
+        // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.
+        constexpr uint8_t JAB = 0;
+        constexpr uint8_t WHIRLWIND = 1;
+        constexpr uint8_t PIERCING_GAZE = 2;
+        uint8_t move = JAB;
+        if (turn_number % 2 == 0) {
+            const MoveOption options[] = { { WHIRLWIND }, { PIERCING_GAZE } };
+            move = draw_move(options);
+        } else {
+            use_move(JAB);
+        }
+        current_intent.type = EnemyIntentType::ATTACK;
+        if (move == WHIRLWIND) {
+            current_intent.base_damage = ascended_damage ? 3 : 2;
+            current_intent.hits = 3;
+            current_intent.description = "Tourbillon (2 dmg x3)";
+        } else if (move == PIERCING_GAZE) {
+            current_intent.base_damage = ascended_damage ? 11 : 10;
+            current_intent.description = "Regard perçant (10 dmg)";
+        } else {
+            current_intent.base_damage = ascended_damage ? 4 : 3;
+            current_intent.description = "Coup sec (3 dmg)";
+        }
+    } else if (type == EnemyType::NIBBIT) {
+        // Butt, Slice, Hiss, and again. Where it starts depends on its place at the start of the fight: alone it
+        // begins with Butt, in front with Slice, behind with Hiss. `phase` holds that offset.
+        if (turn_number == 1) phase = context.allies == 0 ? 0 : (context.slot == 0 ? 1 : 2);
+        uint8_t move = static_cast<uint8_t>((phase + phase_turn - 1) % 3);
+        if (move == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 13 : 12;
+            current_intent.description = "Derrière (12 dmg)";
+        } else if (move == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.block = ascended_damage ? 6 : 5;
+            current_intent.description = "Slice (6 dmg, 5 blk)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 3 : 2;
+            current_intent.description = "Chuintement (+2 Force)";
+        }
+    } else if (type == EnemyType::FLYCONID) {
+        // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the
+        // next phase with Vulnerable Spores, then draws among the three moves, never the same twice in a row.
+        enum Move : uint8_t { VULNERABLE_SPORES, FRAIL_SPORES, SMASH };
+        if (phase == 0 && hp < max_hp && enter_phase(1)) {
+            phase_turn = 1;
+            use_move(VULNERABLE_SPORES);
+        } else if (phase == 0) {
+            static constexpr MoveOption OPENING[] = { { FRAIL_SPORES }, { SMASH } };
+            use_move(draw_move(OPENING));
+        } else if (phase_turn > 1) {
+            static constexpr MoveOption ANY[] = { { VULNERABLE_SPORES }, { FRAIL_SPORES }, { SMASH } };
+            use_move(draw_move(ANY));
+        }
+        if (last_move == VULNERABLE_SPORES) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::VULNERABLE, 2 };
+            current_intent.description = "Spores fragilisantes (Vulnérable 2)";
+        } else if (last_move == FRAIL_SPORES) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
+            current_intent.description = "Spores fragilisantes (8 dmg, Fragilisé 2)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 12 : 11;
+            current_intent.description = "Fracas (11 dmg)";
+        }
     }
 }
 
@@ -558,7 +686,7 @@ int16_t Enemy::intent_damage(const CombatEntity& target) const {
     if (current_intent.damage_status != StatusType::NONE) {
         base = static_cast<int16_t>(std::max(0, base + get_status(current_intent.damage_status)));
     }
-    int16_t damage = attack_damage(base, *this, target);
+    int16_t damage = attack_damage(base, *this, target, damage_down_turns > 0 ? 70 : 100);
     if (target.halve_vulnerable_damage && get_status(StatusType::VULNERABLE) > 0) damage = static_cast<int16_t>(damage / 2);
     return damage;
 }

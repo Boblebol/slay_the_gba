@@ -93,6 +93,7 @@ public:
     FixedVector<DeckCard, 50> master_deck;
     FixedVector<std::string_view, 25> relics;
     FixedVector<std::string_view, MAX_POTION_SLOTS> potions;
+    bool belt_buckle_active = false; // the 2 Dexterity of Belt Buckle are on the player
     uint8_t potion_slots = BASE_POTION_SLOTS; // size of the belt: `potions` never holds more
     // Cards of the deck the player still has to choose. The room is left once it is resolved.
     DeckChoice deck_choice;
@@ -226,6 +227,8 @@ public:
     // Relics that act during the fight become powers of the combat. Called before the first turn.
     void register_relic_powers();
     void apply_combat_start_relics();
+    // Keeps the Dexterity of Belt Buckle in line with the potion belt during a fight.
+    void refresh_belt_buckle();
     void proceed_after_combat();
     void advance_act();
     bool is_run_completed() const;

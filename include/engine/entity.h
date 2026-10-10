@@ -357,7 +357,12 @@ enum class EnemyType : uint8_t {
     FAT_GREMLIN,
     VINE_SHAMBLER,
     EYE_WITH_TEETH,
-    STABBOT
+    STABBOT,
+    NOISEBOT,
+    CUBEX_CONSTRUCT,
+    INKLET,
+    NIBBIT,
+    FLYCONID
 };
 
 // What a monster sees of the fight when it chooses its next move.
@@ -382,6 +387,7 @@ public:
     std::string_view name = "Cultist";
     EnemyIntent current_intent;
     int16_t damage_percent = 100; // Ascension bonus on attack damage
+    uint8_t damage_down_turns = 0; // enemy turns left where its attacks deal 30% less damage (Beetle Juice)
     int16_t temp_strength_loss = 0; // Strength taken away until the end of this enemy's turn
     bool minion = false; // summoned by another enemy: killing it triggers no Fatal effect
     uint8_t hang_marks = 0; // Hang cards already played on this enemy: each one doubles the next

@@ -527,6 +527,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::ANCIENT, CardPool::NECROBINDER }, // FORBIDDEN_GRIMOIRE
     { CardRarity::RARE, CardPool::COLORLESS }, // ALCHEMIZE
     { CardRarity::RARE, CardPool::COLORLESS }, // THE_GAMBIT
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // SEEKER_STRIKE
 };
 
 } // namespace engine
