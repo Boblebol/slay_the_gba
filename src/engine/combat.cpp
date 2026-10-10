@@ -666,6 +666,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::MERCURY_HOURGLASS:
             if (turn_start) damage_all_enemies(power.amount);
             break;
+        case PowerId::MR_STRUGGLES:
+            if (turn_start) damage_all_enemies(static_cast<int16_t>(turn_number));
+            break;
         case PowerId::CLOAK_CLASP:
             if (event == CombatEvent::TURN_END) add_block(static_cast<int16_t>(power.amount * hand.size()));
             break;
