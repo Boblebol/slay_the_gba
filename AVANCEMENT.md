@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 67,9 %** — 835 faits, 20 partiels, 389 à faire (35 hors périmètre).
+**Avancement global : 68,6 %** — 844 faits, 20 partiels, 381 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -14,27 +14,27 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
-| [Soldat de Fer](#ironclad) | 95 | 1 | 6 | 93,6 % |
-| [La Silencieuse](#silent) | 95 | 1 | 5 | 94,6 % |
+| [Soldat de Fer](#ironclad) | 98 | 1 | 3 | 96,6 % |
+| [La Silencieuse](#silent) | 98 | 1 | 2 | 97,5 % |
 | [Le Défectueux](#defect) | 100 | 1 | 4 | 95,7 % |
 | [Le Régent](#regent) | 91 | 1 | 8 | 91,5 % |
-| [La Nécrolieuse](#necrobinder) | 94 | 1 | 7 | 92,6 % |
+| [La Nécrolieuse](#necrobinder) | 96 | 1 | 5 | 94,6 % |
 | [Cartes communes aux cinq éditions](#cartes) | 102 | 0 | 18 | 85,0 % |
 | [Reliques et potions](#reliques) | 166 | 0 | 155 | 51,7 % |
 | [Bestiaire](#bestiaire) | 13 | 1 | 90 | 13,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 40 | 1 | 16 | 71,1 % |
+| [Règles de combat](#regles) | 41 | 1 | 16 | 71,6 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **835** | **20** | **389** | **67,9 %** |
+| **Total** | **844** | **20** | **381** | **68,6 %** |
 
 <a id="ironclad"></a>
 
-## Soldat de Fer — 93,6 %
+## Soldat de Fer — 96,6 %
 
-### Cartes — 95,3 %
+### Cartes — 98,8 %
 
-82 faits, 0 partiel, 4 à faire (4 hors périmètre).
+85 faits, 0 partiel, 1 à faire (4 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -66,8 +66,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Barrière de flammes | Peu commune · Compétence | Oui |  |
 | Bouclier démoniaque | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Brasier | Peu commune · Pouvoir | Oui |  |
-| Colosse | Peu commune · Compétence | Non |  |
-| Cruauté | Peu commune · Pouvoir | Non |  |
+| Colosse | Peu commune · Compétence | Oui |  |
+| Cruauté | Peu commune · Pouvoir | Oui |  |
 | Démantèlement | Peu commune · Attaque | Oui |  |
 | Embrasement | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Enflammer | Peu commune · Pouvoir | Oui |  |
@@ -114,7 +114,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Forme démoniaque | Rare · Pouvoir | Oui |  |
 | Furie | Rare · Attaque | Oui |  |
 | Incendie | Rare · Attaque | Oui |  |
-| Inflexible | Rare · Pouvoir | Non |  |
+| Inflexible | Rare · Pouvoir | Oui |  |
 | Insensible | Rare · Compétence | Oui |  |
 | Juggernaut | Rare · Pouvoir | Oui |  |
 | Manteau pourpre | Rare · Pouvoir | Oui |  |
@@ -161,11 +161,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="silent"></a>
 
-## La Silencieuse — 94,6 %
+## La Silencieuse — 97,5 %
 
-### Cartes — 95,3 %
+### Cartes — 98,8 %
 
-82 faits, 0 partiel, 4 à faire (5 hors périmètre).
+85 faits, 0 partiel, 1 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -235,7 +235,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Adrénaline | Rare · Compétence | Oui |  |
 | Assassiner | Rare · Attaque | Oui |  |
 | Bullet Time | Rare · Compétence | Oui |  |
-| Camouflage | Rare · Compétence | Non |  |
+| Camouflage | Rare · Compétence | Oui |  |
 | Cauchemar | Rare · Compétence | Oui |  |
 | Clou du spectacle | Rare · Attaque | Oui |  |
 | Déflagration | Rare · Compétence | Oui |  |
@@ -249,8 +249,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Lame d'encre | Rare · Compétence | Oui |  |
 | Malaise | Rare · Compétence | Oui |  |
 | Meurtre | Rare · Attaque | Oui |  |
-| Pas de l'ombre | Rare · Compétence | Non |  |
-| Pistage | Rare · Pouvoir | Non |  |
+| Pas de l'ombre | Rare · Compétence | Oui |  |
+| Pistage | Rare · Pouvoir | Oui |  |
 | Piège à poignards | Rare · Compétence | Oui |  |
 | Préméditation | Rare · Pouvoir | Oui |  |
 | Savoir-faire | Rare · Pouvoir | Oui |  |
@@ -557,11 +557,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 92,6 %
+## La Nécrolieuse — 94,6 %
 
-### Cartes — 94,3 %
+### Cartes — 96,6 %
 
-82 faits, 0 partiel, 5 à faire (4 hors périmètre).
+84 faits, 0 partiel, 3 à faire (4 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -590,7 +590,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Terreur | Commune · Attaque | Oui |  |
 | Vie après la mort | Commune · Compétence | Oui |  |
 | Amitié | Peu commune · Pouvoir | Oui |  |
-| Amoindrissement | Peu commune · Attaque | Non |  |
+| Amoindrissement | Peu commune · Attaque | Oui |  |
 | Calcification | Peu commune · Pouvoir | Oui |  |
 | Capture spirituelle | Peu commune · Compétence | Oui |  |
 | Cliquetis | Peu commune · Attaque | Oui |  |
@@ -607,7 +607,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Hanter | Peu commune · Pouvoir | Oui |  |
 | Inéluctable | Peu commune · Compétence | Oui |  |
 | Légion d'ossements | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
-| Létalité | Peu commune · Pouvoir | Non |  |
+| Létalité | Peu commune · Pouvoir | Oui |  |
 | Marche funeste | Peu commune · Attaque | Oui |  |
 | Mélancolie | Peu commune · Compétence | Oui |  |
 | Oraison | Peu commune · Compétence | Oui |  |
@@ -1424,11 +1424,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regles"></a>
 
-## Règles de combat — 71,1 %
+## Règles de combat — 71,6 %
 
-### Déroulement du combat — 88,1 %
+### Déroulement du combat — 88,6 %
 
-18 faits, 1 partiel, 2 à faire.
+19 faits, 1 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1438,6 +1438,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Jusqu'à 3 ennemis par combat, avec ciblage |  | Oui |  |
 | Intentions ennemies affichées |  | Oui |  |
 | Calcul des dégâts (Force, Affaibli, Vulnérable) |  | Oui |  |
+| Modificateurs en pourcentage : dégâts (+25 %, +50 %, double), Armure doublée, Vulnérable et Affaibli renforcés |  | Oui | [#89](https://github.com/Boblebol/slay_the_gba/issues/89) |
 | Attaques de zone et attaques en plusieurs coups |  | Oui |  |
 | Cartes qui font piocher |  | Oui |  |
 | Amélioration de cartes pendant le combat |  | Oui |  |
