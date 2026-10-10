@@ -1635,6 +1635,27 @@ void test_calling_bell() {
     std::cout << "[PASS] Calling Bell: Curse of the Bell and 3 random relics on pickup" << std::endl;
 }
 
+void test_cauldron() {
+    // Obtained: 5 random potions are brewed into the belt.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 463);
+    run.add_potion_slots(5);
+    run.potions.clear();
+    run.add_relic("CAULDRON");
+    assert(run.has_relic("CAULDRON"));
+    assert(run.potions.size() == 5);
+
+    // Without the relic: no potion is brewed.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 463);
+    plain.add_potion_slots(5);
+    plain.potions.clear();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("CAULDRON"));
+    assert(plain.potions.empty());
+    std::cout << "[PASS] Cauldron: 5 random potions brewed on pickup" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1690,5 +1711,6 @@ int main() {
     test_paels_eye();
     test_cursed_pearl();
     test_calling_bell();
+    test_cauldron();
     return 0;
 }
