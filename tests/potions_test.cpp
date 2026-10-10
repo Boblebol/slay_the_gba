@@ -18,7 +18,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
-    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "COLORLESS_POTION",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -830,6 +830,29 @@ void test_liquid_memories() {
     std::cout << "[PASS] Liquid Memories: a card of the discard pile added to the hand, free this turn" << std::endl;
 }
 
+void test_colorless_potion() {
+    // Choose 1 of 3 random Colorless cards: it joins the hand and costs 0 this turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.use_potion("COLORLESS_POTION"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.offers.size() == 3 && combat.choice_size() == 1);
+    assert(std::string_view(combat.combat_log) == "Colorless Potion!");
+    for (size_t i = 0; i < combat.offers.size(); ++i) {
+        assert(card_meta(combat.offers[i].id).pool == CardPool::COLORLESS);
+        assert(combat.offers[i].free_this_turn);
+        for (size_t j = 0; j < i; ++j) assert(combat.offers[j].id != combat.offers[i].id);
+    }
+    const CardId picked = combat.offers[1].id;
+    const uint8_t pick[] = { 1 };
+    assert(combat.resolve_choice(pick));
+    assert(!combat.choice_pending() && combat.offers.empty());
+    assert(combat.hand.size() == 6 && combat.hand[5].id == picked && combat.hand[5].free_this_turn);
+    assert(combat.player.energy == 3);
+
+    std::cout << "[PASS] Colorless Potion: 1 of 3 random Colorless cards added to the hand, free this turn" << std::endl;
+}
+
 void test_unknown_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     assert(!combat.use_potion("NOT_A_POTION"));
@@ -985,6 +1008,7 @@ int main() {
     test_beetle_juice();
     test_touch_of_insanity();
     test_liquid_memories();
+    test_colorless_potion();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;
