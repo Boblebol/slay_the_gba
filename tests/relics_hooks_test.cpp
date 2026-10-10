@@ -930,6 +930,23 @@ void test_vambrace() {
     std::cout << "[PASS] Vambrace: the first Block a card gives each combat is doubled" << std::endl;
 }
 
+void test_mr_struggles() {
+    // With the relic: at the start of each turn, damage equal to the turn number to every enemy (1, then 2, then 3).
+    CombatEngine carnage = make_relic_combat(CharacterId::IRONCLAD, PowerId::MR_STRUGGLES, 1, true);
+    assert(carnage.enemies[0].hp == 17 && carnage.enemies[2].hp == 41);
+    end_turn_idle(carnage);
+    assert(carnage.enemies[0].hp == 15 && carnage.enemies[2].hp == 39);
+    end_turn_idle(carnage);
+    assert(carnage.enemies[0].hp == 12 && carnage.enemies[2].hp == 36);
+
+    // Without the relic: the enemies lose no HP at the start of a turn.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {}, true);
+    assert(plain.enemies[0].hp == 18 && plain.enemies[2].hp == 42);
+    end_turn_idle(plain);
+    assert(plain.enemies[0].hp == 18 && plain.enemies[2].hp == 42);
+    std::cout << "[PASS] Monsieur Carnage: turn number in damage to every enemy at the start of each turn" << std::endl;
+}
+
 void test_dingy_rug() {
     // Card rewards: with the relic, some offers are Colorless cards; without it, never.
     uint32_t colorless = 0, offers = 0;
@@ -2466,6 +2483,25 @@ void test_book_of_five_rings() {
     std::cout << "[PASS] Book of Five Rings: heals 20 HP on every 5th card added to the Deck" << std::endl;
 }
 
+void test_ring_of_the_drake() {
+    // With the relic: 2 more cards drawn at the start of each of the first 3 turns, then the usual 5.
+    RunManager ring = make_relic_run(CharacterId::IRONCLAD, { "RING_OF_THE_DRAKE" });
+    assert(ring.combat.hand.size() == 7);
+    end_turn_idle(ring.combat);
+    assert(ring.combat.hand.size() == 7);
+    end_turn_idle(ring.combat);
+    assert(ring.combat.hand.size() == 7);
+    end_turn_idle(ring.combat);
+    assert(ring.combat.hand.size() == 5);
+
+    // Without the relic: the usual 5 cards on every turn.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.hand.size() == 5);
+    end_turn_idle(plain.combat);
+    assert(plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Ring of the Drake: 2 more cards drawn on each of the first 3 turns" << std::endl;
+}
+
 void test_venerable_tea_set() {
     // With the relic: each Rest Site entered gives 2 more energy to the next combat, once.
     RunManager run;
@@ -2676,6 +2712,93 @@ void test_chemical_x() {
     std::cout << "[PASS] Chemical X: X cards get 2 more X, the energy spent is unchanged" << std::endl;
 }
 
+void test_fragrant_mushroom() {
+    // Obtained: 15 HP are lost (never below 1), then 2 random cards are upgraded.
+    auto upgraded_count = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) {
+            if (r.master_deck[i].upgraded) ++n;
+        }
+        return n;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 511);
+    run.hp = 50;
+    int upgraded_before = upgraded_count(run);
+    run.add_relic("FRAGRANT_MUSHROOM");
+    assert(run.has_relic("FRAGRANT_MUSHROOM"));
+    assert(run.hp == 35);
+    assert(run.max_hp == 80);
+    assert(upgraded_count(run) == upgraded_before + 2);
+
+    // Losing HP never takes the hero below 1.
+    RunManager low;
+    low.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 511);
+    low.hp = 10;
+    low.add_relic("FRAGRANT_MUSHROOM");
+    assert(low.hp == 1);
+
+    // Without the relic, no HP is lost and no card is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 511);
+    plain.hp = 50;
+    int plain_before = upgraded_count(plain);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("FRAGRANT_MUSHROOM") && plain.hp == 50 && upgraded_count(plain) == plain_before);
+    std::cout << "[PASS] Fragrant Mushroom: loses 15 HP and upgrades 2 random cards when obtained" << std::endl;
+}
+
+void test_darkstone_periapt() {
+    // Obtained cards: each Curse that joins the deck raises the Max HP by 6, other cards do not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 781);
+    run.add_relic("DARKSTONE_PERIAPT");
+    assert(run.has_relic("DARKSTONE_PERIAPT"));
+    run.hp = 40;
+    run.max_hp = 60;
+    run.add_card_to_deck(DeckCard{ CardId::GREED, false });
+    assert(run.max_hp == 66);
+    assert(run.hp == 46);
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.max_hp == 66);
+
+    // Without the relic, a Curse leaves the Max HP alone.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 781);
+    plain.add_relic("ANCHOR");
+    plain.max_hp = 60;
+    plain.add_card_to_deck(DeckCard{ CardId::GREED, false });
+    assert(!plain.has_relic("DARKSTONE_PERIAPT") && plain.max_hp == 60);
+
+    std::cout << "[PASS] Darkstone Periapt: +6 Max HP for each Curse obtained" << std::endl;
+}
+
+void test_big_mushroom() {
+    // Obtained: 20 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("BIG_MUSHROOM");
+    assert(run.has_relic("BIG_MUSHROOM"));
+    assert(run.max_hp == max_hp + 20 && run.hp == 70);
+
+    // Start of the combat: 2 cards fewer in the first hand, not in the next ones.
+    RunManager mushroom = make_relic_run(CharacterId::IRONCLAD, { "BIG_MUSHROOM" });
+    assert(mushroom.combat.hand.size() == 3);
+    end_turn_idle(mushroom.combat);
+    assert(mushroom.combat.hand.size() == 5);
+
+    // Without the relic, the first hand keeps its 5 cards and nothing raises the maximum HP.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, { "ANCHOR" });
+    assert(plain.combat.hand.size() == 5);
+    RunManager plain_max;
+    plain_max.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    plain_max.add_relic("ANCHOR");
+    assert(plain_max.max_hp == max_hp);
+    std::cout << "[PASS] Big Mushroom: 20 more max HP on pickup, 2 cards fewer in the first hand" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2738,8 +2861,10 @@ int main() {
     test_cursed_pearl();
     test_calling_bell();
     test_war_paint();
+    test_fragrant_mushroom();
     test_lava_lamp();
     test_petrified_toad();
+    test_mr_struggles();
     test_belt_buckle();
     test_circlet();
     test_dingy_rug();
@@ -2775,5 +2900,8 @@ int main() {
     test_shovel();
     test_white_star();
     test_chemical_x();
+    test_ring_of_the_drake();
+    test_darkstone_periapt();
+    test_big_mushroom();
     return 0;
 }

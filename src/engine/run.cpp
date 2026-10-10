@@ -718,6 +718,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         hp = max_hp;
     }
     if (relic_id == "MANGO" && has_relic("MANGO")) gain_max_hp(14);
+    // Big Mushroom (Event): 20 more maximum HP when obtained.
+    if (relic_id == "BIG_MUSHROOM" && has_relic("BIG_MUSHROOM")) gain_max_hp(20);
     if (relic_id == "PEAR" && has_relic("PEAR")) gain_max_hp(10);
     if (relic_id == "LARGE_CAPSULE" && has_relic("LARGE_CAPSULE")) {
         gain_random_relics(2);
@@ -729,6 +731,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "WHETSTONE" && has_relic("WHETSTONE")) upgrade_random_cards(2, CardType::ATTACK);
     // War Paint: upgrades 2 random Skills when obtained.
     if (relic_id == "WAR_PAINT" && has_relic("WAR_PAINT")) upgrade_random_cards(2, CardType::SKILL);
+    // Fragrant Mushroom (Event): loses 15 HP, never below 1, then upgrades 2 random cards.
+    if (relic_id == "FRAGRANT_MUSHROOM" && has_relic("FRAGRANT_MUSHROOM")) {
+        hp = std::max<int16_t>(1, hp - 15);
+        upgrade_random_cards(2);
+    }
     // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
     if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
         regenerate_map();
@@ -1088,6 +1095,8 @@ bool RunManager::add_card_to_deck(DeckCard card) {
     if (!master_deck.push_back(card)) return false;
     // Lucky Fysh: each card that joins the deck gains gold, whatever the source (reward, shop, event).
     if (has_relic("LUCKY_FYSH")) gain_gold(15);
+    // Darkstone Periapt: each Curse that joins the deck, whatever the source, raises the Max HP by 6.
+    if (has_relic("DARKSTONE_PERIAPT") && card_meta(card.id).pool == CardPool::CURSE) gain_max_hp(6);
     if (has_relic("BOOK_OF_FIVE_RINGS") && tick_relic_counter("BOOK_OF_FIVE_RINGS", BOOK_OF_FIVE_RINGS_CARDS)) {
         heal(BOOK_OF_FIVE_RINGS_HEAL);
     }
@@ -1342,6 +1351,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("SPARKLING_ROUGE")) combat.add_power(PowerId::SPARKLING_ROUGE, 1);
     if (has_relic("HAPPY_FLOWER")) combat.add_power(PowerId::HAPPY_FLOWER, 1);
     if (has_relic("PENDULUM")) combat.add_power(PowerId::PENDULUM, 1);
+    // Ring of the Drake (event): 2 more cards drawn at the start of each of the first 3 turns.
+    if (has_relic("RING_OF_THE_DRAKE")) combat.add_power(PowerId::RING_OF_THE_DRAKE, 2);
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
     if (has_relic("BOOKMARK")) combat.add_power(PowerId::BOOKMARK, 1);
     if (has_relic("VERY_HOT_COCOA")) combat.add_power(PowerId::VERY_HOT_COCOA, 4);
@@ -1351,8 +1362,12 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::TURN_DRAW, 2);
         combat.add_power(PowerId::FIDDLE, 1);
     }
+    // Big Mushroom (Event): 2 cards fewer in the opening draw of the combat. A turn-only power, so the first hand only.
+    if (has_relic("BIG_MUSHROOM")) combat.add_power(PowerId::TURN_DRAW, -2, true);
     if (has_relic("PAELS_BLOOD")) combat.add_power(PowerId::TURN_DRAW, 1);
     if (has_relic("MERCURY_HOURGLASS")) combat.add_power(PowerId::MERCURY_HOURGLASS, 3);
+    // Monsieur Carnage (event): at the start of each turn, the turn number in damage to every enemy.
+    if (has_relic("MR_STRUGGLES")) combat.add_power(PowerId::MR_STRUGGLES, 1);
     // End of turn
     if (has_relic("CLOAK_CLASP")) combat.add_power(PowerId::CLOAK_CLASP, 1);
     if (has_relic("POCKETWATCH")) combat.add_power(PowerId::POCKETWATCH, 3);

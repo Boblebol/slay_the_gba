@@ -647,6 +647,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::PENDULUM:
             if (turn_start && power.turns % 3 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;
+        case PowerId::RING_OF_THE_DRAKE:
+            if (turn_start && power.turns <= RING_OF_THE_DRAKE_TURNS) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
+            break;
         case PowerId::RINGING_TRIANGLE:
             // Set after the turn start has cleared retain_hand: the hand is kept at the end of the first turn only.
             if (turn_start && power.turns == 1) retain_hand = true;
@@ -662,6 +665,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::MERCURY_HOURGLASS:
             if (turn_start) damage_all_enemies(power.amount);
+            break;
+        case PowerId::MR_STRUGGLES:
+            if (turn_start) damage_all_enemies(static_cast<int16_t>(turn_number));
             break;
         case PowerId::CLOAK_CLASP:
             if (event == CombatEvent::TURN_END) add_block(static_cast<int16_t>(power.amount * hand.size()));
