@@ -124,6 +124,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "NEW_LEAF", "Lorsque vous obtenez cette relique, Transformez 1 carte." },
     { "POMANDER", "Lorsque vous obtenez cette relique, Améliorez une carte." },
     { "ASTROLABE", "Lorsque vous obtenez cette relique, Transformez 3 cartes, puis Améliorez-les." },
+    { "PANDORAS_BOX", "Transformez TOUTES vos Frappes et vos Défenses." },
     { "PRESERVED_FOG", "Retirez 3 cartes de votre Deck. Ajoutez Hubris à votre Deck." },
     { "PRECISE_SCISSORS", "Lorsque vous obtenez cette relique, retirez 1 carte de votre Deck." },
     { "EMPTY_CAGE", "Lorsque vous obtenez cette relique, retirez 2 cartes de votre Deck." },
