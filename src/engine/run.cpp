@@ -660,6 +660,17 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         finish_preserved_fog();
     }
     if (relic_id == "PRECISE_SCISSORS" && has_relic("PRECISE_SCISSORS")) request_deck_choice(DeckChoiceKind::REMOVE, 1);
+    if (relic_id == "NEOWS_TALISMAN" && has_relic("NEOWS_TALISMAN")) {
+        // One random Strike and one random Defend, not yet upgraded, are upgraded.
+        const CardId targets[] = { CardId::STRIKE, CardId::DEFEND };
+        for (CardId target : targets) {
+            FixedVector<uint8_t, 50> candidates;
+            for (size_t i = 0; i < master_deck.size(); ++i) {
+                if (!master_deck[i].upgraded && master_deck[i].id == target) candidates.push_back(static_cast<uint8_t>(i));
+            }
+            if (!candidates.empty()) master_deck[candidates[next_random() % candidates.size()]].upgraded = true;
+        }
+    }
     if (relic_id == "MEMBERSHIP_CARD" && phase == RunPhase::SHOP) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
 }
 
