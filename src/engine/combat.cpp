@@ -1876,7 +1876,7 @@ int CombatEngine::effective_cost(const DeckCard& card) const {
     if (printed == COST_X) return COST_X;
     if (costs_nothing(card)) return 0;
 
-    int cost = printed + card.cost_delta;
+    int cost = printed + card.cost_delta - card.bookmark_discount;
     switch (card.id) {
         case CardId::MIDNIGHT:
             cost -= static_cast<int>(exhaust_pile.size());
@@ -2156,6 +2156,7 @@ void CombatEngine::place_played_card(const DeckCard& card, AfterPlay after_play)
     // Where it goes is decided by the card as it was played; Razor Tooth upgrades the copy that comes back.
     DeckCard kept_card = card;
     kept_card.free_this_turn = false;
+    kept_card.bookmark_discount = 0;
     kept_card.cost_one_this_turn = false;
     kept_card.sly_this_turn = false;
     if (played_type == CardType::SKILL && has_power(PowerId::MASTER_PLANNER)) kept_card.sly_combat = true;
@@ -5830,6 +5831,13 @@ void CombatEngine::end_player_turn() {
         }
         discard_pile.push_back(hand[i]);
         hand.erase(i);
+    }
+
+    // Bookmark: a random card kept in hand costs 1 less until it is played.
+    if (has_power(PowerId::BOOKMARK) && !hand.empty()) {
+        DeckCard& kept = hand[next_random() % hand.size()];
+        const uint8_t printed = CardDef::get_cost(kept.id, kept.upgraded);
+        if (printed != COST_X && effective_cost(kept) > 0) ++kept.bookmark_discount;
     }
 
     // Effects that only lasted this turn are over.
