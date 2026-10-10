@@ -527,9 +527,10 @@ void RunManager::generate_rewards() {
     // A boss gives 95 to 105 gold.
     gold_reward = boss ? static_cast<int16_t>(95 + rng.below(11)) : 15 + static_cast<int16_t>(next_random() % 15);
 
-    // A potion the hero can use, in 40 % of the fights.
+    // A potion the hero can use, in 40 % of the fights; White Beast Statue makes it certain.
     potion_reward = {};
-    if (rng.below(100) < POTION_REWARD_CHANCE) {
+    bool potion_roll = rng.below(100) < POTION_REWARD_CHANCE;
+    if (potion_roll || has_relic("WHITE_BEAST_STATUE")) {
         potion_reward = draw_potion(rng, character);
     }
 
@@ -1082,6 +1083,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
+        "WHITE_BEAST_STATUE", // Shared, out of combat
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
         // Statuses given at the start of the combat (#91, #93)

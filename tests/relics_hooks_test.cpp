@@ -1655,6 +1655,27 @@ void test_calling_bell() {
     std::cout << "[PASS] Calling Bell: Curse of the Bell and 3 random relics on pickup" << std::endl;
 }
 
+void test_white_beast_statue() {
+    // With the statue, every combat reward holds a potion; without it, some do not.
+    uint32_t plain_without = 0;
+    for (uint32_t seed = 1; seed <= 50; ++seed) {
+        RunManager with;
+        with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with.add_relic("WHITE_BEAST_STATUE");
+        enter_room_of_type(with, RoomType::MONSTER);
+        with.generate_rewards();
+        assert(!with.potion_reward.empty());
+
+        RunManager plain;
+        plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(plain, RoomType::MONSTER);
+        plain.generate_rewards();
+        if (plain.potion_reward.empty()) ++plain_without;
+    }
+    assert(plain_without > 0);
+    std::cout << "[PASS] White Beast Statue: a potion in every combat reward, not always without it" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -1712,5 +1733,6 @@ int main() {
     test_cursed_pearl();
     test_calling_bell();
     test_pen_nib();
+    test_white_beast_statue();
     return 0;
 }
