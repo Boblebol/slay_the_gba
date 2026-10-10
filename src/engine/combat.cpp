@@ -1456,7 +1456,10 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
         base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY) + power_amount(PowerId::FAKE_STRIKE_DUMMY));
     }
     if (upgraded_attack_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::MINIATURE_CANNON));
-    int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
+    int16_t damage = attack_damage(base, player, target, percent);
+    // The Boot: an Attack hit that would deal 1 to 4 damage (before Block) deals 5 instead.
+    if (damage > 0 && damage <= THE_BOOT_THRESHOLD && has_power(PowerId::THE_BOOT)) damage = THE_BOOT_MINIMUM;
+    int16_t lost = target.take_damage(damage);
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
         EventInfo info;

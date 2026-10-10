@@ -157,6 +157,7 @@ enum class PowerId : uint8_t {
     STRIKE_DUMMY,      // cards containing "Strike" deal `amount` more damage per hit
     FAKE_STRIKE_DUMMY, // event copy of STRIKE_DUMMY: cards containing "Strike" deal `amount` more damage per hit
     MINIATURE_CANNON,  // upgraded Attacks deal `amount` more damage per hit
+    THE_BOOT,          // an Attack hit dealing 1 to THE_BOOT_THRESHOLD damage (before Block) deals THE_BOOT_MINIMUM instead
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy
     RED_SKULL,         // HP at RED_SKULL_HP_PERCENT % of Max HP or less: `amount` more Strength (counter = Strength given now)
@@ -266,6 +267,8 @@ constexpr uint8_t KUNAI_ATTACKS = 3;
 constexpr uint8_t KUSARIGAMA_ATTACKS = 3;
 constexpr uint8_t NUNCHAKU_ATTACKS = 10;
 constexpr uint8_t PEN_NIB_ATTACKS = 10;
+constexpr uint8_t THE_BOOT_THRESHOLD = 4;
+constexpr uint8_t THE_BOOT_MINIMUM = 5;
 constexpr uint8_t SHURIKEN_ATTACKS = 3;
 constexpr uint8_t ORNAMENTAL_FAN_ATTACKS = 3;
 constexpr uint8_t RED_SKULL_HP_PERCENT = 50;
