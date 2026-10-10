@@ -104,6 +104,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "BOOMING_CONCH", "Au début des combats d'Élite, piochez 2 cartes supplémentaires et gagnez 1 ●." },
     { "WHISPERING_EARRING","Gagnez 1 ● au début de chaque tour. Vakuu joue votre premier tour à votre place." },
     { "ARCANE_SCROLL", "Lorsque vous obtenez cette relique, ajoutez une Carte Rare aléatoire à votre Deck." },
+    { "LEAD_PAPERWEIGHT", "Lorsque vous obtenez cette relique, choisissez 1 carte Incolore parmi 2 à ajouter à votre Deck." },
     { "JEWELRY_BOX", "Lorsque vous obtenez cette relique, ajoutez 1 Apothéose à votre Deck." },
     { "TANXS_WHISTLE", "Lorsque vous obtenez cette relique, ajoutez 1 Sifflet à votre Deck." },
     { "STORYBOOK", "Lorsque vous obtenez cette relique, ajoutez 1 Flamme éclatante à votre Deck." },
