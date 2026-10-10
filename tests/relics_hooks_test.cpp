@@ -2184,6 +2184,30 @@ void test_amethyst_aubergine() {
     std::cout << "[PASS] Amethyst Aubergine: 15 more Gold in each fight reward" << std::endl;
 }
 
+void test_orrery() {
+    // Obtained at the merchant: 5 card rewards in a row, the first set offered at once, then the rewards end.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 467);
+    run.phase = RunPhase::SHOP;
+    size_t deck = run.master_deck.size();
+    run.add_relic("ORRERY");
+    assert(run.has_relic("ORRERY") && run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+    for (int set = 0; set < 5; ++set) {
+        assert(run.phase == RunPhase::REWARD_SCREEN);
+        run.pick_card_reward(0);
+    }
+    assert(run.master_deck.size() == deck + 5);
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, no card reward is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 467);
+    plain.phase = RunPhase::SHOP;
+    plain.add_relic("ANCHOR");
+    assert(plain.phase == RunPhase::SHOP && plain.current_card_rewards.empty());
+    std::cout << "[PASS] Orrery: 5 card rewards on pickup" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2212,6 +2236,7 @@ int main() {
     test_booming_conch();
     test_arcane_scroll();
     test_lead_paperweight();
+    test_orrery();
     test_neows_torment();
     test_precise_scissors();
     test_new_leaf();

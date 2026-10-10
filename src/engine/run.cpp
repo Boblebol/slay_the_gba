@@ -776,6 +776,13 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
         phase = RunPhase::REWARD_SCREEN;
     }
+    // Planetary (shop relic): 5 card rewards on pickup. The first set is offered now, the 4 others follow it.
+    if (relic_id == "ORRERY" && has_relic("ORRERY")) {
+        extra_card_rewards = static_cast<uint8_t>(extra_card_rewards + 4);
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng);
+        phase = RunPhase::REWARD_SCREEN;
+    }
     if (relic_id == "DISTINGUISHED_CAPE" && has_relic("DISTINGUISHED_CAPE")) {
         // Two random curses (repetition allowed) drawn from the whole curse pool, then three Apparitions.
         const auto is_curse = [](uint16_t id) { return card_meta(static_cast<CardId>(id)).pool == CardPool::CURSE; };
@@ -1196,7 +1203,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Statuses given at the start of the combat (#91, #93)
         "BRONZE_SCALES", "GORGET", "AKABEKO",
         // At the merchant (#487)
-        "THE_COURIER",
+        "THE_COURIER", "ORRERY",
         // Max HP with each gain of Gold (#474)
         "DRAGON_FRUIT",
         // Retained hand on the first turn (#509)
