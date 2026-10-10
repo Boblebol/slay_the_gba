@@ -6405,6 +6405,11 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
             create_card(made, Pile::HAND);
         }
         set_log("Orobic Acid!");
+    } else if (potion_id == "FOUL_POTION") {
+        // Damage to every player and enemy: Block absorbs it, Strength and Vulnerable do not change it.
+        damage_all_enemies(12);
+        damage_player(12);
+        set_log("Foul Potion!");
     } else {
         return false;
     }
