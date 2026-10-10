@@ -611,6 +611,14 @@ enum class CardId : uint16_t {
     RICOCHET,
     REFLEX,
     FLICK_FLACK,
+    SHADOWMELD,
+    UNMOVABLE,
+    COLOSSUS,
+    CRUELTY,
+    TRACKING,
+    LETHALITY,
+    SHADOW_STEP,
+    DEBILITATE,
     COUNT
 };
 

@@ -23,6 +23,8 @@ public:
     // Vulnerable, Weak and Frail received during the enemies' turn (one bit each): they are not worn down by the
     // end of that same round, or a debuff of 1 turn would be gone before it did anything.
     uint8_t fresh_debuffs = 0;
+    uint8_t debilitate_turns = 0;          // turns left where this entity's Vulnerable and Weak are twice as effective
+    bool halve_vulnerable_damage = false;  // takes 50% less damage from Vulnerable enemies until its next turn (Colossus)
 
     bool is_alive() const { return hp > 0; }
 
@@ -266,12 +268,17 @@ public:
 
 // Attack damage as in Slay the Spire: (base + Strength + Vigor), x0.75 when the attacker is Weak, x1.5 when the
 // target is Vulnerable, rounded down once at the end, and 1 at most against an Intangible target.
-inline int16_t attack_damage(int16_t base, const CombatEntity& attacker, const CombatEntity& target) {
+// `percent` is the total of the other multipliers (Cruelty, Tracking, Lethality, Shadow Step), 100 = none. Debilitate
+// makes Weak x0.5 and Vulnerable x2 on the entity that carries it.
+inline int16_t attack_damage(int16_t base, const CombatEntity& attacker, const CombatEntity& target, int32_t percent = 100) {
     int32_t damage = base + attacker.get_status(StatusType::STRENGTH) + attacker.get_status(StatusType::VIGOR);
     if (damage <= 0) return 0;
-    damage *= attacker.get_status(StatusType::WEAK) > 0 ? 3 : 4;
-    damage *= target.get_status(StatusType::VULNERABLE) > 0 ? 3 : 2;
+    int32_t weak = attacker.debilitate_turns > 0 ? 2 : 3;
+    int32_t vulnerable = target.debilitate_turns > 0 ? 4 : 3;
+    damage *= attacker.get_status(StatusType::WEAK) > 0 ? weak : 4;
+    damage *= target.get_status(StatusType::VULNERABLE) > 0 ? vulnerable : 2;
     damage /= 8;
+    if (percent != 100) damage = damage * percent / 100;
     if (damage > 1 && target.get_status(StatusType::INTANGIBLE) > 0) damage = 1;
     return static_cast<int16_t>(damage);
 }

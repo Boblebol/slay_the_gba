@@ -608,6 +608,14 @@ static constexpr CardDef CARDS[] = {
     { CardId::RICOCHET, "Ricochet", 2, CardType::ATTACK, TargetType::RANDOM_ENEMY, 3, 4, "Sly. Deal 3 damage to a random enemy 4 times.", "Ricochet+", 2, 3, 5, "Sly. Deal 3 damage to a random enemy 5 times.", KEYWORD_SLY, KEYWORD_SLY },
     { CardId::REFLEX, "Reflex", 3, CardType::SKILL, TargetType::SELF, 2, 0, "Sly. Draw 2 cards.", "Reflex+", 3, 3, 0, "Sly. Draw 3 cards.", KEYWORD_SLY, KEYWORD_SLY },
     { CardId::FLICK_FLACK, "Flick-Flack", 1, CardType::ATTACK, TargetType::ALL_ENEMIES, 7, 0, "Sly. Deal 7 damage to ALL enemies.", "Flick-Flack+", 1, 9, 0, "Sly. Deal 9 damage to ALL enemies.", KEYWORD_SLY, KEYWORD_SLY },
+    { CardId::SHADOWMELD, "Shadowmeld", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Double the Block you gain this turn.", "Shadowmeld+", 0, 0, 0, "Double the Block you gain this turn." },
+    { CardId::UNMOVABLE, "Unmovable", 2, CardType::POWER, TargetType::SELF, 0, 0, "The first Block a card gives each turn is doubled.", "Unmovable+", 1, 0, 0, "The first Block a card gives each turn is doubled." },
+    { CardId::COLOSSUS, "Colossus", 1, CardType::SKILL, TargetType::SELF, 4, 0, "Gain 4 block. Take 50% less damage from Vulnerable enemies this turn.", "Colossus+", 1, 7, 0, "Gain 7 block. Take 50% less damage from Vulnerable enemies this turn." },
+    { CardId::CRUELTY, "Cruelty", 1, CardType::POWER, TargetType::SELF, 25, 0, "Vulnerable enemies take 25% more damage.", "Cruelty+", 1, 50, 0, "Vulnerable enemies take 50% more damage." },
+    { CardId::TRACKING, "Tracking", 2, CardType::POWER, TargetType::SELF, 50, 0, "Weak enemies take 50% more damage from Attacks.", "Tracking+", 1, 50, 0, "Weak enemies take 50% more damage from Attacks." },
+    { CardId::LETHALITY, "Lethality", 1, CardType::POWER, TargetType::SELF, 50, 0, "Ethereal. The first Attack each turn deals 50% more damage.", "Lethality+", 1, 75, 0, "Ethereal. The first Attack each turn deals 75% more damage.", KEYWORD_ETHEREAL, KEYWORD_ETHEREAL },
+    { CardId::SHADOW_STEP, "Shadow Step", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Discard your hand. Next turn, Attacks deal double damage.", "Shadow Step+", 0, 0, 0, "Discard your hand. Next turn, Attacks deal double damage." },
+    { CardId::DEBILITATE, "Debilitate", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 2, "Deal 10 damage. Vulnerable and Weak are twice as effective on the enemy for 2 turns.", "Debilitate+", 1, 12, 3, "Deal 12 damage. Vulnerable and Weak are twice as effective on the enemy for 3 turns." },
 };
 
 const CardDef& CardDef::get(CardId id) {

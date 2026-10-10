@@ -125,7 +125,8 @@ void test_distraction(bool upgraded) {
     assert(combat.play_card(0, 0));
     assert(combat.hand.size() == 1);
     assert(CardDef::get(combat.hand[0].id).type == CardType::SKILL);
-    assert(combat.effective_cost(combat.hand[0]) == 0);
+    // The free copy costs nothing, except an X-cost Skill, which stays X.
+    assert(combat.effective_cost(combat.hand[0]) == 0 || combat.effective_cost(combat.hand[0]) == COST_X);
     assert(combat.exhaust_pile.size() == 1);
 }
 
