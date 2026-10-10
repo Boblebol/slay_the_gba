@@ -110,6 +110,8 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
             master_deck.push_back(cid);
         }
     }
+    // Ascension 10: an unremovable curse that is unplayable and Ethereal joins the starting deck.
+    if (ascension_level >= 10) master_deck.push_back(DeckCard(CardId::ASCENDERS_BANE, false));
 
     // Starting relic
     relics.clear();
