@@ -2219,6 +2219,10 @@ bool CombatEngine::can_be_picked(const DeckCard& card, ChoiceKind kind) const {
             return !CardDef::has_keyword(card, KEYWORD_RETAIN);
         case ChoiceKind::MAKE_SLY:
             return !CardDef::is_sly(card);
+        case ChoiceKind::MAKE_FREE: {
+            const int cost = effective_cost(card);
+            return cost != COST_X && cost > 0;
+        }
         case ChoiceKind::COPY_ATTACK_OR_POWER:
             return CardDef::get(card.id).type == CardType::ATTACK || CardDef::get(card.id).type == CardType::POWER;
         case ChoiceKind::COPY_COLORLESS:
@@ -2341,6 +2345,11 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                 case ChoiceKind::MAKE_SLY:
                     hand[index].sly_this_turn = true;
                     break;
+                case ChoiceKind::MAKE_FREE: {
+                    const int cost = effective_cost(hand[index]);
+                    if (cost != COST_X) hand[index].cost_delta = static_cast<int8_t>(hand[index].cost_delta - cost);
+                    break;
+                }
                 case ChoiceKind::COPY_ATTACK_OR_POWER:
                 case ChoiceKind::COPY_COLORLESS: {
                     DeckCard copy = hand[index];
@@ -6187,6 +6196,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "STABLE_SERUM") {
         add_power(PowerId::STABLE_SERUM, 2);
         set_log("Stable Serum!");
+    } else if (potion_id == "TOUCH_OF_INSANITY") {
+        ask_choice(CardChoice{ ChoiceKind::MAKE_FREE, 1 });
+        set_log("Touch of Insanity!");
     } else if (potion_id == "OROBIC_ACID") {
         for (CardType type : { CardType::ATTACK, CardType::SKILL, CardType::POWER }) {
             const CardId card = random_card(CardFilter(type));
