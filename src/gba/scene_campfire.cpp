@@ -174,6 +174,11 @@ public:
 
             if(_done_timer > 50)
             {
+                // Dream Catcher: the Rest opened the card reward screen, which comes next.
+                if(_ctx.run.phase == engine::RunPhase::REWARD_SCREEN)
+                {
+                    return SceneId::REWARDS;
+                }
                 _ctx.run.phase = engine::RunPhase::MAP_NAVIGATION;
                 return SceneId::MAP;
             }

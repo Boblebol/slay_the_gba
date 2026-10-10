@@ -105,6 +105,8 @@ enum class PowerId : uint8_t {
     HAPPY_FLOWER,      // every 3 turns: `amount` energy
     PENDULUM,          // every 3 turns: draw `amount` more
     RING_OF_THE_DRAKE, // start of turns 1 to RING_OF_THE_DRAKE_TURNS: draw `amount` more
+    FAKE_HAPPY_FLOWER, // every 5 turns: `amount` energy
+    POLLINOUS_CORE,    // every 4 turns: draw `amount` more
     VERY_HOT_COCOA,    // turn 1: `amount` more energy
     BOOKMARK,          // end of turn: a random Retained card in hand costs 1 less until played
     BREAD,             // turn 1: lose BREAD_ENERGY_LOST energy; later turns: `amount` energy
@@ -229,7 +231,9 @@ enum class PowerId : uint8_t {
     VAMBRACE,           // the first Block a card gives each combat is doubled (counter = 1 once used)
     CHEMICAL_X,         // the X cards played get `amount` more X (CombatEngine::play_card, autoplay)
     UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
-    MR_STRUGGLES        // start of turn: damage equal to the turn number to every enemy (event relic)
+    MR_STRUGGLES,       // start of turn: damage equal to the turn number to every enemy (event relic)
+    HISTORY_COURSE,     // start of turn: play a copy of the last Attack played (`amount` = 0, or card id * 2 + upgraded + 1)
+    INFUSED_CORE        // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
