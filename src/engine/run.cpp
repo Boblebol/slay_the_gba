@@ -629,6 +629,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         preserved_fog_pending = true;
         finish_preserved_fog();
     }
+    if (relic_id == "PRECISE_SCISSORS" && has_relic("PRECISE_SCISSORS")) request_deck_choice(DeckChoiceKind::REMOVE, 1);
     if (relic_id == "MEMBERSHIP_CARD" && phase == RunPhase::SHOP) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
 }
 
