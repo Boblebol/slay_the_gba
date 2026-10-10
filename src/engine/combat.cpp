@@ -6405,6 +6405,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
             create_card(made, Pile::HAND);
         }
         set_log("Orobic Acid!");
+    } else if (potion_id == "ENTROPIC_BREW") {
+        fill_potion_belt = true; // the run owns the belt: RunManager::use_potion fills it once this potion is gone
+        set_log("Entropic Brew!");
     } else {
         return false;
     }
