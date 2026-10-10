@@ -18,13 +18,18 @@
 #include "bn_sprite_items_mon_brute_ruby_raider.h"
 #include "bn_sprite_items_mon_calcified_cultist.h"
 #include "bn_sprite_items_mon_crossbow_ruby_raider.h"
+#include "bn_sprite_items_mon_cubex_construct.h"
 #include "bn_sprite_items_mon_cultist.h"
 #include "bn_sprite_items_mon_damp_cultist.h"
 #include "bn_sprite_items_mon_eye_with_teeth.h"
 #include "bn_sprite_items_mon_stabbot.h"
+#include "bn_sprite_items_mon_flyconid.h"
 #include "bn_sprite_items_mon_fuzzy_wurm_crawler.h"
 #include "bn_sprite_items_mon_gremlin_nob.h"
+#include "bn_sprite_items_mon_inklet.h"
 #include "bn_sprite_items_mon_jaw_worm.h"
+#include "bn_sprite_items_mon_noisebot.h"
+#include "bn_sprite_items_mon_nibbit.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
@@ -227,6 +232,16 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_eye_with_teeth, false };
     case engine::EnemyType::STABBOT:
         return { &bn::sprite_items::mon_stabbot, false };
+    case engine::EnemyType::NOISEBOT:
+        return { &bn::sprite_items::mon_noisebot, false };
+    case engine::EnemyType::CUBEX_CONSTRUCT:
+        return { &bn::sprite_items::mon_cubex_construct, false };
+    case engine::EnemyType::INKLET:
+        return { &bn::sprite_items::mon_inklet, false };
+    case engine::EnemyType::NIBBIT:
+        return { &bn::sprite_items::mon_nibbit, false };
+    case engine::EnemyType::FLYCONID:
+        return { &bn::sprite_items::mon_flyconid, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

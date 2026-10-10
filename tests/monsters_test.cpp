@@ -25,6 +25,7 @@ struct Turn {
     int block;        // Block the enemy holds after its turn
     int strength;     // Strength the enemy holds after its turn
     int ritual = 0;   // Ritual the enemy holds after its turn
+    int hits = 1;     // times the attack hits, `damage` each
 };
 
 // Lets the enemy play `turns` one after the other against a player who never plays a card.
@@ -46,7 +47,7 @@ void check_monster(EnemyType type, std::string_view name, int hp, std::initializ
         combat.player.hp = combat.player.max_hp; // long cycles must not kill the player
         combat.end_player_turn();
         assert(combat.state == CombatState::PLAYER_TURN);
-        assert(combat.player.max_hp - combat.player.hp == turn.damage);
+        assert(combat.player.max_hp - combat.player.hp == turn.damage * turn.hits);
         assert(enemy.block == turn.block);
         assert(enemy.get_status(StatusType::STRENGTH) == turn.strength);
         assert(enemy.get_status(StatusType::RITUAL) == turn.ritual);
@@ -1185,6 +1186,302 @@ void test_stabbot_ascension() {
     std::cout << "[PASS] Stabbot: Ascension gives 19 to 24 HP and a Stab of 12" << std::endl;
 }
 
+void test_noisebot() {
+    // Noise every turn: 2 Dazed into the discard pile, no damage.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::NOISEBOT);
+    Enemy& bot = combat.enemies[0];
+    assert(bot.type == EnemyType::NOISEBOT && bot.name == "Sonobot");
+    assert(bot.hp >= 18 && bot.hp <= 23 && bot.max_hp == bot.hp && bot.max_hp == 18 + bot.hp_bonus);
+    assert(bot.block == 0 && bot.statuses.empty());
+    for (int turn = 1; turn <= 4; ++turn) {
+        assert(combat.turn_number == turn);
+        assert(bot.current_intent.type == STATUS && bot.current_intent.status_card == CardId::DAZED);
+        assert(bot.current_intent.status_cards == 2 && bot.current_intent.status_pile == Pile::DISCARD);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.hp == combat.player.max_hp && bot.block == 0 && bot.statuses.empty());
+    }
+    std::cout << "[PASS] Noisebot: 18 to 23 HP, Noise (2 Dazed into the discard pile) every turn" << std::endl;
+}
+
+void test_noisebot_ascension() {
+    // 19 to 24 HP (18 to 23 plus 1) at Ascension, same Noise.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::NOISEBOT);
+        Enemy& bot = combat.enemies[0];
+        bot.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = bot.hp;
+        assert(bot.ascension_hp() == 19 && bot.hp_spread() == 5);
+        assert(base >= 18 && base <= 23 && bot.max_hp == 18 + bot.hp_bonus);
+        bot.ascend(true, true);
+        combat.plan_enemies();
+        assert(bot.hp == base + 1 && bot.max_hp == base + 1 && bot.hp >= 19 && bot.hp <= 24);
+        assert(bot.current_intent.type == STATUS && bot.current_intent.status_cards == 2);
+    }
+    std::cout << "[PASS] Noisebot: Ascension gives 19 to 24 HP" << std::endl;
+}
+
+void test_cubex_construct() {
+    // Charge Up (+2 Strength), two Repeater Blasts 7 (+2 Strength each), Expel 5x2, then the blasts and Expel again.
+    // The Strength of a blast is gained after it hits.
+    check_monster(EnemyType::CUBEX_CONSTRUCT, "Assemblage Cubex", 65, {
+        { BUFF, 0, 0, 2 },
+        { ATTACK_BUFF, 9, 0, 4 },
+        { ATTACK_BUFF, 11, 0, 6 },
+        { ATTACK, 11, 0, 6, 0, 2 },
+        { ATTACK_BUFF, 13, 0, 8 },
+        { ATTACK_BUFF, 15, 0, 10 },
+        { ATTACK, 15, 0, 10, 0, 2 },
+    });
+    std::cout << "[PASS] Cubex Construct: 65 HP, Charge Up, 2 Repeater Blasts 7, Expel 5x2, loop" << std::endl;
+}
+
+void test_cubex_construct_ascension() {
+    // 70 HP, Repeater Blast 8 and Expel 6x2 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CUBEX_CONSTRUCT);
+    Enemy& cube = combat.enemies[0];
+    cube.ascend(true, true);
+    combat.plan_enemies();
+    assert(cube.hp == 70 && cube.max_hp == 70);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Charge Up: +2 Strength
+    assert(cube.current_intent.type == ATTACK_BUFF && cube.intent_damage(combat.player) == 10); // 8 + 2
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(cube.current_intent.type == ATTACK && cube.current_intent.hits == 2);
+    assert(cube.intent_damage(combat.player) == 6 + 6); // 6 + 6 Strength
+    std::cout << "[PASS] Cubex Construct: Ascension gives 70 HP, Repeater Blast 8, Expel 6x2" << std::endl;
+}
+
+void test_inklet() {
+    // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
+    bool whirlwind = false, gaze = false;
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::INKLET);
+        Enemy& inklet = combat.enemies[0];
+        inklet.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        assert(inklet.type == EnemyType::INKLET && inklet.name == "Encrelin");
+        assert(inklet.hp >= 11 && inklet.hp <= 17 && inklet.max_hp == 11 + inklet.hp_bonus && inklet.hp_spread() == 6);
+        const int16_t hp = inklet.hp;
+        for (int turn = 1; turn <= 8; ++turn) {
+            assert(combat.turn_number == turn);
+            assert(inklet.current_intent.type == ATTACK);
+            int hits = inklet.current_intent.hits;
+            int damage = inklet.intent_damage(combat.player) * hits;
+            if (turn % 2 == 1) {
+                assert(hits == 1 && damage == 3);
+            } else if (hits == 3) {
+                assert(damage == 6);
+                whirlwind = true;
+            } else {
+                assert(hits == 1 && damage == 10);
+                gaze = true;
+            }
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+            assert(combat.state == CombatState::PLAYER_TURN);
+            assert(combat.player.max_hp - combat.player.hp == damage);
+            assert(inklet.block == 0 && inklet.statuses.empty() && inklet.hp == hp);
+        }
+    }
+    assert(whirlwind && gaze);
+    std::cout << "[PASS] Inklet: 11 to 17 HP, Jab 3, then Whirlwind 2x3 or Piercing Gaze 10 at random" << std::endl;
+}
+
+void test_inklet_ascension() {
+    // 12 to 18 HP (11 to 17 plus 1), Jab 4, Whirlwind 3x3 and Piercing Gaze 11 at Ascension.
+    bool whirlwind = false, gaze = false;
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::INKLET);
+        Enemy& inklet = combat.enemies[0];
+        inklet.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = inklet.hp;
+        assert(inklet.ascension_hp() == 12 && base >= 11 && base <= 17);
+        inklet.ascend(true, true);
+        combat.plan_enemies();
+        assert(inklet.hp == base + 1 && inklet.max_hp == base + 1 && inklet.hp >= 12 && inklet.hp <= 18);
+        for (int turn = 1; turn <= 8; ++turn) {
+            if (turn % 2 == 1) {
+                assert(inklet.intent_damage(combat.player) == 4 && inklet.current_intent.hits == 1);
+            } else if (inklet.current_intent.hits == 3) {
+                assert(inklet.intent_damage(combat.player) == 3);
+                whirlwind = true;
+            } else {
+                assert(inklet.current_intent.hits == 1 && inklet.intent_damage(combat.player) == 11);
+                gaze = true;
+            }
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+        }
+    }
+    assert(whirlwind && gaze);
+    std::cout << "[PASS] Inklet: Ascension gives 12 to 18 HP, Jab 4, Whirlwind 3x3, Piercing Gaze 11" << std::endl;
+}
+
+// Plays `turns` of the enemy at `index`: its intent, the damage the player loses, its Block and its Strength.
+void check_nibbit_cycle(CombatEngine& combat, size_t index, std::initializer_list<Turn> turns, int strength_step) {
+    Enemy& nibbit = combat.enemies[index];
+    int turn_number = 1;
+    int strength = 0;
+    for (const Turn& turn : turns) {
+        assert(combat.turn_number == turn_number);
+        assert(nibbit.current_intent.type == turn.intent);
+        assert(nibbit.intent_damage(combat.player) == turn.damage);
+        if (turn.intent == BUFF) strength += strength_step;
+        pass_turn(combat);
+        assert(nibbit.block == turn.block);
+        assert(nibbit.get_status(StatusType::STRENGTH) == strength);
+        ++turn_number;
+    }
+}
+
+void test_nibbit() {
+    // Alone: Butt 12, Slice 6 + 5 Block, Hiss (+2 Strength), and again.
+    CombatEngine alone = make_pack({ EnemyType::NIBBIT });
+    Enemy& single = alone.enemies[0];
+    assert(single.type == EnemyType::NIBBIT && single.name == "Grignotin");
+    assert(single.hp >= 42 && single.hp <= 46 && single.max_hp == single.hp && single.max_hp == 42 + single.hp_bonus);
+    assert(single.block == 0 && single.statuses.empty());
+    check_nibbit_cycle(alone, 0, {
+        { ATTACK, 12, 0, 0 },
+        { ATTACK_DEFEND, 6, 5, 0 },
+        { BUFF, 0, 0, 0 },
+        { ATTACK, 14, 0, 0 },
+        { ATTACK_DEFEND, 8, 5, 0 },
+        { BUFF, 0, 0, 0 },
+    }, 2);
+
+    // Two Nibbits: the one in front starts with Slice, the one behind with Hiss. Each follows the same cycle.
+    CombatEngine pair = make_pack({ EnemyType::NIBBIT, EnemyType::NIBBIT });
+    assert(pair.enemies[0].current_intent.type == ATTACK_DEFEND);
+    assert(pair.enemies[1].current_intent.type == BUFF);
+    const EnemyIntentType front[] = { ATTACK_DEFEND, BUFF, ATTACK, ATTACK_DEFEND, BUFF, ATTACK };
+    const EnemyIntentType behind[] = { BUFF, ATTACK, ATTACK_DEFEND, BUFF, ATTACK, ATTACK_DEFEND };
+    for (int turn = 0; turn < 6; ++turn) {
+        assert(pair.enemies[0].current_intent.type == front[turn]);
+        assert(pair.enemies[1].current_intent.type == behind[turn]);
+        pass_turn(pair);
+    }
+    // The pattern is kept when the partner dies: it does not start over as if alone.
+    CombatEngine left = make_pack({ EnemyType::NIBBIT, EnemyType::NIBBIT });
+    pass_turn(left);
+    left.enemies[0].hp = 0;
+    pass_turn(left);
+    assert(left.enemies[1].current_intent.type == ATTACK_DEFEND);
+    std::cout << "[PASS] Nibbit: 42 to 46 HP, Butt 12, Slice 6 + 5 Block, Hiss +2 Strength, start by position" << std::endl;
+}
+
+void test_nibbit_ascension() {
+    // 44 to 48 HP, Butt 13, Slice 7 + 6 Block and Hiss +3 Strength at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_pack({ EnemyType::NIBBIT });
+        Enemy& nibbit = combat.enemies[0];
+        nibbit.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = nibbit.hp;
+        assert(nibbit.ascension_hp() == 44 && nibbit.hp_spread() == 4);
+        assert(base >= 42 && base <= 46 && nibbit.max_hp == 42 + nibbit.hp_bonus);
+        nibbit.ascend(true, true);
+        combat.plan_enemies();
+        assert(nibbit.hp == base + 2 && nibbit.max_hp == base + 2 && nibbit.hp >= 44 && nibbit.hp <= 48);
+        assert(nibbit.current_intent.type == ATTACK && nibbit.intent_damage(combat.player) == 13);
+        pass_turn(combat);
+        assert(nibbit.current_intent.type == ATTACK_DEFEND && nibbit.intent_damage(combat.player) == 7);
+        pass_turn(combat);
+        assert(nibbit.block == 6);
+        assert(nibbit.current_intent.type == BUFF);
+        pass_turn(combat);
+        assert(nibbit.get_status(StatusType::STRENGTH) == 3);
+    }
+    std::cout << "[PASS] Nibbit: Ascension gives 44 to 48 HP, Butt 13, Slice 7 + 6 Block, Hiss +3 Strength" << std::endl;
+}
+
+void test_flyconid() {
+    // Calm: Frail Spores (8 damage + 2 Frail) or Smash (11), never the same twice in a row. Hurt, it opens with
+    // Vulnerable Spores, then draws among the three moves, again never the same twice in a row.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FLYCONID);
+    Enemy& fly = combat.enemies[0];
+    assert(fly.type == EnemyType::FLYCONID && fly.name == "Mycoptère");
+    assert(fly.hp >= 47 && fly.hp <= 49 && fly.max_hp == fly.hp && fly.max_hp == 47 + fly.hp_bonus);
+    bool saw_frail = false, saw_smash = false;
+    int previous = -1;
+    for (int turn = 1; turn <= 8; ++turn) {
+        assert(fly.phase == 0 && fly.block == 0 && fly.statuses.empty());
+        const EnemyIntent& intent = fly.current_intent;
+        int move;
+        if (intent.type == ATTACK_DEBUFF) {
+            assert(fly.intent_damage(combat.player) == 8);
+            assert(intent.debuffs[0].type == StatusType::FRAIL && intent.debuffs[0].amount == 2);
+            move = 1;
+            saw_frail = true;
+        } else {
+            assert(intent.type == ATTACK && fly.intent_damage(combat.player) == 11);
+            move = 2;
+            saw_smash = true;
+        }
+        assert(move != previous);
+        previous = move;
+        combat.player.hp = combat.player.max_hp;
+        combat.player.statuses.clear();
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == (move == 1 ? 8 : 11));
+    }
+    assert(saw_frail && saw_smash);
+
+    // Hurt: Vulnerable Spores at once (2 Vulnerable on the player, no damage), then a draw that cannot repeat.
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::FLYCONID);
+    Enemy& bug = hurt.enemies[0];
+    hurt.damage_enemy(bug, 5);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(bug.phase == 1);
+    assert(bug.current_intent.type == DEBUFF && bug.intent_damage(hurt.player) == 0);
+    assert(bug.current_intent.debuffs[0].type == StatusType::VULNERABLE && bug.current_intent.debuffs[0].amount == 2);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(hurt.player.max_hp == hurt.player.hp && hurt.player.get_status(StatusType::VULNERABLE) >= 1);
+    bool seen[3] = { true, false, false };
+    int last = 0;
+    for (int turn = 0; turn < 40; ++turn) {
+        const EnemyIntent& intent = bug.current_intent;
+        int move = intent.type == DEBUFF ? 0 : (intent.type == ATTACK_DEBUFF ? 1 : 2);
+        assert(bug.phase == 1 && move != last);
+        if (move == 1) assert(intent.base_damage == 8 && intent.debuffs[0].type == StatusType::FRAIL);
+        if (move == 2) assert(intent.type == ATTACK && intent.base_damage == 11);
+        seen[move] = true;
+        last = move;
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.end_player_turn();
+        assert(hurt.state == CombatState::PLAYER_TURN);
+    }
+    assert(seen[0] && seen[1] && seen[2]);
+    std::cout << "[PASS] Flyconid: 47 to 49 HP, Frail Spores / Smash, Vulnerable Spores once hurt" << std::endl;
+}
+
+void test_flyconid_ascension() {
+    // 51 to 53 HP (47 to 49 plus 4), Frail Spores of 9 and a Smash of 12 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FLYCONID);
+        Enemy& fly = combat.enemies[0];
+        fly.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = fly.hp;
+        assert(fly.ascension_hp() == 51 && fly.hp_spread() == 2);
+        assert(base >= 47 && base <= 49 && fly.max_hp == 47 + fly.hp_bonus);
+        fly.ascend(true, true);
+        combat.plan_enemies();
+        assert(fly.hp == base + 4 && fly.max_hp == base + 4 && fly.hp >= 51 && fly.hp <= 53);
+        if (fly.current_intent.type == ATTACK_DEBUFF) {
+            assert(fly.intent_damage(combat.player) == 9);
+        } else {
+            assert(fly.current_intent.type == ATTACK && fly.intent_damage(combat.player) == 12);
+        }
+    }
+    std::cout << "[PASS] Flyconid: Ascension gives 51 to 53 HP, Spores of 9 and a Smash of 12" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1225,6 +1522,16 @@ int main() {
     test_eye_with_teeth();
     test_stabbot();
     test_stabbot_ascension();
+    test_noisebot();
+    test_noisebot_ascension();
+    test_cubex_construct();
+    test_cubex_construct_ascension();
+    test_inklet();
+    test_inklet_ascension();
+    test_nibbit();
+    test_nibbit_ascension();
+    test_flyconid();
+    test_flyconid_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
