@@ -1597,6 +1597,10 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("DIVINE_RIGHT")) {
         combat.gain_stars(3);
     }
+    // Divine Destiny (event): 7 Stars.
+    if (has_relic("DIVINE_DESTINY")) {
+        combat.gain_stars(7);
+    }
     // Data Disk: 1 Focus. Runic Capacitor: 3 more orb slots. Symbiotic Virus: 1 Dark orb.
     if (has_relic("DATA_DISK")) {
         combat.player.add_status(StatusType::FOCUS, 1);

@@ -195,6 +195,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "BOOK_OF_FIVE_RINGS", "Chaque fois que vous ajoutez 5 cartes à votre Deck, récupérez 20 PV." },
     { "WAR_PAINT", "Lorsque vous obtenez cette relique, Améliorez 2 Compétences aléatoires." },
     { "FRAGRANT_MUSHROOM", "Lorsque vous obtenez cette relique, perdez 15 PV et Améliorez 2 cartes aléatoires." },
+    { "DIVINE_DESTINY", "Au début de chaque combat, gagnez 7 Étoiles." },
     { "ETERNAL_FEATHER", "Pour toutes les 5 cartes dans votre Deck, récupérez 3 PV lorsque vous entrez dans un Site de repos." },
     { "FROZEN_EGG", "Lorsque vous ajoutez un Pouvoir à votre Deck, Améliorez-le." },
     { "GIRYA", "Aux Sites de repos, vous pouvez gagner 1 de Force. (3 fois maximum)" },
