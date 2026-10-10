@@ -2390,6 +2390,29 @@ void test_venerable_tea_set() {
     std::cout << "[PASS] Venerable Tea Set: 2 energy per Rest Site entered, for the next combat" << std::endl;
 }
 
+void test_fake_venerable_tea_set() {
+    // With the relic: each Rest Site entered gives 1 more energy to the next combat, once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    run.add_relic("FAKE_VENERABLE_TEA_SET");
+    enter_room_of_type(run, RoomType::REST_SITE);
+    enter_room_of_type(run, RoomType::REST_SITE);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 5);
+    assert(run.relic_counter("FAKE_VENERABLE_TEA_SET") == 0);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 3);
+
+    // Without the relic: the usual 3 energy after a Rest Site.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(!plain.has_relic("FAKE_VENERABLE_TEA_SET"));
+    assert(plain.combat.player.energy == 3);
+    std::cout << "[PASS] Venerable Tea Set (event): 1 energy per Rest Site entered, for the next combat" << std::endl;
+}
+
 void test_lava_lamp() {
     // At the end of a fight without HP lost, every card reward of it is upgraded; with HP lost, none is.
     auto all_upgraded = [](const RunManager& r) {
@@ -2571,6 +2594,7 @@ int main() {
     test_paels_legion();
     test_golden_pearl();
     test_venerable_tea_set();
+    test_fake_venerable_tea_set();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();
