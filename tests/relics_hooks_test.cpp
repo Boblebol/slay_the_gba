@@ -897,6 +897,34 @@ void test_beating_remnant() {
     std::cout << "[PASS] Beating Remnant: no more than 20 HP lost per turn" << std::endl;
 }
 
+void test_dingy_rug() {
+    // Card rewards: with the relic, some offers are Colorless cards; without it, never.
+    uint32_t colorless = 0, offers = 0;
+    for (uint32_t seed = 1; seed <= 50; ++seed) {
+        RunManager with_rug;
+        with_rug.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with_rug.add_relic("DINGY_RUG");
+        enter_room_of_type(with_rug, RoomType::MONSTER);
+        with_rug.generate_rewards();
+
+        RunManager without_rug;
+        without_rug.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(without_rug, RoomType::MONSTER);
+        without_rug.generate_rewards();
+
+        for (size_t i = 0; i < with_rug.current_card_rewards.size(); ++i) {
+            ++offers;
+            if (card_meta(with_rug.current_card_rewards[i].id).pool == CardPool::COLORLESS) ++colorless;
+        }
+        for (size_t i = 0; i < without_rug.current_card_rewards.size(); ++i) {
+            assert(card_meta(without_rug.current_card_rewards[i].id).pool != CardPool::COLORLESS);
+        }
+    }
+    assert(offers == 150 && colorless > 0);
+
+    std::cout << "[PASS] Dingy Rug: " << colorless << " of " << offers << " card rewards are Colorless" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -1174,6 +1202,27 @@ void test_tiny_mailbox() {
     assert(!plain.has_relic("TINY_MAILBOX"));
     assert(plain.potions.size() == plain_before);
     std::cout << "[PASS] Tiny Mailbox: 2 potions at each Rest" << std::endl;
+}
+
+void test_regal_pillow() {
+    // With the relic: each Rest heals 15 HP more than the usual 30% of Max HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("REGAL_PILLOW");
+    run.max_hp = 80;
+    run.hp = 20;
+    run.rest_at_campfire();
+    assert(run.hp == 59);  // 20 + 24 (30%) + 15
+
+    // Without the relic: a Rest heals only the usual 30% of Max HP.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.max_hp = 80;
+    plain.hp = 20;
+    plain.rest_at_campfire();
+    assert(!plain.has_relic("REGAL_PILLOW"));
+    assert(plain.hp == 44);  // 20 + 24
+    std::cout << "[PASS] Regal Pillow: 15 extra HP at each Rest" << std::endl;
 }
 
 void test_pomander() {
@@ -1855,6 +1904,30 @@ void test_white_beast_statue() {
     std::cout << "[PASS] White Beast Statue: a potion in every combat reward, not always without it" << std::endl;
 }
 
+void test_bowler_hat() {
+    // With the relic: the fight's gold reward is 25 % bigger, and that gold reaches the purse once the rewards are taken.
+    // Without it: the plain reward.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("BOWLER_HAT");
+    enter_room_of_type(with, RoomType::MONSTER);
+    with.generate_rewards();
+
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.generate_rewards();
+
+    assert(plain.gold_reward > 0 && with.gold_reward == plain.gold_reward);
+    const int16_t with_before = with.gold, plain_before = plain.gold;
+    const int16_t reward = plain.gold_reward;
+    with.skip_card_rewards(); // no card taken: the rewards are over, the gold is paid
+    plain.skip_card_rewards();
+    assert(plain.gold == plain_before + reward);
+    assert(with.gold == with_before + reward + reward / 4);
+    std::cout << "[PASS] Bowler Hat: 25 % more gold from fight rewards" << std::endl;
+}
+
 void test_cauldron() {
     // Obtained: 5 random potions are brewed into the belt.
     RunManager run;
@@ -2071,6 +2144,46 @@ void test_war_paint() {
     std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
 }
 
+void test_dragon_fruit() {
+    // With the relic: each gain of Gold raises the Max HP by 1, a gain of 0 changes nothing.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("DRAGON_FRUIT");
+    int16_t max_hp = with.max_hp;
+    with.gain_gold(10);
+    assert(with.max_hp == max_hp + 1);
+    with.gain_gold(0);
+    assert(with.max_hp == max_hp + 1);
+    with.gain_gold(25);
+    assert(with.max_hp == max_hp + 2);
+
+    // Without the relic: the Max HP does not move with the gold.
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    int16_t plain_max_hp = without.max_hp;
+    without.gain_gold(10);
+    assert(!without.has_relic("DRAGON_FRUIT") && without.max_hp == plain_max_hp);
+    std::cout << "[PASS] Dragon Fruit: +1 Max HP with each gain of Gold" << std::endl;
+}
+
+void test_amethyst_aubergine() {
+    // With the relic: every fight reward holds 15 more Gold than the same fight without it.
+    for (uint32_t seed = 1; seed <= 20; ++seed) {
+        RunManager with;
+        with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with.add_relic("AMETHYST_AUBERGINE");
+        enter_room_of_type(with, RoomType::MONSTER);
+        with.generate_rewards();
+
+        RunManager plain;
+        plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(plain, RoomType::MONSTER);
+        plain.generate_rewards();
+        assert(with.gold_reward == plain.gold_reward + 15);
+    }
+    std::cout << "[PASS] Amethyst Aubergine: 15 more Gold in each fight reward" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2107,6 +2220,7 @@ int main() {
     test_lava_rock();
     test_stone_humidifier();
     test_tiny_mailbox();
+    test_regal_pillow();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();
@@ -2130,6 +2244,7 @@ int main() {
     test_war_paint();
     test_belt_buckle();
     test_circlet();
+    test_dingy_rug();
     test_beating_remnant();
     test_ghost_seed();
     test_reptile_trinket();
@@ -2139,11 +2254,14 @@ int main() {
     test_white_beast_statue();
     test_cauldron();
     test_lees_waffle();
+    test_bowler_hat();
     test_bookmark();
     test_tungsten_rod();
     test_mango();
     test_old_coin();
     test_pear();
     test_whetstone();
+    test_dragon_fruit();
+    test_amethyst_aubergine();
     return 0;
 }

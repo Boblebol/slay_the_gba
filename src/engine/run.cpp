@@ -251,6 +251,8 @@ FixedVector<CampfireAction, 5> RunManager::campfire_actions() const {
 void RunManager::rest_at_campfire() {
     if (can_rest()) {
         int16_t heal_amount = max_hp * 3 / 10;
+        // Regal Pillow: each Rest heals 15 more HP.
+        if (has_relic("REGAL_PILLOW")) heal_amount += 15;
         hp = std::min<int16_t>(max_hp, hp + heal_amount);
     }
     on_rested();
@@ -568,6 +570,12 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng) {
             }
         }
     }
+    // Dingy Rug: the Colorless cards are offered too.
+    if (has_relic("DINGY_RUG")) {
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (card_meta(static_cast<CardId>(id)).pool == CardPool::COLORLESS) candidates.push_back(static_cast<CardId>(id));
+        }
+    }
     while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
         size_t pick = (boss ? rng.next() : next_random()) % candidates.size();
         current_card_rewards.push_back(DeckCard(candidates[pick], false));
@@ -586,6 +594,8 @@ void RunManager::generate_rewards() {
 
     // A boss gives 95 to 105 gold.
     gold_reward = boss ? static_cast<int16_t>(95 + rng.below(11)) : 15 + static_cast<int16_t>(next_random() % 15);
+    // Amethyst Aubergine: the enemies drop 15 more Gold.
+    if (has_relic("AMETHYST_AUBERGINE")) gold_reward = static_cast<int16_t>(gold_reward + 15);
 
     // A potion the hero can use, in 40 % of the fights; White Beast Statue makes it certain.
     potion_reward = {};
@@ -626,7 +636,9 @@ bool RunManager::take_relic_reward() {
 }
 
 void RunManager::finish_rewards() {
-    gain_gold(gold_reward);
+    // Bowler Hat: 25 % more gold from the rewards of the fight.
+    const int bonus = has_relic("BOWLER_HAT") ? gold_reward / 4 : 0;
+    gain_gold(static_cast<int16_t>(gold_reward + bonus));
     gold_reward = 0;
     potion_reward = {};
     relic_reward = {};
@@ -992,6 +1004,8 @@ void RunManager::gain_gold(int16_t amount) {
     if (has_relic("ECTOPLASM")) return;
     gold = static_cast<int16_t>(std::min<int>(9999, gold + amount));
     on_gold_gained(amount);
+    // Dragon Fruit: each gain of Gold raises the Max HP by 1.
+    if (has_relic("DRAGON_FRUIT")) gain_max_hp(1);
 }
 
 int RunManager::upgrade_random_cards(int count) {
@@ -1173,7 +1187,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", // Shared, out of combat
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR",                                   // Shared, out of combat
@@ -1183,10 +1197,14 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRONZE_SCALES", "GORGET", "AKABEKO",
         // At the merchant (#487)
         "THE_COURIER",
+        // Max HP with each gain of Gold (#474)
+        "DRAGON_FRUIT",
         // Retained hand on the first turn (#509)
         "RINGING_TRIANGLE",
         // Upgrades on pickup (#465, #464)
-        "WHETSTONE", "WAR_PAINT"
+        "WHETSTONE", "WAR_PAINT",
+        // Colorless cards in the card rewards (#486)
+        "DINGY_RUG"
     };
     return ACTIVE_RELICS;
 }
