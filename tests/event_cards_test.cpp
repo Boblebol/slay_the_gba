@@ -110,11 +110,35 @@ void test_apotheosis() {
     std::cout << "[PASS] Apotheosis: 2 energy (1 upgraded), Innate, upgrades all cards, Exhaust" << std::endl;
 }
 
+void test_mad_science() {
+    assert(CardDef::get_cost(CardId::MAD_SCIENCE, false) == 1);
+    assert(CardDef::get_cost(CardId::MAD_SCIENCE, true) == 1);
+    assert(CardDef::get(CardId::MAD_SCIENCE).type == CardType::ATTACK);
+    assert(!CardDef::has_keyword(CardId::MAD_SCIENCE, false, KEYWORD_INNATE));
+    assert(CardDef::has_keyword(CardId::MAD_SCIENCE, true, KEYWORD_INNATE));
+    // Base: 1 energy, 12 damage, then the card goes to the discard pile.
+    CombatEngine combat = make_big_fight();
+    combat.hand.push_back(DeckCard(CardId::MAD_SCIENCE));
+    assert(combat.play_card(0, 0));
+    assert(combat.enemies[0].hp == 188);
+    assert(combat.player.energy == 2);
+    assert(combat.hand.empty() && combat.discard_pile.size() == 1);
+    // Upgraded: still 1 energy and 12 damage, now Innate.
+    CombatEngine up = make_big_fight();
+    up.hand.push_back(DeckCard(CardId::MAD_SCIENCE, true));
+    assert(up.play_card(0, 0));
+    assert(up.enemies[0].hp == 188);
+    assert(up.player.energy == 2);
+    assert(up.hand.empty() && up.discard_pile.size() == 1);
+    std::cout << "[PASS] Mad Science: 1 energy, 12 damage, Innate (upgraded only)" << std::endl;
+}
+
 } // namespace
 
 int main() {
     test_apparition();
     test_maul();
     test_apotheosis();
+    test_mad_science();
     return 0;
 }

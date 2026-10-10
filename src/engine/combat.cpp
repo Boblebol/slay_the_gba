@@ -3879,6 +3879,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Byrd Swoop+!"sv : "Played Byrd Swoop!"sv);
             break;
         }
+        case CardId::MAD_SCIENCE: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Mad Science+!"sv : "Played Mad Science!"sv);
+            break;
+        }
         case CardId::ULTIMATE_STRIKE: {
             hit(current_target, base_value);
             set_log(upgraded ? "Played Ultimate Strike+!"sv : "Played Ultimate Strike!"sv);
