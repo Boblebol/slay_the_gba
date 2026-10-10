@@ -18,7 +18,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
-    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "FRUIT_JUICE",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -866,6 +866,16 @@ void test_refused_outside_player_turn() {
     std::cout << "[PASS] Potions are refused outside the player's turn: enemy turn, victory, defeat" << std::endl;
 }
 
+void test_fruit_juice() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    const int16_t max_hp = combat.player.max_hp;
+    const int16_t hp = combat.player.hp;
+    assert(combat.use_potion("FRUIT_JUICE"));
+    assert(combat.player.max_hp == max_hp + 5);
+    assert(combat.player.hp == hp + 5);
+    std::cout << "[PASS] Fruit Juice: gain 5 Max HP, and as much HP" << std::endl;
+}
+
 void test_gigantification_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     combat.hand.clear();
@@ -948,6 +958,7 @@ void test_ashwater() {
 
 int main() {
     std::cout << "=== Potions ===" << std::endl;
+    test_fruit_juice();
     test_gigantification_potion();
     test_explosive_ampoule();
     test_weak_potion();

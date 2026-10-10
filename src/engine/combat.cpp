@@ -6227,6 +6227,11 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "BLOOD_POTION") {
         player.heal(player.max_hp / 5);
         set_log("Blood Potion!");
+    } else if (potion_id == "FRUIT_JUICE") {
+        // Max HP and current HP both rise by 5, as Feed does.
+        player.max_hp = static_cast<int16_t>(player.max_hp + 5);
+        player.hp = static_cast<int16_t>(player.hp + 5);
+        set_log("Fruit Juice!");
     } else if (potion_id == "CUNNING_POTION") {
         add_shivs(3, true);
         set_log("Cunning Potion!");
