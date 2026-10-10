@@ -6118,7 +6118,9 @@ void CombatEngine::execute_enemy_turn() {
             acting.enemy = static_cast<int8_t>(i);
             emit(CombatEvent::ENEMY_TURN_START, acting);
             const EnemyIntent played = enemies[i].current_intent;
-            enemies[i].execute_turn(player, power_amount(PowerId::FLAME_BARRIER), has_power(PowerId::REFLECT));
+            // Undying Sigil: an enemy with at least as much Doom as HP deals 50% less damage.
+            const bool sigil_halved = has_power(PowerId::UNDYING_SIGIL) && enemies[i].get_status(StatusType::DOOM) >= enemies[i].hp;
+            enemies[i].execute_turn(player, power_amount(PowerId::FLAME_BARRIER), has_power(PowerId::REFLECT), sigil_halved);
             // The power of the move: kept by the enemy, or put on a player the attack left alive.
             if (played.power != PowerId::NONE && player.is_alive()) {
                 if (!played.power_on_player) {

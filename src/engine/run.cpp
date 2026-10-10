@@ -1260,7 +1260,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
         "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
-        "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
+        "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK", "UNDYING_SIGIL",                       // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
         "BRONZE_SCALES", "GORGET", "AKABEKO",
         // At the merchant (#487)
@@ -1355,6 +1355,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("RING_OF_THE_DRAKE")) combat.add_power(PowerId::RING_OF_THE_DRAKE, 2);
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
     if (has_relic("BOOKMARK")) combat.add_power(PowerId::BOOKMARK, 1);
+    if (has_relic("UNDYING_SIGIL")) combat.add_power(PowerId::UNDYING_SIGIL, 1);
     if (has_relic("VERY_HOT_COCOA")) combat.add_power(PowerId::VERY_HOT_COCOA, 4);
     // Paël's Blood: one more card in every opening draw, the first one included.
     // Fiddle: two more cards in every opening draw, then no draw until the next turn.

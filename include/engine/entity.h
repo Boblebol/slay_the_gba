@@ -445,11 +445,11 @@ public:
     // Gives back to the player what this enemy stole. Called when it dies.
     void return_stolen(Player& player);
     // Damage of one hit of the current intent on `target` right now (0 when it does not attack).
-    int16_t intent_damage(const CombatEntity& target) const;
+    int16_t intent_damage(const CombatEntity& target, bool halved = false) const;
     void plan_turn(int turn_number, const PlanContext& context = {});
     // Plays the current intent. An attack is answered by the player's Thorns, plus `damage_back` (Flame Barrier),
     // plus the damage their Block absorbed when `reflect` is set (Reflect).
-    void execute_turn(Player& player, int16_t damage_back = 0, bool reflect = false);
+    void execute_turn(Player& player, int16_t damage_back = 0, bool reflect = false, bool halved = false);
 };
 
 } // namespace engine

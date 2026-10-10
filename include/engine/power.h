@@ -229,7 +229,8 @@ enum class PowerId : uint8_t {
     VAMBRACE,           // the first Block a card gives each combat is doubled (counter = 1 once used)
     CHEMICAL_X,         // the X cards played get `amount` more X (CombatEngine::play_card, autoplay)
     UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
-    MR_STRUGGLES        // start of turn: damage equal to the turn number to every enemy (event relic)
+    MR_STRUGGLES,       // start of turn: damage equal to the turn number to every enemy (event relic)
+    UNDYING_SIGIL       // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

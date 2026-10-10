@@ -46,6 +46,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "DATA_DISK", "Commencez chaque combat avec 1 de Focalisation." },
     { "DRAGON_FRUIT", "Chaque fois que vous gagnez des Pièces d'or, augmentez vos PV Max de 1." },
     { "BEATING_REMNANT", "Vous ne pouvez perdre plus de 20 PV en un seul tour." },
+    { "UNDYING_SIGIL", "Les ennemis affligés d'au moins autant de Fatalité que de PV infligent 50% de dégâts en moins." },
     { "UNSETTLING_LAMP", "La première carte de chaque combat qui inflige des Effets négatifs à un ennemi voit son effet doublé." },
     { "BELT_BUCKLE", "Sans Potion, vous avez 2 de Dextérité supplémentaire." },
     { "BOWLER_HAT", "Recevez 25 % de Pièces d'or supplémentaires." },
