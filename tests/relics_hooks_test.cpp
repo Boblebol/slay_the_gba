@@ -2773,6 +2773,32 @@ void test_darkstone_periapt() {
     std::cout << "[PASS] Darkstone Periapt: +6 Max HP for each Curse obtained" << std::endl;
 }
 
+void test_big_mushroom() {
+    // Obtained: 20 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("BIG_MUSHROOM");
+    assert(run.has_relic("BIG_MUSHROOM"));
+    assert(run.max_hp == max_hp + 20 && run.hp == 70);
+
+    // Start of the combat: 2 cards fewer in the first hand, not in the next ones.
+    RunManager mushroom = make_relic_run(CharacterId::IRONCLAD, { "BIG_MUSHROOM" });
+    assert(mushroom.combat.hand.size() == 3);
+    end_turn_idle(mushroom.combat);
+    assert(mushroom.combat.hand.size() == 5);
+
+    // Without the relic, the first hand keeps its 5 cards and nothing raises the maximum HP.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, { "ANCHOR" });
+    assert(plain.combat.hand.size() == 5);
+    RunManager plain_max;
+    plain_max.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    plain_max.add_relic("ANCHOR");
+    assert(plain_max.max_hp == max_hp);
+    std::cout << "[PASS] Big Mushroom: 20 more max HP on pickup, 2 cards fewer in the first hand" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2876,5 +2902,6 @@ int main() {
     test_chemical_x();
     test_ring_of_the_drake();
     test_darkstone_periapt();
+    test_big_mushroom();
     return 0;
 }

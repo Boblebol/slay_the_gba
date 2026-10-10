@@ -718,6 +718,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         hp = max_hp;
     }
     if (relic_id == "MANGO" && has_relic("MANGO")) gain_max_hp(14);
+    // Big Mushroom (Event): 20 more maximum HP when obtained.
+    if (relic_id == "BIG_MUSHROOM" && has_relic("BIG_MUSHROOM")) gain_max_hp(20);
     if (relic_id == "PEAR" && has_relic("PEAR")) gain_max_hp(10);
     if (relic_id == "LARGE_CAPSULE" && has_relic("LARGE_CAPSULE")) {
         gain_random_relics(2);
@@ -1360,6 +1362,8 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::TURN_DRAW, 2);
         combat.add_power(PowerId::FIDDLE, 1);
     }
+    // Big Mushroom (Event): 2 cards fewer in the opening draw of the combat. A turn-only power, so the first hand only.
+    if (has_relic("BIG_MUSHROOM")) combat.add_power(PowerId::TURN_DRAW, -2, true);
     if (has_relic("PAELS_BLOOD")) combat.add_power(PowerId::TURN_DRAW, 1);
     if (has_relic("MERCURY_HOURGLASS")) combat.add_power(PowerId::MERCURY_HOURGLASS, 3);
     // Monsieur Carnage (event): at the start of each turn, the turn number in damage to every enemy.
