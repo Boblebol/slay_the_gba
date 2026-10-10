@@ -1404,6 +1404,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (attack_double_now) percent *= 2;
     if (pen_nib_now && resolving_card) percent *= 2;
     if (strike_played_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY));
+    if (gigantic_now && resolving_card) percent *= 3;
     int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
@@ -1682,6 +1683,8 @@ void CombatEngine::reset_combat_state() {
     unmovable_used = false;
     attack_double_next = false;
     attack_double_now = false;
+    gigantic_next = false;
+    gigantic_now = false;
     no_card_block_turns = 0;
     rebound_pending = false;
     fatal_kills = 0;
@@ -2103,6 +2106,12 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         played.cost = paid;
         emit(CombatEvent::CARD_PLAYED, played);
 
+        // Gigantification: the first Attack played after the potion deals triple damage, all its hits included.
+        if (gigantic_next && played_type == CardType::ATTACK) {
+            gigantic_next = false;
+            gigantic_now = true;
+        }
+
         // Resolve target: a reaction may have killed the one that was aimed at
         int target_idx = random_target ? random_alive_enemy_index() : target_index;
         if (target_idx < 0 || target_idx >= static_cast<int>(enemies.size()) || !enemies[target_idx].is_alive()) {
@@ -2119,6 +2128,7 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         resolving_card = false;
         pen_nib_now = false;
         strike_played_now = false;
+        gigantic_now = false;
         // Vigor goes to the first Attack played, all its hits included.
         if (played_type == CardType::ATTACK) player.clear_status(StatusType::VIGOR);
 
@@ -6331,6 +6341,9 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
             create_card(made, Pile::HAND);
         }
         set_log("Orobic Acid!");
+    } else if (potion_id == "GIGANTIFICATION_POTION") {
+        gigantic_next = true; // the next Attack played deals triple damage
+        set_log("Gigantification Potion!");
     } else {
         return false;
     }

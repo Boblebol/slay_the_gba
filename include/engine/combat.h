@@ -238,6 +238,8 @@ public:
     bool attack_double_now = false;   // Attacks deal double damage this turn
     bool pen_nib_now = false;         // the Attack being played deals double damage (Pen Nib)
     bool strike_played_now = false;   // the card being played contains "Strike" (Strike Dummy)
+    bool gigantic_next = false;       // the next Attack played deals triple damage (Gigantification potion)
+    bool gigantic_now = false;        // the Attack being played deals triple damage
     bool rebound_pending = false;    // the next card played this turn goes on top of the draw pile (Rebound)
     uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
     // Active powers, in the order they were gained: every relic a run can hold plus a combat's worth of
