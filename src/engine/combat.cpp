@@ -897,6 +897,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 if (!paid.empty()) hand[paid[next_random() % paid.size()]].free_this_turn = true;
             }
             break;
+        case PowerId::IRON_CLUB:
+            if (card_played && ++power.counter == IRON_CLUB_CARDS) {
+                power.counter = 0;
+                draw_cards(power.amount);
+            }
+            break;
         case PowerId::NUNCHAKU:
             if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK && ++power.counter == NUNCHAKU_ATTACKS) {
                 power.counter = 0;

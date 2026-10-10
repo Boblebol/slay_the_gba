@@ -233,7 +233,8 @@ enum class PowerId : uint8_t {
     UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
     MR_STRUGGLES,       // start of turn: damage equal to the turn number to every enemy (event relic)
     HISTORY_COURSE,     // start of turn: play a copy of the last Attack played (`amount` = 0, or card id * 2 + upgraded + 1)
-    INFUSED_CORE        // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
+    INFUSED_CORE,       // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
+    IRON_CLUB           // every IRON_CLUB_CARDS cards played: draw `amount` (counter = cards counted)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -243,6 +244,7 @@ constexpr bool is_player_debuff_power(PowerId id) {
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
 constexpr uint8_t PANACHE_CARDS = 5;
+constexpr uint8_t IRON_CLUB_CARDS = 4;
 constexpr uint8_t AUTOMATION_CARDS = 10;
 constexpr uint8_t ROLLING_BOULDER_GROWTH = 5;
 constexpr uint8_t ORBIT_ENERGY = 4;

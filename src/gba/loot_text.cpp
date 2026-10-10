@@ -22,6 +22,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ANCHOR", "Démarrez chaque combat avec 10 d'Armure." },
     { "FAKE_ANCHOR", "Démarrez chaque combat avec 4 d'Armure." },
     { "PAELS_TEARS", "Si vous terminez votre tour avec de l'Énergie non dépensée, gagnez 2 ● supplémentaires au tour suivant." },
+    { "IRON_CLUB", "Toutes les 4 cartes jouées, vous piochez 1 carte." },
     { "ART_OF_WAR", "Si vous ne jouez aucune Attaque pendant votre tour, gagnez 1 ● supplémentaire au tour suivant." },
     { "BAG_OF_MARBLES", "Au début de chaque combat, appliquez Vulnérable (1) sur TOUS les ennemis." },
     { "BAG_OF_PREPARATION", "Au début de chaque combat, piochez 2 cartes supplémentaires." },
