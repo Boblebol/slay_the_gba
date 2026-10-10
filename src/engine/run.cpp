@@ -42,10 +42,12 @@ constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 10, "Fléau de l'Ascension", "Vous commencez la tentative avec une malédiction inépuisable dans votre deck." }
 };
 
-// Hand-written search: string_view::find calls memchr, which the GBA build does not link.
+// Hand-written search: string_view::find calls memchr and substr can throw, neither links in the GBA build.
 bool contains(std::string_view text, std::string_view word) {
     for (size_t start = 0; start + word.size() <= text.size(); ++start) {
-        if (text.substr(start, word.size()) == word) return true;
+        size_t i = 0;
+        while (i < word.size() && text[start + i] == word[i]) ++i;
+        if (i == word.size()) return true;
     }
     return false;
 }
