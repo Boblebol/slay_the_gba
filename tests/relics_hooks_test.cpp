@@ -2071,6 +2071,29 @@ void test_war_paint() {
     std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
 }
 
+void test_venerable_tea_set() {
+    // With the relic: each Rest Site entered gives 2 more energy to the next combat, once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("VENERABLE_TEA_SET");
+    enter_room_of_type(run, RoomType::REST_SITE);
+    enter_room_of_type(run, RoomType::REST_SITE);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 7);
+    assert(run.relic_counter("VENERABLE_TEA_SET") == 0);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 3);
+
+    // Without the relic: the usual 3 energy after a Rest Site.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(!plain.has_relic("VENERABLE_TEA_SET"));
+    assert(plain.combat.player.energy == 3);
+    std::cout << "[PASS] Venerable Tea Set: 2 energy per Rest Site entered, for the next combat" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2095,6 +2118,7 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    test_venerable_tea_set();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();

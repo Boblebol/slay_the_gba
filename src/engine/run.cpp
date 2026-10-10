@@ -886,8 +886,12 @@ void RunManager::count_hook(RunHook hook) {
     if (runs < UINT16_MAX) ++runs;
 }
 
-void RunManager::on_room_entered(RoomType) {
+void RunManager::on_room_entered(RoomType room) {
     count_hook(RunHook::ROOM_ENTERED);
+    // Venerable Tea Set: each Rest Site entered adds one count, spent at the start of the next combat.
+    if (room == RoomType::REST_SITE && has_relic("VENERABLE_TEA_SET") && relic_counter("VENERABLE_TEA_SET") < UINT8_MAX) {
+        set_relic_counter("VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("VENERABLE_TEA_SET") + 1));
+    }
 }
 
 void RunManager::on_rested() {
@@ -1173,7 +1177,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "VENERABLE_TEA_SET", // Shared, out of combat
         "BEATING_REMNANT",                    // Shared, rare: caps the HP lost each turn
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR",                                   // Shared, out of combat
@@ -1474,6 +1478,11 @@ void RunManager::apply_combat_start_relics() {
     // Lantern: 1 additional energy on the first turn.
     if (has_relic("LANTERN")) {
         combat.player.energy = static_cast<int8_t>(combat.player.energy + 1);
+    }
+    // Venerable Tea Set: 2 additional energy on the first turn for each Rest Site entered since the last combat.
+    if (has_relic("VENERABLE_TEA_SET") && relic_counter("VENERABLE_TEA_SET") > 0) {
+        combat.player.energy = static_cast<int8_t>(combat.player.energy + 2 * relic_counter("VENERABLE_TEA_SET"));
+        set_relic_counter("VENERABLE_TEA_SET", 0);
     }
     // Blood Vial: heal 2 HP.
     if (has_relic("BLOOD_VIAL")) {
