@@ -835,6 +835,24 @@ void test_paels_legion() {
     std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
 }
 
+void test_golden_pearl() {
+    // Obtained: 150 gold, paid once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    int16_t gold = run.gold;
+    run.add_relic("GOLDEN_PEARL");
+    assert(run.has_relic("GOLDEN_PEARL"));
+    assert(run.gold == gold + 150);
+
+    // Without the relic, the gold stays where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("GOLDEN_PEARL") && plain.gold == gold);
+
+    std::cout << "[PASS] Golden Pearl: +150 gold when obtained" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -857,6 +875,7 @@ int main() {
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
+    test_golden_pearl();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }
