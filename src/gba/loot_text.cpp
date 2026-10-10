@@ -118,6 +118,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "WAR_HAMMER", "Lorsque vous tuez un Élite, Améliorez 4 cartes aléatoires." },
     { "STRAWBERRY", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 7." },
     { "LOOMING_FRUIT", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 31." },
+    { "STONE_HUMIDIFIER", "Lorsque vous vous Reposez à un Site de repos, augmentez vos PV Max de 5." },
     { "STURDY_CLAMP", "Vous conservez jusqu'à 10 d'Armure entre chaque tour." },
     { "SAI", "Au début de votre tour, gagnez 7 d'Armure." },
     { "SEAL_OF_GOLD", "Au début de votre tour, dépensez 3 Pièces d'or pour gagner 1 ●." },

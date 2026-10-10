@@ -835,6 +835,28 @@ void test_paels_legion() {
     std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
 }
 
+void test_stone_humidifier() {
+    // With the relic: each Rest raises Max HP by 5 (and heals by the same amount).
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("STONE_HUMIDIFIER");
+    run.hp = 40;
+    int16_t max_hp = run.max_hp;
+    run.rest_at_campfire();
+    assert(run.max_hp == max_hp + 5 && run.hp == 40 + max_hp * 3 / 10 + 5);
+    run.rest_at_campfire();
+    assert(run.max_hp == max_hp + 10);
+
+    // Without the relic: a Rest leaves Max HP alone.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 40;
+    plain.rest_at_campfire();
+    assert(!plain.has_relic("STONE_HUMIDIFIER"));
+    assert(plain.max_hp == max_hp);
+    std::cout << "[PASS] Stone Humidifier: +5 Max HP at each Rest Site rest" << std::endl;
+}
+
 int main() {
     std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -857,6 +879,7 @@ int main() {
     test_seal_of_gold();
     test_pumpkin_candle();
     test_paels_legion();
+    test_stone_humidifier();
     std::cout << "All relic hook tests passed." << std::endl;
     return 0;
 }

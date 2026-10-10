@@ -643,6 +643,8 @@ void RunManager::on_room_entered(RoomType) {
 
 void RunManager::on_rested() {
     count_hook(RunHook::RESTED);
+    // Stone Humidifier: each Rest at a Rest Site raises Max HP by 5.
+    if (has_relic("STONE_HUMIDIFIER")) gain_max_hp(5);
 }
 
 void RunManager::on_shop_opened() {
