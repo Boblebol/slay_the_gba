@@ -837,6 +837,24 @@ void test_paels_legion() {
     std::cout << "[PASS] Pael's Legion: a card's Block doubled, then asleep for 2 turns" << std::endl;
 }
 
+void test_radiant_pearl() {
+    // Radiant Pearl: 1 Luminesce added to the hand at the start of the combat, on top of the usual draw.
+    RunManager pearl = make_relic_run(CharacterId::REGENT, { "RADIANT_PEARL" });
+    size_t luminesces = 0;
+    for (const DeckCard& card : pearl.combat.hand) {
+        if (card.id == CardId::LUMINESCE) ++luminesces;
+    }
+    assert(luminesces == 1 && pearl.combat.hand.back().id == CardId::LUMINESCE);
+    assert(pearl.combat.hand.back().deck_index == NOT_IN_DECK);
+    assert(pearl.combat.hand.size() == 6);
+
+    // Without the relic: no Luminesce, the usual 5 cards.
+    RunManager plain = make_relic_run(CharacterId::REGENT, {});
+    for (const DeckCard& card : plain.combat.hand) assert(card.id != CardId::LUMINESCE);
+    assert(plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Radiant Pearl: 1 Luminesce in hand at the start of combat" << std::endl;
+}
+
 void test_golden_pearl() {
     // Obtained: 150 gold, paid once.
     RunManager run;
@@ -1465,6 +1483,7 @@ int main() {
     test_pumpkin_candle();
     test_paels_legion();
     test_golden_pearl();
+    test_radiant_pearl();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();
