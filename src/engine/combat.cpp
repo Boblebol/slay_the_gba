@@ -923,6 +923,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::STRIKE_DUMMY:
             if (card_played && is_strike(info.card.id)) strike_played_now = true;
             break;
+        case PowerId::MINIATURE_CANNON:
+            if (card_played && info.card.upgraded && CardDef::get(info.card.id).type == CardType::ATTACK) upgraded_attack_now = true;
+            break;
         case PowerId::ORNAMENTAL_FAN:
             if (completes(CardType::ATTACK, counters.attacks_played, ORNAMENTAL_FAN_ATTACKS)) add_block(power.amount);
             break;
@@ -1413,6 +1416,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (resolving_card && triple_next_attack) percent *= 3;
     if (pen_nib_now && resolving_card) percent *= 2;
     if (strike_played_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY));
+    if (upgraded_attack_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::MINIATURE_CANNON));
     int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
@@ -2129,6 +2133,7 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         resolving_card = false;
         pen_nib_now = false;
         strike_played_now = false;
+        upgraded_attack_now = false;
         // Vigor goes to the first Attack played, all its hits included.
         if (played_type == CardType::ATTACK) {
             player.clear_status(StatusType::VIGOR);

@@ -2030,6 +2030,31 @@ void test_strike_dummy() {
     std::cout << "[PASS] Strike Dummy: cards containing Strike deal 3 more damage" << std::endl;
 }
 
+void test_miniature_cannon() {
+    // With the relic, an upgraded Attack deals 3 more damage per hit (Twin Strike hits twice); an ordinary one does not.
+    CombatEngine cannon = make_relic_combat(CharacterId::IRONCLAD, PowerId::MINIATURE_CANNON, 3);
+    cannon.enemies[0].hp = 200;
+    play(cannon, DeckCard(CardId::STRIKE, true));
+    const int upgraded_hit = 200 - cannon.enemies[0].hp;
+
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 200;
+    play(plain, DeckCard(CardId::STRIKE, true));
+    assert(200 - plain.enemies[0].hp + 3 == upgraded_hit);
+
+    cannon.enemies[0].hp = 200;
+    play(cannon, DeckCard(CardId::TWIN_STRIKE, true));
+    const int twin_with = 200 - cannon.enemies[0].hp;
+    plain.enemies[0].hp = 200;
+    play(plain, DeckCard(CardId::TWIN_STRIKE, true));
+    assert(twin_with == 200 - plain.enemies[0].hp + 2 * 3);
+
+    cannon.enemies[0].hp = 200;
+    play(cannon, CardId::STRIKE);
+    assert(cannon.enemies[0].hp == 200 - 6);
+    std::cout << "[PASS] Miniature Cannon: upgraded Attacks deal 3 more damage per hit" << std::endl;
+}
+
 void test_white_beast_statue() {
     // With the statue, every combat reward holds a potion; without it, some do not.
     uint32_t plain_without = 0;
@@ -2674,6 +2699,7 @@ int main() {
     test_toolbox();
     test_pen_nib();
     test_strike_dummy();
+    test_miniature_cannon();
     test_white_beast_statue();
     test_cauldron();
     test_lees_waffle();
