@@ -2356,6 +2356,19 @@ void test_fake_mango() {
     std::cout << "[PASS] Fake Mango: 3 more max HP on pickup" << std::endl;
 }
 
+void test_fake_anchor() {
+    // Each combat starts with 4 Block, as with Anchor, and none without the relic.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "FAKE_ANCHOR" });
+    assert(run.has_relic("FAKE_ANCHOR"));
+    assert(run.phase == RunPhase::IN_COMBAT && run.combat.player.block == 4);
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, { "ANCHOR" });
+    assert(!plain.has_relic("FAKE_ANCHOR"));
+    assert(plain.combat.player.block == 10);
+    RunManager none = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(none.combat.player.block == 0);
+    std::cout << "[PASS] Fake Anchor: starts each combat with 4 Block" << std::endl;
+}
+
 void test_old_coin() {
     // Obtained: 300 gold, paid once.
     RunManager run;
@@ -3068,6 +3081,7 @@ int main() {
     test_mango();
     test_fake_lees_waffle();
     test_fake_mango();
+    test_fake_anchor();
     test_old_coin();
     test_pear();
     test_whetstone();
