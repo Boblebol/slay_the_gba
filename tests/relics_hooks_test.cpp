@@ -2546,6 +2546,28 @@ void test_white_star() {
     std::cout << "[PASS] White Star: an Elite offers one more set of Rare cards" << std::endl;
 }
 
+void test_fake_orichalcum() {
+    // With the relic, a turn ended without Block gives 3 Block: the 11 damage of the attack is cut to 8.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "FAKE_ORICHALCUM" });
+    int16_t hp_before = run.combat.player.hp;
+    end_turn_attacked(run.combat, 11);
+    assert(run.combat.player.hp == hp_before - (11 - 3));
+
+    // With Block already, the relic gives nothing: the attack only meets the Block of the turn.
+    RunManager blocked = make_relic_run(CharacterId::IRONCLAD, { "FAKE_ORICHALCUM" });
+    hp_before = blocked.combat.player.hp;
+    blocked.combat.player.block = 2;
+    end_turn_attacked(blocked.combat, 11);
+    assert(blocked.combat.player.hp == hp_before - (11 - 2));
+
+    // Without the relic, the attack lands in full.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    hp_before = plain.combat.player.hp;
+    end_turn_attacked(plain.combat, 11);
+    assert(plain.combat.player.hp == hp_before - 11);
+    std::cout << "[PASS] Orichalque ???: without Block at the end of the turn, gain 3 Block" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -2640,5 +2662,6 @@ int main() {
     test_girya();
     test_shovel();
     test_white_star();
+    test_fake_orichalcum();
     return 0;
 }
