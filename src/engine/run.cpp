@@ -919,6 +919,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "THE_COURIER" && phase == RunPhase::SHOP) current_shop.apply_discount(THE_COURIER_DISCOUNT);
     // Circlet (fallback relic): no effect in game, it is only a circlet.
     if (has_relic("CIRCLET")) {}
+    // Wongo customer appreciation badge (event relic): no effect in game, "Does nothing."
+    if (has_relic("WONGO_CUSTOMER_APPRECIATION_BADGE")) {}
 }
 
 void RunManager::count_hook(RunHook hook) {
