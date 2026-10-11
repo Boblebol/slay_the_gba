@@ -1174,6 +1174,13 @@ bool RunManager::add_card_to_deck(DeckCard card) {
     if (has_relic("BOOK_OF_FIVE_RINGS") && tick_relic_counter("BOOK_OF_FIVE_RINGS", BOOK_OF_FIVE_RINGS_CARDS)) {
         heal(BOOK_OF_FIVE_RINGS_HEAL);
     }
+    // Bing Bong: each card that joins the deck comes with one additional copy (the copy itself does not duplicate).
+    static bool adding_bing_bong_copy = false;
+    if (has_relic("BING_BONG") && !adding_bing_bong_copy) {
+        adding_bing_bong_copy = true;
+        add_card_to_deck(card);
+        adding_bing_bong_copy = false;
+    }
     return true;
 }
 

@@ -211,6 +211,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "CHEMICAL_X", "Les effets de vos cartes de coût X sont augmentés de 2." },
     { "LOST_WISP", "Chaque fois que vous jouez un Pouvoir, infligez 8 dégâts à TOUS les ennemis." },
     { "OLD_COIN", "Lorsque vous obtenez cette relique, obtenez 300 Pièces d'or." },
+    { "BING_BONG", "Chaque fois que vous ajoutez une carte à votre Deck, ajoutez-en une copie supplémentaire." },
     { "LUCKY_FYSH", "Chaque fois que vous ajoutez une carte à votre Deck, obtenez 15 Pièces d'or." },
     { "BOOK_OF_FIVE_RINGS", "Chaque fois que vous ajoutez 5 cartes à votre Deck, récupérez 20 PV." },
     { "WAR_PAINT", "Lorsque vous obtenez cette relique, Améliorez 2 Compétences aléatoires." },
