@@ -45,6 +45,7 @@
 #include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
 #include "bn_sprite_items_mon_sewer_clam.h"
+#include "bn_sprite_items_mon_spectral_knight.h"
 #include "bn_sprite_items_mon_sneaky_gremlin.h"
 #include "bn_sprite_items_mon_sludge_spinner.h"
 #include "bn_sprite_items_mon_tracker_ruby_raider.h"
@@ -246,6 +247,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_sewer_clam, false };
     case engine::EnemyType::EYE_WITH_TEETH:
         return { &bn::sprite_items::mon_eye_with_teeth, false };
+    case engine::EnemyType::SPECTRAL_KNIGHT:
+        return { &bn::sprite_items::mon_spectral_knight, false };
     case engine::EnemyType::SPINY_TOAD:
         return { &bn::sprite_items::mon_spiny_toad, false };
     case engine::EnemyType::SEAPUNK:

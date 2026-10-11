@@ -2861,6 +2861,8 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Décomp";
     case engine::PowerId::PERSONAL_HIVE:
         return "Ruche";
+    case engine::PowerId::HEX:
+        return "Sortil";
     default:
         return "";
     }
@@ -2876,6 +2878,8 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Décomp. : chaque carte, -1 Force/Dex.";
     case engine::PowerId::PERSONAL_HIVE:
         return "Ruche : frappée, Hébété en Pioche.";
+    case engine::PowerId::HEX:
+        return "Sortilège : vos cartes sont Éthérées.";
     default:
         return "";
     }

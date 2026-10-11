@@ -196,6 +196,7 @@ enum class PowerId : uint8_t {
     TENDER,            // card played: lose `amount` Strength and Dexterity until the end of the turn
     // Held by an enemy:
     PERSONAL_HIVE,     // it takes unblocked attack damage: `amount` Dazed into the player's draw pile
+    HEX,               // while its holder lives, every card left in the hand at the end of the turn is exhausted (Ethereal)
     // Relics of the Ancients (appended)
     PAELS_TEARS,       // end of a turn with unspent energy: `amount` energy next turn
     // Colorless and event cards (appended)

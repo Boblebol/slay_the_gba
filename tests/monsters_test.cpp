@@ -2189,6 +2189,67 @@ void test_spiny_toad_ascension() {
     std::cout << "[PASS] Spiny Toad: Ascension gives 121 to 124 HP, Spike Explosion 25 and Tongue Lash 19" << std::endl;
 }
 
+void test_spectral_knight() {
+    // 93 HP. Hex (every card Ethereal) once, Soul Slash 15, then Soul Slash or Soul Flame 3 x3 at random,
+    // Soul Flame never twice in a row.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SPECTRAL_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    assert(knight.name == "Chevalier spectral" && knight.hp == 93 && knight.max_hp == 93 && knight.hp_spread() == 0);
+    assert(knight.current_intent.type == DEBUFF && knight.intent_damage(combat.player) == 0);
+    assert(combat.enemy_power_amount(0, PowerId::HEX) == 0);
+    combat.end_player_turn();
+    assert(combat.enemy_power_amount(0, PowerId::HEX) == 2 && combat.player.hp == combat.player.max_hp);
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 15 && knight.current_intent.hits == 1);
+    // Hex makes every card Ethereal: the hand is exhausted at the end of the turn instead of discarded.
+    combat.player.hp = combat.player.max_hp;
+    const size_t exhausted_before = combat.exhaust_pile.size();
+    assert(!combat.hand.empty());
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 15);
+    assert(combat.exhaust_pile.size() > exhausted_before);
+    bool saw_slash = false;
+    bool saw_flame = false;
+    bool last_was_flame = false;
+    for (int turn = 3; turn <= 40; ++turn) {
+        const bool flame = knight.current_intent.hits == 3;
+        assert(knight.current_intent.type == ATTACK && knight.block == 0);
+        assert(knight.intent_damage(combat.player) == (flame ? 3 : 15));
+        assert(!(flame && last_was_flame));
+        saw_flame = saw_flame || flame;
+        saw_slash = saw_slash || !flame;
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == (flame ? 9 : 15));
+        last_was_flame = flame;
+    }
+    assert(saw_slash && saw_flame);
+    std::cout << "[PASS] Spectral Knight: 93 HP, Hex, Soul Slash 15, then Slash or Flame 3 x3 without repeating the Flame" << std::endl;
+}
+
+void test_spectral_knight_ascension() {
+    // 97 HP, Soul Slash 17 and Soul Flame 4 x3 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SPECTRAL_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    assert(knight.ascension_hp() == 97);
+    knight.ascend(true, true);
+    combat.plan_enemies();
+    assert(knight.hp == 97 && knight.max_hp == 97);
+    assert(knight.current_intent.type == DEBUFF);
+    combat.end_player_turn();
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 17);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 17);
+    for (int turn = 3; turn <= 20; ++turn) {
+        const bool flame = knight.current_intent.hits == 3;
+        assert(knight.intent_damage(combat.player) == (flame ? 4 : 17));
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == (flame ? 12 : 17));
+    }
+    std::cout << "[PASS] Spectral Knight: Ascension gives 97 HP, Soul Slash 17 and Soul Flame 4 x3" << std::endl;
+}
+
 void test_seapunk() {
     // Sea Kick 11, Spinning Kick 2 x4, Bubble Burp (7 Block, +1 Strength), and again with the Strength kept.
     CombatEngine probe = make_combat(CharacterId::IRONCLAD, EnemyType::SEAPUNK);
@@ -2274,6 +2335,8 @@ int main() {
     test_stabbot_ascension();
     test_spiny_toad();
     test_spiny_toad_ascension();
+    test_spectral_knight();
+    test_spectral_knight_ascension();
     test_noisebot();
     test_noisebot_ascension();
     test_cubex_construct();
