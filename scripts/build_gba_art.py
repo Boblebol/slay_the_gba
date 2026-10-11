@@ -185,6 +185,7 @@ MONSTERS: dict[str, str] = {
     "haunted_ship": "haunted_ship",
     "sludge_spinner": "sludge_spinner",
     "toadpole": "toadpole",
+    "louse_progenitor": "louse_progenitor",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.

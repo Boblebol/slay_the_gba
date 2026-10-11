@@ -37,6 +37,7 @@
 #include "bn_sprite_items_mon_punch_construct.h"
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_louse.h"
+#include "bn_sprite_items_mon_louse_progenitor.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
 #include "bn_sprite_items_mon_sewer_clam.h"
@@ -252,6 +253,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_nibbit, false };
     case engine::EnemyType::GREMLIN_MERC:
         return { &bn::sprite_items::mon_gremlin_merc, false };
+    case engine::EnemyType::LOUSE_PROGENITOR:
+        return { &bn::sprite_items::mon_louse_progenitor, false };
     case engine::EnemyType::HAUNTED_SHIP:
         return { &bn::sprite_items::mon_haunted_ship, false };
     case engine::EnemyType::SLUDGE_SPINNER:
