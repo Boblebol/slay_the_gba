@@ -2128,6 +2128,7 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::DUAL_WIELD:
         case CardId::HEIRLOOM_HAMMER:
         case CardId::NIGHTMARE:
+        case CardId::QUASAR:
         case CardId::DECISIONS_DECISIONS:
         case CardId::BRAND:
         case CardId::BURNING_PACT:
@@ -3916,6 +3917,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::BYRD_SWOOP: {
             hit(current_target, base_value);
             set_log(upgraded ? "Played Byrd Swoop+!"sv : "Played Byrd Swoop!"sv);
+            break;
+        }
+        case CardId::QUASAR: {
+            offer_random_cards(CardFilter(CardPool::COLORLESS), static_cast<uint8_t>(base_value), upgraded);
+            set_log(upgraded ? "Played Quasar+!"sv : "Played Quasar!"sv);
             break;
         }
         case CardId::MAD_SCIENCE: {

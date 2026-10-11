@@ -629,6 +629,8 @@ enum class CardId : uint16_t {
     SEEKER_STRIKE,
     // Event card: a single attack (Mad Science)
     MAD_SCIENCE,
+    // Regent: choose 1 of 3 random Colorless cards (Quasar)
+    QUASAR,
     COUNT
 };
 

@@ -235,6 +235,35 @@ void test_royalties() {
     std::cout << "[PASS] Regent: Royalties" << std::endl;
 }
 
+void test_quasar() {
+    assert_in_pool(CharacterId::REGENT, { CardId::QUASAR });
+    assert(card_meta(CardId::QUASAR).rarity == CardRarity::UNCOMMON && card_meta(CardId::QUASAR).pool == CardPool::REGENT);
+    assert(CardDef::get(CardId::QUASAR).type == CardType::SKILL);
+    for (bool upgraded : { false, true }) {
+        assert(CardDef::get_cost(CardId::QUASAR, upgraded) == 0 && CardDef::get_star_cost(CardId::QUASAR, upgraded) == 2);
+        // 0 energy and 2 Stars: 3 different Colorless cards are offered (Upgraded when the card is), 1 goes to the hand.
+        CombatEngine combat = make_pack(CharacterId::REGENT);
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::QUASAR, upgraded));
+        combat.player.energy = combat.player.max_energy;
+        combat.player.sovereign_stars = 5;
+        assert(combat.play_card(0, -1));
+        assert(combat.player.energy == combat.player.max_energy && combat.player.sovereign_stars == 3);
+        assert(combat.choice_pending() && combat.offers.size() == 3 && combat.choice_size() == 1);
+        for (size_t i = 0; i < combat.offers.size(); ++i) {
+            assert(card_meta(combat.offers[i].id).pool == CardPool::COLORLESS && combat.offers[i].upgraded == upgraded);
+            for (size_t j = 0; j < i; ++j) assert(combat.offers[j].id != combat.offers[i].id);
+        }
+        const DeckCard picked = combat.offers[1];
+        const uint8_t picks[] = { 1 };
+        assert(combat.resolve_choice(picks));
+        assert(!combat.choice_pending() && combat.offers.empty());
+        assert(combat.hand.size() == 1 && combat.hand[0].id == picked.id && combat.hand[0].upgraded == upgraded);
+        assert(combat.discard_pile.back().id == CardId::QUASAR);
+    }
+    std::cout << "[PASS] Regent: Quasar" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -245,6 +274,7 @@ int main() {
     test_random_card_uses_the_fight_generator();
     test_manifest_authority();
     test_royalties();
+    test_quasar();
     std::cout << "=== All Regent Cards Passed! ===" << std::endl;
     return 0;
 }
