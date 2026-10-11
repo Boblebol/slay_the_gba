@@ -2127,6 +2127,23 @@ void test_orange_dough() {
     assert(plain.combat.hand.size() == 5);
 }
 
+void test_diamond_diadem() {
+    // With the relic: 20 Block at the start of the combat, kept through the start of the 2nd turn only.
+    RunManager diadem = make_relic_run(CharacterId::IRONCLAD, { "DIAMOND_DIADEM" });
+    assert(diadem.combat.player.block == 20);
+    end_turn_idle(diadem.combat);
+    assert(diadem.combat.player.block >= 20);
+    end_turn_idle(diadem.combat);
+    assert(diadem.combat.player.block < 20);
+
+    // Without the relic: no Block at the start, none left on the 2nd turn.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.player.block == 0);
+    end_turn_idle(plain.combat);
+    assert(plain.combat.player.block == 0);
+    std::cout << "[PASS] Diamond Diadem: 20 Block at the start, kept at the 2nd turn" << std::endl;
+}
+
 void test_toolbox() {
     // With the relic: 3 Colorless cards are offered at the start of the combat, and the one picked joins the hand.
     RunManager toolbox = make_relic_run(CharacterId::IRONCLAD, { "TOOLBOX" });
@@ -4046,6 +4063,7 @@ int main() {
     test_ringing_triangle();
     test_toolbox();
     test_orange_dough();
+    test_diamond_diadem();
     test_pen_nib();
     test_iron_club();
     test_strike_dummy();
