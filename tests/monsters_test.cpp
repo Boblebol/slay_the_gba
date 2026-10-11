@@ -1361,6 +1361,43 @@ void test_punch_construct_ascension() {
     std::cout << "[PASS] Punch Construct: Ascension gives 60 HP, Fast Punch 6x2, Strong Punch 16" << std::endl;
 }
 
+void test_skulking_colony() {
+    // Zoom 14 twice, Inertia 9 (+2 Strength), Piercing Stabs 7x2, and again with the Strength it has gained.
+    check_monster(EnemyType::SKULKING_COLONY, "Colonie de rôdeurs", 75, {
+        { ATTACK, 14, 0, 0 },
+        { ATTACK, 14, 0, 0 },
+        { ATTACK_BUFF, 9, 0, 2 },
+        { ATTACK, 9, 0, 2, 0, 2 },
+        { ATTACK, 16, 0, 2 },
+        { ATTACK, 16, 0, 2 },
+        { ATTACK_BUFF, 11, 0, 4 },
+        { ATTACK, 11, 0, 4, 0, 2 },
+    });
+    std::cout << "[PASS] Skulking Colony: 75 HP, Zoom 14 x2, Inertia 9 (+2 Strength), Piercing Stabs 7x2, loop" << std::endl;
+}
+
+void test_skulking_colony_ascension() {
+    // 80 HP, Zoom 16, Inertia 11 (+4 Strength) and Piercing Stabs 8x2 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SKULKING_COLONY);
+    Enemy& colony = combat.enemies[0];
+    colony.ascend(true, true);
+    combat.plan_enemies();
+    assert(colony.hp == 80 && colony.max_hp == 80);
+    assert(colony.current_intent.type == ATTACK && colony.intent_damage(combat.player) == 16);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(colony.current_intent.type == ATTACK && colony.intent_damage(combat.player) == 16);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(colony.current_intent.type == ATTACK_BUFF && colony.intent_damage(combat.player) == 11);
+    combat.end_player_turn();
+    assert(colony.get_status(StatusType::STRENGTH) == 4);
+    combat.player.hp = combat.player.max_hp;
+    assert(colony.current_intent.type == ATTACK && colony.current_intent.hits == 2);
+    assert(colony.intent_damage(combat.player) == 12);
+    std::cout << "[PASS] Skulking Colony: Ascension gives 80 HP, Zoom 16, Inertia 11 (+4 Strength), Stabs 8x2" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -2280,6 +2317,8 @@ int main() {
     test_cubex_construct_ascension();
     test_punch_construct();
     test_punch_construct_ascension();
+    test_skulking_colony();
+    test_skulking_colony_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();
