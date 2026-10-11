@@ -250,7 +250,9 @@ enum class PowerId : uint8_t {
     CROSSBOW,           // start of turn: add a random Attack to the hand, free this turn
     SPIKED_GAUNTLETS,   // Power cards cost `amount` more energy (CombatEngine::effective_cost)
     TOASTY_MITTENS,     // start of turn: `amount` Strength, and 1 card of the new hand is exhausted
-    PAELS_FLESH         // start of the 3rd turn and each one after: `amount` extra energy (Ancient relic)
+    PAELS_FLESH,        // start of the 3rd turn and each one after: `amount` extra energy (Ancient relic)
+    // Held by an enemy (appended)
+    BURROWED            // its Block is up: the Block broken or its next turn played, the power is spent (amount 0)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
