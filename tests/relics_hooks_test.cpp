@@ -2067,6 +2067,31 @@ void test_paels_eye() {
     std::cout << "[PASS] Pael's Eye: empty first turn exhausts the hand and gives an extra turn" << std::endl;
 }
 
+void test_music_box() {
+    // With the relic: the first Attack of the turn leaves an Ethereal copy in the hand, and only that one.
+    CombatEngine box = make_relic_combat(CharacterId::IRONCLAD, PowerId::MUSIC_BOX, 1);
+    box.hand.clear();
+    box.player.energy = 9;
+    box.hand.push_back(CardId::STRIKE);
+    box.hand.push_back(CardId::STRIKE);
+    assert(box.play_card(0, 0));
+    assert(box.hand.size() == 2);
+    assert(box.hand[1].id == CardId::STRIKE);
+    assert((box.hand[1].added_keywords & KEYWORD_ETHEREAL) != 0);
+    // The second Attack makes no copy.
+    assert(box.play_card(0, 0));
+    assert(box.hand.size() == 1);
+
+    // Without the relic: no copy.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.hand.clear();
+    plain.player.energy = 9;
+    plain.hand.push_back(CardId::STRIKE);
+    assert(plain.play_card(0, 0));
+    assert(plain.hand.empty());
+    std::cout << "[PASS] Music Box: Ethereal copy of the first Attack each turn" << std::endl;
+}
+
 void test_ringing_triangle() {
     // With the relic: the hand is kept at the end of the first turn, and only that one.
     CombatEngine triangle = make_relic_combat(CharacterId::IRONCLAD, PowerId::RINGING_TRIANGLE, 1);
@@ -3919,6 +3944,7 @@ int main() {
     test_strawberry();
     test_golden_compass();
     test_paels_tooth();
+    test_music_box();
     test_membership_card();
     test_the_courier();
     test_yummy_cookie();

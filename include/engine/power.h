@@ -218,6 +218,7 @@ enum class PowerId : uint8_t {
     WHISPERING_EARRING, // Vakuu plays the first turn of the combat (CombatEngine::vakuu_turn_active)
     VELVET_CHOKER,      // no more than `amount` cards played each turn (CombatEngine::play_blocker)
     PAELS_EYE,          // first turn ended with no card played: exhaust the hand, take an extra turn (removed once used)
+    MUSIC_BOX,          // the first Attack played each turn: an Ethereal copy goes to the hand (read by run_card)
     // Sly (appended)
     MASTER_PLANNER,     // the Skills played gain Sly (read by place_played_card)
     // Percentage modifiers (appended)
