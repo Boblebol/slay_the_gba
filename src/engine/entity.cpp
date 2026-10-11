@@ -121,6 +121,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Crapautard";
         max_hp = 21;
         hp = 21;
+    } else if (type == EnemyType::GUARDBOT) {
+        name = "Gardebot";
+        max_hp = 16;
+        hp = 16;
     } else if (type == EnemyType::FLYCONID) {
         name = "Mycoptère";
         max_hp = 47;
@@ -157,6 +161,7 @@ void Enemy::init(EnemyType enemy_type) {
 uint8_t Enemy::hp_spread() const {
     switch (type) {
         case EnemyType::SLUDGE_SPINNER: return 2; // 37 to 39, 41 to 42 at Ascension
+        case EnemyType::GUARDBOT: return 4;    // 16 to 20, 17 to 21 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
         case EnemyType::CORPSE_SLUG: return 2; // 25 to 27, 27 to 29 at Ascension
@@ -209,6 +214,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::HAUNTED_SHIP: return 67;
         case EnemyType::SLUDGE_SPINNER: return 41;
         case EnemyType::TOADPOLE: return 22;
+        case EnemyType::GUARDBOT: return 17;
         default: return 0;
     }
 }
@@ -708,6 +714,11 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.hits = 3;
             current_intent.description = "Piétinement (4 dmg x3)";
         }
+    } else if (type == EnemyType::GUARDBOT) {
+        // Guard (15 Block), every turn.
+        current_intent.type = EnemyIntentType::DEFEND;
+        current_intent.block = 15;
+        current_intent.description = "Garde (15 Armure)";
     } else if (type == EnemyType::TOADPOLE) {
         // Three moves in a loop, started by its place: in front Spiken, Spike Spit, Whirl; behind Whirl, Spiken,
         // Spike Spit. `phase` holds the offset in the cycle SPIKEN, SPIKE_SPIT, WHIRL.

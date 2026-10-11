@@ -55,6 +55,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::HAUNTED_SHIP: return "HAUNTED_SHIP";
         case EnemyType::SLUDGE_SPINNER: return "SLUDGE_SPINNER";
         case EnemyType::TOADPOLE: return "TOADPOLE";
+        case EnemyType::GUARDBOT: return "GUARDBOT";
     }
     return {};
 }
@@ -212,11 +213,13 @@ void test_reference_encounters() {
     // (TurretOperatorWeak), the Fat Gremlin with the Gremlin Merc (GremlinMercNormal), like the Sneaky Gremlin.
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
     // The Stabbot and the Noisebot are brought by the Fabricator (FabricatorNormal).
+    // The Guardbot is brought by the Fabricator too.
     // The Gas Bomb is brought by the Living Fog (LivingFogNormal).
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
-                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN };
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
+                                                          EnemyType::GUARDBOT };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));
