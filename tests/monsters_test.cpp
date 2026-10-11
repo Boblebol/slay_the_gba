@@ -434,6 +434,69 @@ void test_the_forgotten_ascension() {
     std::cout << "[PASS] The Forgotten: Ascension gives 111 HP and Dread 15" << std::endl;
 }
 
+void test_the_lost() {
+    // Debilitating Smog (takes 2 Strength from the player and gains 2), Eye Lasers (4 x 2 + its Strength), and again.
+    check_monster(EnemyType::THE_LOST, "L'Égaré", 93, {
+        Turn{ DEBUFF, 0, 0, 2 }, Turn{ ATTACK, 6, 0, 2, 0, 2 },
+        Turn{ DEBUFF, 0, 0, 4 }, Turn{ ATTACK, 8, 0, 4, 0, 2 },
+        Turn{ DEBUFF, 0, 0, 6 }, Turn{ ATTACK, 10, 0, 6, 0, 2 } });
+
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THE_LOST);
+    Enemy& enemy = combat.enemies[0];
+    assert(enemy.current_intent.debuffs_player());
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::STRENGTH) == -2 && enemy.get_status(StatusType::STRENGTH) == 2);
+    assert(!enemy.current_intent.debuffs_player());
+    combat.end_player_turn();
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::STRENGTH) == -4 && enemy.get_status(StatusType::STRENGTH) == 4);
+
+    // Killed, it gives back all the Strength it stole.
+    enemy.hp = 1;
+    combat.hand.clear();
+    combat.hand.push_back(CardId::STRIKE);
+    combat.player.energy = combat.player.max_energy;
+    bool played = combat.play_card(0, 0);
+    assert(played && !enemy.is_alive());
+    assert(combat.player.get_status(StatusType::STRENGTH) == 0);
+    std::cout << "[PASS] The Lost: 93 HP, Debilitating Smog steals 2 Strength, Eye Lasers 4x2 + Strength" << std::endl;
+}
+
+void test_the_lost_ascension() {
+    // 99 HP when the monsters are tougher (from A7), Eye Lasers 5 x 2 when they hit harder (from A2).
+    auto fight = [](uint8_t ascension) {
+        RunManager run;
+        run.start_run(CharacterId::IRONCLAD, ascension, PaletteVariant::CLASSIC, 777);
+        run.map.nodes[0].type = RoomType::MONSTER;
+        run.enter_room(0);
+        FixedVector<EnemyType, 3> pack;
+        pack.push_back(EnemyType::THE_LOST);
+        run.combat.start_combat_multi(pack, run.character);
+        Enemy& foe = run.combat.enemies[0];
+        foe.ascend(run.get_enemy_hp_multiplier() > 100, run.get_enemy_damage_multiplier() > 100);
+        run.combat.plan_enemies();
+        return run;
+    };
+    struct Level {
+        uint8_t ascension;
+        int hp;
+        int laser;
+    };
+    for (const Level& level : { Level{ 0, 93, 4 }, Level{ 2, 93, 5 }, Level{ 7, 99, 5 }, Level{ 9, 99, 5 } }) {
+        RunManager run = fight(level.ascension);
+        Enemy& foe = run.combat.enemies[0];
+        assert(foe.hp == level.hp && foe.max_hp == level.hp && foe.damage_percent == 100);
+        assert(foe.current_intent.type == DEBUFF);
+        run.combat.end_player_turn();
+        assert(foe.current_intent.base_damage == level.laser && foe.current_intent.hits == 2);
+        assert(foe.intent_damage(run.combat.player) == level.laser + 2);
+    }
+    Enemy lost;
+    lost.init(EnemyType::THE_LOST);
+    assert(lost.ascension_hp() == 99);
+    std::cout << "[PASS] The Lost: Ascension gives 99 HP and Eye Lasers 5" << std::endl;
+}
+
 void test_living_shield() {
     // Alone: one Shield Slam 6, then Smash (16 damage, then +3 Strength) until the end.
     check_monster(EnemyType::LIVING_SHIELD, "Bouclier vivant", 55, {
@@ -2752,6 +2815,8 @@ int main() {
     test_debuff_and_artifact();
     test_the_forgotten();
     test_the_forgotten_ascension();
+    test_the_lost();
+    test_the_lost_ascension();
     test_living_shield();
     test_phase_with_entry_condition();
     test_weighted_draw_without_repetition();

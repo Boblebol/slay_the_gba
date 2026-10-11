@@ -331,6 +331,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_vine_shambler, false };
     case engine::EnemyType::THE_FORGOTTEN:
         return { &bn::sprite_items::mon_the_forgotten, false };
+    case engine::EnemyType::THE_LOST:
+        return { &bn::sprite_items::mon_the_lost, false };
     default:
         return { &bn::sprite_items::mon_cultist, false };
     }

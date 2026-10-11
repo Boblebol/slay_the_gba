@@ -80,6 +80,14 @@ constexpr Encounter ACT3_WEAK[] = {
     { "DevotedSculptorWeak"sv, 1, { EnemyType::DEVOTED_SCULPTOR } },
 };
 
+// Act 3: the reference encounter the engine can play, with the groups the game had before.
+constexpr Encounter ACT3_NORMAL[] = {
+    { "TheLostAndForgottenNormal"sv, 2, { EnemyType::THE_FORGOTTEN, EnemyType::THE_LOST } },
+    { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
+    { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
+    { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
+};
+
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
 };
@@ -100,6 +108,7 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT3_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
 } // namespace
