@@ -1482,6 +1482,53 @@ void test_flyconid_ascension() {
     std::cout << "[PASS] Flyconid: Ascension gives 51 to 53 HP, Spores of 9 and a Smash of 12" << std::endl;
 }
 
+void test_gremlin_merc() {
+    // Gimme 7 x2, Double Smash 6 x2 + 2 Weak, Hehe 8 + 2 Strength, and again. Each Hehe adds to what follows.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::GREMLIN_MERC);
+    Enemy& merc = combat.enemies[0];
+    assert(merc.type == EnemyType::GREMLIN_MERC && merc.name == "Diablotin mercenaire");
+    assert(merc.hp >= 47 && merc.hp <= 49 && merc.max_hp == 47 + merc.hp_bonus && merc.block == 0);
+    struct Step { EnemyIntentType intent; int damage; int hits; int weak; int strength; };
+    const Step steps[] = {
+        { ATTACK, 7, 2, 0, 0 }, { EnemyIntentType::ATTACK_DEBUFF, 6, 2, 2, 0 }, { EnemyIntentType::ATTACK_BUFF, 8, 1, 0, 2 },
+        { ATTACK, 9, 2, 0, 2 }, { EnemyIntentType::ATTACK_DEBUFF, 8, 2, 2, 2 }, { EnemyIntentType::ATTACK_BUFF, 10, 1, 0, 4 },
+    };
+    for (const Step& step : steps) {
+        assert(merc.current_intent.type == step.intent);
+        assert(merc.intent_damage(combat.player) == step.damage && merc.current_intent.hits == step.hits);
+        combat.player.hp = combat.player.max_hp;
+        combat.player.clear_status(StatusType::WEAK);
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == step.damage * step.hits);
+        assert(combat.player.get_status(StatusType::WEAK) == step.weak);
+        assert(merc.get_status(StatusType::STRENGTH) == step.strength && merc.block == 0);
+    }
+    std::cout << "[PASS] Gremlin Merc: 47 to 49 HP, Gimme 7 x2, Double Smash 6 x2 + 2 Weak, Hehe 8 + 2 Strength" << std::endl;
+}
+
+void test_gremlin_merc_ascension() {
+    // 51 to 53 HP, Gimme 8 x2, Double Smash 7 x2 and Hehe 9 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::GREMLIN_MERC);
+        Enemy& merc = combat.enemies[0];
+        merc.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = merc.hp;
+        assert(merc.ascension_hp() == 51 && merc.hp_spread() == 2);
+        assert(base >= 47 && base <= 49 && merc.max_hp == 47 + merc.hp_bonus);
+        merc.ascend(true, true);
+        combat.plan_enemies();
+        assert(merc.hp == base + 4 && merc.hp >= 51 && merc.hp <= 53);
+        const int damage[] = { 8, 7, 9 };
+        for (int damage_of : damage) {
+            assert(merc.intent_damage(combat.player) == damage_of);
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+        }
+    }
+    std::cout << "[PASS] Gremlin Merc: Ascension gives 51 to 53 HP, Gimme 8 x2, Double Smash 7 x2, Hehe 9" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1532,6 +1579,8 @@ int main() {
     test_nibbit_ascension();
     test_flyconid();
     test_flyconid_ascension();
+    test_gremlin_merc();
+    test_gremlin_merc_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

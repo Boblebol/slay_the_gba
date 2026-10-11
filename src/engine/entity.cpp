@@ -113,6 +113,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Mycoptère";
         max_hp = 47;
         hp = 47;
+    } else if (type == EnemyType::GREMLIN_MERC) {
+        name = "Diablotin mercenaire";
+        max_hp = 47;
+        hp = 47;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -125,6 +129,7 @@ void Enemy::init(EnemyType enemy_type) {
 uint8_t Enemy::hp_spread() const {
     switch (type) {
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
+        case EnemyType::GREMLIN_MERC: return 2; // 47 to 49, 51 to 53 at Ascension
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
         case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
         case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
@@ -164,6 +169,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
+        case EnemyType::GREMLIN_MERC: return 51;
         default: return 0;
     }
 }
@@ -573,6 +579,26 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = ascended_damage ? 3 : 2;
             current_intent.description = "Chuintement (+2 Force)";
+        }
+    } else if (type == EnemyType::GREMLIN_MERC) {
+        // Gimme, Double Smash, Hehe, and again.
+        current_intent.hits = 2;
+        if (turn_number % 3 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.description = "Donne-moi ça ! (7 dmg x2)";
+        } else if (turn_number % 3 == 2) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.debuffs[0] = { StatusType::WEAK, 2 };
+            current_intent.description = "Fracas double (6 dmg x2, Affaibli 2)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.hits = 1;
+            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.description = "Héhé (8 dmg, +2 Force)";
         }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the
