@@ -918,6 +918,12 @@ bn::string_view base_name(engine::CardId id)
         return "Joyau caché";
     case engine::CardId::TRANSFIGURE:
         return "Transfiguration";
+    case engine::CardId::GLASSWORK:
+        return "Verrerie";
+    case engine::CardId::REFRACT:
+        return "Réfraction";
+    case engine::CardId::SPINNER:
+        return "Toupie";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1804,6 +1810,15 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::TRANSFIGURE:
         stream << "1 carte de la main : Écho, coûte +1.";
+        break;
+    case engine::CardId::GLASSWORK:
+        stream << "Armure " << value << ". Canalise 1 Orbe vitreux.";
+        break;
+    case engine::CardId::REFRACT:
+        stream << "Inflige " << value << " x2. Canalise 2 Orbes vitreux.";
+        break;
+    case engine::CardId::SPINNER:
+        stream << "Début de tour : canalise 1 Orbe vitreux.";
         break;
     case engine::CardId::MAD_SCIENCE:
         stream << (card.upgraded ? "Inné. " : "") << "Inflige " << value << " dégâts.";

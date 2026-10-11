@@ -651,6 +651,10 @@ enum class CardId : uint16_t {
     // Echo N on a copy of a card (mechanic #86)
     HIDDEN_GEM,
     TRANSFIGURE,
+    // Glass orb (mechanic #99)
+    GLASSWORK,
+    REFRACT,
+    SPINNER,
     COUNT
 };
 

@@ -1170,7 +1170,7 @@ int16_t CombatEngine::with_focus(int16_t base) const {
 
 int CombatEngine::unique_orbs() const {
     int count = 0;
-    for (OrbType type : { OrbType::LIGHTNING, OrbType::FROST, OrbType::DARK, OrbType::PLASMA }) {
+    for (OrbType type : { OrbType::LIGHTNING, OrbType::FROST, OrbType::DARK, OrbType::PLASMA, OrbType::GLASS }) {
         for (const Orb& orb : player.orbs) {
             if (orb == type) {
                 ++count;
@@ -1187,6 +1187,7 @@ void CombatEngine::channel_orb(OrbType type) {
     if (player.orbs.size() >= player.orb_slots) evoke_orb(0);
     Orb orb(type);
     if (type == OrbType::DARK) orb.charge = DARK_PASSIVE;
+    if (type == OrbType::GLASS) orb.charge = GLASS_PASSIVE;
     player.orbs.push_back(orb);
     counters.combat_orbs_channeled = bump(counters.combat_orbs_channeled);
     if (type == OrbType::LIGHTNING) counters.combat_lightning_channeled = bump(counters.combat_lightning_channeled);
@@ -1231,6 +1232,9 @@ void CombatEngine::evoke_orb(size_t slot, int times) {
             case OrbType::PLASMA:
                 player.energy = static_cast<int8_t>(player.energy + PLASMA_EVOKE);
                 break;
+            case OrbType::GLASS:
+                damage_all_enemies(with_focus(GLASS_EVOKE));
+                break;
             default:
                 break;
         }
@@ -1253,6 +1257,11 @@ void CombatEngine::trigger_orb_passive(size_t slot, Enemy* target) {
             break;
         case OrbType::PLASMA:
             player.energy = static_cast<int8_t>(player.energy + PLASMA_PASSIVE);
+            break;
+        case OrbType::GLASS:
+            damage_all_enemies(with_focus(orb.charge));
+            // `orb` may have moved if a kill changed the slots: read it again by slot.
+            if (slot < player.orbs.size() && player.orbs[slot].type == OrbType::GLASS && player.orbs[slot].charge > 0) --player.orbs[slot].charge;
             break;
         default:
             break;
@@ -1917,6 +1926,8 @@ void CombatEngine::start_player_turn() {
         choice.count = static_cast<uint8_t>(tools);
         ask_choice(choice);
     }
+    // Spinner: a Glass orb is channeled at the start of each turn.
+    for (int16_t i = power_amount(PowerId::SPINNER); i > 0; --i) channel_orb(OrbType::GLASS);
     // Entropy: one card of the new hand is transformed.
     if (int16_t entropy = power_amount(PowerId::ENTROPY); entropy > 0) {
         CardChoice choice;
@@ -5588,6 +5599,26 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             choice.kind = ChoiceKind::ADD_ECHO;
             ask_choice(choice);
             set_log(upgraded ? "Played Transfigure+!"sv : "Played Transfigure!"sv);
+            break;
+        }
+        case CardId::GLASSWORK: {
+            gain_block(base_value);
+            channel_orb(OrbType::GLASS);
+            set_log(upgraded ? "Played Glasswork+!"sv : "Played Glasswork!"sv);
+            break;
+        }
+        case CardId::REFRACT: {
+            hit(current_target, base_value);
+            hit(current_target, base_value);
+            channel_orb(OrbType::GLASS);
+            channel_orb(OrbType::GLASS);
+            set_log(upgraded ? "Played Refract+!"sv : "Played Refract!"sv);
+            break;
+        }
+        case CardId::SPINNER: {
+            add_power(PowerId::SPINNER, 1);
+            if (upgraded) channel_orb(OrbType::GLASS);
+            set_log(upgraded ? "Played Spinner+!"sv : "Played Spinner!"sv);
             break;
         }
         case CardId::PRIMAL_FORCE: {

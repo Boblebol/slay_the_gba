@@ -545,6 +545,9 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::RARE, CardPool::REGENT }, // GUARDS
     { CardRarity::RARE, CardPool::COLORLESS }, // HIDDEN_GEM
     { CardRarity::RARE, CardPool::NECROBINDER }, // TRANSFIGURE
+    { CardRarity::UNCOMMON, CardPool::DEFECT }, // GLASSWORK
+    { CardRarity::UNCOMMON, CardPool::DEFECT }, // REFRACT
+    { CardRarity::RARE, CardPool::DEFECT }, // SPINNER
 };
 
 } // namespace engine

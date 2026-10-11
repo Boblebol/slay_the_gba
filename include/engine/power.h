@@ -254,7 +254,9 @@ enum class PowerId : uint8_t {
     // Transformation (appended)
     ENTROPY,            // at the start of each turn `amount` cards of the hand are transformed (read by start_player_turn)
     // Regent minions (appended)
-    VITRUVIAN_MINION    // the Minion cards deal double damage and give double Block (read by hit and gain_block)
+    VITRUVIAN_MINION,   // the Minion cards deal double damage and give double Block (read by hit and gain_block)
+    // Glass orb (appended)
+    SPINNER             // start of turn: channel `amount` Glass orbs (read by start_player_turn)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
