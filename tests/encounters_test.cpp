@@ -79,6 +79,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::DEVOTED_SCULPTOR: return "DEVOTED_SCULPTOR";
         case EnemyType::THE_LOST: return "THE_LOST";
         case EnemyType::BOWLBUG_SILK: return "BOWLBUG_SILK";
+        case EnemyType::BOWLBUG_EGG: return "BOWLBUG_EGG";
     }
     return {};
 }
@@ -282,6 +283,7 @@ void test_reference_encounters() {
     // The Zapbot and the Guardbot are brought by the Fabricator too.
     // The Bowlbug (Nectar) is brought by the Bowlbug (Rock) (BowlbugsNormal, BowlbugsWeak).
     // The Bowlbug Silk is brought by the Bowlbug Rock (BowlbugsNormal, SlumberingBeetleNormal).
+    // The Bowlbug Egg is brought by the Bowlbug Rock (BowlbugsNormal, BowlbugsWeak).
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::LIVING_SHIELD,
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN,
@@ -295,6 +297,8 @@ void test_reference_encounters() {
                                                           EnemyType::BOWLBUG_NECTAR };
                                                           EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
                                                           EnemyType::BOWLBUG_SILK };
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
+                                                          EnemyType::BOWLBUG_EGG };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));

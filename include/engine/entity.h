@@ -411,6 +411,8 @@ enum class EnemyType : uint8_t {
     THE_LOST
     TOADPOLE,
     BOWLBUG_SILK
+    TOADPOLE,
+    BOWLBUG_EGG
 };
 
 // What a monster sees of the fight when it chooses its next move.
