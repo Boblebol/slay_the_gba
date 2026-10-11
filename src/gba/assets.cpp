@@ -24,6 +24,7 @@
 #include "bn_sprite_items_mon_cultist.h"
 #include "bn_sprite_items_mon_damp_cultist.h"
 #include "bn_sprite_items_mon_eye_with_teeth.h"
+#include "bn_sprite_items_mon_soul_nexus.h"
 #include "bn_sprite_items_mon_stabbot.h"
 #include "bn_sprite_items_mon_corpse_slug.h"
 #include "bn_sprite_items_mon_gas_bomb.h"
@@ -346,6 +347,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_entomancer, false };
     case engine::EnemyType::MAWLER:
         return { &bn::sprite_items::mon_mawler, false };
+    case engine::EnemyType::SOUL_NEXUS:
+        return { &bn::sprite_items::mon_soul_nexus, false };
     case engine::EnemyType::FOSSIL_STALKER:
         return { &bn::sprite_items::mon_fossil_stalker, false };
     case engine::EnemyType::CHOMPER:

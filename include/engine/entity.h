@@ -421,6 +421,8 @@ enum class EnemyType : uint8_t {
     FLAIL_KNIGHT
     TRACKER_RUBY_RAIDER,
     SPECTRAL_KNIGHT
+    TRACKER_RUBY_RAIDER,
+    SOUL_NEXUS
 };
 
 // What a monster sees of the fight when it chooses its next move.
