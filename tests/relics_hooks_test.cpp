@@ -3511,6 +3511,38 @@ void test_big_mushroom() {
     std::cout << "[PASS] Big Mushroom: 20 more max HP on pickup, 2 cards fewer in the first hand" << std::endl;
 }
 
+void test_neows_sacrifice() {
+    // Obtained: an Ambergris potion joins the belt and a Guilty curse joins the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    run.potions.clear();
+    size_t deck_size = run.master_deck.size();
+    run.add_relic("NEOWS_SACRIFICE");
+    assert(run.has_relic("NEOWS_SACRIFICE"));
+    assert(run.potions.size() == 1 && run.potions[0] == "AMBERGRIS");
+    assert(run.master_deck.size() == deck_size + 1 && run.master_deck.back().id == CardId::GUILTY);
+
+    // With a full belt, no potion is thrown away, and the Guilty curse still joins the deck.
+    RunManager full;
+    full.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    while (!full.potion_belt_full()) full.potions.push_back("FIRE_POTION");
+    size_t potions_full = full.potions.size();
+    deck_size = full.master_deck.size();
+    full.add_relic("NEOWS_SACRIFICE");
+    assert(full.potions.size() == potions_full && full.master_deck.back().id == CardId::GUILTY);
+    assert(full.master_deck.size() == deck_size + 1);
+
+    // Without the relic, neither the potion nor the curse comes.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    plain.potions.clear();
+    deck_size = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(plain.potions.size() == 0 && plain.master_deck.size() == deck_size);
+
+    std::cout << "[PASS] Sacrifice de Neow: Ambergris potion and Guilty curse on pickup" << std::endl;
+}
+
 void test_fake_orichalcum() {
     // With the relic, a turn ended without Block gives 3 Block: the 11 damage of the attack is cut to 8.
     RunManager run = make_relic_run(CharacterId::IRONCLAD, { "FAKE_ORICHALCUM" });
@@ -4172,6 +4204,7 @@ int main() {
     test_ring_of_the_drake();
     test_darkstone_periapt();
     test_big_mushroom();
+    test_neows_sacrifice();
     test_fake_orichalcum();
     test_maw_bank();
     test_fake_happy_flower();

@@ -807,6 +807,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         add_card_to_deck(DeckCard{ CardId::GREED, false });
         gain_gold(333);
     }
+    // Relic of the Ancients (Neow): an Ambergris potion joins the belt when there is room, and a Guilty curse joins the deck.
+    if (relic_id == "NEOWS_SACRIFICE" && has_relic("NEOWS_SACRIFICE")) {
+        if (!potion_belt_full()) potions.push_back("AMBERGRIS");
+        add_card_to_deck(DeckCard{ CardId::GUILTY, false });
+    }
     // Relic of the Ancients: one Ancient card of the hero, drawn at random with the run's generator.
     if (relic_id == "DUSTY_TOME" && has_relic("DUSTY_TOME")) {
         const auto hero_pool = static_cast<CardPool>(static_cast<uint8_t>(character) + 1);
