@@ -113,6 +113,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Mycoptère";
         max_hp = 47;
         hp = 47;
+    } else if (type == EnemyType::CHOMPER) {
+        name = "Croquebot";
+        max_hp = 60;
+        hp = 60;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -130,6 +134,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
         case EnemyType::INKLET: return 6; // 11 to 17, 12 to 18 at Ascension
         case EnemyType::NIBBIT: return 4;      // 42 to 46, 44 to 48 at Ascension
+        case EnemyType::CHOMPER: return 4;     // 60 to 64, 63 to 67 at Ascension
         default: return 0;
     }
 }
@@ -164,6 +169,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
+        case EnemyType::CHOMPER: return 63;
         default: return 0;
     }
 }
@@ -573,6 +579,20 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = ascended_damage ? 3 : 2;
             current_intent.description = "Chuintement (+2 Force)";
+        }
+    } else if (type == EnemyType::CHOMPER) {
+        // Clamp (two hits), Screech (3 Dazed into the discard pile), and again.
+        if (turn_number % 2 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.hits = 2;
+            current_intent.description = "Pince (8 dmg x2)";
+        } else {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_card = CardId::DAZED;
+            current_intent.status_cards = 3;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Crissement (3 Hébété)";
         }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the

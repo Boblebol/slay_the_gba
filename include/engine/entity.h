@@ -375,7 +375,8 @@ enum class EnemyType : uint8_t {
     CUBEX_CONSTRUCT,
     INKLET,
     NIBBIT,
-    FLYCONID
+    FLYCONID,
+    CHOMPER
 };
 
 // What a monster sees of the fight when it chooses its next move.
