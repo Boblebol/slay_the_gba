@@ -629,6 +629,8 @@ enum class CardId : uint16_t {
     SEEKER_STRIKE,
     // Event card: a single attack (Mad Science)
     MAD_SCIENCE,
+    // Event card: choose 1 of 3 upgraded Powers (Abundance)
+    ABUNDANCE,
     COUNT
 };
 

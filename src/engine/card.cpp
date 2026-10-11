@@ -626,6 +626,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::SEEKER_STRIKE, "Seeker Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 3, "Deal 9 dmg. Choose 1 of 3 cards in your draw pile to add into your hand.", "Seeker Strike+", 1, 12, 3, "Deal 12 dmg. Choose 1 of 3 cards in your draw pile to add into your hand." },
     // Event card: a single attack; Innate once upgraded.
     { CardId::MAD_SCIENCE, "Mad Science", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 12, 0, "Deal 12 dmg. ???", "Mad Science+", 1, 12, 0, "Innate. Deal 12 dmg. ???", 0, KEYWORD_INNATE },
+    // Event card: 3 upgraded Powers offered, the picked one is free this turn.
+    { CardId::ABUNDANCE, "Abundance", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Choose 1 of 3 upgraded Powers to add into your hand. It costs 0 this turn. Exhaust.", "Abundance+", 0, 0, 0, "Choose 1 of 3 upgraded Powers to add into your hand. It costs 0 this turn. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
 };
 
 const CardDef& CardDef::get(CardId id) {

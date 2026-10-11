@@ -2105,6 +2105,7 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::SCULPTING_STRIKE:
         case CardId::HEADBUTT:
         case CardId::WISH:
+        case CardId::ABUNDANCE:
         case CardId::HOLOGRAM:
         case CardId::COSMIC_INDIFFERENCE:
         case CardId::GRAVEBLAST:
@@ -3880,6 +3881,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::BYRD_SWOOP: {
             hit(current_target, base_value);
             set_log(upgraded ? "Played Byrd Swoop+!"sv : "Played Byrd Swoop!"sv);
+            break;
+        }
+        case CardId::ABUNDANCE: {
+            offer_random_cards(CardFilter(CardType::POWER), 3, true, true);
+            set_log(upgraded ? "Played Abundance+!"sv : "Played Abundance!"sv);
             break;
         }
         case CardId::MAD_SCIENCE: {

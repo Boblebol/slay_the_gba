@@ -886,6 +886,8 @@ bn::string_view base_name(engine::CardId id)
         return "Frappe chercheuse";
     case engine::CardId::MAD_SCIENCE:
         return "Science sans conscience";
+    case engine::CardId::ABUNDANCE:
+        return "Abondance";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1724,6 +1726,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:
         stream << "Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::ABUNDANCE:
+        stream << "1 Pouvoir+ sur 3, gratuit. Épuisement.";
         break;
     case engine::CardId::MAD_SCIENCE:
         stream << (card.upgraded ? "Inné. " : "") << "Inflige " << value << " dégâts.";
