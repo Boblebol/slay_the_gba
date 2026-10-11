@@ -628,6 +628,7 @@ enum class CardId : uint16_t {
     THE_GAMBIT,
     // Choose 1 card among N offered (mechanic #72)
     SEEKER_STRIKE,
+    SPLASH,
     // Event card: a single attack (Mad Science)
     MAD_SCIENCE,
     // Regent: choose 1 of 3 random Colorless cards (Quasar)

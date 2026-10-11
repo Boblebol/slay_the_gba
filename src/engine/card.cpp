@@ -625,6 +625,7 @@ static constexpr CardDef CARDS[] = {
     { CardId::THE_GAMBIT, "The Gambit", 0, CardType::SKILL, TargetType::SELF, 50, 0, "Gain 50 block. If you take unblocked attack damage this combat, you die.", "The Gambit+", 0, 75, 0, "Gain 75 block. If you take unblocked attack damage this combat, you die." },
     // Choose 1 card among N offered (mechanic #72).
     { CardId::SEEKER_STRIKE, "Seeker Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 3, "Deal 9 dmg. Choose 1 of 3 cards in your draw pile to add into your hand.", "Seeker Strike+", 1, 12, 3, "Deal 12 dmg. Choose 1 of 3 cards in your draw pile to add into your hand." },
+    { CardId::SPLASH, "Splash", 1, CardType::SKILL, TargetType::SELF, 0, 3, "Choose 1 of 3 random Attacks from another character to add into your hand. It costs 0 this turn.", "Splash+", 1, 0, 3, "Choose 1 of 3 random upgraded Attacks from another character to add into your hand. It costs 0 this turn." },
     // Event card: a single attack; Innate once upgraded.
     { CardId::MAD_SCIENCE, "Mad Science", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 12, 0, "Deal 12 dmg. ???", "Mad Science+", 1, 12, 0, "Innate. Deal 12 dmg. ???", 0, KEYWORD_INNATE },
     // Regent: choose 1 of 3 random Colorless cards to add to the hand (mechanics #72, #77).

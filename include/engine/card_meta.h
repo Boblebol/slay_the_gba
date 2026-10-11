@@ -529,6 +529,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::RARE, CardPool::COLORLESS }, // ALCHEMIZE
     { CardRarity::RARE, CardPool::COLORLESS }, // THE_GAMBIT
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // SEEKER_STRIKE
+    { CardRarity::RARE, CardPool::COLORLESS }, // SPLASH
     { CardRarity::EVENT, CardPool::EVENT }, // MAD_SCIENCE
     { CardRarity::UNCOMMON, CardPool::REGENT }, // QUASAR
 };

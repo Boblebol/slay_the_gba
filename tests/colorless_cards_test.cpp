@@ -250,6 +250,41 @@ void test_alchemize() {
     std::cout << "[PASS] Alchemize: 1 cost Skill, Exhaust, gains a random potion\n";
 }
 
+// Splash: 1 Skill, Rare, offers 3 Attacks (upgraded when upgraded) of another hero, the one picked costs 0 this turn.
+void test_splash() {
+    assert(CardDef::get(CardId::SPLASH).type == CardType::SKILL);
+    assert(card_meta(CardId::SPLASH).rarity == CardRarity::RARE);
+    assert(card_meta(CardId::SPLASH).pool == CardPool::COLORLESS);
+
+    for (bool upgraded : { false, true }) {
+        assert(CardDef::get_cost(CardId::SPLASH, upgraded) == 1);
+        CombatEngine combat = make_pack(); // an Ironclad fight, the random generator moves on at each run
+        for (int run = 0; run < 12; ++run) {
+            combat.hand.clear();
+            combat.draw_pile.clear();
+            combat.discard_pile.clear();
+            combat.player.energy = 3;
+            combat.hand.push_back(DeckCard(CardId::SPLASH, upgraded));
+            assert(combat.play_card(0, 0));
+            assert(combat.player.energy == 2);
+            assert(combat.choice_pending() && combat.pending_choices[0].source == Pile::OFFERS);
+            assert(combat.offers.size() == 3 && combat.choice_size() == 1);
+            for (const DeckCard& offered : combat.offers) {
+                assert(CardDef::get(offered.id).type == CardType::ATTACK);
+                assert(card_meta(offered.id).pool != CardPool::IRONCLAD);
+                assert(offered.upgraded == upgraded && offered.free_this_turn);
+            }
+            const DeckCard picked = combat.offers[1];
+            const uint8_t picks[] = { 1 };
+            assert(combat.resolve_choice(picks));
+            assert(!combat.choice_pending() && combat.offers.empty());
+            assert(combat.hand.size() == 1 && combat.hand[0] == picked && combat.hand[0].free_this_turn);
+            assert(combat.discard_pile.size() == 1 && combat.discard_pile[0].id == CardId::SPLASH);
+        }
+    }
+    std::cout << "[PASS] Splash: 1 Skill, 3 Attacks of another hero (upgraded), the pick costs 0\n";
+}
+
 } // namespace
 
 int main() {
@@ -261,6 +296,7 @@ int main() {
     test_offers_cleared_with_the_combat();
     test_the_gambit();
     test_alchemize();
+    test_splash();
     std::cout << "colorless_cards_test: all tests passed\n";
     return 0;
 }
