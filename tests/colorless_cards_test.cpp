@@ -219,6 +219,49 @@ void test_the_gambit() {
     std::cout << "[PASS] The Gambit: 0 cost Skill, 50/75 Block, unblocked attack damage kills\n";
 }
 
+// Discovery: 1 cost Skill, Uncommon; choose 1 of 3 random cards to add to the hand, free this turn.
+// Exhaust, which the upgrade removes.
+void test_discovery() {
+    const CardDef& def = CardDef::get(CardId::DISCOVERY);
+    assert(def.type == CardType::SKILL);
+    assert(card_meta(CardId::DISCOVERY).rarity == CardRarity::UNCOMMON);
+    assert(card_meta(CardId::DISCOVERY).pool == CardPool::COLORLESS);
+    assert(CardDef::has_keyword(CardId::DISCOVERY, false, KEYWORD_EXHAUST));
+    assert(!CardDef::has_keyword(CardId::DISCOVERY, true, KEYWORD_EXHAUST));
+    assert(CombatEngine::opens_choice(DeckCard(CardId::DISCOVERY)));
+
+    for (bool upgraded : { false, true }) {
+        assert(CardDef::get_cost(CardId::DISCOVERY, upgraded) == 1);
+        CombatEngine combat = make_pack();
+        fill_draw_pile(combat);
+        combat.hand.push_back(DeckCard(CardId::DISCOVERY, upgraded));
+        combat.player.energy = 3;
+        assert(combat.play_card(0, -1));
+        assert(combat.player.energy == 2);
+
+        assert(combat.choice_pending());
+        assert(combat.pending_choices[0].source == Pile::OFFERS);
+        assert(combat.offers.size() == 3 && combat.choice_size() == 1);
+        for (size_t i = 0; i < combat.offers.size(); ++i) {
+            assert(combat.offers[i].free_this_turn && !combat.offers[i].upgraded);
+            for (size_t j = 0; j < i; ++j) assert(combat.offers[j].id != combat.offers[i].id);
+        }
+        assert(combat.draw_pile.size() == 6);
+
+        const DeckCard picked = combat.offers[2];
+        const uint8_t picks[] = { 2 };
+        assert(combat.resolve_choice(picks));
+        assert(!combat.choice_pending() && combat.offers.empty());
+        assert(combat.hand.size() == 1 && combat.hand[0] == picked && combat.hand[0].free_this_turn);
+        assert(combat.draw_pile.size() == 6);
+
+        // Base version is exhausted, upgraded goes to the discard pile.
+        assert(count_in(combat.exhaust_pile, CardId::DISCOVERY) == (upgraded ? 0 : 1));
+        assert(count_in(combat.discard_pile, CardId::DISCOVERY) == (upgraded ? 1 : 0));
+    }
+    std::cout << "[PASS] Discovery: 1 of 3 random cards, free this turn, Exhaust (not upgraded)\n";
+}
+
 } // namespace
 
 int main() {
@@ -229,6 +272,7 @@ int main() {
     test_offer_random_cards();
     test_offers_cleared_with_the_combat();
     test_the_gambit();
+    test_discovery();
     std::cout << "colorless_cards_test: all tests passed\n";
     return 0;
 }

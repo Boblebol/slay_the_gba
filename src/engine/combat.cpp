@@ -2089,6 +2089,7 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::SECRET_TECHNIQUE:
         case CardId::SECRET_WEAPON:
         case CardId::SEEKER_STRIKE:
+        case CardId::DISCOVERY:
         case CardId::DUAL_WIELD:
         case CardId::HEIRLOOM_HAMMER:
         case CardId::NIGHTMARE:
@@ -3880,6 +3881,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::BYRD_SWOOP: {
             hit(current_target, base_value);
             set_log(upgraded ? "Played Byrd Swoop+!"sv : "Played Byrd Swoop!"sv);
+            break;
+        }
+        case CardId::DISCOVERY: {
+            offer_random_cards(CardFilter(), secondary_value, false, true);
+            set_log(upgraded ? "Played Discovery+!"sv : "Played Discovery!"sv);
             break;
         }
         case CardId::MAD_SCIENCE: {

@@ -629,6 +629,8 @@ enum class CardId : uint16_t {
     SEEKER_STRIKE,
     // Event card: a single attack (Mad Science)
     MAD_SCIENCE,
+    // Choose 1 of 3 random cards, free this turn (mechanic #72)
+    DISCOVERY,
     COUNT
 };
 
