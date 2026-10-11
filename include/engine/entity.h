@@ -372,6 +372,7 @@ enum class EnemyType : uint8_t {
     EYE_WITH_TEETH,
     STABBOT,
     NOISEBOT,
+    ZAPBOT,
     CUBEX_CONSTRUCT,
     PUNCH_CONSTRUCT,
     INKLET,

@@ -38,6 +38,7 @@
 #include "bn_sprite_items_mon_jaw_worm.h"
 #include "bn_sprite_items_mon_noisebot.h"
 #include "bn_sprite_items_mon_mawler.h"
+#include "bn_sprite_items_mon_zapbot.h"
 #include "bn_sprite_items_mon_nibbit.h"
 #include "bn_sprite_items_mon_punch_construct.h"
 #include "bn_sprite_items_mon_toadpole.h"
@@ -256,6 +257,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_seapunk, false };
     case engine::EnemyType::STABBOT:
         return { &bn::sprite_items::mon_stabbot, false };
+    case engine::EnemyType::ZAPBOT:
+        return { &bn::sprite_items::mon_zapbot, false };
     case engine::EnemyType::NOISEBOT:
         return { &bn::sprite_items::mon_noisebot, false };
     case engine::EnemyType::CUBEX_CONSTRUCT:
