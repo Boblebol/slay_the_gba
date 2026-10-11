@@ -97,6 +97,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Poignard-bot";
         max_hp = 18;
         hp = 18;
+    } else if (type == EnemyType::ZAPBOT) {
+        name = "Déchargebot";
+        max_hp = 18;
+        hp = 18;
     } else if (type == EnemyType::NOISEBOT) {
         name = "Sonobot";
         max_hp = 18;
@@ -164,6 +168,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
         case EnemyType::SNEAKY_GREMLIN: return 4; // 10 to 14, 11 to 15 at Ascension
         case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
+        case EnemyType::ZAPBOT: return 5;      // 18 to 23, 19 to 24 at Ascension
         case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
         case EnemyType::INKLET: return 6; // 11 to 17, 12 to 18 at Ascension
         case EnemyType::NIBBIT: return 4;      // 42 to 46, 44 to 48 at Ascension
@@ -197,6 +202,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::SNEAKY_GREMLIN: return 11;
         case EnemyType::VINE_SHAMBLER: return 64;
         case EnemyType::STABBOT: return 19;
+        case EnemyType::ZAPBOT: return 19;
         case EnemyType::NOISEBOT: return 19;
         case EnemyType::CUBEX_CONSTRUCT: return 70;
         case EnemyType::PUNCH_CONSTRUCT: return 60;
@@ -564,6 +570,11 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.base_damage = ascended_damage ? 12 : 11;
         current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
         current_intent.description = "Coup de poignard (11 dmg, Fragilisé)";
+    } else if (type == EnemyType::ZAPBOT) {
+        // Zap every turn: 14 damage (15 at Ascension).
+        current_intent.type = EnemyIntentType::ATTACK;
+        current_intent.base_damage = ascended_damage ? 15 : 14;
+        current_intent.description = "Décharge (14 dmg)";
     } else if (type == EnemyType::NOISEBOT) {
         // Noise every turn: 2 Dazed into the discard pile.
         current_intent.type = EnemyIntentType::STATUS;

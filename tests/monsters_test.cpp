@@ -1220,6 +1220,43 @@ void test_stabbot_ascension() {
     std::cout << "[PASS] Stabbot: Ascension gives 19 to 24 HP and a Stab of 12" << std::endl;
 }
 
+void test_zapbot() {
+    // Zap every turn: 14 damage, no Block, no status.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::ZAPBOT);
+    Enemy& bot = combat.enemies[0];
+    assert(bot.type == EnemyType::ZAPBOT && bot.name == "Déchargebot");
+    assert(bot.hp >= 18 && bot.hp <= 23 && bot.max_hp == bot.hp && bot.max_hp == 18 + bot.hp_bonus);
+    const int16_t hp = bot.hp;
+    assert(bot.block == 0 && bot.statuses.empty());
+    for (int turn = 1; turn <= 4; ++turn) {
+        assert(combat.turn_number == turn);
+        assert(bot.current_intent.type == ATTACK && bot.intent_damage(combat.player) == 14);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == 14);
+        assert(bot.block == 0 && bot.statuses.empty() && bot.hp == hp);
+    }
+    std::cout << "[PASS] Zapbot: 18 to 23 HP, Zap 14 damage every turn" << std::endl;
+}
+
+void test_zapbot_ascension() {
+    // 19 to 24 HP (18 to 23 plus 1) and a Zap of 15 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::ZAPBOT);
+        Enemy& bot = combat.enemies[0];
+        bot.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = bot.hp;
+        assert(bot.ascension_hp() == 19 && bot.hp_spread() == 5);
+        assert(base >= 18 && base <= 23 && bot.max_hp == 18 + bot.hp_bonus);
+        bot.ascend(true, true);
+        combat.plan_enemies();
+        assert(bot.hp == base + 1 && bot.max_hp == base + 1 && bot.hp >= 19 && bot.hp <= 24);
+        assert(bot.current_intent.type == ATTACK && bot.intent_damage(combat.player) == 15);
+    }
+    std::cout << "[PASS] Zapbot: Ascension gives 19 to 24 HP and a Zap of 15" << std::endl;
+}
+
 void test_noisebot() {
     // Noise every turn: 2 Dazed into the discard pile, no damage.
     CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::NOISEBOT);
@@ -1917,6 +1954,8 @@ int main() {
     test_eye_with_teeth();
     test_stabbot();
     test_stabbot_ascension();
+    test_zapbot();
+    test_zapbot_ascension();
     test_noisebot();
     test_noisebot_ascension();
     test_cubex_construct();

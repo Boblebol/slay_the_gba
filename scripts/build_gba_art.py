@@ -173,6 +173,7 @@ MONSTERS: dict[str, str] = {
     "eye_with_teeth": "eye_with_teeth",
     "stabbot": "stabbot",
     "noisebot": "noisebot",
+    "zapbot": "zapbot",
     "cubex_construct": "cubex_construct",
     "punch_construct": "punch_construct",
     "inklet": "inklet",

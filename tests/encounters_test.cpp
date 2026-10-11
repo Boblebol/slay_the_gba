@@ -43,6 +43,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::EYE_WITH_TEETH: return "EYE_WITH_TEETH";
         case EnemyType::STABBOT: return "STABBOT";
         case EnemyType::NOISEBOT: return "NOISEBOT";
+        case EnemyType::ZAPBOT: return "ZAPBOT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
         case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
         case EnemyType::INKLET: return "INKLET";
@@ -211,11 +212,11 @@ void test_reference_encounters() {
     // Forgotten is only met with the Lost (TheLostAndForgottenNormal), the Living Shield with the Turret Operator
     // (TurretOperatorWeak), the Fat Gremlin with the Gremlin Merc (GremlinMercNormal), like the Sneaky Gremlin.
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
-    // The Stabbot and the Noisebot are brought by the Fabricator (FabricatorNormal).
+    // The Stabbot, the Noisebot and the Zapbot are brought by the Fabricator (FabricatorNormal).
     // The Gas Bomb is brought by the Living Fog (LivingFogNormal).
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
-                                                          EnemyType::STABBOT, EnemyType::NOISEBOT,
+                                                          EnemyType::STABBOT, EnemyType::NOISEBOT, EnemyType::ZAPBOT,
                                                           EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
