@@ -6758,6 +6758,18 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "ENTROPIC_BREW") {
         fill_potion_belt = true; // the run owns the belt: RunManager::use_potion fills it once this potion is gone
         set_log("Entropic Brew!");
+    } else if (potion_id == "SOLDIERS_STEW") {
+        // Every Strike of the combat (hand, piles) gains Echo 1.
+        auto echo_strikes = [](auto& pile) {
+            for (DeckCard& card : pile) {
+                if (is_strike(card.id) && card.echo < 1) card.echo = 1;
+            }
+        };
+        echo_strikes(hand);
+        echo_strikes(draw_pile);
+        echo_strikes(discard_pile);
+        echo_strikes(exhaust_pile);
+        set_log("Soldier's Stew!");
     } else if (potion_id == "FOUL_POTION") {
         // Damage to every player and enemy: Block absorbs it, Strength and Vulnerable do not change it.
         damage_all_enemies(12);
