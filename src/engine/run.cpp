@@ -1644,6 +1644,10 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("TOOLBOX")) {
         combat.offer_random_cards(CardFilter(CardPool::COLORLESS), 3);
     }
+    // Choices Paradox (ancient): 1 of 5 random cards of the hero's pool goes to the hand, with Retain.
+    if (has_relic("CHOICES_PARADOX")) {
+        combat.offer_random_cards(CardFilter(), 5, false, false, true);
+    }
     // Jeweled Mask (ancient): a random Power of the draw pile goes to the hand and costs 0 for the combat.
     if (has_relic("JEWELED_MASK") && combat.hand.size() < combat.hand.capacity()) {
         FixedVector<uint8_t, 50> powers;
