@@ -52,6 +52,7 @@
 #include "bn_sprite_items_mon_tracker_ruby_raider.h"
 #include "bn_sprite_items_mon_slumbering_beetle.h"
 #include "bn_sprite_items_mon_the_forgotten.h"
+#include "bn_sprite_items_mon_tunneler.h"
 #include "bn_sprite_items_mon_vine_shambler.h"
 
 #include "bn_sprite_items_hand_cards_defect.h"
@@ -295,6 +296,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_chomper, false };
     case engine::EnemyType::PARAFRIGHT:
         return { &bn::sprite_items::mon_parafright, false };
+    case engine::EnemyType::TUNNELER:
+        return { &bn::sprite_items::mon_tunneler, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

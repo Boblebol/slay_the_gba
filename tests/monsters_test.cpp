@@ -2362,6 +2362,62 @@ void test_slumbering_beetle_ascension() {
     std::cout << "[PASS] Slumbering Beetle: Ascension gives 89 HP and Roll Out 18" << std::endl;
 }
 
+void test_tunneler() {
+    // Bite 13, Burrow (32 Block and Burrowed), Below 23, and Below again.
+    check_monster(EnemyType::TUNNELER, "Tunnelier", 87, {
+        { ATTACK, 13, 0, 0 },
+        { DEFEND, 0, 32, 0 },
+        { ATTACK, 23, 0, 0 },
+        { ATTACK, 23, 0, 0 },
+        { ATTACK, 23, 0, 0 },
+    });
+
+    // The Block of the Burrow broken before it acts again: Dizzy (a lost turn), then Bite, Burrow and Below.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TUNNELER);
+    Enemy& digger = combat.enemies[0];
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Bite
+    assert(digger.current_intent.type == DEFEND && digger.current_intent.block == 32);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Burrow
+    assert(digger.block == 32 && combat.enemy_power_amount(0, PowerId::BURROWED) == 1);
+    assert(digger.current_intent.type == ATTACK && digger.phase == 0);
+    combat.damage_enemy(digger, 20);
+    assert(digger.block == 12 && combat.enemy_power_amount(0, PowerId::BURROWED) == 1);
+    combat.damage_enemy(digger, 12);
+    assert(digger.block == 0 && combat.enemy_power_amount(0, PowerId::BURROWED) == 0 && digger.hp == 87);
+    assert(digger.phase == 1 && digger.current_intent.type == STUN && digger.intent_damage(combat.player) == 0);
+    // Dizzy, Bite, Burrow, Below, Below: no damage the lost turn, and the cycle goes on.
+    const int expected[][2] = { { 0, 0 }, { 13, 0 }, { 0, 32 }, { 23, 0 }, { 23, 0 } };
+    for (const auto& turn : expected) {
+        assert(digger.current_intent.type == (turn[0] == 0 ? (turn[1] ? DEFEND : STUN) : ATTACK));
+        assert(digger.intent_damage(combat.player) == turn[0]);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == turn[0]);
+        assert(digger.block == turn[1]);
+    }
+    std::cout << "[PASS] Tunneler: 87 HP, Bite 13, Burrow 32 Block, Below 23, Dizzy once the Burrow is broken" << std::endl;
+}
+
+void test_tunneler_ascension() {
+    // 92 HP, Bite 15 and Below 26 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TUNNELER);
+    Enemy& digger = combat.enemies[0];
+    assert(digger.ascension_hp() == 92);
+    digger.ascend(true, true);
+    combat.plan_enemies();
+    assert(digger.hp == 92 && digger.max_hp == 92);
+    assert(digger.current_intent.type == ATTACK && digger.intent_damage(combat.player) == 15);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(digger.current_intent.type == DEFEND && digger.current_intent.block == 32);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(digger.current_intent.type == ATTACK && digger.intent_damage(combat.player) == 26);
+    std::cout << "[PASS] Tunneler: Ascension gives 92 HP, Bite 15 and Below 26" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -2448,6 +2504,8 @@ int main() {
     test_chomper_ascension();
     test_slumbering_beetle();
     test_slumbering_beetle_ascension();
+    test_tunneler();
+    test_tunneler_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

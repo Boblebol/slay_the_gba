@@ -185,6 +185,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Scarabée dormeur";
         max_hp = 86;
         hp = 86;
+    } else if (type == EnemyType::TUNNELER) {
+        name = "Tunnelier";
+        max_hp = 87;
+        hp = 87;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -192,6 +196,10 @@ void Enemy::init(EnemyType enemy_type) {
     }
 
     plan_turn(1);
+}
+
+namespace {
+enum TunnelerMove : uint8_t { TUNNELER_BITE, TUNNELER_BURROW, TUNNELER_BELOW, TUNNELER_DIZZY };
 }
 
 uint8_t Enemy::hp_spread() const {
@@ -262,6 +270,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::TRACKER_RUBY_RAIDER: return 22;
         case EnemyType::CHOMPER: return 63;
         case EnemyType::SLUMBERING_BEETLE: return 89;
+        case EnemyType::TUNNELER: return 92;
         default: return 0;
     }
 }
@@ -317,6 +326,13 @@ void Enemy::return_stolen(Player& player) {
         player.add_status(stolen.type, static_cast<int16_t>(-stolen.amount));
     }
     stolen = {};
+}
+
+void Enemy::break_burrow() {
+    if (type != EnemyType::TUNNELER || !enter_phase(1)) return;
+    phase_turn = 1;
+    use_move(TUNNELER_DIZZY);
+    stun();
 }
 
 void Enemy::plan_turn(int turn_number, const PlanContext& context) {
@@ -1012,6 +1028,32 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 2;
             current_intent.description = "Roulade (16 dmg, +2 Force)";
+        }
+    } else if (type == EnemyType::TUNNELER) {
+        // Phase 0: Bite, Burrow (Block and Burrowed), Below, and Below again. If the Block of the Burrow is broken
+        // (triggered, see break_burrow), the next phase opens with Dizzy (a lost turn), then Bite, Burrow and
+        // Below over and over.
+        if (phase == 0) {
+            use_move(phase_turn == 1 ? TUNNELER_BITE : (phase_turn == 2 ? TUNNELER_BURROW : TUNNELER_BELOW));
+        } else {
+            use_move(phase_turn == 1 ? TUNNELER_DIZZY : (phase_turn == 2 ? TUNNELER_BITE : (phase_turn == 3 ? TUNNELER_BURROW : TUNNELER_BELOW)));
+        }
+        if (last_move == TUNNELER_DIZZY) {
+            stun();
+        } else if (last_move == TUNNELER_BITE) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 15 : 13;
+            current_intent.description = "Morsure (13 dmg)";
+        } else if (last_move == TUNNELER_BURROW) {
+            current_intent.type = EnemyIntentType::DEFEND;
+            current_intent.block = 32;
+            current_intent.power = PowerId::BURROWED;
+            current_intent.power_amount = 1;
+            current_intent.description = "Creuser (32 blk, Enfoui)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 26 : 23;
+            current_intent.description = "Attaque par dessous (23 dmg)";
         }
     }
 }

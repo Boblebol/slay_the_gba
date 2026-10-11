@@ -326,6 +326,15 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 gain_temporary(StatusType::DEXTERITY, static_cast<int8_t>(-power.amount));
             }
             break;
+        case PowerId::BURROWED:
+            // Spent when its Block is broken (the holder loses its turn) or when its holder acts again.
+            if (event == CombatEvent::BLOCK_BROKEN && info.enemy == power.holder && power.amount > 0) {
+                power.amount = 0;
+                enemies[power.holder].break_burrow();
+            } else if (event == CombatEvent::ENEMY_TURN_START && info.enemy == power.holder) {
+                power.amount = 0;
+            }
+            break;
         case PowerId::PERSONAL_HIVE:
             if (event == CombatEvent::UNBLOCKED_DAMAGE_DEALT && info.enemy == power.holder) {
                 for (int16_t i = 0; i < power.amount; ++i) create_card(CardId::DAZED, Pile::DRAW);
