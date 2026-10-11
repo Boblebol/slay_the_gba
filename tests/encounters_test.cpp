@@ -47,6 +47,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
+        case EnemyType::SLUMBERING_BEETLE: return "SLUMBERING_BEETLE";
     }
     return {};
 }
@@ -205,7 +206,8 @@ void test_reference_encounters() {
     // The Stabbot and the Noisebot are brought by the Fabricator (FabricatorNormal).
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
-                                                          EnemyType::STABBOT, EnemyType::NOISEBOT };
+                                                          EnemyType::STABBOT, EnemyType::NOISEBOT,
+                                                          EnemyType::SLUMBERING_BEETLE };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));

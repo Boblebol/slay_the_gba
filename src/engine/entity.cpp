@@ -113,6 +113,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Mycoptère";
         max_hp = 47;
         hp = 47;
+    } else if (type == EnemyType::SLUMBERING_BEETLE) {
+        name = "Scarabée dormeur";
+        max_hp = 86;
+        hp = 86;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -164,6 +168,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
+        case EnemyType::SLUMBERING_BEETLE: return 89;
         default: return 0;
     }
 }
@@ -601,6 +606,20 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = ascended_damage ? 12 : 11;
             current_intent.description = "Fracas (11 dmg)";
+        }
+    } else if (type == EnemyType::SLUMBERING_BEETLE) {
+        // Snores (loses its turn) while it sleeps; the first hit that costs it HP wakes it for good, and it
+        // then rolls out every turn: 16 damage, +2 Strength.
+        if (phase == 0 && hp < max_hp) enter_phase(1);
+        if (phase == 0) {
+            current_intent.type = EnemyIntentType::STUN;
+            current_intent.description = "Ronflement";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = ascended_damage ? 18 : 16;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.description = "Roulade (16 dmg, +2 Force)";
         }
     }
 }
