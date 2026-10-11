@@ -1458,6 +1458,7 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::VELVET_CHOKER, VELVET_CHOKER_CARDS);
     }
     // Pael's Eye: the first turn ended without playing a card is followed by an extra turn.
+    if (has_relic("BRILLIANT_SCARF")) combat.add_power(PowerId::BRILLIANT_SCARF, 1);
     if (has_relic("PAELS_EYE")) combat.add_power(PowerId::PAELS_EYE, 1);
     // Music Box: the first Attack played each turn leaves an Ethereal copy in the hand.
     if (has_relic("MUSIC_BOX")) combat.add_power(PowerId::MUSIC_BOX, 1);

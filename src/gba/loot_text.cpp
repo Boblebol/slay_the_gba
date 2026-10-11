@@ -168,6 +168,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "RADIANT_PEARL", "Au début de chaque combat, ajoutez 1 Luminescence à votre Main." },
     { "THROWING_AXE", "La première carte que vous jouez chaque combat est jouée une fois de plus." },
     { "MUSIC_BOX", "Crée une copie Éthérée de la première Attaque jouée chaque tour." },
+    { "BRILLIANT_SCARF", "La 5ème carte jouée chaque tour ne coûte rien.", },
     { "PAELS_EYE", "Si vous terminez un tour sans jouer de cartes (1 fois par combat), Épuisez votre Main et jouez un tour supplémentaire." },
     { "JEWELRY_BOX", "Lorsque vous obtenez cette relique, ajoutez 1 Apothéose à votre Deck." },
     { "NEOWS_BONES", "Lorsque vous obtenez cette relique, gagnez 2 Reliques de Neow aléatoires. Ajoutez 1 Malédiction aléatoire à votre Deck." },
