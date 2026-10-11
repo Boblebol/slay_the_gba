@@ -240,7 +240,10 @@ enum class PowerId : uint8_t {
     DAUGHTER_OF_THE_WIND, // Attack played: `amount` Block (event relic)
     LOST_WISP,          // Power played: `amount` damage to every enemy (event relic)
     HAND_DRILL,         // an enemy's Block broken by the player's damage: `amount` Vulnerable on that enemy
-    UNDYING_SIGIL       // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
+    UNDYING_SIGIL,      // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
+    THROWING_AXE,       // the first card played in the combat is played once more (removed once used)
+    IRON_CLUB,          // every IRON_CLUB_CARDS cards played: draw `amount` (counter = cards counted)
+    CROSSBOW            // start of turn: add a random Attack to the hand, free this turn
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -250,6 +253,7 @@ constexpr bool is_player_debuff_power(PowerId id) {
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
 constexpr uint8_t PANACHE_CARDS = 5;
+constexpr uint8_t IRON_CLUB_CARDS = 4;
 constexpr uint8_t AUTOMATION_CARDS = 10;
 constexpr uint8_t ROLLING_BOULDER_GROWTH = 5;
 constexpr uint8_t ORBIT_ENERGY = 4;

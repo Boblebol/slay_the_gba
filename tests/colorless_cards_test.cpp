@@ -4,6 +4,7 @@
 #include <cassert>
 #include <iostream>
 #include "engine/combat.h"
+#include "engine/run.h"
 
 using namespace engine;
 
@@ -219,6 +220,36 @@ void test_the_gambit() {
     std::cout << "[PASS] The Gambit: 0 cost Skill, 50/75 Block, unblocked attack damage kills\n";
 }
 
+// Alchemize: 1 cost Skill, Rare, Exhaust; gains a random potion (after the combat), same upgraded.
+void test_alchemize() {
+    const CardDef& def = CardDef::get(CardId::ALCHEMIZE);
+    assert(def.type == CardType::SKILL);
+    assert(card_meta(CardId::ALCHEMIZE).rarity == CardRarity::RARE);
+    assert(card_meta(CardId::ALCHEMIZE).pool == CardPool::COLORLESS);
+
+    for (bool upgraded : { false, true }) {
+        assert(CardDef::get_cost(CardId::ALCHEMIZE, upgraded) == 1);
+        assert(CardDef::has_keyword(CardId::ALCHEMIZE, upgraded, KEYWORD_EXHAUST));
+        RunManager run;
+        run.start_run(CharacterId::IRONCLAD, 42);
+        run.combat.start_combat(EnemyType::JAW_WORM, CharacterId::IRONCLAD);
+        run.combat.hand.clear();
+        run.combat.hand.push_back(DeckCard(CardId::ALCHEMIZE, upgraded));
+        run.combat.player.energy = 3;
+        size_t potions = run.potions.size();
+        assert(run.combat.play_card(0, 0));
+        assert(run.combat.player.energy == 2);
+        assert(run.combat.potions_gained == 1);
+        assert(run.combat.hand.empty());
+        assert(count_in(run.combat.exhaust_pile, CardId::ALCHEMIZE) == 1);
+        run.combat.state = CombatState::VICTORY;
+        run.phase = RunPhase::IN_COMBAT;
+        run.proceed_after_combat();
+        assert(run.potions.size() == potions + 1);
+    }
+    std::cout << "[PASS] Alchemize: 1 cost Skill, Exhaust, gains a random potion\n";
+}
+
 } // namespace
 
 int main() {
@@ -229,6 +260,7 @@ int main() {
     test_offer_random_cards();
     test_offers_cleared_with_the_combat();
     test_the_gambit();
+    test_alchemize();
     std::cout << "colorless_cards_test: all tests passed\n";
     return 0;
 }

@@ -94,7 +94,7 @@ bool ShopInventory::buy_relic(RunManager& run, int index) {
 bool ShopInventory::buy_potion(RunManager& run, int index, int replace_index) {
     if (index < 0 || static_cast<size_t>(index) >= potions.size()) return false;
     auto& item = potions[index];
-    if (item.purchased || run.gold < item.cost) return false;
+    if (item.purchased || run.gold < item.cost || run.has_relic("SOZU")) return false;
     bool full = run.potion_belt_full();
     if (full && (replace_index < 0 || static_cast<size_t>(replace_index) >= run.potions.size())) return false;
 

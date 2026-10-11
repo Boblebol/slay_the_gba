@@ -240,6 +240,8 @@ public:
     bool double_block_turn = false;   // the Block gained this turn is doubled (Shadowmeld)
     bool unmovable_used = false;      // Unmovable already doubled a Block this turn
     bool attack_double_next = false;  // Attacks deal double damage on the next turn (Shadow Step)
+    uint8_t fairy_bottles = 0;        // Fairy in a Bottle potions ready to revive the player (automatic, set by the run)
+    uint8_t fairy_used = 0;           // Fairy in a Bottle potions spent during this combat
     bool triple_next_attack = false;  // the next Attack played deals triple damage (Gigantification Potion)
     bool attack_double_now = false;   // Attacks deal double damage this turn
     bool pen_nib_now = false;         // the Attack being played deals double damage (Pen Nib)
@@ -259,6 +261,7 @@ public:
     FixedVector<uint8_t, MAX_OFFERS> offer_origins;
     bool resolving_card = false;     // a card's effect is being resolved (Paël's Legion doubles its Block)
     bool lamp_doubling = false;      // the card being resolved is the one Unsettling Lamp doubles
+    bool extra_turn_pending = false;  // a potion (Ambergris) grants an extra turn: the next end of turn skips the enemies
     bool end_turn_requested = false; // a card ended the turn (Void Form): the caller ends it once the card is resolved
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;

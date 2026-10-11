@@ -108,6 +108,47 @@ void test_juggling() {
     std::cout << "[PASS] Ironclad: Juggling" << std::endl;
 }
 
+void test_cruelty() {
+    for (bool up : { false, true }) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+        combat.enemies[0].add_status(StatusType::VULNERABLE, 5);
+        play(combat, DeckCard(CardId::CRUELTY, up));
+        // Strike 6 x1.5 Vulnerable = 9, then +25% (+50% upgraded) from Cruelty.
+        int16_t before = combat.enemies[0].hp;
+        play(combat, DeckCard(CardId::STRIKE, false), 0);
+        assert(before - combat.enemies[0].hp == (up ? 13 : 11));
+    }
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::CRUELTY });
+    std::cout << "[PASS] Ironclad: Cruelty" << std::endl;
+}
+
+void test_unmovable() {
+    for (bool upgraded : { false, true }) {
+        // Unmovable: a Power, 2 energy (1 upgraded).
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+        assert(CardDef::get_cost(CardId::UNMOVABLE, upgraded) == (upgraded ? 1 : 2));
+        play(combat, DeckCard(CardId::UNMOVABLE, upgraded));
+        assert(combat.has_power(PowerId::UNMOVABLE));
+        assert(combat.player.energy == combat.player.max_energy - (upgraded ? 1 : 2));
+
+        // The first Block a card gives each turn is doubled, the next ones are not.
+        combat.player.block = 0;
+        play(combat, CardId::DEFEND);
+        assert(combat.player.block == 10);
+        play(combat, CardId::DEFEND);
+        assert(combat.player.block == 15);
+
+        // It applies again the next turn.
+        end_turn_idle(combat);
+        combat.player.block = 0;
+        play(combat, CardId::DEFEND);
+        assert(combat.player.block == 10);
+    }
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::UNMOVABLE });
+    std::cout << "[PASS] Ironclad: Unmovable" << std::endl;
+}
+
 // Colossus: 4 Block (7 upgraded), and the player takes 50% less damage from Vulnerable enemies this turn.
 void test_colossus() {
     for (bool upgraded : { false, true }) {
@@ -133,6 +174,8 @@ void test_colossus() {
 int main() {
     std::cout << "=== Ironclad Cards ===" << std::endl;
     test_juggling();
+    test_cruelty();
+    test_unmovable();
     test_colossus();
     std::cout << "=== All Ironclad Cards Passed! ===" << std::endl;
     return 0;

@@ -1766,6 +1766,28 @@ void test_ectoplasm() {
     std::cout << "[PASS] Ectoplasm: no gold gained, +1 energy each turn" << std::endl;
 }
 
+void test_sozu() {
+    RunManager sozu = make_relic_run(CharacterId::IRONCLAD, { "SOZU" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    // One more energy at the start of each turn, only with the relic.
+    assert(sozu.combat.player.energy == plain.combat.player.energy + 1);
+    end_turn_idle(sozu.combat);
+    end_turn_idle(plain.combat);
+    assert(sozu.combat.player.energy == plain.combat.player.energy + 1);
+
+    // No potion can be obtained with the relic; without it they come in.
+    assert(sozu.gain_random_potions(2) == 0 && sozu.potions.empty());
+    assert(plain.gain_random_potions(2) == 2 && plain.potions.size() == 2);
+    sozu.potion_reward = "FIRE_POTION";
+    sozu.phase = RunPhase::REWARD_SCREEN;
+    assert(!sozu.take_potion_reward() && sozu.potions.empty());
+    plain.potions.clear();
+    plain.potion_reward = "FIRE_POTION";
+    plain.phase = RunPhase::REWARD_SCREEN;
+    assert(plain.take_potion_reward() && plain.potions.size() == 1);
+    std::cout << "[PASS] Sozu: 1 energy each turn, no potion obtained" << std::endl;
+}
+
 void test_philosophers_stone() {
     // Every enemy starts the combat with 1 Strength, the player does not.
     RunManager stone = make_relic_run(CharacterId::IRONCLAD, { "PHILOSOPHERS_STONE" });
@@ -1950,6 +1972,29 @@ void test_paels_horn() {
     assert(!plain.has_relic("PAELS_HORN") && plain.master_deck.size() == plain_deck);
 
     std::cout << "[PASS] Paël's Horn: 2 Relax added to the deck when obtained" << std::endl;
+}
+
+void test_throwing_axe() {
+    // With the relic: the first card of the combat is played twice, the next ones once.
+    CombatEngine axe = make_relic_combat(CharacterId::IRONCLAD, PowerId::THROWING_AXE, 1);
+    int16_t hp = axe.enemies[0].hp;
+    play(axe, CardId::STRIKE);
+    assert(axe.enemies[0].hp == hp - 12);
+    play(axe, CardId::STRIKE);
+    assert(axe.enemies[0].hp == hp - 18);
+    // Still the first card of the combat on a later turn if none was played before.
+    CombatEngine late = make_relic_combat(CharacterId::IRONCLAD, PowerId::THROWING_AXE, 1);
+    end_turn_idle(late);
+    hp = late.enemies[0].hp;
+    play(late, CardId::STRIKE);
+    assert(late.enemies[0].hp == hp - 12);
+
+    // Without the relic: played once.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    hp = plain.enemies[0].hp;
+    play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].hp == hp - 6);
+    std::cout << "[PASS] Throwing Axe: the first card of the combat is played twice" << std::endl;
 }
 
 void test_paels_eye() {
@@ -2203,6 +2248,25 @@ static void test_pen_nib() {
     for (int i = 0; i < 10; ++i) play(plain, CardId::STRIKE);
     assert(plain.enemies[0].hp == 200 - 10 * 6);
     std::cout << "[PASS] Pen Nib doubles every 10th Attack" << std::endl;
+}
+
+void test_iron_club() {
+    // With the relic, the 4th card played draws 1 card and the count starts over.
+    CombatEngine club = make_relic_combat(CharacterId::IRONCLAD, PowerId::IRON_CLUB, 1);
+    club.enemies[0].hp = 200;
+    club.player.energy = 10;
+    for (int i = 0; i < 3; ++i) play(club, CardId::DEFEND);
+    assert(club.hand.empty());
+    play(club, CardId::DEFEND);
+    assert(club.hand.size() == 1 && club.power_counter(PowerId::IRON_CLUB) == 0);
+
+    // Without it, no card is drawn.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::NUNCHAKU, 1);
+    plain.player.energy = 10;
+    for (int i = 0; i < 3; ++i) play(plain, CardId::DEFEND);
+    play(plain, CardId::DEFEND);
+    assert(plain.hand.empty());
+    std::cout << "[PASS] Iron Club draws a card every 4 cards played" << std::endl;
 }
 
 void test_strike_dummy() {
@@ -3633,6 +3697,25 @@ void test_undying_sigil() {
     std::cout << "[PASS] Undying Sigil: enemy with Doom at least its HP deals 50% less damage" << std::endl;
 }
 
+void test_crossbow() {
+    // With the relic: the start of the next turn adds one random free Attack to the hand.
+    CombatEngine with = make_relic_combat(CharacterId::IRONCLAD, PowerId::CROSSBOW, 1);
+    end_turn_idle(with);
+    assert(with.state == CombatState::PLAYER_TURN);
+    int free_attacks = 0;
+    for (size_t i = 0; i < with.hand.size(); ++i) {
+        if (with.hand[i].free_this_turn && CardDef::get(with.hand[i].id).type == CardType::ATTACK) ++free_attacks;
+    }
+    assert(free_attacks == 1);
+
+    // Without the relic, no free card appears.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    end_turn_idle(plain);
+    for (size_t i = 0; i < plain.hand.size(); ++i) assert(!plain.hand[i].free_this_turn);
+
+    std::cout << "[PASS] Crossbow: a random free Attack joins the hand at the start of the turn" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3692,6 +3775,7 @@ int main() {
     test_runic_pyramid();
     test_ectoplasm();
     test_philosophers_stone();
+    test_sozu();
     test_dusty_tome();
     test_velvet_choker();
     test_glass_eye();
@@ -3700,6 +3784,7 @@ int main() {
     test_sand_castle();
     test_paels_horn();
     test_paels_eye();
+    test_throwing_axe();
     test_cursed_pearl();
     test_calling_bell();
     test_war_paint();
@@ -3721,6 +3806,7 @@ int main() {
     test_toolbox();
     test_orange_dough();
     test_pen_nib();
+    test_iron_club();
     test_strike_dummy();
     test_fake_strike_dummy();
     test_miniature_cannon();
@@ -3761,6 +3847,7 @@ int main() {
     test_maw_bank();
     test_fake_happy_flower();
     test_history_course();
+    test_crossbow();
     test_pollinous_core();
     test_chosen_cheese();
     test_fake_blood_vial();

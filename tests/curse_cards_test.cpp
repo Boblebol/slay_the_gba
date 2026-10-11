@@ -81,6 +81,23 @@ void test_ethereal_and_retain() {
     std::cout << "[PASS] Clumsy and Ascender's Bane exhaust at end of turn, Poor Sleep is retained" << std::endl;
 }
 
+void test_poor_sleep() {
+    // Insomnie: X cost, Curse, Unplayable, Retain; same upgraded.
+    check_definition(CardId::POOR_SLEEP, KEYWORD_RETAIN);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::POOR_SLEEP, up);
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+        assert(CardDef::has_keyword(CardId::POOR_SLEEP, up, KEYWORD_RETAIN));
+        combat.end_player_turn();
+        bool kept = false;
+        for (size_t i = 0; i < combat.hand.size(); ++i) kept = kept || combat.hand[i].id == CardId::POOR_SLEEP;
+        assert(kept);
+    }
+    std::cout << "[PASS] Poor Sleep: X cost, Curse, Unplayable, Retain, same upgraded" << std::endl;
+}
+
 void test_innate() {
     CombatEngine combat;
     combat.start_combat(EnemyType::JAW_WORM, CharacterId::IRONCLAD);
@@ -97,6 +114,18 @@ void test_innate() {
     }
     assert(found);
     std::cout << "[PASS] Writhe is drawn in the opening hand" << std::endl;
+}
+
+void test_writhe() {
+    // Writhe: X cost, Curse, Unplayable, Innate; same upgraded.
+    check_definition(CardId::WRITHE, KEYWORD_INNATE);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::WRITHE, up);
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+    }
+    std::cout << "[PASS] Writhe: X cost, Curse, Unplayable, Innate, same upgraded" << std::endl;
 }
 
 void test_end_of_turn_effects() {
@@ -154,10 +183,52 @@ void test_end_of_turn_effects() {
     std::cout << "[PASS] Doubt, Shame, Decay, Regret, Bad Luck, Debt: effect at end of turn only while in hand" << std::endl;
 }
 
-void test_normality() {
-    CombatEngine combat = fight_with(CardId::NORMALITY);
+void test_debt() {
+    // Cost X, Curse, Unplayable, same upgraded; loses 10 gold at the end of the turn only while in hand.
+    check_definition(CardId::DEBT, 0);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::DEBT, up);
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+        assert(combat.gold_lost == 0);
+        combat.end_player_turn();
+        assert(combat.gold_lost == 10);
+    }
+    CombatEngine combat = fight_with(CardId::DEBT);
     combat.hand.clear();
-    combat.hand.push_back(DeckCard(CardId::NORMALITY, false));
+    combat.discard_pile.push_back(DeckCard(CardId::DEBT, false));
+    combat.end_player_turn();
+    assert(combat.gold_lost == 0);
+    std::cout << "[PASS] Debt: Unplayable, loses 10 gold at the end of the turn while in hand, base and upgraded" << std::endl;
+}
+
+void test_shame() {
+    // Cost X, Curse, Unplayable, no other keyword; Frail 1 at end of turn while in hand; same upgraded.
+    check_definition(CardId::SHAME, 0);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::SHAME, up);
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+        assert(combat.player.get_status(StatusType::FRAIL) == 0);
+        combat.trigger_end_of_turn_in_hand(combat.hand[0]);
+        assert(combat.player.get_status(StatusType::FRAIL) == 1);
+        // Not in hand at the end of the turn: no Frail.
+        CombatEngine other = fight_with(CardId::SHAME, up);
+        other.hand.clear();
+        other.discard_pile.push_back(DeckCard(CardId::SHAME, up));
+        other.end_player_turn();
+        assert(other.player.get_status(StatusType::FRAIL) == 0);
+    }
+    std::cout << "[PASS] Shame: unplayable, Frail 1 at end of turn only while in hand, base and upgraded" << std::endl;
+}
+
+void test_normality() {
+  for (bool up : { false, true }) {
+    CombatEngine combat = fight_with(CardId::NORMALITY, up);
+    combat.hand.clear();
+    combat.hand.push_back(DeckCard(CardId::NORMALITY, up));
     for (int i = 0; i < 5; ++i) combat.hand.push_back(DeckCard(CardId::DEFEND, false));
     combat.player.energy = 10;
     int played = 0;
@@ -171,16 +242,20 @@ void test_normality() {
         ++played;
     }
     assert(played == 3);
+    assert(!combat.can_play_card(0));
+  }
     std::cout << "[PASS] Normality: no more than 3 cards played in a turn" << std::endl;
 }
 
 void test_spore_mind() {
     check_definition(CardId::SPORE_MIND, KEYWORD_EXHAUST, false);
-    CombatEngine combat = fight_with(CardId::SPORE_MIND);
-    assert(combat.can_play_card(0));
-    assert(combat.play_card(0, 0));
-    assert(combat.player.energy == 2);
-    assert(combat.exhaust_pile.size() == 1 && combat.exhaust_pile[0].id == CardId::SPORE_MIND);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::SPORE_MIND, up);
+        assert(combat.can_play_card(0));
+        assert(combat.play_card(0, 0));
+        assert(combat.player.energy == 2);
+        assert(combat.exhaust_pile.size() == 1 && combat.exhaust_pile[0].id == CardId::SPORE_MIND);
+    }
     std::cout << "[PASS] Spore Mind: cost 1, playable, exhausted, nothing else" << std::endl;
 }
 
@@ -228,8 +303,12 @@ int main() {
     test_injury();
     test_keyword_curses();
     test_ethereal_and_retain();
+    test_poor_sleep();
     test_innate();
+    test_writhe();
     test_end_of_turn_effects();
+    test_debt();
+    test_shame();
     test_normality();
     test_spore_mind();
     test_eternal_stays_in_the_deck();

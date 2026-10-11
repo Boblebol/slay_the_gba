@@ -394,6 +394,16 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 autoplay(copy, -1, AfterPlay::NOWHERE);
             }
             break;
+        case PowerId::CROSSBOW:
+            if (turn_start && my_turn) {
+                const CardId id = random_card(CardFilter(CardType::ATTACK));
+                if (id != CardId::NONE) {
+                    DeckCard gift(id);
+                    gift.free_this_turn = hand.size() < hand.capacity();
+                    create_card(gift, Pile::HAND);
+                }
+            }
+            break;
         case PowerId::HELLRAISER:
             // The card just drawn is the last one of the hand.
             if (event == CombatEvent::CARD_DRAWN && is_strike(info.card.id) && !hand.empty() && hand.back().id == info.card.id) {
@@ -904,6 +914,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                     }
                 }
                 if (!paid.empty()) hand[paid[next_random() % paid.size()]].free_this_turn = true;
+            }
+            break;
+        case PowerId::IRON_CLUB:
+            if (card_played && ++power.counter == IRON_CLUB_CARDS) {
+                power.counter = 0;
+                draw_cards(power.amount);
             }
             break;
         case PowerId::NUNCHAKU:
@@ -1570,6 +1586,12 @@ void CombatEngine::note_player_hp_lost(int16_t amount) {
             player.hp = static_cast<int16_t>(player.max_hp * tail->amount / 100);
         }
     }
+    if (player.hp <= 0 && fairy_bottles > 0) {
+        // Fairy in a Bottle: the potion is discarded and heals to 30 % of Max HP.
+        --fairy_bottles;
+        fairy_used = static_cast<uint8_t>(fairy_used + 1);
+        player.hp = static_cast<int16_t>(std::max(1, player.max_hp * 30 / 100));
+    }
     EventInfo info;
     info.amount = amount;
     emit(CombatEvent::HP_LOST, info);
@@ -1762,6 +1784,7 @@ void CombatEngine::reset_combat_state() {
     clear_offers();
     turn_picks_from_draw_ = 0;
     end_turn_requested = false;
+    extra_turn_pending = false;
     event_depth_ = 0;
     autoplay_depth_ = 0;
     vakuu_turn_active = false;
@@ -2011,6 +2034,7 @@ int CombatEngine::consume_play_modifiers(const DeckCard& card) {
 
     int extra = 0;
     if (use_one(PowerId::DUPLICATION)) ++extra;
+    if (use_one(PowerId::THROWING_AXE)) ++extra; // Throwing Axe: the first card of the combat
     if (type == CardType::ATTACK && use_one(PowerId::REPLAY_ATTACK)) ++extra;
     if (type == CardType::SKILL && use_one(PowerId::REPLAY_SKILL)) ++extra;
     if (type == CardType::POWER && use_one(PowerId::REPLAY_POWER)) ++extra;
@@ -6038,7 +6062,8 @@ void CombatEngine::end_player_turn() {
 
     // Pael's Eye: the first turn of the combat ended without a card played exhausts the hand and gives an
     // extra turn, the enemies do not act in between.
-    bool extra_turn = false;
+    bool extra_turn = extra_turn_pending;
+    extra_turn_pending = false;
     if (counters.cards_played() == 0 && power_amount(PowerId::PAELS_EYE) > 0) {
         for (size_t i = powers.size(); i-- > 0;) {
             if (powers[i].id == PowerId::PAELS_EYE) powers.erase(i);
@@ -6266,6 +6291,10 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         }
         damage_enemy(enemies[target_index], 20);
         set_log("Fire Potion!");
+    } else if (potion_id == "FAIRY_IN_A_BOTTLE") {
+        // Automatic: drunk by hand, it is simply made ready to trigger when HP would reach 0.
+        fairy_bottles = static_cast<uint8_t>(fairy_bottles + 1);
+        set_log("Fairy in a Bottle!");
     } else if (potion_id == "POTION_SHAPED_ROCK") {
         damage_enemy(aimed_enemy(), 15);
         set_log("Potion-Shaped Rock!");
@@ -6455,6 +6484,18 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         choice.free_this_turn = true;
         ask_choice(choice);
         set_log("Liquid Memories!");
+    } else if (potion_id == "ATTACK_POTION") {
+        offer_random_cards(CardFilter(CardType::ATTACK), 3, false, true);
+        set_log("Attack Potion!");
+    } else if (potion_id == "SKILL_POTION") {
+        offer_random_cards(CardFilter(CardType::SKILL), 3, false, true);
+        set_log("Skill Potion!");
+    } else if (potion_id == "POWER_POTION") {
+        offer_random_cards(CardFilter(CardType::POWER), 3, false, true);
+        set_log("Power Potion!");
+    } else if (potion_id == "COLORLESS_POTION") {
+        offer_random_cards(CardFilter(CardPool::COLORLESS), 3, false, true);
+        set_log("Colorless Potion!");
     } else if (potion_id == "OROBIC_ACID") {
         for (CardType type : { CardType::ATTACK, CardType::SKILL, CardType::POWER }) {
             const CardId card = random_card(CardFilter(type));
@@ -6464,6 +6505,13 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
             create_card(made, Pile::HAND);
         }
         set_log("Orobic Acid!");
+    } else if (potion_id == "AMBERGRIS") {
+        player.heal(player.max_hp / 2);
+        extra_turn_pending = true;
+        set_log("Ambergris!");
+    } else if (potion_id == "COSMIC_CONCOCTION") {
+        for (int copy = 0; copy < 3; ++copy) create_random_card(CardFilter(CardPool::COLORLESS), Pile::HAND, true);
+        set_log("Cosmic Concoction!");
     } else if (potion_id == "ENTROPIC_BREW") {
         fill_potion_belt = true; // the run owns the belt: RunManager::use_potion fills it once this potion is gone
         set_log("Entropic Brew!");

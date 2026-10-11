@@ -426,6 +426,7 @@ bool RunManager::buy_shop_potion(int index, int replace_index) {
 bool RunManager::use_potion(int index, int target_index) {
     if (phase != RunPhase::IN_COMBAT) return false;
     if (index < 0 || static_cast<size_t>(index) >= potions.size()) return false;
+    if (potions[index] == "FAIRY_IN_A_BOTTLE") return false; // automatic: triggers by itself when HP reaches 0
     if (!combat.use_potion(potions[index], target_index)) return false;
     potions.erase(index);
     refresh_belt_buckle();
@@ -666,7 +667,8 @@ void RunManager::generate_rewards() {
     // A potion the hero can use, in 40 % of the fights; White Beast Statue makes it certain.
     potion_reward = {};
     bool potion_roll = rng.below(100) < POTION_REWARD_CHANCE;
-    if (potion_roll || has_relic("WHITE_BEAST_STATUE")) {
+    // Sozu: no potion can be obtained any more.
+    if (!has_relic("SOZU") && (potion_roll || has_relic("WHITE_BEAST_STATUE"))) {
         potion_reward = draw_potion(rng, character);
     }
 
@@ -683,7 +685,7 @@ void RunManager::generate_rewards() {
 }
 
 bool RunManager::take_potion_reward(int replace_index) {
-    if (phase != RunPhase::REWARD_SCREEN || potion_reward.empty()) return false;
+    if (phase != RunPhase::REWARD_SCREEN || potion_reward.empty() || has_relic("SOZU")) return false;
     if (!potion_belt_full()) {
         potions.push_back(potion_reward);
     } else if (replace_index >= 0 && static_cast<size_t>(replace_index) < potions.size()) {
@@ -1214,6 +1216,7 @@ int RunManager::gain_random_relics(int count) {
 }
 
 int RunManager::gain_random_potions(int count) {
+    if (has_relic("SOZU")) return 0;
     RewardRng rng(next_random());
     int gained = 0;
     while (gained < count && !potion_belt_full()) {
@@ -1404,6 +1407,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("BLOOD_SOAKED_ROSE")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Ectoplasm: one more energy each turn.
     if (has_relic("ECTOPLASM")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Sozu (ancient): one more energy each turn.
+    if (has_relic("SOZU")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Philosopher's Stone (ancient): one more energy each turn.
     if (has_relic("PHILOSOPHERS_STONE")) combat.add_power(PowerId::TURN_ENERGY, 1);
     if (has_relic("PRISMATIC_GEM")) combat.add_power(PowerId::TURN_ENERGY, 1);
@@ -1452,6 +1457,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("POCKETWATCH")) combat.add_power(PowerId::POCKETWATCH, 3);
     if (has_relic("PARRYING_SHIELD")) combat.add_power(PowerId::PARRYING_SHIELD, 6);
     if (has_relic("STONE_CALENDAR")) combat.add_power(PowerId::STONE_CALENDAR, 52);
+    if (has_relic("IRON_CLUB")) combat.add_power(PowerId::IRON_CLUB, 1);
     if (has_relic("PAELS_TEARS")) combat.add_power(PowerId::PAELS_TEARS, 2);
     if (has_relic("ART_OF_WAR")) combat.add_power(PowerId::ART_OF_WAR, 1);
     if (has_relic("ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 6);
@@ -1490,7 +1496,11 @@ void RunManager::register_relic_powers() {
     if (has_relic("LOST_WISP")) combat.add_power(PowerId::LOST_WISP, 8);
     if (has_relic("REPTILE_TRINKET")) combat.add_power(PowerId::REPTILE_TRINKET, 3);
     if (has_relic("CENTENNIAL_PUZZLE")) combat.add_power(PowerId::CENTENNIAL_PUZZLE, 3);
+    for (size_t i = 0; i < potions.size(); ++i) {
+        if (potions[i] == "FAIRY_IN_A_BOTTLE") combat.fairy_bottles = static_cast<uint8_t>(combat.fairy_bottles + 1);
+    }
     if (has_relic("LIZARD_TAIL")) combat.add_power(PowerId::LIZARD_TAIL, 50);
+    if (has_relic("CROSSBOW")) combat.add_power(PowerId::CROSSBOW, 1);
     if (has_relic("HISTORY_COURSE")) combat.add_power(PowerId::HISTORY_COURSE, 0);
     if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);
     if (has_relic("TOUGH_BANDAGES")) combat.add_power(PowerId::TOUGH_BANDAGES, 3);
@@ -1555,6 +1565,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("INFUSED_CORE")) combat.add_power(PowerId::INFUSED_CORE, 1);
     // Daughter of the Wind (event relic): every Attack played gives 1 Block.
     if (has_relic("DAUGHTER_OF_THE_WIND")) combat.add_power(PowerId::DAUGHTER_OF_THE_WIND, 1);
+    // Throwing Axe (ancient): the first card played each combat is played once more.
+    if (has_relic("THROWING_AXE")) combat.add_power(PowerId::THROWING_AXE, 1);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);
@@ -1576,7 +1588,7 @@ void RunManager::apply_combat_start_relics() {
     // Delicate Frond: fill every empty potion slot with a random potion.
     if (has_relic("DELICATE_FROND")) gain_random_potions(MAX_POTION_SLOTS);
     // Petrified Toad: procure a Potion-Shaped Rock at the start of each combat (lost if the belt is full).
-    if (has_relic("PETRIFIED_TOAD") && !potion_belt_full()) potions.push_back("POTION_SHAPED_ROCK");
+    if (has_relic("PETRIFIED_TOAD") && !has_relic("SOZU") && !potion_belt_full()) potions.push_back("POTION_SHAPED_ROCK");
     // Vajra: start each combat with 1 Strength.
     if (has_relic("VAJRA")) {
         combat.player.add_status(StatusType::STRENGTH, 1);
@@ -1800,6 +1812,17 @@ void RunManager::refresh_belt_buckle() {
 }
 
 void RunManager::proceed_after_combat() {
+    // Each Fairy in a Bottle that revived its owner is discarded.
+    for (int spent = combat.fairy_used; spent > 0; --spent) {
+        for (size_t i = 0; i < potions.size(); ++i) {
+            if (potions[i] == "FAIRY_IN_A_BOTTLE") {
+                potions.erase(i);
+                break;
+            }
+        }
+    }
+    combat.fairy_used = 0;
+    refresh_belt_buckle();
     // Lizard Tail only works once: it leaves the run when it saved its owner.
     if (combat.power_counter(PowerId::LIZARD_TAIL) > 0) {
         for (size_t i = 0; i < relics.size(); ++i) {
