@@ -56,6 +56,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::TURRET_OPERATOR: return "TURRET_OPERATOR";
         case EnemyType::BOWLBUG_ROCK: return "BOWLBUG_ROCK";
         case EnemyType::SKULKING_COLONY: return "SKULKING_COLONY";
+        case EnemyType::MAGI_KNIGHT: return "MAGI_KNIGHT";
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
@@ -280,6 +281,8 @@ void test_reference_encounters() {
                                                           EnemyType::FLAIL_KNIGHT };
                                                           EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
                                                           EnemyType::SPECTRAL_KNIGHT };
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
+                                                          EnemyType::MAGI_KNIGHT };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));

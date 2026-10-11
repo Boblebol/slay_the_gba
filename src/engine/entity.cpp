@@ -141,6 +141,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Colonie de rôdeurs";
         max_hp = 75;
         hp = 75;
+    } else if (type == EnemyType::MAGI_KNIGHT) {
+        name = "Chevalier mage";
+        max_hp = 82;
+        hp = 82;
     } else if (type == EnemyType::INKLET) {
         name = "Encrelin";
         max_hp = 11;
@@ -351,6 +355,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::TURRET_OPERATOR: return 51;
         case EnemyType::BOWLBUG_ROCK: return 46;
         case EnemyType::SKULKING_COLONY: return 80;
+        case EnemyType::MAGI_KNIGHT: return 89;
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
@@ -924,6 +929,32 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = ascended_damage ? 8 : 7;
             current_intent.hits = 2;
             current_intent.description = "Coups perforants (7 dmg x2)";
+        }
+    } else if (type == EnemyType::MAGI_KNIGHT) {
+        // Power Shield, Dampen, then Ram, Prep and Magic Bomb in a loop.
+        enum Move : uint8_t { POWER_SHIELD, DAMPEN, RAM, PREP, MAGIC_BOMB };
+        const Move move = turn_number == 1 ? POWER_SHIELD : turn_number == 2 ? DAMPEN
+                          : static_cast<Move>(RAM + (turn_number - 3) % 3);
+        if (move == POWER_SHIELD) {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.block = 5;
+            current_intent.description = "Bouclier de puissance (6 dmg, 5 blk)";
+        } else if (move == DAMPEN) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.description = "Atténuation";
+        } else if (move == RAM) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 11 : 10;
+            current_intent.description = "Bélier (10 dmg)";
+        } else if (move == PREP) {
+            current_intent.type = EnemyIntentType::DEFEND;
+            current_intent.block = 5;
+            current_intent.description = "Prep (5 Armure)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 40 : 35;
+            current_intent.description = "Bombe magique (35 dmg)";
         }
     } else if (type == EnemyType::INKLET) {
         // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.

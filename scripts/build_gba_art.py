@@ -185,6 +185,7 @@ MONSTERS: dict[str, str] = {
     "turret_operator": "turret_operator",
     "bowlbug_rock": "bowlbug_rock",
     "skulking_colony": "skulking_colony",
+    "magi_knight": "magi_knight",
     "inklet": "inklet",
     "nibbit": "nibbit",
     "flyconid": "flyconid",
