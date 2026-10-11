@@ -1482,6 +1482,61 @@ void test_flyconid_ascension() {
     std::cout << "[PASS] Flyconid: Ascension gives 51 to 53 HP, Spores of 9 and a Smash of 12" << std::endl;
 }
 
+void test_corpse_slug() {
+    // Whip Slap (3 x2), Glomp (8), Goop (2 Frail on the player), and again.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CORPSE_SLUG);
+    Enemy& slug = combat.enemies[0];
+    assert(slug.type == EnemyType::CORPSE_SLUG && slug.name == "Putrilimace");
+    assert(slug.hp >= 25 && slug.hp <= 27 && slug.max_hp == slug.hp && slug.max_hp == 25 + slug.hp_bonus);
+    const int16_t hp = slug.hp;
+    for (int turn = 1; turn <= 6; ++turn) {
+        assert(combat.turn_number == turn);
+        assert(slug.block == 0 && slug.statuses.empty() && slug.hp == hp);
+        combat.player.hp = combat.player.max_hp;
+        combat.player.statuses.clear();
+        const EnemyIntent& intent = slug.current_intent;
+        if (turn % 3 == 1) {
+            assert(intent.type == ATTACK && intent.hits == 2 && slug.intent_damage(combat.player) == 3);
+            combat.end_player_turn();
+            assert(combat.player.max_hp - combat.player.hp == 6);
+            assert(combat.player.statuses.empty());
+        } else if (turn % 3 == 2) {
+            assert(intent.type == ATTACK && intent.hits == 1 && slug.intent_damage(combat.player) == 8);
+            combat.end_player_turn();
+            assert(combat.player.max_hp - combat.player.hp == 8);
+            assert(combat.player.statuses.empty());
+        } else {
+            assert(intent.type == DEBUFF && slug.intent_damage(combat.player) == 0);
+            assert(intent.debuffs[0].type == StatusType::FRAIL && intent.debuffs[0].amount == 2);
+            combat.end_player_turn();
+            assert(combat.player.hp == combat.player.max_hp);
+            assert(combat.player.get_status(StatusType::FRAIL) >= 1);
+        }
+        assert(combat.state == CombatState::PLAYER_TURN);
+    }
+    std::cout << "[PASS] Corpse Slug: 25 to 27 HP, Whip Slap 3x2, Glomp 8, Goop 2 Frail" << std::endl;
+}
+
+void test_corpse_slug_ascension() {
+    // 27 to 29 HP (25 to 27 plus 2) and a Glomp of 9 at Ascension; the Whip Slap stays at 3 x2.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CORPSE_SLUG);
+        Enemy& slug = combat.enemies[0];
+        slug.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = slug.hp;
+        assert(slug.ascension_hp() == 27 && slug.hp_spread() == 2);
+        assert(base >= 25 && base <= 27 && slug.max_hp == 25 + slug.hp_bonus);
+        slug.ascend(true, true);
+        combat.plan_enemies();
+        assert(slug.hp == base + 2 && slug.max_hp == base + 2 && slug.hp >= 27 && slug.hp <= 29);
+        assert(slug.current_intent.hits == 2 && slug.intent_damage(combat.player) == 3);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(slug.current_intent.type == ATTACK && slug.intent_damage(combat.player) == 9);
+    }
+    std::cout << "[PASS] Corpse Slug: Ascension gives 27 to 29 HP and a Glomp of 9" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1532,6 +1587,8 @@ int main() {
     test_nibbit_ascension();
     test_flyconid();
     test_flyconid_ascension();
+    test_corpse_slug();
+    test_corpse_slug_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
