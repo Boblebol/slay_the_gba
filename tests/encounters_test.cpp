@@ -415,6 +415,27 @@ void test_same_seed_same_fights() {
     std::cout << "[PASS] Encounter tables: the same seed gives the same fights" << std::endl;
 }
 
+// A room never draws the encounter of the previous fight, in any act, on any seed.
+void test_no_same_encounter_twice_in_a_row() {
+    int fights_checked = 0;
+    for (uint8_t act = 1; act <= 3; ++act) {
+        for (uint32_t seed = 1; seed <= 60; ++seed) {
+            RunManager run = make_run(seed, act);
+            std::string previous;
+            for (int step = 0; step < 40; ++step) {
+                int room = find_room(run, EncounterTier::NORMAL);
+                if (room < 0) break;
+                run.enter_room(room);
+                assert(run.current_encounter != previous);
+                previous = std::string(run.current_encounter);
+                ++fights_checked;
+            }
+        }
+    }
+    assert(fights_checked > 1000);
+    std::cout << "[PASS] Encounter tables: never the same encounter twice in a row" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -424,6 +445,7 @@ int main() {
     test_zone_and_tier();
     test_rooms_meet_every_encounter();
     test_same_seed_same_fights();
+    test_no_same_encounter_twice_in_a_row();
     std::cout << "=== All Encounters Passed! ===" << std::endl;
     return 0;
 }
