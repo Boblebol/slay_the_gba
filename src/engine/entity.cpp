@@ -125,6 +125,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Écharneur";
         max_hp = 72;
         hp = 72;
+    } else if (type == EnemyType::INFESTED_PRISM) {
+        name = "Prisme infesté";
+        max_hp = 161;
+        hp = 161;
     } else if (type == EnemyType::FLYCONID) {
         name = "Mycoptère";
         max_hp = 47;
@@ -231,6 +235,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
+        case EnemyType::INFESTED_PRISM: return 171;
         case EnemyType::CORPSE_SLUG: return 27;
         case EnemyType::GAS_BOMB: return 8;
         case EnemyType::GREMLIN_MERC: return 51;
@@ -842,6 +847,31 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = ascended_damage ? 2 : 1;
             current_intent.description = "Jet de bulles (7 blk, +1 Force)";
+        }
+    } else if (type == EnemyType::INFESTED_PRISM) {
+        // Jab, Radiate, Whirlwind, Pulsate, and again.
+        const int step = (turn_number - 1) % 4;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 17 : 15;
+            current_intent.description = "Coup sec (15 dmg)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = ascended_damage ? 13 : 11;
+            current_intent.block = ascended_damage ? 13 : 11;
+            current_intent.description = "Irradiation (11 dmg, 11 blk)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 6 : 5;
+            current_intent.hits = 3;
+            current_intent.description = "Tourbillon (5 dmg x3)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = ascended_damage ? 10 : 8;
+            current_intent.block = ascended_damage ? 22 : 20;
+            current_intent.power = PowerId::VITAL_SPARK;
+            current_intent.power_amount = ascended_damage ? 3 : 2;
+            current_intent.description = "Pulsation (8 dmg, 20 blk, Étincelle)";
         }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the

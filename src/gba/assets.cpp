@@ -40,6 +40,7 @@
 #include "bn_sprite_items_mon_mawler.h"
 #include "bn_sprite_items_mon_nibbit.h"
 #include "bn_sprite_items_mon_punch_construct.h"
+#include "bn_sprite_items_mon_infested_prism.h"
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
@@ -268,6 +269,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_haunted_ship, false };
     case engine::EnemyType::SLUDGE_SPINNER:
         return { &bn::sprite_items::mon_sludge_spinner, false };
+    case engine::EnemyType::INFESTED_PRISM:
+        return { &bn::sprite_items::mon_infested_prism, false };
     case engine::EnemyType::FLYCONID:
         return { &bn::sprite_items::mon_flyconid, false };
     case engine::EnemyType::CORPSE_SLUG:
