@@ -102,6 +102,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "MINI_REGENT", "La première fois que vous dépensez des ★ chaque tour, gagnez 1 de Force." },
     { "MUMMIFIED_HAND", "Chaque fois que vous jouez un Pouvoir, le coût d'une carte aléatoire de votre Main est réduit à 0 jusqu'à la fin du tour." },
     { "NINJA_SCROLL", "Au début de chaque combat, ajoutez 3 Surins à votre Main." },
+    { "DIAMOND_DIADEM", "Début de combat : 20 d'Armure. Vous gardez votre Armure au début de votre 2ème tour." },
     { "ORANGE_DOUGH", "Au début de chaque combat, ajoutez 2 cartes Incolores aléatoires à votre Main." },
     { "NUNCHAKU", "Toutes les 10 Attaques jouées, vous gagnez 1 ●." },
     { "ODDLY_SMOOTH_STONE", "Démarrez chaque combat avec 1 de Dextérité." },

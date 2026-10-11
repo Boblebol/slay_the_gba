@@ -1725,6 +1725,11 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("FAKE_ANCHOR")) {
         combat.player.block += 4;
     }
+    // Diamond Diadem (Ancient): start each combat with 20 Block, which is not removed at the start of the 2nd turn.
+    if (has_relic("DIAMOND_DIADEM")) {
+        combat.player.block += 20;
+        combat.keep_block_turns = static_cast<uint8_t>(combat.keep_block_turns + 1);
+    }
     // Oddly Smooth Stone: start each combat with 1 Dexterity.
     if (has_relic("ODDLY_SMOOTH_STONE")) {
         combat.player.add_status(StatusType::DEXTERITY, 1);
