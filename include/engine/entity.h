@@ -390,6 +390,8 @@ enum class EnemyType : uint8_t {
     MAWLER
     FLYCONID,
     FOSSIL_STALKER
+    FLYCONID,
+    SPINY_TOAD
 };
 
 // What a monster sees of the fight when it chooses its next move.

@@ -42,6 +42,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::VINE_SHAMBLER: return "VINE_SHAMBLER";
         case EnemyType::EYE_WITH_TEETH: return "EYE_WITH_TEETH";
         case EnemyType::STABBOT: return "STABBOT";
+        case EnemyType::SPINY_TOAD: return "SPINY_TOAD";
         case EnemyType::NOISEBOT: return "NOISEBOT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
         case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
@@ -197,6 +198,10 @@ void test_reference_encounters() {
         assert(ids_of(encounter_table(zone, EncounterTier::NORMAL)) ==
                (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
     }
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "SpinyToadNormal", "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
 
     // The ruby raiders: three of the four raiders in the engine.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),

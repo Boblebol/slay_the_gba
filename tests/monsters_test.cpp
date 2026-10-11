@@ -2100,6 +2100,56 @@ void test_fossil_stalker_ascension() {
     std::cout << "[PASS] Fossil Stalker: Ascension gives 54 to 56 HP, Latch 14, Tackle 11, Lash 4x2" << std::endl;
 }
 
+void test_spiny_toad() {
+    // Protruding Spikes (+5 Thorns), Spike Explosion (23 damage, -5 Thorns), Tongue Lash (17 damage), twice over.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SPINY_TOAD);
+    Enemy& toad = combat.enemies[0];
+    assert(toad.type == EnemyType::SPINY_TOAD && toad.name == "Crapineux");
+    assert(toad.hp >= 116 && toad.hp <= 119 && toad.max_hp == toad.hp && toad.max_hp == 116 + toad.hp_bonus);
+    const int16_t hp = toad.hp;
+    assert(toad.block == 0 && toad.statuses.empty());
+    const EnemyIntentType intents[3] = { EnemyIntentType::BUFF, EnemyIntentType::ATTACK_BUFF, EnemyIntentType::ATTACK };
+    const int damage[3] = { 0, 23, 17 };
+    const int thorns[3] = { 5, 0, 0 };
+    for (int turn = 1; turn <= 6; ++turn) {
+        const int phase = (turn - 1) % 3;
+        assert(combat.turn_number == turn);
+        assert(toad.current_intent.type == intents[phase]);
+        assert(toad.intent_damage(combat.player) == damage[phase]);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == damage[phase]);
+        assert(toad.get_status(StatusType::THORNS) == thorns[phase]);
+        assert(toad.statuses.size() == (thorns[phase] != 0 ? 1u : 0u)); // the spent Thorns leave no status behind
+        assert(toad.block == 0 && toad.hp == hp);
+    }
+    std::cout << "[PASS] Spiny Toad: 116 to 119 HP, +5 Thorns, Spike Explosion 23 (-5 Thorns), Tongue Lash 17" << std::endl;
+}
+
+void test_spiny_toad_ascension() {
+    // 121 to 124 HP (116 to 119 plus 5), Spike Explosion of 25 and Tongue Lash of 19 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SPINY_TOAD);
+        Enemy& toad = combat.enemies[0];
+        toad.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = toad.hp;
+        assert(toad.ascension_hp() == 121 && toad.hp_spread() == 3);
+        assert(base >= 116 && base <= 119 && toad.max_hp == 116 + toad.hp_bonus);
+        toad.ascend(true, true);
+        combat.plan_enemies();
+        assert(toad.hp == base + 5 && toad.max_hp == base + 5 && toad.hp >= 121 && toad.hp <= 124);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn(); // Protruding Spikes
+        assert(toad.current_intent.type == EnemyIntentType::ATTACK_BUFF && toad.intent_damage(combat.player) == 25);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn(); // Spike Explosion
+        assert(combat.player.max_hp - combat.player.hp == 25);
+        assert(toad.current_intent.type == EnemyIntentType::ATTACK && toad.intent_damage(combat.player) == 19);
+    }
+    std::cout << "[PASS] Spiny Toad: Ascension gives 121 to 124 HP, Spike Explosion 25 and Tongue Lash 19" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -2140,6 +2190,8 @@ int main() {
     test_eye_with_teeth();
     test_stabbot();
     test_stabbot_ascension();
+    test_spiny_toad();
+    test_spiny_toad_ascension();
     test_noisebot();
     test_noisebot_ascension();
     test_cubex_construct();
