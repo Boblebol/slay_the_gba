@@ -3971,13 +3971,19 @@ void test_ascension() {
     RunManager normal;
     normal.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(normal, RoomType::ELITE);
-    assert(normal.combat.enemies[0].max_hp == 82 && normal.combat.enemies[0].damage_percent == 100);
+    // The elite depends on the act zone the seed draws; its A0 HP is the one A3 keeps.
+    const Enemy& elite = normal.combat.enemies[0];
+    assert(elite.max_hp > 0 && elite.damage_percent == 100);
 
     // A3: elites hit 20 % harder but keep their HP until A8.
     RunManager a3;
     a3.start_run(CharacterId::IRONCLAD, 3, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(a3, RoomType::ELITE);
-    assert(a3.combat.enemies[0].max_hp == 82 && a3.combat.enemies[0].damage_percent == 120);
+    assert(a3.combat.enemies[0].type == elite.type && a3.combat.enemies[0].max_hp == elite.max_hp);
+    // An elite with its own Ascension values hits harder through them instead of the percentage.
+    const Enemy& a3_elite = a3.combat.enemies[0];
+    assert(a3_elite.ascension_hp() > 0 ? a3_elite.ascended_damage && a3_elite.damage_percent == 100
+                                       : a3_elite.damage_percent == 120);
 
     // A10: every room is tougher; the intent shown is the damage really dealt (Chomp 11 x 1.2 = 13).
     RunManager a10;
