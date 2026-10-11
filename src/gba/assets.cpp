@@ -53,6 +53,7 @@
 #include "bn_sprite_items_mon_slimed_berserker.h"
 #include "bn_sprite_items_mon_frog_knight.h"
 #include "bn_sprite_items_mon_guardbot.h"
+#include "bn_sprite_items_mon_bowlbug_silk.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_louse_progenitor.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
@@ -311,6 +312,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_guardbot, false };
     case engine::EnemyType::DEVOTED_SCULPTOR:
         return { &bn::sprite_items::mon_devoted_sculptor, false };
+    case engine::EnemyType::BOWLBUG_SILK:
+        return { &bn::sprite_items::mon_bowlbug_silk, false };
     case engine::EnemyType::TOADPOLE:
         return { &bn::sprite_items::mon_toadpole, false };
     case engine::EnemyType::HUNTER_KILLER:

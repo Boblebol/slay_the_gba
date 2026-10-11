@@ -161,6 +161,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Sculpteur dévoué";
         max_hp = 162;
         hp = 162;
+    } else if (type == EnemyType::BOWLBUG_SILK) {
+        name = "Sphéropode (Soie)";
+        max_hp = 40;
+        hp = 40;
     } else if (type == EnemyType::FLYCONID) {
         name = "Mycoptère";
         max_hp = 47;
@@ -248,6 +252,7 @@ enum TunnelerMove : uint8_t { TUNNELER_BITE, TUNNELER_BURROW, TUNNELER_BELOW, TU
 
 uint8_t Enemy::hp_spread() const {
     switch (type) {
+        case EnemyType::BOWLBUG_SILK: return 3; // 40 to 43, 41 to 44 at Ascension
         case EnemyType::SLUDGE_SPINNER: return 2; // 37 to 39, 41 to 42 at Ascension
         case EnemyType::GUARDBOT: return 4;    // 16 to 20, 17 to 21 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
@@ -331,6 +336,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::FROG_KNIGHT: return 199;
         case EnemyType::GUARDBOT: return 17;
         case EnemyType::DEVOTED_SCULPTOR: return 172;
+        case EnemyType::BOWLBUG_SILK: return 41;
         default: return 0;
     }
 }
@@ -1019,6 +1025,18 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.type = EnemyIntentType::DEFEND;
         current_intent.block = 15;
         current_intent.description = "Garde (15 Armure)";
+    } else if (type == EnemyType::BOWLBUG_SILK) {
+        // Toxic Spit (1 Weak), Thrash 4x2, and again.
+        if ((turn_number - 1) % 2 == 0) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::WEAK, 1 };
+            current_intent.description = "Crachat toxique (Affaibli 1)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 5 : 4;
+            current_intent.hits = 2;
+            current_intent.description = "Furie (4 dmg x2)";
+        }
     } else if (type == EnemyType::TOADPOLE) {
         // Three moves in a loop, started by its place: in front Spiken, Spike Spit, Whirl; behind Whirl, Spiken,
         // Spike Spit. `phase` holds the offset in the cycle SPIKEN, SPIKE_SPIT, WHIRL.

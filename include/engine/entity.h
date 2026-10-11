@@ -408,6 +408,8 @@ enum class EnemyType : uint8_t {
     DEVOTED_SCULPTOR
     TOADPOLE,
     THE_LOST
+    TOADPOLE,
+    BOWLBUG_SILK
 };
 
 // What a monster sees of the fight when it chooses its next move.
