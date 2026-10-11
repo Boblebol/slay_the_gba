@@ -181,6 +181,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Prisme infesté";
         max_hp = 161;
         hp = 161;
+    } else if (type == EnemyType::FLAIL_KNIGHT) {
+        name = "Chevalier au fléau";
+        max_hp = 101;
+        hp = 101;
     } else if (type == EnemyType::FLYCONID) {
         name = "Mycoptère";
         max_hp = 47;
@@ -343,6 +347,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
         case EnemyType::INFESTED_PRISM: return 171;
+        case EnemyType::FLAIL_KNIGHT: return 108;
         case EnemyType::CORPSE_SLUG: return 27;
         case EnemyType::GAS_BOMB: return 8;
         case EnemyType::GREMLIN_MERC: return 51;
@@ -1226,6 +1231,30 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.power = PowerId::VITAL_SPARK;
             current_intent.power_amount = ascended_damage ? 3 : 2;
             current_intent.description = "Pulsation (8 dmg, 20 blk, Étincelle)";
+        }
+    } else if (type == EnemyType::FLAIL_KNIGHT) {
+        // Ram first, then a draw among War Chant, Flail and Ram: War Chant never twice in a row.
+        enum Move : uint8_t { WAR_CHANT, FLAIL, RAM };
+        if (turn_number <= 1) {
+            use_move(RAM);
+        } else {
+            static constexpr MoveOption OPTIONS[] = { { WAR_CHANT }, { FLAIL, 1, true }, { RAM, 1, true } };
+            draw_move(OPTIONS);
+        }
+        if (last_move == WAR_CHANT) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 3;
+            current_intent.description = "Chant de guerre (+3 Force)";
+        } else if (last_move == FLAIL) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 10 : 9;
+            current_intent.hits = 2;
+            current_intent.description = "Fléau (9 dmg x2)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 17 : 15;
+            current_intent.description = "Bélier (15 dmg)";
         }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the

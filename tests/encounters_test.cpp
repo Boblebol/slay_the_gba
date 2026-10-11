@@ -84,6 +84,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::BOWLBUG_EGG: return "BOWLBUG_EGG";
         case EnemyType::ENTOMANCER: return "ENTOMANCER";
         case EnemyType::INFESTED_PRISM: return "INFESTED_PRISM";
+        case EnemyType::FLAIL_KNIGHT: return "FLAIL_KNIGHT";
     }
     return {};
 }
@@ -264,12 +265,17 @@ void test_reference_encounters() {
     // engine yet. The Slumbering Beetle and the Nectar, Silk and Egg Bowlbugs wait for the random bugs of
     // BowlbugsNormal and SlumberingBeetleNormal.
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
+    // The Flail Knight is brought by the Magi Knight and the Spectral Knight (KnightsElite).
+    const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
+                                                          EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
                                                           EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
                                                           EnemyType::OSTY, EnemyType::SLUMBERING_BEETLE,
                                                           EnemyType::PARAFRIGHT, EnemyType::ZAPBOT,
                                                           EnemyType::GUARDBOT, EnemyType::BOWLBUG_NECTAR,
                                                           EnemyType::BOWLBUG_SILK, EnemyType::BOWLBUG_EGG };
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
+                                                          EnemyType::FLAIL_KNIGHT };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));
