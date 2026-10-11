@@ -2015,6 +2015,91 @@ void test_mawler_ascension() {
     std::cout << "[PASS] Mawler: Ascension gives 76 HP, Rip and Tear of 16 and a Claw of 5 x2" << std::endl;
 }
 
+void test_fossil_stalker() {
+    // Calm: Latch (12) every turn. Hurt, it opens with Lash (3 twice), then draws among Latch, Tackle (9 and
+    // 1 Frail) and Lash, a move being allowed to repeat.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FOSSIL_STALKER);
+    Enemy& stalker = combat.enemies[0];
+    assert(stalker.type == EnemyType::FOSSIL_STALKER && stalker.name == "Traqueur fossilisé");
+    assert(stalker.hp >= 51 && stalker.hp <= 53 && stalker.max_hp == stalker.hp && stalker.max_hp == 51 + stalker.hp_bonus);
+    for (int turn = 1; turn <= 4; ++turn) {
+        assert(stalker.phase == 0 && stalker.block == 0 && stalker.statuses.empty());
+        assert(stalker.current_intent.type == ATTACK && stalker.intent_damage(combat.player) == 12);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == 12);
+    }
+
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::FOSSIL_STALKER);
+    Enemy& beast = hurt.enemies[0];
+    hurt.damage_enemy(beast, 5);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(beast.phase == 1);
+    assert(beast.current_intent.type == ATTACK && beast.current_intent.hits == 2 && beast.intent_damage(hurt.player) == 3);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(hurt.player.max_hp - hurt.player.hp == 6);
+    bool seen[3] = { false, false, false }; // Latch, Tackle, Lash
+    for (int turn = 0; turn < 60; ++turn) {
+        const EnemyIntent& intent = beast.current_intent;
+        assert(beast.phase == 1);
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.player.statuses.clear();
+        int expected;
+        if (intent.type == ATTACK_DEBUFF) {
+            assert(intent.base_damage == 9 && intent.hits == 1);
+            assert(intent.debuffs[0].type == StatusType::FRAIL && intent.debuffs[0].amount == 1);
+            seen[1] = true;
+            expected = 9;
+        } else if (intent.hits == 2) {
+            assert(intent.type == ATTACK && intent.base_damage == 3);
+            seen[2] = true;
+            expected = 6;
+        } else {
+            assert(intent.type == ATTACK && intent.base_damage == 12);
+            seen[0] = true;
+            expected = 12;
+        }
+        hurt.end_player_turn();
+        assert(hurt.state == CombatState::PLAYER_TURN);
+        assert(hurt.player.max_hp - hurt.player.hp == expected);
+    }
+    assert(seen[0] && seen[1] && seen[2]);
+    std::cout << "[PASS] Fossil Stalker: 51 to 53 HP, Latch until hurt, then Lash and a draw of Latch / Tackle / Lash" << std::endl;
+}
+
+void test_fossil_stalker_ascension() {
+    // 54 to 56 HP (51 to 53 plus 3), Latch of 14, Tackle of 11 and Lash of 4 twice at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FOSSIL_STALKER);
+        Enemy& stalker = combat.enemies[0];
+        stalker.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = stalker.hp;
+        assert(stalker.ascension_hp() == 54 && stalker.hp_spread() == 2);
+        assert(base >= 51 && base <= 53 && stalker.max_hp == 51 + stalker.hp_bonus);
+        stalker.ascend(true, true);
+        combat.plan_enemies();
+        assert(stalker.hp == base + 3 && stalker.max_hp == base + 3 && stalker.hp >= 54 && stalker.hp <= 56);
+        assert(stalker.current_intent.type == ATTACK && stalker.intent_damage(combat.player) == 14);
+        combat.damage_enemy(stalker, 1);
+        combat.end_player_turn();
+        assert(stalker.current_intent.hits == 2 && stalker.intent_damage(combat.player) == 4);
+        bool tackle = false;
+        for (int turn = 0; turn < 60 && !tackle; ++turn) {
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+            if (stalker.current_intent.type == ATTACK_DEBUFF) {
+                assert(stalker.intent_damage(combat.player) == 11);
+                tackle = true;
+            }
+        }
+        assert(tackle);
+    }
+    std::cout << "[PASS] Fossil Stalker: Ascension gives 54 to 56 HP, Latch 14, Tackle 11, Lash 4x2" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -2085,6 +2170,8 @@ int main() {
     test_hunter_killer_ascension();
     test_mawler();
     test_mawler_ascension();
+    test_fossil_stalker();
+    test_fossil_stalker_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

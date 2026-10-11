@@ -26,6 +26,7 @@
 #include "bn_sprite_items_mon_corpse_slug.h"
 #include "bn_sprite_items_mon_gas_bomb.h"
 #include "bn_sprite_items_mon_flyconid.h"
+#include "bn_sprite_items_mon_fossil_stalker.h"
 #include "bn_sprite_items_mon_fuzzy_wurm_crawler.h"
 #include "bn_sprite_items_mon_gremlin_merc.h"
 #include "bn_sprite_items_mon_gremlin_nob.h"
@@ -272,6 +273,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_hunter_killer, false };
     case engine::EnemyType::MAWLER:
         return { &bn::sprite_items::mon_mawler, false };
+    case engine::EnemyType::FOSSIL_STALKER:
+        return { &bn::sprite_items::mon_fossil_stalker, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

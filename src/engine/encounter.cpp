@@ -53,6 +53,7 @@ constexpr Encounter ACT1B_NORMAL[] = {
 // Act 2.
 constexpr Encounter ACT2_NORMAL[] = {
     { "HunterKillerNormal"sv, 1, { EnemyType::HUNTER_KILLER } },
+    { "FossilStalkerNormal"sv, 1, { EnemyType::FOSSIL_STALKER } },
 };
 
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
