@@ -436,6 +436,70 @@ void test_shop_stock() {
               << std::endl;
 }
 
+void test_shop_cards() {
+    std::set<int16_t> common_prices;
+    int stocks = 0;
+    for (CharacterId hero : HEROES) {
+        std::set<CardId> seen;
+        for (uint32_t seed = 1; seed <= 300; ++seed) {
+            ShopInventory shop;
+            shop.generate(hero, seed);
+            // 5 cards of the hero then 2 Colorless cards, all different.
+            assert(shop.cards.size() == 7);
+            int on_sale = 0;
+            for (size_t i = 0; i < shop.cards.size(); ++i) {
+                const ShopCard& item = shop.cards[i];
+                bool colorless = i >= 5;
+                const CardMeta& meta = card_meta(item.card.id);
+                assert(!item.purchased && !item.card.upgraded);
+                assert(meta.pool == (colorless ? CardPool::COLORLESS : static_cast<CardPool>(1 + static_cast<int>(hero))));
+                assert(meta.rarity == CardRarity::COMMON || meta.rarity == CardRarity::UNCOMMON || meta.rarity == CardRarity::RARE);
+                for (size_t j = 0; j < i; ++j) assert(shop.cards[j].card.id != item.card.id);
+                seen.insert(item.card.id);
+                // Price by rarity (Colorless 15 % dearer), within 5 %, halved on the card on sale.
+                int base = meta.rarity == CardRarity::COMMON ? 50 : (meta.rarity == CardRarity::UNCOMMON ? 75 : 150);
+                if (colorless) base = base * 115 / 100;
+                int low = base * 95 / 100, high = base * 105 / 100;
+                if (item.on_sale) {
+                    assert(!colorless);
+                    ++on_sale;
+                    low = (low + 1) / 2;
+                    high = (high + 1) / 2;
+                }
+                assert(item.cost >= low && item.cost <= high);
+                if (meta.rarity == CardRarity::COMMON && !colorless && !item.on_sale) common_prices.insert(item.cost);
+            }
+            assert(on_sale == 1);
+            ++stocks;
+
+            // Same seed, same stock.
+            ShopInventory again;
+            again.generate(hero, seed);
+            for (size_t i = 0; i < shop.cards.size(); ++i) {
+                assert(again.cards[i].card == shop.cards[i].card && again.cards[i].cost == shop.cards[i].cost);
+                assert(again.cards[i].on_sale == shop.cards[i].on_sale);
+            }
+        }
+        // The stock changes with the seed.
+        assert(seen.size() > 20);
+    }
+    assert(stocks == 5 * 300 && common_prices.size() > 3);
+
+    // The stock of a run follows the run's seed, and every visit draws its own.
+    RunManager first, second;
+    first.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 777);
+    second.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 777);
+    first.open_shop();
+    second.open_shop();
+    for (size_t i = 0; i < 7; ++i) assert(first.current_shop.cards[i].card == second.current_shop.cards[i].card);
+    first.open_shop();
+    bool differs = false;
+    for (size_t i = 0; i < 7; ++i) differs |= !(first.current_shop.cards[i].card == second.current_shop.cards[i].card);
+    assert(differs);
+    std::cout << "[PASS] Shop: 5 hero cards and 2 Colorless cards drawn by rarity, one on sale, same seed same stock"
+              << std::endl;
+}
+
 void test_shop_potion_with_full_belt() {
     RunManager run;
     run.start_run(CharacterId::REGENT, 0, PaletteVariant::CLASSIC, 12);
@@ -477,6 +541,7 @@ int main() {
     test_same_seed_same_rewards();
     test_potion_belt();
     test_shop_stock();
+    test_shop_cards();
     test_shop_potion_with_full_belt();
     std::cout << "[PASS] Rewards: all groups validated" << std::endl;
     return 0;

@@ -217,8 +217,8 @@ items = [
   { name = "Retrait d'une carte, à coût croissant", status = "oui" },
   { name = "Achat de reliques", status = "oui", note = "Rayon des reliques, touches L et R : deux reliques tirées par rareté et une relique du marchand." },
   { name = "Achat de potions", status = "oui", note = "Rayon des potions, touches L et R. Ceinture pleine : la potion achetée en remplace une." },
-  { name = "Inventaire tiré au hasard à chaque visite", status = "partiel", issue = 270, note = "Reliques et potions tirées au hasard ; trois cartes fixes par héros." },
-  { name = "Prix selon la rareté, carte en solde", status = "partiel", issue = 270, note = "Reliques et potions au prix de leur rareté, à 5 % près ; cartes à prix fixe, sans solde." },
+  { name = "Inventaire tiré au hasard à chaque visite", status = "oui", note = "Cinq cartes du héros et deux cartes incolores tirées par rareté, trois reliques et trois potions, depuis la graine de la partie. L écran montre les trois premières cartes." },
+  { name = "Prix selon la rareté, carte en solde", status = "oui", note = "Cartes, reliques et potions au prix de leur rareté, à 5 % près ; une carte du héros à moitié prix." },
 ]
 
 [[category]]

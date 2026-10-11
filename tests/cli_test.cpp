@@ -716,7 +716,7 @@ int main() {
     restored_run.gold = 300;
     restored_run.open_shop();
     assert(restored_run.phase == RunPhase::SHOP);
-    assert(restored_run.current_shop.cards.size() == 3);
+    assert(restored_run.current_shop.cards.size() == 7);
     assert(restored_run.current_shop.relics.size() == 3);
     prev_gold = restored_run.gold;
     size_t prev_deck_sz = restored_run.master_deck.size();
