@@ -429,6 +429,25 @@ void test_poison_and_star_relics() {
     std::cout << "[PASS] Poison and Star relics: Snecko Skull, Mini Regent, Galactic Dust" << std::endl;
 }
 
+void test_paels_flesh() {
+    // With the relic: no extra energy on turns 1 and 2, then 1 extra energy on turn 3 and every turn after.
+    CombatEngine flesh = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_FLESH, 1);
+    assert(flesh.player.energy == 3);
+    end_turn_idle(flesh);
+    assert(flesh.player.energy == 3);
+    end_turn_idle(flesh);
+    assert(flesh.player.energy == 4);
+    end_turn_idle(flesh);
+    assert(flesh.player.energy == 4);
+
+    // Without the relic: 3 energy every turn.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    end_turn_idle(plain);
+    end_turn_idle(plain);
+    assert(plain.player.energy == 3);
+    std::cout << "[PASS] Pael's Flesh: 1 extra energy from the 3rd turn" << std::endl;
+}
+
 void test_paels_blood() {
     // Paël's Blood: 1 more card on the first turn and on each following one.
     RunManager blood = make_relic_run(CharacterId::IRONCLAD, { "PAELS_BLOOD" });
@@ -1216,6 +1235,24 @@ void test_lead_paperweight() {
     assert(plain.phase != RunPhase::REWARD_SCREEN && plain.current_card_rewards.empty());
 }
 
+void test_lost_coffer() {
+    // Lost Coffer: on pickup, a card reward is offered and one potion is obtained.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t potions = run.potions.size();
+    run.add_relic("LOST_COFFER");
+    assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+    assert(run.potions.size() == potions + 1);
+
+    // Without the relic nothing is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(plain.phase != RunPhase::REWARD_SCREEN && plain.current_card_rewards.empty());
+    assert(plain.potions.size() == potions);
+    std::cout << "[PASS] Lost Coffer" << std::endl;
+}
+
 void test_neows_torment() {
     // Obtained: one Neow's Fury is added to the deck.
     RunManager run;
@@ -1850,6 +1887,29 @@ void test_velvet_choker() {
     std::cout << "[PASS] Velvet Choker: +1 energy each turn, no more than 6 cards played" << std::endl;
 }
 
+void test_brilliant_scarf() {
+    // With the relic: the 5th card played in a turn costs nothing.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "BRILLIANT_SCARF" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(run.combat.has_power(PowerId::BRILLIANT_SCARF));
+    for (RunManager* r : { &run, &plain }) {
+        r->combat.hand.clear();
+        for (int i = 0; i < 6; ++i) r->combat.hand.push_back(DeckCard{ CardId::DEFEND, false });
+        r->combat.player.energy = 10;
+        for (int i = 0; i < 4; ++i) assert(r->combat.play_card(0, -1));
+    }
+    assert(run.combat.effective_cost(run.combat.hand[0]) == 0);
+    assert(plain.combat.effective_cost(plain.combat.hand[0]) == 1);
+    int before = run.combat.player.energy;
+    assert(run.combat.play_card(0, -1));
+    assert(run.combat.player.energy == before);
+    assert(run.combat.effective_cost(run.combat.hand[0]) == 1);
+    before = plain.combat.player.energy;
+    assert(plain.combat.play_card(0, -1));
+    assert(plain.combat.player.energy == before - 1);
+    std::cout << "[PASS] Brilliant Scarf: the 5th card played each turn is free" << std::endl;
+}
+
 void test_glass_eye() {
     // Obtained: 2 Common, 2 Uncommon and 1 Rare cards join the deck.
     RunManager run;
@@ -2030,6 +2090,31 @@ void test_paels_eye() {
     std::cout << "[PASS] Pael's Eye: empty first turn exhausts the hand and gives an extra turn" << std::endl;
 }
 
+void test_music_box() {
+    // With the relic: the first Attack of the turn leaves an Ethereal copy in the hand, and only that one.
+    CombatEngine box = make_relic_combat(CharacterId::IRONCLAD, PowerId::MUSIC_BOX, 1);
+    box.hand.clear();
+    box.player.energy = 9;
+    box.hand.push_back(CardId::STRIKE);
+    box.hand.push_back(CardId::STRIKE);
+    assert(box.play_card(0, 0));
+    assert(box.hand.size() == 2);
+    assert(box.hand[1].id == CardId::STRIKE);
+    assert((box.hand[1].added_keywords & KEYWORD_ETHEREAL) != 0);
+    // The second Attack makes no copy.
+    assert(box.play_card(0, 0));
+    assert(box.hand.size() == 1);
+
+    // Without the relic: no copy.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.hand.clear();
+    plain.player.energy = 9;
+    plain.hand.push_back(CardId::STRIKE);
+    assert(plain.play_card(0, 0));
+    assert(plain.hand.empty());
+    std::cout << "[PASS] Music Box: Ethereal copy of the first Attack each turn" << std::endl;
+}
+
 void test_ringing_triangle() {
     // With the relic: the hand is kept at the end of the first turn, and only that one.
     CombatEngine triangle = make_relic_combat(CharacterId::IRONCLAD, PowerId::RINGING_TRIANGLE, 1);
@@ -2063,6 +2148,42 @@ void test_orange_dough() {
     // Without the relic: the usual 5 cards, no Colorless card added.
     RunManager plain = make_relic_run(CharacterId::REGENT, {});
     assert(plain.combat.hand.size() == 5);
+}
+
+void test_diamond_diadem() {
+    // With the relic: 20 Block at the start of the combat, kept through the start of the 2nd turn only.
+    RunManager diadem = make_relic_run(CharacterId::IRONCLAD, { "DIAMOND_DIADEM" });
+    assert(diadem.combat.player.block == 20);
+    end_turn_idle(diadem.combat);
+    assert(diadem.combat.player.block >= 20);
+    end_turn_idle(diadem.combat);
+    assert(diadem.combat.player.block < 20);
+
+    // Without the relic: no Block at the start, none left on the 2nd turn.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.player.block == 0);
+    end_turn_idle(plain.combat);
+    assert(plain.combat.player.block == 0);
+    std::cout << "[PASS] Diamond Diadem: 20 Block at the start, kept at the 2nd turn" << std::endl;
+}
+
+void test_choices_paradox() {
+    // With the relic: 5 random cards are offered, the one picked joins the hand with Retain.
+    RunManager paradox = make_relic_run(CharacterId::IRONCLAD, { "CHOICES_PARADOX" });
+    CombatEngine& combat = paradox.combat;
+    assert(combat.choice_pending() && combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.offers.size() == 5 && combat.hand.size() == 5);
+    const DeckCard picked = combat.offers[2];
+    const uint8_t picks[] = { 2 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending() && combat.offers.empty());
+    assert(combat.hand.size() == 6 && combat.hand.back().id == picked.id);
+    assert((combat.hand.back().added_keywords & KEYWORD_RETAIN) != 0);
+
+    // Without the relic: no offer at the start of the combat.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(!plain.combat.choice_pending() && plain.combat.offers.empty() && plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Choices Paradox: 1 of 5 random cards joins the hand with Retain" << std::endl;
 }
 
 void test_toolbox() {
@@ -2439,6 +2560,49 @@ void test_cauldron() {
     std::cout << "[PASS] Cauldron: 5 random potions brewed on pickup" << std::endl;
 }
 
+void test_alchemical_coffer() {
+    // Obtained: 4 new potion slots, all filled with random potions.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 744);
+    run.potions.clear();
+    const uint8_t slots = run.potion_slots;
+    run.add_relic("ALCHEMICAL_COFFER");
+    assert(run.has_relic("ALCHEMICAL_COFFER"));
+    assert(run.potion_slots == slots + 4);
+    assert(run.potions.size() == 4);
+
+    // Without the relic: no slot, no potion.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 744);
+    plain.potions.clear();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("ALCHEMICAL_COFFER"));
+    assert(plain.potion_slots == slots && plain.potions.empty());
+    std::cout << "[PASS] Alchemical Coffer: 4 potion slots filled on pickup" << std::endl;
+}
+
+void test_phial_holster() {
+    // Obtained: one more potion slot and 2 random potions.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 709);
+    run.potions.clear();
+    int slots = run.potion_slots;
+    run.add_relic("PHIAL_HOLSTER");
+    assert(run.has_relic("PHIAL_HOLSTER"));
+    assert(run.potion_slots == slots + 1);
+    assert(run.potions.size() == 2);
+
+    // Without the relic: no slot, no potion.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 709);
+    plain.potions.clear();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("PHIAL_HOLSTER"));
+    assert(plain.potion_slots == slots);
+    assert(plain.potions.empty());
+    std::cout << "[PASS] Phial Holster: 1 potion slot and 2 random potions on pickup" << std::endl;
+}
+
 void test_pear() {
     // Obtained: 10 more maximum HP, and the current HP follow.
     RunManager run;
@@ -2692,6 +2856,27 @@ void test_lucky_fysh() {
     plain.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
     assert(!plain.has_relic("LUCKY_FYSH") && plain.gold == plain_gold);
     std::cout << "[PASS] Lucky Fysh: +15 gold each time a card joins the deck" << std::endl;
+}
+
+void test_bing_bong() {
+    // With the relic: each card added to the deck comes with one additional copy.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 524);
+    run.add_relic("BING_BONG");
+    assert(run.has_relic("BING_BONG"));
+    size_t size = run.master_deck.size();
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.master_deck.size() == size + 2);
+    assert(run.master_deck[size].id == CardId::STRIKE && run.master_deck[size + 1].id == CardId::STRIKE);
+
+    // Without the relic: a single card.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 524);
+    plain.add_relic("ANCHOR");
+    size_t plain_size = plain.master_deck.size();
+    plain.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(!plain.has_relic("BING_BONG") && plain.master_deck.size() == plain_size + 1);
+    std::cout << "[PASS] Bing Bong: each card added to the deck is duplicated" << std::endl;
 }
 
 void test_molten_egg() {
@@ -3326,6 +3511,38 @@ void test_big_mushroom() {
     std::cout << "[PASS] Big Mushroom: 20 more max HP on pickup, 2 cards fewer in the first hand" << std::endl;
 }
 
+void test_neows_sacrifice() {
+    // Obtained: an Ambergris potion joins the belt and a Guilty curse joins the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    run.potions.clear();
+    size_t deck_size = run.master_deck.size();
+    run.add_relic("NEOWS_SACRIFICE");
+    assert(run.has_relic("NEOWS_SACRIFICE"));
+    assert(run.potions.size() == 1 && run.potions[0] == "AMBERGRIS");
+    assert(run.master_deck.size() == deck_size + 1 && run.master_deck.back().id == CardId::GUILTY);
+
+    // With a full belt, no potion is thrown away, and the Guilty curse still joins the deck.
+    RunManager full;
+    full.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    while (!full.potion_belt_full()) full.potions.push_back("FIRE_POTION");
+    size_t potions_full = full.potions.size();
+    deck_size = full.master_deck.size();
+    full.add_relic("NEOWS_SACRIFICE");
+    assert(full.potions.size() == potions_full && full.master_deck.back().id == CardId::GUILTY);
+    assert(full.master_deck.size() == deck_size + 1);
+
+    // Without the relic, neither the potion nor the curse comes.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    plain.potions.clear();
+    deck_size = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(plain.potions.size() == 0 && plain.master_deck.size() == deck_size);
+
+    std::cout << "[PASS] Sacrifice de Neow: Ambergris potion and Guilty curse on pickup" << std::endl;
+}
+
 void test_fake_orichalcum() {
     // With the relic, a turn ended without Block gives 3 Block: the 11 damage of the attack is cut to 8.
     RunManager run = make_relic_run(CharacterId::IRONCLAD, { "FAKE_ORICHALCUM" });
@@ -3822,6 +4039,33 @@ void test_spiked_gauntlets() {
     std::cout << "[PASS] Spiked Gauntlets: +1 energy per turn, Powers cost 1 more" << std::endl;
 }
 
+// Fishing Rod: every 3rd normal fight won upgrades one random card; Elites do not count.
+void test_fishing_rod() {
+    auto upgraded = [](const RunManager& run) {
+        int n = 0;
+        for (const DeckCard& card : run.master_deck) n += card.upgraded ? 1 : 0;
+        return n;
+    };
+    for (bool with_relic : { true, false }) {
+        RunManager run;
+        run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 7);
+        if (with_relic) run.add_relic("FISHING_ROD");
+        int base = upgraded(run);
+        auto win = [&](RoomType room) {
+            run.map.nodes[0].type = room;
+            run.enter_room(0);
+            run.proceed_after_combat();
+        };
+        win(RoomType::MONSTER);
+        win(RoomType::ELITE);
+        win(RoomType::MONSTER);
+        assert(upgraded(run) == base);
+        win(RoomType::MONSTER);
+        assert(upgraded(run) == base + (with_relic ? 1 : 0));
+    }
+    std::cout << "[PASS] Fishing Rod upgrades a card every 3 normal fights" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3832,6 +4076,7 @@ int main() {
     test_hp_relics();
     test_poison_and_star_relics();
     test_combat_start_relics();
+    test_paels_flesh();
     test_paels_blood();
     test_relics_in_a_run();
     test_black_blood();
@@ -3839,6 +4084,7 @@ int main() {
     test_strawberry();
     test_golden_compass();
     test_paels_tooth();
+    test_music_box();
     test_membership_card();
     test_the_courier();
     test_yummy_cookie();
@@ -3857,6 +4103,7 @@ int main() {
     test_booming_conch();
     test_arcane_scroll();
     test_lead_paperweight();
+    test_lost_coffer();
     test_neows_torment();
     test_precise_scissors();
     test_precarious_shears();
@@ -3885,6 +4132,7 @@ int main() {
     test_sozu();
     test_dusty_tome();
     test_velvet_choker();
+    test_brilliant_scarf();
     test_glass_eye();
     test_prismatic_gem();
     test_radiant_pearl();
@@ -3911,7 +4159,9 @@ int main() {
     test_reptile_trinket();
     test_ringing_triangle();
     test_toolbox();
+    test_choices_paradox();
     test_orange_dough();
+    test_diamond_diadem();
     test_pen_nib();
     test_iron_club();
     test_strike_dummy();
@@ -3919,6 +4169,7 @@ int main() {
     test_miniature_cannon();
     test_white_beast_statue();
     test_cauldron();
+    test_alchemical_coffer();
     test_lees_waffle();
     test_bowler_hat();
     test_unsettling_lamp();
@@ -3931,6 +4182,7 @@ int main() {
     test_mango();
     test_fake_lees_waffle();
     test_fake_mango();
+    test_phial_holster();
     test_fake_anchor();
     test_old_coin();
     test_pear();
@@ -3952,6 +4204,7 @@ int main() {
     test_ring_of_the_drake();
     test_darkstone_periapt();
     test_big_mushroom();
+    test_neows_sacrifice();
     test_fake_orichalcum();
     test_maw_bank();
     test_fake_happy_flower();
@@ -3966,8 +4219,10 @@ int main() {
     test_the_boot();
     test_hand_drill();
     test_spiked_gauntlets();
+    test_bing_bong();
     test_paper_phrog();
     test_silver_crucible();
     test_forgotten_soul();
+    test_fishing_rod();
     return 0;
 }

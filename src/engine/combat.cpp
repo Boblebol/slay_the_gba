@@ -698,6 +698,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::MERCURY_HOURGLASS:
             if (turn_start) damage_all_enemies(power.amount);
             break;
+        case PowerId::PAELS_FLESH:
+            if (turn_start && turn_number >= 3) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
         case PowerId::MR_STRUGGLES:
             if (turn_start) damage_all_enemies(static_cast<int16_t>(turn_number));
             break;
@@ -1985,6 +1988,8 @@ PlayBlocker CombatEngine::play_blocker(int index) const {
 
 bool CombatEngine::costs_nothing(const DeckCard& card) const {
     if (card.free_this_turn) return true;
+    // Brilliant Scarf: the 5th card played each turn is free.
+    if (counters.cards_played() == BRILLIANT_SCARF_CARD - 1 && has_power(PowerId::BRILLIANT_SCARF)) return true;
     CardType type = CardDef::get(card.id).type;
     if (type == CardType::SKILL && has_power(PowerId::CORRUPTION)) return true;
     if (type == CardType::ATTACK && has_power(PowerId::FREE_ATTACK)) return true;
@@ -2247,6 +2252,13 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
             enemy = enemies[0];
         }
 
+        // Music Box: the first Attack of the turn leaves an Ethereal copy in the hand.
+        if (played_type == CardType::ATTACK && play == 0 && counters.attacks_played == 0 && has_power(PowerId::MUSIC_BOX)) {
+            DeckCard copy = card;
+            copy.added_keywords |= KEYWORD_ETHEREAL;
+            create_card(copy, Pile::HAND);
+        }
+
         // Tallies of the card just played
         if (played_type == CardType::ATTACK) {
             counters.attacks_played = bump(counters.attacks_played);
@@ -2449,7 +2461,7 @@ void CombatEngine::offer_from_draw(uint8_t count) {
     ask_choice(choice);
 }
 
-void CombatEngine::offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded, bool free_this_turn) {
+void CombatEngine::offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded, bool free_this_turn, bool retain) {
     CardChoice choice;
     choice.kind = ChoiceKind::TO_HAND;
     choice.source = Pile::OFFERS;
@@ -2457,6 +2469,7 @@ void CombatEngine::offer_random_cards(const CardFilter& filter, uint8_t count, b
     choice.upgraded = upgraded;
     choice.offer_from_draw = false;
     choice.offer_free = free_this_turn;
+    choice.offer_retain = retain;
     choice.offer_filter = filter;
     ask_choice(choice);
 }
@@ -2490,6 +2503,7 @@ void CombatEngine::deal_offers(const CardChoice& choice) {
         if (offered) continue;
         DeckCard card(id, choice.upgraded);
         card.free_this_turn = choice.offer_free;
+        if (choice.offer_retain) card.added_keywords |= KEYWORD_RETAIN;
         offers.push_back(card);
         offer_origins.push_back(NOT_IN_PILE);
     }

@@ -218,6 +218,8 @@ enum class PowerId : uint8_t {
     WHISPERING_EARRING, // Vakuu plays the first turn of the combat (CombatEngine::vakuu_turn_active)
     VELVET_CHOKER,      // no more than `amount` cards played each turn (CombatEngine::play_blocker)
     PAELS_EYE,          // first turn ended with no card played: exhaust the hand, take an extra turn (removed once used)
+    MUSIC_BOX,          // the first Attack played each turn: an Ethereal copy goes to the hand (read by run_card)
+    BRILLIANT_SCARF,    // the 5th card played each turn costs nothing (CombatEngine::costs_nothing)
     // Sly (appended)
     MASTER_PLANNER,     // the Skills played gain Sly (read by place_played_card)
     // Percentage modifiers (appended)
@@ -247,7 +249,8 @@ enum class PowerId : uint8_t {
     IRON_CLUB,          // every IRON_CLUB_CARDS cards played: draw `amount` (counter = cards counted)
     CROSSBOW,           // start of turn: add a random Attack to the hand, free this turn
     SPIKED_GAUNTLETS,   // Power cards cost `amount` more energy (CombatEngine::effective_cost)
-    TOASTY_MITTENS      // start of turn: `amount` Strength, and 1 card of the new hand is exhausted
+    TOASTY_MITTENS,     // start of turn: `amount` Strength, and 1 card of the new hand is exhausted
+    PAELS_FLESH         // start of the 3rd turn and each one after: `amount` extra energy (Ancient relic)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
@@ -286,6 +289,7 @@ constexpr uint8_t RED_SKULL_HP_PERCENT = 50;
 constexpr uint8_t GALACTIC_DUST_STARS = 10;
 constexpr uint8_t IVORY_TILE_COST = 3;
 constexpr uint8_t VELVET_CHOKER_CARDS = 6;
+constexpr uint8_t BRILLIANT_SCARF_CARD = 5; // the Nth card played each turn is free
 
 struct ActivePower {
     PowerId id = PowerId::NONE;

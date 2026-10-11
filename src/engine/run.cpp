@@ -807,6 +807,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         add_card_to_deck(DeckCard{ CardId::GREED, false });
         gain_gold(333);
     }
+    // Relic of the Ancients (Neow): an Ambergris potion joins the belt when there is room, and a Guilty curse joins the deck.
+    if (relic_id == "NEOWS_SACRIFICE" && has_relic("NEOWS_SACRIFICE")) {
+        if (!potion_belt_full()) potions.push_back("AMBERGRIS");
+        add_card_to_deck(DeckCard{ CardId::GUILTY, false });
+    }
     // Relic of the Ancients: one Ancient card of the hero, drawn at random with the run's generator.
     if (relic_id == "DUSTY_TOME" && has_relic("DUSTY_TOME")) {
         const auto hero_pool = static_cast<CardPool>(static_cast<uint8_t>(character) + 1);
@@ -865,6 +870,13 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
             current_card_rewards.push_back(DeckCard(colorless[pick], false));
             colorless.erase(pick);
         }
+        phase = RunPhase::REWARD_SCREEN;
+    }
+    // Lost Coffer (Ancient): one card reward is offered and one random potion joins the belt.
+    if (relic_id == "LOST_COFFER" && has_relic("LOST_COFFER")) {
+        RewardRng coffer_rng(next_random());
+        draw_card_rewards(false, coffer_rng);
+        gain_random_potions(1);
         phase = RunPhase::REWARD_SCREEN;
     }
     if (relic_id == "DISTINGUISHED_CAPE" && has_relic("DISTINGUISHED_CAPE")) {
@@ -937,6 +949,15 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     // Calling Bell (Ancient): the unique Curse of the Bell joins the deck, then 3 random relics.
     if (relic_id == "CAULDRON" && has_relic("CAULDRON")) gain_random_potions(5);
+    // Alchemical Coffer (Ancient): 4 new potion slots, filled with random potions.
+    if (relic_id == "ALCHEMICAL_COFFER" && has_relic("ALCHEMICAL_COFFER")) {
+        add_potion_slots(4);
+        gain_random_potions(4);
+    }
+    if (relic_id == "PHIAL_HOLSTER" && has_relic("PHIAL_HOLSTER")) {
+        add_potion_slots(1);
+        gain_random_potions(2);
+    }
     if (relic_id == "CALLING_BELL" && has_relic("CALLING_BELL")) {
         add_card_to_deck(DeckCard{ CardId::CURSE_OF_THE_BELL, false });
         gain_random_relics(3);
@@ -1042,6 +1063,8 @@ void RunManager::on_shop_opened() {
     }
 }
 
+static constexpr uint8_t FISHING_ROD_COMBATS = 3;
+
 void RunManager::on_combat_won(RoomType room) {
     count_hook(RunHook::COMBAT_WON);
     // Wongo's Mystery Ticket (event): each fight won counts; the fifth one pays 3 random relics, once.
@@ -1050,6 +1073,10 @@ void RunManager::on_combat_won(RoomType room) {
         if (relic_counter("WONGOS_MYSTERY_TICKET") == WONGOS_MYSTERY_TICKET_COMBATS) {
             gain_random_relics(WONGOS_MYSTERY_TICKET_RELICS);
         }
+    }
+    // Fishing Rod: every 3 normal fights won, one random card of the deck is upgraded.
+    if (room == RoomType::MONSTER && has_relic("FISHING_ROD") && tick_relic_counter("FISHING_ROD", FISHING_ROD_COMBATS)) {
+        upgrade_random_cards(1);
     }
     // War Hammer: killing an Elite upgrades 4 random cards of the deck.
     if (room == RoomType::ELITE && has_relic("WAR_HAMMER")) upgrade_random_cards(4);
@@ -1178,6 +1205,13 @@ bool RunManager::add_card_to_deck(DeckCard card) {
     if (has_relic("DARKSTONE_PERIAPT") && card_meta(card.id).pool == CardPool::CURSE) gain_max_hp(6);
     if (has_relic("BOOK_OF_FIVE_RINGS") && tick_relic_counter("BOOK_OF_FIVE_RINGS", BOOK_OF_FIVE_RINGS_CARDS)) {
         heal(BOOK_OF_FIVE_RINGS_HEAL);
+    }
+    // Bing Bong: each card that joins the deck comes with one additional copy (the copy itself does not duplicate).
+    static bool adding_bing_bong_copy = false;
+    if (has_relic("BING_BONG") && !adding_bing_bong_copy) {
+        adding_bing_bong_copy = true;
+        add_card_to_deck(card);
+        adding_bing_bong_copy = false;
     }
     return true;
 }
@@ -1433,7 +1467,10 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::VELVET_CHOKER, VELVET_CHOKER_CARDS);
     }
     // Pael's Eye: the first turn ended without playing a card is followed by an extra turn.
+    if (has_relic("BRILLIANT_SCARF")) combat.add_power(PowerId::BRILLIANT_SCARF, 1);
     if (has_relic("PAELS_EYE")) combat.add_power(PowerId::PAELS_EYE, 1);
+    // Music Box: the first Attack played each turn leaves an Ethereal copy in the hand.
+    if (has_relic("MUSIC_BOX")) combat.add_power(PowerId::MUSIC_BOX, 1);
     // Start of turn
     if (has_relic("CAPTAINS_WHEEL")) combat.add_power(PowerId::CAPTAINS_WHEEL, 18);
     if (has_relic("HORN_CLEAT")) combat.add_power(PowerId::HORN_CLEAT, 14);
@@ -1469,6 +1506,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("PARRYING_SHIELD")) combat.add_power(PowerId::PARRYING_SHIELD, 6);
     if (has_relic("STONE_CALENDAR")) combat.add_power(PowerId::STONE_CALENDAR, 52);
     if (has_relic("IRON_CLUB")) combat.add_power(PowerId::IRON_CLUB, 1);
+    if (has_relic("PAELS_FLESH")) combat.add_power(PowerId::PAELS_FLESH, 1);
     if (has_relic("PAELS_TEARS")) combat.add_power(PowerId::PAELS_TEARS, 2);
     if (has_relic("ART_OF_WAR")) combat.add_power(PowerId::ART_OF_WAR, 1);
     if (has_relic("ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 6);
@@ -1670,6 +1708,10 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("TOOLBOX")) {
         combat.offer_random_cards(CardFilter(CardPool::COLORLESS), 3);
     }
+    // Choices Paradox (ancient): 1 of 5 random cards of the hero's pool goes to the hand, with Retain.
+    if (has_relic("CHOICES_PARADOX")) {
+        combat.offer_random_cards(CardFilter(), 5, false, false, true);
+    }
     // Jeweled Mask (ancient): a random Power of the draw pile goes to the hand and costs 0 for the combat.
     if (has_relic("JEWELED_MASK") && combat.hand.size() < combat.hand.capacity()) {
         FixedVector<uint8_t, 50> powers;
@@ -1750,6 +1792,11 @@ void RunManager::apply_combat_start_relics() {
     // Event relic (Fake Anchor): start each combat with 4 Block, same timing as Anchor.
     if (has_relic("FAKE_ANCHOR")) {
         combat.player.block += 4;
+    }
+    // Diamond Diadem (Ancient): start each combat with 20 Block, which is not removed at the start of the 2nd turn.
+    if (has_relic("DIAMOND_DIADEM")) {
+        combat.player.block += 20;
+        combat.keep_block_turns = static_cast<uint8_t>(combat.keep_block_turns + 1);
     }
     // Oddly Smooth Stone: start each combat with 1 Dexterity.
     if (has_relic("ODDLY_SMOOTH_STONE")) {
