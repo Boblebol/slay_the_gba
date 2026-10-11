@@ -169,6 +169,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Rôdeur Traqueur";
         max_hp = 21;
         hp = 21;
+    } else if (type == EnemyType::TERROR_EEL) {
+        name = "Murène de l'effroi";
+        max_hp = 140;
+        hp = 140;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -243,6 +247,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::SPINY_TOAD: return 121;
         case EnemyType::SEAPUNK: return 47;
         case EnemyType::TRACKER_RUBY_RAIDER: return 22;
+        case EnemyType::TERROR_EEL: return 150;
         default: return 0;
     }
 }
@@ -824,6 +829,35 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = ascended_damage ? 8 : 7;
             current_intent.description = "Tourbillon (7 dmg)";
+        }
+    } else if (type == EnemyType::TERROR_EEL) {
+        // Crash, Thrash (+6 Vigor), and again. Once at half its HP or less (triggered), it is stunned, then
+        // casts Terror (Vulnerable 99) and goes back to Crash and Thrash for good.
+        enum Move : uint8_t { CRASH, THRASH, STUNNED, TERROR };
+        if (phase == 0 && hp * 2 <= max_hp && enter_phase(1)) phase_turn = 1;
+        uint8_t move;
+        if (phase == 1 && phase_turn == 1) move = STUNNED;
+        else if (phase == 1 && phase_turn == 2) move = TERROR;
+        else if (phase == 1) move = (phase_turn % 2 == 1) ? CRASH : THRASH;
+        else move = (phase_turn % 2 == 1) ? CRASH : THRASH;
+        use_move(move);
+        if (move == STUNNED) {
+            stun();
+        } else if (move == TERROR) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::VULNERABLE, 99 };
+            current_intent.description = "Aura de terreur (Vulnérable 99)";
+        } else if (move == CRASH) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 18 : 16;
+            current_intent.description = "Fracas (16 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = ascended_damage ? 4 : 3;
+            current_intent.hits = 3;
+            current_intent.status_type = StatusType::VIGOR;
+            current_intent.status_amount = 6;
+            current_intent.description = "Furie (3x3 dmg, +6 Vigueur)";
         }
     } else if (type == EnemyType::SEAPUNK) {
         // Sea Kick, Spinning Kick, Bubble Burp, and again.

@@ -1361,6 +1361,59 @@ void test_punch_construct_ascension() {
     std::cout << "[PASS] Punch Construct: Ascension gives 60 HP, Fast Punch 6x2, Strong Punch 16" << std::endl;
 }
 
+void test_terror_eel() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TERROR_EEL);
+    Enemy& eel = combat.enemies[0];
+    assert(eel.name == "Murène de l'effroi" && eel.hp == 140 && eel.max_hp == 140);
+    // Crash 16, Thrash 3x3 (+6 Vigor), Crash 16 + 6 Vigor, Thrash, and again, while above half its HP.
+    struct Turn { EnemyIntentType intent; int damage; int hits; int vigor; };
+    int turn_number = 1;
+    for (const Turn& turn : { Turn{ ATTACK, 16, 1, 0 }, Turn{ ATTACK_BUFF, 3, 3, 6 }, Turn{ ATTACK, 22, 1, 0 },
+                              Turn{ ATTACK_BUFF, 3, 3, 6 }, Turn{ ATTACK, 22, 1, 0 } }) {
+        assert(combat.turn_number == turn_number++);
+        assert(eel.current_intent.type == turn.intent && eel.current_intent.hits == turn.hits);
+        assert(eel.intent_damage(combat.player) == turn.damage || turn.vigor == 0);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == turn.damage * turn.hits);
+        assert(eel.get_status(StatusType::VIGOR) == turn.vigor);
+        assert(combat.player.get_status(StatusType::VULNERABLE) == 0);
+    }
+    // At half its HP or less it is stunned, casts Terror (Vulnerable 99), then Crash and Thrash again.
+    eel.hp = 70;
+    combat.plan_enemies();
+    assert(eel.current_intent.type == STUN);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp == combat.player.hp && combat.player.get_status(StatusType::VULNERABLE) == 0);
+    assert(eel.current_intent.type == DEBUFF && eel.current_intent.debuffs_player());
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::VULNERABLE) == 99);
+    assert(eel.current_intent.type == ATTACK);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 16 * 3 / 2);
+    assert(eel.current_intent.type == ATTACK_BUFF && eel.current_intent.hits == 3);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 3 * (3 * 3 / 2));
+    assert(eel.get_status(StatusType::VIGOR) == 6 && eel.current_intent.type == ATTACK);
+    std::cout << "[PASS] Terror Eel: 140 HP, Crash 16, Thrash 3x3 +6 Vigor, stun and Terror at half HP" << std::endl;
+}
+
+void test_terror_eel_ascension() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TERROR_EEL);
+    Enemy& eel = combat.enemies[0];
+    eel.ascend(true, true);
+    combat.plan_enemies();
+    assert(eel.hp == 150 && eel.max_hp == 150);
+    assert(eel.current_intent.type == ATTACK && eel.intent_damage(combat.player) == 18);
+    combat.end_player_turn();
+    assert(eel.current_intent.type == ATTACK_BUFF && eel.current_intent.hits == 3);
+    assert(eel.intent_damage(combat.player) == 4);
+    std::cout << "[PASS] Terror Eel: Ascension gives 150 HP, Crash 18, Thrash 4x3" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -2280,6 +2333,8 @@ int main() {
     test_cubex_construct_ascension();
     test_punch_construct();
     test_punch_construct_ascension();
+    test_terror_eel();
+    test_terror_eel_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

@@ -34,6 +34,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::ASSASSIN_RUBY_RAIDER: return "ASSASSIN_RUBY_RAIDER";
         case EnemyType::AXE_RUBY_RAIDER: return "AXE_RUBY_RAIDER";
         case EnemyType::TRACKER_RUBY_RAIDER: return "TRACKER_RUBY_RAIDER";
+        case EnemyType::TERROR_EEL: return "TERROR_EEL";
         case EnemyType::CALCIFIED_CULTIST: return "CALCIFIED_CULTIST";
         case EnemyType::DAMP_CULTIST: return "DAMP_CULTIST";
         case EnemyType::SEWER_CLAM: return "SEWER_CLAM";
@@ -186,7 +187,8 @@ void test_reference_encounters() {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
         assert(ids_of(encounter_table(zone, EncounterTier::ELITE)) ==
-               std::set<std::string_view>{ "LegacyGremlinNob" });
+               (zone == ActZone::ACT1B ? std::set<std::string_view>{ "LegacyGremlinNob", "TerrorEelElite" }
+                                       : std::set<std::string_view>{ "LegacyGremlinNob" }));
     }
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
