@@ -11,13 +11,13 @@ using namespace std::string_view_literals;
 // Only the encounters whose every monster exists in EnemyType are listed; the reference gives no weights,
 // so every encounter of a list is as likely as the others.
 
-// RubyRaidersNormal is three raiders drawn among the five Ruby Raiders; TRACKER_RUBY_RAIDER is not in the
-// engine yet.
+// RubyRaidersNormal is three raiders drawn among the five Ruby Raiders.
 constexpr EnemyType RUBY_RAIDERS[] = {
     EnemyType::CROSSBOW_RUBY_RAIDER,
     EnemyType::BRUTE_RUBY_RAIDER,
     EnemyType::ASSASSIN_RUBY_RAIDER,
     EnemyType::AXE_RUBY_RAIDER,
+    EnemyType::TRACKER_RUBY_RAIDER,
 };
 
 // Act 1 (A): the Overgrowth.

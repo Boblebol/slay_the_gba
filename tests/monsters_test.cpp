@@ -128,6 +128,45 @@ void test_axe_ruby_raider() {
     std::cout << "[PASS] Axe Ruby Raider: 20 HP, Swing 5 + 5 Block twice, Big Swing 12, loop" << std::endl;
 }
 
+void test_tracker_ruby_raider() {
+    // 21 to 25 HP, Track (2 Frail) once, then Unleash the Hounds: 1 damage, 8 hits, every turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TRACKER_RUBY_RAIDER);
+    Enemy& raider = combat.enemies[0];
+    assert(raider.name == "Rôdeur Traqueur" && raider.hp >= 21 && raider.hp <= 25 && raider.max_hp == raider.hp);
+    assert(raider.current_intent.type == DEBUFF && raider.intent_damage(combat.player) == 0);
+    assert(raider.current_intent.debuffs[0].type == StatusType::FRAIL && raider.current_intent.debuffs[0].amount == 2);
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::FRAIL) >= 1 && combat.player.hp == combat.player.max_hp);
+    for (int turn = 2; turn <= 4; ++turn) {
+        assert(raider.current_intent.type == ATTACK && raider.current_intent.hits == 8);
+        assert(raider.intent_damage(combat.player) == 1 && raider.block == 0);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 8);
+    }
+    std::cout << "[PASS] Tracker Ruby Raider: 21 to 25 HP, Track 2 Frail, then Hounds 1 x8" << std::endl;
+}
+
+void test_tracker_ruby_raider_ascension() {
+    // 22 to 26 HP and 9 hits at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TRACKER_RUBY_RAIDER);
+        Enemy& raider = combat.enemies[0];
+        raider.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = raider.hp;
+        assert(raider.ascension_hp() == 22 && raider.hp_spread() == 4);
+        assert(base >= 21 && base <= 25);
+        raider.ascend(true, true);
+        assert(raider.hp == base + 1 && raider.hp >= 22 && raider.hp <= 26);
+        combat.end_player_turn();
+        assert(raider.current_intent.type == ATTACK && raider.current_intent.hits == 9);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 9);
+    }
+    std::cout << "[PASS] Tracker Ruby Raider: Ascension gives 22 to 26 HP and 9 hits" << std::endl;
+}
+
 void test_calcified_cultist() {
     // Incantation (Ritual 2) once, then Dark Strike 9: Ritual grants Strength from the turn after it was gained.
     check_monster(EnemyType::CALCIFIED_CULTIST, "Adepte calcifié", 38, {
@@ -1491,6 +1530,8 @@ int main() {
     test_brute_ruby_raider();
     test_assassin_ruby_raider();
     test_axe_ruby_raider();
+    test_tracker_ruby_raider();
+    test_tracker_ruby_raider_ascension();
     test_calcified_cultist();
     test_damp_cultist();
     test_sewer_clam();

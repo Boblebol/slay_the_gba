@@ -34,6 +34,7 @@
 #include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
 #include "bn_sprite_items_mon_sewer_clam.h"
+#include "bn_sprite_items_mon_tracker_ruby_raider.h"
 #include "bn_sprite_items_mon_the_forgotten.h"
 #include "bn_sprite_items_mon_vine_shambler.h"
 
@@ -222,6 +223,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_assassin_ruby_raider, false };
     case engine::EnemyType::AXE_RUBY_RAIDER:
         return { &bn::sprite_items::mon_axe_ruby_raider, false };
+    case engine::EnemyType::TRACKER_RUBY_RAIDER:
+        return { &bn::sprite_items::mon_tracker_ruby_raider, false };
     case engine::EnemyType::CALCIFIED_CULTIST:
         return { &bn::sprite_items::mon_calcified_cultist, false };
     case engine::EnemyType::DAMP_CULTIST:

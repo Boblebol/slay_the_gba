@@ -113,6 +113,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Mycoptère";
         max_hp = 47;
         hp = 47;
+    } else if (type == EnemyType::TRACKER_RUBY_RAIDER) {
+        name = "Rôdeur Traqueur";
+        max_hp = 21;
+        hp = 21;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -130,6 +134,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
         case EnemyType::INKLET: return 6; // 11 to 17, 12 to 18 at Ascension
         case EnemyType::NIBBIT: return 4;      // 42 to 46, 44 to 48 at Ascension
+        case EnemyType::TRACKER_RUBY_RAIDER: return 4; // 21 to 25, 22 to 26 at Ascension
         default: return 0;
     }
 }
@@ -164,6 +169,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
+        case EnemyType::TRACKER_RUBY_RAIDER: return 22;
         default: return 0;
     }
 }
@@ -381,6 +387,22 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = 5;
             current_intent.block = 5;
             current_intent.description = "Swing (5 dmg, 5 blk)";
+        }
+    } else if (type == EnemyType::TRACKER_RUBY_RAIDER) {
+        // Track once (2 Frail), then Unleash the Hounds for the rest of the fight.
+        current_intent.block = 0;
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.base_damage = 0;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
+            current_intent.description = "Traque (2 Fragilisé)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 1;
+            current_intent.hits = ascended_damage ? 9 : 8;
+            current_intent.description = "Lâcher les chiens (1 dmg x8)";
         }
     } else if (type == EnemyType::CALCIFIED_CULTIST) {
         // Incantation once, then Dark Strike for the rest of the fight.
