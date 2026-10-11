@@ -125,6 +125,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Grignotin";
         max_hp = 42;
         hp = 42;
+    } else if (type == EnemyType::FROG_KNIGHT) {
+        name = "Chevalier rainette";
+        max_hp = 191;
+        hp = 191;
     } else if (type == EnemyType::TOADPOLE) {
         name = "Crapautard";
         max_hp = 21;
@@ -282,6 +286,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::SLUMBERING_BEETLE: return 89;
         case EnemyType::TUNNELER: return 92;
         case EnemyType::SLIMED_BERSERKER: return 281;
+        case EnemyType::FROG_KNIGHT: return 199;
         default: return 0;
     }
 }
@@ -944,6 +949,35 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = ascended_damage ? 12 : 11;
             current_intent.description = "Fracas (11 dmg)";
+        }
+    } else if (type == EnemyType::FROG_KNIGHT) {
+        // Tongue Lash, Strike Down Evil, For the Queen, and again. Below half HP it opens a new phase, once,
+        // with Beetle Charge, then goes back to the cycle.
+        enum Move : uint8_t { TONGUE_LASH, STRIKE_DOWN_EVIL, FOR_THE_QUEEN, BEETLE_CHARGE };
+        if (phase == 0 && hp < max_hp / 2 && enter_phase(1)) {
+            phase_turn = 1;
+            use_move(BEETLE_CHARGE);
+        } else if (phase == 0 || phase_turn > 1) {
+            use_move(static_cast<uint8_t>((phase_turn - (phase == 0 ? 1 : 2)) % 3));
+        }
+        if (last_move == TONGUE_LASH) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 14 : 13;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
+            current_intent.description = "Fouet de langue (13 dmg, Fragilisé 2)";
+        } else if (last_move == STRIKE_DOWN_EVIL) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 23 : 21;
+            current_intent.description = "Expier le mal (21 dmg)";
+        } else if (last_move == FOR_THE_QUEEN) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 5;
+            current_intent.description = "Pour la Reine (Force 5)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 40 : 35;
+            current_intent.description = "Charge scarabée (35 dmg)";
         }
     } else if (type == EnemyType::SLUDGE_SPINNER) {
         // Calm: Oil Spray every turn. Once hurt (triggered), it opens the next phase with Rage, then draws among

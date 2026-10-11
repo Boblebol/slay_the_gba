@@ -398,6 +398,8 @@ enum class EnemyType : uint8_t {
     TUNNELER
     TOADPOLE,
     SLIMED_BERSERKER
+    TOADPOLE,
+    FROG_KNIGHT
 };
 
 // What a monster sees of the fight when it chooses its next move.

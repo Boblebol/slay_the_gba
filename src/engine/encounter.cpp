@@ -68,6 +68,11 @@ constexpr Encounter ACT3_NORMAL[] = {
     { "SlimedBerserkerNormal"sv, 1, { EnemyType::SLIMED_BERSERKER } },
 };
 
+// Act 3: the Glory.
+constexpr Encounter ACT3_NORMAL[] = {
+    { "FrogKnightNormal"sv, 1, { EnemyType::FROG_KNIGHT } },
+};
+
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
 };
@@ -92,6 +97,7 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT2_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 

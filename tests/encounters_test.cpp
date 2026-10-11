@@ -68,6 +68,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::SLUMBERING_BEETLE: return "SLUMBERING_BEETLE";
         case EnemyType::TUNNELER: return "TUNNELER";
         case EnemyType::SLIMED_BERSERKER: return "SLIMED_BERSERKER";
+        case EnemyType::FROG_KNIGHT: return "FROG_KNIGHT";
     }
     return {};
 }
@@ -216,6 +217,10 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            std::set<std::string_view>{ "SlimedBerserkerNormal" });
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
+           std::set<std::string_view>{ "FrogKnightNormal" });
 
     // The ruby raiders: three of the five raiders in the engine.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
