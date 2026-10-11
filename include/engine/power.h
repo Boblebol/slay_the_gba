@@ -124,6 +124,7 @@ enum class PowerId : uint8_t {
     GREMLIN_HORN,      // enemy killed: `amount` energy and 1 card
     RAZOR_TOOTH,       // an Attack or a Skill played is upgraded for the rest of the combat
     THE_ABACUS,        // draw pile shuffled: `amount` Block
+    BIIIG_HUG,         // draw pile shuffled: `amount` Soot added to the draw pile
     PERMAFROST,        // first Power played: `amount` Block
     GAME_PIECE,        // Power played: draw `amount`
     REPTILE_TRINKET,   // potion used: `amount` Strength until the end of the turn
