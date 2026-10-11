@@ -252,8 +252,7 @@ enum class PowerId : uint8_t {
     TOASTY_MITTENS,     // start of turn: `amount` Strength, and 1 card of the new hand is exhausted
     PAELS_FLESH,        // start of the 3rd turn and each one after: `amount` extra energy (Ancient relic)
     // Transformation (appended)
-    ENTROPY             // at the start of each turn `amount` cards of the hand are transformed (read by start_player_turn)
-    PAELS_FLESH,        // start of the 3rd turn and each one after: `amount` extra energy (Ancient relic)
+    ENTROPY,            // at the start of each turn `amount` cards of the hand are transformed (read by start_player_turn)
     // Held by an enemy (appended)
     BURROWED            // its Block is up: the Block broken or its next turn played, the power is spent (amount 0)
 };

@@ -195,23 +195,13 @@ void test_reference_encounters() {
     }
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
-    // The groups the game had before, where the reference has nothing the engine can play yet.
-           std::set<std::string_view>{ "LegacyCultist" });
+    // Act 2, and the groups the game had before in Act 3, where the reference has nothing the engine can play yet.
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::WEAK)) == std::set<std::string_view>{ "TunnelerWeak" });
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
-    for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
-        assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
-        assert(ids_of(encounter_table(zone, EncounterTier::NORMAL)) ==
-               (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
-    }
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal" }));
+           (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal", "ChompersNormal", "TunnelerNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
-    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
-    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
-           std::set<std::string_view>{ "ChompersNormal" });
     const Encounter& chompers = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::NORMAL),
                                                "ChompersNormal");
     assert(chompers.count == 2 && chompers.monsters[0] == EnemyType::CHOMPER && chompers.monsters[1] == EnemyType::CHOMPER);
@@ -239,16 +229,13 @@ void test_reference_encounters() {
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
     // The Stabbot and the Noisebot are brought by the Fabricator (FabricatorNormal).
     // The Gas Bomb is brought by the Living Fog (LivingFogNormal).
-    // Titos is summoned by the Entomancer, who is not a monster of the engine yet.
-    // The Parafright is brought by the Obscura (TheObscuraNormal).
+    // Titos is summoned by the Entomancer, the Parafright brought by the Obscura, the Slumbering Beetle
+    // waits for the Bowlbugs: none of them is a monster of the engine yet.
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
-                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN };
-                                                          EnemyType::STABBOT, EnemyType::NOISEBOT, EnemyType::OSTY };
-                                                          EnemyType::STABBOT, EnemyType::NOISEBOT,
-                                                          EnemyType::SLUMBERING_BEETLE };
-                                                          EnemyType::STABBOT, EnemyType::NOISEBOT,
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
+                                                          EnemyType::OSTY, EnemyType::SLUMBERING_BEETLE,
                                                           EnemyType::PARAFRIGHT };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
