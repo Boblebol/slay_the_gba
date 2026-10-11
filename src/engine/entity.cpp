@@ -109,6 +109,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Assemblage de pugilat";
         max_hp = 55;
         hp = 55;
+    } else if (type == EnemyType::BOWLBUG_ROCK) {
+        name = "Sphéropode (Pierre)";
+        max_hp = 45;
+        hp = 45;
     } else if (type == EnemyType::INKLET) {
         name = "Encrelin";
         max_hp = 11;
@@ -200,6 +204,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::NOISEBOT: return 19;
         case EnemyType::CUBEX_CONSTRUCT: return 70;
         case EnemyType::PUNCH_CONSTRUCT: return 60;
+        case EnemyType::BOWLBUG_ROCK: return 46;
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
@@ -607,6 +612,17 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = ascended_damage ? 16 : 14;
             current_intent.description = "Poing puissant (14 dmg)";
+        }
+    } else if (type == EnemyType::BOWLBUG_ROCK) {
+        // Headbutt every turn; when the player's Block soaked it all, it is off balance (phase 1, set by the
+        // fight) and loses the next turn (Dizzy).
+        if (phase == 1) {
+            stun();
+            phase = 0;
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 16 : 15;
+            current_intent.description = "Coup de boule (15 dmg)";
         }
     } else if (type == EnemyType::INKLET) {
         // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.

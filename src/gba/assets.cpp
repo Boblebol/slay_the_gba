@@ -246,6 +246,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_cubex_construct, false };
     case engine::EnemyType::PUNCH_CONSTRUCT:
         return { &bn::sprite_items::mon_punch_construct, false };
+    case engine::EnemyType::BOWLBUG_ROCK:
+        return { &bn::sprite_items::mon_bowlbug_rock, false };
     case engine::EnemyType::INKLET:
         return { &bn::sprite_items::mon_inklet, false };
     case engine::EnemyType::NIBBIT:

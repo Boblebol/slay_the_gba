@@ -66,11 +66,16 @@ constexpr Encounter LEGACY_ELITE[] = {
     { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
 };
 
+// Act 2: only BowlbugsWeak is made of monsters the engine has (the others need random bugs or the Beetle).
+constexpr Encounter ACT2_WEAK[] = {
+    { "BowlbugsWeak"sv, 1, { EnemyType::BOWLBUG_ROCK } },
+};
+
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT2_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 

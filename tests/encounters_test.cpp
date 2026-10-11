@@ -45,6 +45,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::NOISEBOT: return "NOISEBOT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
         case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
+        case EnemyType::BOWLBUG_ROCK: return "BOWLBUG_ROCK";
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
@@ -184,8 +185,9 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak" }));
     // The groups the game had before, where the reference has nothing the engine can play yet.
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::WEAK)) == std::set<std::string_view>{ "BowlbugsWeak" });
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
     for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
-        assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
         assert(ids_of(encounter_table(zone, EncounterTier::NORMAL)) ==
                (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
     }
