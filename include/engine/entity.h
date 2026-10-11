@@ -396,6 +396,8 @@ enum class EnemyType : uint8_t {
     CHOMPER
     FLYCONID,
     SLUMBERING_BEETLE
+    FLYCONID,
+    PARAFRIGHT
 };
 
 // What a monster sees of the fight when it chooses its next move.
