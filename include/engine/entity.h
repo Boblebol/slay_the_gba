@@ -405,7 +405,6 @@ enum class EnemyType : uint8_t {
     DEVOTED_SCULPTOR,
     THE_LOST,
     AXEBOT,
-    BYGONE_EFFIGY,
     TURRET_OPERATOR,
     BOWLBUG_SILK,
     BOWLBUG_ROCK,
@@ -418,10 +417,9 @@ enum class EnemyType : uint8_t {
     SPECTRAL_KNIGHT,
     MAGI_KNIGHT,
     SOUL_NEXUS,
-    MECHA_KNIGHT
-    BOWLBUG_EGG,
-    BYRDONIS
-    BOWLBUG_EGG,
+    MECHA_KNIGHT,
+    BYGONE_EFFIGY,
+    BYRDONIS,
     PHROG_PARASITE
 };
 

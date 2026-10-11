@@ -25,10 +25,6 @@ constexpr Encounter ACT1A_WEAK[] = {
     { "FuzzyWurmCrawlerWeak"sv, 1, { EnemyType::FUZZY_WURM_CRAWLER } },
     { "NibbitsWeak"sv, 1, { EnemyType::NIBBIT } },
 };
-constexpr Encounter ACT1A_ELITE[] = {
-    { "PhrogParasiteElite"sv, 1, { EnemyType::PHROG_PARASITE } },
-    { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
-};
 constexpr Encounter ACT1A_NORMAL[] = {
     { "RubyRaidersNormal"sv, 3, {}, RUBY_RAIDERS },
     { "VineShamblerNormal"sv, 1, { EnemyType::VINE_SHAMBLER } },
@@ -86,6 +82,13 @@ constexpr Encounter ACT3_NORMAL[] = {
     { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
 };
 
+// Act 1 (A) elites: the reference ones the engine can play, and the Gremlin Nob the game had before.
+constexpr Encounter ACT1A_ELITE[] = {
+    { "BygoneEffigyElite"sv, 1, { EnemyType::BYGONE_EFFIGY } },
+    { "ByrdonisElite"sv, 1, { EnemyType::BYRDONIS } },
+    { "PhrogParasiteElite"sv, 1, { EnemyType::PHROG_PARASITE } },
+    { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
+};
 constexpr Encounter ACT1B_ELITE[] = {
     { "SkulkingColonyElite"sv, 1, { EnemyType::SKULKING_COLONY } },
     { "TerrorEelElite"sv, 1, { EnemyType::TERROR_EEL } },
@@ -104,34 +107,12 @@ constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
 };
 
-// Act 1 (A) elite.
-constexpr Encounter ACT1A_ELITE[] = {
-    { "ByrdonisElite"sv, 1, { EnemyType::BYRDONIS } },
-};
-
-// The groups the game had before the tables, for the lists with no reference encounter in the engine yet.
-constexpr Encounter LEGACY_ELITE[] = {
-    { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
-};
-
-// Act 1 (A) elites: the group the game had before, and the reference ones the engine can play.
-constexpr Encounter ACT1A_ELITE[] = {
-    { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
-    { "BygoneEffigyElite"sv, 1, { EnemyType::BYGONE_EFFIGY } },
-};
-
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
-    { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, CEREMONIAL_BEAST_BOSS },
-    { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
-    { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
-    { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
-    { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { ACT2_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { ACT3_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
 } // namespace
