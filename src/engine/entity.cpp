@@ -221,6 +221,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Tisse-boue";
         max_hp = 37;
         hp = 37;
+    } else if (type == EnemyType::SPECTRAL_KNIGHT) {
+        name = "Chevalier spectral";
+        max_hp = 93;
+        hp = 93;
     } else if (type == EnemyType::HUNTER_KILLER) {
         name = "Chasseur-tueur";
         max_hp = 121;
@@ -237,6 +241,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Voyou marin";
         max_hp = 44;
         hp = 44;
+    } else if (type == EnemyType::SPECTRAL_KNIGHT) {
+        name = "Chevalier spectral";
+        max_hp = 93;
+        hp = 93;
     } else if (type == EnemyType::TRACKER_RUBY_RAIDER) {
         name = "Rôdeur Traqueur";
         max_hp = 21;
@@ -373,6 +381,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::BOWLBUG_SILK: return 41;
         case EnemyType::TERROR_EEL: return 150;
         case EnemyType::ENTOMANCER: return 165;
+        case EnemyType::SPECTRAL_KNIGHT: return 97;
         default: return 0;
     }
 }
@@ -1361,6 +1370,32 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 3;
             current_intent.description = "Crachat de phéromones (Ruche 1, Force 3)";
+        }
+    } else if (type == EnemyType::SPECTRAL_KNIGHT) {
+        // Hex, Soul Slash, then a draw between Soul Slash and Soul Flame (Soul Flame never twice in a row).
+        enum Move : uint8_t { HEX, SOUL_SLASH, SOUL_FLAME };
+        if (turn_number == 1) {
+            use_move(HEX);
+        } else if (turn_number == 2) {
+            use_move(SOUL_SLASH);
+        } else {
+            static constexpr MoveOption AFTER[] = { { SOUL_SLASH, 1, true }, { SOUL_FLAME } };
+            use_move(draw_move(AFTER));
+        }
+        if (last_move == HEX) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.power = PowerId::HEX;
+            current_intent.power_amount = 2;
+            current_intent.description = "Sortilège (Éthéré)";
+        } else if (last_move == SOUL_SLASH) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 17 : 15;
+            current_intent.description = "Frappe spirituelle (15 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 4 : 3;
+            current_intent.hits = 3;
+            current_intent.description = "Flamme spirituelle (3 dmg x3)";
         }
     } else if (type == EnemyType::HUNTER_KILLER) {
         // Tenderizing Goop, Bite, Puncture, then a draw between Bite (never twice in a row) and Puncture.

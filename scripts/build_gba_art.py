@@ -173,6 +173,7 @@ MONSTERS: dict[str, str] = {
     "vine_shambler": "vine_shambler",
     "eye_with_teeth": "eye_with_teeth",
     "stabbot": "stabbot",
+    "spectral_knight": "spectral_knight",
     "spiny_toad": "spiny_toad",
     "noisebot": "noisebot",
     "zapbot": "zapbot",

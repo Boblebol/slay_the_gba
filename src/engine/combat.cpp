@@ -6255,8 +6255,14 @@ void CombatEngine::end_player_turn() {
     }
 
     // Ethereal cards left in hand are exhausted first: what their exhaustion draws is discarded with the rest.
+    // Hex held by a living enemy makes every card Ethereal.
+    bool hexed = false;
+    for (const ActivePower& held : powers) {
+        if (held.id == PowerId::HEX && held.holder >= 0 && static_cast<size_t>(held.holder) < enemies.size() &&
+            enemies[held.holder].is_alive()) hexed = true;
+    }
     for (size_t i = hand.size(); i-- > 0;) {
-        if (i < hand.size() && CardDef::has_keyword(hand[i], KEYWORD_ETHEREAL)) exhaust_from_hand(i);
+        if (i < hand.size() && (hexed || CardDef::has_keyword(hand[i], KEYWORD_ETHEREAL))) exhaust_from_hand(i);
     }
     // The rest is discarded, except the cards with Retain.
     const bool keep_hand = retain_hand || has_power(PowerId::KEEP_HAND) || has_power(PowerId::STABLE_SERUM);

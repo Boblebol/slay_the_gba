@@ -2895,6 +2895,8 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Enfoui";
     case engine::PowerId::VITAL_SPARK:
         return "Étincelle";
+    case engine::PowerId::HEX:
+        return "Sortil";
     default:
         return "";
     }
@@ -2914,6 +2916,8 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Enfoui : Armure brisée, tour perdu.";
     case engine::PowerId::VITAL_SPARK:
         return "Étincelle : frappée, +1 ● (X fois/tour).";
+    case engine::PowerId::HEX:
+        return "Sortilège : vos cartes sont Éthérées.";
     default:
         return "";
     }

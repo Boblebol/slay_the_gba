@@ -44,6 +44,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::VINE_SHAMBLER: return "VINE_SHAMBLER";
         case EnemyType::EYE_WITH_TEETH: return "EYE_WITH_TEETH";
         case EnemyType::STABBOT: return "STABBOT";
+        case EnemyType::SPECTRAL_KNIGHT: return "SPECTRAL_KNIGHT";
         case EnemyType::SPINY_TOAD: return "SPINY_TOAD";
         case EnemyType::NOISEBOT: return "NOISEBOT";
         case EnemyType::PARAFRIGHT: return "PARAFRIGHT";
@@ -266,6 +267,7 @@ void test_reference_encounters() {
     // BowlbugsNormal and SlumberingBeetleNormal.
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
     // The Flail Knight is brought by the Magi Knight and the Spectral Knight (KnightsElite).
+    // The Spectral Knight is brought by the other knights (KnightsElite).
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
@@ -276,6 +278,8 @@ void test_reference_encounters() {
                                                           EnemyType::BOWLBUG_SILK, EnemyType::BOWLBUG_EGG };
                                                           EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
                                                           EnemyType::FLAIL_KNIGHT };
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
+                                                          EnemyType::SPECTRAL_KNIGHT };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));
