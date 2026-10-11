@@ -170,7 +170,7 @@ def implemented_potions() -> set[str]:
 
 def implemented_monsters() -> set[str]:
     header = re.sub(r"//.*", "", (ROOT / "include" / "engine" / "entity.h").read_text())
-    body = re.search(r"enum class EnemyType[^{]*\{(.*?)\}", header, re.S)
+    body = re.search(r"enum class EnemyType[^{;]*\{(.*?)\}", header, re.S)
     if not body:
         raise SystemExit("progress: enum EnemyType not found in include/engine/entity.h")
     return set(re.findall(r"\w+", body.group(1)))
