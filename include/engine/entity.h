@@ -412,6 +412,8 @@ enum class EnemyType : uint8_t {
     BOWLBUG_EGG
     TRACKER_RUBY_RAIDER,
     TERROR_EEL
+    TRACKER_RUBY_RAIDER,
+    ENTOMANCER
 };
 
 // What a monster sees of the fight when it chooses its next move.

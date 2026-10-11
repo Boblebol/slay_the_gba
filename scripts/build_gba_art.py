@@ -212,6 +212,7 @@ MONSTERS: dict[str, str] = {
     "bowlbug_silk": "bowlbug_silk",
     "bowlbug_egg": "bowlbug_egg",
     "terror_eel": "terror_eel",
+    "entomancer": "entomancer",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.

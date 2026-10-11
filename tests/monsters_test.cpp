@@ -2947,6 +2947,47 @@ void test_tunneler_ascension() {
     std::cout << "[PASS] Tunneler: Ascension gives 92 HP, Bite 15 and Below 26" << std::endl;
 }
 
+void test_entomancer() {
+    // Bees 3x7, Spear 18, Pheromone Spit (Personal Hive 1, Strength 3), twice over: the Strength it gains adds to
+    // each hit that follows.
+    check_monster(EnemyType::ENTOMANCER, "Entomancien", 145, {
+        { ATTACK, 3, 0, 0, 0, 7 },
+        { ATTACK, 18, 0, 0 },
+        { BUFF, 0, 0, 3 },
+        { ATTACK, 6, 0, 3, 0, 7 },
+        { ATTACK, 21, 0, 3 },
+        { BUFF, 0, 0, 6 },
+        { ATTACK, 9, 0, 6, 0, 7 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::ENTOMANCER);
+    assert(combat.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 0);
+    pass_turn(combat);
+    pass_turn(combat);
+    assert(combat.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 0);
+    pass_turn(combat); // Pheromone Spit
+    assert(combat.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 1);
+    pass_turn(combat);
+    pass_turn(combat);
+    pass_turn(combat); // the second Pheromone Spit
+    assert(combat.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 2);
+    std::cout << "[PASS] Entomancer: 145 HP, Bees 3x7, Spear 18, Pheromone Spit (Personal Hive 1, Strength 3)" << std::endl;
+}
+
+void test_entomancer_ascension() {
+    // 165 HP, Bees 3x8 and Spear 20 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::ENTOMANCER);
+    Enemy& entomancer = combat.enemies[0];
+    assert(entomancer.ascension_hp() == 165);
+    entomancer.ascend(true, true);
+    combat.plan_enemies();
+    assert(entomancer.hp == 165 && entomancer.max_hp == 165);
+    assert(entomancer.current_intent.type == ATTACK && entomancer.current_intent.hits == 8);
+    assert(entomancer.intent_damage(combat.player) == 3);
+    pass_turn(combat);
+    assert(entomancer.current_intent.hits == 1 && entomancer.intent_damage(combat.player) == 20);
+    std::cout << "[PASS] Entomancer: Ascension gives 165 HP, Bees 3x8 and a Spear of 20" << std::endl;
+}
+
 } // namespace
 
 void test_slimed_berserker() {
@@ -3175,6 +3216,8 @@ int main() {
     test_frog_knight();
     test_frog_knight_beetle_charge();
     test_frog_knight_ascension();
+    test_entomancer();
+    test_entomancer_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

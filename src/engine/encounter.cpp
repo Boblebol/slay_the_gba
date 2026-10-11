@@ -82,6 +82,10 @@ constexpr Encounter ACT3_NORMAL[] = {
     { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
 };
 
+constexpr Encounter ACT2_ELITE[] = {
+    { "EntomancerElite"sv, 1, { EnemyType::ENTOMANCER } },
+};
+
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
 };
@@ -116,6 +120,7 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, ACT2_NORMAL, ACT2_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
