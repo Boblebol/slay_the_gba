@@ -517,7 +517,7 @@ int main() {
     potion_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
     potion_run.potions.push_back("FIRE_POTION");
     potion_run.potions.push_back("BLOCK_POTION");
-    potion_run.potions.push_back("SNECKO_OIL");
+    potion_run.potions.push_back("SOLDIERS_STEW");
     assert(!potion_run.use_potion(0)); // not in combat yet
     potion_run.enter_room(potion_run.get_available_rooms()[0]);
     CombatEngine& potion_combat = potion_run.combat;

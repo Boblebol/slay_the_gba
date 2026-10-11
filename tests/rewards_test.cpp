@@ -80,7 +80,7 @@ void test_active_potions_are_the_resolved_ones() {
             assert(potion_fits_hero(active.id, hero) == (active.any_hero || active.hero == hero));
         }
     }
-    assert(!potion_fits_hero("SNECKO_OIL", CharacterId::IRONCLAD) && !potion_fits_hero("NOT_A_POTION", CharacterId::DEFECT));
+    assert(!potion_fits_hero("SOLDIERS_STEW", CharacterId::IRONCLAD) && !potion_fits_hero("NOT_A_POTION", CharacterId::DEFECT));
     assert(potion_fits_hero("FOCUS_POTION", CharacterId::DEFECT) && !potion_fits_hero("FOCUS_POTION", CharacterId::SILENT));
     std::cout << "[PASS] Potions: " << resolved << " resolved by the engine, the only ones on offer" << std::endl;
 }

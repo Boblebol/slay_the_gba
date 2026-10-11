@@ -29,6 +29,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "ENTROPIC_BREW",
     "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "FRUIT_JUICE",
     "FOUL_POTION",
+    "SNECKO_OIL",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -1100,6 +1101,24 @@ void test_entropic_brew() {
     std::cout << "[PASS] Entropic Brew: asks the run to fill the empty potion slots" << std::endl;
 }
 
+void test_snecko_oil() {
+    // Draws 7 cards; each card of the hand then costs 0 to 3 at random for this turn only.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.hand.clear();
+    pad_draw_pile(combat, 30);
+    assert(combat.use_potion("SNECKO_OIL"));
+    assert(combat.hand.size() == 7);
+    for (const DeckCard& card : combat.hand) {
+        assert(card.random_cost_this_turn >= 0 && card.random_cost_this_turn <= 3);
+        assert(combat.effective_cost(card) == card.random_cost_this_turn);
+    }
+    assert(std::string_view(combat.combat_log) == "Snecko Oil!");
+    // The costs wear off at the end of the turn.
+    combat.end_player_turn();
+    for (const DeckCard& card : combat.hand) assert(card.random_cost_this_turn == -1);
+    std::cout << "[PASS] Snecko Oil: draws 7, random cost 0-3 this turn" << std::endl;
+}
+
 } // namespace
 
 void test_stable_serum() {
@@ -1169,6 +1188,7 @@ int main() {
     test_gigantification_potion();
     test_fairy_in_a_bottle();
     test_entropic_brew();
+    test_snecko_oil();
     test_explosive_ampoule();
     test_foul_potion();
     test_weak_potion();
