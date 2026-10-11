@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 82,3 %** — 1016 faits, 19 partiels, 211 à faire (35 hors périmètre).
+**Avancement global : 83,8 %** — 1035 faits, 19 partiels, 192 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 282 | 0 | 39 | 87,9 % |
-| [Bestiaire](#bestiaire) | 33 | 1 | 70 | 32,2 % |
+| [Bestiaire](#bestiaire) | 52 | 1 | 51 | 50,5 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 45 | 0 | 14 | 76,3 % |
 | [Systèmes de jeu](#systemes) | 25 | 4 | 7 | 75,0 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1016** | **19** | **211** | **82,3 %** |
+| **Total** | **1035** | **19** | **192** | **83,8 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 32,2 %
+## Bestiaire — 50,5 %
 
-### Monstres — 45,8 %
+### Monstres — 72,2 %
 
-33 faits, 0 partiel, 39 à faire.
+52 faits, 0 partiel, 20 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1260,37 +1260,37 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Voyou marin | Monstre · Acte 1 (B) | Oui |  |
 | Chasseur-tueur | Monstre · Acte 2 | Oui |  |
 | Crapineux | Monstre · Acte 2 | Oui |  |
-| Croquebot | Monstre · Acte 2 | Non |  |
+| Croquebot | Monstre · Acte 2 | Oui |  |
 | Exosquelette | Monstre · Acte 2 | Non |  |
 | L'Obscura | Monstre · Acte 2 | Non |  |
 | Mante chapardeuse | Faible · Acte 2 | Non |  |
 | Ovicoptère | Monstre · Acte 2 | Non |  |
-| Pareffroi | Monstre · Acte 2 | Non |  |
-| Progéniteur de poux | Monstre · Acte 2 | Non |  |
+| Pareffroi | Monstre · Acte 2 | Oui |  |
+| Progéniteur de poux | Monstre · Acte 2 | Oui |  |
 | Sarcopte | Monstre · Acte 2 | Non |  |
-| Scarabée dormeur | Monstre · Acte 2 | Non |  |
-| Sphéropode (Nectar) | Monstre · Acte 2 | Non |  |
-| Sphéropode (Pierre) | Monstre · Acte 2 | Non |  |
-| Sphéropode (Soie) | Monstre · Acte 2 | Non |  |
-| Sphéropode (Œuf) | Monstre · Acte 2 | Non |  |
-| Titos | Invocation · Acte 2 | Non |  |
-| Tunnelier | Monstre · Acte 2 | Non |  |
+| Scarabée dormeur | Monstre · Acte 2 | Oui |  |
+| Sphéropode (Nectar) | Monstre · Acte 2 | Oui |  |
+| Sphéropode (Pierre) | Monstre · Acte 2 | Oui |  |
+| Sphéropode (Soie) | Monstre · Acte 2 | Oui |  |
+| Sphéropode (Œuf) | Monstre · Acte 2 | Oui |  |
+| Titos | Invocation · Acte 2 | Oui |  |
+| Tunnelier | Monstre · Acte 2 | Oui |  |
 | Œuf robuste | Monstre · Acte 2 | Non |  |
-| Berserker de vase | Monstre · Acte 3 | Non |  |
+| Berserker de vase | Monstre · Acte 3 | Oui |  |
 | Bouclier vivant | Faible · Acte 3 | Oui |  |
-| Chevalier rainette | Monstre · Acte 3 | Non |  |
-| Déchargebot | Invocation · Acte 3 | Non |  |
-| Gardebot | Invocation · Acte 3 | Non |  |
-| Globocéphale | Monstre · Acte 3 | Non |  |
-| Hachebots | Monstre · Acte 3 | Non |  |
+| Chevalier rainette | Monstre · Acte 3 | Oui |  |
+| Déchargebot | Invocation · Acte 3 | Oui |  |
+| Gardebot | Invocation · Acte 3 | Oui |  |
+| Globocéphale | Monstre · Acte 3 | Oui |  |
+| Hachebots | Monstre · Acte 3 | Oui |  |
 | L'Oublié | Monstre · Acte 3 | Oui |  |
-| L'Égaré | Monstre · Acte 3 | Non |  |
+| L'Égaré | Monstre · Acte 3 | Oui |  |
 | Machiniste | Monstre · Acte 3 | Non |  |
 | Magistrix | Monstre · Acte 3 | Non |  |
-| Opérateur de tourelle | Faible · Acte 3 | Non |  |
+| Opérateur de tourelle | Faible · Acte 3 | Oui |  |
 | Parchemord | Monstre · Acte 3 | Non |  |
 | Poignard-bot | Invocation · Acte 3 | Oui |  |
-| Sculpteur dévoué | Faible · Acte 3 | Non |  |
+| Sculpteur dévoué | Faible · Acte 3 | Oui |  |
 | Sonobot | Invocation · Acte 3 | Oui |  |
 
 ### Élites — 0,0 %
