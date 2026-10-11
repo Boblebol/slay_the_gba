@@ -54,6 +54,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "DRAGON_FRUIT", "Chaque fois que vous gagnez des Pièces d'or, augmentez vos PV Max de 1." },
     { "BEATING_REMNANT", "Vous ne pouvez perdre plus de 20 PV en un seul tour." },
     { "INFUSED_CORE", "Au début de chaque combat, Canalisez 3 Orbes kéraunique. Les Orbes kéraunique infligent 1 dégât supplémentaire." },
+    { "TOASTY_MITTENS", "Au début de votre tour, Épuisez 1 carte de votre Main et gagnez 1 de Force." },
     { "UNDYING_SIGIL", "Les ennemis affligés d'au moins autant de Fatalité que de PV infligent 50% de dégâts en moins." },
     { "UNSETTLING_LAMP", "La première carte de chaque combat qui inflige des Effets négatifs à un ennemi voit son effet doublé." },
     { "BELT_BUCKLE", "Sans Potion, vous avez 2 de Dextérité supplémentaire." },

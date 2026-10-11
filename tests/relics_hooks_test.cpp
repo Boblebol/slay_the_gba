@@ -3723,6 +3723,26 @@ void test_silver_crucible() {
     std::cout << "[PASS] Silver Crucible: first 3 card rewards upgraded, first Treasure Chest empty" << std::endl;
 }
 
+void test_toasty_mittens() {
+    // With the relic: each turn starts with 1 Strength more, and 1 card of the hand to exhaust.
+    RunManager mittens = make_relic_run(CharacterId::IRONCLAD, { "TOASTY_MITTENS" });
+    CombatEngine& combat = mittens.combat;
+    assert(combat.player.get_status(StatusType::STRENGTH) == 1);
+    assert(combat.choice_pending() && combat.hand.size() == 5);
+    const uint8_t picks[] = { 0 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending() && combat.hand.size() == 4 && combat.exhaust_pile.size() == 1);
+    end_turn_idle(combat);
+    assert(combat.player.get_status(StatusType::STRENGTH) == 2);
+    assert(combat.choice_pending() && combat.hand.size() == 5);
+
+    // Without it: no Strength, no exhaust.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.player.get_status(StatusType::STRENGTH) == 0);
+    assert(!plain.combat.choice_pending() && plain.combat.hand.size() == 5 && plain.combat.exhaust_pile.empty());
+    std::cout << "[PASS] Toasty Mittens: 1 Strength and 1 exhausted card at the start of each turn" << std::endl;
+}
+
 void test_undying_sigil() {
     // With the relic: an enemy with at least as much Doom as HP deals 50% less damage.
     CombatEngine sigil = make_combat(CharacterId::IRONCLAD);
@@ -3887,6 +3907,7 @@ int main() {
     test_daughter_of_the_wind();
     test_bookmark();
     test_undying_sigil();
+    test_toasty_mittens();
     test_tungsten_rod();
     test_paper_krane();
     test_mango();
