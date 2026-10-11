@@ -35,9 +35,13 @@ constexpr Encounter ACT1A_NORMAL[] = {
 };
 
 // Act 1 (B): the Underdocks.
+constexpr Encounter ACT1B_WEAK[] = {
+    { "SeapunkWeak"sv, 1, { EnemyType::SEAPUNK } },
+};
 constexpr Encounter ACT1B_NORMAL[] = {
     { "CultistsNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::DAMP_CULTIST } },
     { "SewerClamNormal"sv, 1, { EnemyType::SEWER_CLAM } },
+    { "SeapunkNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::SEAPUNK } },
 };
 
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
@@ -60,7 +64,7 @@ constexpr Encounter LEGACY_ELITE[] = {
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };

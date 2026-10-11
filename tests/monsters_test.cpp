@@ -35,7 +35,9 @@ void check_monster(EnemyType type, std::string_view name, int hp, std::initializ
     Enemy& enemy = combat.enemies[0];
     assert(enemy.type == type);
     assert(enemy.name == name);
-    assert(enemy.hp == hp && enemy.max_hp == hp);
+    // `hp` is the base HP: a monster with a spread of HP starts a few above it (hp_bonus).
+    assert(enemy.hp == hp + enemy.hp_bonus && enemy.max_hp == enemy.hp);
+    hp = enemy.hp;
     assert(enemy.block == 0 && enemy.statuses.empty());
 
     int turn_number = 1;
@@ -1482,6 +1484,45 @@ void test_flyconid_ascension() {
     std::cout << "[PASS] Flyconid: Ascension gives 51 to 53 HP, Spores of 9 and a Smash of 12" << std::endl;
 }
 
+void test_seapunk() {
+    // Sea Kick 11, Spinning Kick 2 x4, Bubble Burp (7 Block, +1 Strength), and again with the Strength kept.
+    check_monster(EnemyType::SEAPUNK, "Voyou marin", 44, {
+        { ATTACK, 11, 0, 0 },
+        { ATTACK, 2, 0, 0, 0, 4 },
+        { BUFF, 0, 7, 1 },
+        { ATTACK, 12, 0, 1 },
+        { ATTACK, 3, 0, 1, 0, 4 },
+        { BUFF, 0, 7, 2 },
+        { ATTACK, 13, 0, 2 },
+    });
+    std::cout << "[PASS] Seapunk: 44 HP, Sea Kick 11, Spinning Kick 2x4, Bubble Burp 7 Block + 1 Strength" << std::endl;
+}
+
+void test_seapunk_ascension() {
+    // 47 to 49 HP (44 to 46 plus 3), Sea Kick 13, Bubble Burp 8 Block + 2 Strength at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SEAPUNK);
+        Enemy& punk = combat.enemies[0];
+        punk.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        const int16_t base = punk.hp;
+        assert(punk.ascension_hp() == 47 && punk.hp_spread() == 2);
+        assert(base >= 44 && base <= 46 && punk.max_hp == 44 + punk.hp_bonus);
+        punk.ascend(true, true);
+        combat.plan_enemies();
+        assert(punk.hp == base + 3 && punk.max_hp == base + 3 && punk.hp >= 47 && punk.hp <= 49);
+        assert(punk.current_intent.type == ATTACK && punk.intent_damage(combat.player) == 13);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(punk.current_intent.type == ATTACK && punk.current_intent.hits == 4 &&
+               punk.intent_damage(combat.player) == 2);
+        combat.end_player_turn();
+        assert(punk.current_intent.type == BUFF);
+        combat.end_player_turn();
+        assert(punk.block == 8 && punk.get_status(StatusType::STRENGTH) == 2);
+    }
+    std::cout << "[PASS] Seapunk: Ascension gives 47 to 49 HP, Sea Kick 13, Bubble Burp 8 Block + 2 Strength" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1532,6 +1573,8 @@ int main() {
     test_nibbit_ascension();
     test_flyconid();
     test_flyconid_ascension();
+    test_seapunk();
+    test_seapunk_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

@@ -113,6 +113,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Mycoptère";
         max_hp = 47;
         hp = 47;
+    } else if (type == EnemyType::SEAPUNK) {
+        name = "Voyou marin";
+        max_hp = 44;
+        hp = 44;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -125,6 +129,7 @@ void Enemy::init(EnemyType enemy_type) {
 uint8_t Enemy::hp_spread() const {
     switch (type) {
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
+        case EnemyType::SEAPUNK: return 2;     // 44 to 46, 47 to 49 at Ascension
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
         case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
         case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
@@ -164,6 +169,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
+        case EnemyType::SEAPUNK: return 47;
         default: return 0;
     }
 }
@@ -573,6 +579,24 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = ascended_damage ? 3 : 2;
             current_intent.description = "Chuintement (+2 Force)";
+        }
+    } else if (type == EnemyType::SEAPUNK) {
+        // Sea Kick, Spinning Kick, Bubble Burp, and again.
+        if (turn_number % 3 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 13 : 11;
+            current_intent.description = "Coup de pied marin (11 dmg)";
+        } else if (turn_number % 3 == 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 2;
+            current_intent.hits = 4;
+            current_intent.description = "Coup de pied tournoyant (2 dmg x4)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.block = ascended_damage ? 8 : 7;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 2 : 1;
+            current_intent.description = "Jet de bulles (7 blk, +1 Force)";
         }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the
