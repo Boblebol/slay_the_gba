@@ -1817,6 +1817,11 @@ void RunManager::proceed_after_combat() {
         }
     }
     combat.permanent_gains.clear();
+    // Guilty counts the fights it has sat through in `bonus`, and leaves the deck after the fifth.
+    for (size_t i = master_deck.size(); i > 0; --i) {
+        if (master_deck[i - 1].id != CardId::GUILTY) continue;
+        if (++master_deck[i - 1].bonus >= 5) master_deck.erase(i - 1);
+    }
     if (has_relic("SEAL_OF_GOLD")) gold = combat.gold;
     // What the cards of the fight leave to the run: gold (Hand of Greed, Royalties), potions (Alchemize), an extra
     // card reward (The Hunt), a card to remove from the deck (Forbidden Grimoire).

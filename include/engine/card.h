@@ -602,6 +602,7 @@ enum class CardId : uint16_t {
     BAD_LUCK,
     DEBT,
     SPORE_MIND,
+    GUILTY,
     // Sly (Silent): played for free when discarded from the hand during the turn
     TACTICIAN,
     ABRASIVE,
