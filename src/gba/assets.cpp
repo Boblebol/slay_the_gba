@@ -24,11 +24,13 @@
 #include "bn_sprite_items_mon_cultist.h"
 #include "bn_sprite_items_mon_damp_cultist.h"
 #include "bn_sprite_items_mon_eye_with_teeth.h"
+#include "bn_sprite_items_mon_soul_nexus.h"
 #include "bn_sprite_items_mon_stabbot.h"
 #include "bn_sprite_items_mon_corpse_slug.h"
 #include "bn_sprite_items_mon_gas_bomb.h"
 #include "bn_sprite_items_mon_spiny_toad.h"
 #include "bn_sprite_items_mon_seapunk.h"
+#include "bn_sprite_items_mon_flail_knight.h"
 #include "bn_sprite_items_mon_flyconid.h"
 #include "bn_sprite_items_mon_fossil_stalker.h"
 #include "bn_sprite_items_mon_fuzzy_wurm_crawler.h"
@@ -36,6 +38,7 @@
 #include "bn_sprite_items_mon_gremlin_nob.h"
 #include "bn_sprite_items_mon_haunted_ship.h"
 #include "bn_sprite_items_mon_hunter_killer.h"
+#include "bn_sprite_items_mon_entomancer.h"
 #include "bn_sprite_items_mon_inklet.h"
 #include "bn_sprite_items_mon_jaw_worm.h"
 #include "bn_sprite_items_mon_noisebot.h"
@@ -48,6 +51,10 @@
 #include "bn_sprite_items_mon_devoted_sculptor.h"
 #include "bn_sprite_items_mon_axebot.h"
 #include "bn_sprite_items_mon_turret_operator.h"
+#include "bn_sprite_items_mon_skulking_colony.h"
+#include "bn_sprite_items_mon_terror_eel.h"
+#include "bn_sprite_items_mon_infested_prism.h"
+#include "bn_sprite_items_mon_magi_knight.h"
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_osty.h"
 #include "bn_sprite_items_mon_parafright.h"
@@ -61,10 +68,12 @@
 #include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
 #include "bn_sprite_items_mon_sewer_clam.h"
+#include "bn_sprite_items_mon_spectral_knight.h"
 #include "bn_sprite_items_mon_sneaky_gremlin.h"
 #include "bn_sprite_items_mon_sludge_spinner.h"
 #include "bn_sprite_items_mon_tracker_ruby_raider.h"
 #include "bn_sprite_items_mon_slumbering_beetle.h"
+#include "bn_sprite_items_mon_mecha_knight.h"
 #include "bn_sprite_items_mon_the_forgotten.h"
 #include "bn_sprite_items_mon_the_lost.h"
 #include "bn_sprite_items_mon_tunneler.h"
@@ -257,6 +266,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_axe_ruby_raider, false };
     case engine::EnemyType::TRACKER_RUBY_RAIDER:
         return { &bn::sprite_items::mon_tracker_ruby_raider, false };
+    case engine::EnemyType::MECHA_KNIGHT:
+        return { &bn::sprite_items::mon_mecha_knight, false };
     case engine::EnemyType::CALCIFIED_CULTIST:
         return { &bn::sprite_items::mon_calcified_cultist, false };
     case engine::EnemyType::DAMP_CULTIST:
@@ -265,8 +276,12 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_sewer_clam, false };
     case engine::EnemyType::EYE_WITH_TEETH:
         return { &bn::sprite_items::mon_eye_with_teeth, false };
+    case engine::EnemyType::SPECTRAL_KNIGHT:
+        return { &bn::sprite_items::mon_spectral_knight, false };
     case engine::EnemyType::SPINY_TOAD:
         return { &bn::sprite_items::mon_spiny_toad, false };
+    case engine::EnemyType::FLAIL_KNIGHT:
+        return { &bn::sprite_items::mon_flail_knight, false };
     case engine::EnemyType::SEAPUNK:
         return { &bn::sprite_items::mon_seapunk, false };
     case engine::EnemyType::STABBOT:
@@ -277,6 +292,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_noisebot, false };
     case engine::EnemyType::CUBEX_CONSTRUCT:
         return { &bn::sprite_items::mon_cubex_construct, false };
+    case engine::EnemyType::TERROR_EEL:
+        return { &bn::sprite_items::mon_terror_eel, false };
     case engine::EnemyType::PUNCH_CONSTRUCT:
         return { &bn::sprite_items::mon_punch_construct, false };
     case engine::EnemyType::BOWLBUG_NECTAR:
@@ -287,6 +304,10 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_turret_operator, false };
     case engine::EnemyType::BOWLBUG_ROCK:
         return { &bn::sprite_items::mon_bowlbug_rock, false };
+    case engine::EnemyType::SKULKING_COLONY:
+        return { &bn::sprite_items::mon_skulking_colony, false };
+    case engine::EnemyType::MAGI_KNIGHT:
+        return { &bn::sprite_items::mon_magi_knight, false };
     case engine::EnemyType::INKLET:
         return { &bn::sprite_items::mon_inklet, false };
     case engine::EnemyType::NIBBIT:
@@ -305,6 +326,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_osty, false };
     case engine::EnemyType::SLUMBERING_BEETLE:
         return { &bn::sprite_items::mon_slumbering_beetle, false };
+    case engine::EnemyType::INFESTED_PRISM:
+        return { &bn::sprite_items::mon_infested_prism, false };
     case engine::EnemyType::FLYCONID:
         return { &bn::sprite_items::mon_flyconid, false };
     case engine::EnemyType::CORPSE_SLUG:
@@ -323,8 +346,12 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_toadpole, false };
     case engine::EnemyType::HUNTER_KILLER:
         return { &bn::sprite_items::mon_hunter_killer, false };
+    case engine::EnemyType::ENTOMANCER:
+        return { &bn::sprite_items::mon_entomancer, false };
     case engine::EnemyType::MAWLER:
         return { &bn::sprite_items::mon_mawler, false };
+    case engine::EnemyType::SOUL_NEXUS:
+        return { &bn::sprite_items::mon_soul_nexus, false };
     case engine::EnemyType::FOSSIL_STALKER:
         return { &bn::sprite_items::mon_fossil_stalker, false };
     case engine::EnemyType::CHOMPER:

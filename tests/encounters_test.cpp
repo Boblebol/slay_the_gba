@@ -34,6 +34,8 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::ASSASSIN_RUBY_RAIDER: return "ASSASSIN_RUBY_RAIDER";
         case EnemyType::AXE_RUBY_RAIDER: return "AXE_RUBY_RAIDER";
         case EnemyType::TRACKER_RUBY_RAIDER: return "TRACKER_RUBY_RAIDER";
+        case EnemyType::TERROR_EEL: return "TERROR_EEL";
+        case EnemyType::MECHA_KNIGHT: return "MECHA_KNIGHT";
         case EnemyType::CALCIFIED_CULTIST: return "CALCIFIED_CULTIST";
         case EnemyType::DAMP_CULTIST: return "DAMP_CULTIST";
         case EnemyType::SEWER_CLAM: return "SEWER_CLAM";
@@ -43,6 +45,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::VINE_SHAMBLER: return "VINE_SHAMBLER";
         case EnemyType::EYE_WITH_TEETH: return "EYE_WITH_TEETH";
         case EnemyType::STABBOT: return "STABBOT";
+        case EnemyType::SPECTRAL_KNIGHT: return "SPECTRAL_KNIGHT";
         case EnemyType::SPINY_TOAD: return "SPINY_TOAD";
         case EnemyType::NOISEBOT: return "NOISEBOT";
         case EnemyType::PARAFRIGHT: return "PARAFRIGHT";
@@ -53,6 +56,8 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::AXEBOT: return "AXEBOT";
         case EnemyType::TURRET_OPERATOR: return "TURRET_OPERATOR";
         case EnemyType::BOWLBUG_ROCK: return "BOWLBUG_ROCK";
+        case EnemyType::SKULKING_COLONY: return "SKULKING_COLONY";
+        case EnemyType::MAGI_KNIGHT: return "MAGI_KNIGHT";
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
@@ -80,6 +85,10 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::THE_LOST: return "THE_LOST";
         case EnemyType::BOWLBUG_SILK: return "BOWLBUG_SILK";
         case EnemyType::BOWLBUG_EGG: return "BOWLBUG_EGG";
+        case EnemyType::ENTOMANCER: return "ENTOMANCER";
+        case EnemyType::INFESTED_PRISM: return "INFESTED_PRISM";
+        case EnemyType::FLAIL_KNIGHT: return "FLAIL_KNIGHT";
+        case EnemyType::SOUL_NEXUS: return "SOUL_NEXUS";
     }
     return {};
 }
@@ -204,9 +213,15 @@ void test_reference_encounters() {
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
-        assert(ids_of(encounter_table(zone, EncounterTier::ELITE)) ==
-               std::set<std::string_view>{ "LegacyGremlinNob" });
     }
+    assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
+           std::set<std::string_view>{ "LegacyGremlinNob" });
+    assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "SkulkingColonyElite", "TerrorEelElite" }));
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "EntomancerElite", "InfestedPrismsElite" }));
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "SoulNexusElite", "MechaKnightElite", "KnightsElite" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
     // Acts 2 and 3: the reference encounters the engine can play, with the groups the game had before in Act 3.

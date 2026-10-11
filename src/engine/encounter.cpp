@@ -82,6 +82,20 @@ constexpr Encounter ACT3_NORMAL[] = {
     { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
 };
 
+constexpr Encounter ACT1B_ELITE[] = {
+    { "SkulkingColonyElite"sv, 1, { EnemyType::SKULKING_COLONY } },
+    { "TerrorEelElite"sv, 1, { EnemyType::TERROR_EEL } },
+};
+constexpr Encounter ACT2_ELITE[] = {
+    { "EntomancerElite"sv, 1, { EnemyType::ENTOMANCER } },
+    { "InfestedPrismsElite"sv, 1, { EnemyType::INFESTED_PRISM } },
+};
+constexpr Encounter ACT3_ELITE[] = {
+    { "SoulNexusElite"sv, 1, { EnemyType::SOUL_NEXUS } },
+    { "MechaKnightElite"sv, 1, { EnemyType::MECHA_KNIGHT } },
+    { "KnightsElite"sv, 3, { EnemyType::FLAIL_KNIGHT, EnemyType::MAGI_KNIGHT, EnemyType::SPECTRAL_KNIGHT } },
+};
+
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
 };
@@ -94,9 +108,9 @@ constexpr Encounter LEGACY_ELITE[] = {
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { ACT2_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { ACT3_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
 } // namespace

@@ -408,7 +408,16 @@ enum class EnemyType : uint8_t {
     TURRET_OPERATOR,
     BOWLBUG_SILK,
     BOWLBUG_ROCK,
-    BOWLBUG_EGG
+    BOWLBUG_EGG,
+    SKULKING_COLONY,
+    TERROR_EEL,
+    ENTOMANCER,
+    INFESTED_PRISM,
+    FLAIL_KNIGHT,
+    SPECTRAL_KNIGHT,
+    MAGI_KNIGHT,
+    SOUL_NEXUS,
+    MECHA_KNIGHT
 };
 
 // What a monster sees of the fight when it chooses its next move.

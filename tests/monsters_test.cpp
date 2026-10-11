@@ -167,6 +167,79 @@ void test_tracker_ruby_raider_ascension() {
     std::cout << "[PASS] Tracker Ruby Raider: Ascension gives 22 to 26 HP and 9 hits" << std::endl;
 }
 
+template <typename Pile>
+int count_cards(const Pile& pile, CardId id) {
+    int n = 0;
+    for (const DeckCard& card : pile) n += card.id == id;
+    return n;
+}
+
+void test_mecha_knight() {
+    // 300 HP. Charge 25, Flamethrower 8 + 4 Burn, Windup 15 Block + 5 Strength, Heavy Cleave 35, then the
+    // last three again from Flamethrower. Strength adds to every attack that follows.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::MECHA_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    assert(knight.type == EnemyType::MECHA_KNIGHT && knight.name == "Méca-Chevalier");
+    assert(knight.hp == 300 && knight.max_hp == 300 && knight.block == 0 && knight.statuses.empty());
+
+    int burns = 0;
+    int strength = 0;
+    auto play = [&](EnemyIntentType intent, int damage) {
+        assert(damage >= 0);
+        assert(knight.current_intent.type == intent && knight.intent_damage(combat.player) == damage);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+    };
+    auto total_burns = [&]() {
+        return count_cards(combat.draw_pile, CardId::BURN) + count_cards(combat.hand, CardId::BURN) +
+               count_cards(combat.discard_pile, CardId::BURN);
+    };
+
+    play(ATTACK, 25); // Charge
+    assert(combat.player.hp == combat.player.max_hp - 25 && knight.block == 0 && total_burns() == 0);
+    play(ATTACK_DEBUFF, 8); // Flamethrower
+    burns += 4;
+    assert(total_burns() == burns && knight.block == 0);
+    play(BUFF, 0); // Windup
+    strength += 5;
+    assert(knight.block == 15 && knight.get_status(StatusType::STRENGTH) == strength);
+    const int burns_in_hand = count_cards(combat.hand, CardId::BURN);
+    combat.player.hp = combat.player.max_hp;
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 40); // 35 + 5 Strength
+    combat.end_player_turn();
+    assert(combat.player.hp == combat.player.max_hp - 40 - 2 * burns_in_hand);
+    assert(knight.block == 0);
+    // The cycle starts again at Flamethrower, with the Strength kept.
+    assert(knight.current_intent.type == ATTACK_DEBUFF && knight.intent_damage(combat.player) == 13);
+    assert(knight.current_intent.status_card == CardId::BURN && knight.current_intent.status_cards == 4);
+    std::cout << "[PASS] Mecha Knight: 300 HP, Charge, Flamethrower + Burn, Windup, Heavy Cleave, loop" << std::endl;
+}
+
+void mecha_pass(CombatEngine& combat) {
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.state == CombatState::PLAYER_TURN);
+}
+
+void test_mecha_knight_ascension() {
+    // 320 HP, Charge 30, Flamethrower 12, Heavy Cleave 40 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::MECHA_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    assert(knight.ascension_hp() == 320);
+    knight.ascend(true, true);
+    combat.plan_enemies();
+    assert(knight.hp == 320 && knight.max_hp == 320);
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 30);
+    mecha_pass(combat);
+    assert(knight.current_intent.type == ATTACK_DEBUFF && knight.intent_damage(combat.player) == 12);
+    mecha_pass(combat);
+    assert(knight.current_intent.type == BUFF && knight.current_intent.block == 15);
+    mecha_pass(combat);
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 45); // 40 + 5 Strength
+    std::cout << "[PASS] Mecha Knight: Ascension gives 320 HP, Charge 30, Flamethrower 12, Heavy Cleave 40" << std::endl;
+}
+
 void test_calcified_cultist() {
     // Incantation (Ritual 2) once, then Dark Strike 9: Ritual grants Strength from the turn after it was gained.
     check_monster(EnemyType::CALCIFIED_CULTIST, "Adepte calcifié", 38, {
@@ -1778,6 +1851,185 @@ void test_bowlbug_egg_ascension() {
     std::cout << "[PASS] Bowlbug Egg: Ascension gives 23 to 24 HP and a Bite of 8" << std::endl;
 }
 
+void test_skulking_colony() {
+    // Zoom 14 twice, Inertia 9 (+2 Strength), Piercing Stabs 7x2, and again with the Strength it has gained.
+    check_monster(EnemyType::SKULKING_COLONY, "Colonie de rôdeurs", 75, {
+        { ATTACK, 14, 0, 0 },
+        { ATTACK, 14, 0, 0 },
+        { ATTACK_BUFF, 9, 0, 2 },
+        { ATTACK, 9, 0, 2, 0, 2 },
+        { ATTACK, 16, 0, 2 },
+        { ATTACK, 16, 0, 2 },
+        { ATTACK_BUFF, 11, 0, 4 },
+        { ATTACK, 11, 0, 4, 0, 2 },
+    });
+    std::cout << "[PASS] Skulking Colony: 75 HP, Zoom 14 x2, Inertia 9 (+2 Strength), Piercing Stabs 7x2, loop" << std::endl;
+}
+
+void test_skulking_colony_ascension() {
+    // 80 HP, Zoom 16, Inertia 11 (+4 Strength) and Piercing Stabs 8x2 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SKULKING_COLONY);
+    Enemy& colony = combat.enemies[0];
+    colony.ascend(true, true);
+    combat.plan_enemies();
+    assert(colony.hp == 80 && colony.max_hp == 80);
+    assert(colony.current_intent.type == ATTACK && colony.intent_damage(combat.player) == 16);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(colony.current_intent.type == ATTACK && colony.intent_damage(combat.player) == 16);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(colony.current_intent.type == ATTACK_BUFF && colony.intent_damage(combat.player) == 11);
+    combat.end_player_turn();
+    assert(colony.get_status(StatusType::STRENGTH) == 4);
+    combat.player.hp = combat.player.max_hp;
+    assert(colony.current_intent.type == ATTACK && colony.current_intent.hits == 2);
+    assert(colony.intent_damage(combat.player) == 12);
+    std::cout << "[PASS] Skulking Colony: Ascension gives 80 HP, Zoom 16, Inertia 11 (+4 Strength), Stabs 8x2" << std::endl;
+}
+
+void test_terror_eel() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TERROR_EEL);
+    Enemy& eel = combat.enemies[0];
+    assert(eel.name == "Murène de l'effroi" && eel.hp == 140 && eel.max_hp == 140);
+    // Crash 16, Thrash 3x3 (+6 Vigor), Crash 16 + 6 Vigor, Thrash, and again, while above half its HP.
+    struct Turn { EnemyIntentType intent; int damage; int hits; int vigor; };
+    int turn_number = 1;
+    for (const Turn& turn : { Turn{ ATTACK, 16, 1, 0 }, Turn{ ATTACK_BUFF, 3, 3, 6 }, Turn{ ATTACK, 22, 1, 0 },
+                              Turn{ ATTACK_BUFF, 3, 3, 6 }, Turn{ ATTACK, 22, 1, 0 } }) {
+        assert(combat.turn_number == turn_number++);
+        assert(eel.current_intent.type == turn.intent && eel.current_intent.hits == turn.hits);
+        assert(eel.intent_damage(combat.player) == turn.damage || turn.vigor == 0);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == turn.damage * turn.hits);
+        assert(eel.get_status(StatusType::VIGOR) == turn.vigor);
+        assert(combat.player.get_status(StatusType::VULNERABLE) == 0);
+    }
+    // At half its HP or less it is stunned, casts Terror (Vulnerable 99), then Crash and Thrash again.
+    eel.hp = 70;
+    combat.plan_enemies();
+    assert(eel.current_intent.type == STUN);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp == combat.player.hp && combat.player.get_status(StatusType::VULNERABLE) == 0);
+    assert(eel.current_intent.type == DEBUFF && eel.current_intent.debuffs_player());
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::VULNERABLE) == 99);
+    assert(eel.current_intent.type == ATTACK);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 16 * 3 / 2);
+    assert(eel.current_intent.type == ATTACK_BUFF && eel.current_intent.hits == 3);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 3 * (3 * 3 / 2));
+    assert(eel.get_status(StatusType::VIGOR) == 6 && eel.current_intent.type == ATTACK);
+    std::cout << "[PASS] Terror Eel: 140 HP, Crash 16, Thrash 3x3 +6 Vigor, stun and Terror at half HP" << std::endl;
+}
+
+void test_terror_eel_ascension() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TERROR_EEL);
+    Enemy& eel = combat.enemies[0];
+    eel.ascend(true, true);
+    combat.plan_enemies();
+    assert(eel.hp == 150 && eel.max_hp == 150);
+    assert(eel.current_intent.type == ATTACK && eel.intent_damage(combat.player) == 18);
+    combat.end_player_turn();
+    assert(eel.current_intent.type == ATTACK_BUFF && eel.current_intent.hits == 3);
+    assert(eel.intent_damage(combat.player) == 4);
+    std::cout << "[PASS] Terror Eel: Ascension gives 150 HP, Crash 18, Thrash 4x3" << std::endl;
+}
+
+void test_infested_prism() {
+    // Jab 15, Radiate 11 + 11 Block, Whirlwind 5x3, Pulsate 8 + 20 Block + Vital Spark, and again.
+    check_monster(EnemyType::INFESTED_PRISM, "Prisme infesté", 161, {
+        { ATTACK, 15, 0, 0 },
+        { ATTACK_DEFEND, 11, 11, 0 },
+        { ATTACK, 5, 0, 0, 0, 3 },
+        { ATTACK_DEFEND, 8, 20, 0 },
+        { ATTACK, 15, 0, 0 },
+        { ATTACK_DEFEND, 11, 11, 0 },
+        { ATTACK, 5, 0, 0, 0, 3 },
+        { ATTACK_DEFEND, 8, 20, 0 },
+    });
+    std::cout << "[PASS] Infested Prism: 161 HP, Jab 15, Radiate 11/11, Whirlwind 5x3, Pulsate 8/20, loop" << std::endl;
+}
+
+void test_infested_prism_ascension() {
+    // 171 HP at Ascension; Jab 17, Radiate 13/13, Whirlwind 6x3, Pulsate 10/22 with 3 Vital Spark.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::INFESTED_PRISM);
+    Enemy& prism = combat.enemies[0];
+    prism.ascend(true, true);
+    combat.plan_enemies();
+    assert(prism.hp == 171 && prism.max_hp == 171);
+    const int damage[] = { 17, 13, 6, 10 };
+    const int block[] = { 0, 13, 0, 22 };
+    for (int i = 0; i < 4; ++i) {
+        combat.player.hp = combat.player.max_hp;
+        assert(prism.intent_damage(combat.player) == damage[i]);
+        combat.end_player_turn();
+        assert(prism.block == block[i]);
+        assert(combat.player.max_hp - combat.player.hp == damage[i] * (i == 2 ? 3 : 1));
+    }
+    assert(combat.enemy_power_amount(0, PowerId::VITAL_SPARK) == 3);
+    std::cout << "[PASS] Infested Prism: Ascension gives 171 HP, Jab 17, Radiate 13/13, Whirlwind 6x3, Pulsate 10/22" << std::endl;
+}
+
+void test_infested_prism_vital_spark() {
+    // Pulsate gives 2 Vital Spark: each unblocked hit gives 1 energy, twice a turn, and the count starts over.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::INFESTED_PRISM);
+    for (int i = 0; i < 4; ++i) combat.end_player_turn(); // up to Pulsate
+    assert(combat.enemy_power_amount(0, PowerId::VITAL_SPARK) == 2);
+    Enemy& prism = combat.enemies[0];
+    prism.block = 0;
+    combat.hand.clear();
+    for (int i = 0; i < 3; ++i) combat.hand.push_back(CardId::STRIKE);
+    combat.player.energy = 3;
+    for (int i = 0; i < 3; ++i) assert(combat.play_card(0, 0));
+    assert(combat.player.energy == 3 - 3 + 2); // the third hit gives nothing
+    combat.end_player_turn();
+    prism.block = 0;
+    combat.hand.clear();
+    combat.hand.push_back(CardId::STRIKE);
+    assert(combat.play_card(0, 0));
+    assert(combat.player.energy == combat.player.max_energy); // the first hit of a new turn gives 1 again
+    std::cout << "[PASS] Infested Prism: Vital Spark gives 1 energy per unblocked hit, up to its amount each turn" << std::endl;
+}
+
+void test_magi_knight() {
+    // Power Shield 6 + 5 Block, Dampen, then Ram 10, Prep 5 Block and Magic Bomb 35 in a loop. The Block fades
+    // at the monster's next turn.
+    check_monster(EnemyType::MAGI_KNIGHT, "Chevalier mage", 82, {
+        { ATTACK_DEFEND, 6, 5, 0 },
+        { DEBUFF, 0, 0, 0 },
+        { ATTACK, 10, 0, 0 },
+        { DEFEND, 0, 5, 0 },
+        { ATTACK, 35, 0, 0 },
+        { ATTACK, 10, 0, 0 },
+        { DEFEND, 0, 5, 0 },
+        { ATTACK, 35, 0, 0 },
+    });
+    std::cout << "[PASS] Magi Knight: 82 HP, Power Shield, Dampen, then Ram, Prep, Magic Bomb in a loop" << std::endl;
+}
+
+void test_magi_knight_ascension() {
+    // 89 HP, Power Shield 7, Ram 11 and Magic Bomb 40 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::MAGI_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    knight.ascend(true, true);
+    combat.plan_enemies();
+    assert(knight.hp == 89 && knight.max_hp == 89);
+    assert(knight.intent_damage(combat.player) == 7);
+    combat.end_player_turn(); // Power Shield
+    combat.end_player_turn(); // Dampen
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 11);
+    combat.end_player_turn(); // Ram
+    combat.end_player_turn(); // Prep
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 40);
+    std::cout << "[PASS] Magi Knight: Ascension gives 89 HP, Power Shield 7, Ram 11, Magic Bomb 40" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -2655,6 +2907,67 @@ void test_spiny_toad_ascension() {
     std::cout << "[PASS] Spiny Toad: Ascension gives 121 to 124 HP, Spike Explosion 25 and Tongue Lash 19" << std::endl;
 }
 
+void test_spectral_knight() {
+    // 93 HP. Hex (every card Ethereal) once, Soul Slash 15, then Soul Slash or Soul Flame 3 x3 at random,
+    // Soul Flame never twice in a row.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SPECTRAL_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    assert(knight.name == "Chevalier spectral" && knight.hp == 93 && knight.max_hp == 93 && knight.hp_spread() == 0);
+    assert(knight.current_intent.type == DEBUFF && knight.intent_damage(combat.player) == 0);
+    assert(combat.enemy_power_amount(0, PowerId::HEX) == 0);
+    combat.end_player_turn();
+    assert(combat.enemy_power_amount(0, PowerId::HEX) == 2 && combat.player.hp == combat.player.max_hp);
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 15 && knight.current_intent.hits == 1);
+    // Hex makes every card Ethereal: the hand is exhausted at the end of the turn instead of discarded.
+    combat.player.hp = combat.player.max_hp;
+    const size_t exhausted_before = combat.exhaust_pile.size();
+    assert(!combat.hand.empty());
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 15);
+    assert(combat.exhaust_pile.size() > exhausted_before);
+    bool saw_slash = false;
+    bool saw_flame = false;
+    bool last_was_flame = false;
+    for (int turn = 3; turn <= 40; ++turn) {
+        const bool flame = knight.current_intent.hits == 3;
+        assert(knight.current_intent.type == ATTACK && knight.block == 0);
+        assert(knight.intent_damage(combat.player) == (flame ? 3 : 15));
+        assert(!(flame && last_was_flame));
+        saw_flame = saw_flame || flame;
+        saw_slash = saw_slash || !flame;
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == (flame ? 9 : 15));
+        last_was_flame = flame;
+    }
+    assert(saw_slash && saw_flame);
+    std::cout << "[PASS] Spectral Knight: 93 HP, Hex, Soul Slash 15, then Slash or Flame 3 x3 without repeating the Flame" << std::endl;
+}
+
+void test_spectral_knight_ascension() {
+    // 97 HP, Soul Slash 17 and Soul Flame 4 x3 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SPECTRAL_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    assert(knight.ascension_hp() == 97);
+    knight.ascend(true, true);
+    combat.plan_enemies();
+    assert(knight.hp == 97 && knight.max_hp == 97);
+    assert(knight.current_intent.type == DEBUFF);
+    combat.end_player_turn();
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 17);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 17);
+    for (int turn = 3; turn <= 20; ++turn) {
+        const bool flame = knight.current_intent.hits == 3;
+        assert(knight.intent_damage(combat.player) == (flame ? 4 : 17));
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == (flame ? 12 : 17));
+    }
+    std::cout << "[PASS] Spectral Knight: Ascension gives 97 HP, Soul Slash 17 and Soul Flame 4 x3" << std::endl;
+}
+
 void test_seapunk() {
     // Sea Kick 11, Spinning Kick 2 x4, Bubble Burp (7 Block, +1 Strength), and again with the Strength kept.
     CombatEngine probe = make_combat(CharacterId::IRONCLAD, EnemyType::SEAPUNK);
@@ -2857,6 +3170,205 @@ void test_tunneler_ascension() {
     std::cout << "[PASS] Tunneler: Ascension gives 92 HP, Bite 15 and Below 26" << std::endl;
 }
 
+void test_entomancer() {
+    // Bees 3x7, Spear 18, Pheromone Spit (Personal Hive 1, Strength 3), twice over: the Strength it gains adds to
+    // each hit that follows.
+    check_monster(EnemyType::ENTOMANCER, "Entomancien", 145, {
+        { ATTACK, 3, 0, 0, 0, 7 },
+        { ATTACK, 18, 0, 0 },
+        { BUFF, 0, 0, 3 },
+        { ATTACK, 6, 0, 3, 0, 7 },
+        { ATTACK, 21, 0, 3 },
+        { BUFF, 0, 0, 6 },
+        { ATTACK, 9, 0, 6, 0, 7 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::ENTOMANCER);
+    assert(combat.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 0);
+    pass_turn(combat);
+    pass_turn(combat);
+    assert(combat.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 0);
+    pass_turn(combat); // Pheromone Spit
+    assert(combat.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 1);
+    pass_turn(combat);
+    pass_turn(combat);
+    pass_turn(combat); // the second Pheromone Spit
+    assert(combat.enemy_power_amount(0, PowerId::PERSONAL_HIVE) == 2);
+    std::cout << "[PASS] Entomancer: 145 HP, Bees 3x7, Spear 18, Pheromone Spit (Personal Hive 1, Strength 3)" << std::endl;
+}
+
+void test_entomancer_ascension() {
+    // 165 HP, Bees 3x8 and Spear 20 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::ENTOMANCER);
+    Enemy& entomancer = combat.enemies[0];
+    assert(entomancer.ascension_hp() == 165);
+    entomancer.ascend(true, true);
+    combat.plan_enemies();
+    assert(entomancer.hp == 165 && entomancer.max_hp == 165);
+    assert(entomancer.current_intent.type == ATTACK && entomancer.current_intent.hits == 8);
+    assert(entomancer.intent_damage(combat.player) == 3);
+    pass_turn(combat);
+    assert(entomancer.current_intent.hits == 1 && entomancer.intent_damage(combat.player) == 20);
+    std::cout << "[PASS] Entomancer: Ascension gives 165 HP, Bees 3x8 and a Spear of 20" << std::endl;
+}
+
+void test_flail_knight() {
+    // Ram 15 first, then a draw among War Chant (+3 Strength), Flail 9x2 and Ram 15; War Chant never twice in a row.
+    bool chant = false, flail = false, ram_again = false;
+    for (int i = 0; i < 30; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FLAIL_KNIGHT);
+        Enemy& knight = combat.enemies[0];
+        assert(knight.type == EnemyType::FLAIL_KNIGHT && knight.name == "Chevalier au fléau");
+        assert(knight.hp == 101 && knight.max_hp == 101);
+        bool previous_chant = false;
+        int strength = 0;
+        for (int turn = 1; turn <= 12; ++turn) {
+            const EnemyIntent intent = knight.current_intent;
+            if (turn == 1) assert(intent.type == ATTACK && intent.hits == 1 && knight.intent_damage(combat.player) == 15);
+            int expected = 0;
+            if (intent.type == BUFF) {
+                assert(turn > 1 && !previous_chant);
+                assert(knight.intent_damage(combat.player) == 0);
+                chant = true;
+            } else if (intent.hits == 2) {
+                assert(knight.intent_damage(combat.player) == 9 + strength);
+                expected = 2 * (9 + strength);
+                flail = true;
+            } else {
+                assert(intent.type == ATTACK && knight.intent_damage(combat.player) == 15 + strength);
+                expected = 15 + strength;
+                if (turn > 1) ram_again = true;
+            }
+            previous_chant = intent.type == BUFF;
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+            assert(combat.state == CombatState::PLAYER_TURN);
+            assert(combat.player.max_hp - combat.player.hp == expected);
+            if (previous_chant) strength += 3;
+            assert(knight.get_status(StatusType::STRENGTH) == strength);
+            assert(knight.block == 0 && knight.hp == 101);
+        }
+    }
+    assert(chant && flail && ram_again);
+    std::cout << "[PASS] Flail Knight: 101 HP, Ram 15, then War Chant +3 Strength, Flail 9x2 or Ram at random" << std::endl;
+}
+
+void test_flail_knight_ascension() {
+    // 108 HP, Flail 10x2 and Ram 17 at Ascension.
+    bool flail = false, ram = false;
+    for (int i = 0; i < 30; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FLAIL_KNIGHT);
+        Enemy& knight = combat.enemies[0];
+        knight.ascend(true, true);
+        combat.plan_enemies();
+        assert(knight.hp == 108 && knight.max_hp == 108);
+        for (int turn = 1; turn <= 8; ++turn) {
+            const EnemyIntent intent = knight.current_intent;
+            if (intent.type == ATTACK && intent.hits == 2) {
+                assert(knight.intent_damage(combat.player) == 10 + knight.get_status(StatusType::STRENGTH));
+                flail = true;
+            } else if (intent.type == ATTACK) {
+                assert(knight.intent_damage(combat.player) == 17 + knight.get_status(StatusType::STRENGTH));
+                ram = true;
+            }
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+        }
+    }
+    assert(flail && ram);
+    std::cout << "[PASS] Flail Knight: Ascension gives 108 HP, Flail 10x2, Ram 17" << std::endl;
+}
+
+void test_soul_nexus() {
+    // Calm: Soul Burn (29) every turn. Hurt, it opens with Life Drain (18, Weak 2, Vulnerable 2), then draws
+    // among Soul Burn, Maelstrom (6 four times) and Life Drain, never the move it just played.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SOUL_NEXUS);
+    Enemy& nexus = combat.enemies[0];
+    assert(nexus.type == EnemyType::SOUL_NEXUS && nexus.name == "Amalg'âmes");
+    assert(nexus.hp == 234 && nexus.max_hp == 234);
+    for (int turn = 1; turn <= 4; ++turn) {
+        assert(nexus.phase == 0 && nexus.block == 0 && nexus.statuses.empty());
+        assert(nexus.current_intent.type == ATTACK && nexus.intent_damage(combat.player) == 29);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == 29);
+    }
+
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::SOUL_NEXUS);
+    Enemy& beast = hurt.enemies[0];
+    hurt.damage_enemy(beast, 5);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(beast.phase == 1);
+    assert(beast.current_intent.type == ATTACK_DEBUFF && beast.intent_damage(hurt.player) == 18);
+    assert(beast.current_intent.debuffs[0].type == StatusType::WEAK && beast.current_intent.debuffs[0].amount == 2);
+    assert(beast.current_intent.debuffs[1].type == StatusType::VULNERABLE && beast.current_intent.debuffs[1].amount == 2);
+    bool seen[3] = { false, false, false }; // Soul Burn, Maelstrom, Life Drain
+    int previous = -1;
+    for (int turn = 0; turn < 60; ++turn) {
+        const EnemyIntent& intent = beast.current_intent;
+        assert(beast.phase == 1);
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.player.statuses.clear();
+        int kind, expected;
+        if (intent.type == ATTACK_DEBUFF) {
+            assert(intent.base_damage == 18 && intent.hits == 1);
+            assert(intent.debuffs[0].type == StatusType::WEAK && intent.debuffs[0].amount == 2);
+            assert(intent.debuffs[1].type == StatusType::VULNERABLE && intent.debuffs[1].amount == 2);
+            kind = 2;
+            expected = 18;
+        } else if (intent.hits == 4) {
+            assert(intent.type == ATTACK && intent.base_damage == 6);
+            kind = 1;
+            expected = 24;
+        } else {
+            assert(intent.type == ATTACK && intent.base_damage == 29);
+            kind = 0;
+            expected = 29;
+        }
+        assert(kind != previous || turn == 0); // never twice in a row after the opening
+        if (turn == 0) assert(kind == 2);
+        seen[kind] = true;
+        previous = kind;
+        hurt.end_player_turn();
+        assert(hurt.state == CombatState::PLAYER_TURN);
+        assert(hurt.player.max_hp - hurt.player.hp >= expected);
+        if (kind == 2) {
+            assert(hurt.player.get_status(StatusType::WEAK) == 2 && hurt.player.get_status(StatusType::VULNERABLE) == 2);
+        }
+    }
+    assert(seen[0] && seen[1] && seen[2]);
+    std::cout << "[PASS] Soul Nexus: 234 HP, Soul Burn until hurt, then Life Drain and a draw without repeating" << std::endl;
+}
+
+void test_soul_nexus_ascension() {
+    // 254 HP, Soul Burn of 31, Maelstrom of 7 four times and Life Drain of 19 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SOUL_NEXUS);
+    Enemy& nexus = combat.enemies[0];
+    assert(nexus.ascension_hp() == 254);
+    nexus.ascend(true, true);
+    combat.plan_enemies();
+    assert(nexus.hp == 254 && nexus.max_hp == 254);
+    assert(nexus.current_intent.type == ATTACK && nexus.intent_damage(combat.player) == 31);
+    combat.damage_enemy(nexus, 1);
+    combat.end_player_turn();
+    assert(nexus.current_intent.type == ATTACK_DEBUFF && nexus.intent_damage(combat.player) == 19);
+    bool burn = false, maelstrom = false;
+    for (int turn = 0; turn < 60 && !(burn && maelstrom); ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        if (nexus.current_intent.hits == 4) {
+            assert(nexus.current_intent.base_damage == 7);
+            maelstrom = true;
+        } else if (nexus.current_intent.type == ATTACK) {
+            assert(nexus.current_intent.base_damage == 31);
+            burn = true;
+        }
+    }
+    assert(burn && maelstrom);
+    std::cout << "[PASS] Soul Nexus: Ascension gives 254 HP, Soul Burn 31, Maelstrom 7x4, Life Drain 19" << std::endl;
+}
+
 } // namespace
 
 void test_slimed_berserker() {
@@ -2977,6 +3489,8 @@ int main() {
     test_axe_ruby_raider();
     test_tracker_ruby_raider();
     test_tracker_ruby_raider_ascension();
+    test_mecha_knight();
+    test_mecha_knight_ascension();
     test_calcified_cultist();
     test_damp_cultist();
     test_sewer_clam();
@@ -3014,6 +3528,8 @@ int main() {
     test_spiny_toad_ascension();
     test_zapbot();
     test_zapbot_ascension();
+    test_spectral_knight();
+    test_spectral_knight_ascension();
     test_noisebot();
     test_noisebot_ascension();
     test_parafright();
@@ -3042,6 +3558,15 @@ int main() {
     test_bowlbug_rock_ascension();
     test_bowlbug_egg();
     test_bowlbug_egg_ascension();
+    test_skulking_colony();
+    test_skulking_colony_ascension();
+    test_terror_eel();
+    test_terror_eel_ascension();
+    test_infested_prism();
+    test_infested_prism_ascension();
+    test_infested_prism_vital_spark();
+    test_magi_knight();
+    test_magi_knight_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();
@@ -3070,6 +3595,8 @@ int main() {
     test_mawler_ascension();
     test_fossil_stalker();
     test_fossil_stalker_ascension();
+    test_soul_nexus();
+    test_soul_nexus_ascension();
     test_seapunk();
     test_seapunk_ascension();
     test_chomper();
@@ -3081,6 +3608,10 @@ int main() {
     test_frog_knight();
     test_frog_knight_beetle_charge();
     test_frog_knight_ascension();
+    test_entomancer();
+    test_entomancer_ascension();
+    test_flail_knight();
+    test_flail_knight_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
