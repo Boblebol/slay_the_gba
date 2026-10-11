@@ -90,33 +90,6 @@ void test_lethality() {
     std::cout << "[PASS] Necrobinder: Lethality" << std::endl;
 }
 
-} // namespace
-
-int main() {
-    test_debilitate();
-    test_lethality();
-    std::cout << "All Necrobinder card tests passed." << std::endl;
-    return 0;
-}
-// Necrobinder cards: each one is played in its base and upgraded versions, and must be offered in the hero's pool.
-#include <algorithm>
-#include <cassert>
-#include <iostream>
-#include <span>
-#include "engine/combat.h"
-#include "engine/run.h"
-
-using namespace engine;
-
-namespace {
-
-void assert_in_pool(CharacterId hero, std::initializer_list<CardId> cards) {
-    std::span<const CardId> pool = RunManager::card_reward_pool(hero);
-    for (CardId id : cards) {
-        assert(std::find(pool.begin(), pool.end(), id) != pool.end());
-    }
-}
-
 void test_forbidden_grimoire() {
     assert_in_pool(CharacterId::NECROBINDER, { CardId::FORBIDDEN_GRIMOIRE });
     for (bool up : { false, true }) {
@@ -144,8 +117,9 @@ void test_forbidden_grimoire() {
 } // namespace
 
 int main() {
-    std::cout << "=== Necrobinder Cards ===" << std::endl;
+    test_debilitate();
+    test_lethality();
     test_forbidden_grimoire();
-    std::cout << "=== All Necrobinder Cards Passed! ===" << std::endl;
+    std::cout << "All Necrobinder card tests passed." << std::endl;
     return 0;
 }
