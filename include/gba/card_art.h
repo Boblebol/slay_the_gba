@@ -204,6 +204,7 @@
 #include "bn_sprite_items_card_splash.h"
 #include "bn_sprite_items_card_mad_science_silent.h"
 #include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
 
 namespace gba::card_art
 {
@@ -597,6 +598,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_mad_science_silent;
     case engine::CardId::DISCOVERY:
         return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
     default:
         return nullptr;
     }
@@ -632,6 +635,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     174, 175, 176, 177, 178, 179, 180, 181, 0, 0, 0, 182, 0, 183, 0, 184, 185, 0, 0, 186,
     187, 188, 189, 0,
     174, 175, 176, 177, 178, 179, 180, 181, 182, 0, 0, 0, 183, 0, 184, 0, 185, 186, 0, 0,
+    187, 188, 189, 190,
     187, 188, 189, 190,
     187, 188, 189, 190,
     187, 188, 189, 190,
@@ -833,6 +837,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_splash.h"
 #include "bn_sprite_items_card_mad_science_defect.h"
 #include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
 
 namespace gba::card_art
 {
@@ -1220,6 +1225,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_mad_science_defect;
     case engine::CardId::DISCOVERY:
         return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
     default:
         return nullptr;
     }
@@ -1256,6 +1263,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     184, 185, 186, 0,
     0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 0, 0, 0,
+    184, 185, 186, 187,
     184, 185, 186, 187,
     184, 185, 186, 187,
     184, 185, 186, 187,
@@ -1457,6 +1465,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_mad_science_regent.h"
 #include "bn_sprite_items_card_quasar.h"
 #include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
 
 namespace gba::card_art
 {
@@ -1844,6 +1853,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_quasar;
     case engine::CardId::DISCOVERY:
         return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
     default:
         return nullptr;
     }
@@ -1880,6 +1891,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     183, 184, 185, 186,
     0, 0, 0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 0, 182, 0,
+    183, 184, 185, 186,
     183, 184, 185, 186,
     183, 184, 185, 186,
     183, 184, 185, 186,
@@ -2084,6 +2096,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_splash.h"
 #include "bn_sprite_items_card_mad_science_necrobinder.h"
 #include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
 
 namespace gba::card_art
 {
@@ -2477,6 +2490,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_mad_science_necrobinder;
     case engine::CardId::DISCOVERY:
         return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
     default:
         return nullptr;
     }
@@ -2513,6 +2528,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     187, 188, 189, 0,
     0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 0, 184, 185, 0, 0, 186,
+    187, 188, 189, 190,
     187, 188, 189, 190,
     187, 188, 189, 190,
     187, 188, 189, 190,
@@ -2717,6 +2733,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_splash.h"
 #include "bn_sprite_items_card_mad_science_ironclad.h"
 #include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
 
 namespace gba::card_art
 {
@@ -3110,6 +3127,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_mad_science_ironclad;
     case engine::CardId::DISCOVERY:
         return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
     default:
         return nullptr;
     }
@@ -3146,6 +3165,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     187, 188, 189, 0,
     0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 184, 185, 0, 0, 0, 0, 186, 0, 0, 0,
+    187, 188, 189, 190,
     187, 188, 189, 190,
     187, 188, 189, 190,
     187, 188, 189, 190,

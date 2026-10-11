@@ -635,6 +635,8 @@ enum class CardId : uint16_t {
     QUASAR,
     // Choose 1 of 3 random cards, free this turn (mechanic #72)
     DISCOVERY,
+    // Event card: choose 1 of 3 upgraded Powers (Abundance)
+    ABUNDANCE,
     COUNT
 };
 

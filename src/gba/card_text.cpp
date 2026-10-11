@@ -894,6 +894,8 @@ bn::string_view base_name(engine::CardId id)
         return "Science sans conscience";
     case engine::CardId::DISCOVERY:
         return "Découverte";
+    case engine::CardId::ABUNDANCE:
+        return "Abondance";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1744,6 +1746,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::DISCOVERY:
         stream << "1 parmi " << secondary << ", coût 0. " << (card.upgraded ? "" : "Épuis.");
+        break;
+    case engine::CardId::ABUNDANCE:
+        stream << "1 Pouvoir+ sur 3, gratuit. Épuisement.";
         break;
     case engine::CardId::MAD_SCIENCE:
         stream << (card.upgraded ? "Inné. " : "") << "Inflige " << value << " dégâts.";

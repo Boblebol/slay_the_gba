@@ -631,6 +631,8 @@ static constexpr CardDef CARDS[] = {
     // Regent: choose 1 of 3 random Colorless cards to add to the hand (mechanics #72, #77).
     { CardId::QUASAR, "Quasar", 0, CardType::SKILL, TargetType::SELF, 3, 3, "Choose 1 of 3 random Colorless cards to add to your hand.", "Quasar+", 0, 3, 3, "Choose 1 of 3 random upgraded Colorless cards to add to your hand.", 0, 0, 2, 2 },
     { CardId::DISCOVERY, "Discovery", 1, CardType::SKILL, TargetType::SELF, 0, 3, "Choose 1 of 3 random cards to add into your hand. It's free to play this turn. Exhaust.", "Discovery+", 1, 0, 3, "Choose 1 of 3 random cards to add into your hand. It's free to play this turn.", KEYWORD_EXHAUST, 0 },
+    // Event card: 3 upgraded Powers offered, the picked one is free this turn.
+    { CardId::ABUNDANCE, "Abundance", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Choose 1 of 3 upgraded Powers to add into your hand. It costs 0 this turn. Exhaust.", "Abundance+", 0, 0, 0, "Choose 1 of 3 upgraded Powers to add into your hand. It costs 0 this turn. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
 };
 
 const CardDef& CardDef::get(CardId id) {

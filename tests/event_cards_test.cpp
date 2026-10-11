@@ -133,6 +133,39 @@ void test_mad_science() {
     std::cout << "[PASS] Mad Science: 1 energy, 12 damage, Innate (upgraded only)" << std::endl;
 }
 
+void check_abundance(bool upgraded) {
+    const int cost = upgraded ? 0 : 1;
+    assert(CardDef::get_cost(CardId::ABUNDANCE, upgraded) == cost);
+    assert(CardDef::get(CardId::ABUNDANCE).type == CardType::SKILL);
+    assert(CardDef::has_keyword(CardId::ABUNDANCE, upgraded, KEYWORD_EXHAUST));
+    CombatEngine combat = make_fight();
+    combat.hand.push_back(DeckCard(CardId::ABUNDANCE, upgraded));
+    assert(combat.play_card(0, 0));
+    assert(combat.player.energy == 3 - cost);
+    // The card is exhausted; 3 different upgraded Powers are offered, free this turn once picked.
+    assert(combat.hand.empty() && combat.exhaust_pile.size() == 1);
+    assert(combat.choice_pending());
+    assert(combat.offers.size() == 3);
+    for (const DeckCard& offer : combat.offers) {
+        assert(CardDef::get(offer.id).type == CardType::POWER);
+        assert(offer.upgraded && offer.free_this_turn);
+    }
+    assert(combat.offers[0].id != combat.offers[1].id && combat.offers[1].id != combat.offers[2].id
+           && combat.offers[0].id != combat.offers[2].id);
+    const DeckCard picked = combat.offers[1];
+    const uint8_t picks[] = { 1 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending());
+    assert(combat.hand.size() == 1 && combat.hand[0].id == picked.id);
+    assert(combat.hand[0].upgraded && combat.hand[0].free_this_turn);
+}
+
+void test_abundance() {
+    check_abundance(false);
+    check_abundance(true);
+    std::cout << "[PASS] Abundance: 1 energy (0 upgraded), 1 of 3 upgraded Powers free this turn, Exhaust" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -140,5 +173,6 @@ int main() {
     test_maul();
     test_apotheosis();
     test_mad_science();
+    test_abundance();
     return 0;
 }
