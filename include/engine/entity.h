@@ -420,7 +420,8 @@ enum class EnemyType : uint8_t {
     MECHA_KNIGHT,
     BYGONE_EFFIGY,
     BYRDONIS,
-    PHROG_PARASITE
+    PHROG_PARASITE,
+    WRIGGLER
 };
 
 // What a monster sees of the fight when it chooses its next move.
