@@ -51,6 +51,7 @@
 #include "bn_sprite_items_mon_turret_operator.h"
 #include "bn_sprite_items_mon_skulking_colony.h"
 #include "bn_sprite_items_mon_terror_eel.h"
+#include "bn_sprite_items_mon_infested_prism.h"
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_osty.h"
 #include "bn_sprite_items_mon_parafright.h"
@@ -312,6 +313,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_osty, false };
     case engine::EnemyType::SLUMBERING_BEETLE:
         return { &bn::sprite_items::mon_slumbering_beetle, false };
+    case engine::EnemyType::INFESTED_PRISM:
+        return { &bn::sprite_items::mon_infested_prism, false };
     case engine::EnemyType::FLYCONID:
         return { &bn::sprite_items::mon_flyconid, false };
     case engine::EnemyType::CORPSE_SLUG:

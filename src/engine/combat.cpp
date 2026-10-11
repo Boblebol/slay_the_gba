@@ -340,6 +340,15 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 for (int16_t i = 0; i < power.amount; ++i) create_card(CardId::DAZED, Pile::DRAW);
             }
             break;
+        case PowerId::VITAL_SPARK:
+            if (turn_start) {
+                power.counter = 0;
+            } else if (event == CombatEvent::UNBLOCKED_DAMAGE_DEALT && info.enemy == power.holder &&
+                       power.counter < power.amount) {
+                power.counter = bump(power.counter);
+                player.energy = static_cast<int8_t>(player.energy + 1);
+            }
+            break;
         case PowerId::TURN_ENERGY:
             if (turn_start) player.energy = static_cast<int8_t>(player.energy + power.amount);
             break;

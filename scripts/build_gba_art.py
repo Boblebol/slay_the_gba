@@ -187,6 +187,7 @@ MONSTERS: dict[str, str] = {
     "inklet": "inklet",
     "nibbit": "nibbit",
     "flyconid": "flyconid",
+    "infested_prism": "infested_prism",
     "corpse_slug": "corpse_slug",
     "gas_bomb": "gas_bomb",
     "gremlin_merc": "gremlin_merc",

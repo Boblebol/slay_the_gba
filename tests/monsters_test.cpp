@@ -1868,6 +1868,62 @@ void test_terror_eel_ascension() {
     std::cout << "[PASS] Terror Eel: Ascension gives 150 HP, Crash 18, Thrash 4x3" << std::endl;
 }
 
+void test_infested_prism() {
+    // Jab 15, Radiate 11 + 11 Block, Whirlwind 5x3, Pulsate 8 + 20 Block + Vital Spark, and again.
+    check_monster(EnemyType::INFESTED_PRISM, "Prisme infesté", 161, {
+        { ATTACK, 15, 0, 0 },
+        { ATTACK_DEFEND, 11, 11, 0 },
+        { ATTACK, 5, 0, 0, 0, 3 },
+        { ATTACK_DEFEND, 8, 20, 0 },
+        { ATTACK, 15, 0, 0 },
+        { ATTACK_DEFEND, 11, 11, 0 },
+        { ATTACK, 5, 0, 0, 0, 3 },
+        { ATTACK_DEFEND, 8, 20, 0 },
+    });
+    std::cout << "[PASS] Infested Prism: 161 HP, Jab 15, Radiate 11/11, Whirlwind 5x3, Pulsate 8/20, loop" << std::endl;
+}
+
+void test_infested_prism_ascension() {
+    // 171 HP at Ascension; Jab 17, Radiate 13/13, Whirlwind 6x3, Pulsate 10/22 with 3 Vital Spark.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::INFESTED_PRISM);
+    Enemy& prism = combat.enemies[0];
+    prism.ascend(true, true);
+    combat.plan_enemies();
+    assert(prism.hp == 171 && prism.max_hp == 171);
+    const int damage[] = { 17, 13, 6, 10 };
+    const int block[] = { 0, 13, 0, 22 };
+    for (int i = 0; i < 4; ++i) {
+        combat.player.hp = combat.player.max_hp;
+        assert(prism.intent_damage(combat.player) == damage[i]);
+        combat.end_player_turn();
+        assert(prism.block == block[i]);
+        assert(combat.player.max_hp - combat.player.hp == damage[i] * (i == 2 ? 3 : 1));
+    }
+    assert(combat.enemy_power_amount(0, PowerId::VITAL_SPARK) == 3);
+    std::cout << "[PASS] Infested Prism: Ascension gives 171 HP, Jab 17, Radiate 13/13, Whirlwind 6x3, Pulsate 10/22" << std::endl;
+}
+
+void test_infested_prism_vital_spark() {
+    // Pulsate gives 2 Vital Spark: each unblocked hit gives 1 energy, twice a turn, and the count starts over.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::INFESTED_PRISM);
+    for (int i = 0; i < 4; ++i) combat.end_player_turn(); // up to Pulsate
+    assert(combat.enemy_power_amount(0, PowerId::VITAL_SPARK) == 2);
+    Enemy& prism = combat.enemies[0];
+    prism.block = 0;
+    combat.hand.clear();
+    for (int i = 0; i < 3; ++i) combat.hand.push_back(CardId::STRIKE);
+    combat.player.energy = 3;
+    for (int i = 0; i < 3; ++i) assert(combat.play_card(0, 0));
+    assert(combat.player.energy == 3 - 3 + 2); // the third hit gives nothing
+    combat.end_player_turn();
+    prism.block = 0;
+    combat.hand.clear();
+    combat.hand.push_back(CardId::STRIKE);
+    assert(combat.play_card(0, 0));
+    assert(combat.player.energy == combat.player.max_energy); // the first hit of a new turn gives 1 again
+    std::cout << "[PASS] Infested Prism: Vital Spark gives 1 energy per unblocked hit, up to its amount each turn" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -3177,6 +3233,9 @@ int main() {
     test_skulking_colony_ascension();
     test_terror_eel();
     test_terror_eel_ascension();
+    test_infested_prism();
+    test_infested_prism_ascension();
+    test_infested_prism_vital_spark();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();
