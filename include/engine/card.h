@@ -648,6 +648,9 @@ enum class CardId : uint16_t {
     BEGONE,
     CHARGE,
     GUARDS,
+    // Echo N on a copy of a card (mechanic #86)
+    HIDDEN_GEM,
+    TRANSFIGURE,
     COUNT
 };
 
@@ -683,6 +686,7 @@ struct DeckCard {
     uint8_t bookmark_discount = 0; // energy off this copy until it is played (Bookmark)
     bool free_this_turn = false; // this copy costs 0 until the end of the turn (Bullet Time)
     bool cost_one_this_turn = false; // this copy costs at most 1 until the end of the turn (Enlightenment)
+    uint8_t echo = 0;           // Echo N: the card is replayed N more times each time it is played (Hidden Gem, Transfigure)
     bool sly_combat = false;    // this copy has Sly for the rest of the combat (Master Planner)
     bool sly_this_turn = false; // this copy has Sly until the end of the turn (Hand Trick)
     uint8_t deck_index = NOT_IN_DECK; // position of the card in the run's deck, for the gains that outlive the combat

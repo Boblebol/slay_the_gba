@@ -150,6 +150,7 @@ enum class ChoiceKind : uint8_t {
     PLAY_REPEATED,        // the picked hand card is played `amount` times, then goes where it goes (Decisions, Decisions)
     MAKE_SLY,             // the picked hand card gains Sly until the end of the turn (Hand Trick)
     MAKE_FREE,            // the picked hand card costs 0 for the rest of the combat (Touch of Insanity)
+    ADD_ECHO,             // the picked hand card gains Echo 1 and costs 1 more (Transfigure)
     TRANSFORM             // the picked card becomes `CardChoice::into` (a random card of the hero's pool when NONE) for the combat
 };
 
