@@ -90,7 +90,8 @@ int main() {
     bool entered_route = nav.select_current_route();
     assert(entered_route);
     assert(run.phase == RunPhase::IN_COMBAT);
-    assert(run.combat.enemy.type == EnemyType::CULTIST);
+    // First fight of an Act 1 (B) run: the Cultist of the legacy list or the Toadpoles of the reference.
+    assert(run.combat.enemy.type == EnemyType::CULTIST || run.combat.enemy.type == EnemyType::TOADPOLE);
     std::cout << "[E2E Step 8] Map Navigation verified: Floor scrolled, Deck viewed, and Floor 1 entered.\n";
 
     // 9. Combat: Pokémon-style Battle UI (4-way menu, CARDS submenu, animations)

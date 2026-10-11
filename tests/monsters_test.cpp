@@ -1482,6 +1482,74 @@ void test_flyconid_ascension() {
     std::cout << "[PASS] Flyconid: Ascension gives 51 to 53 HP, Spores of 9 and a Smash of 12" << std::endl;
 }
 
+void check_toadpole_cycle(CombatEngine& combat, size_t index, const EnemyIntentType* intents, int damage_step) {
+    // Spiken (Thorns 2), Spike Spit (3 x 3, Thorns 2) and Whirl (7), in the order given, over two cycles.
+    Enemy& toad = combat.enemies[index];
+    combat.enemies[1 - index].hp = 0; // its partner would add its own damage; the pattern is kept without it
+    int thorns = 0;
+    for (int turn = 0; turn < 6; ++turn) {
+        const EnemyIntent& intent = toad.current_intent;
+        assert(intent.type == intents[turn]);
+        int hits = 0, damage = 0;
+        if (intent.type == BUFF) {
+            assert(toad.intent_damage(combat.player) == 0);
+            thorns += 2;
+        } else if (intent.type == ATTACK_BUFF) {
+            assert(intent.hits == 3 && toad.intent_damage(combat.player) == 3 + damage_step);
+            hits = 3;
+            damage = 3 + damage_step;
+            thorns += 2;
+        } else {
+            assert(intent.type == ATTACK && intent.hits == 1 && toad.intent_damage(combat.player) == 7 + damage_step);
+            hits = 1;
+            damage = 7 + damage_step;
+        }
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == hits * damage);
+        assert(toad.block == 0 && toad.get_status(StatusType::THORNS) == thorns);
+    }
+}
+
+void test_toadpole() {
+    CombatEngine pair = make_pack({ EnemyType::TOADPOLE, EnemyType::TOADPOLE });
+    for (Enemy& toad : pair.enemies) {
+        assert(toad.type == EnemyType::TOADPOLE && toad.name == "Crapautard");
+        assert(toad.hp >= 21 && toad.hp <= 25 && toad.max_hp == toad.hp && toad.max_hp == 21 + toad.hp_bonus);
+        assert(toad.block == 0 && toad.statuses.empty());
+    }
+    // The one in front starts with Spiken, the one behind with Whirl; each loops through the same three moves.
+    assert(pair.enemies[0].current_intent.type == BUFF);
+    assert(pair.enemies[1].current_intent.type == ATTACK);
+    const EnemyIntentType front[] = { BUFF, ATTACK_BUFF, ATTACK, BUFF, ATTACK_BUFF, ATTACK };
+    const EnemyIntentType behind[] = { ATTACK, BUFF, ATTACK_BUFF, ATTACK, BUFF, ATTACK_BUFF };
+    CombatEngine front_fight = make_pack({ EnemyType::TOADPOLE, EnemyType::TOADPOLE });
+    check_toadpole_cycle(front_fight, 0, front, 0);
+    CombatEngine behind_fight = make_pack({ EnemyType::TOADPOLE, EnemyType::TOADPOLE });
+    check_toadpole_cycle(behind_fight, 1, behind, 0);
+    std::cout << "[PASS] Toadpole: 21 to 25 HP, Spiken, Spike Spit 3x3 and Whirl 7 by position, Thorns 2 each time"
+              << std::endl;
+}
+
+void test_toadpole_ascension() {
+    // 22 to 26 HP, Spike Spit 4x3 and Whirl 8 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_pack({ EnemyType::TOADPOLE, EnemyType::TOADPOLE });
+        Enemy& toad = combat.enemies[0];
+        toad.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = toad.hp;
+        assert(toad.ascension_hp() == 22 && toad.hp_spread() == 4);
+        assert(base >= 21 && base <= 25 && toad.max_hp == 21 + toad.hp_bonus);
+        toad.ascend(true, true);
+        combat.plan_enemies();
+        assert(toad.hp == base + 1 && toad.max_hp == base + 1 && toad.hp >= 22 && toad.hp <= 26);
+        const EnemyIntentType front[] = { BUFF, ATTACK_BUFF, ATTACK, BUFF, ATTACK_BUFF, ATTACK };
+        check_toadpole_cycle(combat, 0, front, 1);
+    }
+    std::cout << "[PASS] Toadpole: Ascension gives 22 to 26 HP, Spike Spit 4x3 and Whirl 8" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1532,6 +1600,8 @@ int main() {
     test_nibbit_ascension();
     test_flyconid();
     test_flyconid_ascension();
+    test_toadpole();
+    test_toadpole_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
