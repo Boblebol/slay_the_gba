@@ -2202,7 +2202,8 @@ void test_toolbox() {
     assert(combat.hand.back().deck_index == NOT_IN_DECK);
     // Offered once per combat: the next turn is dealt its own hand, with no new offer.
     end_turn_idle(combat);
-    assert(!combat.choice_pending() && combat.hand.size() == 5);
+    // A picked card that Retains stays in the hand next to the 5 new cards.
+    assert(!combat.choice_pending() && combat.hand.size() == 5 + (CardDef::has_keyword(picked, KEYWORD_RETAIN) ? 1 : 0));
 
     // Without the relic: no offer at the start of the combat.
     RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});

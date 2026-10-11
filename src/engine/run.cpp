@@ -596,7 +596,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::REAVE, CardId::GRAVE_WARDEN, CardId::CAPTURE_SPIRIT,
                                                    CardId::SEVERANCE, CardId::DIRGE, CardId::HAUNT,
                                                    CardId::DEVOUR_LIFE, CardId::SOUL_STORM,
-                                                   CardId::GLIMPSE_BEYOND, CardId::LETHALITY, CardId::DEBILITATE, CardId::FORBIDDEN_GRIMOIRE, CardId::SEANCE };
+                                                   CardId::GLIMPSE_BEYOND, CardId::LETHALITY, CardId::DEBILITATE, CardId::FORBIDDEN_GRIMOIRE, CardId::SEANCE, CardId::TRANSFIGURE };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;

@@ -543,6 +543,8 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::COMMON, CardPool::REGENT }, // BEGONE
     { CardRarity::UNCOMMON, CardPool::REGENT }, // CHARGE
     { CardRarity::RARE, CardPool::REGENT }, // GUARDS
+    { CardRarity::RARE, CardPool::COLORLESS }, // HIDDEN_GEM
+    { CardRarity::RARE, CardPool::NECROBINDER }, // TRANSFIGURE
 };
 
 } // namespace engine

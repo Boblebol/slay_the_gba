@@ -828,6 +828,8 @@ CARDS: list[CardArt] = [
     CardArt("begone", "regent", "begone", "skill", (1, 1)),
     CardArt("charge", "regent", "charge", "skill", (1, 1)),
     CardArt("guards", "regent", "guards", "skill", (2, 2)),
+    CardArt("hidden_gem", "colorless", "hidden_gem", "skill", (1, 1)),
+    CardArt("transfigure", "necrobinder", "transfigure", "skill", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
