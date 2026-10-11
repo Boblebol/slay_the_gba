@@ -145,6 +145,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Tisse-boue";
         max_hp = 37;
         hp = 37;
+    } else if (type == EnemyType::SLIMED_BERSERKER) {
+        name = "Berserker de vase";
+        max_hp = 261;
+        hp = 261;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -209,6 +213,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::HAUNTED_SHIP: return 67;
         case EnemyType::SLUDGE_SPINNER: return 41;
         case EnemyType::TOADPOLE: return 22;
+        case EnemyType::SLIMED_BERSERKER: return 281;
         default: return 0;
     }
 }
@@ -786,6 +791,31 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 3;
             current_intent.description = "Rage (6 dmg, Force 3)";
+        }
+    } else if (type == EnemyType::SLIMED_BERSERKER) {
+        // Vomit Ichor (10 Slimed), Furious Pummeling, Leeching Hug (+3 Strength, 3 Weak), Smother, and again.
+        const int step = (turn_number - 1) % 4;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_card = CardId::SLIMED;
+            current_intent.status_cards = 10;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Régurgitation d'ichor (10 Englué)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 5 : 4;
+            current_intent.hits = 4;
+            current_intent.description = "Ruée de coups (4 dmg x4)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 3;
+            current_intent.debuffs[0] = { StatusType::WEAK, 3 };
+            current_intent.description = "Câlin sangsue (Force 3, Affaibli 3)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 33 : 30;
+            current_intent.description = "Smother (30 dmg)";
         }
     }
 }
