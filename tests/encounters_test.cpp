@@ -47,6 +47,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
+        case EnemyType::HAUNTED_SHIP: return "HAUNTED_SHIP";
     }
     return {};
 }
@@ -165,7 +166,7 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal",
                                         "InkletsNormal", "NibbitsNormal", "FlyconidNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal" }));
+           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "HauntedShipNormal" }));
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });

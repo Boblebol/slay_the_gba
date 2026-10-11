@@ -38,6 +38,7 @@ constexpr Encounter ACT1A_NORMAL[] = {
 constexpr Encounter ACT1B_NORMAL[] = {
     { "CultistsNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::DAMP_CULTIST } },
     { "SewerClamNormal"sv, 1, { EnemyType::SEWER_CLAM } },
+    { "HauntedShipNormal"sv, 1, { EnemyType::HAUNTED_SHIP } },
 };
 
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
