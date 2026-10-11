@@ -18,6 +18,7 @@
 #include "bn_sprite_items_mon_brute_ruby_raider.h"
 #include "bn_sprite_items_mon_calcified_cultist.h"
 #include "bn_sprite_items_mon_crossbow_ruby_raider.h"
+#include "bn_sprite_items_mon_chomper.h"
 #include "bn_sprite_items_mon_cubex_construct.h"
 #include "bn_sprite_items_mon_cultist.h"
 #include "bn_sprite_items_mon_damp_cultist.h"
@@ -38,17 +39,27 @@
 #include "bn_sprite_items_mon_jaw_worm.h"
 #include "bn_sprite_items_mon_noisebot.h"
 #include "bn_sprite_items_mon_mawler.h"
+#include "bn_sprite_items_mon_zapbot.h"
 #include "bn_sprite_items_mon_nibbit.h"
+#include "bn_sprite_items_mon_globe_head.h"
 #include "bn_sprite_items_mon_punch_construct.h"
 #include "bn_sprite_items_mon_toadpole.h"
+#include "bn_sprite_items_mon_osty.h"
+#include "bn_sprite_items_mon_parafright.h"
+#include "bn_sprite_items_mon_slimed_berserker.h"
+#include "bn_sprite_items_mon_frog_knight.h"
+#include "bn_sprite_items_mon_guardbot.h"
 #include "bn_sprite_items_mon_louse.h"
+#include "bn_sprite_items_mon_louse_progenitor.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
 #include "bn_sprite_items_mon_sewer_clam.h"
 #include "bn_sprite_items_mon_sneaky_gremlin.h"
 #include "bn_sprite_items_mon_sludge_spinner.h"
 #include "bn_sprite_items_mon_tracker_ruby_raider.h"
+#include "bn_sprite_items_mon_slumbering_beetle.h"
 #include "bn_sprite_items_mon_the_forgotten.h"
+#include "bn_sprite_items_mon_tunneler.h"
 #include "bn_sprite_items_mon_vine_shambler.h"
 
 #include "bn_sprite_items_hand_cards_defect.h"
@@ -252,6 +263,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_seapunk, false };
     case engine::EnemyType::STABBOT:
         return { &bn::sprite_items::mon_stabbot, false };
+    case engine::EnemyType::ZAPBOT:
+        return { &bn::sprite_items::mon_zapbot, false };
     case engine::EnemyType::NOISEBOT:
         return { &bn::sprite_items::mon_noisebot, false };
     case engine::EnemyType::CUBEX_CONSTRUCT:
@@ -264,10 +277,18 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_nibbit, false };
     case engine::EnemyType::GREMLIN_MERC:
         return { &bn::sprite_items::mon_gremlin_merc, false };
+    case engine::EnemyType::GLOBE_HEAD:
+        return { &bn::sprite_items::mon_globe_head, false };
+    case engine::EnemyType::LOUSE_PROGENITOR:
+        return { &bn::sprite_items::mon_louse_progenitor, false };
     case engine::EnemyType::HAUNTED_SHIP:
         return { &bn::sprite_items::mon_haunted_ship, false };
     case engine::EnemyType::SLUDGE_SPINNER:
         return { &bn::sprite_items::mon_sludge_spinner, false };
+    case engine::EnemyType::OSTY:
+        return { &bn::sprite_items::mon_osty, false };
+    case engine::EnemyType::SLUMBERING_BEETLE:
+        return { &bn::sprite_items::mon_slumbering_beetle, false };
     case engine::EnemyType::FLYCONID:
         return { &bn::sprite_items::mon_flyconid, false };
     case engine::EnemyType::CORPSE_SLUG:
@@ -276,6 +297,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_gas_bomb, false };
     case engine::EnemyType::SNEAKY_GREMLIN:
         return { &bn::sprite_items::mon_sneaky_gremlin, false };
+    case engine::EnemyType::GUARDBOT:
+        return { &bn::sprite_items::mon_guardbot, false };
     case engine::EnemyType::TOADPOLE:
         return { &bn::sprite_items::mon_toadpole, false };
     case engine::EnemyType::HUNTER_KILLER:
@@ -284,6 +307,16 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_mawler, false };
     case engine::EnemyType::FOSSIL_STALKER:
         return { &bn::sprite_items::mon_fossil_stalker, false };
+    case engine::EnemyType::CHOMPER:
+        return { &bn::sprite_items::mon_chomper, false };
+    case engine::EnemyType::PARAFRIGHT:
+        return { &bn::sprite_items::mon_parafright, false };
+    case engine::EnemyType::TUNNELER:
+        return { &bn::sprite_items::mon_tunneler, false };
+    case engine::EnemyType::SLIMED_BERSERKER:
+        return { &bn::sprite_items::mon_slimed_berserker, false };
+    case engine::EnemyType::FROG_KNIGHT:
+        return { &bn::sprite_items::mon_frog_knight, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

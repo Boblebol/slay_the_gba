@@ -256,7 +256,9 @@ enum class PowerId : uint8_t {
     // Regent minions (appended)
     VITRUVIAN_MINION,   // the Minion cards deal double damage and give double Block (read by hit and gain_block)
     // Glass orb (appended)
-    SPINNER             // start of turn: channel `amount` Glass orbs (read by start_player_turn)
+    SPINNER,            // start of turn: channel `amount` Glass orbs (read by start_player_turn)
+    // Held by an enemy (appended)
+    BURROWED            // its Block is up: the Block broken or its next turn played, the power is spent (amount 0)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

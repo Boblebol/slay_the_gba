@@ -1259,6 +1259,43 @@ void test_stabbot_ascension() {
     std::cout << "[PASS] Stabbot: Ascension gives 19 to 24 HP and a Stab of 12" << std::endl;
 }
 
+void test_zapbot() {
+    // Zap every turn: 14 damage, no Block, no status.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::ZAPBOT);
+    Enemy& bot = combat.enemies[0];
+    assert(bot.type == EnemyType::ZAPBOT && bot.name == "Déchargebot");
+    assert(bot.hp >= 18 && bot.hp <= 23 && bot.max_hp == bot.hp && bot.max_hp == 18 + bot.hp_bonus);
+    const int16_t hp = bot.hp;
+    assert(bot.block == 0 && bot.statuses.empty());
+    for (int turn = 1; turn <= 4; ++turn) {
+        assert(combat.turn_number == turn);
+        assert(bot.current_intent.type == ATTACK && bot.intent_damage(combat.player) == 14);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == 14);
+        assert(bot.block == 0 && bot.statuses.empty() && bot.hp == hp);
+    }
+    std::cout << "[PASS] Zapbot: 18 to 23 HP, Zap 14 damage every turn" << std::endl;
+}
+
+void test_zapbot_ascension() {
+    // 19 to 24 HP (18 to 23 plus 1) and a Zap of 15 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::ZAPBOT);
+        Enemy& bot = combat.enemies[0];
+        bot.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = bot.hp;
+        assert(bot.ascension_hp() == 19 && bot.hp_spread() == 5);
+        assert(base >= 18 && base <= 23 && bot.max_hp == 18 + bot.hp_bonus);
+        bot.ascend(true, true);
+        combat.plan_enemies();
+        assert(bot.hp == base + 1 && bot.max_hp == base + 1 && bot.hp >= 19 && bot.hp <= 24);
+        assert(bot.current_intent.type == ATTACK && bot.intent_damage(combat.player) == 15);
+    }
+    std::cout << "[PASS] Zapbot: Ascension gives 19 to 24 HP and a Zap of 15" << std::endl;
+}
+
 void test_noisebot() {
     // Noise every turn: 2 Dazed into the discard pile, no damage.
     CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::NOISEBOT);
@@ -1293,6 +1330,33 @@ void test_noisebot_ascension() {
         assert(bot.current_intent.type == STATUS && bot.current_intent.status_cards == 2);
     }
     std::cout << "[PASS] Noisebot: Ascension gives 19 to 24 HP" << std::endl;
+}
+
+void test_parafright() {
+    // Slam 16 every turn.
+    check_monster(EnemyType::PARAFRIGHT, "Pareffroi", 21, {
+        { ATTACK, 16, 0, 0 },
+        { ATTACK, 16, 0, 0 },
+        { ATTACK, 16, 0, 0 },
+        { ATTACK, 16, 0, 0 },
+    });
+    std::cout << "[PASS] Parafright: 21 HP, Slam 16 every turn" << std::endl;
+}
+
+void test_parafright_ascension() {
+    // Same 21 HP (no Ascension HP), Slam 17 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::PARAFRIGHT);
+    Enemy& ghost = combat.enemies[0];
+    ghost.ascend(true, true);
+    combat.plan_enemies();
+    assert(ghost.hp == 21 && ghost.max_hp == 21);
+    for (int turn = 1; turn <= 3; ++turn) {
+        assert(ghost.current_intent.type == ATTACK && ghost.intent_damage(combat.player) == 17);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 17);
+    }
+    std::cout << "[PASS] Parafright: Ascension gives a Slam of 17" << std::endl;
 }
 
 void test_cubex_construct() {
@@ -1359,6 +1423,71 @@ void test_punch_construct_ascension() {
     combat.player.hp = combat.player.max_hp;
     assert(golem.current_intent.type == ATTACK && golem.intent_damage(combat.player) == 16);
     std::cout << "[PASS] Punch Construct: Ascension gives 60 HP, Fast Punch 6x2, Strong Punch 16" << std::endl;
+}
+
+void test_globe_head() {
+    // Shocking Slap 13 (2 Frail), Thunder Strike 6x3, Galvanic Burst 16 (+2 Strength), and again.
+    check_monster(EnemyType::GLOBE_HEAD, "Globocéphale", 148, {
+        { ATTACK_DEBUFF, 13, 0, 0, 0, 1 },
+        { ATTACK, 6, 0, 0, 0, 3 },
+        { ATTACK_BUFF, 16, 0, 2 },
+        { ATTACK_DEBUFF, 15, 0, 2 },
+        { ATTACK, 8, 0, 2, 0, 3 },
+        { ATTACK_BUFF, 18, 0, 4 },
+    });
+    std::cout << "[PASS] Globe Head: 148 HP, Shocking Slap 13, Thunder Strike 6x3, Galvanic Burst 16, loop" << std::endl;
+}
+
+void test_globe_head_ascension() {
+    // 158 HP, Shocking Slap 14, Thunder Strike 7x3 and Galvanic Burst 17 (+2 Strength) at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::GLOBE_HEAD);
+    Enemy& head = combat.enemies[0];
+    head.ascend(true, true);
+    combat.plan_enemies();
+    assert(head.hp == 158 && head.max_hp == 158);
+    assert(head.current_intent.type == ATTACK_DEBUFF && head.intent_damage(combat.player) == 14);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 14);
+    assert(combat.player.get_status(StatusType::FRAIL) == 2);
+    combat.player.hp = combat.player.max_hp;
+    assert(head.current_intent.type == ATTACK && head.current_intent.hits == 3);
+    assert(head.intent_damage(combat.player) == 7);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 21);
+    combat.player.hp = combat.player.max_hp;
+    assert(head.current_intent.type == ATTACK_BUFF && head.intent_damage(combat.player) == 17);
+    combat.end_player_turn();
+    assert(head.get_status(StatusType::STRENGTH) == 2);
+    std::cout << "[PASS] Globe Head: Ascension gives 158 HP, Slap 14, Thunder Strike 7x3, Burst 17" << std::endl;
+}
+
+void test_guardbot() {
+    // Guard 15 Block, every turn. Its HP are drawn between 16 and 20 at the start of the fight.
+    CombatEngine probe = make_combat(CharacterId::IRONCLAD, EnemyType::GUARDBOT);
+    const Enemy& bot = probe.enemies[0];
+    assert(bot.hp >= 16 && bot.hp <= 20 && bot.max_hp == 16 + bot.hp_bonus && bot.hp_spread() == 4);
+    check_monster(EnemyType::GUARDBOT, "Gardebot", bot.hp, {
+        { DEFEND, 0, 15, 0 },
+        { DEFEND, 0, 15, 0 },
+        { DEFEND, 0, 15, 0 },
+    });
+    std::cout << "[PASS] Guardbot: 16 HP, Guard 15 Block every turn" << std::endl;
+}
+
+void test_guardbot_ascension() {
+    // 17 to 21 HP at Ascension; the move has no damage and keeps its 15 Block.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::GUARDBOT);
+        Enemy& bot = combat.enemies[0];
+        bot.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = bot.hp;
+        assert(bot.ascension_hp() == 17 && bot.hp_spread() == 4);
+        bot.ascend(true, true);
+        combat.plan_enemies();
+        assert(bot.hp == base + 1 && bot.max_hp == base + 1 && bot.hp >= 17 && bot.hp <= 21);
+        assert(bot.current_intent.type == DEFEND && bot.current_intent.block == 15);
+    }
+    std::cout << "[PASS] Guardbot: Ascension gives 17 to 21 HP, Guard 15 Block" << std::endl;
 }
 
 void test_inklet() {
@@ -1714,6 +1843,55 @@ void test_gremlin_merc_ascension() {
         }
     }
     std::cout << "[PASS] Gremlin Merc: Ascension gives 51 to 53 HP, Gimme 8 x2, Double Smash 7 x2, Hehe 9" << std::endl;
+}
+
+void test_louse_progenitor() {
+    // Web Cannon 9 + 2 Frail, Curl and Grow (14 Block, +5 Strength), Pounce 14, and again with the Strength kept.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LOUSE_PROGENITOR);
+    Enemy& louse = combat.enemies[0];
+    assert(louse.type == EnemyType::LOUSE_PROGENITOR && louse.name == "Progéniteur de poux");
+    assert(louse.hp >= 134 && louse.hp <= 136 && louse.max_hp == 134 + louse.hp_bonus && louse.block == 0);
+    struct Step { EnemyIntentType intent; int damage; int block; int strength; int frail; };
+    const Step steps[] = {
+        { ATTACK_DEBUFF, 9, 0, 0, 2 }, { BUFF, 0, 14, 5, 0 }, { ATTACK, 19, 0, 5, 0 },
+        { ATTACK_DEBUFF, 14, 0, 5, 2 }, { BUFF, 0, 14, 10, 0 }, { ATTACK, 24, 0, 10, 0 },
+    };
+    for (const Step& step : steps) {
+        assert(louse.current_intent.type == step.intent);
+        assert(louse.intent_damage(combat.player) == step.damage);
+        combat.player.hp = combat.player.max_hp;
+        combat.player.clear_status(StatusType::FRAIL);
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == step.damage);
+        assert(combat.player.get_status(StatusType::FRAIL) == step.frail);
+        assert(louse.block == step.block && louse.get_status(StatusType::STRENGTH) == step.strength);
+    }
+    std::cout << "[PASS] Louse Progenitor: 134 to 136 HP, Web Cannon 9 + 2 Frail, Curl and Grow 14 Block +5 Strength, Pounce 14" << std::endl;
+}
+
+void test_louse_progenitor_ascension() {
+    // 138 to 140 HP, Web Cannon 10, Curl and Grow 18 Block and +7 Strength, Pounce 16 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LOUSE_PROGENITOR);
+        Enemy& louse = combat.enemies[0];
+        louse.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = louse.hp;
+        assert(louse.ascension_hp() == 138 && louse.hp_spread() == 2);
+        assert(base >= 134 && base <= 136 && louse.max_hp == 134 + louse.hp_bonus);
+        louse.ascend(true, true);
+        combat.plan_enemies();
+        assert(louse.hp == base + 4 && louse.hp >= 138 && louse.hp <= 140);
+        assert(louse.intent_damage(combat.player) == 10);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(louse.current_intent.type == BUFF);
+        combat.end_player_turn();
+        assert(louse.block == 18 && louse.get_status(StatusType::STRENGTH) == 7);
+        combat.player.hp = combat.player.max_hp;
+        assert(louse.current_intent.type == ATTACK && louse.intent_damage(combat.player) == 16 + 7);
+    }
+    std::cout << "[PASS] Louse Progenitor: Ascension gives 138 to 140 HP, Web Cannon 10, 18 Block +7 Strength, Pounce 16" << std::endl;
 }
 
 void test_haunted_ship() {
@@ -2230,11 +2408,281 @@ void test_seapunk_ascension() {
     std::cout << "[PASS] Seapunk: Ascension gives 47 to 49 HP, Sea Kick 13, Bubble Burp 8 Block + 2 Strength" << std::endl;
 }
 
+void test_osty() {
+    // Titos, summoned by the Entomancer: 1 HP and no move, so it does nothing turn after turn.
+    check_monster(EnemyType::OSTY, "Titos", 1, {
+        { STUN, 0, 0, 0 }, { STUN, 0, 0, 0 }, { STUN, 0, 0, 0 }, { STUN, 0, 0, 0 },
+    });
+    std::cout << "[PASS] Titos: 1 HP, does nothing every turn" << std::endl;
+}
+
+void test_osty_ascension() {
+    // The bible gives no Ascension value: HP stays at 1 and the turn stays empty.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::OSTY);
+    Enemy& osty = combat.enemies[0];
+    assert(osty.ascension_hp() == 0 && osty.hp_spread() == 0);
+    osty.ascend(true, true);
+    combat.plan_enemies();
+    assert(osty.hp == 1 && osty.max_hp == 1);
+    assert(osty.current_intent.type == STUN && osty.intent_damage(combat.player) == 0);
+    std::cout << "[PASS] Titos: Ascension changes neither HP nor behaviour" << std::endl;
+}
+
+void test_chomper() {
+    // Clamp 8 x2, Screech (3 Dazed into the discard pile), and again.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CHOMPER);
+    Enemy& chomper = combat.enemies[0];
+    assert(chomper.type == EnemyType::CHOMPER && chomper.name == "Croquebot");
+    assert(chomper.hp >= 60 && chomper.hp <= 64 && chomper.max_hp == chomper.hp && chomper.max_hp == 60 + chomper.hp_bonus);
+    assert(chomper.block == 0 && chomper.statuses.empty());
+    for (int turn = 1; turn <= 6; ++turn) {
+        assert(combat.turn_number == turn);
+        combat.player.hp = combat.player.max_hp;
+        if (turn % 2 == 1) {
+            assert(chomper.current_intent.type == ATTACK && chomper.current_intent.hits == 2);
+            assert(chomper.intent_damage(combat.player) == 8);
+            combat.end_player_turn();
+            assert(combat.player.max_hp - combat.player.hp == 16);
+        } else {
+            assert(chomper.current_intent.type == STATUS && chomper.current_intent.status_card == CardId::DAZED);
+            assert(chomper.current_intent.status_cards == 3 && chomper.current_intent.status_pile == Pile::DISCARD);
+            combat.end_player_turn();
+            assert(combat.player.hp == combat.player.max_hp);
+        }
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(chomper.block == 0 && chomper.statuses.empty());
+    }
+    std::cout << "[PASS] Chomper: 60 to 64 HP, Clamp 8 x2 then Screech (3 Dazed) in a loop" << std::endl;
+}
+
+void test_chomper_ascension() {
+    // 63 to 67 HP (60 to 64 plus 3) and Clamp 9 x2 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CHOMPER);
+        Enemy& chomper = combat.enemies[0];
+        chomper.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = chomper.hp;
+        assert(chomper.ascension_hp() == 63 && chomper.hp_spread() == 4);
+        assert(base >= 60 && base <= 64 && chomper.max_hp == 60 + chomper.hp_bonus);
+        chomper.ascend(true, true);
+        combat.plan_enemies();
+        assert(chomper.hp == base + 3 && chomper.max_hp == base + 3 && chomper.hp >= 63 && chomper.hp <= 67);
+        assert(chomper.current_intent.type == ATTACK && chomper.current_intent.hits == 2);
+        assert(chomper.intent_damage(combat.player) == 9);
+    }
+    std::cout << "[PASS] Chomper: Ascension gives 63 to 67 HP and Clamp 9 x2" << std::endl;
+}
+
+void test_slumbering_beetle() {
+    // Asleep it only snores, turn after turn, and costs the player nothing.
+    check_monster(EnemyType::SLUMBERING_BEETLE, "Scarabée dormeur", 86, {
+        { STUN, 0, 0, 0 },
+        { STUN, 0, 0, 0 },
+        { STUN, 0, 0, 0 },
+    });
+    // The first hit wakes it: Roll Out 16, +2 Strength after each, every turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLUMBERING_BEETLE);
+    Enemy& beetle = combat.enemies[0];
+    combat.damage_enemy(beetle, 5);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // still snoring: the intent was planned asleep
+    assert(combat.player.hp == combat.player.max_hp);
+    for (int turn = 0; turn < 4; ++turn) {
+        const int strength = 2 * turn;
+        assert(beetle.current_intent.type == ATTACK_BUFF);
+        assert(beetle.intent_damage(combat.player) == 16 + strength);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 16 + strength);
+        assert(beetle.get_status(StatusType::STRENGTH) == strength + 2 && beetle.block == 0);
+    }
+    std::cout << "[PASS] Slumbering Beetle: 86 HP, Snore while asleep, Roll Out 16 +2 Strength once hurt" << std::endl;
+}
+
+void test_slumbering_beetle_ascension() {
+    // 89 HP and a Roll Out of 18 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLUMBERING_BEETLE);
+    Enemy& beetle = combat.enemies[0];
+    beetle.ascend(true, true);
+    combat.plan_enemies();
+    assert(beetle.hp == 89 && beetle.max_hp == 89);
+    combat.damage_enemy(beetle, 5);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(beetle.current_intent.type == ATTACK_BUFF && beetle.intent_damage(combat.player) == 18);
+    std::cout << "[PASS] Slumbering Beetle: Ascension gives 89 HP and Roll Out 18" << std::endl;
+}
+
+void test_tunneler() {
+    // Bite 13, Burrow (32 Block and Burrowed), Below 23, and Below again.
+    check_monster(EnemyType::TUNNELER, "Tunnelier", 87, {
+        { ATTACK, 13, 0, 0 },
+        { DEFEND, 0, 32, 0 },
+        { ATTACK, 23, 0, 0 },
+        { ATTACK, 23, 0, 0 },
+        { ATTACK, 23, 0, 0 },
+    });
+
+    // The Block of the Burrow broken before it acts again: Dizzy (a lost turn), then Bite, Burrow and Below.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TUNNELER);
+    Enemy& digger = combat.enemies[0];
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Bite
+    assert(digger.current_intent.type == DEFEND && digger.current_intent.block == 32);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Burrow
+    assert(digger.block == 32 && combat.enemy_power_amount(0, PowerId::BURROWED) == 1);
+    assert(digger.current_intent.type == ATTACK && digger.phase == 0);
+    combat.damage_enemy(digger, 20);
+    assert(digger.block == 12 && combat.enemy_power_amount(0, PowerId::BURROWED) == 1);
+    combat.damage_enemy(digger, 12);
+    assert(digger.block == 0 && combat.enemy_power_amount(0, PowerId::BURROWED) == 0 && digger.hp == 87);
+    assert(digger.phase == 1 && digger.current_intent.type == STUN && digger.intent_damage(combat.player) == 0);
+    // Dizzy, Bite, Burrow, Below, Below: no damage the lost turn, and the cycle goes on.
+    const int expected[][2] = { { 0, 0 }, { 13, 0 }, { 0, 32 }, { 23, 0 }, { 23, 0 } };
+    for (const auto& turn : expected) {
+        assert(digger.current_intent.type == (turn[0] == 0 ? (turn[1] ? DEFEND : STUN) : ATTACK));
+        assert(digger.intent_damage(combat.player) == turn[0]);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == turn[0]);
+        assert(digger.block == turn[1]);
+    }
+    std::cout << "[PASS] Tunneler: 87 HP, Bite 13, Burrow 32 Block, Below 23, Dizzy once the Burrow is broken" << std::endl;
+}
+
+void test_tunneler_ascension() {
+    // 92 HP, Bite 15 and Below 26 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TUNNELER);
+    Enemy& digger = combat.enemies[0];
+    assert(digger.ascension_hp() == 92);
+    digger.ascend(true, true);
+    combat.plan_enemies();
+    assert(digger.hp == 92 && digger.max_hp == 92);
+    assert(digger.current_intent.type == ATTACK && digger.intent_damage(combat.player) == 15);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(digger.current_intent.type == DEFEND && digger.current_intent.block == 32);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(digger.current_intent.type == ATTACK && digger.intent_damage(combat.player) == 26);
+    std::cout << "[PASS] Tunneler: Ascension gives 92 HP, Bite 15 and Below 26" << std::endl;
+}
+
 } // namespace
+
+void test_slimed_berserker() {
+    // Vomit Ichor (10 Slimed), Furious Pummeling 4x4, Leeching Hug (+3 Strength, 3 Weak), Smother 30, and again.
+    // Its Strength adds to every hit that follows.
+    check_monster(EnemyType::SLIMED_BERSERKER, "Berserker de vase", 261, {
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 4 },
+        { BUFF, 0, 0, 3 },
+        { ATTACK, 33, 0, 3 },
+        { STATUS, 0, 0, 3 },
+        { ATTACK, 7, 0, 3, 0, 4 },
+        { BUFF, 0, 0, 6 },
+        { ATTACK, 36, 0, 6 },
+    });
+
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLIMED_BERSERKER);
+    Enemy& berserker = combat.enemies[0];
+    assert(berserker.current_intent.status_card == CardId::SLIMED && berserker.current_intent.status_cards == 10);
+    auto slimed = [&] {
+        int count = 0;
+        for (const DeckCard& card : combat.discard_pile) count += card.id == CardId::SLIMED;
+        return count;
+    };
+    combat.end_player_turn();
+    assert(slimed() >= 10);
+    combat.end_player_turn(); // Furious Pummeling
+    combat.player.hp = combat.player.max_hp;
+    assert(berserker.current_intent.type == BUFF);
+    assert(berserker.current_intent.debuffs[0].type == StatusType::WEAK && berserker.current_intent.debuffs[0].amount == 3);
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::WEAK) >= 3 && berserker.get_status(StatusType::STRENGTH) == 3);
+    std::cout << "[PASS] Slimed Berserker: 261 HP, Vomit Ichor, Pummeling, Leeching Hug, Smother, loop" << std::endl;
+}
+
+void test_slimed_berserker_ascension() {
+    // 281 HP, Furious Pummeling 5x4 and Smother 33 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLIMED_BERSERKER);
+    Enemy& berserker = combat.enemies[0];
+    berserker.ascend(true, true);
+    combat.plan_enemies();
+    assert(berserker.hp == 281 && berserker.max_hp == 281);
+    combat.end_player_turn(); // Vomit Ichor
+    combat.player.hp = combat.player.max_hp;
+    assert(berserker.current_intent.type == ATTACK && berserker.current_intent.hits == 4);
+    assert(berserker.intent_damage(combat.player) == 5);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 20);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Leeching Hug
+    combat.player.hp = combat.player.max_hp;
+    assert(berserker.current_intent.type == ATTACK && berserker.intent_damage(combat.player) == 36);
+    std::cout << "[PASS] Slimed Berserker: Ascension gives 281 HP, Pummeling 5x4, Smother 33" << std::endl;
+}
+
+void test_frog_knight() {
+    // Tongue Lash 13 (2 Frail), Strike Down Evil 21, For the Queen (+5 Strength), and again.
+    check_monster(EnemyType::FROG_KNIGHT, "Chevalier rainette", 191, {
+        { ATTACK_DEBUFF, 13, 0, 0 },
+        { ATTACK, 21, 0, 0 },
+        { BUFF, 0, 0, 5 },
+        { ATTACK_DEBUFF, 18, 0, 5 },
+        { ATTACK, 26, 0, 5 },
+        { BUFF, 0, 0, 10 },
+    });
+    std::cout << "[PASS] Frog Knight: 191 HP, Tongue Lash 13, Strike Down Evil 21, For the Queen +5 Strength, loop" << std::endl;
+}
+
+void test_frog_knight_beetle_charge() {
+    // Hurt below half its HP, it opens a phase with Beetle Charge 35, once, then goes back to the cycle.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FROG_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    assert(knight.current_intent.type == ATTACK_DEBUFF);
+    combat.end_player_turn(); // Tongue Lash
+    assert(combat.player.get_status(StatusType::FRAIL) == 2);
+    knight.hp = 95; // 191 / 2 = 95: not below half yet
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Strike Down Evil
+    knight.hp = 94;
+    combat.plan_enemies();
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 35);
+    const EnemyIntentType after[] = { ATTACK_DEBUFF, ATTACK, BUFF, ATTACK_DEBUFF };
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Beetle Charge
+    for (EnemyIntentType intent : after) {
+        assert(knight.current_intent.type == intent);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+    }
+    std::cout << "[PASS] Frog Knight: Beetle Charge 35 once below half HP, then Tongue Lash, Strike, For the Queen" << std::endl;
+}
+
+void test_frog_knight_ascension() {
+    // 199 HP, Tongue Lash 14, Strike Down Evil 23 and Beetle Charge 40 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FROG_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    knight.ascend(true, true);
+    combat.plan_enemies();
+    assert(knight.hp == 199 && knight.max_hp == 199);
+    assert(knight.current_intent.type == ATTACK_DEBUFF && knight.intent_damage(combat.player) == 14);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 23);
+    knight.hp = 50;
+    combat.plan_enemies();
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 40);
+    std::cout << "[PASS] Frog Knight: Ascension gives 199 HP, Tongue Lash 14, Strike 23, Beetle Charge 40" << std::endl;
+}
 
 int main() {
     std::cout << "=== Monsters ===" << std::endl;
     test_fuzzy_wurm_crawler();
+    test_osty();
+    test_osty_ascension();
     test_crossbow_ruby_raider();
     test_brute_ruby_raider();
     test_assassin_ruby_raider();
@@ -2274,12 +2722,22 @@ int main() {
     test_stabbot_ascension();
     test_spiny_toad();
     test_spiny_toad_ascension();
+    test_zapbot();
+    test_zapbot_ascension();
     test_noisebot();
     test_noisebot_ascension();
+    test_parafright();
+    test_parafright_ascension();
     test_cubex_construct();
     test_cubex_construct_ascension();
     test_punch_construct();
     test_punch_construct_ascension();
+    test_slimed_berserker();
+    test_slimed_berserker_ascension();
+    test_globe_head();
+    test_globe_head_ascension();
+    test_guardbot();
+    test_guardbot_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();
@@ -2294,6 +2752,8 @@ int main() {
     test_gremlin_merc_ascension();
     test_sneaky_gremlin();
     test_sneaky_gremlin_ascension();
+    test_louse_progenitor();
+    test_louse_progenitor_ascension();
     test_haunted_ship();
     test_haunted_ship_ascension();
     test_sludge_spinner();
@@ -2308,6 +2768,15 @@ int main() {
     test_fossil_stalker_ascension();
     test_seapunk();
     test_seapunk_ascension();
+    test_chomper();
+    test_chomper_ascension();
+    test_slumbering_beetle();
+    test_slumbering_beetle_ascension();
+    test_tunneler();
+    test_tunneler_ascension();
+    test_frog_knight();
+    test_frog_knight_beetle_charge();
+    test_frog_knight_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

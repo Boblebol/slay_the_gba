@@ -389,7 +389,18 @@ enum class EnemyType : uint8_t {
     FOSSIL_STALKER,
     SPINY_TOAD,
     SEAPUNK,
-    TRACKER_RUBY_RAIDER
+    TRACKER_RUBY_RAIDER,
+    OSTY,
+    CHOMPER,
+    SLUMBERING_BEETLE,
+    PARAFRIGHT,
+    TUNNELER,
+    ZAPBOT,
+    SLIMED_BERSERKER,
+    FROG_KNIGHT,
+    GLOBE_HEAD,
+    LOUSE_PROGENITOR,
+    GUARDBOT
 };
 
 // What a monster sees of the fight when it chooses its next move.
@@ -454,6 +465,8 @@ public:
     void reset_pattern(uint32_t seed);
     // Moves to `next` when the monster is in an earlier phase. True when the phase changed.
     bool enter_phase(uint8_t next);
+    // The Tunneler's Block was broken while Burrowed (triggered): it enters its next phase, stunned.
+    void break_burrow();
     // Draws a move among `options` by weight, leaving out the last move played unless it can repeat, and
     // remembers it. When the rule leaves no move, the last one is played again. NO_MOVE for an empty list.
     uint8_t draw_move(std::span<const MoveOption> options);

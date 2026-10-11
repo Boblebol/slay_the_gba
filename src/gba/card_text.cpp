@@ -2916,6 +2916,8 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Décomp";
     case engine::PowerId::PERSONAL_HIVE:
         return "Ruche";
+    case engine::PowerId::BURROWED:
+        return "Enfoui";
     default:
         return "";
     }
@@ -2931,6 +2933,8 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Décomp. : chaque carte, -1 Force/Dex.";
     case engine::PowerId::PERSONAL_HIVE:
         return "Ruche : frappée, Hébété en Pioche.";
+    case engine::PowerId::BURROWED:
+        return "Enfoui : Armure brisée, tour perdu.";
     default:
         return "";
     }
@@ -2944,7 +2948,7 @@ void append_enemy_powers(const engine::CombatEngine& combat, int holder, bn::ist
     {
         bn::string_view label = enemy_power_label(power.id);
 
-        if(label.empty() || power.holder != holder)
+        if(label.empty() || power.holder != holder || power.amount <= 0)
         {
             continue;
         }
