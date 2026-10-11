@@ -374,6 +374,7 @@ enum class EnemyType : uint8_t {
     NOISEBOT,
     CUBEX_CONSTRUCT,
     PUNCH_CONSTRUCT,
+    SKULKING_COLONY,
     INKLET,
     NIBBIT,
     FLYCONID,

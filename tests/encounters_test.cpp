@@ -53,6 +53,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::AXEBOT: return "AXEBOT";
         case EnemyType::TURRET_OPERATOR: return "TURRET_OPERATOR";
         case EnemyType::BOWLBUG_ROCK: return "BOWLBUG_ROCK";
+        case EnemyType::SKULKING_COLONY: return "SKULKING_COLONY";
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
@@ -204,9 +205,12 @@ void test_reference_encounters() {
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
+        if (zone == ActZone::ACT1B) continue;
         assert(ids_of(encounter_table(zone, EncounterTier::ELITE)) ==
                std::set<std::string_view>{ "LegacyGremlinNob" });
     }
+    assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::ELITE)) ==
+           std::set<std::string_view>{ "SkulkingColonyElite" });
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
     // Acts 2 and 3: the reference encounters the engine can play, with the groups the game had before in Act 3.

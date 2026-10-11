@@ -137,6 +137,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Sphéropode (Pierre)";
         max_hp = 45;
         hp = 45;
+    } else if (type == EnemyType::SKULKING_COLONY) {
+        name = "Colonie de rôdeurs";
+        max_hp = 75;
+        hp = 75;
     } else if (type == EnemyType::INKLET) {
         name = "Encrelin";
         max_hp = 11;
@@ -322,6 +326,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::AXEBOT: return 76;
         case EnemyType::TURRET_OPERATOR: return 51;
         case EnemyType::BOWLBUG_ROCK: return 46;
+        case EnemyType::SKULKING_COLONY: return 80;
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
@@ -872,6 +877,24 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = ascended_damage ? 16 : 15;
             current_intent.description = "Coup de boule (15 dmg)";
+        }
+    } else if (type == EnemyType::SKULKING_COLONY) {
+        // Zoom twice, Inertia (+2 Strength, +4 at Ascension), Piercing Stabs, and again.
+        const int step = (turn_number - 1) % 4;
+        current_intent.type = EnemyIntentType::ATTACK;
+        if (step <= 1) {
+            current_intent.base_damage = ascended_damage ? 16 : 14;
+            current_intent.description = "Bourdonnement (14 dmg)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = ascended_damage ? 11 : 9;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 4 : 2;
+            current_intent.description = "Inertie (9 dmg, +2 Force)";
+        } else {
+            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.hits = 2;
+            current_intent.description = "Coups perforants (7 dmg x2)";
         }
     } else if (type == EnemyType::INKLET) {
         // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.

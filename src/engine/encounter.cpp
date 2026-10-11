@@ -87,6 +87,17 @@ constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
 };
 
 // The groups the game had before the tables, for the lists with no reference encounter in the engine yet.
+constexpr Encounter LEGACY_WEAK[] = {
+    { "LegacyCultist"sv, 1, { EnemyType::CULTIST } },
+};
+constexpr Encounter LEGACY_NORMAL[] = {
+    { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
+    { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
+    { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
+};
+constexpr Encounter ACT1B_ELITE[] = {
+    { "SkulkingColonyElite"sv, 1, { EnemyType::SKULKING_COLONY } },
+};
 constexpr Encounter LEGACY_ELITE[] = {
     { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
 };
@@ -97,6 +108,9 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT3_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
 } // namespace
