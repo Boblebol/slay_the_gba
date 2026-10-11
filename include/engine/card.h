@@ -628,6 +628,10 @@ enum class CardId : uint16_t {
     THE_GAMBIT,
     // Choose 1 card among N offered (mechanic #72)
     SEEKER_STRIKE,
+    // Transform a card (mechanic #79)
+    PRIMAL_FORCE,
+    SEANCE,
+    ENTROPY,
     SPLASH,
     // Event card: a single attack (Mad Science)
     MAD_SCIENCE,
