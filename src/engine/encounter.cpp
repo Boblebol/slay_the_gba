@@ -100,6 +100,11 @@ constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
 };
 
+// Act 1 (A) elite.
+constexpr Encounter ACT1A_ELITE[] = {
+    { "ByrdonisElite"sv, 1, { EnemyType::BYRDONIS } },
+};
+
 // The groups the game had before the tables, for the lists with no reference encounter in the engine yet.
 constexpr Encounter LEGACY_ELITE[] = {
     { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
@@ -117,6 +122,7 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },

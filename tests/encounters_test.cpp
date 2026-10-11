@@ -90,6 +90,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::INFESTED_PRISM: return "INFESTED_PRISM";
         case EnemyType::FLAIL_KNIGHT: return "FLAIL_KNIGHT";
         case EnemyType::SOUL_NEXUS: return "SOUL_NEXUS";
+        case EnemyType::BYRDONIS: return "BYRDONIS";
     }
     return {};
 }
@@ -216,7 +217,8 @@ void test_reference_encounters() {
                std::set<std::string_view>{ "CeremonialBeastBoss" });
         if (zone == ActZone::ACT1A) continue;
         assert(ids_of(encounter_table(zone, EncounterTier::ELITE)) ==
-               std::set<std::string_view>{ "LegacyGremlinNob" });
+               (zone == ActZone::ACT1A ? std::set<std::string_view>{ "ByrdonisElite" }
+                                       : std::set<std::string_view>{ "LegacyGremlinNob" }));
     }
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
            std::set<std::string_view>{ "LegacyGremlinNob" });

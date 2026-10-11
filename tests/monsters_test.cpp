@@ -2071,6 +2071,37 @@ void test_bygone_effigy_ascension() {
     std::cout << "[PASS] Bygone Effigy: Ascension gives 132 HP and Slashes 15" << std::endl;
 }
 
+void test_byrdonis() {
+    // Swoop 17 on the odd turns, Peck 3 x3 on the even ones.
+    check_monster(EnemyType::BYRDONIS, "Oizodon", 81, {
+        { ATTACK, 17, 0, 0 },
+        { ATTACK, 3, 0, 0, 0, 3 },
+        { ATTACK, 17, 0, 0 },
+        { ATTACK, 3, 0, 0, 0, 3 },
+        { ATTACK, 17, 0, 0 },
+    });
+    std::cout << "[PASS] Byrdonis: 81 HP, Swoop 17 then Peck 3x3" << std::endl;
+}
+
+void test_byrdonis_ascension() {
+    // 81 to 84 HP, exactly 90 at Ascension; Swoop 19 and Peck 4 x3.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BYRDONIS);
+        Enemy& bird = combat.enemies[0];
+        bird.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        assert(bird.hp >= 81 && bird.hp <= 84 && bird.hp_spread() == 3);
+        bird.ascend(true, true);
+        combat.plan_enemies();
+        assert(bird.hp == 90 && bird.max_hp == 90);
+        assert(bird.current_intent.type == ATTACK && bird.intent_damage(combat.player) == 19);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(bird.current_intent.type == ATTACK && bird.current_intent.hits == 3 &&
+               bird.intent_damage(combat.player) == 4);
+    }
+    std::cout << "[PASS] Byrdonis: Ascension gives 90 HP, Swoop 19 and Peck 4x3" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -3610,6 +3641,8 @@ int main() {
     test_magi_knight_ascension();
     test_bygone_effigy();
     test_bygone_effigy_ascension();
+    test_byrdonis();
+    test_byrdonis_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

@@ -165,6 +165,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Sphéropode (Œuf)";
         max_hp = 21;
         hp = 21;
+    } else if (type == EnemyType::BYRDONIS) {
+        name = "Oizodon";
+        max_hp = 81;
+        hp = 81;
     } else if (type == EnemyType::TOADPOLE) {
         name = "Crapautard";
         max_hp = 21;
@@ -308,6 +312,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::SLUDGE_SPINNER: return 2; // 37 to 39, 41 to 42 at Ascension
         case EnemyType::GUARDBOT: return 4;    // 16 to 20, 17 to 21 at Ascension
         case EnemyType::BOWLBUG_EGG: return 1; // 21 to 22, 23 to 24 at Ascension
+        case EnemyType::BYRDONIS: return 3;    // 81 to 84, always 90 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
         case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
         case EnemyType::BOWLBUG_NECTAR: return 3; // 35 to 38, 36 to 39 at Ascension
@@ -382,6 +387,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::LOUSE_PROGENITOR: return 138;
         case EnemyType::SLUDGE_SPINNER: return 41;
         case EnemyType::BOWLBUG_EGG: return 23;
+        case EnemyType::BYRDONIS: return static_cast<int16_t>(90 - hp_bonus); // ascend() adds hp_bonus back: 90 exactly
         case EnemyType::TOADPOLE: return 22;
         case EnemyType::HUNTER_KILLER: return 126;
         case EnemyType::MAWLER: return 76;
@@ -1183,6 +1189,18 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.base_damage = ascended_damage ? 8 : 7;
         current_intent.block = 7;
         current_intent.description = "Morsure (7 dmg, 7 blk)";
+    } else if (type == EnemyType::BYRDONIS) {
+        // Swoop (17 damage) then Peck (3 damage x3), and again.
+        if (turn_number % 2 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 19 : 17;
+            current_intent.description = "Piqué (17 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 4 : 3;
+            current_intent.hits = 3;
+            current_intent.description = "Coup de bec (3 dmg x3)";
+        }
     } else if (type == EnemyType::TOADPOLE) {
         // Three moves in a loop, started by its place: in front Spiken, Spike Spit, Whirl; behind Whirl, Spiken,
         // Spike Spit. `phase` holds the offset in the cycle SPIKEN, SPIKE_SPIT, WHIRL.
