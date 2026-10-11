@@ -698,6 +698,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::MERCURY_HOURGLASS:
             if (turn_start) damage_all_enemies(power.amount);
             break;
+        case PowerId::PAELS_FLESH:
+            if (turn_start && turn_number >= 3) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
         case PowerId::MR_STRUGGLES:
             if (turn_start) damage_all_enemies(static_cast<int16_t>(turn_number));
             break;
