@@ -2650,6 +2650,22 @@ void test_molten_egg() {
     std::cout << "[PASS] Molten Egg: upgrades an Attack added to the deck" << std::endl;
 }
 
+void test_potion_belt() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 462);
+    int before = run.potion_slots;
+    run.add_relic("POTION_BELT");
+    assert(run.has_relic("POTION_BELT"));
+    assert(run.potion_slots == before + 2);
+
+    // Without the relic, the belt keeps its size.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 462);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("POTION_BELT") && plain.potion_slots == before);
+    std::cout << "[PASS] Potion Belt: 2 more potion slots when obtained" << std::endl;
+}
+
 void test_whetstone() {
     // Obtained: two random Attacks of the deck are upgraded, never more than the deck holds.
     auto upgraded_attacks = [](const RunManager& r) {
@@ -3740,6 +3756,7 @@ int main() {
     test_fake_anchor();
     test_old_coin();
     test_pear();
+    test_potion_belt();
     test_whetstone();
     test_dragon_fruit();
     test_toxic_egg();
