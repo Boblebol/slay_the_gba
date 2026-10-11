@@ -49,6 +49,7 @@
 #include "bn_sprite_items_mon_axebot.h"
 #include "bn_sprite_items_mon_turret_operator.h"
 #include "bn_sprite_items_mon_skulking_colony.h"
+#include "bn_sprite_items_mon_terror_eel.h"
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_osty.h"
 #include "bn_sprite_items_mon_parafright.h"
@@ -278,6 +279,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_noisebot, false };
     case engine::EnemyType::CUBEX_CONSTRUCT:
         return { &bn::sprite_items::mon_cubex_construct, false };
+    case engine::EnemyType::TERROR_EEL:
+        return { &bn::sprite_items::mon_terror_eel, false };
     case engine::EnemyType::PUNCH_CONSTRUCT:
         return { &bn::sprite_items::mon_punch_construct, false };
     case engine::EnemyType::BOWLBUG_NECTAR:
