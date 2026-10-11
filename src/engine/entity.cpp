@@ -113,6 +113,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Mycoptère";
         max_hp = 47;
         hp = 47;
+    } else if (type == EnemyType::CORPSE_SLUG) {
+        name = "Putrilimace";
+        max_hp = 25;
+        hp = 25;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -125,6 +129,7 @@ void Enemy::init(EnemyType enemy_type) {
 uint8_t Enemy::hp_spread() const {
     switch (type) {
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
+        case EnemyType::CORPSE_SLUG: return 2; // 25 to 27, 27 to 29 at Ascension
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
         case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
         case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
@@ -164,6 +169,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
+        case EnemyType::CORPSE_SLUG: return 27;
         default: return 0;
     }
 }
@@ -573,6 +579,22 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = ascended_damage ? 3 : 2;
             current_intent.description = "Chuintement (+2 Force)";
+        }
+    } else if (type == EnemyType::CORPSE_SLUG) {
+        // Whip Slap, Glomp, Goop, and again.
+        if (turn_number % 3 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 3;
+            current_intent.hits = 2;
+            current_intent.description = "Fouet (3 dmg x2)";
+        } else if (turn_number % 3 == 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.description = "Câlin brutal (8 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
+            current_intent.description = "Mucus (Fragilisé 2)";
         }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the

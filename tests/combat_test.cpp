@@ -3984,7 +3984,9 @@ void test_ascension() {
     a10.start_run(CharacterId::IRONCLAD, 10, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(a10, RoomType::MONSTER);
     const Enemy& cultist = a10.combat.enemies[0];
-    assert(cultist.max_hp == 50 * 115 / 100 && cultist.hp == cultist.max_hp && cultist.damage_percent == 120);
+    // The first fight depends on the seed (Corpse Slugs here, which have their own Ascension values).
+    assert(cultist.type == EnemyType::CORPSE_SLUG && cultist.hp == cultist.max_hp);
+    assert(cultist.ascended_damage && cultist.max_hp >= 27 && cultist.max_hp <= 29);
 
     CombatEngine fight = make_combat(CharacterId::IRONCLAD);
     fight.enemies[0].damage_percent = 120;
