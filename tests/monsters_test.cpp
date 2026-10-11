@@ -1322,6 +1322,35 @@ void test_punch_construct_ascension() {
     std::cout << "[PASS] Punch Construct: Ascension gives 60 HP, Fast Punch 6x2, Strong Punch 16" << std::endl;
 }
 
+void test_bowlbug_egg() {
+    // Bite (7 damage, 7 Block) every turn.
+    check_monster(EnemyType::BOWLBUG_EGG, "Sphéropode (Œuf)", 21, {
+        { ATTACK_DEFEND, 7, 7, 0 },
+        { ATTACK_DEFEND, 7, 7, 0 },
+        { ATTACK_DEFEND, 7, 7, 0 },
+    });
+    std::cout << "[PASS] Bowlbug Egg: 21 HP, Bite 7 damage + 7 Block every turn" << std::endl;
+}
+
+void test_bowlbug_egg_ascension() {
+    // 23 to 24 HP (21 to 22 plus 2) and a Bite of 8 at Ascension; the Block stays 7.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_EGG);
+        Enemy& egg = combat.enemies[0];
+        egg.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = egg.hp;
+        assert(egg.ascension_hp() == 23 && egg.hp_spread() == 1);
+        assert(base >= 21 && base <= 22 && egg.max_hp == 21 + egg.hp_bonus);
+        egg.ascend(true, true);
+        combat.plan_enemies();
+        assert(egg.hp == base + 2 && egg.max_hp == base + 2 && egg.hp >= 23 && egg.hp <= 24);
+        assert(egg.current_intent.type == ATTACK_DEFEND && egg.intent_damage(combat.player) == 8);
+        combat.end_player_turn();
+        assert(egg.block == 7);
+    }
+    std::cout << "[PASS] Bowlbug Egg: Ascension gives 23 to 24 HP and a Bite of 8" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -1923,6 +1952,8 @@ int main() {
     test_cubex_construct_ascension();
     test_punch_construct();
     test_punch_construct_ascension();
+    test_bowlbug_egg();
+    test_bowlbug_egg_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

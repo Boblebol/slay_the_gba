@@ -117,6 +117,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Grignotin";
         max_hp = 42;
         hp = 42;
+    } else if (type == EnemyType::BOWLBUG_EGG) {
+        name = "Sphéropode (Œuf)";
+        max_hp = 21;
+        hp = 21;
     } else if (type == EnemyType::TOADPOLE) {
         name = "Crapautard";
         max_hp = 21;
@@ -157,6 +161,7 @@ void Enemy::init(EnemyType enemy_type) {
 uint8_t Enemy::hp_spread() const {
     switch (type) {
         case EnemyType::SLUDGE_SPINNER: return 2; // 37 to 39, 41 to 42 at Ascension
+        case EnemyType::BOWLBUG_EGG: return 1; // 21 to 22, 23 to 24 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
         case EnemyType::CORPSE_SLUG: return 2; // 25 to 27, 27 to 29 at Ascension
@@ -208,6 +213,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::GREMLIN_MERC: return 51;
         case EnemyType::HAUNTED_SHIP: return 67;
         case EnemyType::SLUDGE_SPINNER: return 41;
+        case EnemyType::BOWLBUG_EGG: return 23;
         case EnemyType::TOADPOLE: return 22;
         default: return 0;
     }
@@ -708,6 +714,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.hits = 3;
             current_intent.description = "Piétinement (4 dmg x3)";
         }
+    } else if (type == EnemyType::BOWLBUG_EGG) {
+        // Bite (7 damage, 7 Block) every turn.
+        current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+        current_intent.base_damage = ascended_damage ? 8 : 7;
+        current_intent.block = 7;
+        current_intent.description = "Morsure (7 dmg, 7 blk)";
     } else if (type == EnemyType::TOADPOLE) {
         // Three moves in a loop, started by its place: in front Spiken, Spike Spit, Whirl; behind Whirl, Spiken,
         // Spike Spit. `phase` holds the offset in the cycle SPIKEN, SPIKE_SPIT, WHIRL.
