@@ -1361,6 +1361,39 @@ void test_punch_construct_ascension() {
     std::cout << "[PASS] Punch Construct: Ascension gives 60 HP, Fast Punch 6x2, Strong Punch 16" << std::endl;
 }
 
+void test_magi_knight() {
+    // Power Shield 6 + 5 Block, Dampen, then Ram 10, Prep 5 Block and Magic Bomb 35 in a loop. The Block fades
+    // at the monster's next turn.
+    check_monster(EnemyType::MAGI_KNIGHT, "Chevalier mage", 82, {
+        { ATTACK_DEFEND, 6, 5, 0 },
+        { DEBUFF, 0, 0, 0 },
+        { ATTACK, 10, 0, 0 },
+        { DEFEND, 0, 5, 0 },
+        { ATTACK, 35, 0, 0 },
+        { ATTACK, 10, 0, 0 },
+        { DEFEND, 0, 5, 0 },
+        { ATTACK, 35, 0, 0 },
+    });
+    std::cout << "[PASS] Magi Knight: 82 HP, Power Shield, Dampen, then Ram, Prep, Magic Bomb in a loop" << std::endl;
+}
+
+void test_magi_knight_ascension() {
+    // 89 HP, Power Shield 7, Ram 11 and Magic Bomb 40 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::MAGI_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    knight.ascend(true, true);
+    combat.plan_enemies();
+    assert(knight.hp == 89 && knight.max_hp == 89);
+    assert(knight.intent_damage(combat.player) == 7);
+    combat.end_player_turn(); // Power Shield
+    combat.end_player_turn(); // Dampen
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 11);
+    combat.end_player_turn(); // Ram
+    combat.end_player_turn(); // Prep
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 40);
+    std::cout << "[PASS] Magi Knight: Ascension gives 89 HP, Power Shield 7, Ram 11, Magic Bomb 40" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -2280,6 +2313,8 @@ int main() {
     test_cubex_construct_ascension();
     test_punch_construct();
     test_punch_construct_ascension();
+    test_magi_knight();
+    test_magi_knight_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

@@ -177,6 +177,7 @@ MONSTERS: dict[str, str] = {
     "noisebot": "noisebot",
     "cubex_construct": "cubex_construct",
     "punch_construct": "punch_construct",
+    "magi_knight": "magi_knight",
     "inklet": "inklet",
     "nibbit": "nibbit",
     "flyconid": "flyconid",
