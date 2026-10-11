@@ -3633,6 +3633,22 @@ void test_undying_sigil() {
     std::cout << "[PASS] Undying Sigil: enemy with Doom at least its HP deals 50% less damage" << std::endl;
 }
 
+void test_spiked_gauntlets() {
+    // With the relic: +1 energy each turn, and a Power card costs 1 more.
+    CombatEngine gauntlets = make_relic_combat(CharacterId::IRONCLAD, { RelicPower{ PowerId::TURN_ENERGY, 1 }, RelicPower{ PowerId::SPIKED_GAUNTLETS, 1 } });
+    assert(gauntlets.player.energy == gauntlets.player.max_energy + 1);
+    DeckCard power_card(CardId::INFLAME);
+    DeckCard attack_card(CardId::STRIKE);
+    assert(gauntlets.effective_cost(power_card) == CardDef::get_cost(CardId::INFLAME, false) + 1);
+    assert(gauntlets.effective_cost(attack_card) == CardDef::get_cost(CardId::STRIKE, false));
+
+    // Without the relic: no extra energy, and the Power costs its printed cost.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    assert(plain.player.energy == plain.player.max_energy);
+    assert(plain.effective_cost(power_card) == CardDef::get_cost(CardId::INFLAME, false));
+    std::cout << "[PASS] Spiked Gauntlets: +1 energy per turn, Powers cost 1 more" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3769,6 +3785,7 @@ int main() {
     test_tea_of_discourtesy();
     test_the_boot();
     test_hand_drill();
+    test_spiked_gauntlets();
     test_paper_phrog();
     test_silver_crucible();
     return 0;
