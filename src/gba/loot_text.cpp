@@ -222,6 +222,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "CALLING_BELL", "Lorsque vous obtenez cette relique, obtenez une Malédiction spéciale et 3 Reliques." },
     { "ALCHEMICAL_COFFER", "Lorsque vous obtenez cette relique, gagnez 4 nouveaux emplacements de potion avec des Potions aléatoires." },
     { "CAULDRON", "Lorsque vous obtenez cette relique, concoctez 5 Potions aléatoires." },
+    { "PHIAL_HOLSTER", "Lorsque vous obtenez cette relique, gagnez 1 emplacement de potion et obtenez 2 Potions aléatoires." },
     { "CHEMICAL_X", "Les effets de vos cartes de coût X sont augmentés de 2." },
     { "LOST_WISP", "Chaque fois que vous jouez un Pouvoir, infligez 8 dégâts à TOUS les ennemis." },
     { "OLD_COIN", "Lorsque vous obtenez cette relique, obtenez 300 Pièces d'or." },

@@ -949,6 +949,10 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         add_potion_slots(4);
         gain_random_potions(4);
     }
+    if (relic_id == "PHIAL_HOLSTER" && has_relic("PHIAL_HOLSTER")) {
+        add_potion_slots(1);
+        gain_random_potions(2);
+    }
     if (relic_id == "CALLING_BELL" && has_relic("CALLING_BELL")) {
         add_card_to_deck(DeckCard{ CardId::CURSE_OF_THE_BELL, false });
         gain_random_relics(3);

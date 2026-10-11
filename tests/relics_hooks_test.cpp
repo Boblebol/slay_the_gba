@@ -2562,6 +2562,28 @@ void test_alchemical_coffer() {
     std::cout << "[PASS] Alchemical Coffer: 4 potion slots filled on pickup" << std::endl;
 }
 
+void test_phial_holster() {
+    // Obtained: one more potion slot and 2 random potions.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 709);
+    run.potions.clear();
+    int slots = run.potion_slots;
+    run.add_relic("PHIAL_HOLSTER");
+    assert(run.has_relic("PHIAL_HOLSTER"));
+    assert(run.potion_slots == slots + 1);
+    assert(run.potions.size() == 2);
+
+    // Without the relic: no slot, no potion.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 709);
+    plain.potions.clear();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("PHIAL_HOLSTER"));
+    assert(plain.potion_slots == slots);
+    assert(plain.potions.empty());
+    std::cout << "[PASS] Phial Holster: 1 potion slot and 2 random potions on pickup" << std::endl;
+}
+
 void test_pear() {
     // Obtained: 10 more maximum HP, and the current HP follow.
     RunManager run;
@@ -4108,6 +4130,7 @@ int main() {
     test_mango();
     test_fake_lees_waffle();
     test_fake_mango();
+    test_phial_holster();
     test_fake_anchor();
     test_old_coin();
     test_pear();
