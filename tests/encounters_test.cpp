@@ -51,6 +51,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::CORPSE_SLUG: return "CORPSE_SLUG";
         case EnemyType::GAS_BOMB: return "GAS_BOMB";
         case EnemyType::GREMLIN_MERC: return "GREMLIN_MERC";
+        case EnemyType::SNEAKY_GREMLIN: return "SNEAKY_GREMLIN";
     }
     return {};
 }
@@ -206,7 +207,7 @@ void test_reference_encounters() {
     }
     // Except the ones whose only reference encounter needs a monster the engine does not have yet: the
     // Forgotten is only met with the Lost (TheLostAndForgottenNormal), the Living Shield with the Turret Operator
-    // (TurretOperatorWeak), the Fat Gremlin with the Gremlin Merc (GremlinMercNormal).
+    // (TurretOperatorWeak), the Fat Gremlin with the Gremlin Merc (GremlinMercNormal), like the Sneaky Gremlin.
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
     // The Stabbot and the Noisebot are brought by the Fabricator (FabricatorNormal).
     // The Gas Bomb is brought by the Living Fog (LivingFogNormal).
@@ -214,6 +215,8 @@ void test_reference_encounters() {
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
                                                           EnemyType::GAS_BOMB };
+                                                          EnemyType::STABBOT, EnemyType::NOISEBOT,
+                                                          EnemyType::SNEAKY_GREMLIN };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));

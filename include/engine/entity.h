@@ -382,6 +382,8 @@ enum class EnemyType : uint8_t {
     GAS_BOMB
     FLYCONID,
     GREMLIN_MERC
+    FLYCONID,
+    SNEAKY_GREMLIN
 };
 
 // What a monster sees of the fight when it chooses its next move.
