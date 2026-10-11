@@ -70,6 +70,16 @@ void test_fairy_in_a_bottle_is_automatic_and_discarded_when_it_saves() {
     std::cout << "[PASS] Fairy in a Bottle: automatic, leaves the belt once it has saved its owner" << std::endl;
 }
 
+void test_entropic_brew_fills_the_empty_slots() {
+    // Drunk from a belt of one potion: the two free slots get random potions, the drunk one is not counted.
+    RunManager run = fight_with({ "ENTROPIC_BREW", "BLOCK_POTION" });
+    assert(run.use_potion(0));
+    assert(run.potions.size() == run.potion_slots);
+    assert(run.potions.size() == 3 && run.potions[2] != "ENTROPIC_BREW");
+    assert(run.potions[0] == "BLOCK_POTION");
+    std::cout << "[PASS] Entropic Brew fills the empty potion slots" << std::endl;
+}
+
 void test_nothing_is_drunk_outside_the_player_turn() {
     RunManager run = fight_with({ "BLOCK_POTION" });
     run.combat.state = CombatState::ENEMY_TURN;
@@ -97,7 +107,8 @@ void test_every_resolved_potion_has_a_belt_entry() {
         RunManager run = fight_with({ potion.id });
         if (run.use_potion(0, 1)) {
             ++resolved;
-            assert(run.potions.empty());
+            // Entropic Brew refills the belt it was drunk from; every other potion leaves it empty.
+            assert(run.potions.empty() || potion.id == "ENTROPIC_BREW");
         } else {
             assert(run.potions.size() == 1);
         }
@@ -112,6 +123,7 @@ int main() {
     test_drinking_removes_the_potion_and_keeps_the_order();
     test_a_potion_the_engine_does_not_resolve_stays_in_the_belt();
     test_fairy_in_a_bottle_is_automatic_and_discarded_when_it_saves();
+    test_entropic_brew_fills_the_empty_slots();
     test_nothing_is_drunk_outside_the_player_turn();
     test_a_killing_potion_ends_the_combat();
     test_every_resolved_potion_has_a_belt_entry();

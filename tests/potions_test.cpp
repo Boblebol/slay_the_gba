@@ -26,6 +26,9 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "FAIRY_IN_A_BOTTLE",
     "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "AMBERGRIS",
     "COSMIC_CONCOCTION",
+    "ENTROPIC_BREW",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "FRUIT_JUICE",
+    "FOUL_POTION",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -115,6 +118,41 @@ void test_explosive_ampoule() {
     assert(lethal.use_potion("EXPLOSIVE_AMPOULE"));
     assert(lethal.state == CombatState::VICTORY);
     std::cout << "[PASS] Explosive Ampoule: 10 damage to every enemy, absorbed by Block, victory" << std::endl;
+}
+
+void test_foul_potion() {
+    // 12 damage to every enemy and to the player; Block absorbs it on each of them.
+    CombatEngine combat = make_pack(CharacterId::IRONCLAD);
+    const int16_t hp_before = combat.player.hp;
+    combat.enemies[1].block = 4;
+    combat.player.block = 5;
+    assert(combat.use_potion("FOUL_POTION"));
+    assert(combat.enemies[0].hp == 18 - 12 && combat.enemies[2].hp == 42 - 12);
+    assert(combat.enemies[1].hp == 18 - 8 && combat.enemies[1].block == 0);
+    assert(combat.player.hp == hp_before - 7 && combat.player.block == 0);
+
+    // It is not an attack: Strength and Vulnerable change nothing.
+    CombatEngine plain = make_combat(CharacterId::IRONCLAD);
+    const int16_t plain_hp = plain.player.hp;
+    plain.player.add_status(StatusType::STRENGTH, 3);
+    plain.enemies[0].add_status(StatusType::VULNERABLE, 2);
+    assert(plain.use_potion("FOUL_POTION"));
+    assert(plain.enemies[0].hp == 42 - 12 && plain.player.hp == plain_hp - 12);
+
+    // Killing every enemy wins the fight, and the player dropping to 0 loses it.
+    CombatEngine lethal = make_pack(CharacterId::IRONCLAD);
+    lethal.enemies[2].hp = 10;
+    assert(lethal.use_potion("FOUL_POTION"));
+    assert(lethal.enemies[0].hp == 6 && lethal.state == CombatState::PLAYER_TURN);
+    lethal.enemies[0].hp = 6;
+    lethal.enemies[1].hp = 6;
+    assert(lethal.use_potion("FOUL_POTION"));
+    assert(lethal.state == CombatState::VICTORY);
+    CombatEngine doomed = make_combat(CharacterId::IRONCLAD);
+    doomed.player.hp = 12;
+    assert(doomed.use_potion("FOUL_POTION"));
+    assert(doomed.state == CombatState::DEFEAT);
+    std::cout << "[PASS] Foul Potion: 12 damage to the player and every enemy, Block absorbs it, defeat and victory" << std::endl;
 }
 
 void test_weak_potion() {
@@ -1009,6 +1047,16 @@ void test_power_potion() {
     std::cout << "[PASS] Power Potion: 1 of 3 random Powers added to the hand, free this turn" << std::endl;
 }
 
+void test_fruit_juice() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    const int16_t max_hp = combat.player.max_hp;
+    const int16_t hp = combat.player.hp;
+    assert(combat.use_potion("FRUIT_JUICE"));
+    assert(combat.player.max_hp == max_hp + 5);
+    assert(combat.player.hp == hp + 5);
+    std::cout << "[PASS] Fruit Juice: gain 5 Max HP, and as much HP" << std::endl;
+}
+
 void test_gigantification_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     combat.hand.clear();
@@ -1038,6 +1086,18 @@ void test_fairy_in_a_bottle() {
     combat.damage_player(static_cast<int16_t>(max_hp)); // no second fairy
     assert(combat.state == CombatState::DEFEAT);
     std::cout << "[PASS] Fairy in a Bottle: revives at 30 % of Max HP, once" << std::endl;
+}
+
+void test_entropic_brew() {
+    // Drinking it asks the run to fill its empty potion slots; the combat itself gains nothing.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    int16_t hp = combat.player.hp;
+    int8_t energy = combat.player.energy;
+    assert(combat.use_potion("ENTROPIC_BREW"));
+    assert(combat.fill_potion_belt);
+    assert(combat.player.hp == hp && combat.player.energy == energy);
+    assert(std::string_view(combat.combat_log) == "Entropic Brew!");
+    std::cout << "[PASS] Entropic Brew: asks the run to fill the empty potion slots" << std::endl;
 }
 
 } // namespace
@@ -1105,9 +1165,12 @@ void test_ashwater() {
 
 int main() {
     std::cout << "=== Potions ===" << std::endl;
+    test_fruit_juice();
     test_gigantification_potion();
     test_fairy_in_a_bottle();
+    test_entropic_brew();
     test_explosive_ampoule();
+    test_foul_potion();
     test_weak_potion();
     test_swift_potion();
     test_dexterity_potion();

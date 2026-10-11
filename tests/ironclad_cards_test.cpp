@@ -149,6 +149,26 @@ void test_unmovable() {
     std::cout << "[PASS] Ironclad: Unmovable" << std::endl;
 }
 
+// Colossus: 4 Block (7 upgraded), and the player takes 50% less damage from Vulnerable enemies this turn.
+void test_colossus() {
+    for (bool upgraded : { false, true }) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+        play(combat, DeckCard(CardId::COLOSSUS, upgraded));
+        assert(combat.player.block == (upgraded ? 7 : 4));
+        assert(combat.player.halve_vulnerable_damage);
+
+        Enemy& foe = combat.enemies[0];
+        foe.current_intent.type = EnemyIntentType::ATTACK;
+        foe.current_intent.base_damage = 10;
+        int16_t plain = foe.intent_damage(combat.player);
+        foe.add_status(StatusType::VULNERABLE, 1);
+        assert(foe.intent_damage(combat.player) == plain / 2);
+    }
+
+    assert_in_pool(CharacterId::IRONCLAD, { CardId::COLOSSUS });
+    std::cout << "[PASS] Ironclad: Colossus" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -156,6 +176,7 @@ int main() {
     test_juggling();
     test_cruelty();
     test_unmovable();
+    test_colossus();
     std::cout << "=== All Ironclad Cards Passed! ===" << std::endl;
     return 0;
 }
