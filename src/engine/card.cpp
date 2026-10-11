@@ -651,6 +651,22 @@ static constexpr CardDef CARDS[] = {
     { CardId::INFECTION, "Infection", 0, CardType::STATUS, TargetType::SELF, 0, 0, "Unplayable.", "Infection", 0, 0, 0, "Unplayable.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
 };
 
+bool can_enchant(const DeckCard& card, Enchantment enchantment) {
+    if (enchantment == Enchantment::NONE || enchantment == Enchantment::COUNT) return false;
+    if (card.enchantment != Enchantment::NONE) return false;
+    const CardType type = CardDef::get(card.id).type;
+    if (type == CardType::STATUS || type == CardType::CURSE || type == CardType::QUEST) return false;
+    switch (enchantment) {
+        case Enchantment::SHARP:
+        case Enchantment::INSTINCT:
+        case Enchantment::MOMENTUM:
+        case Enchantment::TEZCATARAS_EMBER:
+            return type == CardType::ATTACK;
+        default:
+            return true;
+    }
+}
+
 const CardDef& CardDef::get(CardId id) {
     uint16_t index = static_cast<uint16_t>(id);
     if (index >= static_cast<uint16_t>(CardId::COUNT)) {

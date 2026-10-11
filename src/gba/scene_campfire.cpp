@@ -124,6 +124,12 @@ public:
                         play_sfx(Sfx::ERROR);
                     }
                 }
+                else if(action == engine::CampfireAction::CLONE)
+                {
+                    // Clone: a card enchanted with it is duplicated, then the rest site is used up.
+                    play_sfx(Sfx::UI_OPEN);
+                    _open_clone();
+                }
                 else if(action != engine::CampfireAction::SMITH)
                 {
                     // An action the engine does not resolve yet.
@@ -164,6 +170,34 @@ public:
             }
             break;
 
+        case Stage::CLONE:
+            _picker.update(_ctx.frame);
+
+            if(bn::keypad::b_pressed())
+            {
+                play_sfx(Sfx::UI_CANCEL);
+                _picker.clear();
+                _stage = Stage::MENU;
+                _refresh_options();
+            }
+            else if(bn::keypad::a_pressed() && _picker.size() > 0)
+            {
+                if(_ctx.run.clone_at_campfire(_picker.selected_tag()))
+                {
+                    _popups.spawn(-74, -60, "Clonée !", TextColor::PURPLE);
+                    play_sfx(Sfx::BUFF);
+                    _stage = Stage::DONE;
+                    _done_timer = 0;
+                    _hint.clear();
+                }
+                else
+                {
+                    _popups.spawn(0, 10, "Deck plein", TextColor::GRAY);
+                    play_sfx(Sfx::ERROR);
+                }
+            }
+            break;
+
         case Stage::DONE:
             ++_done_timer;
 
@@ -193,6 +227,7 @@ private:
     {
         MENU,
         FORGE,
+        CLONE,
         DONE
     };
 
@@ -200,7 +235,7 @@ private:
     bn::regular_bg_ptr _bg;
     bn::sprite_ptr _heart;
     CardPicker _picker;
-    engine::FixedVector<engine::CampfireAction, 5> _actions;
+    engine::FixedVector<engine::CampfireAction, engine::MAX_CAMPFIRE_ACTIONS> _actions;
     bn::random _random;
     Label _title;
     Label _hp;
@@ -269,6 +304,9 @@ private:
             case engine::CampfireAction::LIFT:
                 stream << "Soulever : gagner de la Force";
                 break;
+            case engine::CampfireAction::CLONE:
+                stream << "Cloner : dupliquer une carte";
+                break;
             default:
                 stream << "Cuisiner : -2 cartes, +5 PV Max";
                 break;
@@ -298,6 +336,25 @@ private:
         }
 
         _hint.set(0, 30, "◄► Carte   A Forger   B Retour", Align::CENTER, TextColor::GRAY);
+    }
+
+    void _open_clone()
+    {
+        _stage = Stage::CLONE;
+        _options.clear();
+        _picker.clear();
+        _picker.set_preview_upgraded(false);
+        const auto& deck = _ctx.run.master_deck;
+
+        for(int index = 0; index < int(deck.size()); ++index)
+        {
+            if(deck[index].enchantment == engine::Enchantment::CLONE)
+            {
+                _picker.add(deck[index], index);
+            }
+        }
+
+        _hint.set(0, 30, "◄► Carte   A Cloner   B Retour", Align::CENTER, TextColor::GRAY);
     }
 };
 

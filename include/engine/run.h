@@ -59,8 +59,11 @@ enum class CampfireAction : uint8_t {
     SMITH,
     DIG,  // Shovel
     LIFT, // Girya
-    COOK  // Meat Cleaver
+    COOK, // Meat Cleaver
+    CLONE // a card of the deck is enchanted with Clone
 };
+
+constexpr size_t MAX_CAMPFIRE_ACTIONS = 6;
 
 // A number a relic keeps from room to room ("every 3 combats", "3 times max"), saved with the run.
 struct RelicCounter {
@@ -140,7 +143,7 @@ public:
 
     // Campfire actions
     // Rest, Smith, then the actions the relics of the run give, in the order of the menu.
-    [[nodiscard]] FixedVector<CampfireAction, 5> campfire_actions() const;
+    [[nodiscard]] FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> campfire_actions() const;
     void rest_at_campfire();
     bool can_rest() const;
     bool smith_at_campfire(int card_index);
@@ -153,6 +156,10 @@ public:
     bool lift_at_campfire();
     // Shovel: digs for a random relic at the campfire (false when there is none to find).
     bool dig_at_campfire();
+    // Clone: adds to the deck a copy of the card at `deck_index`, which must be enchanted with Clone. Uses up the
+    // rest site. False when the card cannot be cloned or the deck is full.
+    bool clone_at_campfire(int deck_index);
+    [[nodiscard]] bool can_clone(int deck_index) const;
 
     // Shop actions
     void open_shop();
@@ -194,6 +201,9 @@ public:
     int upgrade_random_cards(int count, CardType type);
     // Adds a card (a curse like any other) to the deck. False when the deck is full.
     bool add_card_to_deck(DeckCard card);
+    // Enchants the card at `deck_index` (mechanic #107). A card holds one enchantment: false when it already has
+    // one, or when the enchantment does not fit it (see can_enchant).
+    bool enchant_card_in_deck(int deck_index, Enchantment enchantment, uint8_t amount = 0);
     // Replaces the card by another one of the hero's reward pool, drawn at random and never the same card.
     bool transform_card_in_deck(int deck_index, bool upgraded = false, CardId into = CardId::NONE);
     // Obtains up to `count` relics drawn like the ones of a chest. Returns how many were obtained.

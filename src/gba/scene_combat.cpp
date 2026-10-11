@@ -609,7 +609,8 @@ void CombatScene::_refresh_card_text()
             _selected_shown = -2;
             TextLine text;
             card_name(_flying, text);
-            _line1.set(-112, LINE1_Y, text, Align::LEFT, _flying.upgraded ? TextColor::GREEN : TextColor::GOLD);
+            _line1.set(-112, LINE1_Y, text, Align::LEFT,
+                       is_enchanted(_flying) ? TextColor::PURPLE : _flying.upgraded ? TextColor::GREEN : TextColor::GOLD);
             _line1_right.clear();
             card_description(_flying, text);
             _line2.set(-112, LINE2_Y, text, Align::LEFT, TextColor::WHITE);
@@ -667,7 +668,8 @@ void CombatScene::_refresh_card_text()
     const engine::DeckCard& card = _hand[_selected].card;
     TextLine text;
     card_name(card, text);
-    _line1.set(-112, LINE1_Y, text, Align::LEFT, card.upgraded ? TextColor::GREEN : TextColor::GOLD);
+    _line1.set(-112, LINE1_Y, text, Align::LEFT,
+               is_enchanted(card) ? TextColor::PURPLE : card.upgraded ? TextColor::GREEN : TextColor::GOLD);
 
     if(_phase == Phase::CHOICE && _pile_view && _combat.choice_pending())
     {

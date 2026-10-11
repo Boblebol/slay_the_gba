@@ -158,6 +158,7 @@ enum class PowerId : uint8_t {
     STRIKE_DUMMY,      // cards containing "Strike" deal `amount` more damage per hit
     FAKE_STRIKE_DUMMY, // event copy of STRIKE_DUMMY: cards containing "Strike" deal `amount` more damage per hit
     MINIATURE_CANNON,  // upgraded Attacks deal `amount` more damage per hit
+    MYSTIC_LIGHTER,    // Enchanted Attacks deal `amount` more damage per hit
     THE_BOOT,          // an Attack hit dealing 1 to THE_BOOT_THRESHOLD damage (before Block) deals THE_BOOT_MINIMUM instead
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy

@@ -63,15 +63,15 @@ void test_rest_hook_and_campfire_actions() {
     assert(run.smith_at_campfire(0) && run.hook_count(RunHook::RESTED) == 1);
 
     // Rest and Smith by default; a relic adds its action, in the order of the menu.
-    FixedVector<CampfireAction, 5> base = run.campfire_actions();
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> base = run.campfire_actions();
     assert(base.size() == 2 && base[0] == CampfireAction::REST && base[1] == CampfireAction::SMITH);
     run.add_relic("MEAT_CLEAVER");
     run.add_relic("ANCHOR"); // a relic with no campfire action
-    FixedVector<CampfireAction, 5> cook = run.campfire_actions();
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> cook = run.campfire_actions();
     assert(cook.size() == 3 && cook[2] == CampfireAction::COOK);
     run.add_relic("SHOVEL");
     run.add_relic("GIRYA");
-    FixedVector<CampfireAction, 5> all = run.campfire_actions();
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> all = run.campfire_actions();
     assert(all.size() == 5 && all[2] == CampfireAction::DIG && all[3] == CampfireAction::LIFT &&
            all[4] == CampfireAction::COOK);
     std::cout << "[PASS] Hook: resting; campfire actions given by Shovel, Girya and Meat Cleaver" << std::endl;

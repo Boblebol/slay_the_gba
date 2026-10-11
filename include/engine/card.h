@@ -675,13 +675,29 @@ enum class Pile : uint8_t {
 
 constexpr uint8_t NOT_IN_DECK = 0xFF;
 
-// What an enchantment adds to one copy of a card.
+// What an enchantment adds to one copy of a card (mechanic #107). A copy of the deck holds at most one, with its
+// amount (DeckCard::enchant_amount); it is kept by the save and follows the copy into every fight.
 enum class Enchantment : uint8_t {
     NONE,
-    INKY // applies INKY_WEAK Weak to the enemies the card hits
+    INKY,             // Encrée: applies INKY_WEAK Weak to the enemies the card hits
+    ADROIT,           // Adroit: the card also gains `amount` Block
+    NIMBLE,           // Agilité: the Block the card gives is raised by `amount`
+    TEZCATARAS_EMBER, // Braise de Tezcatara: costs 0, deals `amount` more damage, and is Eternal
+    SWIFT,            // Célérité: the first time the card is played in a combat, draw `amount` cards
+    CLONE,            // Clonage: the card can be duplicated at a rest site
+    MOMENTUM,         // Élan: once played, the card deals `amount` more damage for the rest of the combat
+    GLAM,             // Glamour: Echo 1, once per combat
+    IMBUED,           // Imprégnation: the card is played automatically at the start of each combat
+    INSTINCT,         // Instinct: the damage of the card is doubled
+    ROYALLY_APPROVED, // Sceau royal: Innate and Retain
+    SHARP,            // Tranchant: the card deals `amount` more damage
+    GOOPY,            // Viscosité: Exhaust; once played, the Block it gives is raised by 1 for good (`amount`)
+    COUNT
 };
 
 constexpr uint8_t INKY_WEAK = 1;
+// Mystic Lighter: Enchanted Attacks deal this much more damage per hit.
+constexpr uint8_t MYSTIC_LIGHTER_DAMAGE = 9;
 
 struct DeckCard {
     CardId id = CardId::NONE;
@@ -697,6 +713,9 @@ struct DeckCard {
     bool sly_this_turn = false; // this copy has Sly until the end of the turn (Hand Trick)
     uint8_t deck_index = NOT_IN_DECK; // position of the card in the run's deck, for the gains that outlive the combat
     Enchantment enchantment = Enchantment::NONE;
+    uint8_t enchant_amount = 0; // the enchantment's amount: Sharp 3, Swift 2, the Block Goopy has added...
+    // What the enchantment did during this combat: the damage Momentum has added, or 1 once Swift or Glam is used.
+    uint8_t enchant_combat = 0;
 
     constexpr DeckCard() = default;
     constexpr DeckCard(CardId i, bool up = false) : id(i), upgraded(up) {}
@@ -721,6 +740,20 @@ enum CardKeyword : uint16_t {
 };
 
 constexpr uint8_t MAX_PLAYS_WHEN_LIMITED = 3;
+
+// Whether a card can receive an enchantment: never a Status, a Curse or a Quest card, never a card that already
+// holds one, and only an Attack for the enchantments that change damage.
+bool can_enchant(const DeckCard& card, Enchantment enchantment);
+
+// Keywords an enchantment gives to the copy that holds it.
+constexpr uint16_t enchantment_keywords(Enchantment enchantment) {
+    switch (enchantment) {
+        case Enchantment::TEZCATARAS_EMBER: return KEYWORD_ETERNAL;
+        case Enchantment::ROYALLY_APPROVED: return KEYWORD_INNATE | KEYWORD_RETAIN;
+        case Enchantment::GOOPY: return KEYWORD_EXHAUST;
+        default: return 0;
+    }
+}
 
 // What a card needs, besides its cost, to be played.
 enum class PlayCondition : uint8_t {
@@ -795,14 +828,20 @@ struct CardDef {
         const auto& c = get(id);
         return ((upgraded ? c.upgraded_keywords : c.keywords) & keyword) != 0;
     }
-    // Keyword of one copy: from its definition or given to that copy during the combat.
+    // Keyword of one copy: from its definition, from its enchantment, or given to that copy during the combat.
     static bool has_keyword(const DeckCard& card, CardKeyword keyword) {
-        return (card.added_keywords & keyword) != 0 || has_keyword(card.id, card.upgraded, keyword);
+        return (card.added_keywords & keyword) != 0 || (enchantment_keywords(card.enchantment) & keyword) != 0 ||
+               has_keyword(card.id, card.upgraded, keyword);
+    }
+    // Energy cost printed on one copy: Tezcatara's Ember makes it 0, an X card stays X.
+    static uint8_t get_cost(const DeckCard& card) {
+        const uint8_t printed = get_cost(card.id, card.upgraded);
+        return card.enchantment == Enchantment::TEZCATARAS_EMBER && printed != COST_X ? 0 : printed;
     }
     // Sly: from its definition, or given to that copy during the combat.
     static bool is_sly(const DeckCard& card) { return card.sly_combat || card.sly_this_turn || has_keyword(card, KEYWORD_SLY); }
     // An Eternal card stays in the deck: it is never removed nor transformed.
-    static bool is_eternal(const DeckCard& card) { return has_keyword(card.id, card.upgraded, KEYWORD_ETERNAL); }
+    static bool is_eternal(const DeckCard& card) { return has_keyword(card, KEYWORD_ETERNAL); }
     static bool is_x_cost(CardId id, bool upgraded) {
         return get_cost(id, upgraded) == COST_X;
     }
