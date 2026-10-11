@@ -40,8 +40,6 @@ constexpr Encounter ACT1B_WEAK[] = {
     { "CorpseSlugsWeak"sv, 2, { EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG } },
     { "SludgeSpinnerWeak"sv, 1, { EnemyType::SLUDGE_SPINNER } },
     { "ToadpolesWeak"sv, 2, { EnemyType::TOADPOLE, EnemyType::TOADPOLE } },
-};
-constexpr Encounter ACT1B_WEAK[] = {
     { "SeapunkWeak"sv, 1, { EnemyType::SEAPUNK } },
 };
 constexpr Encounter ACT1B_NORMAL[] = {
@@ -51,21 +49,14 @@ constexpr Encounter ACT1B_NORMAL[] = {
     { "PunchConstructNormal"sv, 1, { EnemyType::PUNCH_CONSTRUCT } },
     { "GremlinMercNormal"sv, 1, { EnemyType::GREMLIN_MERC } },
     { "HauntedShipNormal"sv, 1, { EnemyType::HAUNTED_SHIP } },
+    { "FossilStalkerNormal"sv, 1, { EnemyType::FOSSIL_STALKER } },
+    { "SeapunkNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::SEAPUNK } },
 };
 
-// Act 2.
+// Act 2: the Hive.
 constexpr Encounter ACT2_NORMAL[] = {
     { "HunterKillerNormal"sv, 1, { EnemyType::HUNTER_KILLER } },
-    { "FossilStalkerNormal"sv, 1, { EnemyType::FOSSIL_STALKER } },
-};
-
-// Act 2: the Hive, with the groups the game had before next to the Spiny Toad.
-constexpr Encounter ACT2_NORMAL[] = {
     { "SpinyToadNormal"sv, 1, { EnemyType::SPINY_TOAD } },
-    { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
-    { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
-    { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
-    { "SeapunkNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::SEAPUNK } },
 };
 
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
@@ -89,10 +80,6 @@ constexpr Encounter LEGACY_ELITE[] = {
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };

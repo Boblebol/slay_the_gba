@@ -180,9 +180,8 @@ void test_reference_encounters() {
                                         "InkletsNormal", "NibbitsNormal", "FlyconidNormal", "MawlerNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal",
-                                        "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal" }));
-           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "FossilStalkerNormal" }));
-           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "SeapunkNormal" }));
+                                        "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
+                                        "FossilStalkerNormal", "SeapunkNormal" }));
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
@@ -190,22 +189,15 @@ void test_reference_encounters() {
                std::set<std::string_view>{ "LegacyGremlinNob" });
     }
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
-           (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak" }));
+           (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
     // The groups the game had before, where the reference has nothing the engine can play yet.
-           std::set<std::string_view>{ "LegacyCultist" });
-    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
-           std::set<std::string_view>{ "HunterKillerNormal" });
-           std::set<std::string_view>{ "SeapunkWeak" });
     for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
         assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
-        if (zone == ActZone::ACT2) continue;
-        assert(ids_of(encounter_table(zone, EncounterTier::NORMAL)) ==
-               (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
     }
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
-    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "SpinyToadNormal", "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
 
     // The ruby raiders: three of the five raiders in the engine.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
