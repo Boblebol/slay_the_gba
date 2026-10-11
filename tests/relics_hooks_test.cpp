@@ -3926,6 +3926,33 @@ void test_spiked_gauntlets() {
     std::cout << "[PASS] Spiked Gauntlets: +1 energy per turn, Powers cost 1 more" << std::endl;
 }
 
+// Fishing Rod: every 3rd normal fight won upgrades one random card; Elites do not count.
+void test_fishing_rod() {
+    auto upgraded = [](const RunManager& run) {
+        int n = 0;
+        for (const DeckCard& card : run.master_deck) n += card.upgraded ? 1 : 0;
+        return n;
+    };
+    for (bool with_relic : { true, false }) {
+        RunManager run;
+        run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 7);
+        if (with_relic) run.add_relic("FISHING_ROD");
+        int base = upgraded(run);
+        auto win = [&](RoomType room) {
+            run.map.nodes[0].type = room;
+            run.enter_room(0);
+            run.proceed_after_combat();
+        };
+        win(RoomType::MONSTER);
+        win(RoomType::ELITE);
+        win(RoomType::MONSTER);
+        assert(upgraded(run) == base);
+        win(RoomType::MONSTER);
+        assert(upgraded(run) == base + (with_relic ? 1 : 0));
+    }
+    std::cout << "[PASS] Fishing Rod upgrades a card every 3 normal fights" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -4078,5 +4105,6 @@ int main() {
     test_paper_phrog();
     test_silver_crucible();
     test_forgotten_soul();
+    test_fishing_rod();
     return 0;
 }
