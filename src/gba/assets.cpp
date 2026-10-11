@@ -50,6 +50,7 @@
 #include "bn_sprite_items_mon_bowlbug_nectar.h"
 #include "bn_sprite_items_mon_devoted_sculptor.h"
 #include "bn_sprite_items_mon_axebot.h"
+#include "bn_sprite_items_mon_bygone_effigy.h"
 #include "bn_sprite_items_mon_turret_operator.h"
 #include "bn_sprite_items_mon_skulking_colony.h"
 #include "bn_sprite_items_mon_terror_eel.h"
@@ -63,6 +64,8 @@
 #include "bn_sprite_items_mon_guardbot.h"
 #include "bn_sprite_items_mon_bowlbug_silk.h"
 #include "bn_sprite_items_mon_bowlbug_egg.h"
+#include "bn_sprite_items_mon_byrdonis.h"
+#include "bn_sprite_items_mon_phrog_parasite.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_louse_progenitor.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
@@ -308,6 +311,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_skulking_colony, false };
     case engine::EnemyType::MAGI_KNIGHT:
         return { &bn::sprite_items::mon_magi_knight, false };
+    case engine::EnemyType::BYGONE_EFFIGY:
+        return { &bn::sprite_items::mon_bygone_effigy, false };
     case engine::EnemyType::INKLET:
         return { &bn::sprite_items::mon_inklet, false };
     case engine::EnemyType::NIBBIT:
@@ -366,6 +371,10 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_frog_knight, false };
     case engine::EnemyType::BOWLBUG_EGG:
         return { &bn::sprite_items::mon_bowlbug_egg, false };
+    case engine::EnemyType::BYRDONIS:
+        return { &bn::sprite_items::mon_byrdonis, false };
+    case engine::EnemyType::PHROG_PARASITE:
+        return { &bn::sprite_items::mon_phrog_parasite, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

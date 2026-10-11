@@ -54,6 +54,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
         case EnemyType::BOWLBUG_NECTAR: return "BOWLBUG_NECTAR";
         case EnemyType::AXEBOT: return "AXEBOT";
+        case EnemyType::BYGONE_EFFIGY: return "BYGONE_EFFIGY";
         case EnemyType::TURRET_OPERATOR: return "TURRET_OPERATOR";
         case EnemyType::BOWLBUG_ROCK: return "BOWLBUG_ROCK";
         case EnemyType::SKULKING_COLONY: return "SKULKING_COLONY";
@@ -89,6 +90,8 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::INFESTED_PRISM: return "INFESTED_PRISM";
         case EnemyType::FLAIL_KNIGHT: return "FLAIL_KNIGHT";
         case EnemyType::SOUL_NEXUS: return "SOUL_NEXUS";
+        case EnemyType::BYRDONIS: return "BYRDONIS";
+        case EnemyType::PHROG_PARASITE: return "PHROG_PARASITE";
     }
     return {};
 }
@@ -215,7 +218,8 @@ void test_reference_encounters() {
                std::set<std::string_view>{ "CeremonialBeastBoss" });
     }
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
-           std::set<std::string_view>{ "LegacyGremlinNob" });
+           (std::set<std::string_view>{ "BygoneEffigyElite", "ByrdonisElite", "PhrogParasiteElite",
+                                        "LegacyGremlinNob" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::ELITE)) ==
            (std::set<std::string_view>{ "SkulkingColonyElite", "TerrorEelElite" }));
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::ELITE)) ==

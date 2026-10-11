@@ -655,6 +655,8 @@ enum class CardId : uint16_t {
     GLASSWORK,
     REFRACT,
     SPINNER,
+    // Status card given by the Phrog Parasite
+    INFECTION,
     COUNT
 };
 

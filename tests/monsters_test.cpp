@@ -2030,6 +2030,116 @@ void test_magi_knight_ascension() {
     std::cout << "[PASS] Magi Knight: Ascension gives 89 HP, Power Shield 7, Ram 11, Magic Bomb 40" << std::endl;
 }
 
+void test_bygone_effigy() {
+    // Sleep (a lost turn), Wake (+10 Strength), then Slashes 13 every turn, 10 stronger.
+    check_monster(EnemyType::BYGONE_EFFIGY, "Idole Oubliée", 127, {
+        { STUN, 0, 0, 0 },
+        { BUFF, 0, 0, 10 },
+        { ATTACK, 23, 0, 10 },
+        { ATTACK, 23, 0, 10 },
+        { ATTACK, 23, 0, 10 },
+    });
+
+    // Hurt while it sleeps: it skips the Wake, loses one more turn, then Slashes without the Strength.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BYGONE_EFFIGY);
+    Enemy& effigy = combat.enemies[0];
+    combat.damage_enemy(effigy, 5);
+    combat.end_player_turn(); // Sleep, already planned
+    assert(effigy.phase == 1 && effigy.current_intent.type == STUN);
+    combat.end_player_turn(); // Sleep again
+    for (int turn = 0; turn < 3; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        assert(effigy.current_intent.type == ATTACK && effigy.intent_damage(combat.player) == 13);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 13 && effigy.get_status(StatusType::STRENGTH) == 0);
+    }
+    std::cout << "[PASS] Bygone Effigy: 127 HP, Sleep, Wake +10 Strength, Slashes 13, Sleep again once hurt" << std::endl;
+}
+
+void test_bygone_effigy_ascension() {
+    // 132 HP and Slashes 15 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BYGONE_EFFIGY);
+    Enemy& effigy = combat.enemies[0];
+    assert(effigy.ascension_hp() == 132);
+    effigy.ascend(true, true);
+    combat.plan_enemies();
+    assert(effigy.hp == 132 && effigy.max_hp == 132);
+    combat.end_player_turn(); // Sleep
+    combat.end_player_turn(); // Wake
+    combat.player.hp = combat.player.max_hp;
+    assert(effigy.current_intent.type == ATTACK && effigy.intent_damage(combat.player) == 25);
+    std::cout << "[PASS] Bygone Effigy: Ascension gives 132 HP and Slashes 15" << std::endl;
+}
+
+void test_byrdonis() {
+    // Swoop 17 on the odd turns, Peck 3 x3 on the even ones.
+    check_monster(EnemyType::BYRDONIS, "Oizodon", 81, {
+        { ATTACK, 17, 0, 0 },
+        { ATTACK, 3, 0, 0, 0, 3 },
+        { ATTACK, 17, 0, 0 },
+        { ATTACK, 3, 0, 0, 0, 3 },
+        { ATTACK, 17, 0, 0 },
+    });
+    std::cout << "[PASS] Byrdonis: 81 HP, Swoop 17 then Peck 3x3" << std::endl;
+}
+
+void test_byrdonis_ascension() {
+    // 81 to 84 HP, exactly 90 at Ascension; Swoop 19 and Peck 4 x3.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BYRDONIS);
+        Enemy& bird = combat.enemies[0];
+        bird.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        assert(bird.hp >= 81 && bird.hp <= 84 && bird.hp_spread() == 3);
+        bird.ascend(true, true);
+        combat.plan_enemies();
+        assert(bird.hp == 90 && bird.max_hp == 90);
+        assert(bird.current_intent.type == ATTACK && bird.intent_damage(combat.player) == 19);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(bird.current_intent.type == ATTACK && bird.current_intent.hits == 3 &&
+               bird.intent_damage(combat.player) == 4);
+    }
+    std::cout << "[PASS] Byrdonis: Ascension gives 90 HP, Swoop 19 and Peck 4x3" << std::endl;
+}
+
+void test_phrog_parasite() {
+    // Infect (3 Infections), Lash (4 damage x4), and again.
+    check_monster(EnemyType::PHROG_PARASITE, "Parasite Krapo", 61, {
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 4 },
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 4 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::PHROG_PARASITE);
+    Enemy& parasite = combat.enemies[0];
+    assert(parasite.current_intent.gives_cards() && parasite.current_intent.status_card == CardId::INFECTION);
+    combat.end_player_turn();
+    assert(combat.last_enemy_actions[0].cards_added == CardId::INFECTION && combat.last_enemy_actions[0].cards_added_count == 3);
+    assert(count_in(combat.discard_pile, CardId::INFECTION) == 3);
+    assert(CardDef::get(CardId::INFECTION).type == CardType::STATUS &&
+           CardDef::has_keyword(CardId::INFECTION, false, KEYWORD_UNPLAYABLE));
+    std::cout << "[PASS] Phrog Parasite: 61 HP, Infect (3 Infections), Lash 4x4, loop" << std::endl;
+}
+
+void test_phrog_parasite_ascension() {
+    // 66 HP at least at Ascension (the engine adds the same 0 to 3 as at A0, so up to 69) and a Lash of 5x4.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::PHROG_PARASITE);
+        Enemy& parasite = combat.enemies[0];
+        parasite.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = parasite.hp;
+        assert(parasite.ascension_hp() == 66 && parasite.hp_spread() == 3);
+        assert(base >= 61 && base <= 64);
+        parasite.ascend(true, true);
+        combat.plan_enemies();
+        assert(parasite.hp == parasite.max_hp && parasite.hp >= 66 && parasite.hp <= 69);
+        combat.end_player_turn();
+        assert(parasite.current_intent.type == ATTACK && parasite.current_intent.hits == 4 &&
+               parasite.intent_damage(combat.player) == 5);
+    }
+    std::cout << "[PASS] Phrog Parasite: Ascension gives 66 HP minimum and a Lash of 5x4" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -3567,6 +3677,12 @@ int main() {
     test_infested_prism_vital_spark();
     test_magi_knight();
     test_magi_knight_ascension();
+    test_bygone_effigy();
+    test_bygone_effigy_ascension();
+    test_byrdonis();
+    test_byrdonis_ascension();
+    test_phrog_parasite();
+    test_phrog_parasite_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

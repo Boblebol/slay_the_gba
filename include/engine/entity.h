@@ -417,7 +417,10 @@ enum class EnemyType : uint8_t {
     SPECTRAL_KNIGHT,
     MAGI_KNIGHT,
     SOUL_NEXUS,
-    MECHA_KNIGHT
+    MECHA_KNIGHT,
+    BYGONE_EFFIGY,
+    BYRDONIS,
+    PHROG_PARASITE
 };
 
 // What a monster sees of the fight when it chooses its next move.

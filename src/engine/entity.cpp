@@ -145,6 +145,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Chevalier mage";
         max_hp = 82;
         hp = 82;
+    } else if (type == EnemyType::BYGONE_EFFIGY) {
+        name = "Idole Oubliée";
+        max_hp = 127;
+        hp = 127;
     } else if (type == EnemyType::INKLET) {
         name = "Encrelin";
         max_hp = 11;
@@ -161,6 +165,14 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Sphéropode (Œuf)";
         max_hp = 21;
         hp = 21;
+    } else if (type == EnemyType::BYRDONIS) {
+        name = "Oizodon";
+        max_hp = 81;
+        hp = 81;
+    } else if (type == EnemyType::PHROG_PARASITE) {
+        name = "Parasite Krapo";
+        max_hp = 61;
+        hp = 61;
     } else if (type == EnemyType::TOADPOLE) {
         name = "Crapautard";
         max_hp = 21;
@@ -303,7 +315,9 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::BOWLBUG_SILK: return 3; // 40 to 43, 41 to 44 at Ascension
         case EnemyType::SLUDGE_SPINNER: return 2; // 37 to 39, 41 to 42 at Ascension
         case EnemyType::GUARDBOT: return 4;    // 16 to 20, 17 to 21 at Ascension
+        case EnemyType::PHROG_PARASITE: return 3; // 61 to 64, 66 and up at Ascension
         case EnemyType::BOWLBUG_EGG: return 1; // 21 to 22, 23 to 24 at Ascension
+        case EnemyType::BYRDONIS: return 3;    // 81 to 84, always 90 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
         case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
         case EnemyType::BOWLBUG_NECTAR: return 3; // 35 to 38, 36 to 39 at Ascension
@@ -360,6 +374,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::PUNCH_CONSTRUCT: return 60;
         case EnemyType::BOWLBUG_NECTAR: return 36;
         case EnemyType::AXEBOT: return 76;
+        case EnemyType::BYGONE_EFFIGY: return 132;
         case EnemyType::TURRET_OPERATOR: return 51;
         case EnemyType::BOWLBUG_ROCK: return 46;
         case EnemyType::SKULKING_COLONY: return 80;
@@ -376,7 +391,9 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::GLOBE_HEAD: return 158;
         case EnemyType::LOUSE_PROGENITOR: return 138;
         case EnemyType::SLUDGE_SPINNER: return 41;
+        case EnemyType::PHROG_PARASITE: return 66;
         case EnemyType::BOWLBUG_EGG: return 23;
+        case EnemyType::BYRDONIS: return static_cast<int16_t>(90 - hp_bonus); // ascend() adds hp_bonus back: 90 exactly
         case EnemyType::TOADPOLE: return 22;
         case EnemyType::HUNTER_KILLER: return 126;
         case EnemyType::MAWLER: return 76;
@@ -966,6 +983,26 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = ascended_damage ? 40 : 35;
             current_intent.description = "Bombe magique (35 dmg)";
         }
+    } else if (type == EnemyType::BYGONE_EFFIGY) {
+        // Sleep (a lost turn), Wake (+10 Strength), then Slashes every turn. Hurt while it sleeps, it skips
+        // the Wake: one more lost turn, then Slashes without the Strength.
+        if (phase == 0 && turn_number == 2 && hp < max_hp && enter_phase(1)) phase_turn = 1;
+        if (phase == 0 && turn_number == 1) {
+            current_intent.type = EnemyIntentType::STUN;
+            current_intent.description = "Sommeil";
+        } else if (phase == 0 && turn_number == 2) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 10;
+            current_intent.description = "Éveil (+10 Force)";
+        } else if (phase == 1 && phase_turn == 1) {
+            current_intent.type = EnemyIntentType::STUN;
+            current_intent.description = "Sommeil";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 15 : 13;
+            current_intent.description = "Bourrasque (13 dmg)";
+        }
     } else if (type == EnemyType::INKLET) {
         // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.
         constexpr uint8_t JAB = 0;
@@ -1158,6 +1195,32 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.base_damage = ascended_damage ? 8 : 7;
         current_intent.block = 7;
         current_intent.description = "Morsure (7 dmg, 7 blk)";
+    } else if (type == EnemyType::BYRDONIS) {
+        // Swoop (17 damage) then Peck (3 damage x3), and again.
+        if (turn_number % 2 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 19 : 17;
+            current_intent.description = "Piqué (17 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 4 : 3;
+            current_intent.hits = 3;
+            current_intent.description = "Coup de bec (3 dmg x3)";
+        }
+    } else if (type == EnemyType::PHROG_PARASITE) {
+        // Infect (3 Infections into the discard pile), then Lash (4 damage x4), and again.
+        if (turn_number % 2 == 1) {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_card = CardId::INFECTION;
+            current_intent.status_cards = 3;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Infection (3 Infection)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 5 : 4;
+            current_intent.hits = 4;
+            current_intent.description = "Fouet (4 dmg x4)";
+        }
     } else if (type == EnemyType::TOADPOLE) {
         // Three moves in a loop, started by its place: in front Spiken, Spike Spit, Whirl; behind Whirl, Spiken,
         // Spike Spit. `phase` holds the offset in the cycle SPIKEN, SPIKE_SPIT, WHIRL.
