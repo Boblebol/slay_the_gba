@@ -408,7 +408,8 @@ enum class EnemyType : uint8_t {
     TURRET_OPERATOR,
     BOWLBUG_SILK,
     BOWLBUG_ROCK,
-    BOWLBUG_EGG
+    BOWLBUG_EGG,
+    BYRDONIS
 };
 
 // What a monster sees of the fight when it chooses its next move.
