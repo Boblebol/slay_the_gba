@@ -137,6 +137,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Sphéropode (Pierre)";
         max_hp = 45;
         hp = 45;
+    } else if (type == EnemyType::BYGONE_EFFIGY) {
+        name = "Idole Oubliée";
+        max_hp = 127;
+        hp = 127;
     } else if (type == EnemyType::INKLET) {
         name = "Encrelin";
         max_hp = 11;
@@ -320,6 +324,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::PUNCH_CONSTRUCT: return 60;
         case EnemyType::BOWLBUG_NECTAR: return 36;
         case EnemyType::AXEBOT: return 76;
+        case EnemyType::BYGONE_EFFIGY: return 132;
         case EnemyType::TURRET_OPERATOR: return 51;
         case EnemyType::BOWLBUG_ROCK: return 46;
         case EnemyType::INKLET: return 12;
@@ -872,6 +877,26 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = ascended_damage ? 16 : 15;
             current_intent.description = "Coup de boule (15 dmg)";
+        }
+    } else if (type == EnemyType::BYGONE_EFFIGY) {
+        // Sleep (a lost turn), Wake (+10 Strength), then Slashes every turn. Hurt while it sleeps, it skips
+        // the Wake: one more lost turn, then Slashes without the Strength.
+        if (phase == 0 && turn_number == 2 && hp < max_hp && enter_phase(1)) phase_turn = 1;
+        if (phase == 0 && turn_number == 1) {
+            current_intent.type = EnemyIntentType::STUN;
+            current_intent.description = "Sommeil";
+        } else if (phase == 0 && turn_number == 2) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 10;
+            current_intent.description = "Éveil (+10 Force)";
+        } else if (phase == 1 && phase_turn == 1) {
+            current_intent.type = EnemyIntentType::STUN;
+            current_intent.description = "Sommeil";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 15 : 13;
+            current_intent.description = "Bourrasque (13 dmg)";
         }
     } else if (type == EnemyType::INKLET) {
         // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.
