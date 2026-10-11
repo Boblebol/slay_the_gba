@@ -566,7 +566,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::FURNACE, CardId::PARRY, CardId::SUMMON_FORTH,
                                               CardId::BEAT_INTO_SHAPE, CardId::BIG_BANG, CardId::SEEKING_EDGE,
                                               CardId::SWORD_SAGE, CardId::THE_SMITH,
-                                              CardId::MANIFEST_AUTHORITY, CardId::ROYALTIES };
+                                              CardId::MANIFEST_AUTHORITY, CardId::ROYALTIES, CardId::QUASAR };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,

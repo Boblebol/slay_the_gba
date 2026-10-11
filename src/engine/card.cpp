@@ -626,6 +626,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::SEEKER_STRIKE, "Seeker Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 3, "Deal 9 dmg. Choose 1 of 3 cards in your draw pile to add into your hand.", "Seeker Strike+", 1, 12, 3, "Deal 12 dmg. Choose 1 of 3 cards in your draw pile to add into your hand." },
     // Event card: a single attack; Innate once upgraded.
     { CardId::MAD_SCIENCE, "Mad Science", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 12, 0, "Deal 12 dmg. ???", "Mad Science+", 1, 12, 0, "Innate. Deal 12 dmg. ???", 0, KEYWORD_INNATE },
+    // Regent: choose 1 of 3 random Colorless cards to add to the hand (mechanics #72, #77).
+    { CardId::QUASAR, "Quasar", 0, CardType::SKILL, TargetType::SELF, 3, 3, "Choose 1 of 3 random Colorless cards to add to your hand.", "Quasar+", 0, 3, 3, "Choose 1 of 3 random upgraded Colorless cards to add to your hand.", 0, 0, 2, 2 },
 };
 
 const CardDef& CardDef::get(CardId id) {

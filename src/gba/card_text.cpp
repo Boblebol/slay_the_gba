@@ -884,6 +884,8 @@ bn::string_view base_name(engine::CardId id)
         return "La grande manœuvre";
     case engine::CardId::SEEKER_STRIKE:
         return "Frappe chercheuse";
+    case engine::CardId::QUASAR:
+        return "Quasar";
     case engine::CardId::MAD_SCIENCE:
         return "Science sans conscience";
     case engine::CardId::BYRD_SWOOP:
@@ -1724,6 +1726,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:
         stream << "Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::QUASAR:
+        stream << "1 Incolore" << (card.upgraded ? " améliorée" : "") << " parmi " << value << " en main.";
         break;
     case engine::CardId::MAD_SCIENCE:
         stream << (card.upgraded ? "Inné. " : "") << "Inflige " << value << " dégâts.";
