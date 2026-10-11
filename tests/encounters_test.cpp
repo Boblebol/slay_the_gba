@@ -54,6 +54,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
         case EnemyType::BOWLBUG_NECTAR: return "BOWLBUG_NECTAR";
         case EnemyType::AXEBOT: return "AXEBOT";
+        case EnemyType::BYGONE_EFFIGY: return "BYGONE_EFFIGY";
         case EnemyType::TURRET_OPERATOR: return "TURRET_OPERATOR";
         case EnemyType::BOWLBUG_ROCK: return "BOWLBUG_ROCK";
         case EnemyType::SKULKING_COLONY: return "SKULKING_COLONY";
@@ -213,6 +214,9 @@ void test_reference_encounters() {
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
+        if (zone == ActZone::ACT1A) continue;
+        assert(ids_of(encounter_table(zone, EncounterTier::ELITE)) ==
+               std::set<std::string_view>{ "LegacyGremlinNob" });
     }
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
            std::set<std::string_view>{ "LegacyGremlinNob" });
@@ -222,6 +226,8 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "EntomancerElite", "InfestedPrismsElite" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::ELITE)) ==
            (std::set<std::string_view>{ "SoulNexusElite", "MechaKnightElite", "KnightsElite" }));
+    assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "LegacyGremlinNob", "BygoneEffigyElite" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
     // Acts 2 and 3: the reference encounters the engine can play, with the groups the game had before in Act 3.

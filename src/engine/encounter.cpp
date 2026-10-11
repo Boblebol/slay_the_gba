@@ -105,12 +105,22 @@ constexpr Encounter LEGACY_ELITE[] = {
     { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
 };
 
+// Act 1 (A) elites: the group the game had before, and the reference ones the engine can play.
+constexpr Encounter ACT1A_ELITE[] = {
+    { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
+    { "BygoneEffigyElite"sv, 1, { EnemyType::BYGONE_EFFIGY } },
+};
+
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT2_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT3_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
 } // namespace

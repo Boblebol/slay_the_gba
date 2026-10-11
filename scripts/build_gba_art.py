@@ -183,6 +183,7 @@ MONSTERS: dict[str, str] = {
     "globe_head": "globe_head",
     "bowlbug_nectar": "bowlbug_nectar",
     "axebot": "axebot",
+    "bygone_effigy": "bygone_effigy",
     "turret_operator": "turret_operator",
     "bowlbug_rock": "bowlbug_rock",
     "skulking_colony": "skulking_colony",

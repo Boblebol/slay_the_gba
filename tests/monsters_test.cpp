@@ -2030,6 +2030,47 @@ void test_magi_knight_ascension() {
     std::cout << "[PASS] Magi Knight: Ascension gives 89 HP, Power Shield 7, Ram 11, Magic Bomb 40" << std::endl;
 }
 
+void test_bygone_effigy() {
+    // Sleep (a lost turn), Wake (+10 Strength), then Slashes 13 every turn, 10 stronger.
+    check_monster(EnemyType::BYGONE_EFFIGY, "Idole Oubliée", 127, {
+        { STUN, 0, 0, 0 },
+        { BUFF, 0, 0, 10 },
+        { ATTACK, 23, 0, 10 },
+        { ATTACK, 23, 0, 10 },
+        { ATTACK, 23, 0, 10 },
+    });
+
+    // Hurt while it sleeps: it skips the Wake, loses one more turn, then Slashes without the Strength.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BYGONE_EFFIGY);
+    Enemy& effigy = combat.enemies[0];
+    combat.damage_enemy(effigy, 5);
+    combat.end_player_turn(); // Sleep, already planned
+    assert(effigy.phase == 1 && effigy.current_intent.type == STUN);
+    combat.end_player_turn(); // Sleep again
+    for (int turn = 0; turn < 3; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        assert(effigy.current_intent.type == ATTACK && effigy.intent_damage(combat.player) == 13);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 13 && effigy.get_status(StatusType::STRENGTH) == 0);
+    }
+    std::cout << "[PASS] Bygone Effigy: 127 HP, Sleep, Wake +10 Strength, Slashes 13, Sleep again once hurt" << std::endl;
+}
+
+void test_bygone_effigy_ascension() {
+    // 132 HP and Slashes 15 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BYGONE_EFFIGY);
+    Enemy& effigy = combat.enemies[0];
+    assert(effigy.ascension_hp() == 132);
+    effigy.ascend(true, true);
+    combat.plan_enemies();
+    assert(effigy.hp == 132 && effigy.max_hp == 132);
+    combat.end_player_turn(); // Sleep
+    combat.end_player_turn(); // Wake
+    combat.player.hp = combat.player.max_hp;
+    assert(effigy.current_intent.type == ATTACK && effigy.intent_damage(combat.player) == 25);
+    std::cout << "[PASS] Bygone Effigy: Ascension gives 132 HP and Slashes 15" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -3567,6 +3608,8 @@ int main() {
     test_infested_prism_vital_spark();
     test_magi_knight();
     test_magi_knight_ascension();
+    test_bygone_effigy();
+    test_bygone_effigy_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

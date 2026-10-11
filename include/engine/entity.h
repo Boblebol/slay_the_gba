@@ -405,6 +405,7 @@ enum class EnemyType : uint8_t {
     DEVOTED_SCULPTOR,
     THE_LOST,
     AXEBOT,
+    BYGONE_EFFIGY,
     TURRET_OPERATOR,
     BOWLBUG_SILK,
     BOWLBUG_ROCK,
