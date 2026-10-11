@@ -378,6 +378,8 @@ enum class EnemyType : uint8_t {
     NIBBIT,
     FLYCONID,
     CORPSE_SLUG
+    FLYCONID,
+    GAS_BOMB
 };
 
 // What a monster sees of the fight when it chooses its next move.

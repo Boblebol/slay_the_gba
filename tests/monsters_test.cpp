@@ -1430,6 +1430,33 @@ void test_nibbit_ascension() {
     std::cout << "[PASS] Nibbit: Ascension gives 44 to 48 HP, Butt 13, Slice 7 + 6 Block, Hiss +3 Strength" << std::endl;
 }
 
+void test_gas_bomb() {
+    // Explode every turn: 8 damage.
+    check_monster(EnemyType::GAS_BOMB, "Bombe à gaz", 7, {
+        { ATTACK, 8, 0, 0 },
+        { ATTACK, 8, 0, 0 },
+        { ATTACK, 8, 0, 0 },
+    });
+    std::cout << "[PASS] Gas Bomb: 7 HP, Explode 8 every turn" << std::endl;
+}
+
+void test_gas_bomb_ascension() {
+    // 8 HP and Explode 9 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::GAS_BOMB);
+    Enemy& bomb = combat.enemies[0];
+    assert(bomb.ascension_hp() == 8);
+    bomb.ascend(true, true);
+    combat.plan_enemies();
+    assert(bomb.hp == 8 && bomb.max_hp == 8);
+    for (int turn = 1; turn <= 3; ++turn) {
+        assert(bomb.current_intent.type == ATTACK && bomb.intent_damage(combat.player) == 9);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 9);
+    }
+    std::cout << "[PASS] Gas Bomb: Ascension gives 8 HP and Explode 9" << std::endl;
+}
+
 void test_flyconid() {
     // Calm: Frail Spores (8 damage + 2 Frail) or Smash (11), never the same twice in a row. Hurt, it opens with
     // Vulnerable Spores, then draws among the three moves, again never the same twice in a row.
@@ -1619,6 +1646,8 @@ int main() {
     test_inklet_ascension();
     test_nibbit();
     test_nibbit_ascension();
+    test_gas_bomb();
+    test_gas_bomb_ascension();
     test_flyconid();
     test_flyconid_ascension();
     test_corpse_slug();

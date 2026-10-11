@@ -248,6 +248,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_flyconid, false };
     case engine::EnemyType::CORPSE_SLUG:
         return { &bn::sprite_items::mon_corpse_slug, false };
+    case engine::EnemyType::GAS_BOMB:
+        return { &bn::sprite_items::mon_gas_bomb, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

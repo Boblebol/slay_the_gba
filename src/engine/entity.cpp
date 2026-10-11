@@ -121,6 +121,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Putrilimace";
         max_hp = 25;
         hp = 25;
+    } else if (type == EnemyType::GAS_BOMB) {
+        name = "Bombe à gaz";
+        max_hp = 7;
+        hp = 7;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -175,6 +179,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
         case EnemyType::CORPSE_SLUG: return 27;
+        case EnemyType::GAS_BOMB: return 8;
         default: return 0;
     }
 }
@@ -509,6 +514,11 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.status_cards = 3;
         current_intent.status_pile = Pile::DISCARD;
         current_intent.description = "Distraction (3 Hébété)";
+    } else if (type == EnemyType::GAS_BOMB) {
+        // Explode every turn: 8 damage (9 at Ascension).
+        current_intent.type = EnemyIntentType::ATTACK;
+        current_intent.base_damage = ascended_damage ? 9 : 8;
+        current_intent.description = "Explosion (8 dmg)";
     } else if (type == EnemyType::STABBOT) {
         // Stab every turn: 1 Frail.
         current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
