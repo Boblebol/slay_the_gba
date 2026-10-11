@@ -389,7 +389,8 @@ enum class EnemyType : uint8_t {
     FOSSIL_STALKER,
     SPINY_TOAD,
     SEAPUNK,
-    TRACKER_RUBY_RAIDER
+    TRACKER_RUBY_RAIDER,
+    MECHA_KNIGHT
 };
 
 // What a monster sees of the fight when it chooses its next move.

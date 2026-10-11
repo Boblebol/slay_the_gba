@@ -167,6 +167,79 @@ void test_tracker_ruby_raider_ascension() {
     std::cout << "[PASS] Tracker Ruby Raider: Ascension gives 22 to 26 HP and 9 hits" << std::endl;
 }
 
+template <typename Pile>
+int count_cards(const Pile& pile, CardId id) {
+    int n = 0;
+    for (const DeckCard& card : pile) n += card.id == id;
+    return n;
+}
+
+void test_mecha_knight() {
+    // 300 HP. Charge 25, Flamethrower 8 + 4 Burn, Windup 15 Block + 5 Strength, Heavy Cleave 35, then the
+    // last three again from Flamethrower. Strength adds to every attack that follows.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::MECHA_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    assert(knight.type == EnemyType::MECHA_KNIGHT && knight.name == "Méca-Chevalier");
+    assert(knight.hp == 300 && knight.max_hp == 300 && knight.block == 0 && knight.statuses.empty());
+
+    int burns = 0;
+    int strength = 0;
+    auto play = [&](EnemyIntentType intent, int damage) {
+        assert(damage >= 0);
+        assert(knight.current_intent.type == intent && knight.intent_damage(combat.player) == damage);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+    };
+    auto total_burns = [&]() {
+        return count_cards(combat.draw_pile, CardId::BURN) + count_cards(combat.hand, CardId::BURN) +
+               count_cards(combat.discard_pile, CardId::BURN);
+    };
+
+    play(ATTACK, 25); // Charge
+    assert(combat.player.hp == combat.player.max_hp - 25 && knight.block == 0 && total_burns() == 0);
+    play(ATTACK_DEBUFF, 8); // Flamethrower
+    burns += 4;
+    assert(total_burns() == burns && knight.block == 0);
+    play(BUFF, 0); // Windup
+    strength += 5;
+    assert(knight.block == 15 && knight.get_status(StatusType::STRENGTH) == strength);
+    const int burns_in_hand = count_cards(combat.hand, CardId::BURN);
+    combat.player.hp = combat.player.max_hp;
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 40); // 35 + 5 Strength
+    combat.end_player_turn();
+    assert(combat.player.hp == combat.player.max_hp - 40 - 2 * burns_in_hand);
+    assert(knight.block == 0);
+    // The cycle starts again at Flamethrower, with the Strength kept.
+    assert(knight.current_intent.type == ATTACK_DEBUFF && knight.intent_damage(combat.player) == 13);
+    assert(knight.current_intent.status_card == CardId::BURN && knight.current_intent.status_cards == 4);
+    std::cout << "[PASS] Mecha Knight: 300 HP, Charge, Flamethrower + Burn, Windup, Heavy Cleave, loop" << std::endl;
+}
+
+void mecha_pass(CombatEngine& combat) {
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.state == CombatState::PLAYER_TURN);
+}
+
+void test_mecha_knight_ascension() {
+    // 320 HP, Charge 30, Flamethrower 12, Heavy Cleave 40 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::MECHA_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    assert(knight.ascension_hp() == 320);
+    knight.ascend(true, true);
+    combat.plan_enemies();
+    assert(knight.hp == 320 && knight.max_hp == 320);
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 30);
+    mecha_pass(combat);
+    assert(knight.current_intent.type == ATTACK_DEBUFF && knight.intent_damage(combat.player) == 12);
+    mecha_pass(combat);
+    assert(knight.current_intent.type == BUFF && knight.current_intent.block == 15);
+    mecha_pass(combat);
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 45); // 40 + 5 Strength
+    std::cout << "[PASS] Mecha Knight: Ascension gives 320 HP, Charge 30, Flamethrower 12, Heavy Cleave 40" << std::endl;
+}
+
 void test_calcified_cultist() {
     // Incantation (Ritual 2) once, then Dark Strike 9: Ritual grants Strength from the turn after it was gained.
     check_monster(EnemyType::CALCIFIED_CULTIST, "Adepte calcifié", 38, {
@@ -2241,6 +2314,8 @@ int main() {
     test_axe_ruby_raider();
     test_tracker_ruby_raider();
     test_tracker_ruby_raider_ascension();
+    test_mecha_knight();
+    test_mecha_knight_ascension();
     test_calcified_cultist();
     test_damp_cultist();
     test_sewer_clam();
