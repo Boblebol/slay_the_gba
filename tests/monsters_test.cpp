@@ -1322,6 +1322,36 @@ void test_punch_construct_ascension() {
     std::cout << "[PASS] Punch Construct: Ascension gives 60 HP, Fast Punch 6x2, Strong Punch 16" << std::endl;
 }
 
+void test_bowlbug_nectar() {
+    // Thrash 3, Buff (+15 Strength), then Thrash again for good: 3 + 15 Strength = 18 damage.
+    check_monster(EnemyType::BOWLBUG_NECTAR, "Sphéropode (Nectar)", 35, {
+        { ATTACK, 3, 0, 0 },
+        { BUFF, 0, 0, 15 },
+        { ATTACK, 18, 0, 15 },
+        { ATTACK, 18, 0, 15 },
+        { ATTACK, 18, 0, 15 },
+    });
+    std::cout << "[PASS] Bowlbug (Nectar): 35 HP, Thrash 3, Buff +15 Strength, then Thrash 18 on loop" << std::endl;
+}
+
+void test_bowlbug_nectar_ascension() {
+    // 36 HP and +16 Strength at Ascension; Thrash stays at 3 (19 once buffed).
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_NECTAR);
+    Enemy& bug = combat.enemies[0];
+    bug.ascend(true, true);
+    combat.plan_enemies();
+    assert(bug.hp == 36 && bug.max_hp == 36);
+    assert(bug.current_intent.type == ATTACK && bug.intent_damage(combat.player) == 3);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(bug.current_intent.type == EnemyIntentType::BUFF);
+    combat.end_player_turn();
+    assert(bug.get_status(StatusType::STRENGTH) == 16);
+    combat.player.hp = combat.player.max_hp;
+    assert(bug.current_intent.type == ATTACK && bug.intent_damage(combat.player) == 19);
+    std::cout << "[PASS] Bowlbug (Nectar): Ascension gives 36 HP and +16 Strength" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -1923,6 +1953,8 @@ int main() {
     test_cubex_construct_ascension();
     test_punch_construct();
     test_punch_construct_ascension();
+    test_bowlbug_nectar();
+    test_bowlbug_nectar_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

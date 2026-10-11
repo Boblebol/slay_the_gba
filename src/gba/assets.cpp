@@ -35,6 +35,7 @@
 #include "bn_sprite_items_mon_noisebot.h"
 #include "bn_sprite_items_mon_nibbit.h"
 #include "bn_sprite_items_mon_punch_construct.h"
+#include "bn_sprite_items_mon_bowlbug_nectar.h"
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
@@ -246,6 +247,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_cubex_construct, false };
     case engine::EnemyType::PUNCH_CONSTRUCT:
         return { &bn::sprite_items::mon_punch_construct, false };
+    case engine::EnemyType::BOWLBUG_NECTAR:
+        return { &bn::sprite_items::mon_bowlbug_nectar, false };
     case engine::EnemyType::INKLET:
         return { &bn::sprite_items::mon_inklet, false };
     case engine::EnemyType::NIBBIT:
