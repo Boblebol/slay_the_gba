@@ -208,6 +208,33 @@ void test_manifest_authority() {
     std::cout << "[PASS] Regent: Manifest Authority" << std::endl;
 }
 
+void test_royalties() {
+    assert_in_pool(CharacterId::REGENT, { CardId::ROYALTIES });
+    const CardDef& def = CardDef::get(CardId::ROYALTIES);
+    assert(def.cost == 1 && def.upgraded_cost == 1 && def.type == CardType::POWER && def.target == TargetType::SELF);
+    assert(card_meta(CardId::ROYALTIES).rarity == CardRarity::RARE);
+
+    for (bool upgraded : { false, true }) {
+        // 30 gold (40 upgraded) at the end of the combat, paid by the run.
+        CombatEngine combat = make_pack(CharacterId::REGENT);
+        play(combat, DeckCard(CardId::ROYALTIES, upgraded));
+        assert(combat.player.energy == combat.player.max_energy - 1);
+        assert(combat.power_amount(PowerId::ROYALTIES) == (upgraded ? 40 : 30));
+        assert(combat.enemies[0].hp == 18 && combat.enemies[2].hp == 42);
+
+        RunManager run;
+        run.start_run(CharacterId::REGENT, 1234);
+        int16_t before = run.gold;
+        run.combat.start_combat(EnemyType::JAW_WORM, CharacterId::REGENT);
+        play(run.combat, DeckCard(CardId::ROYALTIES, upgraded));
+        run.combat.state = CombatState::VICTORY;
+        run.phase = RunPhase::IN_COMBAT;
+        run.proceed_after_combat();
+        assert(run.gold == before + (upgraded ? 40 : 30));
+    }
+    std::cout << "[PASS] Regent: Royalties" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -217,6 +244,7 @@ int main() {
     test_random_card_by_type_and_rarity();
     test_random_card_uses_the_fight_generator();
     test_manifest_authority();
+    test_royalties();
     std::cout << "=== All Regent Cards Passed! ===" << std::endl;
     return 0;
 }
