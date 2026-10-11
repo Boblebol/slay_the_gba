@@ -117,6 +117,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Grignotin";
         max_hp = 42;
         hp = 42;
+    } else if (type == EnemyType::TOADPOLE) {
+        name = "Crapautard";
+        max_hp = 21;
+        hp = 21;
     } else if (type == EnemyType::FLYCONID) {
         name = "Mycoptère";
         max_hp = 47;
@@ -153,6 +157,7 @@ void Enemy::init(EnemyType enemy_type) {
 uint8_t Enemy::hp_spread() const {
     switch (type) {
         case EnemyType::SLUDGE_SPINNER: return 2; // 37 to 39, 41 to 42 at Ascension
+        case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
         case EnemyType::CORPSE_SLUG: return 2; // 25 to 27, 27 to 29 at Ascension
         case EnemyType::GREMLIN_MERC: return 2; // 47 to 49, 51 to 53 at Ascension
@@ -203,6 +208,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::GREMLIN_MERC: return 51;
         case EnemyType::HAUNTED_SHIP: return 67;
         case EnemyType::SLUDGE_SPINNER: return 41;
+        case EnemyType::TOADPOLE: return 22;
         default: return 0;
     }
 }
@@ -701,6 +707,28 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = ascended_damage ? 5 : 4;
             current_intent.hits = 3;
             current_intent.description = "Piétinement (4 dmg x3)";
+        }
+    } else if (type == EnemyType::TOADPOLE) {
+        // Three moves in a loop, started by its place: in front Spiken, Spike Spit, Whirl; behind Whirl, Spiken,
+        // Spike Spit. `phase` holds the offset in the cycle SPIKEN, SPIKE_SPIT, WHIRL.
+        if (turn_number == 1) phase = context.slot == 0 ? 0 : 2;
+        uint8_t move = static_cast<uint8_t>((phase + phase_turn - 1) % 3);
+        if (move == 0) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::THORNS;
+            current_intent.status_amount = 2;
+            current_intent.description = "Épines (+2 Épines)";
+        } else if (move == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = ascended_damage ? 4 : 3;
+            current_intent.hits = 3;
+            current_intent.status_type = StatusType::THORNS;
+            current_intent.status_amount = 2;
+            current_intent.description = "Jet d'épines (3x3 dmg, +2 Épines)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.description = "Tourbillon (7 dmg)";
         }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the
