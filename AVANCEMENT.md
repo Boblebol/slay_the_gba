@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 74,3 %** — 916 faits, 20 partiels, 310 à faire (35 hors périmètre).
+**Avancement global : 76,6 %** — 944 faits, 20 partiels, 282 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 92 | 1 | 7 | 92,5 % |
 | [La Nécrolieuse](#necrobinder) | 98 | 1 | 3 | 96,6 % |
 | [Cartes communes aux cinq éditions](#cartes) | 106 | 0 | 14 | 88,3 % |
-| [Reliques et potions](#reliques) | 222 | 0 | 99 | 69,2 % |
+| [Reliques et potions](#reliques) | 250 | 0 | 71 | 77,9 % |
 | [Bestiaire](#bestiaire) | 19 | 1 | 84 | 18,8 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 43 | 1 | 15 | 73,7 % |
 | [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **916** | **20** | **310** | **74,3 %** |
+| **Total** | **944** | **20** | **282** | **76,6 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 69,2 %
+## Reliques et potions — 77,9 %
 
 ### Reliques partagées — 88,9 %
 
@@ -985,49 +985,49 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Lentille de Fresnel | Évènement | Non |  |
 | Diadème | Secours | Oui |  |
 
-### Reliques d'évènement — 17,9 %
+### Reliques d'évènement — 89,7 %
 
-7 faits, 0 partiel, 32 à faire.
+35 faits, 0 partiel, 4 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Anneau du dragon | Départ | Oui |  |
-| Destin divin | Départ | Non |  |
-| Noyau infusé | Départ | Non |  |
+| Destin divin | Départ | Oui |  |
+| Noyau infusé | Départ | Oui |  |
 | Phylactère déchaîné | Départ | Oui |  |
-| Sang noir | Départ | Non |  |
+| Sang noir | Départ | Oui |  |
 | Amulette sombrepierre | Évènement | Oui |  |
-| Ancre ??? | Évènement | Non |  |
-| Attrape-rêves | Évènement | Non |  |
+| Ancre ??? | Évènement | Oui |  |
+| Attrape-rêves | Évènement | Oui |  |
 | Bing bong | Évènement | Non |  |
 | Champi aromatique | Évènement | Oui |  |
-| Feu follet perdu | Évènement | Non |  |
-| Fille des vents | Évènement | Non |  |
-| Fiole de sang ??? | Évènement | Non |  |
-| Fleur joyeuse ??? | Évènement | Non |  |
-| Fromage d'élection | Évènement | Non |  |
-| Gaufre de Lee ??? | Évènement | Non |  |
+| Feu follet perdu | Évènement | Oui |  |
+| Fille des vents | Évènement | Oui |  |
+| Fiole de sang ??? | Évènement | Oui |  |
+| Fleur joyeuse ??? | Évènement | Oui |  |
+| Fromage d'élection | Évènement | Oui |  |
+| Gaufre de Lee ??? | Évènement | Oui |  |
 | Gros champi | Évènement | Oui |  |
-| La botte | Évènement | Non |  |
-| Le tapis du Marchand ??? | Évènement | Non |  |
-| Mangue ??? | Évènement | Non |  |
-| Mannequin d'entraînement ??? | Évènement | Non |  |
-| Manuel d'Histoire | Évènement | Non |  |
+| La botte | Évènement | Oui |  |
+| Le tapis du Marchand ??? | Évènement | Oui |  |
+| Mangue ??? | Évènement | Oui |  |
+| Mannequin d'entraînement ??? | Évènement | Oui |  |
+| Manuel d'Histoire | Évènement | Oui |  |
 | Monsieur Carnage | Évènement | Oui |  |
-| Noyau pollinique | Évènement | Non |  |
+| Noyau pollinique | Évènement | Oui |  |
 | Oizillon | Évènement | Non |  |
-| Orichalque ??? | Évènement | Non |  |
-| Perceuse | Évènement | Non |  |
-| Pin’s Exclusif de Fidélité Wongo | Évènement | Non |  |
-| Poison royal | Évènement | Non |  |
-| Service à thé vénérable ??? | Évènement | Non |  |
-| Thé d'os | Évènement | Non |  |
-| Thé de braises | Évènement | Non |  |
-| Thé de l'incivilité | Évènement | Non |  |
-| Ticket mystère de Chez Wongo's | Évènement | Non |  |
-| Tirelire-gueule | Évènement | Non |  |
+| Orichalque ??? | Évènement | Oui |  |
+| Perceuse | Évènement | Oui |  |
+| Pin’s Exclusif de Fidélité Wongo | Évènement | Oui |  |
+| Poison royal | Évènement | Oui |  |
+| Service à thé vénérable ??? | Évènement | Oui |  |
+| Thé d'os | Évènement | Oui |  |
+| Thé de braises | Évènement | Oui |  |
+| Thé de l'incivilité | Évènement | Oui |  |
+| Ticket mystère de Chez Wongo's | Évènement | Oui |  |
+| Tirelire-gueule | Évènement | Oui |  |
 | Âme oubliée | Évènement | Non |  |
-| Épée de jade | Évènement | Non |  |
+| Épée de jade | Évènement | Oui |  |
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
