@@ -386,6 +386,8 @@ enum class EnemyType : uint8_t {
     TOADPOLE
     FLYCONID,
     HUNTER_KILLER
+    FLYCONID,
+    MAWLER
 };
 
 // What a monster sees of the fight when it chooses its next move.

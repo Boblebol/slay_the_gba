@@ -34,6 +34,7 @@
 #include "bn_sprite_items_mon_inklet.h"
 #include "bn_sprite_items_mon_jaw_worm.h"
 #include "bn_sprite_items_mon_noisebot.h"
+#include "bn_sprite_items_mon_mawler.h"
 #include "bn_sprite_items_mon_nibbit.h"
 #include "bn_sprite_items_mon_punch_construct.h"
 #include "bn_sprite_items_mon_toadpole.h"
@@ -269,6 +270,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_toadpole, false };
     case engine::EnemyType::HUNTER_KILLER:
         return { &bn::sprite_items::mon_hunter_killer, false };
+    case engine::EnemyType::MAWLER:
+        return { &bn::sprite_items::mon_mawler, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:
