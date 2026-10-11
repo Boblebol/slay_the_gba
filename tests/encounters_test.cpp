@@ -58,6 +58,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::SNEAKY_GREMLIN: return "SNEAKY_GREMLIN";
         case EnemyType::HAUNTED_SHIP: return "HAUNTED_SHIP";
         case EnemyType::GLOBE_HEAD: return "GLOBE_HEAD";
+        case EnemyType::LOUSE_PROGENITOR: return "LOUSE_PROGENITOR";
         case EnemyType::SLUDGE_SPINNER: return "SLUDGE_SPINNER";
         case EnemyType::TOADPOLE: return "TOADPOLE";
         case EnemyType::HUNTER_KILLER: return "HUNTER_KILLER";
@@ -226,6 +227,11 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "GlobeHeadNormal", "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice",
+                                        "LouseProgenitorNormal" }));
 
     // The ruby raiders: three of the five raiders in the engine.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),

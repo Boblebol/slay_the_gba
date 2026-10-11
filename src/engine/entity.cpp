@@ -157,6 +157,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Globocéphale";
         max_hp = 148;
         hp = 148;
+    } else if (type == EnemyType::LOUSE_PROGENITOR) {
+        name = "Progéniteur de poux";
+        max_hp = 134;
+        hp = 134;
     } else if (type == EnemyType::HAUNTED_SHIP) {
         name = "Navire hanté";
         max_hp = 63;
@@ -225,6 +229,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
         case EnemyType::CORPSE_SLUG: return 2; // 25 to 27, 27 to 29 at Ascension
+        case EnemyType::LOUSE_PROGENITOR: return 2; // 134 to 136, 138 to 140 at Ascension
         case EnemyType::GREMLIN_MERC: return 2; // 47 to 49, 51 to 53 at Ascension
         case EnemyType::FOSSIL_STALKER: return 2; // 51 to 53, 54 to 56 at Ascension
         case EnemyType::SEAPUNK: return 2;     // 44 to 46, 47 to 49 at Ascension
@@ -279,6 +284,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::GREMLIN_MERC: return 51;
         case EnemyType::HAUNTED_SHIP: return 67;
         case EnemyType::GLOBE_HEAD: return 158;
+        case EnemyType::LOUSE_PROGENITOR: return 138;
         case EnemyType::SLUDGE_SPINNER: return 41;
         case EnemyType::TOADPOLE: return 22;
         case EnemyType::HUNTER_KILLER: return 126;
@@ -868,6 +874,29 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 2;
             current_intent.description = "Galvanic Burst (16 dmg, +2 Force)";
+        }
+    } else if (type == EnemyType::LOUSE_PROGENITOR) {
+        // Web Cannon, Curl and Grow, Pounce, and again.
+        current_intent.block = 0;
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        const int step = (turn_number - 1) % 3;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 10 : 9;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
+            current_intent.description = "Canon de toile (9 dmg, Fragilisé 2)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.base_damage = 0;
+            current_intent.block = ascended_damage ? 18 : 14;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 7 : 5;
+            current_intent.description = "Repli fortifiant (14 Armure, +5 Force)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 16 : 14;
+            current_intent.description = "Bond (14 dmg)";
         }
     } else if (type == EnemyType::HAUNTED_SHIP) {
         // Haunt, then Swipe and Stomp, and again from Swipe.

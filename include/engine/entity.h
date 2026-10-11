@@ -384,6 +384,7 @@ enum class EnemyType : uint8_t {
     SNEAKY_GREMLIN,
     HAUNTED_SHIP,
     GLOBE_HEAD,
+    LOUSE_PROGENITOR,
     SLUDGE_SPINNER,
     TOADPOLE,
     HUNTER_KILLER,

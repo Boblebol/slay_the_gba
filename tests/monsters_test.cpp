@@ -1816,6 +1816,55 @@ void test_gremlin_merc_ascension() {
     std::cout << "[PASS] Gremlin Merc: Ascension gives 51 to 53 HP, Gimme 8 x2, Double Smash 7 x2, Hehe 9" << std::endl;
 }
 
+void test_louse_progenitor() {
+    // Web Cannon 9 + 2 Frail, Curl and Grow (14 Block, +5 Strength), Pounce 14, and again with the Strength kept.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LOUSE_PROGENITOR);
+    Enemy& louse = combat.enemies[0];
+    assert(louse.type == EnemyType::LOUSE_PROGENITOR && louse.name == "Progéniteur de poux");
+    assert(louse.hp >= 134 && louse.hp <= 136 && louse.max_hp == 134 + louse.hp_bonus && louse.block == 0);
+    struct Step { EnemyIntentType intent; int damage; int block; int strength; int frail; };
+    const Step steps[] = {
+        { ATTACK_DEBUFF, 9, 0, 0, 2 }, { BUFF, 0, 14, 5, 0 }, { ATTACK, 19, 0, 5, 0 },
+        { ATTACK_DEBUFF, 14, 0, 5, 2 }, { BUFF, 0, 14, 10, 0 }, { ATTACK, 24, 0, 10, 0 },
+    };
+    for (const Step& step : steps) {
+        assert(louse.current_intent.type == step.intent);
+        assert(louse.intent_damage(combat.player) == step.damage);
+        combat.player.hp = combat.player.max_hp;
+        combat.player.clear_status(StatusType::FRAIL);
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == step.damage);
+        assert(combat.player.get_status(StatusType::FRAIL) == step.frail);
+        assert(louse.block == step.block && louse.get_status(StatusType::STRENGTH) == step.strength);
+    }
+    std::cout << "[PASS] Louse Progenitor: 134 to 136 HP, Web Cannon 9 + 2 Frail, Curl and Grow 14 Block +5 Strength, Pounce 14" << std::endl;
+}
+
+void test_louse_progenitor_ascension() {
+    // 138 to 140 HP, Web Cannon 10, Curl and Grow 18 Block and +7 Strength, Pounce 16 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LOUSE_PROGENITOR);
+        Enemy& louse = combat.enemies[0];
+        louse.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = louse.hp;
+        assert(louse.ascension_hp() == 138 && louse.hp_spread() == 2);
+        assert(base >= 134 && base <= 136 && louse.max_hp == 134 + louse.hp_bonus);
+        louse.ascend(true, true);
+        combat.plan_enemies();
+        assert(louse.hp == base + 4 && louse.hp >= 138 && louse.hp <= 140);
+        assert(louse.intent_damage(combat.player) == 10);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(louse.current_intent.type == BUFF);
+        combat.end_player_turn();
+        assert(louse.block == 18 && louse.get_status(StatusType::STRENGTH) == 7);
+        combat.player.hp = combat.player.max_hp;
+        assert(louse.current_intent.type == ATTACK && louse.intent_damage(combat.player) == 16 + 7);
+    }
+    std::cout << "[PASS] Louse Progenitor: Ascension gives 138 to 140 HP, Web Cannon 10, 18 Block +7 Strength, Pounce 16" << std::endl;
+}
+
 void test_haunted_ship() {
     // Haunt (3 Weak and 5 Dazed), then Swipe (13) and Stomp (4 x3), and again from Swipe.
     CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::HAUNTED_SHIP);
@@ -2672,6 +2721,8 @@ int main() {
     test_gremlin_merc_ascension();
     test_sneaky_gremlin();
     test_sneaky_gremlin_ascension();
+    test_louse_progenitor();
+    test_louse_progenitor_ascension();
     test_haunted_ship();
     test_haunted_ship_ascension();
     test_sludge_spinner();
