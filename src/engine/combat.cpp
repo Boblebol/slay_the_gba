@@ -339,6 +339,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             if (turn_start) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;
         case PowerId::TURN_STRENGTH:
+        case PowerId::TOASTY_MITTENS: // the exhaust that follows is asked once the hand is drawn
             if (turn_start) player.add_status(StatusType::STRENGTH, power.amount);
             break;
         case PowerId::TURN_STARS:
@@ -1884,6 +1885,8 @@ void CombatEngine::start_player_turn() {
         choice.count = static_cast<uint8_t>(tyranny);
         ask_choice(choice);
     }
+    // Toasty Mittens: one card of the new hand is exhausted.
+    if (has_power(PowerId::TOASTY_MITTENS)) ask_choice(CardChoice{ ChoiceKind::EXHAUST, 1 });
     // Only the cards drawn by effects during the turn count as drawn this turn.
     counters.cards_drawn = 0;
     selected_card_index = 0;
