@@ -113,6 +113,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Mycoptère";
         max_hp = 47;
         hp = 47;
+    } else if (type == EnemyType::SLUDGE_SPINNER) {
+        name = "Tisse-boue";
+        max_hp = 37;
+        hp = 37;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -124,6 +128,7 @@ void Enemy::init(EnemyType enemy_type) {
 
 uint8_t Enemy::hp_spread() const {
     switch (type) {
+        case EnemyType::SLUDGE_SPINNER: return 2; // 37 to 39, 41 to 42 at Ascension
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
         case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
@@ -164,6 +169,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
+        case EnemyType::SLUDGE_SPINNER: return 41;
         default: return 0;
     }
 }
@@ -601,6 +607,35 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = ascended_damage ? 12 : 11;
             current_intent.description = "Fracas (11 dmg)";
+        }
+    } else if (type == EnemyType::SLUDGE_SPINNER) {
+        // Calm: Oil Spray every turn. Once hurt (triggered), it opens the next phase with Rage, then draws among
+        // the three moves, never the same twice in a row.
+        enum Move : uint8_t { OIL_SPRAY, SLAM, RAGE };
+        if (phase == 0 && hp < max_hp && enter_phase(1)) {
+            phase_turn = 1;
+            use_move(RAGE);
+        } else if (phase == 0) {
+            use_move(OIL_SPRAY);
+        } else if (phase_turn > 1) {
+            static constexpr MoveOption ANY[] = { { OIL_SPRAY }, { SLAM }, { RAGE } };
+            use_move(draw_move(ANY));
+        }
+        if (last_move == OIL_SPRAY) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.debuffs[0] = { StatusType::WEAK, 1 };
+            current_intent.description = "Spray huileux (8 dmg, Affaibli 1)";
+        } else if (last_move == SLAM) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 12 : 11;
+            current_intent.description = "Heurt (11 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 3;
+            current_intent.description = "Rage (6 dmg, Force 3)";
         }
     }
 }

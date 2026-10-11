@@ -1482,6 +1482,89 @@ void test_flyconid_ascension() {
     std::cout << "[PASS] Flyconid: Ascension gives 51 to 53 HP, Spores of 9 and a Smash of 12" << std::endl;
 }
 
+void test_sludge_spinner() {
+    // Calm: Oil Spray (8 damage + 1 Weak) every turn. Hurt, it opens with Rage (6 damage, +3 Strength to itself),
+    // then draws among Oil Spray, Slam (11) and Rage, never the same move twice in a row.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLUDGE_SPINNER);
+    Enemy& spinner = combat.enemies[0];
+    assert(spinner.type == EnemyType::SLUDGE_SPINNER && spinner.name == "Tisse-boue");
+    assert(spinner.hp >= 37 && spinner.hp <= 39 && spinner.max_hp == 37 + spinner.hp_bonus);
+    for (int turn = 1; turn <= 3; ++turn) {
+        const EnemyIntent& intent = spinner.current_intent;
+        assert(spinner.phase == 0 && intent.type == ATTACK_DEBUFF && spinner.intent_damage(combat.player) == 8);
+        assert(intent.debuffs[0].type == StatusType::WEAK && intent.debuffs[0].amount == 1);
+        combat.player.hp = combat.player.max_hp;
+        combat.player.statuses.clear();
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 8 && combat.player.get_status(StatusType::WEAK) >= 1);
+    }
+
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::SLUDGE_SPINNER);
+    Enemy& angry = hurt.enemies[0];
+    hurt.damage_enemy(angry, 5);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(angry.phase == 1);
+    assert(angry.current_intent.type == ATTACK_BUFF && angry.intent_damage(hurt.player) == 6);
+    assert(angry.current_intent.status_type == StatusType::STRENGTH && angry.current_intent.status_amount == 3);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.player.statuses.clear();
+    hurt.end_player_turn();
+    assert(hurt.player.max_hp - hurt.player.hp == 6 && angry.get_status(StatusType::STRENGTH) == 3);
+    bool seen[3] = { false, false, true };
+    int last = 2;
+    for (int turn = 0; turn < 40; ++turn) {
+        const EnemyIntent& intent = angry.current_intent;
+        int move = intent.type == ATTACK_DEBUFF ? 0 : (intent.type == ATTACK_BUFF ? 2 : 1);
+        assert(angry.phase == 1 && move != last);
+        if (move == 0) assert(intent.base_damage == 8 && intent.debuffs[0].type == StatusType::WEAK);
+        if (move == 1) assert(intent.type == ATTACK && intent.base_damage == 11);
+        if (move == 2) assert(intent.base_damage == 6 && intent.status_amount == 3);
+        seen[move] = true;
+        last = move;
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.end_player_turn();
+        assert(hurt.state == CombatState::PLAYER_TURN);
+    }
+    assert(seen[0] && seen[1] && seen[2]);
+    std::cout << "[PASS] Sludge Spinner: 37 to 39 HP, Oil Spray, Rage once hurt then Slam / Oil Spray / Rage" << std::endl;
+}
+
+void test_sludge_spinner_ascension() {
+    // 41 HP at least, an Oil Spray of 9, a Slam of 12 and a Rage of 7 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLUDGE_SPINNER);
+        Enemy& spinner = combat.enemies[0];
+        spinner.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = spinner.hp;
+        assert(spinner.ascension_hp() == 41 && spinner.hp_spread() == 2);
+        assert(base >= 37 && base <= 39);
+        spinner.ascend(true, true);
+        combat.plan_enemies();
+        assert(spinner.hp == base + 4 && spinner.hp >= 41);
+        assert(spinner.current_intent.type == ATTACK_DEBUFF && spinner.intent_damage(combat.player) == 9);
+    }
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::SLUDGE_SPINNER);
+    Enemy& angry = hurt.enemies[0];
+    angry.ascend(true, true);
+    hurt.plan_enemies();
+    hurt.damage_enemy(angry, 5);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(angry.current_intent.type == ATTACK_BUFF && angry.intent_damage(hurt.player) == 7);
+    bool saw_slam = false;
+    for (int turn = 0; turn < 40; ++turn) {
+        if (angry.current_intent.type == ATTACK) {
+            assert(angry.current_intent.base_damage == 12);
+            saw_slam = true;
+        }
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.end_player_turn();
+    }
+    assert(saw_slam);
+    std::cout << "[PASS] Sludge Spinner: Ascension gives 41+ HP, Oil Spray of 9, Slam of 12, Rage of 7" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1532,6 +1615,8 @@ int main() {
     test_nibbit_ascension();
     test_flyconid();
     test_flyconid_ascension();
+    test_sludge_spinner();
+    test_sludge_spinner_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

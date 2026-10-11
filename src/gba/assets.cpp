@@ -34,6 +34,7 @@
 #include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
 #include "bn_sprite_items_mon_sewer_clam.h"
+#include "bn_sprite_items_mon_sludge_spinner.h"
 #include "bn_sprite_items_mon_the_forgotten.h"
 #include "bn_sprite_items_mon_vine_shambler.h"
 
@@ -240,6 +241,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_inklet, false };
     case engine::EnemyType::NIBBIT:
         return { &bn::sprite_items::mon_nibbit, false };
+    case engine::EnemyType::SLUDGE_SPINNER:
+        return { &bn::sprite_items::mon_sludge_spinner, false };
     case engine::EnemyType::FLYCONID:
         return { &bn::sprite_items::mon_flyconid, false };
     case engine::EnemyType::FAT_GREMLIN:
