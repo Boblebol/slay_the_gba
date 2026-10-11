@@ -429,6 +429,25 @@ void test_poison_and_star_relics() {
     std::cout << "[PASS] Poison and Star relics: Snecko Skull, Mini Regent, Galactic Dust" << std::endl;
 }
 
+void test_paels_flesh() {
+    // With the relic: no extra energy on turns 1 and 2, then 1 extra energy on turn 3 and every turn after.
+    CombatEngine flesh = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_FLESH, 1);
+    assert(flesh.player.energy == 3);
+    end_turn_idle(flesh);
+    assert(flesh.player.energy == 3);
+    end_turn_idle(flesh);
+    assert(flesh.player.energy == 4);
+    end_turn_idle(flesh);
+    assert(flesh.player.energy == 4);
+
+    // Without the relic: 3 energy every turn.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    end_turn_idle(plain);
+    end_turn_idle(plain);
+    assert(plain.player.energy == 3);
+    std::cout << "[PASS] Pael's Flesh: 1 extra energy from the 3rd turn" << std::endl;
+}
+
 void test_paels_blood() {
     // Paël's Blood: 1 more card on the first turn and on each following one.
     RunManager blood = make_relic_run(CharacterId::IRONCLAD, { "PAELS_BLOOD" });
@@ -3643,6 +3662,7 @@ int main() {
     test_hp_relics();
     test_poison_and_star_relics();
     test_combat_start_relics();
+    test_paels_flesh();
     test_paels_blood();
     test_relics_in_a_run();
     test_black_blood();
