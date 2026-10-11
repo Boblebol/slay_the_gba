@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 85,4 %** — 1054 faits, 19 partiels, 173 à faire (35 hors périmètre).
+**Avancement global : 85,5 %** — 1057 faits, 17 partiels, 172 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
-| [Reliques et potions](#reliques) | 283 | 0 | 38 | 88,2 % |
+| [Reliques et potions](#reliques) | 284 | 0 | 37 | 88,5 % |
 | [Bestiaire](#bestiaire) | 65 | 1 | 38 | 63,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 45 | 0 | 14 | 76,3 % |
-| [Systèmes de jeu](#systemes) | 26 | 4 | 6 | 77,8 % |
+| [Systèmes de jeu](#systemes) | 28 | 2 | 6 | 80,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1054** | **19** | **173** | **85,4 %** |
+| **Total** | **1057** | **17** | **172** | **85,5 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 88,2 %
+## Reliques et potions — 88,5 %
 
 ### Reliques partagées — 89,7 %
 
@@ -1140,9 +1140,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Œil de geckobra | Ancienne | Oui |  |
 | Œil de verre | Ancienne | Oui |  |
 
-### Potions — 98,4 %
+### Potions — 100,0 %
 
-62 faits, 0 partiel, 1 à faire.
+63 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1196,7 +1196,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Fée en bouteille | Rare | Oui |  |
 | Goules en bouteille | Rare | Oui |  |
 | Goutte de prescience | Rare | Oui |  |
-| Huile de geckobra | Rare | Non |  |
+| Huile de geckobra | Rare | Oui |  |
 | Jus de coléoptère | Rare | Oui |  |
 | Jus de fruits | Rare | Oui |  |
 | Navire en bouteille | Rare | Oui |  |
@@ -1515,7 +1515,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 77,8 %
+## Systèmes de jeu — 80,6 %
 
 ### La Tour — 50,0 %
 
@@ -1555,9 +1555,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Forge : améliorer une carte, avec aperçu |  | Oui |  |
 | Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon) |  | Non | [#271](https://github.com/Boblebol/slay_the_gba/issues/271) |
 
-### Marchand — 83,3 %
+### Marchand — 100,0 %
 
-4 faits, 2 partiels, 0 à faire.
+6 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1565,8 +1565,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Retrait d'une carte, à coût croissant |  | Oui |  |
 | Achat de reliques |  | Oui | Rayon des reliques, touches L et R : deux reliques tirées par rareté et une relique du marchand. |
 | Achat de potions |  | Oui | Rayon des potions, touches L et R. Ceinture pleine : la potion achetée en remplace une. |
-| Inventaire tiré au hasard à chaque visite |  | Partiel | Reliques et potions tirées au hasard ; trois cartes fixes par héros. [#270](https://github.com/Boblebol/slay_the_gba/issues/270) |
-| Prix selon la rareté, carte en solde |  | Partiel | Reliques et potions au prix de leur rareté, à 5 % près ; cartes à prix fixe, sans solde. [#270](https://github.com/Boblebol/slay_the_gba/issues/270) |
+| Inventaire tiré au hasard à chaque visite |  | Oui | Cinq cartes du héros et deux cartes incolores tirées par rareté, trois reliques et trois potions, depuis la graine de la partie. L écran montre les trois premières cartes. |
+| Prix selon la rareté, carte en solde |  | Oui | Cartes, reliques et potions au prix de leur rareté, à 5 % près ; une carte du héros à moitié prix. |
 
 ### Potions — 100,0 %
 
