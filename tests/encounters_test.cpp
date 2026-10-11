@@ -92,6 +92,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::SOUL_NEXUS: return "SOUL_NEXUS";
         case EnemyType::BYRDONIS: return "BYRDONIS";
         case EnemyType::PHROG_PARASITE: return "PHROG_PARASITE";
+        case EnemyType::WRIGGLER: return "WRIGGLER";
     }
     return {};
 }
@@ -272,13 +273,15 @@ void test_reference_encounters() {
     // Titos is summoned by the Entomancer, the Parafright brought by the Obscura: neither is a monster of the
     // engine yet. The Slumbering Beetle and the Nectar, Silk and Egg Bowlbugs wait for the random bugs of
     // BowlbugsNormal and SlumberingBeetleNormal.
+    // The Wriggler is the companion of the Phrog Parasite, which fights alone for now.
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
                                                           EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
                                                           EnemyType::OSTY, EnemyType::SLUMBERING_BEETLE,
                                                           EnemyType::PARAFRIGHT, EnemyType::ZAPBOT,
                                                           EnemyType::GUARDBOT, EnemyType::BOWLBUG_NECTAR,
-                                                          EnemyType::BOWLBUG_SILK, EnemyType::BOWLBUG_EGG };
+                                                          EnemyType::BOWLBUG_SILK, EnemyType::BOWLBUG_EGG,
+                                                          EnemyType::WRIGGLER };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));
