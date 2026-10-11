@@ -1482,6 +1482,77 @@ void test_flyconid_ascension() {
     std::cout << "[PASS] Flyconid: Ascension gives 51 to 53 HP, Spores of 9 and a Smash of 12" << std::endl;
 }
 
+void test_mawler() {
+    // Claw (4 x2) first, then a draw among Rip and Tear (14), Roar (3 Vulnerable) and Claw, never the move just
+    // played, and Roar only once.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::MAWLER);
+    Enemy& mawler = combat.enemies[0];
+    assert(mawler.type == EnemyType::MAWLER && mawler.name == "Écharneur");
+    assert(mawler.hp == 72 && mawler.max_hp == 72);
+    int previous = -1;
+    int roars = 0;
+    bool saw_rip = false, saw_claw = false;
+    for (int turn = 1; turn <= 40; ++turn) {
+        assert(mawler.block == 0);
+        combat.player.statuses.clear(); // Vulnerable from Roar would raise the damage below
+        const EnemyIntent& intent = mawler.current_intent;
+        int move;
+        int expected_damage;
+        if (intent.type == DEBUFF) {
+            assert(mawler.intent_damage(combat.player) == 0);
+            assert(intent.debuffs[0].type == StatusType::VULNERABLE && intent.debuffs[0].amount == 3);
+            move = 1;
+            expected_damage = 0;
+            ++roars;
+        } else if (intent.hits == 2) {
+            assert(intent.type == ATTACK && mawler.intent_damage(combat.player) == 4);
+            move = 2;
+            expected_damage = 8;
+            saw_claw = true;
+        } else {
+            assert(intent.type == ATTACK && intent.hits == 1 && mawler.intent_damage(combat.player) == 14);
+            move = 0;
+            expected_damage = 14;
+            saw_rip = true;
+        }
+        if (turn == 1) assert(move == 2);
+        assert(move != previous);
+        previous = move;
+        combat.player.hp = combat.player.max_hp;
+        combat.player.statuses.clear();
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == expected_damage);
+        if (move == 1) assert(combat.player.get_status(StatusType::VULNERABLE) >= 1);
+    }
+    assert(roars == 1 && saw_rip && saw_claw);
+    std::cout << "[PASS] Mawler: 72 HP, Claw first, then Rip and Tear / Roar (once) / Claw, no repeat" << std::endl;
+}
+
+void test_mawler_ascension() {
+    // 76 HP, Rip and Tear of 16 and a Claw of 5 x2 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::MAWLER);
+    Enemy& mawler = combat.enemies[0];
+    assert(mawler.ascension_hp() == 76);
+    mawler.ascend(true, true);
+    combat.plan_enemies();
+    assert(mawler.hp == 76 && mawler.max_hp == 76);
+    assert(mawler.current_intent.hits == 2 && mawler.intent_damage(combat.player) == 5);
+    bool saw_rip = false;
+    for (int turn = 0; turn < 20; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.player.statuses.clear();
+        combat.end_player_turn();
+        combat.player.statuses.clear();
+        if (mawler.current_intent.type == ATTACK && mawler.current_intent.hits == 1) {
+            assert(mawler.intent_damage(combat.player) == 16);
+            saw_rip = true;
+        }
+    }
+    assert(saw_rip);
+    std::cout << "[PASS] Mawler: Ascension gives 76 HP, Rip and Tear of 16 and a Claw of 5 x2" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1532,6 +1603,8 @@ int main() {
     test_nibbit_ascension();
     test_flyconid();
     test_flyconid_ascension();
+    test_mawler();
+    test_mawler_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

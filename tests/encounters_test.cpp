@@ -47,6 +47,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
+        case EnemyType::MAWLER: return "MAWLER";
     }
     return {};
 }
@@ -163,7 +164,7 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "FuzzyWurmCrawlerWeak", "NibbitsWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal",
-                                        "InkletsNormal", "NibbitsNormal", "FlyconidNormal" }));
+                                        "InkletsNormal", "NibbitsNormal", "FlyconidNormal", "MawlerNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal" }));
     for (ActZone zone : ZONES) {
@@ -309,7 +310,7 @@ void test_same_seed_same_fights() {
         assert(first == fights_of(seed));
     }
     // A run of Act 1 (A): weak fights on the first floors, then the ruby raiders or the Vine Shambler, both met.
-    uint32_t seed = 99;
+    uint32_t seed = 1;
     assert(act_zone(1, make_run(seed, 1).map_seed) == ActZone::ACT1A);
     std::vector<std::string> fights = fights_of(seed);
     int raiders = 0;
@@ -329,8 +330,8 @@ void test_same_seed_same_fights() {
                 ++inklets;
             } else {
                 assert(fight == "VineShamblerNormal VINE_SHAMBLER" || fight == "CubexConstructNormal CUBEX_CONSTRUCT" ||
-                       fight == "FlyconidNormal FLYCONID");
-                if (!fight.starts_with("FlyconidNormal")) ++shamblers;
+                       fight == "FlyconidNormal FLYCONID" || fight == "MawlerNormal MAWLER");
+                if (fight.starts_with("VineShamblerNormal") || fight.starts_with("CubexConstructNormal")) ++shamblers;
             }
         }
     }

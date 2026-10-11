@@ -109,6 +109,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Grignotin";
         max_hp = 42;
         hp = 42;
+    } else if (type == EnemyType::MAWLER) {
+        name = "Écharneur";
+        max_hp = 72;
+        hp = 72;
     } else if (type == EnemyType::FLYCONID) {
         name = "Mycoptère";
         max_hp = 47;
@@ -164,6 +168,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
+        case EnemyType::MAWLER: return 76;
         default: return 0;
     }
 }
@@ -553,6 +558,32 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         } else {
             current_intent.base_damage = ascended_damage ? 4 : 3;
             current_intent.description = "Coup sec (3 dmg)";
+        }
+    } else if (type == EnemyType::MAWLER) {
+        // Claw first, then a draw among Rip and Tear, Roar and Claw: never the move just played, and Roar only
+        // once (`phase` becomes 1 once it was played).
+        enum Move : uint8_t { RIP_AND_TEAR, ROAR, CLAW };
+        if (phase_turn <= 1) {
+            use_move(CLAW);
+        } else {
+            static constexpr MoveOption ALL[] = { { RIP_AND_TEAR }, { ROAR }, { CLAW } };
+            static constexpr MoveOption NO_ROAR[] = { { RIP_AND_TEAR }, { CLAW } };
+            use_move(phase == 0 ? draw_move(ALL) : draw_move(NO_ROAR));
+            if (last_move == ROAR) phase = 1;
+        }
+        if (last_move == RIP_AND_TEAR) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 16 : 14;
+            current_intent.description = "Déchirure (14 dmg)";
+        } else if (last_move == ROAR) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::VULNERABLE, 3 };
+            current_intent.description = "Rugissement (Vulnérable 3)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 5 : 4;
+            current_intent.hits = 2;
+            current_intent.description = "Griffe (4 dmg x2)";
         }
     } else if (type == EnemyType::NIBBIT) {
         // Butt, Slice, Hiss, and again. Where it starts depends on its place at the start of the fight: alone it
