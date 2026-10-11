@@ -1322,6 +1322,34 @@ void test_punch_construct_ascension() {
     std::cout << "[PASS] Punch Construct: Ascension gives 60 HP, Fast Punch 6x2, Strong Punch 16" << std::endl;
 }
 
+void test_bowlbug_silk() {
+    // Toxic Spit (1 Weak), Thrash 4x2, and again.
+    check_monster(EnemyType::BOWLBUG_SILK, "Sphéropode (Soie)", 40, {
+        { DEBUFF, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 2 },
+        { DEBUFF, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 2 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_SILK);
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::WEAK) == 1);
+    std::cout << "[PASS] Bowlbug Silk: 40 HP, Toxic Spit 1 Weak, Thrash 4x2, loop" << std::endl;
+}
+
+void test_bowlbug_silk_ascension() {
+    // 41 HP, Thrash 5x2 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_SILK);
+    Enemy& bug = combat.enemies[0];
+    bug.ascend(true, true);
+    combat.plan_enemies();
+    assert(bug.hp == 41 && bug.max_hp == 41);
+    combat.end_player_turn(); // Toxic Spit
+    combat.player.hp = combat.player.max_hp;
+    assert(bug.current_intent.type == ATTACK && bug.current_intent.hits == 2);
+    assert(bug.intent_damage(combat.player) == 5);
+    std::cout << "[PASS] Bowlbug Silk: Ascension gives 41 HP, Thrash 5x2" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -1923,6 +1951,8 @@ int main() {
     test_cubex_construct_ascension();
     test_punch_construct();
     test_punch_construct_ascension();
+    test_bowlbug_silk();
+    test_bowlbug_silk_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

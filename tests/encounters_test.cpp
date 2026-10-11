@@ -55,6 +55,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::HAUNTED_SHIP: return "HAUNTED_SHIP";
         case EnemyType::SLUDGE_SPINNER: return "SLUDGE_SPINNER";
         case EnemyType::TOADPOLE: return "TOADPOLE";
+        case EnemyType::BOWLBUG_SILK: return "BOWLBUG_SILK";
     }
     return {};
 }
@@ -213,10 +214,12 @@ void test_reference_encounters() {
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
     // The Stabbot and the Noisebot are brought by the Fabricator (FabricatorNormal).
     // The Gas Bomb is brought by the Living Fog (LivingFogNormal).
+    // The Bowlbug Silk is brought by the Bowlbug Rock (BowlbugsNormal, SlumberingBeetleNormal).
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
-                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN };
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
+                                                          EnemyType::BOWLBUG_SILK };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));
