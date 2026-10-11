@@ -249,8 +249,7 @@ enum class PowerId : uint8_t {
     IRON_CLUB,          // every IRON_CLUB_CARDS cards played: draw `amount` (counter = cards counted)
     CROSSBOW,           // start of turn: add a random Attack to the hand, free this turn
     SPIKED_GAUNTLETS,   // Power cards cost `amount` more energy (CombatEngine::effective_cost)
-    TOASTY_MITTENS      // start of turn: `amount` Strength, and 1 card of the new hand is exhausted
-    UNDYING_SIGIL,      // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
+    TOASTY_MITTENS,     // start of turn: `amount` Strength, and 1 card of the new hand is exhausted
     PAELS_FLESH         // start of the 3rd turn and each one after: `amount` extra energy (Ancient relic)
 };
 
