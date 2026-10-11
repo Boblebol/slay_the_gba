@@ -2053,6 +2053,7 @@ int CombatEngine::effective_cost(const DeckCard& card) const {
     if (costs_nothing(card)) return 0;
 
     int cost = printed + card.cost_delta - card.bookmark_discount;
+    if (card.random_cost_this_turn >= 0) cost = card.random_cost_this_turn; // Snecko Oil
     switch (card.id) {
         case CardId::MIDNIGHT:
             cost -= static_cast<int>(exhaust_pile.size());
@@ -2368,6 +2369,7 @@ void CombatEngine::place_played_card(const DeckCard& card, AfterPlay after_play)
     kept_card.free_this_turn = false;
     kept_card.bookmark_discount = 0;
     kept_card.cost_one_this_turn = false;
+    kept_card.random_cost_this_turn = -1;
     kept_card.sly_this_turn = false;
     if (played_type == CardType::SKILL && has_power(PowerId::MASTER_PLANNER)) kept_card.sly_combat = true;
     if (has_power(PowerId::RAZOR_TOOTH)) kept_card.upgraded = true;
@@ -2657,6 +2659,7 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                     DeckCard copy = hand[index];
                     copy.free_this_turn = false;
                     copy.cost_one_this_turn = false;
+                    copy.random_cost_this_turn = -1;
                     copy.deck_index = NOT_IN_DECK; // a gain on the copy does not reach the deck
                     for (uint8_t made = 0; made < choice.amount; ++made) create_card(copy, Pile::HAND);
                     break;
@@ -6303,6 +6306,7 @@ void CombatEngine::end_player_turn() {
     for (DeckCard& card : hand) {
         card.free_this_turn = false;
         card.cost_one_this_turn = false;
+        card.random_cost_this_turn = -1;
     }
     // "Until the end of the turn" Sly goes in every pile (a card discarded this turn keeps its mark otherwise).
     for (DeckCard& card : hand) card.sly_this_turn = false;
@@ -6632,6 +6636,14 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         player.add_status(StatusType::STRENGTH, 1);
         player.add_status(StatusType::DEXTERITY, 1);
         set_log("Fysh Oil!");
+    } else if (potion_id == "SNECKO_OIL") {
+        draw_cards(7);
+        // Every card in the hand (the ones just drawn included) costs 0 to 3 at random until the end of the turn.
+        for (DeckCard& held : hand) {
+            if (CardDef::is_x_cost(held.id, held.upgraded) || CardDef::has_keyword(held, KEYWORD_UNPLAYABLE)) continue;
+            held.random_cost_this_turn = static_cast<int8_t>(next_random() % 4);
+        }
+        set_log("Snecko Oil!");
     } else if (potion_id == "GAMBLERS_BREW") {
         ask_choice(CardChoice{ ChoiceKind::DISCARD, 10, true, ChoiceThen::DRAW_PER_CARD });
         set_log("Gambler's Brew!");

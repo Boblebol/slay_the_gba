@@ -694,6 +694,7 @@ struct DeckCard {
     uint8_t bookmark_discount = 0; // energy off this copy until it is played (Bookmark)
     bool free_this_turn = false; // this copy costs 0 until the end of the turn (Bullet Time)
     bool cost_one_this_turn = false; // this copy costs at most 1 until the end of the turn (Enlightenment)
+    int8_t random_cost_this_turn = -1; // this copy costs this many (0 to 3) until the end of the turn, -1 for none (Snecko Oil)
     uint8_t echo = 0;           // Echo N: the card is replayed N more times each time it is played (Hidden Gem, Transfigure)
     bool sly_combat = false;    // this copy has Sly for the rest of the combat (Master Planner)
     bool sly_this_turn = false; // this copy has Sly until the end of the turn (Hand Trick)
