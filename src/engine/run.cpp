@@ -781,6 +781,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     if (relic_id == "YUMMY_COOKIE" && has_relic("YUMMY_COOKIE")) upgrade_random_cards(4);
     if (relic_id == "SAND_CASTLE" && has_relic("SAND_CASTLE")) upgrade_random_cards(6);
+    if (relic_id == "POTION_BELT" && has_relic("POTION_BELT")) add_potion_slots(2);
     if (relic_id == "WHETSTONE" && has_relic("WHETSTONE")) upgrade_random_cards(2, CardType::ATTACK);
     // War Paint: upgrades 2 random Skills when obtained.
     if (relic_id == "WAR_PAINT" && has_relic("WAR_PAINT")) upgrade_random_cards(2, CardType::SKILL);
@@ -1349,6 +1350,8 @@ std::span<const std::string_view> RunManager::active_relics() {
         "RINGING_TRIANGLE",
         // Upgrades on pickup (#465, #464)
         "WHETSTONE", "WAR_PAINT",
+        // Potion slots on pickup (#462)
+        "POTION_BELT",
         // Colorless cards in the card rewards (#486)
         "DINGY_RUG",
         // Out of combat, at the end of a fight without HP lost (#476)
