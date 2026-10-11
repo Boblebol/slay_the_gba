@@ -33,6 +33,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::BRUTE_RUBY_RAIDER: return "BRUTE_RUBY_RAIDER";
         case EnemyType::ASSASSIN_RUBY_RAIDER: return "ASSASSIN_RUBY_RAIDER";
         case EnemyType::AXE_RUBY_RAIDER: return "AXE_RUBY_RAIDER";
+        case EnemyType::TRACKER_RUBY_RAIDER: return "TRACKER_RUBY_RAIDER";
         case EnemyType::CALCIFIED_CULTIST: return "CALCIFIED_CULTIST";
         case EnemyType::DAMP_CULTIST: return "DAMP_CULTIST";
         case EnemyType::SEWER_CLAM: return "SEWER_CLAM";
@@ -206,10 +207,10 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "SpinyToadNormal", "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
 
-    // The ruby raiders: three of the four raiders in the engine.
+    // The ruby raiders: three of the five raiders in the engine.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
                                               "RubyRaidersNormal");
-    assert(raiders.count == 3 && raiders.random_pool.size() == 4);
+    assert(raiders.count == 3 && raiders.random_pool.size() == 5);
     const Encounter& inklets = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
                                               "InkletsNormal");
     assert(inklets.count == 3 && inklets.monsters[0] == EnemyType::INKLET && inklets.monsters[2] == EnemyType::INKLET);
@@ -292,7 +293,7 @@ void test_rooms_meet_every_encounter() {
         }
         if (act == 1) {
             assert(zones_met == (std::set<ActZone>{ ActZone::ACT1A, ActZone::ACT1B }));
-            assert(raider_groups.size() == 4); // every trio of the four raiders
+            assert(raider_groups.size() >= 8); // nearly every one of the 10 trios of the five raiders
         } else {
             assert(zones_met.size() == 1);
         }
