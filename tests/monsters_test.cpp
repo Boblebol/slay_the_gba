@@ -2102,6 +2102,48 @@ void test_byrdonis_ascension() {
     std::cout << "[PASS] Byrdonis: Ascension gives 90 HP, Swoop 19 and Peck 4x3" << std::endl;
 }
 
+void test_wriggler() {
+    // Nasty Bite (6 damage), Wriggle (+2 Strength and an Infection), and again with the Strength kept.
+    // The starting HP is 17 to 21: the roll of the fight is read, then checked against that range.
+    const int hp = make_combat(CharacterId::IRONCLAD, EnemyType::WRIGGLER).enemies[0].hp;
+    assert(hp >= 17 && hp <= 21);
+    check_monster(EnemyType::WRIGGLER, "Larve", hp, {
+        { ATTACK, 6, 0, 0 },
+        { STATUS, 0, 0, 2 },
+        { ATTACK, 8, 0, 2 },
+        { STATUS, 0, 0, 4 },
+        { ATTACK, 10, 0, 4 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::WRIGGLER);
+    combat.end_player_turn();
+    assert(count_in(combat.discard_pile, CardId::INFECTION) == 0);
+    assert(combat.enemies[0].current_intent.gives_cards() && combat.enemies[0].current_intent.status_card == CardId::INFECTION);
+    combat.end_player_turn();
+    assert(combat.last_enemy_actions[0].cards_added == CardId::INFECTION && combat.last_enemy_actions[0].cards_added_count == 1);
+    // The next turn draws from a reshuffled deck: the Infection is in one of the player's piles.
+    int infections = count_in(combat.discard_pile, CardId::INFECTION) + count_in(combat.draw_pile, CardId::INFECTION);
+    for (const DeckCard& card : combat.hand) infections += card.id == CardId::INFECTION;
+    assert(infections == 1);
+    std::cout << "[PASS] Wriggler: 17 to 21 HP, Nasty Bite 6, Wriggle (+2 Strength, 1 Infection), loop" << std::endl;
+}
+
+void test_wriggler_ascension() {
+    // 18 to 22 HP (17 to 21 plus 1) and a Nasty Bite of 7 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::WRIGGLER);
+        Enemy& worm = combat.enemies[0];
+        worm.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = worm.hp;
+        assert(worm.ascension_hp() == 18 && worm.hp_spread() == 4);
+        assert(base >= 17 && base <= 21 && worm.max_hp == 17 + worm.hp_bonus);
+        worm.ascend(true, true);
+        combat.plan_enemies();
+        assert(worm.hp == worm.max_hp && worm.hp >= 18 && worm.hp <= 22);
+        assert(worm.current_intent.type == ATTACK && worm.intent_damage(combat.player) == 7);
+    }
+    std::cout << "[PASS] Wriggler: Ascension gives 18 to 22 HP and a Nasty Bite of 7" << std::endl;
+}
+
 void test_phrog_parasite() {
     // Infect (3 Infections), Lash (4 damage x4), and again.
     check_monster(EnemyType::PHROG_PARASITE, "Parasite Krapo", 61, {
@@ -3682,6 +3724,8 @@ int main() {
     test_byrdonis();
     test_byrdonis_ascension();
     test_phrog_parasite();
+    test_wriggler();
+    test_wriggler_ascension();
     test_phrog_parasite_ascension();
     test_inklet();
     test_inklet_ascension();

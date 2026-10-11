@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 85,2 %** — 1052 faits, 19 partiels, 175 à faire (35 hors périmètre).
+**Avancement global : 85,3 %** — 1053 faits, 19 partiels, 174 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 283 | 0 | 38 | 88,2 % |
-| [Bestiaire](#bestiaire) | 64 | 1 | 39 | 62,0 % |
+| [Bestiaire](#bestiaire) | 65 | 1 | 38 | 63,0 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 45 | 0 | 14 | 76,3 % |
 | [Systèmes de jeu](#systemes) | 25 | 4 | 7 | 75,0 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1052** | **19** | **175** | **85,2 %** |
+| **Total** | **1053** | **19** | **174** | **85,3 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,7 +1212,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 62,0 %
+## Bestiaire — 63,0 %
 
 ### Monstres — 72,2 %
 
@@ -1293,14 +1293,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sculpteur dévoué | Faible · Acte 3 | Oui |  |
 | Sonobot | Invocation · Acte 3 | Oui |  |
 
-### Élites — 70,6 %
+### Élites — 76,5 %
 
-12 faits, 0 partiel, 5 à faire.
+13 faits, 0 partiel, 4 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Idole Oubliée | Élite · Acte 1 (A) | Oui |  |
-| Larve | Élite · Acte 1 (A) | Non |  |
+| Larve | Élite · Acte 1 (A) | Oui |  |
 | Oizodon | Élite · Acte 1 (A) | Oui |  |
 | Parasite Krapo | Élite · Acte 1 (A) | Oui |  |
 | Colonie de rôdeurs | Élite · Acte 1 (B) | Oui |  |
