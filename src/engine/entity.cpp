@@ -101,6 +101,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Assemblage Cubex";
         max_hp = 65;
         hp = 65;
+    } else if (type == EnemyType::PUNCH_CONSTRUCT) {
+        name = "Assemblage de pugilat";
+        max_hp = 55;
+        hp = 55;
     } else if (type == EnemyType::INKLET) {
         name = "Encrelin";
         max_hp = 11;
@@ -161,6 +165,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::STABBOT: return 19;
         case EnemyType::NOISEBOT: return 19;
         case EnemyType::CUBEX_CONSTRUCT: return 70;
+        case EnemyType::PUNCH_CONSTRUCT: return 60;
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
@@ -529,6 +534,24 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::NONE;
             current_intent.status_amount = 0;
             current_intent.description = "Éjection (5 dmg x2)";
+        }
+    } else if (type == EnemyType::PUNCH_CONSTRUCT) {
+        // Ready (10 Block), Fast Punch (2 hits, 1 Frail), Strong Punch, and again.
+        const int step = (turn_number - 1) % 3;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::DEFEND;
+            current_intent.block = 10;
+            current_intent.description = "PRÊT (10 Armure)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 6 : 5;
+            current_intent.hits = 2;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
+            current_intent.description = "Poing rapide (5 dmg x2, Fragilisé)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 16 : 14;
+            current_intent.description = "Poing puissant (14 dmg)";
         }
     } else if (type == EnemyType::INKLET) {
         // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.
