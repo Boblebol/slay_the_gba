@@ -44,6 +44,7 @@
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_osty.h"
 #include "bn_sprite_items_mon_parafright.h"
+#include "bn_sprite_items_mon_slimed_berserker.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
@@ -301,6 +302,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_parafright, false };
     case engine::EnemyType::TUNNELER:
         return { &bn::sprite_items::mon_tunneler, false };
+    case engine::EnemyType::SLIMED_BERSERKER:
+        return { &bn::sprite_items::mon_slimed_berserker, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

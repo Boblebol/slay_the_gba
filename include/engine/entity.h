@@ -396,6 +396,8 @@ enum class EnemyType : uint8_t {
     SLUMBERING_BEETLE,
     PARAFRIGHT,
     TUNNELER
+    TOADPOLE,
+    SLIMED_BERSERKER
 };
 
 // What a monster sees of the fight when it chooses its next move.

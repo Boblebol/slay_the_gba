@@ -2457,6 +2457,59 @@ void test_tunneler_ascension() {
 
 } // namespace
 
+void test_slimed_berserker() {
+    // Vomit Ichor (10 Slimed), Furious Pummeling 4x4, Leeching Hug (+3 Strength, 3 Weak), Smother 30, and again.
+    // Its Strength adds to every hit that follows.
+    check_monster(EnemyType::SLIMED_BERSERKER, "Berserker de vase", 261, {
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 4 },
+        { BUFF, 0, 0, 3 },
+        { ATTACK, 33, 0, 3 },
+        { STATUS, 0, 0, 3 },
+        { ATTACK, 7, 0, 3, 0, 4 },
+        { BUFF, 0, 0, 6 },
+        { ATTACK, 36, 0, 6 },
+    });
+
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLIMED_BERSERKER);
+    Enemy& berserker = combat.enemies[0];
+    assert(berserker.current_intent.status_card == CardId::SLIMED && berserker.current_intent.status_cards == 10);
+    auto slimed = [&] {
+        int count = 0;
+        for (const DeckCard& card : combat.discard_pile) count += card.id == CardId::SLIMED;
+        return count;
+    };
+    combat.end_player_turn();
+    assert(slimed() >= 10);
+    combat.end_player_turn(); // Furious Pummeling
+    combat.player.hp = combat.player.max_hp;
+    assert(berserker.current_intent.type == BUFF);
+    assert(berserker.current_intent.debuffs[0].type == StatusType::WEAK && berserker.current_intent.debuffs[0].amount == 3);
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::WEAK) >= 3 && berserker.get_status(StatusType::STRENGTH) == 3);
+    std::cout << "[PASS] Slimed Berserker: 261 HP, Vomit Ichor, Pummeling, Leeching Hug, Smother, loop" << std::endl;
+}
+
+void test_slimed_berserker_ascension() {
+    // 281 HP, Furious Pummeling 5x4 and Smother 33 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLIMED_BERSERKER);
+    Enemy& berserker = combat.enemies[0];
+    berserker.ascend(true, true);
+    combat.plan_enemies();
+    assert(berserker.hp == 281 && berserker.max_hp == 281);
+    combat.end_player_turn(); // Vomit Ichor
+    combat.player.hp = combat.player.max_hp;
+    assert(berserker.current_intent.type == ATTACK && berserker.current_intent.hits == 4);
+    assert(berserker.intent_damage(combat.player) == 5);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 20);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Leeching Hug
+    combat.player.hp = combat.player.max_hp;
+    assert(berserker.current_intent.type == ATTACK && berserker.intent_damage(combat.player) == 36);
+    std::cout << "[PASS] Slimed Berserker: Ascension gives 281 HP, Pummeling 5x4, Smother 33" << std::endl;
+}
+
 int main() {
     std::cout << "=== Monsters ===" << std::endl;
     test_fuzzy_wurm_crawler();
@@ -2511,6 +2564,8 @@ int main() {
     test_cubex_construct_ascension();
     test_punch_construct();
     test_punch_construct_ascension();
+    test_slimed_berserker();
+    test_slimed_berserker_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

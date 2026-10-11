@@ -64,6 +64,10 @@ constexpr Encounter ACT2_NORMAL[] = {
     { "TunnelerNormal"sv, 2, { EnemyType::CHOMPER, EnemyType::TUNNELER } },
 };
 
+constexpr Encounter ACT3_NORMAL[] = {
+    { "SlimedBerserkerNormal"sv, 1, { EnemyType::SLIMED_BERSERKER } },
+};
+
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
 };
@@ -87,6 +91,8 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
 } // namespace
