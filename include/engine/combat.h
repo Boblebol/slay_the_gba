@@ -248,6 +248,7 @@ public:
     bool triple_next_attack = false;  // the next Attack played deals triple damage (Gigantification Potion)
     bool attack_double_now = false;   // Attacks deal double damage this turn
     bool pen_nib_now = false;         // the Attack being played deals double damage (Pen Nib)
+    bool minion_played_now = false;   // the card being played is a Minion card (Vitruvian Minion)
     bool strike_played_now = false;   // the card being played contains "Strike" (Strike Dummy)
     bool upgraded_attack_now = false; // the card being played is an upgraded Attack (Miniature Cannon)
     bool rebound_pending = false;    // the next card played this turn goes on top of the draw pile (Rebound)
