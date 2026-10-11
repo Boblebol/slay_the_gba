@@ -93,6 +93,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::BYRDONIS: return "BYRDONIS";
         case EnemyType::PHROG_PARASITE: return "PHROG_PARASITE";
         case EnemyType::WRIGGLER: return "WRIGGLER";
+        case EnemyType::THE_INSATIABLE: return "THE_INSATIABLE";
     }
     return {};
 }
@@ -214,10 +215,14 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal",
                                         "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
                                         "FossilStalkerNormal", "SeapunkNormal" }));
+    // Act 2 has its own boss, the Insatiable; the other acts keep the Ceremonial Beast.
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
-               std::set<std::string_view>{ "CeremonialBeastBoss" });
+               std::set<std::string_view>{ zone == ActZone::ACT2 ? "TheInsatiableBoss" : "CeremonialBeastBoss" });
     }
+    const Encounter& insatiable = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::BOSS),
+                                                 "TheInsatiableBoss");
+    assert(insatiable.count == 1 && insatiable.monsters[0] == EnemyType::THE_INSATIABLE);
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
            (std::set<std::string_view>{ "BygoneEffigyElite", "ByrdonisElite", "PhrogParasiteElite",
                                         "LegacyGremlinNob" }));

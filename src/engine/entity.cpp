@@ -169,6 +169,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Oizodon";
         max_hp = 81;
         hp = 81;
+    } else if (type == EnemyType::THE_INSATIABLE) {
+        name = "L'Insatiable";
+        max_hp = 321;
+        hp = 321;
     } else if (type == EnemyType::WRIGGLER) {
         name = "Larve";
         max_hp = 17;
@@ -397,6 +401,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::LOUSE_PROGENITOR: return 138;
         case EnemyType::SLUDGE_SPINNER: return 41;
         case EnemyType::WRIGGLER: return 18;
+        case EnemyType::THE_INSATIABLE: return 341;
         case EnemyType::PHROG_PARASITE: return 66;
         case EnemyType::BOWLBUG_EGG: return 23;
         case EnemyType::BYRDONIS: return static_cast<int16_t>(90 - hp_bonus); // ascend() adds hp_bonus back: 90 exactly
@@ -1212,6 +1217,32 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = ascended_damage ? 4 : 3;
             current_intent.hits = 3;
             current_intent.description = "Coup de bec (3 dmg x3)";
+        }
+    } else if (type == EnemyType::THE_INSATIABLE) {
+        // Liquify Ground once (Sandpit and Frantic Escapes), then Thrash, Lunging Bite, Salivate, Thrash, and again.
+        const int step = turn_number == 1 ? -1 : (turn_number - 2) % 4;
+        if (step < 0) {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.power = PowerId::SANDPIT;
+            current_intent.power_amount = INSATIABLE_SANDPIT;
+            current_intent.status_card = CardId::FRANTIC_ESCAPE;
+            current_intent.status_cards = INSATIABLE_FRANTIC_ESCAPES;
+            current_intent.status_pile = Pile::DRAW;
+            current_intent.description = "Liquéfaction du sol (Sables mouvants)";
+        } else if (step == 0 || step == 3) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.hits = 2;
+            current_intent.description = "Furie (8 dmg x2)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 31 : 28;
+            current_intent.description = "Morsure brusque (28 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 3 : 2;
+            current_intent.description = "Salivation (+2 Force)";
         }
     } else if (type == EnemyType::WRIGGLER) {
         // Nasty Bite (6 damage), then Wriggle (+2 Strength and an Infection into the discard pile), and again.

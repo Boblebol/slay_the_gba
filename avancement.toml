@@ -135,7 +135,7 @@ items = [
   { name = "Vigueur", status = "oui", issue = 93 },
   { name = "Fatalité", status = "oui" },
   { name = "Désorienté", status = "oui", issue = 93 },
-  { name = "Sables mouvants (L'Insatiable)", status = "non", issue = 245 },
+  { name = "Sables mouvants (L'Insatiable)", status = "oui", issue = 245 },
 ]
 
 [[category]]
