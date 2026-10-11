@@ -121,6 +121,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Crapautard";
         max_hp = 21;
         hp = 21;
+    } else if (type == EnemyType::MAWLER) {
+        name = "Écharneur";
+        max_hp = 72;
+        hp = 72;
     } else if (type == EnemyType::FLYCONID) {
         name = "Mycoptère";
         max_hp = 47;
@@ -145,6 +149,26 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Tisse-boue";
         max_hp = 37;
         hp = 37;
+    } else if (type == EnemyType::HUNTER_KILLER) {
+        name = "Chasseur-tueur";
+        max_hp = 121;
+        hp = 121;
+    } else if (type == EnemyType::FOSSIL_STALKER) {
+        name = "Traqueur fossilisé";
+        max_hp = 51;
+        hp = 51;
+    } else if (type == EnemyType::SPINY_TOAD) {
+        name = "Crapineux";
+        max_hp = 116;
+        hp = 116;
+    } else if (type == EnemyType::SEAPUNK) {
+        name = "Voyou marin";
+        max_hp = 44;
+        hp = 44;
+    } else if (type == EnemyType::TRACKER_RUBY_RAIDER) {
+        name = "Rôdeur Traqueur";
+        max_hp = 21;
+        hp = 21;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -158,15 +182,19 @@ uint8_t Enemy::hp_spread() const {
     switch (type) {
         case EnemyType::SLUDGE_SPINNER: return 2; // 37 to 39, 41 to 42 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
+        case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
         case EnemyType::CORPSE_SLUG: return 2; // 25 to 27, 27 to 29 at Ascension
         case EnemyType::GREMLIN_MERC: return 2; // 47 to 49, 51 to 53 at Ascension
+        case EnemyType::FOSSIL_STALKER: return 2; // 51 to 53, 54 to 56 at Ascension
+        case EnemyType::SEAPUNK: return 2;     // 44 to 46, 47 to 49 at Ascension
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
         case EnemyType::SNEAKY_GREMLIN: return 4; // 10 to 14, 11 to 15 at Ascension
         case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
         case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
         case EnemyType::INKLET: return 6; // 11 to 17, 12 to 18 at Ascension
         case EnemyType::NIBBIT: return 4;      // 42 to 46, 44 to 48 at Ascension
+        case EnemyType::TRACKER_RUBY_RAIDER: return 4; // 21 to 25, 22 to 26 at Ascension
         default: return 0;
     }
 }
@@ -209,6 +237,12 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::HAUNTED_SHIP: return 67;
         case EnemyType::SLUDGE_SPINNER: return 41;
         case EnemyType::TOADPOLE: return 22;
+        case EnemyType::HUNTER_KILLER: return 126;
+        case EnemyType::MAWLER: return 76;
+        case EnemyType::FOSSIL_STALKER: return 54;
+        case EnemyType::SPINY_TOAD: return 121;
+        case EnemyType::SEAPUNK: return 47;
+        case EnemyType::TRACKER_RUBY_RAIDER: return 22;
         default: return 0;
     }
 }
@@ -427,6 +461,22 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.block = 5;
             current_intent.description = "Swing (5 dmg, 5 blk)";
         }
+    } else if (type == EnemyType::TRACKER_RUBY_RAIDER) {
+        // Track once (2 Frail), then Unleash the Hounds for the rest of the fight.
+        current_intent.block = 0;
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.base_damage = 0;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
+            current_intent.description = "Traque (2 Fragilisé)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 1;
+            current_intent.hits = ascended_damage ? 9 : 8;
+            current_intent.description = "Lâcher les chiens (1 dmg x8)";
+        }
     } else if (type == EnemyType::CALCIFIED_CULTIST) {
         // Incantation once, then Dark Strike for the rest of the fight.
         current_intent.block = 0;
@@ -558,6 +608,25 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.type = EnemyIntentType::ATTACK;
         current_intent.base_damage = ascended_damage ? 9 : 8;
         current_intent.description = "Explosion (8 dmg)";
+    } else if (type == EnemyType::SPINY_TOAD) {
+        // Protruding Spikes (+5 Thorns), Spike Explosion (-5 Thorns), Tongue Lash, and again.
+        current_intent.status_type = StatusType::THORNS;
+        const int phase = (turn_number - 1) % 3;
+        if (phase == 0) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_amount = 5;
+            current_intent.description = "Épines saillantes (+5 Épines)";
+        } else if (phase == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = ascended_damage ? 25 : 23;
+            current_intent.status_amount = -5;
+            current_intent.description = "Explosion épineuse (23 dmg, -5 Épines)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.status_type = StatusType::NONE;
+            current_intent.base_damage = ascended_damage ? 19 : 17;
+            current_intent.description = "Fouet de langue (17 dmg)";
+        }
     } else if (type == EnemyType::STABBOT) {
         // Stab every turn: 1 Frail.
         current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
@@ -631,6 +700,32 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         } else {
             current_intent.base_damage = ascended_damage ? 4 : 3;
             current_intent.description = "Coup sec (3 dmg)";
+        }
+    } else if (type == EnemyType::MAWLER) {
+        // Claw first, then a draw among Rip and Tear, Roar and Claw: never the move just played, and Roar only
+        // once (`phase` becomes 1 once it was played).
+        enum Move : uint8_t { RIP_AND_TEAR, ROAR, CLAW };
+        if (phase_turn <= 1) {
+            use_move(CLAW);
+        } else {
+            static constexpr MoveOption ALL[] = { { RIP_AND_TEAR }, { ROAR }, { CLAW } };
+            static constexpr MoveOption NO_ROAR[] = { { RIP_AND_TEAR }, { CLAW } };
+            use_move(phase == 0 ? draw_move(ALL) : draw_move(NO_ROAR));
+            if (last_move == ROAR) phase = 1;
+        }
+        if (last_move == RIP_AND_TEAR) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 16 : 14;
+            current_intent.description = "Déchirure (14 dmg)";
+        } else if (last_move == ROAR) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::VULNERABLE, 3 };
+            current_intent.description = "Rugissement (Vulnérable 3)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 5 : 4;
+            current_intent.hits = 2;
+            current_intent.description = "Griffe (4 dmg x2)";
         }
     } else if (type == EnemyType::NIBBIT) {
         // Butt, Slice, Hiss, and again. Where it starts depends on its place at the start of the fight: alone it
@@ -730,6 +825,24 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = ascended_damage ? 8 : 7;
             current_intent.description = "Tourbillon (7 dmg)";
         }
+    } else if (type == EnemyType::SEAPUNK) {
+        // Sea Kick, Spinning Kick, Bubble Burp, and again.
+        if (turn_number % 3 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 13 : 11;
+            current_intent.description = "Coup de pied marin (11 dmg)";
+        } else if (turn_number % 3 == 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 2;
+            current_intent.hits = 4;
+            current_intent.description = "Coup de pied tournoyant (2 dmg x4)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.block = ascended_damage ? 8 : 7;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 2 : 1;
+            current_intent.description = "Jet de bulles (7 blk, +1 Force)";
+        }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the
         // next phase with Vulnerable Spores, then draws among the three moves, never the same twice in a row.
@@ -787,6 +900,63 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_amount = 3;
             current_intent.description = "Rage (6 dmg, Force 3)";
         }
+    } else if (type == EnemyType::HUNTER_KILLER) {
+        // Tenderizing Goop, Bite, Puncture, then a draw between Bite (never twice in a row) and Puncture.
+        enum Move : uint8_t { TENDERIZING_GOOP, BITE, PUNCTURE };
+        if (turn_number == 1) {
+            use_move(TENDERIZING_GOOP);
+        } else if (turn_number == 2) {
+            use_move(BITE);
+        } else if (turn_number == 3) {
+            use_move(PUNCTURE);
+        } else {
+            static constexpr MoveOption AFTER[] = { { BITE }, { PUNCTURE, 1, true } };
+            use_move(draw_move(AFTER));
+        }
+        if (last_move == TENDERIZING_GOOP) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.power = PowerId::TENDER;
+            current_intent.power_amount = 1;
+            current_intent.power_on_player = true;
+            current_intent.description = "Suc de décomposition (Décomposition 1)";
+        } else if (last_move == BITE) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 19 : 17;
+            current_intent.description = "Morsure (17 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.hits = 3;
+            current_intent.description = "Perforation (7 dmg x3)";
+        }
+    } else if (type == EnemyType::FOSSIL_STALKER) {
+        // Phase 0: Latch every turn. Once hurt (triggered), it opens the next phase with Lash, then draws among
+        // Latch, Tackle and Lash, a move being allowed to repeat.
+        enum Move : uint8_t { TACKLE, LATCH, LASH };
+        if (phase == 0 && hp < max_hp && enter_phase(1)) {
+            phase_turn = 1;
+            use_move(LASH);
+        } else if (phase == 0) {
+            use_move(LATCH);
+        } else if (phase_turn > 1) {
+            static constexpr MoveOption ANY[] = { { LATCH, 1, true }, { TACKLE, 1, true }, { LASH, 1, true } };
+            use_move(draw_move(ANY));
+        }
+        if (last_move == TACKLE) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 11 : 9;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
+            current_intent.description = "Charge (9 dmg, Fragilisé 1)";
+        } else if (last_move == LATCH) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 14 : 12;
+            current_intent.description = "Accrochage (12 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 4 : 3;
+            current_intent.hits = 2;
+            current_intent.description = "Fouet (3x2 dmg)";
+        }
     }
 }
 
@@ -805,7 +975,7 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect, bool
 
     // Apply status buff to self if any. A move that also attacks hits first (see below).
     const bool buff_after_attack = current_intent.type == EnemyIntentType::ATTACK_BUFF;
-    if (!buff_after_attack && current_intent.status_type != StatusType::NONE && current_intent.status_amount > 0) {
+    if (!buff_after_attack && current_intent.status_type != StatusType::NONE && current_intent.status_amount != 0) {
         add_status(current_intent.status_type, current_intent.status_amount);
     }
 
@@ -822,7 +992,7 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect, bool
         clear_status(StatusType::VIGOR); // spent on this attack
     }
 
-    if (buff_after_attack && is_alive() && current_intent.status_amount > 0) {
+    if (buff_after_attack && is_alive() && current_intent.status_amount != 0) {
         add_status(current_intent.status_type, current_intent.status_amount);
     }
 

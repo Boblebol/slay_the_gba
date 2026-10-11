@@ -163,6 +163,7 @@ MONSTERS: dict[str, str] = {
     "brute_ruby_raider": "brute_ruby_raider",
     "assassin_ruby_raider": "assassin_ruby_raider",
     "axe_ruby_raider": "axe_ruby_raider",
+    "tracker_ruby_raider": "tracker_ruby_raider",
     "calcified_cultist": "calcified_cultist",
     "damp_cultist": "damp_cultist",
     "sewer_clam": "sewer_clam",
@@ -172,6 +173,7 @@ MONSTERS: dict[str, str] = {
     "vine_shambler": "vine_shambler",
     "eye_with_teeth": "eye_with_teeth",
     "stabbot": "stabbot",
+    "spiny_toad": "spiny_toad",
     "noisebot": "noisebot",
     "cubex_construct": "cubex_construct",
     "punch_construct": "punch_construct",
@@ -185,6 +187,10 @@ MONSTERS: dict[str, str] = {
     "haunted_ship": "haunted_ship",
     "sludge_spinner": "sludge_spinner",
     "toadpole": "toadpole",
+    "hunter_killer": "hunter_killer",
+    "mawler": "mawler",
+    "fossil_stalker": "fossil_stalker",
+    "seapunk": "seapunk",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.

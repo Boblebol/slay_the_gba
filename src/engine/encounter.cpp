@@ -11,13 +11,13 @@ using namespace std::string_view_literals;
 // Only the encounters whose every monster exists in EnemyType are listed; the reference gives no weights,
 // so every encounter of a list is as likely as the others.
 
-// RubyRaidersNormal is three raiders drawn among the five Ruby Raiders; TRACKER_RUBY_RAIDER is not in the
-// engine yet.
+// RubyRaidersNormal is three raiders drawn among the five Ruby Raiders.
 constexpr EnemyType RUBY_RAIDERS[] = {
     EnemyType::CROSSBOW_RUBY_RAIDER,
     EnemyType::BRUTE_RUBY_RAIDER,
     EnemyType::ASSASSIN_RUBY_RAIDER,
     EnemyType::AXE_RUBY_RAIDER,
+    EnemyType::TRACKER_RUBY_RAIDER,
 };
 
 // Act 1 (A): the Overgrowth.
@@ -32,6 +32,7 @@ constexpr Encounter ACT1A_NORMAL[] = {
     { "InkletsNormal"sv, 3, { EnemyType::INKLET, EnemyType::INKLET, EnemyType::INKLET } },
     { "NibbitsNormal"sv, 2, { EnemyType::NIBBIT, EnemyType::NIBBIT } },
     { "FlyconidNormal"sv, 1, { EnemyType::FLYCONID } },
+    { "MawlerNormal"sv, 1, { EnemyType::MAWLER } },
 };
 
 // Act 1 (B): the Underdocks.
@@ -39,6 +40,7 @@ constexpr Encounter ACT1B_WEAK[] = {
     { "CorpseSlugsWeak"sv, 2, { EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG } },
     { "SludgeSpinnerWeak"sv, 1, { EnemyType::SLUDGE_SPINNER } },
     { "ToadpolesWeak"sv, 2, { EnemyType::TOADPOLE, EnemyType::TOADPOLE } },
+    { "SeapunkWeak"sv, 1, { EnemyType::SEAPUNK } },
 };
 constexpr Encounter ACT1B_NORMAL[] = {
     { "CultistsNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::DAMP_CULTIST } },
@@ -47,6 +49,14 @@ constexpr Encounter ACT1B_NORMAL[] = {
     { "PunchConstructNormal"sv, 1, { EnemyType::PUNCH_CONSTRUCT } },
     { "GremlinMercNormal"sv, 1, { EnemyType::GREMLIN_MERC } },
     { "HauntedShipNormal"sv, 1, { EnemyType::HAUNTED_SHIP } },
+    { "FossilStalkerNormal"sv, 1, { EnemyType::FOSSIL_STALKER } },
+    { "SeapunkNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::SEAPUNK } },
+};
+
+// Act 2: the Hive.
+constexpr Encounter ACT2_NORMAL[] = {
+    { "HunterKillerNormal"sv, 1, { EnemyType::HUNTER_KILLER } },
+    { "SpinyToadNormal"sv, 1, { EnemyType::SPINY_TOAD } },
 };
 
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
@@ -70,7 +80,7 @@ constexpr Encounter LEGACY_ELITE[] = {
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 

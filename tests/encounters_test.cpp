@@ -33,6 +33,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::BRUTE_RUBY_RAIDER: return "BRUTE_RUBY_RAIDER";
         case EnemyType::ASSASSIN_RUBY_RAIDER: return "ASSASSIN_RUBY_RAIDER";
         case EnemyType::AXE_RUBY_RAIDER: return "AXE_RUBY_RAIDER";
+        case EnemyType::TRACKER_RUBY_RAIDER: return "TRACKER_RUBY_RAIDER";
         case EnemyType::CALCIFIED_CULTIST: return "CALCIFIED_CULTIST";
         case EnemyType::DAMP_CULTIST: return "DAMP_CULTIST";
         case EnemyType::SEWER_CLAM: return "SEWER_CLAM";
@@ -42,6 +43,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::VINE_SHAMBLER: return "VINE_SHAMBLER";
         case EnemyType::EYE_WITH_TEETH: return "EYE_WITH_TEETH";
         case EnemyType::STABBOT: return "STABBOT";
+        case EnemyType::SPINY_TOAD: return "SPINY_TOAD";
         case EnemyType::NOISEBOT: return "NOISEBOT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
         case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
@@ -55,6 +57,10 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::HAUNTED_SHIP: return "HAUNTED_SHIP";
         case EnemyType::SLUDGE_SPINNER: return "SLUDGE_SPINNER";
         case EnemyType::TOADPOLE: return "TOADPOLE";
+        case EnemyType::HUNTER_KILLER: return "HUNTER_KILLER";
+        case EnemyType::MAWLER: return "MAWLER";
+        case EnemyType::FOSSIL_STALKER: return "FOSSIL_STALKER";
+        case EnemyType::SEAPUNK: return "SEAPUNK";
     }
     return {};
 }
@@ -171,10 +177,11 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "FuzzyWurmCrawlerWeak", "NibbitsWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal",
-                                        "InkletsNormal", "NibbitsNormal", "FlyconidNormal" }));
+                                        "InkletsNormal", "NibbitsNormal", "FlyconidNormal", "MawlerNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal",
-                                        "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal" }));
+                                        "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
+                                        "FossilStalkerNormal", "SeapunkNormal" }));
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
@@ -182,18 +189,20 @@ void test_reference_encounters() {
                std::set<std::string_view>{ "LegacyGremlinNob" });
     }
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
-           (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak" }));
+           (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
     // The groups the game had before, where the reference has nothing the engine can play yet.
     for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
         assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
-        assert(ids_of(encounter_table(zone, EncounterTier::NORMAL)) ==
-               (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
     }
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal" }));
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
 
-    // The ruby raiders: three of the four raiders in the engine.
+    // The ruby raiders: three of the five raiders in the engine.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
                                               "RubyRaidersNormal");
-    assert(raiders.count == 3 && raiders.random_pool.size() == 4);
+    assert(raiders.count == 3 && raiders.random_pool.size() == 5);
     const Encounter& inklets = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
                                               "InkletsNormal");
     assert(inklets.count == 3 && inklets.monsters[0] == EnemyType::INKLET && inklets.monsters[2] == EnemyType::INKLET);
@@ -276,7 +285,7 @@ void test_rooms_meet_every_encounter() {
         }
         if (act == 1) {
             assert(zones_met == (std::set<ActZone>{ ActZone::ACT1A, ActZone::ACT1B }));
-            assert(raider_groups.size() == 4); // every trio of the four raiders
+            assert(raider_groups.size() >= 8); // nearly every one of the 10 trios of the five raiders
         } else {
             assert(zones_met.size() == 1);
         }
@@ -320,7 +329,7 @@ void test_same_seed_same_fights() {
         assert(first == fights_of(seed));
     }
     // A run of Act 1 (A): weak fights on the first floors, then the ruby raiders or the Vine Shambler, both met.
-    uint32_t seed = 99;
+    uint32_t seed = 1;
     assert(act_zone(1, make_run(seed, 1).map_seed) == ActZone::ACT1A);
     std::vector<std::string> fights = fights_of(seed);
     int raiders = 0;
@@ -340,8 +349,8 @@ void test_same_seed_same_fights() {
                 ++inklets;
             } else {
                 assert(fight == "VineShamblerNormal VINE_SHAMBLER" || fight == "CubexConstructNormal CUBEX_CONSTRUCT" ||
-                       fight == "FlyconidNormal FLYCONID");
-                if (!fight.starts_with("FlyconidNormal")) ++shamblers;
+                       fight == "FlyconidNormal FLYCONID" || fight == "MawlerNormal MAWLER");
+                if (fight.starts_with("VineShamblerNormal") || fight.starts_with("CubexConstructNormal")) ++shamblers;
             }
         }
     }

@@ -25,14 +25,19 @@
 #include "bn_sprite_items_mon_stabbot.h"
 #include "bn_sprite_items_mon_corpse_slug.h"
 #include "bn_sprite_items_mon_gas_bomb.h"
+#include "bn_sprite_items_mon_spiny_toad.h"
+#include "bn_sprite_items_mon_seapunk.h"
 #include "bn_sprite_items_mon_flyconid.h"
+#include "bn_sprite_items_mon_fossil_stalker.h"
 #include "bn_sprite_items_mon_fuzzy_wurm_crawler.h"
 #include "bn_sprite_items_mon_gremlin_merc.h"
 #include "bn_sprite_items_mon_gremlin_nob.h"
 #include "bn_sprite_items_mon_haunted_ship.h"
+#include "bn_sprite_items_mon_hunter_killer.h"
 #include "bn_sprite_items_mon_inklet.h"
 #include "bn_sprite_items_mon_jaw_worm.h"
 #include "bn_sprite_items_mon_noisebot.h"
+#include "bn_sprite_items_mon_mawler.h"
 #include "bn_sprite_items_mon_nibbit.h"
 #include "bn_sprite_items_mon_punch_construct.h"
 #include "bn_sprite_items_mon_toadpole.h"
@@ -42,6 +47,7 @@
 #include "bn_sprite_items_mon_sewer_clam.h"
 #include "bn_sprite_items_mon_sneaky_gremlin.h"
 #include "bn_sprite_items_mon_sludge_spinner.h"
+#include "bn_sprite_items_mon_tracker_ruby_raider.h"
 #include "bn_sprite_items_mon_the_forgotten.h"
 #include "bn_sprite_items_mon_vine_shambler.h"
 
@@ -230,6 +236,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_assassin_ruby_raider, false };
     case engine::EnemyType::AXE_RUBY_RAIDER:
         return { &bn::sprite_items::mon_axe_ruby_raider, false };
+    case engine::EnemyType::TRACKER_RUBY_RAIDER:
+        return { &bn::sprite_items::mon_tracker_ruby_raider, false };
     case engine::EnemyType::CALCIFIED_CULTIST:
         return { &bn::sprite_items::mon_calcified_cultist, false };
     case engine::EnemyType::DAMP_CULTIST:
@@ -238,6 +246,10 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_sewer_clam, false };
     case engine::EnemyType::EYE_WITH_TEETH:
         return { &bn::sprite_items::mon_eye_with_teeth, false };
+    case engine::EnemyType::SPINY_TOAD:
+        return { &bn::sprite_items::mon_spiny_toad, false };
+    case engine::EnemyType::SEAPUNK:
+        return { &bn::sprite_items::mon_seapunk, false };
     case engine::EnemyType::STABBOT:
         return { &bn::sprite_items::mon_stabbot, false };
     case engine::EnemyType::NOISEBOT:
@@ -266,6 +278,12 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_sneaky_gremlin, false };
     case engine::EnemyType::TOADPOLE:
         return { &bn::sprite_items::mon_toadpole, false };
+    case engine::EnemyType::HUNTER_KILLER:
+        return { &bn::sprite_items::mon_hunter_killer, false };
+    case engine::EnemyType::MAWLER:
+        return { &bn::sprite_items::mon_mawler, false };
+    case engine::EnemyType::FOSSIL_STALKER:
+        return { &bn::sprite_items::mon_fossil_stalker, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

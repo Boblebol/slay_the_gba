@@ -128,6 +128,45 @@ void test_axe_ruby_raider() {
     std::cout << "[PASS] Axe Ruby Raider: 20 HP, Swing 5 + 5 Block twice, Big Swing 12, loop" << std::endl;
 }
 
+void test_tracker_ruby_raider() {
+    // 21 to 25 HP, Track (2 Frail) once, then Unleash the Hounds: 1 damage, 8 hits, every turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TRACKER_RUBY_RAIDER);
+    Enemy& raider = combat.enemies[0];
+    assert(raider.name == "Rôdeur Traqueur" && raider.hp >= 21 && raider.hp <= 25 && raider.max_hp == raider.hp);
+    assert(raider.current_intent.type == DEBUFF && raider.intent_damage(combat.player) == 0);
+    assert(raider.current_intent.debuffs[0].type == StatusType::FRAIL && raider.current_intent.debuffs[0].amount == 2);
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::FRAIL) >= 1 && combat.player.hp == combat.player.max_hp);
+    for (int turn = 2; turn <= 4; ++turn) {
+        assert(raider.current_intent.type == ATTACK && raider.current_intent.hits == 8);
+        assert(raider.intent_damage(combat.player) == 1 && raider.block == 0);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 8);
+    }
+    std::cout << "[PASS] Tracker Ruby Raider: 21 to 25 HP, Track 2 Frail, then Hounds 1 x8" << std::endl;
+}
+
+void test_tracker_ruby_raider_ascension() {
+    // 22 to 26 HP and 9 hits at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TRACKER_RUBY_RAIDER);
+        Enemy& raider = combat.enemies[0];
+        raider.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = raider.hp;
+        assert(raider.ascension_hp() == 22 && raider.hp_spread() == 4);
+        assert(base >= 21 && base <= 25);
+        raider.ascend(true, true);
+        assert(raider.hp == base + 1 && raider.hp >= 22 && raider.hp <= 26);
+        combat.end_player_turn();
+        assert(raider.current_intent.type == ATTACK && raider.current_intent.hits == 9);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 9);
+    }
+    std::cout << "[PASS] Tracker Ruby Raider: Ascension gives 22 to 26 HP and 9 hits" << std::endl;
+}
+
 void test_calcified_cultist() {
     // Incantation (Ritual 2) once, then Dark Strike 9: Ritual grants Strength from the turn after it was gained.
     check_monster(EnemyType::CALCIFIED_CULTIST, "Adepte calcifié", 38, {
@@ -1877,6 +1916,320 @@ void test_toadpole_ascension() {
     std::cout << "[PASS] Toadpole: Ascension gives 22 to 26 HP, Spike Spit 4x3 and Whirl 8" << std::endl;
 }
 
+void test_hunter_killer() {
+    // Tenderizing Goop (Tender 1 on the player), Bite 17, Puncture 7x3, then a draw between Bite (never twice
+    // in a row) and Puncture.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::HUNTER_KILLER);
+    Enemy& hunter = combat.enemies[0];
+    assert(hunter.type == EnemyType::HUNTER_KILLER && hunter.name == "Chasseur-tueur");
+    assert(hunter.hp == 121 && hunter.max_hp == 121 && hunter.block == 0 && hunter.statuses.empty());
+
+    assert(hunter.current_intent.type == DEBUFF && hunter.intent_damage(combat.player) == 0);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.state == CombatState::PLAYER_TURN);
+    assert(combat.player.hp == combat.player.max_hp && combat.has_power(PowerId::TENDER));
+    assert(combat.power_amount(PowerId::TENDER) == 1);
+
+    assert(hunter.current_intent.type == ATTACK && hunter.current_intent.hits == 1);
+    assert(hunter.intent_damage(combat.player) == 17);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 17);
+
+    assert(hunter.current_intent.type == ATTACK && hunter.current_intent.hits == 3);
+    assert(hunter.intent_damage(combat.player) == 7);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 21);
+
+    bool saw_bite = false, saw_puncture = false;
+    bool previous_bite = false;
+    for (int turn = 0; turn < 40; ++turn) {
+        const EnemyIntent& intent = hunter.current_intent;
+        assert(intent.type == ATTACK);
+        bool bite = intent.hits == 1;
+        if (bite) {
+            assert(!previous_bite && hunter.intent_damage(combat.player) == 17);
+        } else {
+            assert(intent.hits == 3 && hunter.intent_damage(combat.player) == 7);
+        }
+        saw_bite |= bite;
+        saw_puncture |= !bite;
+        previous_bite = bite;
+        assert(hunter.block == 0 && hunter.statuses.empty() && hunter.hp == 121);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == (bite ? 17 : 21));
+    }
+    assert(saw_bite && saw_puncture);
+    std::cout << "[PASS] Hunter Killer: 121 HP, Tenderizing Goop, Bite, Puncture, then a draw" << std::endl;
+}
+
+void test_hunter_killer_ascension() {
+    // 126 HP, Bite 19 and Puncture 8x3 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::HUNTER_KILLER);
+    Enemy& hunter = combat.enemies[0];
+    assert(hunter.ascension_hp() == 126);
+    hunter.ascend(true, true);
+    combat.plan_enemies();
+    assert(hunter.hp == 126 && hunter.max_hp == 126);
+    assert(hunter.current_intent.type == DEBUFF);
+    pass_turn(combat);
+    assert(hunter.current_intent.type == ATTACK && hunter.intent_damage(combat.player) == 19);
+    pass_turn(combat);
+    assert(hunter.current_intent.hits == 3 && hunter.intent_damage(combat.player) == 8);
+    std::cout << "[PASS] Hunter Killer: Ascension gives 126 HP, a Bite of 19 and a Puncture of 8x3" << std::endl;
+}
+
+void test_mawler() {
+    // Claw (4 x2) first, then a draw among Rip and Tear (14), Roar (3 Vulnerable) and Claw, never the move just
+    // played, and Roar only once.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::MAWLER);
+    Enemy& mawler = combat.enemies[0];
+    assert(mawler.type == EnemyType::MAWLER && mawler.name == "Écharneur");
+    assert(mawler.hp == 72 && mawler.max_hp == 72);
+    int previous = -1;
+    int roars = 0;
+    bool saw_rip = false, saw_claw = false;
+    for (int turn = 1; turn <= 40; ++turn) {
+        assert(mawler.block == 0);
+        combat.player.statuses.clear(); // Vulnerable from Roar would raise the damage below
+        const EnemyIntent& intent = mawler.current_intent;
+        int move;
+        int expected_damage;
+        if (intent.type == DEBUFF) {
+            assert(mawler.intent_damage(combat.player) == 0);
+            assert(intent.debuffs[0].type == StatusType::VULNERABLE && intent.debuffs[0].amount == 3);
+            move = 1;
+            expected_damage = 0;
+            ++roars;
+        } else if (intent.hits == 2) {
+            assert(intent.type == ATTACK && mawler.intent_damage(combat.player) == 4);
+            move = 2;
+            expected_damage = 8;
+            saw_claw = true;
+        } else {
+            assert(intent.type == ATTACK && intent.hits == 1 && mawler.intent_damage(combat.player) == 14);
+            move = 0;
+            expected_damage = 14;
+            saw_rip = true;
+        }
+        if (turn == 1) assert(move == 2);
+        assert(move != previous);
+        previous = move;
+        combat.player.hp = combat.player.max_hp;
+        combat.player.statuses.clear();
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == expected_damage);
+        if (move == 1) assert(combat.player.get_status(StatusType::VULNERABLE) >= 1);
+    }
+    assert(roars == 1 && saw_rip && saw_claw);
+    std::cout << "[PASS] Mawler: 72 HP, Claw first, then Rip and Tear / Roar (once) / Claw, no repeat" << std::endl;
+}
+
+void test_mawler_ascension() {
+    // 76 HP, Rip and Tear of 16 and a Claw of 5 x2 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::MAWLER);
+    Enemy& mawler = combat.enemies[0];
+    assert(mawler.ascension_hp() == 76);
+    mawler.ascend(true, true);
+    combat.plan_enemies();
+    assert(mawler.hp == 76 && mawler.max_hp == 76);
+    assert(mawler.current_intent.hits == 2 && mawler.intent_damage(combat.player) == 5);
+    bool saw_rip = false;
+    for (int turn = 0; turn < 20; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.player.statuses.clear();
+        combat.end_player_turn();
+        combat.player.statuses.clear();
+        if (mawler.current_intent.type == ATTACK && mawler.current_intent.hits == 1) {
+            assert(mawler.intent_damage(combat.player) == 16);
+            saw_rip = true;
+        }
+    }
+    assert(saw_rip);
+    std::cout << "[PASS] Mawler: Ascension gives 76 HP, Rip and Tear of 16 and a Claw of 5 x2" << std::endl;
+}
+
+void test_fossil_stalker() {
+    // Calm: Latch (12) every turn. Hurt, it opens with Lash (3 twice), then draws among Latch, Tackle (9 and
+    // 1 Frail) and Lash, a move being allowed to repeat.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FOSSIL_STALKER);
+    Enemy& stalker = combat.enemies[0];
+    assert(stalker.type == EnemyType::FOSSIL_STALKER && stalker.name == "Traqueur fossilisé");
+    assert(stalker.hp >= 51 && stalker.hp <= 53 && stalker.max_hp == stalker.hp && stalker.max_hp == 51 + stalker.hp_bonus);
+    for (int turn = 1; turn <= 4; ++turn) {
+        assert(stalker.phase == 0 && stalker.block == 0 && stalker.statuses.empty());
+        assert(stalker.current_intent.type == ATTACK && stalker.intent_damage(combat.player) == 12);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == 12);
+    }
+
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::FOSSIL_STALKER);
+    Enemy& beast = hurt.enemies[0];
+    hurt.damage_enemy(beast, 5);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(beast.phase == 1);
+    assert(beast.current_intent.type == ATTACK && beast.current_intent.hits == 2 && beast.intent_damage(hurt.player) == 3);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(hurt.player.max_hp - hurt.player.hp == 6);
+    bool seen[3] = { false, false, false }; // Latch, Tackle, Lash
+    for (int turn = 0; turn < 60; ++turn) {
+        const EnemyIntent& intent = beast.current_intent;
+        assert(beast.phase == 1);
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.player.statuses.clear();
+        int expected;
+        if (intent.type == ATTACK_DEBUFF) {
+            assert(intent.base_damage == 9 && intent.hits == 1);
+            assert(intent.debuffs[0].type == StatusType::FRAIL && intent.debuffs[0].amount == 1);
+            seen[1] = true;
+            expected = 9;
+        } else if (intent.hits == 2) {
+            assert(intent.type == ATTACK && intent.base_damage == 3);
+            seen[2] = true;
+            expected = 6;
+        } else {
+            assert(intent.type == ATTACK && intent.base_damage == 12);
+            seen[0] = true;
+            expected = 12;
+        }
+        hurt.end_player_turn();
+        assert(hurt.state == CombatState::PLAYER_TURN);
+        assert(hurt.player.max_hp - hurt.player.hp == expected);
+    }
+    assert(seen[0] && seen[1] && seen[2]);
+    std::cout << "[PASS] Fossil Stalker: 51 to 53 HP, Latch until hurt, then Lash and a draw of Latch / Tackle / Lash" << std::endl;
+}
+
+void test_fossil_stalker_ascension() {
+    // 54 to 56 HP (51 to 53 plus 3), Latch of 14, Tackle of 11 and Lash of 4 twice at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FOSSIL_STALKER);
+        Enemy& stalker = combat.enemies[0];
+        stalker.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = stalker.hp;
+        assert(stalker.ascension_hp() == 54 && stalker.hp_spread() == 2);
+        assert(base >= 51 && base <= 53 && stalker.max_hp == 51 + stalker.hp_bonus);
+        stalker.ascend(true, true);
+        combat.plan_enemies();
+        assert(stalker.hp == base + 3 && stalker.max_hp == base + 3 && stalker.hp >= 54 && stalker.hp <= 56);
+        assert(stalker.current_intent.type == ATTACK && stalker.intent_damage(combat.player) == 14);
+        combat.damage_enemy(stalker, 1);
+        combat.end_player_turn();
+        assert(stalker.current_intent.hits == 2 && stalker.intent_damage(combat.player) == 4);
+        bool tackle = false;
+        for (int turn = 0; turn < 60 && !tackle; ++turn) {
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+            if (stalker.current_intent.type == ATTACK_DEBUFF) {
+                assert(stalker.intent_damage(combat.player) == 11);
+                tackle = true;
+            }
+        }
+        assert(tackle);
+    }
+    std::cout << "[PASS] Fossil Stalker: Ascension gives 54 to 56 HP, Latch 14, Tackle 11, Lash 4x2" << std::endl;
+}
+
+void test_spiny_toad() {
+    // Protruding Spikes (+5 Thorns), Spike Explosion (23 damage, -5 Thorns), Tongue Lash (17 damage), twice over.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SPINY_TOAD);
+    Enemy& toad = combat.enemies[0];
+    assert(toad.type == EnemyType::SPINY_TOAD && toad.name == "Crapineux");
+    assert(toad.hp >= 116 && toad.hp <= 119 && toad.max_hp == toad.hp && toad.max_hp == 116 + toad.hp_bonus);
+    const int16_t hp = toad.hp;
+    assert(toad.block == 0 && toad.statuses.empty());
+    const EnemyIntentType intents[3] = { EnemyIntentType::BUFF, EnemyIntentType::ATTACK_BUFF, EnemyIntentType::ATTACK };
+    const int damage[3] = { 0, 23, 17 };
+    const int thorns[3] = { 5, 0, 0 };
+    for (int turn = 1; turn <= 6; ++turn) {
+        const int phase = (turn - 1) % 3;
+        assert(combat.turn_number == turn);
+        assert(toad.current_intent.type == intents[phase]);
+        assert(toad.intent_damage(combat.player) == damage[phase]);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == damage[phase]);
+        assert(toad.get_status(StatusType::THORNS) == thorns[phase]);
+        assert(toad.statuses.size() == (thorns[phase] != 0 ? 1u : 0u)); // the spent Thorns leave no status behind
+        assert(toad.block == 0 && toad.hp == hp);
+    }
+    std::cout << "[PASS] Spiny Toad: 116 to 119 HP, +5 Thorns, Spike Explosion 23 (-5 Thorns), Tongue Lash 17" << std::endl;
+}
+
+void test_spiny_toad_ascension() {
+    // 121 to 124 HP (116 to 119 plus 5), Spike Explosion of 25 and Tongue Lash of 19 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SPINY_TOAD);
+        Enemy& toad = combat.enemies[0];
+        toad.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = toad.hp;
+        assert(toad.ascension_hp() == 121 && toad.hp_spread() == 3);
+        assert(base >= 116 && base <= 119 && toad.max_hp == 116 + toad.hp_bonus);
+        toad.ascend(true, true);
+        combat.plan_enemies();
+        assert(toad.hp == base + 5 && toad.max_hp == base + 5 && toad.hp >= 121 && toad.hp <= 124);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn(); // Protruding Spikes
+        assert(toad.current_intent.type == EnemyIntentType::ATTACK_BUFF && toad.intent_damage(combat.player) == 25);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn(); // Spike Explosion
+        assert(combat.player.max_hp - combat.player.hp == 25);
+        assert(toad.current_intent.type == EnemyIntentType::ATTACK && toad.intent_damage(combat.player) == 19);
+    }
+    std::cout << "[PASS] Spiny Toad: Ascension gives 121 to 124 HP, Spike Explosion 25 and Tongue Lash 19" << std::endl;
+}
+
+void test_seapunk() {
+    // Sea Kick 11, Spinning Kick 2 x4, Bubble Burp (7 Block, +1 Strength), and again with the Strength kept.
+    CombatEngine probe = make_combat(CharacterId::IRONCLAD, EnemyType::SEAPUNK);
+    assert(probe.enemies[0].hp == 44 + probe.enemies[0].hp_bonus);
+    check_monster(EnemyType::SEAPUNK, "Voyou marin", probe.enemies[0].hp, {
+        { ATTACK, 11, 0, 0 },
+        { ATTACK, 2, 0, 0, 0, 4 },
+        { BUFF, 0, 7, 1 },
+        { ATTACK, 12, 0, 1 },
+        { ATTACK, 3, 0, 1, 0, 4 },
+        { BUFF, 0, 7, 2 },
+        { ATTACK, 13, 0, 2 },
+    });
+    std::cout << "[PASS] Seapunk: 44 HP, Sea Kick 11, Spinning Kick 2x4, Bubble Burp 7 Block + 1 Strength" << std::endl;
+}
+
+void test_seapunk_ascension() {
+    // 47 to 49 HP (44 to 46 plus 3), Sea Kick 13, Bubble Burp 8 Block + 2 Strength at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SEAPUNK);
+        Enemy& punk = combat.enemies[0];
+        punk.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        const int16_t base = punk.hp;
+        assert(punk.ascension_hp() == 47 && punk.hp_spread() == 2);
+        assert(base >= 44 && base <= 46 && punk.max_hp == 44 + punk.hp_bonus);
+        punk.ascend(true, true);
+        combat.plan_enemies();
+        assert(punk.hp == base + 3 && punk.max_hp == base + 3 && punk.hp >= 47 && punk.hp <= 49);
+        assert(punk.current_intent.type == ATTACK && punk.intent_damage(combat.player) == 13);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(punk.current_intent.type == ATTACK && punk.current_intent.hits == 4 &&
+               punk.intent_damage(combat.player) == 2);
+        combat.end_player_turn();
+        assert(punk.current_intent.type == BUFF);
+        combat.end_player_turn();
+        assert(punk.block == 8 && punk.get_status(StatusType::STRENGTH) == 2);
+    }
+    std::cout << "[PASS] Seapunk: Ascension gives 47 to 49 HP, Sea Kick 13, Bubble Burp 8 Block + 2 Strength" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1886,6 +2239,8 @@ int main() {
     test_brute_ruby_raider();
     test_assassin_ruby_raider();
     test_axe_ruby_raider();
+    test_tracker_ruby_raider();
+    test_tracker_ruby_raider_ascension();
     test_calcified_cultist();
     test_damp_cultist();
     test_sewer_clam();
@@ -1917,6 +2272,8 @@ int main() {
     test_eye_with_teeth();
     test_stabbot();
     test_stabbot_ascension();
+    test_spiny_toad();
+    test_spiny_toad_ascension();
     test_noisebot();
     test_noisebot_ascension();
     test_cubex_construct();
@@ -1943,6 +2300,14 @@ int main() {
     test_sludge_spinner_ascension();
     test_toadpole();
     test_toadpole_ascension();
+    test_hunter_killer();
+    test_hunter_killer_ascension();
+    test_mawler();
+    test_mawler_ascension();
+    test_fossil_stalker();
+    test_fossil_stalker_ascension();
+    test_seapunk();
+    test_seapunk_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
