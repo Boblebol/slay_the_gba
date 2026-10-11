@@ -630,6 +630,7 @@ static constexpr CardDef CARDS[] = {
     { CardId::MAD_SCIENCE, "Mad Science", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 12, 0, "Deal 12 dmg. ???", "Mad Science+", 1, 12, 0, "Innate. Deal 12 dmg. ???", 0, KEYWORD_INNATE },
     // Regent: choose 1 of 3 random Colorless cards to add to the hand (mechanics #72, #77).
     { CardId::QUASAR, "Quasar", 0, CardType::SKILL, TargetType::SELF, 3, 3, "Choose 1 of 3 random Colorless cards to add to your hand.", "Quasar+", 0, 3, 3, "Choose 1 of 3 random upgraded Colorless cards to add to your hand.", 0, 0, 2, 2 },
+    { CardId::DISCOVERY, "Discovery", 1, CardType::SKILL, TargetType::SELF, 0, 3, "Choose 1 of 3 random cards to add into your hand. It's free to play this turn. Exhaust.", "Discovery+", 1, 0, 3, "Choose 1 of 3 random cards to add into your hand. It's free to play this turn.", KEYWORD_EXHAUST, 0 },
 };
 
 const CardDef& CardDef::get(CardId id) {

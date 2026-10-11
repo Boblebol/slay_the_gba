@@ -2126,6 +2126,7 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::SECRET_WEAPON:
         case CardId::SEEKER_STRIKE:
         case CardId::SPLASH:
+        case CardId::DISCOVERY:
         case CardId::DUAL_WIELD:
         case CardId::HEIRLOOM_HAMMER:
         case CardId::NIGHTMARE:
@@ -3932,6 +3933,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::QUASAR: {
             offer_random_cards(CardFilter(CardPool::COLORLESS), static_cast<uint8_t>(base_value), upgraded);
             set_log(upgraded ? "Played Quasar+!"sv : "Played Quasar!"sv);
+            break;
+        }
+        case CardId::DISCOVERY: {
+            offer_random_cards(CardFilter(), secondary_value, false, true);
+            set_log(upgraded ? "Played Discovery+!"sv : "Played Discovery!"sv);
             break;
         }
         case CardId::MAD_SCIENCE: {

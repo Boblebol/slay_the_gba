@@ -633,6 +633,8 @@ enum class CardId : uint16_t {
     MAD_SCIENCE,
     // Regent: choose 1 of 3 random Colorless cards (Quasar)
     QUASAR,
+    // Choose 1 of 3 random cards, free this turn (mechanic #72)
+    DISCOVERY,
     COUNT
 };
 

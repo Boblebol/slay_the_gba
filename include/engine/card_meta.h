@@ -532,6 +532,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::RARE, CardPool::COLORLESS }, // SPLASH
     { CardRarity::EVENT, CardPool::EVENT }, // MAD_SCIENCE
     { CardRarity::UNCOMMON, CardPool::REGENT }, // QUASAR
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // DISCOVERY
 };
 
 } // namespace engine

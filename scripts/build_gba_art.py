@@ -775,6 +775,7 @@ CARDS: list[CardArt] = [
     CardArt("splash", "colorless", "splash", "skill", (1, 1)),
     CardArt("mad_science", "hero", "mad_science_attack", "attack", (1, 1), folder="event"),
     CardArt("quasar", "regent", "quasar", "skill", (0, 0), stars=(2, 2)),
+    CardArt("discovery", "colorless", "discovery", "skill", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
