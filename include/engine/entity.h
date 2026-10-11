@@ -421,6 +421,8 @@ enum class EnemyType : uint8_t {
     MECHA_KNIGHT
     BOWLBUG_EGG,
     BYRDONIS
+    BOWLBUG_EGG,
+    PHROG_PARASITE
 };
 
 // What a monster sees of the fight when it chooses its next move.

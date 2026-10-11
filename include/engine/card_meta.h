@@ -548,6 +548,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::UNCOMMON, CardPool::DEFECT }, // GLASSWORK
     { CardRarity::UNCOMMON, CardPool::DEFECT }, // REFRACT
     { CardRarity::RARE, CardPool::DEFECT }, // SPINNER
+    { CardRarity::NONE, CardPool::NONE }, // INFECTION
 };
 
 } // namespace engine

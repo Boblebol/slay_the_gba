@@ -65,6 +65,7 @@
 #include "bn_sprite_items_mon_bowlbug_silk.h"
 #include "bn_sprite_items_mon_bowlbug_egg.h"
 #include "bn_sprite_items_mon_byrdonis.h"
+#include "bn_sprite_items_mon_phrog_parasite.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_louse_progenitor.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
@@ -372,6 +373,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_bowlbug_egg, false };
     case engine::EnemyType::BYRDONIS:
         return { &bn::sprite_items::mon_byrdonis, false };
+    case engine::EnemyType::PHROG_PARASITE:
+        return { &bn::sprite_items::mon_phrog_parasite, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

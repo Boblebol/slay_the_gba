@@ -2102,6 +2102,44 @@ void test_byrdonis_ascension() {
     std::cout << "[PASS] Byrdonis: Ascension gives 90 HP, Swoop 19 and Peck 4x3" << std::endl;
 }
 
+void test_phrog_parasite() {
+    // Infect (3 Infections), Lash (4 damage x4), and again.
+    check_monster(EnemyType::PHROG_PARASITE, "Parasite Krapo", 61, {
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 4 },
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 4 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::PHROG_PARASITE);
+    Enemy& parasite = combat.enemies[0];
+    assert(parasite.current_intent.gives_cards() && parasite.current_intent.status_card == CardId::INFECTION);
+    combat.end_player_turn();
+    assert(combat.last_enemy_actions[0].cards_added == CardId::INFECTION && combat.last_enemy_actions[0].cards_added_count == 3);
+    assert(count_in(combat.discard_pile, CardId::INFECTION) == 3);
+    assert(CardDef::get(CardId::INFECTION).type == CardType::STATUS &&
+           CardDef::has_keyword(CardId::INFECTION, false, KEYWORD_UNPLAYABLE));
+    std::cout << "[PASS] Phrog Parasite: 61 HP, Infect (3 Infections), Lash 4x4, loop" << std::endl;
+}
+
+void test_phrog_parasite_ascension() {
+    // 66 HP at least at Ascension (the engine adds the same 0 to 3 as at A0, so up to 69) and a Lash of 5x4.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::PHROG_PARASITE);
+        Enemy& parasite = combat.enemies[0];
+        parasite.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = parasite.hp;
+        assert(parasite.ascension_hp() == 66 && parasite.hp_spread() == 3);
+        assert(base >= 61 && base <= 64);
+        parasite.ascend(true, true);
+        combat.plan_enemies();
+        assert(parasite.hp == parasite.max_hp && parasite.hp >= 66 && parasite.hp <= 69);
+        combat.end_player_turn();
+        assert(parasite.current_intent.type == ATTACK && parasite.current_intent.hits == 4 &&
+               parasite.intent_damage(combat.player) == 5);
+    }
+    std::cout << "[PASS] Phrog Parasite: Ascension gives 66 HP minimum and a Lash of 5x4" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -3643,6 +3681,8 @@ int main() {
     test_bygone_effigy_ascension();
     test_byrdonis();
     test_byrdonis_ascension();
+    test_phrog_parasite();
+    test_phrog_parasite_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

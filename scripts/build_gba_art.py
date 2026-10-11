@@ -221,6 +221,7 @@ MONSTERS: dict[str, str] = {
     "flail_knight": "flail_knight",
     "soul_nexus": "soul_nexus",
     "byrdonis": "byrdonis",
+    "phrog_parasite": "phrog_parasite",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
@@ -835,6 +836,7 @@ CARDS: list[CardArt] = [
     CardArt("glasswork", "defect", "glasswork", "skill", (1, 1)),
     CardArt("refract", "defect", "refract", "attack", (3, 3)),
     CardArt("spinner", "defect", "spinner", "power", (1, 1)),
+    CardArt("infection", "status", "wound", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

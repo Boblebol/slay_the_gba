@@ -25,6 +25,10 @@ constexpr Encounter ACT1A_WEAK[] = {
     { "FuzzyWurmCrawlerWeak"sv, 1, { EnemyType::FUZZY_WURM_CRAWLER } },
     { "NibbitsWeak"sv, 1, { EnemyType::NIBBIT } },
 };
+constexpr Encounter ACT1A_ELITE[] = {
+    { "PhrogParasiteElite"sv, 1, { EnemyType::PHROG_PARASITE } },
+    { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
+};
 constexpr Encounter ACT1A_NORMAL[] = {
     { "RubyRaidersNormal"sv, 3, {}, RUBY_RAIDERS },
     { "VineShamblerNormal"sv, 1, { EnemyType::VINE_SHAMBLER } },
@@ -122,6 +126,7 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
