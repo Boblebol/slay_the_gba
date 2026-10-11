@@ -44,6 +44,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "CENTENNIAL_PUZZLE", "La première fois que vous perdez des PV chaque combat, piochez 3 cartes." },
     { "CHANDELIER", "Au début de votre 3ème tour, gagnez 3 ●." },
     { "CHARONS_ASHES", "Chaque fois que vous Épuisez une carte, infligez 3 dégâts à TOUS les ennemis." },
+    { "FORGOTTEN_SOUL", "Chaque fois que vous Épuisez une carte, infligez 1 dégât à un ennemi aléatoire." },
     { "CIRCLET", "C'est un diadème." },
     { "FAKE_MERCHANTS_RUG", "Une piètre imitation." },
     { "DINGY_RUG", "Les récompenses de carte peuvent proposer des cartes Incolores." },

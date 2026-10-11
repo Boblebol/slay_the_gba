@@ -972,6 +972,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::CHARONS_ASHES:
             if (event == CombatEvent::CARD_EXHAUSTED) damage_all_enemies(power.amount);
             break;
+        case PowerId::FORGOTTEN_SOUL:
+            if (event == CombatEvent::CARD_EXHAUSTED && has_alive_enemies()) damage_enemy(enemies[random_alive_enemy_index()], power.amount);
+            break;
         case PowerId::RED_SKULL: {
             // Looked at on every event, a heal being none of them: the Strength follows the HP at the next one.
             const int wanted = player.hp * 100 <= player.max_hp * RED_SKULL_HP_PERCENT ? power.amount : 0;

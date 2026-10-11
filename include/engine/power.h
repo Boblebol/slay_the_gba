@@ -160,6 +160,7 @@ enum class PowerId : uint8_t {
     THE_BOOT,          // an Attack hit dealing 1 to THE_BOOT_THRESHOLD damage (before Block) deals THE_BOOT_MINIMUM instead
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy
+    FORGOTTEN_SOUL,    // event relic: card exhausted: `amount` damage to a random enemy
     RED_SKULL,         // HP at RED_SKULL_HP_PERCENT % of Max HP or less: `amount` more Strength (counter = Strength given now)
     DEMON_TONGUE,      // first HP loss of each turn: heal as much (counter = turn of the last heal)
     BRIMSTONE,         // start of turn: `amount` Strength, and 1 Strength per stack to every enemy
