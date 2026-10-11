@@ -35,9 +35,7 @@ void check_monster(EnemyType type, std::string_view name, int hp, std::initializ
     Enemy& enemy = combat.enemies[0];
     assert(enemy.type == type);
     assert(enemy.name == name);
-    // `hp` is the base HP: a monster with a spread of HP starts a few above it (hp_bonus).
-    assert(enemy.hp == hp + enemy.hp_bonus && enemy.max_hp == enemy.hp);
-    hp = enemy.hp;
+    assert(enemy.hp == hp && enemy.max_hp == hp);
     assert(enemy.block == 0 && enemy.statuses.empty());
 
     int turn_number = 1;
@@ -2193,7 +2191,9 @@ void test_spiny_toad_ascension() {
 
 void test_seapunk() {
     // Sea Kick 11, Spinning Kick 2 x4, Bubble Burp (7 Block, +1 Strength), and again with the Strength kept.
-    check_monster(EnemyType::SEAPUNK, "Voyou marin", 44, {
+    CombatEngine probe = make_combat(CharacterId::IRONCLAD, EnemyType::SEAPUNK);
+    assert(probe.enemies[0].hp == 44 + probe.enemies[0].hp_bonus);
+    check_monster(EnemyType::SEAPUNK, "Voyou marin", probe.enemies[0].hp, {
         { ATTACK, 11, 0, 0 },
         { ATTACK, 2, 0, 0, 0, 4 },
         { BUFF, 0, 7, 1 },
