@@ -252,7 +252,15 @@ enum class PowerId : uint8_t {
     TOASTY_MITTENS,     // start of turn: `amount` Strength, and 1 card of the new hand is exhausted
     PAELS_FLESH,        // start of the 3rd turn and each one after: `amount` extra energy (Ancient relic)
     // Transformation (appended)
-    ENTROPY             // at the start of each turn `amount` cards of the hand are transformed (read by start_player_turn)
+    ENTROPY,            // at the start of each turn `amount` cards of the hand are transformed (read by start_player_turn)
+    // Regent minions (appended)
+    VITRUVIAN_MINION,   // the Minion cards deal double damage and give double Block (read by hit and gain_block)
+    // Glass orb (appended)
+    SPINNER,            // start of turn: channel `amount` Glass orbs (read by start_player_turn)
+    // Held by an enemy (appended)
+    BURROWED,           // its Block is up: the Block broken or its next turn played, the power is spent (amount 0)
+    VITAL_SPARK,       // it takes unblocked attack damage: 1 energy for the player, up to `amount` times a turn (counter = times)
+    HEX                // while its holder lives, every card left in the hand at the end of the turn is exhausted (Ethereal)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

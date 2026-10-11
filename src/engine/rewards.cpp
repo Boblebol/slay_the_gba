@@ -38,7 +38,7 @@ constexpr ActivePotion ACTIVE_POTIONS[] = {
     { "POWDERED_DEMISE" }, { "POWER_POTION" },
     { "RADIANT_TINCTURE" }, { "REGEN_POTION" }, { "SHACKLING_POTION" },
     // Event rarity: no draw rolls it; only the Petrified Toad procures it (#497)
-    { "POTION_SHAPED_ROCK" }, { "FOUL_POTION" },
+    { "POTION_SHAPED_ROCK" }, { "FOUL_POTION" }, { "SOLDIERS_STEW" },
     { "SHIP_IN_A_BOTTLE" }, { "SKILL_POTION" }, { "SNECKO_OIL" }, { "SPEED_POTION" }, { "STABLE_SERUM" },
     { "STAR_POTION", false, CharacterId::REGENT },
     { "STRENGTH_POTION" }, { "TOUCH_OF_INSANITY" }, { "SWIFT_POTION" }, { "VULNERABLE_POTION" }, { "WEAK_POTION" },

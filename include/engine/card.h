@@ -641,10 +641,31 @@ enum class CardId : uint16_t {
     DISCOVERY,
     // Event card: choose 1 of 3 upgraded Powers (Abundance)
     ABUNDANCE,
+    // Regent minions (mechanic #103): tokens, and the cards that transform into them
+    MINION_STRIKE,
+    MINION_DIVE_BOMB,
+    MINION_SACRIFICE,
+    BEGONE,
+    CHARGE,
+    GUARDS,
+    // Echo N on a copy of a card (mechanic #86)
+    HIDDEN_GEM,
+    TRANSFIGURE,
+    // Glass orb (mechanic #99)
+    GLASSWORK,
+    REFRACT,
+    SPINNER,
+    // Status card given by the Phrog Parasite
+    INFECTION,
     COUNT
 };
 
 // Where a card created during a fight goes.
+// The cards whose French name contains "Sbire" (Vitruvian Minion).
+constexpr bool is_minion_card(CardId id) {
+    return id == CardId::MINION_STRIKE || id == CardId::MINION_DIVE_BOMB || id == CardId::MINION_SACRIFICE;
+}
+
 enum class Pile : uint8_t {
     HAND,
     DRAW, // at a random place
@@ -672,6 +693,7 @@ struct DeckCard {
     bool free_this_turn = false; // this copy costs 0 until the end of the turn (Bullet Time)
     bool cost_one_this_turn = false; // this copy costs at most 1 until the end of the turn (Enlightenment)
     int8_t random_cost_this_turn = -1; // this copy costs this many (0 to 3) until the end of the turn, -1 for none (Snecko Oil)
+    uint8_t echo = 0;           // Echo N: the card is replayed N more times each time it is played (Hidden Gem, Transfigure)
     bool sly_combat = false;    // this copy has Sly for the rest of the combat (Master Planner)
     bool sly_this_turn = false; // this copy has Sly until the end of the turn (Hand Trick)
     uint8_t deck_index = NOT_IN_DECK; // position of the card in the run's deck, for the gains that outlive the combat

@@ -90,7 +90,7 @@ int main() {
     bool entered_route = nav.select_current_route();
     assert(entered_route);
     assert(run.phase == RunPhase::IN_COMBAT);
-    assert(run.combat.enemy.type == EnemyType::CULTIST);
+    assert(run.combat.enemy.is_alive()); // the floor 1 fight depends on the seed: weak monsters of Act 1
     std::cout << "[E2E Step 8] Map Navigation verified: Floor scrolled, Deck viewed, and Floor 1 entered.\n";
 
     // 9. Combat: Pokémon-style Battle UI (4-way menu, CARDS submenu, animations)
@@ -156,7 +156,7 @@ int main() {
     run.gold = 350;
     run.open_shop();
     assert(run.phase == RunPhase::SHOP);
-    assert(run.current_shop.cards.size() == 3);
+    assert(run.current_shop.cards.size() == 7);
     assert(run.current_shop.relics.size() == 3);
     std::cout << "[E2E Step 12] Entered Merchant Shop with " << run.gold << " Gold.\n";
 

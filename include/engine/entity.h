@@ -373,9 +373,55 @@ enum class EnemyType : uint8_t {
     STABBOT,
     NOISEBOT,
     CUBEX_CONSTRUCT,
+    PUNCH_CONSTRUCT,
     INKLET,
     NIBBIT,
-    FLYCONID
+    FLYCONID,
+    CORPSE_SLUG,
+    GAS_BOMB,
+    GREMLIN_MERC,
+    SNEAKY_GREMLIN,
+    HAUNTED_SHIP,
+    SLUDGE_SPINNER,
+    TOADPOLE,
+    HUNTER_KILLER,
+    MAWLER,
+    FOSSIL_STALKER,
+    SPINY_TOAD,
+    SEAPUNK,
+    TRACKER_RUBY_RAIDER,
+    OSTY,
+    CHOMPER,
+    SLUMBERING_BEETLE,
+    PARAFRIGHT,
+    TUNNELER,
+    ZAPBOT,
+    SLIMED_BERSERKER,
+    FROG_KNIGHT,
+    GLOBE_HEAD,
+    LOUSE_PROGENITOR,
+    GUARDBOT,
+    BOWLBUG_NECTAR,
+    DEVOTED_SCULPTOR,
+    THE_LOST,
+    AXEBOT,
+    TURRET_OPERATOR,
+    BOWLBUG_SILK,
+    BOWLBUG_ROCK,
+    BOWLBUG_EGG,
+    SKULKING_COLONY,
+    TERROR_EEL,
+    ENTOMANCER,
+    INFESTED_PRISM,
+    FLAIL_KNIGHT,
+    SPECTRAL_KNIGHT,
+    MAGI_KNIGHT,
+    SOUL_NEXUS,
+    MECHA_KNIGHT,
+    BYGONE_EFFIGY,
+    BYRDONIS,
+    PHROG_PARASITE,
+    WRIGGLER
 };
 
 // What a monster sees of the fight when it chooses its next move.
@@ -440,6 +486,8 @@ public:
     void reset_pattern(uint32_t seed);
     // Moves to `next` when the monster is in an earlier phase. True when the phase changed.
     bool enter_phase(uint8_t next);
+    // The Tunneler's Block was broken while Burrowed (triggered): it enters its next phase, stunned.
+    void break_burrow();
     // Draws a move among `options` by weight, leaving out the last move played unless it can repeat, and
     // remembers it. When the rule leaves no move, the last one is played again. NO_MOVE for an empty list.
     uint8_t draw_move(std::span<const MoveOption> options);

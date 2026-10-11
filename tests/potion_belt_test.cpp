@@ -51,11 +51,11 @@ void test_drinking_removes_the_potion_and_keeps_the_order() {
 }
 
 void test_a_potion_the_engine_does_not_resolve_stays_in_the_belt() {
-    RunManager run = fight_with({ "SOLDIERS_STEW", "BLOCK_POTION" });
+    RunManager run = fight_with({ "NOT_A_POTION", "BLOCK_POTION" });
     assert(!run.use_potion(0));
-    assert(run.potions.size() == 2 && run.potions[0] == "SOLDIERS_STEW");
+    assert(run.potions.size() == 2 && run.potions[0] == "NOT_A_POTION");
     assert(run.combat.player.block == 0);
-    std::cout << "[PASS] An unresolved potion stays in the belt" << std::endl;
+    std::cout << "[PASS] An unknown potion stays in the belt" << std::endl;
 }
 
 void test_fairy_in_a_bottle_is_automatic_and_discarded_when_it_saves() {

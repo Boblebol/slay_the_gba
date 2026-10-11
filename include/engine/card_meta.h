@@ -537,6 +537,18 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::UNCOMMON, CardPool::REGENT }, // QUASAR
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // DISCOVERY
     { CardRarity::ANCIENT, CardPool::EVENT }, // ABUNDANCE
+    { CardRarity::NONE, CardPool::NONE }, // MINION_STRIKE
+    { CardRarity::NONE, CardPool::NONE }, // MINION_DIVE_BOMB
+    { CardRarity::NONE, CardPool::NONE }, // MINION_SACRIFICE
+    { CardRarity::COMMON, CardPool::REGENT }, // BEGONE
+    { CardRarity::UNCOMMON, CardPool::REGENT }, // CHARGE
+    { CardRarity::RARE, CardPool::REGENT }, // GUARDS
+    { CardRarity::RARE, CardPool::COLORLESS }, // HIDDEN_GEM
+    { CardRarity::RARE, CardPool::NECROBINDER }, // TRANSFIGURE
+    { CardRarity::UNCOMMON, CardPool::DEFECT }, // GLASSWORK
+    { CardRarity::UNCOMMON, CardPool::DEFECT }, // REFRACT
+    { CardRarity::RARE, CardPool::DEFECT }, // SPINNER
+    { CardRarity::NONE, CardPool::NONE }, // INFECTION
 };
 
 } // namespace engine

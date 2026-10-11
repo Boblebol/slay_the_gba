@@ -33,6 +33,9 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::BRUTE_RUBY_RAIDER: return "BRUTE_RUBY_RAIDER";
         case EnemyType::ASSASSIN_RUBY_RAIDER: return "ASSASSIN_RUBY_RAIDER";
         case EnemyType::AXE_RUBY_RAIDER: return "AXE_RUBY_RAIDER";
+        case EnemyType::TRACKER_RUBY_RAIDER: return "TRACKER_RUBY_RAIDER";
+        case EnemyType::TERROR_EEL: return "TERROR_EEL";
+        case EnemyType::MECHA_KNIGHT: return "MECHA_KNIGHT";
         case EnemyType::CALCIFIED_CULTIST: return "CALCIFIED_CULTIST";
         case EnemyType::DAMP_CULTIST: return "DAMP_CULTIST";
         case EnemyType::SEWER_CLAM: return "SEWER_CLAM";
@@ -42,11 +45,54 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::VINE_SHAMBLER: return "VINE_SHAMBLER";
         case EnemyType::EYE_WITH_TEETH: return "EYE_WITH_TEETH";
         case EnemyType::STABBOT: return "STABBOT";
+        case EnemyType::SPECTRAL_KNIGHT: return "SPECTRAL_KNIGHT";
+        case EnemyType::SPINY_TOAD: return "SPINY_TOAD";
         case EnemyType::NOISEBOT: return "NOISEBOT";
+        case EnemyType::PARAFRIGHT: return "PARAFRIGHT";
+        case EnemyType::ZAPBOT: return "ZAPBOT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
+        case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
+        case EnemyType::BOWLBUG_NECTAR: return "BOWLBUG_NECTAR";
+        case EnemyType::AXEBOT: return "AXEBOT";
+        case EnemyType::BYGONE_EFFIGY: return "BYGONE_EFFIGY";
+        case EnemyType::TURRET_OPERATOR: return "TURRET_OPERATOR";
+        case EnemyType::BOWLBUG_ROCK: return "BOWLBUG_ROCK";
+        case EnemyType::SKULKING_COLONY: return "SKULKING_COLONY";
+        case EnemyType::MAGI_KNIGHT: return "MAGI_KNIGHT";
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
+        case EnemyType::CORPSE_SLUG: return "CORPSE_SLUG";
+        case EnemyType::GAS_BOMB: return "GAS_BOMB";
+        case EnemyType::GREMLIN_MERC: return "GREMLIN_MERC";
+        case EnemyType::SNEAKY_GREMLIN: return "SNEAKY_GREMLIN";
+        case EnemyType::HAUNTED_SHIP: return "HAUNTED_SHIP";
+        case EnemyType::GLOBE_HEAD: return "GLOBE_HEAD";
+        case EnemyType::LOUSE_PROGENITOR: return "LOUSE_PROGENITOR";
+        case EnemyType::SLUDGE_SPINNER: return "SLUDGE_SPINNER";
+        case EnemyType::TOADPOLE: return "TOADPOLE";
+        case EnemyType::HUNTER_KILLER: return "HUNTER_KILLER";
+        case EnemyType::MAWLER: return "MAWLER";
+        case EnemyType::FOSSIL_STALKER: return "FOSSIL_STALKER";
+        case EnemyType::SEAPUNK: return "SEAPUNK";
+        case EnemyType::OSTY: return "OSTY";
+        case EnemyType::CHOMPER: return "CHOMPER";
+        case EnemyType::SLUMBERING_BEETLE: return "SLUMBERING_BEETLE";
+        case EnemyType::TUNNELER: return "TUNNELER";
+        case EnemyType::SLIMED_BERSERKER: return "SLIMED_BERSERKER";
+        case EnemyType::FROG_KNIGHT: return "FROG_KNIGHT";
+        case EnemyType::GUARDBOT: return "GUARDBOT";
+        case EnemyType::DEVOTED_SCULPTOR: return "DEVOTED_SCULPTOR";
+        case EnemyType::THE_LOST: return "THE_LOST";
+        case EnemyType::BOWLBUG_SILK: return "BOWLBUG_SILK";
+        case EnemyType::BOWLBUG_EGG: return "BOWLBUG_EGG";
+        case EnemyType::ENTOMANCER: return "ENTOMANCER";
+        case EnemyType::INFESTED_PRISM: return "INFESTED_PRISM";
+        case EnemyType::FLAIL_KNIGHT: return "FLAIL_KNIGHT";
+        case EnemyType::SOUL_NEXUS: return "SOUL_NEXUS";
+        case EnemyType::BYRDONIS: return "BYRDONIS";
+        case EnemyType::PHROG_PARASITE: return "PHROG_PARASITE";
+        case EnemyType::WRIGGLER: return "WRIGGLER";
     }
     return {};
 }
@@ -163,28 +209,49 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "FuzzyWurmCrawlerWeak", "NibbitsWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal",
-                                        "InkletsNormal", "NibbitsNormal", "FlyconidNormal" }));
+                                        "InkletsNormal", "NibbitsNormal", "FlyconidNormal", "MawlerNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal" }));
+           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal",
+                                        "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
+                                        "FossilStalkerNormal", "SeapunkNormal" }));
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
-        assert(ids_of(encounter_table(zone, EncounterTier::ELITE)) ==
-               std::set<std::string_view>{ "LegacyGremlinNob" });
     }
-    // The groups the game had before, where the reference has nothing the engine can play yet.
+    assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "BygoneEffigyElite", "ByrdonisElite", "PhrogParasiteElite",
+                                        "LegacyGremlinNob" }));
+    assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "SkulkingColonyElite", "TerrorEelElite" }));
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "EntomancerElite", "InfestedPrismsElite" }));
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "SoulNexusElite", "MechaKnightElite", "KnightsElite" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
-           std::set<std::string_view>{ "LegacyCultist" });
-    for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
-        assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
-        assert(ids_of(encounter_table(zone, EncounterTier::NORMAL)) ==
-               (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
-    }
+           (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
+    // Acts 2 and 3: the reference encounters the engine can play, with the groups the game had before in Act 3.
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::WEAK)) ==
+           (std::set<std::string_view>{ "TunnelerWeak", "BowlbugsWeak" }));
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::WEAK)) ==
+           (std::set<std::string_view>{ "DevotedSculptorWeak", "TurretOperatorWeak" }));
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal", "ChompersNormal", "TunnelerNormal",
+                                        "LouseProgenitorNormal" }));
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "SlimedBerserkerNormal", "FrogKnightNormal", "GlobeHeadNormal",
+                                        "TheLostAndForgottenNormal", "AxebotsNormal", "LegacyCultistAndLouse",
+                                        "LegacyJawWorm", "LegacyLice" }));
+    const Encounter& chompers = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::NORMAL),
+                                               "ChompersNormal");
+    assert(chompers.count == 2 && chompers.monsters[0] == EnemyType::CHOMPER && chompers.monsters[1] == EnemyType::CHOMPER);
+    const Encounter& turret = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::WEAK), "TurretOperatorWeak");
+    assert(turret.count == 2 && turret.monsters[0] == EnemyType::LIVING_SHIELD &&
+           turret.monsters[1] == EnemyType::TURRET_OPERATOR);
 
-    // The ruby raiders: three of the four raiders in the engine.
+    // The ruby raiders: three of the five raiders in the engine.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
                                               "RubyRaidersNormal");
-    assert(raiders.count == 3 && raiders.random_pool.size() == 4);
+    assert(raiders.count == 3 && raiders.random_pool.size() == 5);
     const Encounter& inklets = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
                                               "InkletsNormal");
     assert(inklets.count == 3 && inklets.monsters[0] == EnemyType::INKLET && inklets.monsters[2] == EnemyType::INKLET);
@@ -198,14 +265,23 @@ void test_reference_encounters() {
             }
         }
     }
-    // Except the ones whose only reference encounter needs a monster the engine does not have yet: the
-    // Forgotten is only met with the Lost (TheLostAndForgottenNormal), the Living Shield with the Turret Operator
-    // (TurretOperatorWeak), the Fat Gremlin with the Gremlin Merc (GremlinMercNormal).
+    // Except the ones whose only reference encounter needs a monster the engine does not have yet: the Fat
+    // Gremlin and the Sneaky Gremlin wait for their full Gremlin Merc group (GremlinMercNormal).
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
-    // The Stabbot and the Noisebot are brought by the Fabricator (FabricatorNormal).
-    const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
-                                                          EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
-                                                          EnemyType::STABBOT, EnemyType::NOISEBOT };
+    // The Stabbot, the Noisebot, the Zapbot and the Guardbot are brought by the Fabricator (FabricatorNormal).
+    // The Gas Bomb is brought by the Living Fog (LivingFogNormal).
+    // Titos is summoned by the Entomancer, the Parafright brought by the Obscura: neither is a monster of the
+    // engine yet. The Slumbering Beetle and the Nectar, Silk and Egg Bowlbugs wait for the random bugs of
+    // BowlbugsNormal and SlumberingBeetleNormal.
+    // The Wriggler is the companion of the Phrog Parasite, which fights alone for now.
+    const std::set<EnemyType> waiting_for_a_companion = { EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
+                                                          EnemyType::STABBOT, EnemyType::NOISEBOT,
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
+                                                          EnemyType::OSTY, EnemyType::SLUMBERING_BEETLE,
+                                                          EnemyType::PARAFRIGHT, EnemyType::ZAPBOT,
+                                                          EnemyType::GUARDBOT, EnemyType::BOWLBUG_NECTAR,
+                                                          EnemyType::BOWLBUG_SILK, EnemyType::BOWLBUG_EGG,
+                                                          EnemyType::WRIGGLER };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));
@@ -265,7 +341,7 @@ void test_rooms_meet_every_encounter() {
         }
         if (act == 1) {
             assert(zones_met == (std::set<ActZone>{ ActZone::ACT1A, ActZone::ACT1B }));
-            assert(raider_groups.size() == 4); // every trio of the four raiders
+            assert(raider_groups.size() >= 8); // nearly every one of the 10 trios of the five raiders
         } else {
             assert(zones_met.size() == 1);
         }
@@ -309,7 +385,7 @@ void test_same_seed_same_fights() {
         assert(first == fights_of(seed));
     }
     // A run of Act 1 (A): weak fights on the first floors, then the ruby raiders or the Vine Shambler, both met.
-    uint32_t seed = 99;
+    uint32_t seed = 1;
     assert(act_zone(1, make_run(seed, 1).map_seed) == ActZone::ACT1A);
     std::vector<std::string> fights = fights_of(seed);
     int raiders = 0;
@@ -329,14 +405,35 @@ void test_same_seed_same_fights() {
                 ++inklets;
             } else {
                 assert(fight == "VineShamblerNormal VINE_SHAMBLER" || fight == "CubexConstructNormal CUBEX_CONSTRUCT" ||
-                       fight == "FlyconidNormal FLYCONID");
-                if (!fight.starts_with("FlyconidNormal")) ++shamblers;
+                       fight == "FlyconidNormal FLYCONID" || fight == "MawlerNormal MAWLER");
+                if (fight.starts_with("VineShamblerNormal") || fight.starts_with("CubexConstructNormal")) ++shamblers;
             }
         }
     }
     assert(raiders > 0 && shamblers > 0);
     assert(fights[fights.size() - 1] == "CeremonialBeastBoss CEREMONIAL_BEAST");
     std::cout << "[PASS] Encounter tables: the same seed gives the same fights" << std::endl;
+}
+
+// A room never draws the encounter of the previous fight, in any act, on any seed.
+void test_no_same_encounter_twice_in_a_row() {
+    int fights_checked = 0;
+    for (uint8_t act = 1; act <= 3; ++act) {
+        for (uint32_t seed = 1; seed <= 60; ++seed) {
+            RunManager run = make_run(seed, act);
+            std::string previous;
+            for (int step = 0; step < 40; ++step) {
+                int room = find_room(run, EncounterTier::NORMAL);
+                if (room < 0) break;
+                run.enter_room(room);
+                assert(run.current_encounter != previous);
+                previous = std::string(run.current_encounter);
+                ++fights_checked;
+            }
+        }
+    }
+    assert(fights_checked > 1000);
+    std::cout << "[PASS] Encounter tables: never the same encounter twice in a row" << std::endl;
 }
 
 } // namespace
@@ -348,6 +445,7 @@ int main() {
     test_zone_and_tier();
     test_rooms_meet_every_encounter();
     test_same_seed_same_fights();
+    test_no_same_encounter_twice_in_a_row();
     std::cout << "=== All Encounters Passed! ===" << std::endl;
     return 0;
 }

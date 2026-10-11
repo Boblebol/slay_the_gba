@@ -51,7 +51,7 @@ items = [
   { name = "Orbe glaciaire : 2 d'Armure en fin de tour, 5 à l'Activation", status = "oui" },
   { name = "Orbe ténébreux : se charge de 6 par tour, libère sa charge", status = "oui" },
   { name = "Orbe plasmique : 1 énergie par tour, 2 à l'Activation", status = "oui" },
-  { name = "Orbe vitreux", status = "non", issue = 99 },
+  { name = "Orbe vitreux", status = "oui", issue = 99 },
   { name = "Focalisation : renforce tous les Orbes", status = "oui" },
   { name = "Emplacements d'Orbe variables (Condensateur)", status = "oui" },
   { name = "Compteur d'Orbes affiché en combat", status = "oui" },
@@ -65,7 +65,7 @@ items = [
   { name = "Étoiles : seconde ressource gagnée par les cartes", status = "oui" },
   { name = "Cartes à coût en Étoiles", status = "oui" },
   { name = "Forger la Lame souveraine", status = "oui", issue = 102 },
-  { name = "Sbires (Frappe de sbire, Sbire en piqué)", status = "non", issue = 103 },
+  { name = "Sbires (Frappe de sbire, Sbire en piqué)", status = "oui", issue = 103 },
   { name = "Compteur d'Étoiles affiché en combat", status = "oui" },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
 ]
@@ -107,7 +107,7 @@ items = [
   { name = "Choix de cartes dans la Pioche ou la Défausse", status = "oui" },
   { name = "Choix d'une carte parmi 3 propositions (Découverte, etc.)", status = "oui", issue = 72 },
   { name = "Cartes à coût X", status = "oui" },
-  { name = "Écho : rejouer une carte", status = "partiel", issue = 86 },
+  { name = "Écho : rejouer une carte", status = "oui", issue = 86 },
   { name = "Cartes jouées automatiquement (Pioche, pile d'épuisement, fin de tour)", status = "oui" },
   { name = "Coûts modifiés pendant le tour ou le combat", status = "oui" },
   { name = "Cartes évolutives : bonus et coût propres à chaque exemplaire", status = "oui" },
@@ -197,7 +197,7 @@ items = [
   { name = "Potion en récompense de combat", status = "oui", note = "40 % des combats, tirée par rareté parmi les potions que le moteur résout. Ceinture pleine : en jeter une ou la laisser." },
   { name = "Relique après un élite", status = "oui", note = "Tirée par rareté, jamais en double, jamais celle d'un autre héros." },
   { name = "Relique de boss", status = "partiel", issue = 184, note = "Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. Les reliques d'Ancien du jeu d'origine restent à faire." },
-  { name = "Cartes rares et peu communes selon la salle", status = "non", issue = 67 },
+  { name = "Cartes rares et peu communes selon la salle", status = "oui", note = "Chaque carte tire sa rareté : 60 / 37 / 3 % après un combat, 50 / 40 / 10 % après un élite, que des Rares après un boss. Pool bâti depuis les cartes du héros." },
 ]
 
 [[category]]
@@ -217,8 +217,8 @@ items = [
   { name = "Retrait d'une carte, à coût croissant", status = "oui" },
   { name = "Achat de reliques", status = "oui", note = "Rayon des reliques, touches L et R : deux reliques tirées par rareté et une relique du marchand." },
   { name = "Achat de potions", status = "oui", note = "Rayon des potions, touches L et R. Ceinture pleine : la potion achetée en remplace une." },
-  { name = "Inventaire tiré au hasard à chaque visite", status = "partiel", issue = 270, note = "Reliques et potions tirées au hasard ; trois cartes fixes par héros." },
-  { name = "Prix selon la rareté, carte en solde", status = "partiel", issue = 270, note = "Reliques et potions au prix de leur rareté, à 5 % près ; cartes à prix fixe, sans solde." },
+  { name = "Inventaire tiré au hasard à chaque visite", status = "oui", note = "Cinq cartes du héros et deux cartes incolores tirées par rareté, trois reliques et trois potions, depuis la graine de la partie. L écran montre les trois premières cartes." },
+  { name = "Prix selon la rareté, carte en solde", status = "oui", note = "Cartes, reliques et potions au prix de leur rareté, à 5 % près ; une carte du héros à moitié prix." },
 ]
 
 [[category]]

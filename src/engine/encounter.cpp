@@ -11,13 +11,13 @@ using namespace std::string_view_literals;
 // Only the encounters whose every monster exists in EnemyType are listed; the reference gives no weights,
 // so every encounter of a list is as likely as the others.
 
-// RubyRaidersNormal is three raiders drawn among the five Ruby Raiders; TRACKER_RUBY_RAIDER is not in the
-// engine yet.
+// RubyRaidersNormal is three raiders drawn among the five Ruby Raiders.
 constexpr EnemyType RUBY_RAIDERS[] = {
     EnemyType::CROSSBOW_RUBY_RAIDER,
     EnemyType::BRUTE_RUBY_RAIDER,
     EnemyType::ASSASSIN_RUBY_RAIDER,
     EnemyType::AXE_RUBY_RAIDER,
+    EnemyType::TRACKER_RUBY_RAIDER,
 };
 
 // Act 1 (A): the Overgrowth.
@@ -32,37 +32,87 @@ constexpr Encounter ACT1A_NORMAL[] = {
     { "InkletsNormal"sv, 3, { EnemyType::INKLET, EnemyType::INKLET, EnemyType::INKLET } },
     { "NibbitsNormal"sv, 2, { EnemyType::NIBBIT, EnemyType::NIBBIT } },
     { "FlyconidNormal"sv, 1, { EnemyType::FLYCONID } },
+    { "MawlerNormal"sv, 1, { EnemyType::MAWLER } },
 };
 
 // Act 1 (B): the Underdocks.
+constexpr Encounter ACT1B_WEAK[] = {
+    { "CorpseSlugsWeak"sv, 2, { EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG } },
+    { "SludgeSpinnerWeak"sv, 1, { EnemyType::SLUDGE_SPINNER } },
+    { "ToadpolesWeak"sv, 2, { EnemyType::TOADPOLE, EnemyType::TOADPOLE } },
+    { "SeapunkWeak"sv, 1, { EnemyType::SEAPUNK } },
+};
 constexpr Encounter ACT1B_NORMAL[] = {
     { "CultistsNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::DAMP_CULTIST } },
     { "SewerClamNormal"sv, 1, { EnemyType::SEWER_CLAM } },
+    { "CorpseSlugsNormal"sv, 3, { EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG } },
+    { "PunchConstructNormal"sv, 1, { EnemyType::PUNCH_CONSTRUCT } },
+    { "GremlinMercNormal"sv, 1, { EnemyType::GREMLIN_MERC } },
+    { "HauntedShipNormal"sv, 1, { EnemyType::HAUNTED_SHIP } },
+    { "FossilStalkerNormal"sv, 1, { EnemyType::FOSSIL_STALKER } },
+    { "SeapunkNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::SEAPUNK } },
+};
+
+// Act 2: the Hive.
+constexpr Encounter ACT2_WEAK[] = {
+    { "TunnelerWeak"sv, 1, { EnemyType::TUNNELER } },
+    { "BowlbugsWeak"sv, 1, { EnemyType::BOWLBUG_ROCK } },
+};
+constexpr Encounter ACT2_NORMAL[] = {
+    { "HunterKillerNormal"sv, 1, { EnemyType::HUNTER_KILLER } },
+    { "SpinyToadNormal"sv, 1, { EnemyType::SPINY_TOAD } },
+    { "ChompersNormal"sv, 2, { EnemyType::CHOMPER, EnemyType::CHOMPER } },
+    { "TunnelerNormal"sv, 2, { EnemyType::CHOMPER, EnemyType::TUNNELER } },
+    { "LouseProgenitorNormal"sv, 1, { EnemyType::LOUSE_PROGENITOR } },
+};
+
+// Act 3: the Glory. The groups the game had before stay beside them: the Louse and the Jaw Worm are met there.
+constexpr Encounter ACT3_WEAK[] = {
+    { "DevotedSculptorWeak"sv, 1, { EnemyType::DEVOTED_SCULPTOR } },
+    { "TurretOperatorWeak"sv, 2, { EnemyType::LIVING_SHIELD, EnemyType::TURRET_OPERATOR } },
+};
+constexpr Encounter ACT3_NORMAL[] = {
+    { "SlimedBerserkerNormal"sv, 1, { EnemyType::SLIMED_BERSERKER } },
+    { "FrogKnightNormal"sv, 1, { EnemyType::FROG_KNIGHT } },
+    { "GlobeHeadNormal"sv, 1, { EnemyType::GLOBE_HEAD } },
+    { "TheLostAndForgottenNormal"sv, 2, { EnemyType::THE_FORGOTTEN, EnemyType::THE_LOST } },
+    { "AxebotsNormal"sv, 1, { EnemyType::AXEBOT } },
+    { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
+    { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
+    { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
+};
+
+// Act 1 (A) elites: the reference ones the engine can play, and the Gremlin Nob the game had before.
+constexpr Encounter ACT1A_ELITE[] = {
+    { "BygoneEffigyElite"sv, 1, { EnemyType::BYGONE_EFFIGY } },
+    { "ByrdonisElite"sv, 1, { EnemyType::BYRDONIS } },
+    { "PhrogParasiteElite"sv, 1, { EnemyType::PHROG_PARASITE } },
+    { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
+};
+constexpr Encounter ACT1B_ELITE[] = {
+    { "SkulkingColonyElite"sv, 1, { EnemyType::SKULKING_COLONY } },
+    { "TerrorEelElite"sv, 1, { EnemyType::TERROR_EEL } },
+};
+constexpr Encounter ACT2_ELITE[] = {
+    { "EntomancerElite"sv, 1, { EnemyType::ENTOMANCER } },
+    { "InfestedPrismsElite"sv, 1, { EnemyType::INFESTED_PRISM } },
+};
+constexpr Encounter ACT3_ELITE[] = {
+    { "SoulNexusElite"sv, 1, { EnemyType::SOUL_NEXUS } },
+    { "MechaKnightElite"sv, 1, { EnemyType::MECHA_KNIGHT } },
+    { "KnightsElite"sv, 3, { EnemyType::FLAIL_KNIGHT, EnemyType::MAGI_KNIGHT, EnemyType::SPECTRAL_KNIGHT } },
 };
 
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
 };
 
-// The groups the game had before the tables, for the lists with no reference encounter in the engine yet.
-constexpr Encounter LEGACY_WEAK[] = {
-    { "LegacyCultist"sv, 1, { EnemyType::CULTIST } },
-};
-constexpr Encounter LEGACY_NORMAL[] = {
-    { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
-    { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
-    { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
-};
-constexpr Encounter LEGACY_ELITE[] = {
-    { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
-};
-
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
-    { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
 } // namespace

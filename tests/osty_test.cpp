@@ -293,6 +293,7 @@ void test_phylactery_relics() {
     assert(bound.has_relic("BOUND_PHYLACTERY"));
     bound.map.nodes[0].type = RoomType::MONSTER;
     bound.enter_room(0);
+    while (bound.combat.enemies.size() > 1) bound.combat.enemies.pop_back(); // one enemy: end_turn hits once per enemy
     assert(bound.combat.player.minion_hp == 1 && bound.combat.player.minion_max_hp == 1);
     end_turn(bound.combat, 0);
     assert(bound.combat.player.minion_hp == 2 && bound.combat.player.minion_max_hp == 2);

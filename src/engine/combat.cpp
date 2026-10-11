@@ -326,9 +326,27 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 gain_temporary(StatusType::DEXTERITY, static_cast<int8_t>(-power.amount));
             }
             break;
+        case PowerId::BURROWED:
+            // Spent when its Block is broken (the holder loses its turn) or when its holder acts again.
+            if (event == CombatEvent::BLOCK_BROKEN && info.enemy == power.holder && power.amount > 0) {
+                power.amount = 0;
+                enemies[power.holder].break_burrow();
+            } else if (event == CombatEvent::ENEMY_TURN_START && info.enemy == power.holder) {
+                power.amount = 0;
+            }
+            break;
         case PowerId::PERSONAL_HIVE:
             if (event == CombatEvent::UNBLOCKED_DAMAGE_DEALT && info.enemy == power.holder) {
                 for (int16_t i = 0; i < power.amount; ++i) create_card(CardId::DAZED, Pile::DRAW);
+            }
+            break;
+        case PowerId::VITAL_SPARK:
+            if (turn_start) {
+                power.counter = 0;
+            } else if (event == CombatEvent::UNBLOCKED_DAMAGE_DEALT && info.enemy == power.holder &&
+                       power.counter < power.amount) {
+                power.counter = bump(power.counter);
+                player.energy = static_cast<int8_t>(player.energy + 1);
             }
             break;
         case PowerId::TURN_ENERGY:
@@ -975,6 +993,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 pen_nib_now = true;
             }
             break;
+        case PowerId::VITRUVIAN_MINION:
+            if (card_played && is_minion_card(info.card.id)) minion_played_now = true;
+            break;
         case PowerId::STRIKE_DUMMY:
         case PowerId::FAKE_STRIKE_DUMMY:
             if (card_played && is_strike(info.card.id)) strike_played_now = true;
@@ -1104,6 +1125,7 @@ void CombatEngine::gain_block(int16_t amount) {
             factor *= 2;
         }
         if (double_block_turn) factor *= 2;
+        if (resolving_card && minion_played_now) factor *= 2;
         if (factor > 1) player.block = static_cast<int16_t>(before + (player.block - before) * factor);
     }
     if (player.block > before) {
@@ -1166,7 +1188,7 @@ int16_t CombatEngine::with_focus(int16_t base) const {
 
 int CombatEngine::unique_orbs() const {
     int count = 0;
-    for (OrbType type : { OrbType::LIGHTNING, OrbType::FROST, OrbType::DARK, OrbType::PLASMA }) {
+    for (OrbType type : { OrbType::LIGHTNING, OrbType::FROST, OrbType::DARK, OrbType::PLASMA, OrbType::GLASS }) {
         for (const Orb& orb : player.orbs) {
             if (orb == type) {
                 ++count;
@@ -1183,6 +1205,7 @@ void CombatEngine::channel_orb(OrbType type) {
     if (player.orbs.size() >= player.orb_slots) evoke_orb(0);
     Orb orb(type);
     if (type == OrbType::DARK) orb.charge = DARK_PASSIVE;
+    if (type == OrbType::GLASS) orb.charge = GLASS_PASSIVE;
     player.orbs.push_back(orb);
     counters.combat_orbs_channeled = bump(counters.combat_orbs_channeled);
     if (type == OrbType::LIGHTNING) counters.combat_lightning_channeled = bump(counters.combat_lightning_channeled);
@@ -1227,6 +1250,9 @@ void CombatEngine::evoke_orb(size_t slot, int times) {
             case OrbType::PLASMA:
                 player.energy = static_cast<int8_t>(player.energy + PLASMA_EVOKE);
                 break;
+            case OrbType::GLASS:
+                damage_all_enemies(with_focus(GLASS_EVOKE));
+                break;
             default:
                 break;
         }
@@ -1249,6 +1275,11 @@ void CombatEngine::trigger_orb_passive(size_t slot, Enemy* target) {
             break;
         case OrbType::PLASMA:
             player.energy = static_cast<int8_t>(player.energy + PLASMA_PASSIVE);
+            break;
+        case OrbType::GLASS:
+            damage_all_enemies(with_focus(orb.charge));
+            // `orb` may have moved if a kill changed the slots: read it again by slot.
+            if (slot < player.orbs.size() && player.orbs[slot].type == OrbType::GLASS && player.orbs[slot].charge > 0) --player.orbs[slot].charge;
             break;
         default:
             break;
@@ -1492,6 +1523,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (attack_double_now) percent *= 2;
     if (resolving_card && triple_next_attack) percent *= 3;
     if (pen_nib_now && resolving_card) percent *= 2;
+    if (minion_played_now && resolving_card) percent *= 2;
     if (strike_played_now && resolving_card) {
         base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY) + power_amount(PowerId::FAKE_STRIKE_DUMMY));
     }
@@ -1912,6 +1944,8 @@ void CombatEngine::start_player_turn() {
         choice.count = static_cast<uint8_t>(tools);
         ask_choice(choice);
     }
+    // Spinner: a Glass orb is channeled at the start of each turn.
+    for (int16_t i = power_amount(PowerId::SPINNER); i > 0; --i) channel_orb(OrbType::GLASS);
     // Entropy: one card of the new hand is transformed.
     if (int16_t entropy = power_amount(PowerId::ENTROPY); entropy > 0) {
         CardChoice choice;
@@ -2065,6 +2099,8 @@ int CombatEngine::consume_play_modifiers(const DeckCard& card) {
     if (type == CardType::POWER && use_one(PowerId::REPLAY_POWER)) ++extra;
     // Sword Sage: Replay on the Sovereign Blade, every time it is played.
     if (card.id == CardId::SOVEREIGN_BLADE) extra += power_amount(PowerId::SWORD_SAGE);
+    // Echo N on this copy of the card.
+    extra += card.echo;
     ActivePower* echo = find_power(PowerId::ECHO_FORM);
     if (echo && echo->counter < echo->amount) {
         ++echo->counter;
@@ -2133,6 +2169,10 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::SURVIVOR:
         case CardId::HAND_TRICK:
         case CardId::SEANCE:
+        case CardId::TRANSFIGURE:
+        case CardId::BEGONE:
+        case CardId::CHARGE:
+        case CardId::GUARDS:
         case CardId::NEOWS_FURY:
         case CardId::THINKING_AHEAD:
         case CardId::PURITY:
@@ -2249,6 +2289,7 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         lamp_doubling = false;
         pen_nib_now = false;
         strike_played_now = false;
+        minion_played_now = false;
         upgraded_attack_now = false;
         // Vigor goes to the first Attack played, all its hits included.
         if (played_type == CardType::ATTACK) {
@@ -2378,6 +2419,8 @@ bool CombatEngine::can_be_picked(const DeckCard& card, ChoiceKind kind) const {
             return !CardDef::is_sly(card);
         case ChoiceKind::TRANSFORM:
             return true;
+        case ChoiceKind::ADD_ECHO:
+            return card.echo == 0;
         case ChoiceKind::MAKE_FREE: {
             const int cost = effective_cost(card);
             return cost != COST_X && cost > 0;
@@ -2591,6 +2634,10 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                     break;
                 case ChoiceKind::MAKE_SLY:
                     hand[index].sly_this_turn = true;
+                    break;
+                case ChoiceKind::ADD_ECHO:
+                    hand[index].echo = 1;
+                    hand[index].cost_delta = static_cast<int8_t>(hand[index].cost_delta + 1);
                     break;
                 case ChoiceKind::TRANSFORM:
                     transform_card(hand[index], choice.into, choice.upgraded);
@@ -5316,6 +5363,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         }
         case CardId::BURN:
         case CardId::DAZED:
+        case CardId::INFECTION:
         case CardId::SOOT:
         case CardId::VOID_CARD:
         case CardId::WOUND:
@@ -5508,6 +5556,91 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::PHANTOM_BLADES: {
             add_power(PowerId::PHANTOM_BLADES, base_value);
             set_log(upgraded ? "Played Phantom Blades+!"sv : "Played Phantom Blades!"sv);
+            break;
+        }
+        case CardId::MINION_STRIKE: {
+            hit(current_target, base_value);
+            draw_cards(1);
+            set_log(upgraded ? "Played Minion Strike+!"sv : "Played Minion Strike!"sv);
+            break;
+        }
+        case CardId::MINION_DIVE_BOMB: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Minion Dive Bomb+!"sv : "Played Minion Dive Bomb!"sv);
+            break;
+        }
+        case CardId::MINION_SACRIFICE: {
+            gain_block(base_value);
+            set_log(upgraded ? "Played Minion Sacrifice+!"sv : "Played Minion Sacrifice!"sv);
+            break;
+        }
+        case CardId::BEGONE: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::TRANSFORM;
+            choice.into = CardId::MINION_STRIKE;
+            choice.upgraded = upgraded;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Begone+!"sv : "Played Begone!"sv);
+            break;
+        }
+        case CardId::CHARGE: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::TRANSFORM;
+            choice.source = Pile::DRAW;
+            choice.count = 2;
+            choice.into = CardId::MINION_DIVE_BOMB;
+            choice.upgraded = upgraded;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Charge+!"sv : "Played Charge!"sv);
+            break;
+        }
+        case CardId::GUARDS: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::TRANSFORM;
+            choice.count = static_cast<uint8_t>(hand.size());
+            choice.optional = true;
+            choice.into = CardId::MINION_SACRIFICE;
+            choice.upgraded = upgraded;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Guards+!"sv : "Played Guards!"sv);
+            break;
+        }
+        case CardId::HIDDEN_GEM: {
+            // A random card of the draw pile without Echo gains Echo N.
+            uint8_t candidates[50];
+            size_t count = 0;
+            for (size_t i = 0; i < draw_pile.size(); ++i) {
+                if (draw_pile[i].echo == 0) candidates[count++] = static_cast<uint8_t>(i);
+            }
+            if (count > 0) draw_pile[candidates[next_random() % count]].echo = static_cast<uint8_t>(base_value);
+            set_log(upgraded ? "Played Hidden Gem+!"sv : "Played Hidden Gem!"sv);
+            break;
+        }
+        case CardId::TRANSFIGURE: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::ADD_ECHO;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Transfigure+!"sv : "Played Transfigure!"sv);
+            break;
+        }
+        case CardId::GLASSWORK: {
+            gain_block(base_value);
+            channel_orb(OrbType::GLASS);
+            set_log(upgraded ? "Played Glasswork+!"sv : "Played Glasswork!"sv);
+            break;
+        }
+        case CardId::REFRACT: {
+            hit(current_target, base_value);
+            hit(current_target, base_value);
+            channel_orb(OrbType::GLASS);
+            channel_orb(OrbType::GLASS);
+            set_log(upgraded ? "Played Refract+!"sv : "Played Refract!"sv);
+            break;
+        }
+        case CardId::SPINNER: {
+            add_power(PowerId::SPINNER, 1);
+            if (upgraded) channel_orb(OrbType::GLASS);
+            set_log(upgraded ? "Played Spinner+!"sv : "Played Spinner!"sv);
             break;
         }
         case CardId::PRIMAL_FORCE: {
@@ -6185,8 +6318,14 @@ void CombatEngine::end_player_turn() {
     }
 
     // Ethereal cards left in hand are exhausted first: what their exhaustion draws is discarded with the rest.
+    // Hex held by a living enemy makes every card Ethereal.
+    bool hexed = false;
+    for (const ActivePower& held : powers) {
+        if (held.id == PowerId::HEX && held.holder >= 0 && static_cast<size_t>(held.holder) < enemies.size() &&
+            enemies[held.holder].is_alive()) hexed = true;
+    }
     for (size_t i = hand.size(); i-- > 0;) {
-        if (i < hand.size() && CardDef::has_keyword(hand[i], KEYWORD_ETHEREAL)) exhaust_from_hand(i);
+        if (i < hand.size() && (hexed || CardDef::has_keyword(hand[i], KEYWORD_ETHEREAL))) exhaust_from_hand(i);
     }
     // The rest is discarded, except the cards with Retain.
     const bool keep_hand = retain_hand || has_power(PowerId::KEEP_HAND) || has_power(PowerId::STABLE_SERUM);
@@ -6314,6 +6453,11 @@ void CombatEngine::execute_enemy_turn() {
                 record.cards_added = played.status_card;
                 record.cards_added_count =
                     static_cast<uint8_t>(draw_pile.size() + hand.size() + discard_pile.size() - before);
+            }
+            // The Rock Bowlbug is thrown off balance by an attack the player's Block took in full.
+            if (enemies[i].type == EnemyType::BOWLBUG_ROCK && played.type == EnemyIntentType::ATTACK &&
+                enemies[i].is_alive() && hp_before == player.hp) {
+                enemies[i].phase = 1;
             }
             record.hits = played.hits;
             record.debuff_attempted = record.debuff_attempted || (played.power_on_player && played.power != PowerId::NONE);
@@ -6627,6 +6771,18 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "ENTROPIC_BREW") {
         fill_potion_belt = true; // the run owns the belt: RunManager::use_potion fills it once this potion is gone
         set_log("Entropic Brew!");
+    } else if (potion_id == "SOLDIERS_STEW") {
+        // Every Strike of the combat (hand, piles) gains Echo 1.
+        auto echo_strikes = [](auto& pile) {
+            for (DeckCard& card : pile) {
+                if (is_strike(card.id) && card.echo < 1) card.echo = 1;
+            }
+        };
+        echo_strikes(hand);
+        echo_strikes(draw_pile);
+        echo_strikes(discard_pile);
+        echo_strikes(exhaust_pile);
+        set_log("Soldier's Stew!");
     } else if (potion_id == "FOUL_POTION") {
         // Damage to every player and enemy: Block absorbs it, Strength and Vulnerable do not change it.
         damage_all_enemies(12);

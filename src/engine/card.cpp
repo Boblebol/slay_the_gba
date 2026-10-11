@@ -636,6 +636,19 @@ static constexpr CardDef CARDS[] = {
     { CardId::DISCOVERY, "Discovery", 1, CardType::SKILL, TargetType::SELF, 0, 3, "Choose 1 of 3 random cards to add into your hand. It's free to play this turn. Exhaust.", "Discovery+", 1, 0, 3, "Choose 1 of 3 random cards to add into your hand. It's free to play this turn.", KEYWORD_EXHAUST, 0 },
     // Event card: 3 upgraded Powers offered, the picked one is free this turn.
     { CardId::ABUNDANCE, "Abundance", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Choose 1 of 3 upgraded Powers to add into your hand. It costs 0 this turn. Exhaust.", "Abundance+", 0, 0, 0, "Choose 1 of 3 upgraded Powers to add into your hand. It costs 0 this turn. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Regent minions: tokens (the upgraded values are not in the bible dump, +3 is assumed) and the cards that make them.
+    { CardId::MINION_STRIKE, "Minion Strike", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 0, "Deal 6 damage. Draw 1 card. Exhaust.", "Minion Strike+", 0, 9, 0, "Deal 9 damage. Draw 1 card. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::MINION_DIVE_BOMB, "Minion Dive Bomb", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 13, 0, "Deal 13 damage. Exhaust.", "Minion Dive Bomb+", 0, 16, 0, "Deal 16 damage. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::MINION_SACRIFICE, "Minion Sacrifice", 0, CardType::SKILL, TargetType::SELF, 7, 0, "Gain 7 block. Exhaust.", "Minion Sacrifice+", 0, 10, 0, "Gain 10 block. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::BEGONE, "Begone!", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Choose a card in your hand to Transform into Minion Strike.", "Begone!+", 1, 0, 0, "Choose a card in your hand to Transform into Minion Strike+." },
+    { CardId::CHARGE, "Charge!!", 1, CardType::SKILL, TargetType::SELF, 2, 0, "Choose 2 cards in your draw pile to Transform into Minion Dive Bombs.", "Charge!!+", 1, 2, 0, "Choose 2 cards in your draw pile to Transform into Minion Dive Bombs+." },
+    { CardId::GUARDS, "Guards!!!", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Transform any number of cards in your hand into Minion Sacrifice. Exhaust.", "Guards!!!+", 2, 0, 0, "Transform any number of cards in your hand into Minion Sacrifice+. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::HIDDEN_GEM, "Hidden Gem", 1, CardType::SKILL, TargetType::SELF, 2, 0, "A random card in your draw pile without Echo gains Echo 2.", "Hidden Gem+", 1, 3, 0, "A random card in your draw pile without Echo gains Echo 3." },
+    { CardId::TRANSFIGURE, "Transfigure", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Add Echo to a card in your hand. It costs 1 more. Exhaust.", "Transfigure+", 1, 0, 0, "Add Echo to a card in your hand. It costs 1 more.", KEYWORD_EXHAUST, 0 },
+    { CardId::GLASSWORK, "Glasswork", 1, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 block. Channel 1 Glass orb.", "Glasswork+", 1, 8, 0, "Gain 8 block. Channel 1 Glass orb." },
+    { CardId::REFRACT, "Refract", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 0, "Deal 10 damage twice. Channel 2 Glass orbs.", "Refract+", 3, 13, 0, "Deal 13 damage twice. Channel 2 Glass orbs." },
+    { CardId::SPINNER, "Spinner", 1, CardType::POWER, TargetType::SELF, 0, 0, "At the start of your turn, channel 1 Glass orb.", "Spinner+", 1, 0, 0, "Channel 1 Glass orb. At the start of your turn, channel 1 Glass orb." },
+    { CardId::INFECTION, "Infection", 0, CardType::STATUS, TargetType::SELF, 0, 0, "Unplayable.", "Infection", 0, 0, 0, "Unplayable.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
 };
 
 const CardDef& CardDef::get(CardId id) {

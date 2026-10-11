@@ -811,9 +811,13 @@ void test_membership_card() {
     // Without the card, the prices are the ones the stock is drawn with.
     RunManager plain;
     plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    uint32_t plain_seed = plain.rng_state();
+    plain_seed ^= plain_seed << 13;
+    plain_seed ^= plain_seed >> 17;
+    plain_seed ^= plain_seed << 5;
     plain.open_shop();
     ShopInventory drawn;
-    drawn.generate(CharacterId::IRONCLAD, 4242, 0);
+    drawn.generate(CharacterId::IRONCLAD, plain_seed, 0);
     assert(!plain.has_relic("MEMBERSHIP_CARD") && plain.current_shop.card_removal_cost == 75);
     assert(plain.current_shop.cards[0].cost == drawn.cards[0].cost);
 
@@ -2202,7 +2206,8 @@ void test_toolbox() {
     assert(combat.hand.back().deck_index == NOT_IN_DECK);
     // Offered once per combat: the next turn is dealt its own hand, with no new offer.
     end_turn_idle(combat);
-    assert(!combat.choice_pending() && combat.hand.size() == 5);
+    // A picked card that Retains stays in the hand next to the 5 new cards.
+    assert(!combat.choice_pending() && combat.hand.size() == 5 + (CardDef::has_keyword(picked, KEYWORD_RETAIN) ? 1 : 0));
 
     // Without the relic: no offer at the start of the combat.
     RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
