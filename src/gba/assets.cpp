@@ -24,6 +24,7 @@
 #include "bn_sprite_items_mon_eye_with_teeth.h"
 #include "bn_sprite_items_mon_stabbot.h"
 #include "bn_sprite_items_mon_corpse_slug.h"
+#include "bn_sprite_items_mon_gas_bomb.h"
 #include "bn_sprite_items_mon_flyconid.h"
 #include "bn_sprite_items_mon_fuzzy_wurm_crawler.h"
 #include "bn_sprite_items_mon_gremlin_merc.h"

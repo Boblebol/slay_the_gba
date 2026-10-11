@@ -173,10 +173,8 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal",
                                         "InkletsNormal", "NibbitsNormal", "FlyconidNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal" }));
-           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "PunchConstructNormal" }));
-           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "GremlinMercNormal" }));
-           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "HauntedShipNormal" }));
+           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal",
+                                        "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal" }));
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
@@ -184,9 +182,7 @@ void test_reference_encounters() {
                std::set<std::string_view>{ "LegacyGremlinNob" });
     }
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
-           std::set<std::string_view>{ "CorpseSlugsWeak" });
-           std::set<std::string_view>{ "SludgeSpinnerWeak" });
-           std::set<std::string_view>{ "ToadpolesWeak" });
+           (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak" }));
     // The groups the game had before, where the reference has nothing the engine can play yet.
     for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
         assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
@@ -220,9 +216,7 @@ void test_reference_encounters() {
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
-                                                          EnemyType::GAS_BOMB };
-                                                          EnemyType::STABBOT, EnemyType::NOISEBOT,
-                                                          EnemyType::SNEAKY_GREMLIN };
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));

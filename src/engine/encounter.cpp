@@ -37,11 +37,7 @@ constexpr Encounter ACT1A_NORMAL[] = {
 // Act 1 (B): the Underdocks.
 constexpr Encounter ACT1B_WEAK[] = {
     { "CorpseSlugsWeak"sv, 2, { EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG } },
-};
-constexpr Encounter ACT1B_WEAK[] = {
     { "SludgeSpinnerWeak"sv, 1, { EnemyType::SLUDGE_SPINNER } },
-};
-constexpr Encounter ACT1B_WEAK[] = {
     { "ToadpolesWeak"sv, 2, { EnemyType::TOADPOLE, EnemyType::TOADPOLE } },
 };
 constexpr Encounter ACT1B_NORMAL[] = {
