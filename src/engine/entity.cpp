@@ -81,6 +81,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Gros diablotin";
         max_hp = 13;
         hp = 13;
+    } else if (type == EnemyType::SNEAKY_GREMLIN) {
+        name = "Diablotin sournois";
+        max_hp = 10;
+        hp = 10;
     } else if (type == EnemyType::VINE_SHAMBLER) {
         name = "Bourbelianes";
         max_hp = 61;
@@ -126,6 +130,7 @@ uint8_t Enemy::hp_spread() const {
     switch (type) {
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
+        case EnemyType::SNEAKY_GREMLIN: return 4; // 10 to 14, 11 to 15 at Ascension
         case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
         case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
         case EnemyType::INKLET: return 6; // 11 to 17, 12 to 18 at Ascension
@@ -157,6 +162,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::THE_FORGOTTEN: return 111;
         case EnemyType::LIVING_SHIELD: return 65;
         case EnemyType::FAT_GREMLIN: return 14;
+        case EnemyType::SNEAKY_GREMLIN: return 11;
         case EnemyType::VINE_SHAMBLER: return 64;
         case EnemyType::STABBOT: return 19;
         case EnemyType::NOISEBOT: return 19;
@@ -470,6 +476,16 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         } else {
             current_intent.type = EnemyIntentType::ESCAPE;
             current_intent.description = "Fuite";
+        }
+    } else if (type == EnemyType::SNEAKY_GREMLIN) {
+        // Wakes up dazed, then Tackles every turn.
+        if (turn_number == 1) {
+            stun();
+            current_intent.description = "Éveil (étourdi)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 10 : 9;
+            current_intent.description = "Charge (9 dmg)";
         }
     } else if (type == EnemyType::VINE_SHAMBLER) {
         // Swipe, Grasping Vines, Chomp, and again.

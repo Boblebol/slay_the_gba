@@ -768,6 +768,40 @@ void test_fat_gremlin_ascension() {
     std::cout << "[PASS] Fat Gremlin: Ascension gives 14 to 18 HP" << std::endl;
 }
 
+void test_sneaky_gremlin() {
+    // Spawned (stunned), then Tackle 9 every turn. Its HP are drawn between 10 and 14 at the start of the fight.
+    CombatEngine probe = make_combat(CharacterId::IRONCLAD, EnemyType::SNEAKY_GREMLIN);
+    const Enemy& gremlin = probe.enemies[0];
+    assert(gremlin.hp >= 10 && gremlin.hp <= 14 && gremlin.max_hp == 10 + gremlin.hp_bonus && gremlin.hp_spread() == 4);
+    check_monster(EnemyType::SNEAKY_GREMLIN, "Diablotin sournois", gremlin.hp, {
+        { STUN,   0, 0, 0 },
+        { ATTACK, 9, 0, 0 },
+        { ATTACK, 9, 0, 0 },
+        { ATTACK, 9, 0, 0 },
+    });
+    std::cout << "[PASS] Sneaky Gremlin: 10 to 14 HP, Spawned (stunned), then Tackle 9" << std::endl;
+}
+
+void test_sneaky_gremlin_ascension() {
+    // 11 to 15 HP at Ascension, on the same draw; Tackle 10 at Ascension 9.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SNEAKY_GREMLIN);
+        Enemy& gremlin = combat.enemies[0];
+        gremlin.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = gremlin.hp;
+        assert(base >= 10 && base <= 14 && gremlin.ascension_hp() == 11);
+        gremlin.ascend(true, true);
+        combat.plan_enemies();
+        assert(gremlin.hp == base + 1 && gremlin.max_hp == base + 1 && gremlin.hp >= 11 && gremlin.hp <= 15);
+        assert(gremlin.current_intent.type == STUN);
+        pass_turn(combat);
+        assert(gremlin.current_intent.type == ATTACK && gremlin.intent_damage(combat.player) == 10);
+        pass_turn(combat);
+        assert(gremlin.current_intent.type == ATTACK && gremlin.intent_damage(combat.player) == 10);
+    }
+    std::cout << "[PASS] Sneaky Gremlin: Ascension gives 11 to 15 HP and Tackle 10" << std::endl;
+}
+
 // Puts `card` alone in hand with full energy and plays it on the first enemy.
 bool play_alone(CombatEngine& combat, DeckCard card) {
     combat.hand.clear();
@@ -1532,6 +1566,8 @@ int main() {
     test_nibbit_ascension();
     test_flyconid();
     test_flyconid_ascension();
+    test_sneaky_gremlin();
+    test_sneaky_gremlin_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
