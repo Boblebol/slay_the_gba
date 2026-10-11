@@ -1322,6 +1322,59 @@ void test_punch_construct_ascension() {
     std::cout << "[PASS] Punch Construct: Ascension gives 60 HP, Fast Punch 6x2, Strong Punch 16" << std::endl;
 }
 
+void test_axebot() {
+    // 70 to 78 HP. Boot Up 10 Block and 1 Strength, then Hammer Uppercut (14, 2 Frail, 2 Weak) and One-Two (10 x2)
+    // in turn, each hit 1 stronger once the Strength is up.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::AXEBOT);
+    Enemy& bot = combat.enemies[0];
+    assert(bot.type == EnemyType::AXEBOT && bot.name == "Hachebots");
+    assert(bot.hp >= 70 && bot.hp <= 78 && bot.max_hp == bot.hp && bot.max_hp == 70 + bot.hp_bonus);
+    const int16_t hp = bot.hp;
+    assert(bot.block == 0 && bot.statuses.empty());
+    assert(bot.current_intent.type == BUFF && bot.current_intent.block == 10);
+    combat.end_player_turn();
+    assert(bot.block == 10 && bot.get_status(StatusType::STRENGTH) == 1);
+    for (int cycle = 0; cycle < 2; ++cycle) {
+        combat.player.hp = combat.player.max_hp;
+        assert(bot.current_intent.type == ATTACK_DEBUFF && bot.intent_damage(combat.player) == 15);
+        assert(bot.current_intent.debuffs[0].type == StatusType::FRAIL && bot.current_intent.debuffs[0].amount == 2);
+        assert(bot.current_intent.debuffs[1].type == StatusType::WEAK && bot.current_intent.debuffs[1].amount == 2);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 15);
+        assert(combat.player.get_status(StatusType::FRAIL) >= 2 && combat.player.get_status(StatusType::WEAK) >= 2);
+        combat.player.hp = combat.player.max_hp;
+        assert(bot.current_intent.type == ATTACK && bot.current_intent.hits == 2);
+        assert(bot.intent_damage(combat.player) == 11);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 22);
+        assert(bot.get_status(StatusType::STRENGTH) == 1 && bot.hp == hp);
+    }
+    std::cout << "[PASS] Axebot: 70 to 78 HP, Boot Up, Hammer Uppercut, One-Two, loop" << std::endl;
+}
+
+void test_axebot_ascension() {
+    // 76 to 84 HP (70 to 78 plus 6), Hammer Uppercut 18 and One-Two 11x2 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::AXEBOT);
+        Enemy& bot = combat.enemies[0];
+        bot.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = bot.hp;
+        assert(bot.ascension_hp() == 76 && bot.hp_spread() == 8);
+        assert(base >= 70 && base <= 78 && bot.max_hp == 70 + bot.hp_bonus);
+        bot.ascend(true, true);
+        combat.plan_enemies();
+        assert(bot.hp == base + 6 && bot.max_hp == base + 6);
+        combat.end_player_turn(); // Boot Up
+        combat.player.hp = combat.player.max_hp;
+        assert(bot.current_intent.type == ATTACK_DEBUFF && bot.intent_damage(combat.player) == 19);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 19);
+        combat.player.hp = combat.player.max_hp;
+        assert(bot.current_intent.type == ATTACK && bot.current_intent.hits == 2 && bot.intent_damage(combat.player) == 12);
+    }
+    std::cout << "[PASS] Axebot: Ascension gives 76 to 84 HP, Hammer Uppercut 18, One-Two 11x2" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -1923,6 +1976,8 @@ int main() {
     test_cubex_construct_ascension();
     test_punch_construct();
     test_punch_construct_ascension();
+    test_axebot();
+    test_axebot_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();
