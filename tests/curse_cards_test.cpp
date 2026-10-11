@@ -232,11 +232,13 @@ void test_normality() {
 
 void test_spore_mind() {
     check_definition(CardId::SPORE_MIND, KEYWORD_EXHAUST, false);
-    CombatEngine combat = fight_with(CardId::SPORE_MIND);
-    assert(combat.can_play_card(0));
-    assert(combat.play_card(0, 0));
-    assert(combat.player.energy == 2);
-    assert(combat.exhaust_pile.size() == 1 && combat.exhaust_pile[0].id == CardId::SPORE_MIND);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::SPORE_MIND, up);
+        assert(combat.can_play_card(0));
+        assert(combat.play_card(0, 0));
+        assert(combat.player.energy == 2);
+        assert(combat.exhaust_pile.size() == 1 && combat.exhaust_pile[0].id == CardId::SPORE_MIND);
+    }
     std::cout << "[PASS] Spore Mind: cost 1, playable, exhausted, nothing else" << std::endl;
 }
 
