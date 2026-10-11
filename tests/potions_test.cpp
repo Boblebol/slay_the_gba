@@ -29,6 +29,7 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "ENTROPIC_BREW",
     "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "FRUIT_JUICE",
     "FOUL_POTION",
+    "SOLDIERS_STEW",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -118,6 +119,27 @@ void test_explosive_ampoule() {
     assert(lethal.use_potion("EXPLOSIVE_AMPOULE"));
     assert(lethal.state == CombatState::VICTORY);
     std::cout << "[PASS] Explosive Ampoule: 10 damage to every enemy, absorbed by Block, victory" << std::endl;
+}
+
+void test_soldiers_stew() {
+    // Every Strike (hand, draw, discard) gains Echo 1; other cards do not.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.hand.clear();
+    combat.draw_pile.clear();
+    combat.discard_pile.clear();
+    combat.hand.push_back(CardId::STRIKE);
+    combat.hand.push_back(CardId::DEFEND);
+    combat.draw_pile.push_back(CardId::TWIN_STRIKE);
+    combat.discard_pile.push_back(CardId::STRIKE);
+    assert(combat.use_potion("SOLDIERS_STEW"));
+    assert(combat.hand[0].echo == 1 && combat.hand[1].echo == 0);
+    assert(combat.draw_pile[0].echo == 1 && combat.discard_pile[0].echo == 1);
+
+    // The Echo replays the Strike: 6 damage twice.
+    const int16_t hp_before = combat.enemy.hp;
+    assert(combat.play_card(0, 0));
+    assert(combat.enemy.hp == hp_before - 12);
+    std::cout << "[PASS] Soldier's Stew: every Strike gains Echo 1" << std::endl;
 }
 
 void test_foul_potion() {
@@ -1171,6 +1193,7 @@ int main() {
     test_entropic_brew();
     test_explosive_ampoule();
     test_foul_potion();
+    test_soldiers_stew();
     test_weak_potion();
     test_swift_potion();
     test_dexterity_potion();
