@@ -2230,11 +2230,33 @@ void test_seapunk_ascension() {
     std::cout << "[PASS] Seapunk: Ascension gives 47 to 49 HP, Sea Kick 13, Bubble Burp 8 Block + 2 Strength" << std::endl;
 }
 
+void test_osty() {
+    // Titos, summoned by the Entomancer: 1 HP and no move, so it does nothing turn after turn.
+    check_monster(EnemyType::OSTY, "Titos", 1, {
+        { STUN, 0, 0, 0 }, { STUN, 0, 0, 0 }, { STUN, 0, 0, 0 }, { STUN, 0, 0, 0 },
+    });
+    std::cout << "[PASS] Titos: 1 HP, does nothing every turn" << std::endl;
+}
+
+void test_osty_ascension() {
+    // The bible gives no Ascension value: HP stays at 1 and the turn stays empty.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::OSTY);
+    Enemy& osty = combat.enemies[0];
+    assert(osty.ascension_hp() == 0 && osty.hp_spread() == 0);
+    osty.ascend(true, true);
+    combat.plan_enemies();
+    assert(osty.hp == 1 && osty.max_hp == 1);
+    assert(osty.current_intent.type == STUN && osty.intent_damage(combat.player) == 0);
+    std::cout << "[PASS] Titos: Ascension changes neither HP nor behaviour" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Monsters ===" << std::endl;
     test_fuzzy_wurm_crawler();
+    test_osty();
+    test_osty_ascension();
     test_crossbow_ruby_raider();
     test_brute_ruby_raider();
     test_assassin_ruby_raider();

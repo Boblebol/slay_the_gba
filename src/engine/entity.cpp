@@ -169,6 +169,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Rôdeur Traqueur";
         max_hp = 21;
         hp = 21;
+    } else if (type == EnemyType::OSTY) {
+        name = "Titos";
+        max_hp = 1;
+        hp = 1;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -843,6 +847,10 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_amount = ascended_damage ? 2 : 1;
             current_intent.description = "Jet de bulles (7 blk, +1 Force)";
         }
+    } else if (type == EnemyType::OSTY) {
+        // Titos, summoned by the Entomancer, has no move: it does nothing, turn after turn.
+        current_intent.type = EnemyIntentType::STUN;
+        current_intent.description = "Ne fait rien";
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the
         // next phase with Vulnerable Spores, then draws among the three moves, never the same twice in a row.
