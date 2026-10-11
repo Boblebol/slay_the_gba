@@ -1222,6 +1222,33 @@ void test_noisebot_ascension() {
     std::cout << "[PASS] Noisebot: Ascension gives 19 to 24 HP" << std::endl;
 }
 
+void test_parafright() {
+    // Slam 16 every turn.
+    check_monster(EnemyType::PARAFRIGHT, "Pareffroi", 21, {
+        { ATTACK, 16, 0, 0 },
+        { ATTACK, 16, 0, 0 },
+        { ATTACK, 16, 0, 0 },
+        { ATTACK, 16, 0, 0 },
+    });
+    std::cout << "[PASS] Parafright: 21 HP, Slam 16 every turn" << std::endl;
+}
+
+void test_parafright_ascension() {
+    // Same 21 HP (no Ascension HP), Slam 17 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::PARAFRIGHT);
+    Enemy& ghost = combat.enemies[0];
+    ghost.ascend(true, true);
+    combat.plan_enemies();
+    assert(ghost.hp == 21 && ghost.max_hp == 21);
+    for (int turn = 1; turn <= 3; ++turn) {
+        assert(ghost.current_intent.type == ATTACK && ghost.intent_damage(combat.player) == 17);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 17);
+    }
+    std::cout << "[PASS] Parafright: Ascension gives a Slam of 17" << std::endl;
+}
+
 void test_cubex_construct() {
     // Charge Up (+2 Strength), two Repeater Blasts 7 (+2 Strength each), Expel 5x2, then the blasts and Expel again.
     // The Strength of a blast is gained after it hits.
@@ -1524,6 +1551,8 @@ int main() {
     test_stabbot_ascension();
     test_noisebot();
     test_noisebot_ascension();
+    test_parafright();
+    test_parafright_ascension();
     test_cubex_construct();
     test_cubex_construct_ascension();
     test_inklet();

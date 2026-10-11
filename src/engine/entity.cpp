@@ -93,6 +93,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Poignard-bot";
         max_hp = 18;
         hp = 18;
+    } else if (type == EnemyType::PARAFRIGHT) {
+        name = "Pareffroi";
+        max_hp = 21;
+        hp = 21;
     } else if (type == EnemyType::NOISEBOT) {
         name = "Sonobot";
         max_hp = 18;
@@ -504,6 +508,11 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.base_damage = ascended_damage ? 12 : 11;
         current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
         current_intent.description = "Coup de poignard (11 dmg, Fragilisé)";
+    } else if (type == EnemyType::PARAFRIGHT) {
+        // Slam every turn.
+        current_intent.type = EnemyIntentType::ATTACK;
+        current_intent.base_damage = ascended_damage ? 17 : 16;
+        current_intent.description = "Heurt (16 dmg)";
     } else if (type == EnemyType::NOISEBOT) {
         // Noise every turn: 2 Dazed into the discard pile.
         current_intent.type = EnemyIntentType::STATUS;

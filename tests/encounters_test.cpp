@@ -43,6 +43,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::EYE_WITH_TEETH: return "EYE_WITH_TEETH";
         case EnemyType::STABBOT: return "STABBOT";
         case EnemyType::NOISEBOT: return "NOISEBOT";
+        case EnemyType::PARAFRIGHT: return "PARAFRIGHT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
@@ -203,9 +204,11 @@ void test_reference_encounters() {
     // (TurretOperatorWeak), the Fat Gremlin with the Gremlin Merc (GremlinMercNormal).
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
     // The Stabbot and the Noisebot are brought by the Fabricator (FabricatorNormal).
+    // The Parafright is brought by the Obscura (TheObscuraNormal).
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
-                                                          EnemyType::STABBOT, EnemyType::NOISEBOT };
+                                                          EnemyType::STABBOT, EnemyType::NOISEBOT,
+                                                          EnemyType::PARAFRIGHT };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));
