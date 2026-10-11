@@ -30,6 +30,7 @@
 #include "bn_sprite_items_mon_jaw_worm.h"
 #include "bn_sprite_items_mon_noisebot.h"
 #include "bn_sprite_items_mon_nibbit.h"
+#include "bn_sprite_items_mon_osty.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
@@ -240,6 +241,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_inklet, false };
     case engine::EnemyType::NIBBIT:
         return { &bn::sprite_items::mon_nibbit, false };
+    case engine::EnemyType::OSTY:
+        return { &bn::sprite_items::mon_osty, false };
     case engine::EnemyType::FLYCONID:
         return { &bn::sprite_items::mon_flyconid, false };
     case engine::EnemyType::FAT_GREMLIN:
