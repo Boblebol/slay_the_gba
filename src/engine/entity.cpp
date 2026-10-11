@@ -129,6 +129,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Hachebots";
         max_hp = 70;
         hp = 70;
+    } else if (type == EnemyType::TURRET_OPERATOR) {
+        name = "Opérateur de tourelle";
+        max_hp = 41;
+        hp = 41;
     } else if (type == EnemyType::INKLET) {
         name = "Encrelin";
         max_hp = 11;
@@ -302,6 +306,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::PUNCH_CONSTRUCT: return 60;
         case EnemyType::BOWLBUG_NECTAR: return 36;
         case EnemyType::AXEBOT: return 76;
+        case EnemyType::TURRET_OPERATOR: return 51;
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
@@ -824,6 +829,21 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = ascended_damage ? 11 : 10;
             current_intent.hits = 2;
             current_intent.description = "Droite-gauche (10 dmg x2)";
+        }
+    } else if (type == EnemyType::TURRET_OPERATOR) {
+        // Unload twice (5 hits of 3), Reload (+1 Strength), and again.
+        if ((turn_number - 1) % 3 != 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 4 : 3;
+            current_intent.hits = 5;
+            current_intent.description = "Déchargement ! (3 dmg x5)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.base_damage = 0;
+            current_intent.block = 0;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 1;
+            current_intent.description = "Rechargement (+1 Force)";
         }
     } else if (type == EnemyType::INKLET) {
         // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.

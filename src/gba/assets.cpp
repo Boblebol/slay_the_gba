@@ -46,6 +46,7 @@
 #include "bn_sprite_items_mon_bowlbug_nectar.h"
 #include "bn_sprite_items_mon_devoted_sculptor.h"
 #include "bn_sprite_items_mon_axebot.h"
+#include "bn_sprite_items_mon_turret_operator.h"
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_osty.h"
 #include "bn_sprite_items_mon_parafright.h"
@@ -278,6 +279,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_bowlbug_nectar, false };
     case engine::EnemyType::AXEBOT:
         return { &bn::sprite_items::mon_axebot, false };
+    case engine::EnemyType::TURRET_OPERATOR:
+        return { &bn::sprite_items::mon_turret_operator, false };
     case engine::EnemyType::INKLET:
         return { &bn::sprite_items::mon_inklet, false };
     case engine::EnemyType::NIBBIT:

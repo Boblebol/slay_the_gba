@@ -1660,6 +1660,34 @@ void test_axebot_ascension() {
     std::cout << "[PASS] Axebot: Ascension gives 76 to 84 HP, Hammer Uppercut 18, One-Two 11x2" << std::endl;
 }
 
+void test_turret_operator() {
+    // Unload 3x5 twice, Reload (+1 Strength), and again: the Strength makes each hit stronger.
+    check_monster(EnemyType::TURRET_OPERATOR, "Opérateur de tourelle", 41, {
+        { ATTACK, 3, 0, 0, 0, 5 },
+        { ATTACK, 3, 0, 0, 0, 5 },
+        { BUFF, 0, 0, 1 },
+        { ATTACK, 4, 0, 1, 0, 5 },
+        { ATTACK, 4, 0, 1, 0, 5 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK, 5, 0, 2, 0, 5 },
+    });
+    std::cout << "[PASS] Turret Operator: 41 HP, Unload 3x5 twice, Reload +1 Strength, loop" << std::endl;
+}
+
+void test_turret_operator_ascension() {
+    // 51 HP and Unload 4x5 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TURRET_OPERATOR);
+    Enemy& operator_ = combat.enemies[0];
+    operator_.ascend(true, true);
+    combat.plan_enemies();
+    assert(operator_.hp == 51 && operator_.max_hp == 51);
+    assert(operator_.current_intent.type == ATTACK && operator_.current_intent.hits == 5);
+    assert(operator_.intent_damage(combat.player) == 4);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 20);
+    std::cout << "[PASS] Turret Operator: Ascension gives 51 HP, Unload 4x5" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -2916,6 +2944,8 @@ int main() {
     test_devoted_sculptor_ascension();
     test_axebot();
     test_axebot_ascension();
+    test_turret_operator();
+    test_turret_operator_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();
