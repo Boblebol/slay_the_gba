@@ -3619,6 +3619,42 @@ void test_precarious_shears() {
     std::cout << "[PASS] Precarious Shears: pickup asks for 2 cards to remove and costs 16 HP, nothing without the relic" << std::endl;
 }
 
+void test_biiig_hug() {
+    // Obtained: 4 cards are chosen to leave the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 763);
+    size_t deck = run.master_deck.size();
+    run.add_relic("BIIIG_HUG");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 4);
+    for (int i = 0; i < 4; ++i) assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 4);
+
+    // In combat, each shuffle of the draw pile adds a Soot to it.
+    CombatEngine hug = make_relic_combat(CharacterId::IRONCLAD, PowerId::BIIIG_HUG, 1);
+    hug.draw_pile.clear();
+    hug.draw_cards(1);
+    assert(hug.draw_pile.empty()); // nothing to shuffle
+    hug.discard_pile.push_back(CardId::STRIKE);
+    hug.draw_cards(1);
+    int soot = 0;
+    for (const auto& card : hug.draw_pile) soot += card.id == CardId::SOOT;
+    for (const auto& card : hug.hand) soot += card.id == CardId::SOOT;
+    assert(soot == 1);
+
+    // Without the relic nothing is removed or added.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 763);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("BIIIG_HUG") && !plain.has_deck_choice() && plain.master_deck.size() == deck);
+    CombatEngine bare = make_relic_combat(CharacterId::IRONCLAD, PowerId::THE_ABACUS, 6);
+    bare.draw_pile.clear();
+    bare.discard_pile.push_back(CardId::STRIKE);
+    bare.draw_cards(1);
+    for (const auto& card : bare.draw_pile) assert(card.id != CardId::SOOT);
+    for (const auto& card : bare.hand) assert(card.id != CardId::SOOT);
+    std::cout << "[PASS] Biiig Hug: pickup removes 4 cards, each shuffle adds a Soot, nothing without the relic" << std::endl;
+}
+
 void test_paper_phrog() {
     // With the relic, a Strike (6 damage, x1.5 on a Vulnerable enemy = 9) gets 25% more on top: 11. Other enemies do not.
     CombatEngine phrog = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAPER_PHROG, 25);
@@ -3786,6 +3822,7 @@ int main() {
     test_neows_torment();
     test_precise_scissors();
     test_precarious_shears();
+    test_biiig_hug();
     test_new_leaf();
     test_small_capsule();
     test_nutritious_oyster();

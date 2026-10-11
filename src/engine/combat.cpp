@@ -828,6 +828,11 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::THE_ABACUS:
             if (event == CombatEvent::DRAW_PILE_SHUFFLED) add_block(power.amount);
             break;
+        case PowerId::BIIIG_HUG:
+            if (event == CombatEvent::DRAW_PILE_SHUFFLED) {
+                for (int16_t copy = 0; copy < power.amount; ++copy) create_card(CardId::SOOT, Pile::DRAW);
+            }
+            break;
         case PowerId::PERMAFROST:
             if (card_played && CardDef::get(info.card.id).type == CardType::POWER && power.counter == 0) {
                 power.counter = 1;

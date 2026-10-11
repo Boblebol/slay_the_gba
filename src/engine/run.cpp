@@ -977,6 +977,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
             if (!candidates.empty()) master_deck[candidates[next_random() % candidates.size()]].upgraded = true;
         }
     }
+    // Grooos câlin (Ancient): 4 cards chosen out of the deck when obtained.
+    if (relic_id == "BIIIG_HUG" && has_relic("BIIIG_HUG")) request_deck_choice(DeckChoiceKind::REMOVE, 4);
     if (relic_id == "EMPTY_CAGE" && has_relic("EMPTY_CAGE")) request_deck_choice(DeckChoiceKind::REMOVE, 2);
     // Precarious Shears (Ancient): 2 cards chosen out of the deck, then 16 HP lost, never below 1.
     if (relic_id == "PRECARIOUS_SHEARS" && has_relic("PRECARIOUS_SHEARS")) {
@@ -1498,6 +1500,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("GREMLIN_HORN")) combat.add_power(PowerId::GREMLIN_HORN, 1);
     if (has_relic("RAZOR_TOOTH")) combat.add_power(PowerId::RAZOR_TOOTH);
     if (has_relic("THE_ABACUS")) combat.add_power(PowerId::THE_ABACUS, 6);
+    // Grooos câlin (Ancient): a Soot joins the draw pile each time it is shuffled.
+    if (has_relic("BIIIG_HUG")) combat.add_power(PowerId::BIIIG_HUG, 1);
     if (has_relic("PERMAFROST")) combat.add_power(PowerId::PERMAFROST, 7);
     if (has_relic("GAME_PIECE")) combat.add_power(PowerId::GAME_PIECE, 1);
     // Lost Wisp (event relic): each Power played deals 8 damage to every enemy.
