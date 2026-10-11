@@ -148,7 +148,18 @@ FixedVector<EnemyType, 3> RunManager::draw_encounter(RoomType room) {
     // A list of one draws nothing, as the rooms with a single choice did before the tables.
     // The high bits: the low ones of two draws in a row are too alike, and would tie the monsters drawn
     // from a pool to the encounter picked.
-    const Encounter& encounter = table.size() == 1 ? table[0] : table[(next_random() >> 16) % table.size()];
+    // Never the encounter of the previous fight: it is left out of the draw when this list holds it.
+    size_t previous = table.size();
+    for (size_t i = 0; i < table.size(); ++i) {
+        if (table[i].id == current_encounter) previous = i;
+    }
+    size_t index = 0;
+    if (table.size() > 1) {
+        const bool skips = previous < table.size();
+        index = (next_random() >> 16) % (skips ? table.size() - 1 : table.size());
+        if (skips && index >= previous) ++index;
+    }
+    const Encounter& encounter = table[index];
     current_encounter = encounter.id;
 
     FixedVector<EnemyType, 3> monsters;
