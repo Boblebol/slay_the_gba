@@ -2230,6 +2230,73 @@ void test_seapunk_ascension() {
     std::cout << "[PASS] Seapunk: Ascension gives 47 to 49 HP, Sea Kick 13, Bubble Burp 8 Block + 2 Strength" << std::endl;
 }
 
+void test_flail_knight() {
+    // Ram 15 first, then a draw among War Chant (+3 Strength), Flail 9x2 and Ram 15; War Chant never twice in a row.
+    bool chant = false, flail = false, ram_again = false;
+    for (int i = 0; i < 30; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FLAIL_KNIGHT);
+        Enemy& knight = combat.enemies[0];
+        assert(knight.type == EnemyType::FLAIL_KNIGHT && knight.name == "Chevalier au fléau");
+        assert(knight.hp == 101 && knight.max_hp == 101);
+        bool previous_chant = false;
+        int strength = 0;
+        for (int turn = 1; turn <= 12; ++turn) {
+            const EnemyIntent intent = knight.current_intent;
+            if (turn == 1) assert(intent.type == ATTACK && intent.hits == 1 && knight.intent_damage(combat.player) == 15);
+            int expected = 0;
+            if (intent.type == BUFF) {
+                assert(turn > 1 && !previous_chant);
+                assert(knight.intent_damage(combat.player) == 0);
+                chant = true;
+            } else if (intent.hits == 2) {
+                assert(knight.intent_damage(combat.player) == 9 + strength);
+                expected = 2 * (9 + strength);
+                flail = true;
+            } else {
+                assert(intent.type == ATTACK && knight.intent_damage(combat.player) == 15 + strength);
+                expected = 15 + strength;
+                if (turn > 1) ram_again = true;
+            }
+            previous_chant = intent.type == BUFF;
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+            assert(combat.state == CombatState::PLAYER_TURN);
+            assert(combat.player.max_hp - combat.player.hp == expected);
+            if (previous_chant) strength += 3;
+            assert(knight.get_status(StatusType::STRENGTH) == strength);
+            assert(knight.block == 0 && knight.hp == 101);
+        }
+    }
+    assert(chant && flail && ram_again);
+    std::cout << "[PASS] Flail Knight: 101 HP, Ram 15, then War Chant +3 Strength, Flail 9x2 or Ram at random" << std::endl;
+}
+
+void test_flail_knight_ascension() {
+    // 108 HP, Flail 10x2 and Ram 17 at Ascension.
+    bool flail = false, ram = false;
+    for (int i = 0; i < 30; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FLAIL_KNIGHT);
+        Enemy& knight = combat.enemies[0];
+        knight.ascend(true, true);
+        combat.plan_enemies();
+        assert(knight.hp == 108 && knight.max_hp == 108);
+        for (int turn = 1; turn <= 8; ++turn) {
+            const EnemyIntent intent = knight.current_intent;
+            if (intent.type == ATTACK && intent.hits == 2) {
+                assert(knight.intent_damage(combat.player) == 10 + knight.get_status(StatusType::STRENGTH));
+                flail = true;
+            } else if (intent.type == ATTACK) {
+                assert(knight.intent_damage(combat.player) == 17 + knight.get_status(StatusType::STRENGTH));
+                ram = true;
+            }
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+        }
+    }
+    assert(flail && ram);
+    std::cout << "[PASS] Flail Knight: Ascension gives 108 HP, Flail 10x2, Ram 17" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -2308,6 +2375,8 @@ int main() {
     test_fossil_stalker_ascension();
     test_seapunk();
     test_seapunk_ascension();
+    test_flail_knight();
+    test_flail_knight_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
