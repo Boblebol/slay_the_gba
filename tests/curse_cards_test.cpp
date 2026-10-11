@@ -208,9 +208,10 @@ void test_shame() {
 }
 
 void test_normality() {
-    CombatEngine combat = fight_with(CardId::NORMALITY);
+  for (bool up : { false, true }) {
+    CombatEngine combat = fight_with(CardId::NORMALITY, up);
     combat.hand.clear();
-    combat.hand.push_back(DeckCard(CardId::NORMALITY, false));
+    combat.hand.push_back(DeckCard(CardId::NORMALITY, up));
     for (int i = 0; i < 5; ++i) combat.hand.push_back(DeckCard(CardId::DEFEND, false));
     combat.player.energy = 10;
     int played = 0;
@@ -224,6 +225,8 @@ void test_normality() {
         ++played;
     }
     assert(played == 3);
+    assert(!combat.can_play_card(0));
+  }
     std::cout << "[PASS] Normality: no more than 3 cards played in a turn" << std::endl;
 }
 
