@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 83,8 %** — 1035 faits, 19 partiels, 192 à faire (35 hors périmètre).
+**Avancement global : 84,9 %** — 1048 faits, 19 partiels, 179 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -16,17 +16,17 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 |---|---:|---:|---:|---:|
 | [Soldat de Fer](#ironclad) | 100 | 1 | 1 | 98,5 % |
 | [La Silencieuse](#silent) | 100 | 1 | 0 | 99,5 % |
-| [Le Défectueux](#defect) | 100 | 1 | 4 | 95,7 % |
+| [Le Défectueux](#defect) | 104 | 1 | 0 | 99,5 % |
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 282 | 0 | 39 | 87,9 % |
-| [Bestiaire](#bestiaire) | 52 | 1 | 51 | 50,5 % |
+| [Bestiaire](#bestiaire) | 61 | 1 | 42 | 59,1 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 45 | 0 | 14 | 76,3 % |
 | [Systèmes de jeu](#systemes) | 25 | 4 | 7 | 75,0 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1035** | **19** | **192** | **83,8 %** |
+| **Total** | **1048** | **19** | **179** | **84,9 %** |
 
 <a id="ironclad"></a>
 
@@ -292,11 +292,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="defect"></a>
 
-## Le Défectueux — 95,7 %
+## Le Défectueux — 99,5 %
 
-### Cartes — 96,5 %
+### Cartes — 100,0 %
 
-83 faits, 0 partiel, 3 à faire (5 hors périmètre).
+86 faits, 0 partiel, 0 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -349,7 +349,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Prise de masse | Peu commune · Pouvoir | Oui |  |
 | Programme de démarrage | Peu commune · Compétence | Oui |  |
 | Récupération | Peu commune · Compétence | Oui |  |
-| Réfraction | Peu commune · Attaque | Non |  |
+| Réfraction | Peu commune · Attaque | Oui |  |
 | Sauvagerie | Peu commune · Pouvoir | Oui |  |
 | Scission | Peu commune · Attaque | Oui |  |
 | Sous-programme | Peu commune · Pouvoir | Oui |  |
@@ -359,7 +359,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tonnerre | Peu commune · Pouvoir | Oui |  |
 | Ténèbres | Peu commune · Compétence | Oui |  |
 | Valeur nulle | Peu commune · Attaque | Oui |  |
-| Verrerie | Peu commune · Compétence | Non |  |
+| Verrerie | Peu commune · Compétence | Oui |  |
 | Énergie double | Peu commune · Compétence | Oui |  |
 | Éraflure | Peu commune · Attaque | Oui |  |
 | Activation multiple | Rare · Compétence | Oui |  |
@@ -383,7 +383,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Revalorisation | Rare · Pouvoir | Oui |  |
 | Supercritique | Rare · Compétence | Oui |  |
 | Tampon | Rare · Pouvoir | Oui |  |
-| Toupie | Rare · Pouvoir | Non |  |
+| Toupie | Rare · Pouvoir | Oui |  |
 | Tous pour un | Rare · Attaque | Oui |  |
 | Ultralaser | Rare · Attaque | Oui |  |
 | Un pour tous | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
@@ -407,9 +407,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Puce émotionnelle | Rare | Oui |  |
 | Condensateur runique | Boutique | Oui |  |
 
-### Mécaniques — 86,4 %
+### Mécaniques — 95,5 %
 
-9 faits, 1 partiel, 1 à faire.
+10 faits, 1 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -419,7 +419,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Orbe glaciaire : 2 d'Armure en fin de tour, 5 à l'Activation |  | Oui |  |
 | Orbe ténébreux : se charge de 6 par tour, libère sa charge |  | Oui |  |
 | Orbe plasmique : 1 énergie par tour, 2 à l'Activation |  | Oui |  |
-| Orbe vitreux |  | Non | [#99](https://github.com/Boblebol/slay_the_gba/issues/99) |
+| Orbe vitreux |  | Oui | [#99](https://github.com/Boblebol/slay_the_gba/issues/99) |
 | Focalisation : renforce tous les Orbes |  | Oui |  |
 | Emplacements d'Orbe variables (Condensateur) |  | Oui |  |
 | Compteur d'Orbes affiché en combat |  | Oui |  |
@@ -1212,7 +1212,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 50,5 %
+## Bestiaire — 59,1 %
 
 ### Monstres — 72,2 %
 
@@ -1293,9 +1293,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sculpteur dévoué | Faible · Acte 3 | Oui |  |
 | Sonobot | Invocation · Acte 3 | Oui |  |
 
-### Élites — 0,0 %
+### Élites — 52,9 %
 
-0 fait, 0 partiel, 17 à faire.
+9 faits, 0 partiel, 8 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1303,19 +1303,19 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Larve | Élite · Acte 1 (A) | Non |  |
 | Oizodon | Élite · Acte 1 (A) | Non |  |
 | Parasite Krapo | Élite · Acte 1 (A) | Non |  |
-| Colonie de rôdeurs | Élite · Acte 1 (B) | Non |  |
+| Colonie de rôdeurs | Élite · Acte 1 (B) | Oui |  |
 | Jardinier spectral | Élite · Acte 1 (B) | Non |  |
-| Murène de l'effroi | Élite · Acte 1 (B) | Non |  |
+| Murène de l'effroi | Élite · Acte 1 (B) | Oui |  |
 | Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
 | Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
 | Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
-| Entomancien | Élite · Acte 2 | Non |  |
-| Prisme infesté | Élite · Acte 2 | Non |  |
-| Amalg'âmes | Élite · Acte 3 | Non |  |
-| Chevalier au fléau | Élite · Acte 3 | Non |  |
-| Chevalier mage | Élite · Acte 3 | Non |  |
-| Chevalier spectral | Élite · Acte 3 | Non |  |
-| Méca-Chevalier | Élite · Acte 3 | Non |  |
+| Entomancien | Élite · Acte 2 | Oui |  |
+| Prisme infesté | Élite · Acte 2 | Oui |  |
+| Amalg'âmes | Élite · Acte 3 | Oui |  |
+| Chevalier au fléau | Élite · Acte 3 | Oui |  |
+| Chevalier mage | Élite · Acte 3 | Oui |  |
+| Chevalier spectral | Élite · Acte 3 | Oui |  |
+| Méca-Chevalier | Élite · Acte 3 | Oui |  |
 
 ### Boss — 3,3 %
 
