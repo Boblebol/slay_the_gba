@@ -372,7 +372,6 @@ enum class EnemyType : uint8_t {
     EYE_WITH_TEETH,
     STABBOT,
     NOISEBOT,
-    ZAPBOT,
     CUBEX_CONSTRUCT,
     PUNCH_CONSTRUCT,
     INKLET,
@@ -383,8 +382,6 @@ enum class EnemyType : uint8_t {
     GREMLIN_MERC,
     SNEAKY_GREMLIN,
     HAUNTED_SHIP,
-    GLOBE_HEAD,
-    LOUSE_PROGENITOR,
     SLUDGE_SPINNER,
     TOADPOLE,
     HUNTER_KILLER,
@@ -397,12 +394,12 @@ enum class EnemyType : uint8_t {
     CHOMPER,
     SLUMBERING_BEETLE,
     PARAFRIGHT,
-    TUNNELER
-    TOADPOLE,
-    SLIMED_BERSERKER
-    TOADPOLE,
-    FROG_KNIGHT
-    TOADPOLE,
+    TUNNELER,
+    ZAPBOT,
+    SLIMED_BERSERKER,
+    FROG_KNIGHT,
+    GLOBE_HEAD,
+    LOUSE_PROGENITOR,
     GUARDBOT
 };
 
