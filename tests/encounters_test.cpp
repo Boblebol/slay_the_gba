@@ -49,6 +49,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::ZAPBOT: return "ZAPBOT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
         case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
+        case EnemyType::BOWLBUG_NECTAR: return "BOWLBUG_NECTAR";
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
@@ -242,6 +243,7 @@ void test_reference_encounters() {
     // Titos is summoned by the Entomancer, the Parafright brought by the Obscura, the Slumbering Beetle
     // waits for the Bowlbugs: none of them is a monster of the engine yet.
     // The Zapbot and the Guardbot are brought by the Fabricator too.
+    // The Bowlbug (Nectar) is brought by the Bowlbug (Rock) (BowlbugsNormal, BowlbugsWeak).
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
@@ -249,6 +251,8 @@ void test_reference_encounters() {
                                                           EnemyType::OSTY, EnemyType::SLUMBERING_BEETLE,
                                                           EnemyType::PARAFRIGHT, EnemyType::ZAPBOT,
                                                           EnemyType::GUARDBOT };
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
+                                                          EnemyType::BOWLBUG_NECTAR };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));

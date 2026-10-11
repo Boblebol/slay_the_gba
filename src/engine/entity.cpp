@@ -117,6 +117,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Assemblage de pugilat";
         max_hp = 55;
         hp = 55;
+    } else if (type == EnemyType::BOWLBUG_NECTAR) {
+        name = "Sphéropode (Nectar)";
+        max_hp = 35;
+        hp = 35;
     } else if (type == EnemyType::INKLET) {
         name = "Encrelin";
         max_hp = 11;
@@ -232,6 +236,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::GUARDBOT: return 4;    // 16 to 20, 17 to 21 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
         case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
+        case EnemyType::BOWLBUG_NECTAR: return 3; // 35 to 38, 36 to 39 at Ascension
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
         case EnemyType::CORPSE_SLUG: return 2; // 25 to 27, 27 to 29 at Ascension
         case EnemyType::LOUSE_PROGENITOR: return 2; // 134 to 136, 138 to 140 at Ascension
@@ -281,6 +286,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::NOISEBOT: return 19;
         case EnemyType::CUBEX_CONSTRUCT: return 70;
         case EnemyType::PUNCH_CONSTRUCT: return 60;
+        case EnemyType::BOWLBUG_NECTAR: return 36;
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
@@ -754,6 +760,18 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = ascended_damage ? 16 : 14;
             current_intent.description = "Poing puissant (14 dmg)";
+        }
+    } else if (type == EnemyType::BOWLBUG_NECTAR) {
+        // Thrash (3), Buff (+15 Strength, +16 at Ascension), then Thrash again for good.
+        if (turn_number == 2) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 16 : 15;
+            current_intent.description = "Buff (+15 Force)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 3;
+            current_intent.description = "Furie (3 dmg)";
         }
     } else if (type == EnemyType::INKLET) {
         // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.
