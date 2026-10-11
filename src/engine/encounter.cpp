@@ -40,6 +40,14 @@ constexpr Encounter ACT1B_NORMAL[] = {
     { "SewerClamNormal"sv, 1, { EnemyType::SEWER_CLAM } },
 };
 
+// Act 2: the Hive, with the groups the game had before next to the Spiny Toad.
+constexpr Encounter ACT2_NORMAL[] = {
+    { "SpinyToadNormal"sv, 1, { EnemyType::SPINY_TOAD } },
+    { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
+    { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
+    { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
+};
+
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
 };
@@ -61,7 +69,7 @@ constexpr Encounter LEGACY_ELITE[] = {
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 

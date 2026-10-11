@@ -113,6 +113,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Mycoptère";
         max_hp = 47;
         hp = 47;
+    } else if (type == EnemyType::SPINY_TOAD) {
+        name = "Crapineux";
+        max_hp = 116;
+        hp = 116;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -124,6 +128,7 @@ void Enemy::init(EnemyType enemy_type) {
 
 uint8_t Enemy::hp_spread() const {
     switch (type) {
+        case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
         case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
         case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
@@ -164,6 +169,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
+        case EnemyType::SPINY_TOAD: return 121;
         default: return 0;
     }
 }
@@ -498,6 +504,25 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.status_cards = 3;
         current_intent.status_pile = Pile::DISCARD;
         current_intent.description = "Distraction (3 Hébété)";
+    } else if (type == EnemyType::SPINY_TOAD) {
+        // Protruding Spikes (+5 Thorns), Spike Explosion (-5 Thorns), Tongue Lash, and again.
+        current_intent.status_type = StatusType::THORNS;
+        const int phase = (turn_number - 1) % 3;
+        if (phase == 0) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_amount = 5;
+            current_intent.description = "Épines saillantes (+5 Épines)";
+        } else if (phase == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = ascended_damage ? 25 : 23;
+            current_intent.status_amount = -5;
+            current_intent.description = "Explosion épineuse (23 dmg, -5 Épines)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.status_type = StatusType::NONE;
+            current_intent.base_damage = ascended_damage ? 19 : 17;
+            current_intent.description = "Fouet de langue (17 dmg)";
+        }
     } else if (type == EnemyType::STABBOT) {
         // Stab every turn: 1 Frail.
         current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
@@ -620,7 +645,7 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect, bool
 
     // Apply status buff to self if any. A move that also attacks hits first (see below).
     const bool buff_after_attack = current_intent.type == EnemyIntentType::ATTACK_BUFF;
-    if (!buff_after_attack && current_intent.status_type != StatusType::NONE && current_intent.status_amount > 0) {
+    if (!buff_after_attack && current_intent.status_type != StatusType::NONE && current_intent.status_amount != 0) {
         add_status(current_intent.status_type, current_intent.status_amount);
     }
 
@@ -637,7 +662,7 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect, bool
         clear_status(StatusType::VIGOR); // spent on this attack
     }
 
-    if (buff_after_attack && is_alive() && current_intent.status_amount > 0) {
+    if (buff_after_attack && is_alive() && current_intent.status_amount != 0) {
         add_status(current_intent.status_type, current_intent.status_amount);
     }
 
