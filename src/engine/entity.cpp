@@ -173,6 +173,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Titos";
         max_hp = 1;
         hp = 1;
+    } else if (type == EnemyType::CHOMPER) {
+        name = "Croquebot";
+        max_hp = 60;
+        hp = 60;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -199,6 +203,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::INKLET: return 6; // 11 to 17, 12 to 18 at Ascension
         case EnemyType::NIBBIT: return 4;      // 42 to 46, 44 to 48 at Ascension
         case EnemyType::TRACKER_RUBY_RAIDER: return 4; // 21 to 25, 22 to 26 at Ascension
+        case EnemyType::CHOMPER: return 4;     // 60 to 64, 63 to 67 at Ascension
         default: return 0;
     }
 }
@@ -247,6 +252,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::SPINY_TOAD: return 121;
         case EnemyType::SEAPUNK: return 47;
         case EnemyType::TRACKER_RUBY_RAIDER: return 22;
+        case EnemyType::CHOMPER: return 63;
         default: return 0;
     }
 }
@@ -851,6 +857,20 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         // Titos, summoned by the Entomancer, has no move: it does nothing, turn after turn.
         current_intent.type = EnemyIntentType::STUN;
         current_intent.description = "Ne fait rien";
+    } else if (type == EnemyType::CHOMPER) {
+        // Clamp (two hits), Screech (3 Dazed into the discard pile), and again.
+        if (turn_number % 2 == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.hits = 2;
+            current_intent.description = "Pince (8 dmg x2)";
+        } else {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_card = CardId::DAZED;
+            current_intent.status_cards = 3;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Crissement (3 Hébété)";
+        }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the
         // next phase with Vulnerable Spores, then draws among the three moves, never the same twice in a row.

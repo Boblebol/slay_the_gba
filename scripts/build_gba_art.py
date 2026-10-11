@@ -192,6 +192,7 @@ MONSTERS: dict[str, str] = {
     "fossil_stalker": "fossil_stalker",
     "seapunk": "seapunk",
     "osty": "osty",
+    "chomper": "chomper",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.

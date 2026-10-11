@@ -392,6 +392,8 @@ enum class EnemyType : uint8_t {
     TRACKER_RUBY_RAIDER
     FLYCONID,
     OSTY
+    FLYCONID,
+    CHOMPER
 };
 
 // What a monster sees of the fight when it chooses its next move.

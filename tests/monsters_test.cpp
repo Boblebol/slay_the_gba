@@ -2250,6 +2250,51 @@ void test_osty_ascension() {
     std::cout << "[PASS] Titos: Ascension changes neither HP nor behaviour" << std::endl;
 }
 
+void test_chomper() {
+    // Clamp 8 x2, Screech (3 Dazed into the discard pile), and again.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CHOMPER);
+    Enemy& chomper = combat.enemies[0];
+    assert(chomper.type == EnemyType::CHOMPER && chomper.name == "Croquebot");
+    assert(chomper.hp >= 60 && chomper.hp <= 64 && chomper.max_hp == chomper.hp && chomper.max_hp == 60 + chomper.hp_bonus);
+    assert(chomper.block == 0 && chomper.statuses.empty());
+    for (int turn = 1; turn <= 6; ++turn) {
+        assert(combat.turn_number == turn);
+        combat.player.hp = combat.player.max_hp;
+        if (turn % 2 == 1) {
+            assert(chomper.current_intent.type == ATTACK && chomper.current_intent.hits == 2);
+            assert(chomper.intent_damage(combat.player) == 8);
+            combat.end_player_turn();
+            assert(combat.player.max_hp - combat.player.hp == 16);
+        } else {
+            assert(chomper.current_intent.type == STATUS && chomper.current_intent.status_card == CardId::DAZED);
+            assert(chomper.current_intent.status_cards == 3 && chomper.current_intent.status_pile == Pile::DISCARD);
+            combat.end_player_turn();
+            assert(combat.player.hp == combat.player.max_hp);
+        }
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(chomper.block == 0 && chomper.statuses.empty());
+    }
+    std::cout << "[PASS] Chomper: 60 to 64 HP, Clamp 8 x2 then Screech (3 Dazed) in a loop" << std::endl;
+}
+
+void test_chomper_ascension() {
+    // 63 to 67 HP (60 to 64 plus 3) and Clamp 9 x2 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CHOMPER);
+        Enemy& chomper = combat.enemies[0];
+        chomper.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = chomper.hp;
+        assert(chomper.ascension_hp() == 63 && chomper.hp_spread() == 4);
+        assert(base >= 60 && base <= 64 && chomper.max_hp == 60 + chomper.hp_bonus);
+        chomper.ascend(true, true);
+        combat.plan_enemies();
+        assert(chomper.hp == base + 3 && chomper.max_hp == base + 3 && chomper.hp >= 63 && chomper.hp <= 67);
+        assert(chomper.current_intent.type == ATTACK && chomper.current_intent.hits == 2);
+        assert(chomper.intent_damage(combat.player) == 9);
+    }
+    std::cout << "[PASS] Chomper: Ascension gives 63 to 67 HP and Clamp 9 x2" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -2330,6 +2375,8 @@ int main() {
     test_fossil_stalker_ascension();
     test_seapunk();
     test_seapunk_ascension();
+    test_chomper();
+    test_chomper_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

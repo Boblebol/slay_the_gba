@@ -287,6 +287,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_mawler, false };
     case engine::EnemyType::FOSSIL_STALKER:
         return { &bn::sprite_items::mon_fossil_stalker, false };
+    case engine::EnemyType::CHOMPER:
+        return { &bn::sprite_items::mon_chomper, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:
