@@ -838,6 +838,8 @@ bn::string_view base_name(engine::CardId id)
         return "Dette";
     case engine::CardId::SPORE_MIND:
         return "Conscience sporique";
+    case engine::CardId::GUILTY:
+        return "Culpabilité";
     case engine::CardId::TACTICIAN:
         return "Tactique";
     case engine::CardId::ABRASIVE:
@@ -890,6 +892,16 @@ bn::string_view base_name(engine::CardId id)
         return "Séance";
     case engine::CardId::ENTROPY:
         return "Entropie";
+    case engine::CardId::QUASAR:
+        return "Quasar";
+    case engine::CardId::SPLASH:
+        return "Clapotis";
+    case engine::CardId::MAD_SCIENCE:
+        return "Science sans conscience";
+    case engine::CardId::DISCOVERY:
+        return "Découverte";
+    case engine::CardId::ABUNDANCE:
+        return "Abondance";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1657,6 +1669,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::SPORE_MIND:
         stream << "Épuisement.";
         break;
+    case engine::CardId::GUILTY:
+        stream << "Injouable. Retirée après 5 combats.";
+        break;
     case engine::CardId::TACTICIAN:
         stream << "Ruse. Énergie +" << value << ".";
         break;
@@ -1722,6 +1737,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::THE_GAMBIT:
         stream << "Armure " << value << ". Dégât subi : mort.";
+    case engine::CardId::SPLASH:
+        stream << "1 Attaque" << (card.upgraded ? "+ parmi " : " parmi ") << secondary << " d'un autre héros, à 0.";
+        break;
     case engine::CardId::SEEKER_STRIKE:
         stream << value << " dégâts. Pioche : 1 parmi " << secondary << " en main.";
         break;
@@ -1737,6 +1755,18 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:
         stream << "Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::QUASAR:
+        stream << "1 Incolore" << (card.upgraded ? " améliorée" : "") << " parmi " << value << " en main.";
+        break;
+    case engine::CardId::DISCOVERY:
+        stream << "1 parmi " << secondary << ", coût 0. " << (card.upgraded ? "" : "Épuis.");
+        break;
+    case engine::CardId::ABUNDANCE:
+        stream << "1 Pouvoir+ sur 3, gratuit. Épuisement.";
+        break;
+    case engine::CardId::MAD_SCIENCE:
+        stream << (card.upgraded ? "Inné. " : "") << "Inflige " << value << " dégâts.";
         break;
     case engine::CardId::ULTIMATE_DEFEND:
         stream << "Gagne " << value << " d'Armure.";

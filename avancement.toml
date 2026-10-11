@@ -238,7 +238,7 @@ items = [
   { name = "A5 : soin réduit après un boss", status = "oui", issue = 29 },
   { name = "A6 : départ avec 10 % de PV en moins", status = "oui", issue = 29 },
   { name = "A7 à A9 : PV accrus des monstres, élites et boss", status = "oui", issue = 29 },
-  { name = "A10 : malédiction Fléau de l'ascendant dans le deck de départ", status = "non", issue = 40 },
+  { name = "A10 : malédiction Fléau de l'ascendant dans le deck de départ", status = "oui", issue = 40 },
   { name = "Choix du niveau d'Ascension sur GBA", status = "non", issue = 272, note = "Toutes les parties démarrent en Ascension 0." },
 ]
 

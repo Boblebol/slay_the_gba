@@ -605,7 +605,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
     }
 }
 
-void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
+void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect, bool halved) {
     clear_block();
     decay_plating();
     last_heal = 0;
@@ -628,7 +628,7 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
     if (current_intent.base_damage > 0) {
         for (uint8_t hit = 0; hit < current_intent.hits && is_alive() && player.is_alive(); ++hit) {
             const int16_t block_before = player.block;
-            player.take_damage_with_minion(intent_damage(player));
+            player.take_damage_with_minion(intent_damage(player, halved));
             // The attacker gets hurt back: the player's Thorns, Flame Barrier, and the damage Reflect sends back.
             int16_t back = static_cast<int16_t>(player.get_status(StatusType::THORNS) + damage_back);
             if (reflect) back = static_cast<int16_t>(back + block_before - player.block);
@@ -680,7 +680,7 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect) {
     }
 }
 
-int16_t Enemy::intent_damage(const CombatEntity& target) const {
+int16_t Enemy::intent_damage(const CombatEntity& target, bool halved) const {
     if (current_intent.base_damage <= 0) return 0;
     int16_t base = static_cast<int16_t>(current_intent.base_damage * damage_percent / 100);
     if (current_intent.damage_status != StatusType::NONE) {
@@ -688,6 +688,7 @@ int16_t Enemy::intent_damage(const CombatEntity& target) const {
     }
     int16_t damage = attack_damage(base, *this, target, damage_down_turns > 0 ? 70 : 100);
     if (target.halve_vulnerable_damage && get_status(StatusType::VULNERABLE) > 0) damage = static_cast<int16_t>(damage / 2);
+    if (halved) damage = static_cast<int16_t>(damage / 2); // Undying Sigil: enemy with Doom at least its HP
     return damage;
 }
 

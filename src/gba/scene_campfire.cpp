@@ -91,6 +91,39 @@ public:
                     _ctx.run.cook_at_campfire();
                     return scene_after_deck_choice(_ctx, SceneId::MAP);
                 }
+                else if(action == engine::CampfireAction::LIFT)
+                {
+                    // Girya: +1 Strength for the rest of the run, then the rest site is used up.
+                    if(_ctx.run.lift_at_campfire())
+                    {
+                        _popups.spawn(0, -20, "+1 Force", TextColor::GREEN);
+                        play_sfx(Sfx::BUFF);
+                        _stage = Stage::DONE;
+                        _done_timer = 0;
+                        _clear_options();
+                    }
+                    else
+                    {
+                        _popups.spawn(0, 10, "Maximum atteint", TextColor::GRAY);
+                        play_sfx(Sfx::ERROR);
+                    }
+                }
+                else if(action == engine::CampfireAction::DIG)
+                {
+                    if(_ctx.run.dig_at_campfire())
+                    {
+                        _popups.spawn(0, -20, "Relique trouvée !", TextColor::GREEN);
+                        play_sfx(Sfx::BUFF);
+                        _stage = Stage::DONE;
+                        _done_timer = 0;
+                        _clear_options();
+                    }
+                    else
+                    {
+                        _popups.spawn(0, 10, "Rien à fouiller", TextColor::GRAY);
+                        play_sfx(Sfx::ERROR);
+                    }
+                }
                 else if(action != engine::CampfireAction::SMITH)
                 {
                     // An action the engine does not resolve yet.
@@ -141,6 +174,11 @@ public:
 
             if(_done_timer > 50)
             {
+                // Dream Catcher: the Rest opened the card reward screen, which comes next.
+                if(_ctx.run.phase == engine::RunPhase::REWARD_SCREEN)
+                {
+                    return SceneId::REWARDS;
+                }
                 _ctx.run.phase = engine::RunPhase::MAP_NAVIGATION;
                 return SceneId::MAP;
             }

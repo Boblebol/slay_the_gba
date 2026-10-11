@@ -339,6 +339,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             if (turn_start) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;
         case PowerId::TURN_STRENGTH:
+        case PowerId::TOASTY_MITTENS: // the exhaust that follows is asked once the hand is drawn
             if (turn_start) player.add_status(StatusType::STRENGTH, power.amount);
             break;
         case PowerId::TURN_STARS:
@@ -384,6 +385,25 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::ECHO_FORM:
         case PowerId::VOID_FORM:
             if (turn_start) power.counter = 0;
+            break;
+        case PowerId::HISTORY_COURSE:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK) {
+                power.amount = static_cast<int16_t>(static_cast<int>(info.card.id) * 2 + (info.card.upgraded ? 1 : 0) + 1);
+            } else if (turn_start && my_turn && power.amount > 0) {
+                DeckCard copy(static_cast<CardId>((power.amount - 1) / 2));
+                copy.upgraded = (power.amount - 1) % 2 == 1;
+                autoplay(copy, -1, AfterPlay::NOWHERE);
+            }
+            break;
+        case PowerId::CROSSBOW:
+            if (turn_start && my_turn) {
+                const CardId id = random_card(CardFilter(CardType::ATTACK));
+                if (id != CardId::NONE) {
+                    DeckCard gift(id);
+                    gift.free_this_turn = hand.size() < hand.capacity();
+                    create_card(gift, Pile::HAND);
+                }
+            }
             break;
         case PowerId::HELLRAISER:
             // The card just drawn is the last one of the hand.
@@ -453,6 +473,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             }
             break;
         case PowerId::RAGE:
+            if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK) add_block(power.amount);
+            break;
+        case PowerId::DAUGHTER_OF_THE_WIND:
             if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK) add_block(power.amount);
             break;
         case PowerId::VICIOUS:
@@ -588,6 +611,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::NEUROSURGE:
             if (turn_start) player.receive_status(StatusType::DOOM, power.amount);
             break;
+        case PowerId::HAND_DRILL:
+            if (event == CombatEvent::BLOCK_BROKEN && foe && foe->is_alive()) afflict(*foe, StatusType::VULNERABLE, power.amount);
+            break;
         case PowerId::REAPER_FORM:
             if (event == CombatEvent::UNBLOCKED_DAMAGE_DEALT && foe && foe->is_alive()) {
                 afflict(*foe, StatusType::DOOM, info.amount);
@@ -644,8 +670,17 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::HAPPY_FLOWER:
             if (turn_start && power.turns % 3 == 0) player.energy = static_cast<int8_t>(player.energy + power.amount);
             break;
+        case PowerId::FAKE_HAPPY_FLOWER:
+            if (turn_start && power.turns % 5 == 0) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
         case PowerId::PENDULUM:
             if (turn_start && power.turns % 3 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
+            break;
+        case PowerId::RING_OF_THE_DRAKE:
+            if (turn_start && power.turns <= RING_OF_THE_DRAKE_TURNS) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
+            break;
+        case PowerId::POLLINOUS_CORE:
+            if (turn_start && power.turns % 4 == 0) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;
         case PowerId::RINGING_TRIANGLE:
             // Set after the turn start has cleared retain_hand: the hand is kept at the end of the first turn only.
@@ -662,6 +697,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::MERCURY_HOURGLASS:
             if (turn_start) damage_all_enemies(power.amount);
+            break;
+        case PowerId::PAELS_FLESH:
+            if (turn_start && turn_number >= 3) player.energy = static_cast<int8_t>(player.energy + power.amount);
+            break;
+        case PowerId::MR_STRUGGLES:
+            if (turn_start) damage_all_enemies(static_cast<int16_t>(turn_number));
             break;
         case PowerId::CLOAK_CLASP:
             if (event == CombatEvent::TURN_END) add_block(static_cast<int16_t>(power.amount * hand.size()));
@@ -791,6 +832,11 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::THE_ABACUS:
             if (event == CombatEvent::DRAW_PILE_SHUFFLED) add_block(power.amount);
             break;
+        case PowerId::BIIIG_HUG:
+            if (event == CombatEvent::DRAW_PILE_SHUFFLED) {
+                for (int16_t copy = 0; copy < power.amount; ++copy) create_card(CardId::SOOT, Pile::DRAW);
+            }
+            break;
         case PowerId::PERMAFROST:
             if (card_played && CardDef::get(info.card.id).type == CardType::POWER && power.counter == 0) {
                 power.counter = 1;
@@ -799,6 +845,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::GAME_PIECE:
             if (card_played && CardDef::get(info.card.id).type == CardType::POWER) draw_cards(power.amount);
+            break;
+        case PowerId::LOST_WISP:
+            if (card_played && CardDef::get(info.card.id).type == CardType::POWER) damage_all_enemies(power.amount);
             break;
         case PowerId::CENTENNIAL_PUZZLE:
             if (event == CombatEvent::HP_LOST && power.counter == 0) {
@@ -876,6 +925,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 if (!paid.empty()) hand[paid[next_random() % paid.size()]].free_this_turn = true;
             }
             break;
+        case PowerId::IRON_CLUB:
+            if (card_played && ++power.counter == IRON_CLUB_CARDS) {
+                power.counter = 0;
+                draw_cards(power.amount);
+            }
+            break;
         case PowerId::NUNCHAKU:
             if (card_played && CardDef::get(info.card.id).type == CardType::ATTACK && ++power.counter == NUNCHAKU_ATTACKS) {
                 power.counter = 0;
@@ -921,7 +976,11 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             }
             break;
         case PowerId::STRIKE_DUMMY:
+        case PowerId::FAKE_STRIKE_DUMMY:
             if (card_played && is_strike(info.card.id)) strike_played_now = true;
+            break;
+        case PowerId::MINIATURE_CANNON:
+            if (card_played && info.card.upgraded && CardDef::get(info.card.id).type == CardType::ATTACK) upgraded_attack_now = true;
             break;
         case PowerId::ORNAMENTAL_FAN:
             if (completes(CardType::ATTACK, counters.attacks_played, ORNAMENTAL_FAN_ATTACKS)) add_block(power.amount);
@@ -937,6 +996,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::CHARONS_ASHES:
             if (event == CombatEvent::CARD_EXHAUSTED) damage_all_enemies(power.amount);
+            break;
+        case PowerId::FORGOTTEN_SOUL:
+            if (event == CombatEvent::CARD_EXHAUSTED && has_alive_enemies()) damage_enemy(enemies[random_alive_enemy_index()], power.amount);
             break;
         case PowerId::RED_SKULL: {
             // Looked at on every event, a heal being none of them: the Strength follows the HP at the next one.
@@ -1026,6 +1088,14 @@ void CombatEngine::gain_block(int16_t amount) {
             legion->counter = static_cast<uint8_t>(legion->amount + 1);
         }
     }
+    // Vambrace: the first Block a card gives each combat is doubled.
+    if (resolving_card && player.block > before) {
+        ActivePower* vambrace = find_power(PowerId::VAMBRACE);
+        if (vambrace != nullptr && vambrace->counter == 0) {
+            player.block = static_cast<int16_t>(player.block + (player.block - before));
+            vambrace->counter = 1;
+        }
+    }
     // Unmovable doubles the first Block a card gives each turn, Shadowmeld every one of the turn.
     if (player.block > before) {
         int factor = 1;
@@ -1053,6 +1123,15 @@ void CombatEngine::add_block(int16_t amount) {
 
 void CombatEngine::afflict(Enemy& target, StatusType type, int16_t amount) {
     if (amount == 0) return;
+    // Unsettling Lamp: the first card of the fight that debuffs an enemy has every debuff it applies doubled.
+    if (resolving_card && is_debuff(type, amount)) {
+        ActivePower* lamp = find_power(PowerId::UNSETTLING_LAMP);
+        if (lamp != nullptr && lamp->counter == 0) {
+            lamp->counter = 1;
+            lamp_doubling = true;
+        }
+        if (lamp_doubling) amount = static_cast<int16_t>(amount * 2);
+    }
     // Artifact cancels the debuff: nothing was applied, nothing reacts.
     if (!target.receive_status(type, amount)) return;
     if (type == StatusType::DOOM) counters.doom_applied = bump(counters.doom_applied);
@@ -1067,7 +1146,13 @@ void CombatEngine::afflict(Enemy& target, StatusType type, int16_t amount) {
 
 void CombatEngine::damage_enemy(Enemy& target, int16_t amount) {
     if (!target.is_alive()) return;
+    const int16_t block_before = target.block;
     target.take_damage(amount);
+    if (block_before > 0 && target.block == 0) {
+        EventInfo info;
+        info.enemy = index_of(target);
+        emit(CombatEvent::BLOCK_BROKEN, info);
+    }
     settle_deaths();
 }
 
@@ -1124,7 +1209,7 @@ void CombatEngine::evoke_orb(size_t slot, int times) {
             case OrbType::LIGHTNING:
                 if (has_alive_enemies()) {
                     Enemy& struck = enemies[random_alive_enemy_index()];
-                    damage_enemy(struck, static_cast<int16_t>(with_focus(LIGHTNING_EVOKE) + power_amount(PowerId::THUNDER)));
+                    damage_enemy(struck, static_cast<int16_t>(with_focus(LIGHTNING_EVOKE) + power_amount(PowerId::THUNDER) + power_amount(PowerId::INFUSED_CORE)));
                 }
                 break;
             case OrbType::FROST:
@@ -1154,7 +1239,7 @@ void CombatEngine::trigger_orb_passive(size_t slot, Enemy* target) {
     switch (orb.type) {
         case OrbType::LIGHTNING:
             if (!target && has_alive_enemies()) target = &enemies[random_alive_enemy_index()];
-            if (target) damage_enemy(*target, with_focus(LIGHTNING_PASSIVE));
+            if (target) damage_enemy(*target, static_cast<int16_t>(with_focus(LIGHTNING_PASSIVE) + power_amount(PowerId::INFUSED_CORE)));
             break;
         case OrbType::FROST:
             add_block(with_focus(FROST_PASSIVE));
@@ -1398,14 +1483,24 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     bool was_alive = target.is_alive();
     // Percentage modifiers add up; Shadow Step then doubles the total.
     int32_t percent = 100;
-    if (target.get_status(StatusType::VULNERABLE) > 0) percent += power_amount(PowerId::CRUELTY);
+    if (target.get_status(StatusType::VULNERABLE) > 0) {
+        percent += power_amount(PowerId::CRUELTY);
+        percent += power_amount(PowerId::PAPER_PHROG);
+    }
     if (target.get_status(StatusType::WEAK) > 0) percent += power_amount(PowerId::TRACKING);
     if (resolving_card && counters.attacks_played == 0) percent += power_amount(PowerId::LETHALITY);
     if (attack_double_now) percent *= 2;
     if (resolving_card && triple_next_attack) percent *= 3;
     if (pen_nib_now && resolving_card) percent *= 2;
-    if (strike_played_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY));
-    int16_t lost = target.take_damage(attack_damage(base, player, target, percent));
+    if (strike_played_now && resolving_card) {
+        base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY) + power_amount(PowerId::FAKE_STRIKE_DUMMY));
+    }
+    if (upgraded_attack_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::MINIATURE_CANNON));
+    int16_t damage = attack_damage(base, player, target, percent);
+    // The Boot: an Attack hit that would deal 1 to 4 damage (before Block) deals 5 instead.
+    if (damage > 0 && damage <= THE_BOOT_THRESHOLD && has_power(PowerId::THE_BOOT)) damage = THE_BOOT_MINIMUM;
+    const int16_t block_before = target.block;
+    int16_t lost = target.take_damage(damage);
     if (was_alive && !target.is_alive() && !target.minion) fatal_kills = bump(fatal_kills);
     if (was_alive) {
         EventInfo info;
@@ -1413,6 +1508,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
         info.amount = lost;
         emit(CombatEvent::ATTACK_HIT, info);
         if (lost > 0) emit(CombatEvent::UNBLOCKED_DAMAGE_DEALT, info);
+        if (block_before > 0 && target.block == 0) emit(CombatEvent::BLOCK_BROKEN, info);
         // The enemy's Thorns hurt the player, once per hit.
         damage_player(target.get_status(StatusType::THORNS));
         settle_deaths();
@@ -1501,6 +1597,12 @@ void CombatEngine::note_player_hp_lost(int16_t amount) {
             tail->counter = 1;
             player.hp = static_cast<int16_t>(player.max_hp * tail->amount / 100);
         }
+    }
+    if (player.hp <= 0 && fairy_bottles > 0) {
+        // Fairy in a Bottle: the potion is discarded and heals to 30 % of Max HP.
+        --fairy_bottles;
+        fairy_used = static_cast<uint8_t>(fairy_used + 1);
+        player.hp = static_cast<int16_t>(std::max(1, player.max_hp * 30 / 100));
     }
     EventInfo info;
     info.amount = amount;
@@ -1694,6 +1796,7 @@ void CombatEngine::reset_combat_state() {
     clear_offers();
     turn_picks_from_draw_ = 0;
     end_turn_requested = false;
+    extra_turn_pending = false;
     event_depth_ = 0;
     autoplay_depth_ = 0;
     vakuu_turn_active = false;
@@ -1734,6 +1837,8 @@ void CombatEngine::begin_first_turn() {
 
 void CombatEngine::start_player_turn() {
     state = CombatState::PLAYER_TURN;
+    // Beating Remnant: the HP lost from this turn on, until the next one, is capped.
+    player.hp_loss_budget = has_power(PowerId::BEATING_REMNANT) ? power_amount(PowerId::BEATING_REMNANT) : -1;
     int16_t hp_before = player.hp;
     player.apply_poison_tick();
     lost_hp_last_turn_ = counters.hp_lost > 0;
@@ -1821,6 +1926,8 @@ void CombatEngine::start_player_turn() {
         choice.count = static_cast<uint8_t>(tyranny);
         ask_choice(choice);
     }
+    // Toasty Mittens: one card of the new hand is exhausted.
+    if (has_power(PowerId::TOASTY_MITTENS)) ask_choice(CardChoice{ ChoiceKind::EXHAUST, 1 });
     // Only the cards drawn by effects during the turn count as drawn this turn.
     counters.cards_drawn = 0;
     selected_card_index = 0;
@@ -1888,6 +1995,8 @@ PlayBlocker CombatEngine::play_blocker(int index) const {
 
 bool CombatEngine::costs_nothing(const DeckCard& card) const {
     if (card.free_this_turn) return true;
+    // Brilliant Scarf: the 5th card played each turn is free.
+    if (counters.cards_played() == BRILLIANT_SCARF_CARD - 1 && has_power(PowerId::BRILLIANT_SCARF)) return true;
     CardType type = CardDef::get(card.id).type;
     if (type == CardType::SKILL && has_power(PowerId::CORRUPTION)) return true;
     if (type == CardType::ATTACK && has_power(PowerId::FREE_ATTACK)) return true;
@@ -1923,6 +2032,7 @@ int CombatEngine::effective_cost(const DeckCard& card) const {
             break;
     }
     cost += power_amount(PowerId::SURCHARGE);
+    if (CardDef::get(card.id).type == CardType::POWER) cost += power_amount(PowerId::SPIKED_GAUNTLETS);
     if (CardDef::get(card.id).type == CardType::ATTACK) cost += power_amount(PowerId::TANGLED);
     if (card.cost_one_this_turn) cost = std::min(cost, 1);
     return std::clamp(cost, 0, 99);
@@ -1948,6 +2058,7 @@ int CombatEngine::consume_play_modifiers(const DeckCard& card) {
 
     int extra = 0;
     if (use_one(PowerId::DUPLICATION)) ++extra;
+    if (use_one(PowerId::THROWING_AXE)) ++extra; // Throwing Axe: the first card of the combat
     if (type == CardType::ATTACK && use_one(PowerId::REPLAY_ATTACK)) ++extra;
     if (type == CardType::SKILL && use_one(PowerId::REPLAY_SKILL)) ++extra;
     if (type == CardType::POWER && use_one(PowerId::REPLAY_POWER)) ++extra;
@@ -1969,6 +2080,7 @@ bool CombatEngine::play_card(int index, int target_index) {
 
     // Pay energy. An X card spends everything left: `x_value` is what it spent, or what is there when it is free.
     int x_value = 0;
+    const bool x_card = cost == COST_X || CardDef::get_star_cost(played_card.id, played_card.upgraded) == COST_X;
     if (cost == COST_X) {
         x_value = std::max<int>(player.energy, 0);
         cost = costs_nothing(played_card) ? 0 : x_value;
@@ -1981,6 +2093,8 @@ bool CombatEngine::play_card(int index, int target_index) {
         star_cost = player.sovereign_stars;
     }
     spend_stars(star_cost);
+    // Chemical X: the effect of an X card is raised, the energy it spends is not.
+    if (x_card) x_value += power_amount(PowerId::CHEMICAL_X);
 
     hand.erase(index);
     // Void Form counts the cards played from the hand, not their replays.
@@ -2003,7 +2117,9 @@ void CombatEngine::autoplay(DeckCard card, int target_index, AfterPlay destinati
     AfterPlay after_play = destination;
     // An X card played for free takes the energy that is there without spending it.
     int x_value = CardDef::is_x_cost(card.id, card.upgraded) ? std::max<int>(player.energy, 0) : 0;
-    if (CardDef::get_star_cost(card.id, card.upgraded) == COST_X) x_value = player.sovereign_stars;
+    const bool star_x = CardDef::get_star_cost(card.id, card.upgraded) == COST_X;
+    if (star_x) x_value = player.sovereign_stars;
+    if (CardDef::is_x_cost(card.id, card.upgraded) || star_x) x_value += power_amount(PowerId::CHEMICAL_X);
     run_card(card, target_index, target_index < 0, x_value, 0, after_play);
     // The destination asked by whoever plays the card wins over the card's own (Havoc exhausts).
     if (destination != AfterPlay::DISCARD) after_play = destination;
@@ -2022,9 +2138,12 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::SECRET_TECHNIQUE:
         case CardId::SECRET_WEAPON:
         case CardId::SEEKER_STRIKE:
+        case CardId::SPLASH:
+        case CardId::DISCOVERY:
         case CardId::DUAL_WIELD:
         case CardId::HEIRLOOM_HAMMER:
         case CardId::NIGHTMARE:
+        case CardId::QUASAR:
         case CardId::DECISIONS_DECISIONS:
         case CardId::BRAND:
         case CardId::BURNING_PACT:
@@ -2038,6 +2157,7 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::SCULPTING_STRIKE:
         case CardId::HEADBUTT:
         case CardId::WISH:
+        case CardId::ABUNDANCE:
         case CardId::HOLOGRAM:
         case CardId::COSMIC_INDIFFERENCE:
         case CardId::GRAVEBLAST:
@@ -2125,8 +2245,10 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         resolving_card = true;
         resolve_effect(card, target_idx, x_value, after_play);
         resolving_card = false;
+        lamp_doubling = false;
         pen_nib_now = false;
         strike_played_now = false;
+        upgraded_attack_now = false;
         // Vigor goes to the first Attack played, all its hits included.
         if (played_type == CardType::ATTACK) {
             player.clear_status(StatusType::VIGOR);
@@ -2136,6 +2258,13 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         // Keep primary enemy in sync
         if (!enemies.empty()) {
             enemy = enemies[0];
+        }
+
+        // Music Box: the first Attack of the turn leaves an Ethereal copy in the hand.
+        if (played_type == CardType::ATTACK && play == 0 && counters.attacks_played == 0 && has_power(PowerId::MUSIC_BOX)) {
+            DeckCard copy = card;
+            copy.added_keywords |= KEYWORD_ETHEREAL;
+            create_card(copy, Pile::HAND);
         }
 
         // Tallies of the card just played
@@ -2247,6 +2376,10 @@ bool CombatEngine::can_be_picked(const DeckCard& card, ChoiceKind kind) const {
             return !CardDef::is_sly(card);
         case ChoiceKind::TRANSFORM:
             return true;
+        case ChoiceKind::MAKE_FREE: {
+            const int cost = effective_cost(card);
+            return cost != COST_X && cost > 0;
+        }
         case ChoiceKind::COPY_ATTACK_OR_POWER:
             return CardDef::get(card.id).type == CardType::ATTACK || CardDef::get(card.id).type == CardType::POWER;
         case ChoiceKind::COPY_COLORLESS:
@@ -2345,7 +2478,7 @@ void CombatEngine::offer_from_draw(uint8_t count) {
     ask_choice(choice);
 }
 
-void CombatEngine::offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded, bool free_this_turn) {
+void CombatEngine::offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded, bool free_this_turn, bool retain) {
     CardChoice choice;
     choice.kind = ChoiceKind::TO_HAND;
     choice.source = Pile::OFFERS;
@@ -2353,6 +2486,7 @@ void CombatEngine::offer_random_cards(const CardFilter& filter, uint8_t count, b
     choice.upgraded = upgraded;
     choice.offer_from_draw = false;
     choice.offer_free = free_this_turn;
+    choice.offer_retain = retain;
     choice.offer_filter = filter;
     ask_choice(choice);
 }
@@ -2386,6 +2520,7 @@ void CombatEngine::deal_offers(const CardChoice& choice) {
         if (offered) continue;
         DeckCard card(id, choice.upgraded);
         card.free_this_turn = choice.offer_free;
+        if (choice.offer_retain) card.added_keywords |= KEYWORD_RETAIN;
         offers.push_back(card);
         offer_origins.push_back(NOT_IN_PILE);
     }
@@ -2458,6 +2593,11 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                 case ChoiceKind::TRANSFORM:
                     transform_card(hand[index], choice.into, choice.upgraded);
                     break;
+                case ChoiceKind::MAKE_FREE: {
+                    const int cost = effective_cost(hand[index]);
+                    if (cost != COST_X) hand[index].cost_delta = static_cast<int8_t>(hand[index].cost_delta - cost);
+                    break;
+                }
                 case ChoiceKind::COPY_ATTACK_OR_POWER:
                 case ChoiceKind::COPY_COLORLESS: {
                     DeckCard copy = hand[index];
@@ -2513,6 +2653,7 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
         if (choice.source == Pile::DISCARD) ++taken_from_discard;
         switch (choice.kind) {
             case ChoiceKind::TO_HAND:
+                if (choice.free_this_turn) card.free_this_turn = true;
                 hand.push_back(card);
                 break;
             case ChoiceKind::TOP_OF_DRAW:
@@ -3696,6 +3837,15 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Seeker Strike+!"sv : "Played Seeker Strike!"sv);
             break;
         }
+        case CardId::SPLASH: {
+            // Three Attacks of the pool of another hero, drawn at random among the other four.
+            uint8_t other = static_cast<uint8_t>(next_random() % (static_cast<uint8_t>(CharacterId::COUNT) - 1));
+            if (other >= static_cast<uint8_t>(current_character)) ++other;
+            const CardPool pool = static_cast<CardPool>(other + 1);
+            offer_random_cards(CardFilter(pool, CardType::ATTACK), secondary_value, upgraded, true);
+            set_log(upgraded ? "Played Splash+!"sv : "Played Splash!"sv);
+            break;
+        }
         case CardId::SECRET_TECHNIQUE:
         case CardId::SECRET_WEAPON: {
             CardChoice choice;
@@ -3817,6 +3967,26 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::BYRD_SWOOP: {
             hit(current_target, base_value);
             set_log(upgraded ? "Played Byrd Swoop+!"sv : "Played Byrd Swoop!"sv);
+            break;
+        }
+        case CardId::QUASAR: {
+            offer_random_cards(CardFilter(CardPool::COLORLESS), static_cast<uint8_t>(base_value), upgraded);
+            set_log(upgraded ? "Played Quasar+!"sv : "Played Quasar!"sv);
+            break;
+        }
+        case CardId::DISCOVERY: {
+            offer_random_cards(CardFilter(), secondary_value, false, true);
+            set_log(upgraded ? "Played Discovery+!"sv : "Played Discovery!"sv);
+            break;
+        }
+        case CardId::ABUNDANCE: {
+            offer_random_cards(CardFilter(CardType::POWER), 3, true, true);
+            set_log(upgraded ? "Played Abundance+!"sv : "Played Abundance!"sv);
+            break;
+        }
+        case CardId::MAD_SCIENCE: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Mad Science+!"sv : "Played Mad Science!"sv);
             break;
         }
         case CardId::ULTIMATE_STRIKE: {
@@ -5163,6 +5333,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::REGRET:
         case CardId::BAD_LUCK:
         case CardId::DEBT:
+        case CardId::GUILTY:
             // Unplayable: only another card can play them, and nothing happens.
             break;
         case CardId::DEBRIS: {
@@ -5991,7 +6162,8 @@ void CombatEngine::end_player_turn() {
 
     // Pael's Eye: the first turn of the combat ended without a card played exhausts the hand and gives an
     // extra turn, the enemies do not act in between.
-    bool extra_turn = false;
+    bool extra_turn = extra_turn_pending;
+    extra_turn_pending = false;
     if (counters.cards_played() == 0 && power_amount(PowerId::PAELS_EYE) > 0) {
         for (size_t i = powers.size(); i-- > 0;) {
             if (powers[i].id == PowerId::PAELS_EYE) powers.erase(i);
@@ -6117,7 +6289,9 @@ void CombatEngine::execute_enemy_turn() {
             acting.enemy = static_cast<int8_t>(i);
             emit(CombatEvent::ENEMY_TURN_START, acting);
             const EnemyIntent played = enemies[i].current_intent;
-            enemies[i].execute_turn(player, power_amount(PowerId::FLAME_BARRIER), has_power(PowerId::REFLECT));
+            // Undying Sigil: an enemy with at least as much Doom as HP deals 50% less damage.
+            const bool sigil_halved = has_power(PowerId::UNDYING_SIGIL) && enemies[i].get_status(StatusType::DOOM) >= enemies[i].hp;
+            enemies[i].execute_turn(player, power_amount(PowerId::FLAME_BARRIER), has_power(PowerId::REFLECT), sigil_halved);
             // The power of the move: kept by the enemy, or put on a player the attack left alive.
             if (played.power != PowerId::NONE && player.is_alive()) {
                 if (!played.power_on_player) {
@@ -6217,6 +6391,13 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         }
         damage_enemy(enemies[target_index], 20);
         set_log("Fire Potion!");
+    } else if (potion_id == "FAIRY_IN_A_BOTTLE") {
+        // Automatic: drunk by hand, it is simply made ready to trigger when HP would reach 0.
+        fairy_bottles = static_cast<uint8_t>(fairy_bottles + 1);
+        set_log("Fairy in a Bottle!");
+    } else if (potion_id == "POTION_SHAPED_ROCK") {
+        damage_enemy(aimed_enemy(), 15);
+        set_log("Potion-Shaped Rock!");
     } else if (potion_id == "GIGANTIFICATION_POTION") {
         triple_next_attack = true;
         set_log("Gigantification Potion!");
@@ -6229,6 +6410,11 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "BLOOD_POTION") {
         player.heal(player.max_hp / 5);
         set_log("Blood Potion!");
+    } else if (potion_id == "FRUIT_JUICE") {
+        // Max HP and current HP both rise by 5, as Feed does.
+        player.max_hp = static_cast<int16_t>(player.max_hp + 5);
+        player.hp = static_cast<int16_t>(player.hp + 5);
+        set_log("Fruit Juice!");
     } else if (potion_id == "CUNNING_POTION") {
         add_shivs(3, true);
         set_log("Cunning Potion!");
@@ -6388,6 +6574,28 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
     } else if (potion_id == "STABLE_SERUM") {
         add_power(PowerId::STABLE_SERUM, 2);
         set_log("Stable Serum!");
+    } else if (potion_id == "TOUCH_OF_INSANITY") {
+        ask_choice(CardChoice{ ChoiceKind::MAKE_FREE, 1 });
+        set_log("Touch of Insanity!");
+    } else if (potion_id == "LIQUID_MEMORIES") {
+        CardChoice choice;
+        choice.kind = ChoiceKind::TO_HAND;
+        choice.source = Pile::DISCARD;
+        choice.free_this_turn = true;
+        ask_choice(choice);
+        set_log("Liquid Memories!");
+    } else if (potion_id == "ATTACK_POTION") {
+        offer_random_cards(CardFilter(CardType::ATTACK), 3, false, true);
+        set_log("Attack Potion!");
+    } else if (potion_id == "SKILL_POTION") {
+        offer_random_cards(CardFilter(CardType::SKILL), 3, false, true);
+        set_log("Skill Potion!");
+    } else if (potion_id == "POWER_POTION") {
+        offer_random_cards(CardFilter(CardType::POWER), 3, false, true);
+        set_log("Power Potion!");
+    } else if (potion_id == "COLORLESS_POTION") {
+        offer_random_cards(CardFilter(CardPool::COLORLESS), 3, false, true);
+        set_log("Colorless Potion!");
     } else if (potion_id == "OROBIC_ACID") {
         for (CardType type : { CardType::ATTACK, CardType::SKILL, CardType::POWER }) {
             const CardId card = random_card(CardFilter(type));
@@ -6397,6 +6605,21 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
             create_card(made, Pile::HAND);
         }
         set_log("Orobic Acid!");
+    } else if (potion_id == "AMBERGRIS") {
+        player.heal(player.max_hp / 2);
+        extra_turn_pending = true;
+        set_log("Ambergris!");
+    } else if (potion_id == "COSMIC_CONCOCTION") {
+        for (int copy = 0; copy < 3; ++copy) create_random_card(CardFilter(CardPool::COLORLESS), Pile::HAND, true);
+        set_log("Cosmic Concoction!");
+    } else if (potion_id == "ENTROPIC_BREW") {
+        fill_potion_belt = true; // the run owns the belt: RunManager::use_potion fills it once this potion is gone
+        set_log("Entropic Brew!");
+    } else if (potion_id == "FOUL_POTION") {
+        // Damage to every player and enemy: Block absorbs it, Strength and Vulnerable do not change it.
+        damage_all_enemies(12);
+        damage_player(12);
+        set_log("Foul Potion!");
     } else {
         return false;
     }

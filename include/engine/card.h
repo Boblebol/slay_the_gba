@@ -602,6 +602,7 @@ enum class CardId : uint16_t {
     BAD_LUCK,
     DEBT,
     SPORE_MIND,
+    GUILTY,
     // Sly (Silent): played for free when discarded from the hand during the turn
     TACTICIAN,
     ABRASIVE,
@@ -631,6 +632,15 @@ enum class CardId : uint16_t {
     PRIMAL_FORCE,
     SEANCE,
     ENTROPY,
+    SPLASH,
+    // Event card: a single attack (Mad Science)
+    MAD_SCIENCE,
+    // Regent: choose 1 of 3 random Colorless cards (Quasar)
+    QUASAR,
+    // Choose 1 of 3 random cards, free this turn (mechanic #72)
+    DISCOVERY,
+    // Event card: choose 1 of 3 upgraded Powers (Abundance)
+    ABUNDANCE,
     COUNT
 };
 

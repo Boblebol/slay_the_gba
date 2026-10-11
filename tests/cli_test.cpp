@@ -319,12 +319,12 @@ int main() {
     assert(aeonglass->min_hp == 512);
     std::cout << "[PASS] Monsters database: 112 monsters registered (validated: " << aeonglass->name << " HP: " << aeonglass->min_hp << ")" << std::endl;
 
-    // Test Complete Potions Database (63 potions)
+    // Test Complete Potions Database (64 potions)
     auto all_potions = get_all_potions();
-    assert(all_potions.size() == 63);
+    assert(all_potions.size() == 64);
     const auto* ambergris = find_potion("AMBERGRIS");
     assert(ambergris != nullptr && ambergris->name == "Ambre gris");
-    std::cout << "[PASS] Potions database: 63 potions registered (validated: " << ambergris->name << ")" << std::endl;
+    std::cout << "[PASS] Potions database: 64 potions registered (validated: " << ambergris->name << ")" << std::endl;
 
     // Test Complete Events Database (57 events)
     auto all_events = get_all_events();
@@ -517,7 +517,7 @@ int main() {
     potion_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
     potion_run.potions.push_back("FIRE_POTION");
     potion_run.potions.push_back("BLOCK_POTION");
-    potion_run.potions.push_back("AMBERGRIS");
+    potion_run.potions.push_back("SNECKO_OIL");
     assert(!potion_run.use_potion(0)); // not in combat yet
     potion_run.enter_room(potion_run.get_available_rooms()[0]);
     CombatEngine& potion_combat = potion_run.combat;

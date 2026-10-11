@@ -51,11 +51,33 @@ void test_drinking_removes_the_potion_and_keeps_the_order() {
 }
 
 void test_a_potion_the_engine_does_not_resolve_stays_in_the_belt() {
-    RunManager run = fight_with({ "FAIRY_IN_A_BOTTLE", "BLOCK_POTION" });
+    RunManager run = fight_with({ "SNECKO_OIL", "BLOCK_POTION" });
     assert(!run.use_potion(0));
-    assert(run.potions.size() == 2 && run.potions[0] == "FAIRY_IN_A_BOTTLE");
+    assert(run.potions.size() == 2 && run.potions[0] == "SNECKO_OIL");
     assert(run.combat.player.block == 0);
     std::cout << "[PASS] An unresolved potion stays in the belt" << std::endl;
+}
+
+void test_fairy_in_a_bottle_is_automatic_and_discarded_when_it_saves() {
+    RunManager run = fight_with({ "FAIRY_IN_A_BOTTLE" });
+    assert(!run.use_potion(0)); // automatic: cannot be drunk by hand
+    run.combat.fairy_bottles = 1; // what the run arms at the start of a combat
+    run.combat.damage_player(static_cast<int16_t>(run.combat.player.max_hp + 10));
+    assert(run.combat.player.hp == run.combat.player.max_hp * 30 / 100);
+    assert(run.combat.state != CombatState::DEFEAT);
+    run.proceed_after_combat();
+    assert(run.potions.empty());
+    std::cout << "[PASS] Fairy in a Bottle: automatic, leaves the belt once it has saved its owner" << std::endl;
+}
+
+void test_entropic_brew_fills_the_empty_slots() {
+    // Drunk from a belt of one potion: the two free slots get random potions, the drunk one is not counted.
+    RunManager run = fight_with({ "ENTROPIC_BREW", "BLOCK_POTION" });
+    assert(run.use_potion(0));
+    assert(run.potions.size() == run.potion_slots);
+    assert(run.potions.size() == 3 && run.potions[2] != "ENTROPIC_BREW");
+    assert(run.potions[0] == "BLOCK_POTION");
+    std::cout << "[PASS] Entropic Brew fills the empty potion slots" << std::endl;
 }
 
 void test_nothing_is_drunk_outside_the_player_turn() {
@@ -85,7 +107,8 @@ void test_every_resolved_potion_has_a_belt_entry() {
         RunManager run = fight_with({ potion.id });
         if (run.use_potion(0, 1)) {
             ++resolved;
-            assert(run.potions.empty());
+            // Entropic Brew refills the belt it was drunk from; every other potion leaves it empty.
+            assert(run.potions.empty() || potion.id == "ENTROPIC_BREW");
         } else {
             assert(run.potions.size() == 1);
         }
@@ -99,6 +122,8 @@ void test_every_resolved_potion_has_a_belt_entry() {
 int main() {
     test_drinking_removes_the_potion_and_keeps_the_order();
     test_a_potion_the_engine_does_not_resolve_stays_in_the_belt();
+    test_fairy_in_a_bottle_is_automatic_and_discarded_when_it_saves();
+    test_entropic_brew_fills_the_empty_slots();
     test_nothing_is_drunk_outside_the_player_turn();
     test_a_killing_potion_ends_the_combat();
     test_every_resolved_potion_has_a_belt_entry();

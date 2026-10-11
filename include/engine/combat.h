@@ -149,6 +149,7 @@ enum class ChoiceKind : uint8_t {
     COPY_NEXT_TURN,       // to the hand at the start of the next turn (Nightmare)
     PLAY_REPEATED,        // the picked hand card is played `amount` times, then goes where it goes (Decisions, Decisions)
     MAKE_SLY,             // the picked hand card gains Sly until the end of the turn (Hand Trick)
+    MAKE_FREE,            // the picked hand card costs 0 for the rest of the combat (Touch of Insanity)
     TRANSFORM             // the picked card becomes `CardChoice::into` (a random card of the hero's pool when NONE) for the combat
 };
 
@@ -192,7 +193,9 @@ struct CardChoice {
     // turn when `offer_free`). The picked cards go to the hand, the others stay where they were or vanish.
     bool offer_from_draw = true;
     bool offer_free = false;
+    bool offer_retain = false;   // the cards made for the offer have Retain
     CardFilter offer_filter;
+    bool free_this_turn = false; // TO_HAND: the cards picked cost 0 this turn (Liquid Memories)
 };
 
 // Where a card goes once it has been played.
@@ -220,6 +223,7 @@ public:
     int16_t gold_gained = 0; // gold earned during the combat (Hand of Greed), paid by the run after it
     uint8_t extra_card_rewards = 0; // extra card rewards earned during the combat (The Hunt)
     uint8_t potions_gained = 0;     // random potions earned during the combat (Alchemize)
+    bool fill_potion_belt = false;  // the run fills its empty potion slots with random potions (Entropic Brew)
     bool gambit_active = false;     // taking unblocked attack damage ends the combat in defeat (The Gambit)
     int16_t gold = 0; // the run's gold, lent to the combat for the relics that spend it (Seal of Gold)
     CharacterId current_character = CharacterId::IRONCLAD;
@@ -239,10 +243,13 @@ public:
     bool double_block_turn = false;   // the Block gained this turn is doubled (Shadowmeld)
     bool unmovable_used = false;      // Unmovable already doubled a Block this turn
     bool attack_double_next = false;  // Attacks deal double damage on the next turn (Shadow Step)
+    uint8_t fairy_bottles = 0;        // Fairy in a Bottle potions ready to revive the player (automatic, set by the run)
+    uint8_t fairy_used = 0;           // Fairy in a Bottle potions spent during this combat
     bool triple_next_attack = false;  // the next Attack played deals triple damage (Gigantification Potion)
     bool attack_double_now = false;   // Attacks deal double damage this turn
     bool pen_nib_now = false;         // the Attack being played deals double damage (Pen Nib)
     bool strike_played_now = false;   // the card being played contains "Strike" (Strike Dummy)
+    bool upgraded_attack_now = false; // the card being played is an upgraded Attack (Miniature Cannon)
     bool rebound_pending = false;    // the next card played this turn goes on top of the draw pile (Rebound)
     uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
     // Active powers, in the order they were gained: every relic a run can hold plus a combat's worth of
@@ -256,6 +263,8 @@ public:
     FixedVector<DeckCard, MAX_OFFERS> offers;
     FixedVector<uint8_t, MAX_OFFERS> offer_origins;
     bool resolving_card = false;     // a card's effect is being resolved (Paël's Legion doubles its Block)
+    bool lamp_doubling = false;      // the card being resolved is the one Unsettling Lamp doubles
+    bool extra_turn_pending = false;  // a potion (Ambergris) grants an extra turn: the next end of turn skips the enemies
     bool end_turn_requested = false; // a card ended the turn (Void Form): the caller ends it once the card is resolved
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;
@@ -412,7 +421,7 @@ public:
     void offer_from_draw(uint8_t count);
     // "Choose 1 of `count` random cards to add to your Hand" (Discovery): `count` different random cards of
     // `filter` are made and offered; the picked one goes to the hand, the others vanish.
-    void offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded = false, bool free_this_turn = false);
+    void offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded = false, bool free_this_turn = false, bool retain = false);
     // Cards of a pile, as the choices index them.
     size_t pile_size(Pile pile) const;
     const DeckCard& pile_card(Pile pile, size_t index) const;

@@ -196,7 +196,10 @@ void test_extra_relics_and_potions() {
         int16_t max_hp = chained.max_hp;
         chained.gain_random_relics(2);
         strawberry = chained.has_relic("STRAWBERRY");
-        assert(chained.max_hp == max_hp + (strawberry ? 7 : 0));
+        // The other relics that raise the maximum HP on pickup count too.
+        int gained = (strawberry ? 7 : 0) + (chained.has_relic("MANGO") ? 14 : 0) + (chained.has_relic("PEAR") ? 10 : 0) +
+                     (chained.has_relic("LEES_WAFFLE") ? 7 : 0);
+        assert(chained.max_hp == max_hp + gained);
     }
     assert(strawberry);
     // Never beyond the bag.

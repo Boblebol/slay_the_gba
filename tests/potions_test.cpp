@@ -18,7 +18,17 @@ constexpr std::string_view ENGINE_POTIONS[] = {
     "RADIANT_TINCTURE", "POTION_OF_CAPACITY", "MAZALETHS_GIFT", "ESSENCE_OF_DARKNESS", "BOTTLED_POTENTIAL",
     "DISTILLED_CHAOS", "SHIP_IN_A_BOTTLE", "SHACKLING_POTION", "GLOWWATER_POTION", "GAMBLERS_BREW",
     "POWDERED_DEMISE", "DUPLICATOR", "DROPLET_OF_PRECOGNITION", "STABLE_SERUM",
-    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "GIGANTIFICATION_POTION",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION",
+    "ATTACK_POTION",
+    "SKILL_POTION",
+    "POWER_POTION",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "COLORLESS_POTION",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "FAIRY_IN_A_BOTTLE",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "AMBERGRIS",
+    "COSMIC_CONCOCTION",
+    "ENTROPIC_BREW",
+    "ASHWATER", "OROBIC_ACID", "BEETLE_JUICE", "TOUCH_OF_INSANITY", "LIQUID_MEMORIES", "GIGANTIFICATION_POTION", "FRUIT_JUICE",
+    "FOUL_POTION",
 };
 
 // Jaw Worm opens with Chomp (11 damage, no block): a predictable punching bag.
@@ -108,6 +118,41 @@ void test_explosive_ampoule() {
     assert(lethal.use_potion("EXPLOSIVE_AMPOULE"));
     assert(lethal.state == CombatState::VICTORY);
     std::cout << "[PASS] Explosive Ampoule: 10 damage to every enemy, absorbed by Block, victory" << std::endl;
+}
+
+void test_foul_potion() {
+    // 12 damage to every enemy and to the player; Block absorbs it on each of them.
+    CombatEngine combat = make_pack(CharacterId::IRONCLAD);
+    const int16_t hp_before = combat.player.hp;
+    combat.enemies[1].block = 4;
+    combat.player.block = 5;
+    assert(combat.use_potion("FOUL_POTION"));
+    assert(combat.enemies[0].hp == 18 - 12 && combat.enemies[2].hp == 42 - 12);
+    assert(combat.enemies[1].hp == 18 - 8 && combat.enemies[1].block == 0);
+    assert(combat.player.hp == hp_before - 7 && combat.player.block == 0);
+
+    // It is not an attack: Strength and Vulnerable change nothing.
+    CombatEngine plain = make_combat(CharacterId::IRONCLAD);
+    const int16_t plain_hp = plain.player.hp;
+    plain.player.add_status(StatusType::STRENGTH, 3);
+    plain.enemies[0].add_status(StatusType::VULNERABLE, 2);
+    assert(plain.use_potion("FOUL_POTION"));
+    assert(plain.enemies[0].hp == 42 - 12 && plain.player.hp == plain_hp - 12);
+
+    // Killing every enemy wins the fight, and the player dropping to 0 loses it.
+    CombatEngine lethal = make_pack(CharacterId::IRONCLAD);
+    lethal.enemies[2].hp = 10;
+    assert(lethal.use_potion("FOUL_POTION"));
+    assert(lethal.enemies[0].hp == 6 && lethal.state == CombatState::PLAYER_TURN);
+    lethal.enemies[0].hp = 6;
+    lethal.enemies[1].hp = 6;
+    assert(lethal.use_potion("FOUL_POTION"));
+    assert(lethal.state == CombatState::VICTORY);
+    CombatEngine doomed = make_combat(CharacterId::IRONCLAD);
+    doomed.player.hp = 12;
+    assert(doomed.use_potion("FOUL_POTION"));
+    assert(doomed.state == CombatState::DEFEAT);
+    std::cout << "[PASS] Foul Potion: 12 damage to the player and every enemy, Block absorbs it, defeat and victory" << std::endl;
 }
 
 void test_weak_potion() {
@@ -729,6 +774,26 @@ void test_droplet_of_precognition() {
     std::cout << "[PASS] Droplet of Precognition: add a card of the draw pile to the hand" << std::endl;
 }
 
+void test_ambergris() {
+    // 50% of Max HP healed, and the end of this turn is followed by another player turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.player.hp = 10;
+    const int max_hp = combat.player.max_hp;
+    assert(combat.use_potion("AMBERGRIS"));
+    assert(combat.player.hp == 10 + max_hp / 2);
+    assert(combat.extra_turn_pending);
+    assert(std::string_view(combat.combat_log) == "Ambergris!");
+
+    const int hp = combat.player.hp;
+    combat.end_player_turn();
+    assert(!combat.extra_turn_pending);
+    assert(combat.state == CombatState::PLAYER_TURN);
+    assert(combat.player.hp == hp); // the enemies did not act in between
+    assert(std::string_view(combat.combat_log) == "Extra turn!");
+
+    std::cout << "[PASS] Ambergris: heals 50% Max HP and grants an extra turn" << std::endl;
+}
+
 void test_orobic_acid() {
     // One Attack, one Skill and one Power are added to the hand, free this turn.
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
@@ -752,6 +817,31 @@ void test_orobic_acid() {
     std::cout << "[PASS] Orobic Acid: an Attack, a Skill and a Power added to the hand, free this turn" << std::endl;
 }
 
+void test_skill_potion() {
+    // 3 different Skills are offered; the picked one goes to the hand and costs 0 this turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.hand.size() == 5);
+    assert(combat.use_potion("SKILL_POTION"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.offers.size() == 3);
+    for (const DeckCard& card : combat.offers) {
+        assert(CardDef::get(card.id).type == CardType::SKILL);
+        assert(card.free_this_turn);
+    }
+    assert(combat.offers[0].id != combat.offers[1].id && combat.offers[1].id != combat.offers[2].id &&
+           combat.offers[0].id != combat.offers[2].id);
+    const DeckCard picked = combat.offers[1];
+    const uint8_t picks[] = { 1 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending());
+    assert(combat.hand.size() == 6 && combat.hand[5].id == picked.id && combat.hand[5].free_this_turn);
+    assert(combat.player.energy == 3);
+    assert(std::string_view(combat.combat_log) == "Skill Potion!");
+
+    std::cout << "[PASS] Skill Potion: pick 1 of 3 random Skills, added to the hand, free this turn" << std::endl;
+}
+
 void test_beetle_juice() {
     // Chomp 11 x 0.70 = 7 for 4 enemy turns, then back to 11.
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
@@ -773,6 +863,126 @@ void test_beetle_juice() {
     assert(combat.enemies[0].damage_down_turns == 0);
     assert(combat.enemies[0].intent_damage(combat.player) == 10);
     std::cout << "[PASS] Beetle Juice: the enemy deals 30% less damage for 4 turns" << std::endl;
+}
+
+void test_touch_of_insanity() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.hand.clear();
+    combat.hand.push_back(DeckCard(CardId::BASH));   // cost 2
+    combat.hand.push_back(DeckCard(CardId::DEFEND)); // cost 1
+    assert(combat.use_potion("TOUCH_OF_INSANITY"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].kind == ChoiceKind::MAKE_FREE);
+    const uint8_t pick[] = { 0 };
+    assert(combat.resolve_choice(pick));
+    assert(!combat.choice_pending());
+    assert(combat.effective_cost(combat.hand[0]) == 0);
+    assert(combat.effective_cost(combat.hand[1]) == 1);
+    assert(std::string_view(combat.combat_log) == "Touch of Insanity!");
+
+    // It lasts the whole combat, past the end of the turn.
+    end_turn_idle(combat);
+    int free_bash = 0;
+    for (const DeckCard& card : combat.hand) free_bash += card.id == CardId::BASH && combat.effective_cost(card) == 0;
+    for (const DeckCard& card : combat.discard_pile) free_bash += card.id == CardId::BASH && combat.effective_cost(card) == 0;
+    assert(free_bash >= 1);
+
+    std::cout << "[PASS] Touch of Insanity: a hand card costs 0 for the combat" << std::endl;
+}
+
+void test_liquid_memories() {
+    // Choose 1 card of the discard pile and add it to the hand: it costs 0 this turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.discard_pile.push_back(DeckCard(CardId::BASH));
+    combat.discard_pile.push_back(DeckCard(CardId::DEFEND));
+    assert(combat.use_potion("LIQUID_MEMORIES"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].kind == ChoiceKind::TO_HAND);
+    assert(combat.pending_choices[0].source == Pile::DISCARD);
+    assert(combat.pending_choices[0].count == 1);
+    assert(combat.choice_size() == 1);
+    assert(std::string_view(combat.combat_log) == "Liquid Memories!");
+
+    const uint8_t pick[] = { 0 };
+    assert(combat.resolve_choice(pick));
+    assert(!combat.choice_pending());
+    assert(combat.hand.size() == 6 && combat.hand[5].id == CardId::BASH && combat.hand[5].free_this_turn);
+    assert(combat.discard_pile.size() == 1 && combat.discard_pile[0].id == CardId::DEFEND);
+    assert(combat.player.energy == 3);
+    assert(combat.play_card(5, 0));
+    assert(combat.player.energy == 3);
+
+    // Empty discard pile: nothing to choose from.
+    CombatEngine empty = make_combat(CharacterId::IRONCLAD);
+    assert(empty.use_potion("LIQUID_MEMORIES"));
+    assert(!empty.choice_pending() && empty.hand.size() == 5);
+
+    std::cout << "[PASS] Liquid Memories: a card of the discard pile added to the hand, free this turn" << std::endl;
+}
+
+void test_attack_potion() {
+    // Choose 1 Attack among 3 random ones to add to the hand: it costs 0 this turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.use_potion("ATTACK_POTION"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].kind == ChoiceKind::TO_HAND);
+    assert(combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.offers.size() == 3 && combat.choice_size() == 1);
+    for (size_t i = 0; i < combat.offers.size(); ++i) {
+        assert(CardDef::get(combat.offers[i].id).type == CardType::ATTACK);
+        assert(combat.offers[i].free_this_turn);
+        for (size_t j = 0; j < i; ++j) assert(combat.offers[j].id != combat.offers[i].id);
+    }
+    assert(std::string_view(combat.combat_log) == "Attack Potion!");
+
+    const DeckCard picked = combat.offers[1];
+    const uint8_t pick[] = { 1 };
+    assert(combat.resolve_choice(pick));
+    assert(!combat.choice_pending());
+    assert(combat.hand.size() == 6 && combat.hand[5].id == picked.id && combat.hand[5].free_this_turn);
+    assert(combat.player.energy == 3);
+    std::cout << "[PASS] Attack Potion: 1 of 3 Attacks to the hand, free this turn" << std::endl;
+}
+
+void test_colorless_potion() {
+    // Choose 1 of 3 random Colorless cards: it joins the hand and costs 0 this turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.use_potion("COLORLESS_POTION"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.offers.size() == 3 && combat.choice_size() == 1);
+    assert(std::string_view(combat.combat_log) == "Colorless Potion!");
+    for (size_t i = 0; i < combat.offers.size(); ++i) {
+        assert(card_meta(combat.offers[i].id).pool == CardPool::COLORLESS);
+        assert(combat.offers[i].free_this_turn);
+        for (size_t j = 0; j < i; ++j) assert(combat.offers[j].id != combat.offers[i].id);
+    }
+    const CardId picked = combat.offers[1].id;
+    const uint8_t pick[] = { 1 };
+    assert(combat.resolve_choice(pick));
+    assert(!combat.choice_pending() && combat.offers.empty());
+    assert(combat.hand.size() == 6 && combat.hand[5].id == picked && combat.hand[5].free_this_turn);
+    assert(combat.player.energy == 3);
+
+    std::cout << "[PASS] Colorless Potion: 1 of 3 random Colorless cards added to the hand, free this turn" << std::endl;
+}
+
+void test_cosmic_concoction() {
+    // Three Colorless cards, all upgraded, are added to the hand.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.hand.size() == 5);
+    assert(combat.use_potion("COSMIC_CONCOCTION"));
+    assert(combat.hand.size() == 8);
+    for (size_t i = 5; i < 8; ++i) {
+        assert(card_meta(combat.hand[i].id).pool == CardPool::COLORLESS);
+        assert(combat.hand[i].upgraded);
+        assert(!combat.hand[i].free_this_turn);
+    }
+    for (size_t i = 0; i < 5; ++i) assert(!combat.hand[i].upgraded);
+    assert(combat.player.energy == 3);
+    assert(std::string_view(combat.combat_log) == "Cosmic Concoction!");
+
+    std::cout << "[PASS] Cosmic Concoction: three upgraded Colorless cards added to the hand" << std::endl;
 }
 
 void test_unknown_potion() {
@@ -811,6 +1021,42 @@ void test_refused_outside_player_turn() {
     std::cout << "[PASS] Potions are refused outside the player's turn: enemy turn, victory, defeat" << std::endl;
 }
 
+void test_power_potion() {
+    // Choose 1 of 3 random Powers to add to the hand: it costs 0 this turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    combat.hand.clear();
+    assert(combat.use_potion("POWER_POTION"));
+    assert(combat.choice_pending());
+    assert(combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.pending_choices[0].kind == ChoiceKind::TO_HAND);
+    assert(combat.offers.size() == 3 && combat.choice_size() == 1);
+    for (size_t i = 0; i < combat.offers.size(); ++i) {
+        assert(CardDef::get(combat.offers[i].id).type == CardType::POWER);
+        assert(combat.offers[i].free_this_turn);
+        for (size_t j = 0; j < i; ++j) assert(combat.offers[j].id != combat.offers[i].id);
+    }
+    assert(std::string_view(combat.combat_log) == "Power Potion!");
+
+    const DeckCard picked = combat.offers[1];
+    const uint8_t pick[] = { 1 };
+    assert(combat.resolve_choice(pick));
+    assert(!combat.choice_pending() && combat.offers.empty());
+    assert(combat.hand.size() == 1 && combat.hand[0].id == picked.id && combat.hand[0].free_this_turn);
+    assert(combat.effective_cost(combat.hand[0]) == 0);
+
+    std::cout << "[PASS] Power Potion: 1 of 3 random Powers added to the hand, free this turn" << std::endl;
+}
+
+void test_fruit_juice() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    const int16_t max_hp = combat.player.max_hp;
+    const int16_t hp = combat.player.hp;
+    assert(combat.use_potion("FRUIT_JUICE"));
+    assert(combat.player.max_hp == max_hp + 5);
+    assert(combat.player.hp == hp + 5);
+    std::cout << "[PASS] Fruit Juice: gain 5 Max HP, and as much HP" << std::endl;
+}
+
 void test_gigantification_potion() {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD);
     combat.hand.clear();
@@ -826,6 +1072,32 @@ void test_gigantification_potion() {
     assert(combat.play_card(0, 0));
     assert(hp - combat.enemies[0].hp == 6);
     std::cout << "[PASS] Gigantification Potion: the next Attack deals triple damage, only once" << std::endl;
+}
+
+void test_fairy_in_a_bottle() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    assert(combat.use_potion("FAIRY_IN_A_BOTTLE")); // made ready
+    assert(combat.fairy_bottles == 1);
+    int16_t max_hp = combat.player.max_hp;
+    combat.damage_player(static_cast<int16_t>(max_hp + 50));
+    assert(combat.player.hp == max_hp * 30 / 100);
+    assert(combat.state == CombatState::PLAYER_TURN);
+    assert(combat.fairy_bottles == 0 && combat.fairy_used == 1);
+    combat.damage_player(static_cast<int16_t>(max_hp)); // no second fairy
+    assert(combat.state == CombatState::DEFEAT);
+    std::cout << "[PASS] Fairy in a Bottle: revives at 30 % of Max HP, once" << std::endl;
+}
+
+void test_entropic_brew() {
+    // Drinking it asks the run to fill its empty potion slots; the combat itself gains nothing.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD);
+    int16_t hp = combat.player.hp;
+    int8_t energy = combat.player.energy;
+    assert(combat.use_potion("ENTROPIC_BREW"));
+    assert(combat.fill_potion_belt);
+    assert(combat.player.hp == hp && combat.player.energy == energy);
+    assert(std::string_view(combat.combat_log) == "Entropic Brew!");
+    std::cout << "[PASS] Entropic Brew: asks the run to fill the empty potion slots" << std::endl;
 }
 
 } // namespace
@@ -893,8 +1165,12 @@ void test_ashwater() {
 
 int main() {
     std::cout << "=== Potions ===" << std::endl;
+    test_fruit_juice();
     test_gigantification_potion();
+    test_fairy_in_a_bottle();
+    test_entropic_brew();
     test_explosive_ampoule();
+    test_foul_potion();
     test_weak_potion();
     test_swift_potion();
     test_dexterity_potion();
@@ -927,7 +1203,15 @@ int main() {
     test_duplicator();
     test_droplet_of_precognition();
     test_orobic_acid();
+    test_skill_potion();
+    test_ambergris();
+    test_cosmic_concoction();
     test_beetle_juice();
+    test_touch_of_insanity();
+    test_liquid_memories();
+    test_attack_potion();
+    test_power_potion();
+    test_colorless_potion();
     test_unknown_potion();
     test_refused_outside_player_turn();
     std::cout << "=== All Potions Passed! ===" << std::endl;

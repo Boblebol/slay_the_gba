@@ -184,6 +184,7 @@
 #include "bn_sprite_items_card_bad_luck.h"
 #include "bn_sprite_items_card_debt.h"
 #include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_guilty.h"
 #include "bn_sprite_items_card_tactician.h"
 #include "bn_sprite_items_card_abrasive.h"
 #include "bn_sprite_items_card_master_planner.h"
@@ -201,6 +202,10 @@
 #include "bn_sprite_items_card_the_gambit.h"
 #include "bn_sprite_items_card_seeker_strike.h"
 #include "bn_sprite_items_card_entropy.h"
+#include "bn_sprite_items_card_splash.h"
+#include "bn_sprite_items_card_mad_science_silent.h"
+#include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
 
 namespace gba::card_art
 {
@@ -554,6 +559,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_debt;
     case engine::CardId::SPORE_MIND:
         return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::GUILTY:
+        return &bn::sprite_items::card_guilty;
     case engine::CardId::TACTICIAN:
         return &bn::sprite_items::card_tactician;
     case engine::CardId::ABRASIVE:
@@ -588,6 +595,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_seeker_strike;
     case engine::CardId::ENTROPY:
         return &bn::sprite_items::card_entropy;
+    case engine::CardId::SPLASH:
+        return &bn::sprite_items::card_splash;
+    case engine::CardId::MAD_SCIENCE:
+        return &bn::sprite_items::card_mad_science_silent;
+    case engine::CardId::DISCOVERY:
+        return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
     default:
         return nullptr;
     }
@@ -620,8 +635,8 @@ constexpr uint16_t SHEET_SLOT[] = {
     123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
     143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 0, 0, 0, 0, 0, 0, 0,
     156, 157, 0, 0, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173,
-    174, 175, 176, 177, 178, 179, 180, 181, 0, 0, 0, 182, 0, 183, 0, 184, 185, 0, 0, 186,
-    187, 188, 0, 0, 189,
+    174, 175, 176, 177, 178, 179, 180, 181, 182, 0, 0, 0, 183, 0, 184, 0, 185, 186, 0, 0,
+    187, 188, 189, 0, 0, 190, 191, 192, 0, 193, 194,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -812,11 +827,16 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_bad_luck.h"
 #include "bn_sprite_items_card_debt.h"
 #include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_guilty.h"
 #include "bn_sprite_items_card_hand_of_greed.h"
 #include "bn_sprite_items_card_alchemize.h"
 #include "bn_sprite_items_card_the_gambit.h"
 #include "bn_sprite_items_card_seeker_strike.h"
 #include "bn_sprite_items_card_entropy.h"
+#include "bn_sprite_items_card_splash.h"
+#include "bn_sprite_items_card_mad_science_defect.h"
+#include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
 
 namespace gba::card_art
 {
@@ -1188,6 +1208,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_debt;
     case engine::CardId::SPORE_MIND:
         return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::GUILTY:
+        return &bn::sprite_items::card_guilty;
     case engine::CardId::HAND_OF_GREED:
         return &bn::sprite_items::card_hand_of_greed;
     case engine::CardId::ALCHEMIZE:
@@ -1198,6 +1220,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_seeker_strike;
     case engine::CardId::ENTROPY:
         return &bn::sprite_items::card_entropy;
+    case engine::CardId::SPLASH:
+        return &bn::sprite_items::card_splash;
+    case engine::CardId::MAD_SCIENCE:
+        return &bn::sprite_items::card_mad_science_defect;
+    case engine::CardId::DISCOVERY:
+        return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
     default:
         return nullptr;
     }
@@ -1229,9 +1259,9 @@ constexpr uint16_t SHEET_SLOT[] = {
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
     132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
     152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 0, 0, 0, 0, 0, 165, 166,
-    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 182, 0, 0, 0, 183,
-    184, 185, 0, 0, 186,
+    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 0, 0, 0,
+    184, 185, 186, 0, 0, 187, 188, 189, 0, 190, 191,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1420,12 +1450,18 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_bad_luck.h"
 #include "bn_sprite_items_card_debt.h"
 #include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_guilty.h"
 #include "bn_sprite_items_card_hand_of_greed.h"
 #include "bn_sprite_items_card_royalties.h"
 #include "bn_sprite_items_card_alchemize.h"
 #include "bn_sprite_items_card_the_gambit.h"
 #include "bn_sprite_items_card_seeker_strike.h"
 #include "bn_sprite_items_card_entropy.h"
+#include "bn_sprite_items_card_splash.h"
+#include "bn_sprite_items_card_mad_science_regent.h"
+#include "bn_sprite_items_card_quasar.h"
+#include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
 
 namespace gba::card_art
 {
@@ -1793,6 +1829,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_debt;
     case engine::CardId::SPORE_MIND:
         return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::GUILTY:
+        return &bn::sprite_items::card_guilty;
     case engine::CardId::HAND_OF_GREED:
         return &bn::sprite_items::card_hand_of_greed;
     case engine::CardId::ROYALTIES:
@@ -1805,6 +1843,16 @@ namespace gba::card_art
         return &bn::sprite_items::card_seeker_strike;
     case engine::CardId::ENTROPY:
         return &bn::sprite_items::card_entropy;
+    case engine::CardId::SPLASH:
+        return &bn::sprite_items::card_splash;
+    case engine::CardId::MAD_SCIENCE:
+        return &bn::sprite_items::card_mad_science_regent;
+    case engine::CardId::QUASAR:
+        return &bn::sprite_items::card_quasar;
+    case engine::CardId::DISCOVERY:
+        return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
     default:
         return nullptr;
     }
@@ -1836,9 +1884,9 @@ constexpr uint16_t SHEET_SLOT[] = {
     108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
     128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147,
     148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 0, 161, 162, 163, 164, 0, 0,
-    0, 0, 0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 180, 0, 181, 0, 182,
-    183, 184, 0, 0, 185,
+    0, 0, 0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 0, 182, 0,
+    183, 184, 185, 0, 0, 186, 187, 188, 189, 190, 191,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -2029,6 +2077,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_bad_luck.h"
 #include "bn_sprite_items_card_debt.h"
 #include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_guilty.h"
 #include "bn_sprite_items_card_lethality.h"
 #include "bn_sprite_items_card_debilitate.h"
 #include "bn_sprite_items_card_hand_of_greed.h"
@@ -2038,6 +2087,10 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_seeker_strike.h"
 #include "bn_sprite_items_card_seance.h"
 #include "bn_sprite_items_card_entropy.h"
+#include "bn_sprite_items_card_splash.h"
+#include "bn_sprite_items_card_mad_science_necrobinder.h"
+#include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
 
 namespace gba::card_art
 {
@@ -2409,6 +2462,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_debt;
     case engine::CardId::SPORE_MIND:
         return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::GUILTY:
+        return &bn::sprite_items::card_guilty;
     case engine::CardId::LETHALITY:
         return &bn::sprite_items::card_lethality;
     case engine::CardId::DEBILITATE:
@@ -2427,6 +2482,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_seance;
     case engine::CardId::ENTROPY:
         return &bn::sprite_items::card_entropy;
+    case engine::CardId::SPLASH:
+        return &bn::sprite_items::card_splash;
+    case engine::CardId::MAD_SCIENCE:
+        return &bn::sprite_items::card_mad_science_necrobinder;
+    case engine::CardId::DISCOVERY:
+        return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
     default:
         return nullptr;
     }
@@ -2458,9 +2521,9 @@ constexpr uint16_t SHEET_SLOT[] = {
     113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132,
     133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
     153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 182, 0, 183, 184, 0, 0, 185, 186,
-    187, 188, 0, 189, 190,
+    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 0, 184, 185, 0, 0, 186,
+    187, 188, 189, 0, 190, 191, 192, 193, 0, 194, 195,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -2651,6 +2714,7 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_bad_luck.h"
 #include "bn_sprite_items_card_debt.h"
 #include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_guilty.h"
 #include "bn_sprite_items_card_unmovable.h"
 #include "bn_sprite_items_card_colossus.h"
 #include "bn_sprite_items_card_cruelty.h"
@@ -2660,6 +2724,10 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_seeker_strike.h"
 #include "bn_sprite_items_card_primal_force.h"
 #include "bn_sprite_items_card_entropy.h"
+#include "bn_sprite_items_card_splash.h"
+#include "bn_sprite_items_card_mad_science_ironclad.h"
+#include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
 
 namespace gba::card_art
 {
@@ -3031,6 +3099,8 @@ namespace gba::card_art
         return &bn::sprite_items::card_debt;
     case engine::CardId::SPORE_MIND:
         return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::GUILTY:
+        return &bn::sprite_items::card_guilty;
     case engine::CardId::UNMOVABLE:
         return &bn::sprite_items::card_unmovable;
     case engine::CardId::COLOSSUS:
@@ -3049,6 +3119,14 @@ namespace gba::card_art
         return &bn::sprite_items::card_primal_force;
     case engine::CardId::ENTROPY:
         return &bn::sprite_items::card_entropy;
+    case engine::CardId::SPLASH:
+        return &bn::sprite_items::card_splash;
+    case engine::CardId::MAD_SCIENCE:
+        return &bn::sprite_items::card_mad_science_ironclad;
+    case engine::CardId::DISCOVERY:
+        return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
     default:
         return nullptr;
     }
@@ -3080,9 +3158,9 @@ constexpr uint16_t SHEET_SLOT[] = {
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
     132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
     152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 182, 183, 184, 0, 0, 0, 0, 185, 0, 0, 0, 186,
-    187, 188, 189, 0, 190,
+    0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 184, 185, 0, 0, 0, 0, 186, 0, 0, 0,
+    187, 188, 189, 190, 0, 191, 192, 193, 0, 194, 195,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.

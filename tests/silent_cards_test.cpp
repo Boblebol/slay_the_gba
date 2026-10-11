@@ -92,11 +92,311 @@ void test_expose() {
     std::cout << "[PASS] Silent: Expose" << std::endl;
 }
 
+void test_abrasive() {
+    for (bool upgraded : { false, true }) {
+        // Abrasive: Sly, +1 Dexterity and 4 (6) Thorns. It costs 3 energy.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        combat.player.energy = combat.player.max_energy;
+        play(combat, DeckCard(CardId::ABRASIVE, upgraded));
+        assert(combat.player.energy == combat.player.max_energy - 3);
+        assert(combat.player.get_status(StatusType::DEXTERITY) == 1);
+        assert(combat.player.get_status(StatusType::THORNS) == (upgraded ? 6 : 4));
+    }
+
+    assert(CardDef::get_cost(CardId::ABRASIVE, false) == 3 && CardDef::get_cost(CardId::ABRASIVE, true) == 3);
+    assert(CardDef::get(CardId::ABRASIVE).type == CardType::POWER);
+    assert(CardDef::has_keyword(CardId::ABRASIVE, false, KEYWORD_SLY));
+
+    assert_in_pool(CharacterId::SILENT, { CardId::ABRASIVE });
+    std::cout << "[PASS] Silent: Abrasive" << std::endl;
+}
+
+void test_master_planner() {
+    // Power, rare: 2 energy, 1 once upgraded. While in play, every Skill played gains Sly (Attacks do not).
+    assert(CardDef::get(CardId::MASTER_PLANNER).type == CardType::POWER);
+    assert(CardDef::get_cost(CardId::MASTER_PLANNER, false) == 2 && CardDef::get_cost(CardId::MASTER_PLANNER, true) == 1);
+    for (bool upgraded : { false, true }) {
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::MASTER_PLANNER, upgraded));
+        combat.hand.push_back(DeckCard(CardId::DEFEND, false));
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = 5;
+        assert(combat.play_card(0, -1));
+        assert(combat.player.energy == (upgraded ? 4 : 3));
+        assert(combat.has_power(PowerId::MASTER_PLANNER));
+        assert(combat.play_card(0, -1)); // Defend, a Skill: it gains Sly
+        assert(combat.play_card(0, 0));  // Strike, an Attack: it does not
+        bool defend_sly = false, strike_sly = false;
+        for (size_t i = 0; i < combat.discard_pile.size(); ++i) {
+            if (combat.discard_pile[i].id == CardId::DEFEND) defend_sly = CardDef::is_sly(combat.discard_pile[i]);
+            if (combat.discard_pile[i].id == CardId::STRIKE) strike_sly = CardDef::is_sly(combat.discard_pile[i]);
+        }
+        assert(defend_sly && !strike_sly);
+    }
+    assert_in_pool(CharacterId::SILENT, { CardId::MASTER_PLANNER });
+    std::cout << "[PASS] Silent: Master Planner" << std::endl;
+}
+
+void test_hand_trick() {
+    for (bool upgraded : { false, true }) {
+        assert(CardDef::get_cost(CardId::HAND_TRICK, upgraded) == 1);
+        assert(CardDef::get(CardId::HAND_TRICK).type == CardType::SKILL);
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::HAND_TRICK, upgraded));
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.hand.push_back(DeckCard(CardId::DEFEND, false));
+        combat.player.energy = combat.player.max_energy;
+        combat.player.block = 0;
+        assert(combat.play_card(0, 0));
+        assert(combat.player.block == (upgraded ? 10 : 7));
+        // Defend is the only Skill left in hand: it gains Sly until the end of the turn (picked by the player if asked).
+        if (combat.choice_pending()) {
+            for (size_t i = 0; i < combat.hand.size(); ++i) {
+                if (combat.hand[i].id == CardId::STRIKE) assert(!combat.choice_allows(i));
+            }
+            for (size_t i = 0; i < combat.hand.size(); ++i) {
+                if (combat.hand[i].id == CardId::DEFEND) {
+                    const uint8_t pick[] = { static_cast<uint8_t>(i) };
+                    assert(combat.resolve_choice(std::span<const uint8_t>(pick, 1)));
+                    break;
+                }
+            }
+        }
+        bool defend_sly = false;
+        bool strike_sly = false;
+        for (size_t i = 0; i < combat.hand.size(); ++i) {
+            if (combat.hand[i].id == CardId::DEFEND) defend_sly = CardDef::is_sly(combat.hand[i]);
+            if (combat.hand[i].id == CardId::STRIKE) strike_sly = CardDef::is_sly(combat.hand[i]);
+        }
+        assert(defend_sly && !strike_sly);
+    }
+    assert_in_pool(CharacterId::SILENT, { CardId::HAND_TRICK });
+    std::cout << "[PASS] Silent: Hand Trick" << std::endl;
+}
+
+void test_tracking() {
+    assert(CardDef::get_cost(CardId::TRACKING, false) == 2);
+    assert(CardDef::get_cost(CardId::TRACKING, true) == 1);
+    assert(CardDef::get(CardId::TRACKING).type == CardType::POWER);
+    assert_in_pool(CharacterId::SILENT, { CardId::TRACKING });
+    for (bool upgraded : { false, true }) {
+        // Weak enemies take 50% more damage from Attacks (Strike 6 -> 9); the upgrade keeps the same 50%.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        play(combat, DeckCard(CardId::TRACKING, upgraded));
+        assert(combat.player.energy == combat.player.max_energy - (upgraded ? 1 : 2));
+        combat.enemies[0].add_status(StatusType::WEAK, 3);
+        int16_t weak_before = combat.enemies[0].hp;
+        int16_t other_before = combat.enemies[1].hp;
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = combat.player.max_energy;
+        assert(combat.play_card(0, 0));
+        assert(weak_before - combat.enemies[0].hp == 9);
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = combat.player.max_energy;
+        assert(combat.play_card(0, 1));
+        assert(other_before - combat.enemies[1].hp == 6);
+    }
+    std::cout << "[PASS] Silent: Tracking" << std::endl;
+}
+
+void test_the_hunt() {
+    for (bool upgraded : { false, true }) {
+        const int16_t damage = upgraded ? 15 : 10;
+        assert(CardDef::get_cost(CardId::THE_HUNT, upgraded) == 1);
+        assert(CardDef::get(CardId::THE_HUNT).type == CardType::ATTACK);
+        assert(CardDef::has_keyword(CardId::THE_HUNT, upgraded, KEYWORD_EXHAUST));
+
+        // A survivor takes the damage and earns no extra reward; the card is exhausted.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        int16_t hp = combat.enemies[2].hp;
+        play(combat, DeckCard(CardId::THE_HUNT, upgraded), 2);
+        assert(combat.enemies[2].hp == hp - damage);
+        assert(combat.extra_card_rewards == 0);
+        assert(combat.exhaust_pile.size() == 1);
+
+        // A kill (Fatal) earns one extra card reward.
+        CombatEngine kill = make_pack(CharacterId::SILENT);
+        kill.enemies[0].hp = damage;
+        play(kill, DeckCard(CardId::THE_HUNT, upgraded), 0);
+        assert(!kill.enemies[0].is_alive());
+        assert(kill.extra_card_rewards == 1);
+    }
+    assert_in_pool(CharacterId::SILENT, { CardId::THE_HUNT });
+    std::cout << "[PASS] Silent: The Hunt" << std::endl;
+}
+
+void test_shadow_step() {
+    for (bool upgraded : { false, true }) {
+        // Shadow Step: 1 energy, free once upgraded. It discards the whole hand.
+        assert(CardDef::get_cost(CardId::SHADOW_STEP, false) == 1 && CardDef::get_cost(CardId::SHADOW_STEP, true) == 0);
+        assert(CardDef::get(CardId::SHADOW_STEP).type == CardType::SKILL);
+        assert(CardDef::get(CardId::SHADOW_STEP).target == TargetType::SELF);
+
+        // One sturdy Jaw Worm, with nothing to soften or deflect the hits.
+        CombatEngine combat;
+        combat.start_combat(EnemyType::JAW_WORM, CharacterId::SILENT);
+        combat.enemies[0].hp = combat.enemies[0].max_hp = 500;
+        combat.enemies[0].block = 0;
+        combat.enemies[0].statuses.clear();
+        combat.player.statuses.clear();
+        combat.hand.clear();
+        combat.draw_pile.clear();
+        combat.discard_pile.clear();
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.hand.push_back(DeckCard(CardId::DEFEND, false));
+        combat.hand.push_back(DeckCard(CardId::SHADOW_STEP, upgraded));
+        combat.player.energy = combat.player.max_energy;
+        assert(combat.play_card(2, -1));
+        assert(combat.hand.empty());
+        assert(combat.player.energy == combat.player.max_energy - (upgraded ? 0 : 1));
+
+        // This turn, Attacks still deal normal damage.
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = combat.player.max_energy;
+        int16_t hp = combat.enemies[0].hp;
+        assert(combat.play_card(0, 0));
+        assert(hp - combat.enemies[0].hp == 6);
+
+        // Next turn, Attacks deal double damage.
+        combat.end_player_turn();
+        combat.enemies[0].block = 0;
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = combat.player.max_energy;
+        hp = combat.enemies[0].hp;
+        assert(combat.play_card(0, 0));
+        assert(hp - combat.enemies[0].hp == 12);
+
+        // The turn after, damage is back to normal.
+        combat.end_player_turn();
+        combat.enemies[0].block = 0;
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::STRIKE, false));
+        combat.player.energy = combat.player.max_energy;
+        hp = combat.enemies[0].hp;
+        assert(combat.play_card(0, 0));
+        assert(hp - combat.enemies[0].hp == 6);
+    }
+
+    assert_in_pool(CharacterId::SILENT, { CardId::SHADOW_STEP });
+    std::cout << "[PASS] Silent: Shadow Step" << std::endl;
+}
+
+void test_untouchable() {
+    for (bool upgraded : { false, true }) {
+        // Untouchable: 2 energy, Gain 6 Block, or 9 once upgraded.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        play(combat, DeckCard(CardId::UNTOUCHABLE, upgraded));
+        assert(combat.player.block == (upgraded ? 9 : 6));
+        assert(combat.player.energy == combat.player.max_energy - 2);
+        assert(count_in(combat.discard_pile, CardId::UNTOUCHABLE) == 1);
+    }
+
+    // Base and upgraded definitions: 2 energy, 6 then 9 Block.
+    assert(CardDef::get_cost(CardId::UNTOUCHABLE, false) == 2 && CardDef::get_cost(CardId::UNTOUCHABLE, true) == 2);
+    assert(CardDef::get_value(CardId::UNTOUCHABLE, false) == 6 && CardDef::get_value(CardId::UNTOUCHABLE, true) == 9);
+    assert(CardDef::get(CardId::UNTOUCHABLE).type == CardType::SKILL);
+
+    assert_in_pool(CharacterId::SILENT, { CardId::UNTOUCHABLE });
+    std::cout << "[PASS] Silent: Untouchable" << std::endl;
+}
+
+void test_ricochet() {
+    for (bool upgraded : { false, true }) {
+        // Ricochet: 3 damage to a random enemy, 4 times (5 when upgraded). It costs 2 energy.
+        CombatEngine combat = make_pack(CharacterId::SILENT);
+        for (Enemy& enemy : combat.enemies) {
+            enemy.hp = enemy.max_hp = 200;
+            enemy.block = 0;
+        }
+        int hp_before = 0;
+        for (const Enemy& enemy : combat.enemies) hp_before += enemy.hp;
+        play(combat, DeckCard(CardId::RICOCHET, upgraded), 0);
+        assert(combat.player.energy == combat.player.max_energy - 2);
+
+        int hp_after = 0;
+        for (const Enemy& enemy : combat.enemies) hp_after += enemy.hp;
+        assert(hp_before - hp_after == 3 * (upgraded ? 5 : 4));
+        assert(count_in(combat.discard_pile, CardId::RICOCHET) == 1);
+    }
+
+    // Base and upgraded definitions: 2 energy, 3 damage, 4 then 5 hits, Sly.
+    assert(CardDef::get_cost(CardId::RICOCHET, false) == 2 && CardDef::get_cost(CardId::RICOCHET, true) == 2);
+    assert(CardDef::get_value(CardId::RICOCHET, false) == 3 && CardDef::get_value(CardId::RICOCHET, true) == 3);
+    assert(CardDef::get_secondary(CardId::RICOCHET, false) == 4 && CardDef::get_secondary(CardId::RICOCHET, true) == 5);
+    assert(CardDef::get(CardId::RICOCHET).type == CardType::ATTACK);
+    assert(CardDef::has_keyword(CardId::RICOCHET, false, KEYWORD_SLY));
+    assert(CardDef::has_keyword(CardId::RICOCHET, true, KEYWORD_SLY));
+
+    assert_in_pool(CharacterId::SILENT, { CardId::RICOCHET });
+    std::cout << "[PASS] Silent: Ricochet" << std::endl;
+}
+
+void test_reflex() {
+    for (bool upgraded : { false, true }) {
+        // Reflex: Sly, costs 3, draws 2 cards (3 when upgraded).
+        assert(CardDef::get_cost(CardId::REFLEX, false) == 3 && CardDef::get_cost(CardId::REFLEX, true) == 3);
+        assert(CardDef::get_secondary(CardId::REFLEX, false) == 0 && CardDef::get_secondary(CardId::REFLEX, true) == 0);
+        assert(CardDef::get_value(CardId::REFLEX, false) == 2 && CardDef::get_value(CardId::REFLEX, true) == 3);
+        assert(CardDef::get(CardId::REFLEX).type == CardType::SKILL);
+        assert(CardDef::get(CardId::REFLEX).target == TargetType::SELF);
+
+        CombatEngine reflex = make_pack(CharacterId::SILENT);
+        reflex.draw_pile.clear();
+        reflex.draw_pile.push_back(DeckCard(CardId::STRIKE, false));
+        reflex.draw_pile.push_back(DeckCard(CardId::DEFEND, false));
+        reflex.draw_pile.push_back(DeckCard(CardId::STRIKE, false));
+        play(reflex, DeckCard(CardId::REFLEX, upgraded));
+        assert(reflex.player.energy == reflex.player.max_energy - 3);
+        assert(reflex.hand.size() == (upgraded ? 3u : 2u));
+    }
+
+    assert_in_pool(CharacterId::SILENT, { CardId::REFLEX });
+    std::cout << "[PASS] Silent: Reflex" << std::endl;
+}
+
+void test_flick_flack() {
+    for (bool upgraded : { false, true }) {
+        // Flick-Flack: 7 damage to every enemy (9 upgraded). It costs 1 energy.
+        CombatEngine flick = make_pack(CharacterId::SILENT);
+        play(flick, DeckCard(CardId::FLICK_FLACK, upgraded));
+        int damage = upgraded ? 9 : 7;
+        assert(flick.player.energy == flick.player.max_energy - 1);
+        assert(flick.enemies[0].hp == 18 - damage);
+        assert(flick.enemies[1].hp == 18 - damage);
+        assert(flick.enemies[2].hp == 42 - damage);
+        assert(count_in(flick.discard_pile, CardId::FLICK_FLACK) == 1);
+    }
+
+    // Base and upgraded definitions: 1 energy, 7 then 9 damage, Attack against all enemies.
+    assert(CardDef::get_cost(CardId::FLICK_FLACK, false) == 1 && CardDef::get_cost(CardId::FLICK_FLACK, true) == 1);
+    assert(CardDef::get_value(CardId::FLICK_FLACK, false) == 7 && CardDef::get_value(CardId::FLICK_FLACK, true) == 9);
+    assert(CardDef::get(CardId::FLICK_FLACK).type == CardType::ATTACK);
+    assert(CardDef::get(CardId::FLICK_FLACK).target == TargetType::ALL_ENEMIES);
+
+    assert_in_pool(CharacterId::SILENT, { CardId::FLICK_FLACK });
+    std::cout << "[PASS] Silent: Flick-Flack" << std::endl;
+}
+
 } // namespace
 
 int main() {
     std::cout << "=== Silent Cards ===" << std::endl;
     test_expose();
+    test_abrasive();
+    test_master_planner();
+    test_hand_trick();
+    test_tracking();
+    test_the_hunt();
+    test_shadow_step();
+    test_untouchable();
+    test_ricochet();
+    test_reflex();
+    test_flick_flack();
     std::cout << "=== All Silent Cards Passed! ===" << std::endl;
     return 0;
 }
