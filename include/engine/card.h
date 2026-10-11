@@ -641,10 +641,22 @@ enum class CardId : uint16_t {
     DISCOVERY,
     // Event card: choose 1 of 3 upgraded Powers (Abundance)
     ABUNDANCE,
+    // Regent minions (mechanic #103): tokens, and the cards that transform into them
+    MINION_STRIKE,
+    MINION_DIVE_BOMB,
+    MINION_SACRIFICE,
+    BEGONE,
+    CHARGE,
+    GUARDS,
     COUNT
 };
 
 // Where a card created during a fight goes.
+// The cards whose French name contains "Sbire" (Vitruvian Minion).
+constexpr bool is_minion_card(CardId id) {
+    return id == CardId::MINION_STRIKE || id == CardId::MINION_DIVE_BOMB || id == CardId::MINION_SACRIFICE;
+}
+
 enum class Pile : uint8_t {
     HAND,
     DRAW, // at a random place

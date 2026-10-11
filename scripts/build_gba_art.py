@@ -794,6 +794,12 @@ CARDS: list[CardArt] = [
     CardArt("quasar", "regent", "quasar", "skill", (0, 0), stars=(2, 2)),
     CardArt("discovery", "colorless", "discovery", "skill", (1, 1)),
     CardArt("abundance", "ancient", "abundance", "skill", (1, 0), folder="event"),
+    CardArt("minion_strike", "regent", "minion_strike", "attack", (0, 0), folder="token"),
+    CardArt("minion_dive_bomb", "regent", "minion_dive_bomb", "attack", (0, 0), folder="token"),
+    CardArt("minion_sacrifice", "regent", "minion_sacrifice", "skill", (0, 0), folder="token"),
+    CardArt("begone", "regent", "begone", "skill", (1, 1)),
+    CardArt("charge", "regent", "charge", "skill", (1, 1)),
+    CardArt("guards", "regent", "guards", "skill", (2, 2)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
