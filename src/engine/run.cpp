@@ -1037,6 +1037,8 @@ void RunManager::on_shop_opened() {
     }
 }
 
+static constexpr uint8_t FISHING_ROD_COMBATS = 3;
+
 void RunManager::on_combat_won(RoomType room) {
     count_hook(RunHook::COMBAT_WON);
     // Wongo's Mystery Ticket (event): each fight won counts; the fifth one pays 3 random relics, once.
@@ -1045,6 +1047,10 @@ void RunManager::on_combat_won(RoomType room) {
         if (relic_counter("WONGOS_MYSTERY_TICKET") == WONGOS_MYSTERY_TICKET_COMBATS) {
             gain_random_relics(WONGOS_MYSTERY_TICKET_RELICS);
         }
+    }
+    // Fishing Rod: every 3 normal fights won, one random card of the deck is upgraded.
+    if (room == RoomType::MONSTER && has_relic("FISHING_ROD") && tick_relic_counter("FISHING_ROD", FISHING_ROD_COMBATS)) {
+        upgrade_random_cards(1);
     }
     // War Hammer: killing an Elite upgrades 4 random cards of the deck.
     if (room == RoomType::ELITE && has_relic("WAR_HAMMER")) upgrade_random_cards(4);
