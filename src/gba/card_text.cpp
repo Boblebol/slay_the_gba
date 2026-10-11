@@ -914,6 +914,10 @@ bn::string_view base_name(engine::CardId id)
         return "Chargez !!";
     case engine::CardId::GUARDS:
         return "Gardes !!!";
+    case engine::CardId::HIDDEN_GEM:
+        return "Joyau caché";
+    case engine::CardId::TRANSFIGURE:
+        return "Transfiguration";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1794,6 +1798,12 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::GUARDS:
         stream << "Main en Sbires sacrificiels. Épuisement.";
+        break;
+    case engine::CardId::HIDDEN_GEM:
+        stream << "1 carte de la Pioche gagne Écho " << value << ".";
+        break;
+    case engine::CardId::TRANSFIGURE:
+        stream << "1 carte de la main : Écho, coûte +1.";
         break;
     case engine::CardId::MAD_SCIENCE:
         stream << (card.upgraded ? "Inné. " : "") << "Inflige " << value << " dégâts.";

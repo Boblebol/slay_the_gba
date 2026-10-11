@@ -2069,6 +2069,8 @@ int CombatEngine::consume_play_modifiers(const DeckCard& card) {
     if (type == CardType::POWER && use_one(PowerId::REPLAY_POWER)) ++extra;
     // Sword Sage: Replay on the Sovereign Blade, every time it is played.
     if (card.id == CardId::SOVEREIGN_BLADE) extra += power_amount(PowerId::SWORD_SAGE);
+    // Echo N on this copy of the card.
+    extra += card.echo;
     ActivePower* echo = find_power(PowerId::ECHO_FORM);
     if (echo && echo->counter < echo->amount) {
         ++echo->counter;
@@ -2137,6 +2139,7 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::SURVIVOR:
         case CardId::HAND_TRICK:
         case CardId::SEANCE:
+        case CardId::TRANSFIGURE:
         case CardId::BEGONE:
         case CardId::CHARGE:
         case CardId::GUARDS:
@@ -2385,6 +2388,8 @@ bool CombatEngine::can_be_picked(const DeckCard& card, ChoiceKind kind) const {
             return !CardDef::is_sly(card);
         case ChoiceKind::TRANSFORM:
             return true;
+        case ChoiceKind::ADD_ECHO:
+            return card.echo == 0;
         case ChoiceKind::MAKE_FREE: {
             const int cost = effective_cost(card);
             return cost != COST_X && cost > 0;
@@ -2598,6 +2603,10 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                     break;
                 case ChoiceKind::MAKE_SLY:
                     hand[index].sly_this_turn = true;
+                    break;
+                case ChoiceKind::ADD_ECHO:
+                    hand[index].echo = 1;
+                    hand[index].cost_delta = static_cast<int8_t>(hand[index].cost_delta + 1);
                     break;
                 case ChoiceKind::TRANSFORM:
                     transform_card(hand[index], choice.into, choice.upgraded);
@@ -5561,6 +5570,24 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             choice.upgraded = upgraded;
             ask_choice(choice);
             set_log(upgraded ? "Played Guards+!"sv : "Played Guards!"sv);
+            break;
+        }
+        case CardId::HIDDEN_GEM: {
+            // A random card of the draw pile without Echo gains Echo N.
+            uint8_t candidates[50];
+            size_t count = 0;
+            for (size_t i = 0; i < draw_pile.size(); ++i) {
+                if (draw_pile[i].echo == 0) candidates[count++] = static_cast<uint8_t>(i);
+            }
+            if (count > 0) draw_pile[candidates[next_random() % count]].echo = static_cast<uint8_t>(base_value);
+            set_log(upgraded ? "Played Hidden Gem+!"sv : "Played Hidden Gem!"sv);
+            break;
+        }
+        case CardId::TRANSFIGURE: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::ADD_ECHO;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Transfigure+!"sv : "Played Transfigure!"sv);
             break;
         }
         case CardId::PRIMAL_FORCE: {

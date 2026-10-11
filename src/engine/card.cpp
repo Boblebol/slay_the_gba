@@ -643,6 +643,8 @@ static constexpr CardDef CARDS[] = {
     { CardId::BEGONE, "Begone!", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Choose a card in your hand to Transform into Minion Strike.", "Begone!+", 1, 0, 0, "Choose a card in your hand to Transform into Minion Strike+." },
     { CardId::CHARGE, "Charge!!", 1, CardType::SKILL, TargetType::SELF, 2, 0, "Choose 2 cards in your draw pile to Transform into Minion Dive Bombs.", "Charge!!+", 1, 2, 0, "Choose 2 cards in your draw pile to Transform into Minion Dive Bombs+." },
     { CardId::GUARDS, "Guards!!!", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Transform any number of cards in your hand into Minion Sacrifice. Exhaust.", "Guards!!!+", 2, 0, 0, "Transform any number of cards in your hand into Minion Sacrifice+. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::HIDDEN_GEM, "Hidden Gem", 1, CardType::SKILL, TargetType::SELF, 2, 0, "A random card in your draw pile without Echo gains Echo 2.", "Hidden Gem+", 1, 3, 0, "A random card in your draw pile without Echo gains Echo 3." },
+    { CardId::TRANSFIGURE, "Transfigure", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Add Echo to a card in your hand. It costs 1 more. Exhaust.", "Transfigure+", 1, 0, 0, "Add Echo to a card in your hand. It costs 1 more.", KEYWORD_EXHAUST, 0 },
 };
 
 const CardDef& CardDef::get(CardId id) {
