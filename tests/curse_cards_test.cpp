@@ -174,6 +174,27 @@ void test_debt() {
     std::cout << "[PASS] Debt: Unplayable, loses 10 gold at the end of the turn while in hand, base and upgraded" << std::endl;
 }
 
+void test_shame() {
+    // Cost X, Curse, Unplayable, no other keyword; Frail 1 at end of turn while in hand; same upgraded.
+    check_definition(CardId::SHAME, 0);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::SHAME, up);
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+        assert(combat.player.get_status(StatusType::FRAIL) == 0);
+        combat.trigger_end_of_turn_in_hand(combat.hand[0]);
+        assert(combat.player.get_status(StatusType::FRAIL) == 1);
+        // Not in hand at the end of the turn: no Frail.
+        CombatEngine other = fight_with(CardId::SHAME, up);
+        other.hand.clear();
+        other.discard_pile.push_back(DeckCard(CardId::SHAME, up));
+        other.end_player_turn();
+        assert(other.player.get_status(StatusType::FRAIL) == 0);
+    }
+    std::cout << "[PASS] Shame: unplayable, Frail 1 at end of turn only while in hand, base and upgraded" << std::endl;
+}
+
 void test_normality() {
     CombatEngine combat = fight_with(CardId::NORMALITY);
     combat.hand.clear();
@@ -251,6 +272,7 @@ int main() {
     test_innate();
     test_end_of_turn_effects();
     test_debt();
+    test_shame();
     test_normality();
     test_spore_mind();
     test_eternal_stays_in_the_deck();
