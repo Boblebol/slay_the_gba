@@ -3676,6 +3676,24 @@ void test_paper_phrog() {
     std::cout << "[PASS] Paper Phrog: Vulnerable enemies take 25% more damage from attacks" << std::endl;
 }
 
+void test_forgotten_soul() {
+    // With the relic, each exhausted card deals 1 damage to one random enemy.
+    CombatEngine soul = make_relic_combat(CharacterId::IRONCLAD, PowerId::FORGOTTEN_SOUL, 1, true);
+    auto total = [](const CombatEngine& c) { int sum = 0; for (const Enemy& e : c.enemies) sum += e.hp; return sum; };
+    const int before = total(soul);
+    soul.exhaust_card(CardId::STRIKE);
+    assert(total(soul) == before - 1);
+    soul.exhaust_card(CardId::STRIKE);
+    assert(total(soul) == before - 2);
+
+    // Without the relic, nothing happens.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::VELVET_CHOKER, 0, true);
+    const int plain_before = total(plain);
+    plain.exhaust_card(CardId::STRIKE);
+    assert(total(plain) == plain_before);
+    std::cout << "[PASS] Forgotten Soul: an exhausted card deals 1 damage to a random enemy" << std::endl;
+}
+
 void test_silver_crucible() {
     // The first 3 card rewards seen are Upgraded, the next ones are not.
     RunManager run;
@@ -3950,5 +3968,6 @@ int main() {
     test_spiked_gauntlets();
     test_paper_phrog();
     test_silver_crucible();
+    test_forgotten_soul();
     return 0;
 }
