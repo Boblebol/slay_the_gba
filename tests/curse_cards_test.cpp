@@ -81,6 +81,23 @@ void test_ethereal_and_retain() {
     std::cout << "[PASS] Clumsy and Ascender's Bane exhaust at end of turn, Poor Sleep is retained" << std::endl;
 }
 
+void test_poor_sleep() {
+    // Insomnie: X cost, Curse, Unplayable, Retain; same upgraded.
+    check_definition(CardId::POOR_SLEEP, KEYWORD_RETAIN);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::POOR_SLEEP, up);
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+        assert(CardDef::has_keyword(CardId::POOR_SLEEP, up, KEYWORD_RETAIN));
+        combat.end_player_turn();
+        bool kept = false;
+        for (size_t i = 0; i < combat.hand.size(); ++i) kept = kept || combat.hand[i].id == CardId::POOR_SLEEP;
+        assert(kept);
+    }
+    std::cout << "[PASS] Poor Sleep: X cost, Curse, Unplayable, Retain, same upgraded" << std::endl;
+}
+
 void test_innate() {
     CombatEngine combat;
     combat.start_combat(EnemyType::JAW_WORM, CharacterId::IRONCLAD);
@@ -209,6 +226,7 @@ int main() {
     test_injury();
     test_keyword_curses();
     test_ethereal_and_retain();
+    test_poor_sleep();
     test_innate();
     test_end_of_turn_effects();
     test_normality();
