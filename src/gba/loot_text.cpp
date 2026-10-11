@@ -155,6 +155,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "BOOMING_CONCH", "Au début des combats d'Élite, piochez 2 cartes supplémentaires et gagnez 1 ●." },
     { "WHISPERING_EARRING","Gagnez 1 ● au début de chaque tour. Vakuu joue votre premier tour à votre place." },
     { "ARCANE_SCROLL", "Lorsque vous obtenez cette relique, ajoutez une Carte Rare aléatoire à votre Deck." },
+    { "LOST_COFFER", "Lorsque vous obtenez cette relique, gagnez 1 récompense de carte et obtenez 1 Potion aléatoire." },
     { "LEAD_PAPERWEIGHT", "Lorsque vous obtenez cette relique, choisissez 1 carte Incolore parmi 2 à ajouter à votre Deck." },
     { "BLACK_BLOOD", "À la fin de chaque combat, récupérez 12 PV." },
     { "LAVA_ROCK", "Le Boss de l'Acte 1 octroie 2 Reliques lorsqu'il est vaincu." },
