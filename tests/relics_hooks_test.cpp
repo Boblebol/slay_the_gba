@@ -2167,6 +2167,25 @@ void test_diamond_diadem() {
     std::cout << "[PASS] Diamond Diadem: 20 Block at the start, kept at the 2nd turn" << std::endl;
 }
 
+void test_choices_paradox() {
+    // With the relic: 5 random cards are offered, the one picked joins the hand with Retain.
+    RunManager paradox = make_relic_run(CharacterId::IRONCLAD, { "CHOICES_PARADOX" });
+    CombatEngine& combat = paradox.combat;
+    assert(combat.choice_pending() && combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.offers.size() == 5 && combat.hand.size() == 5);
+    const DeckCard picked = combat.offers[2];
+    const uint8_t picks[] = { 2 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending() && combat.offers.empty());
+    assert(combat.hand.size() == 6 && combat.hand.back().id == picked.id);
+    assert((combat.hand.back().added_keywords & KEYWORD_RETAIN) != 0);
+
+    // Without the relic: no offer at the start of the combat.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(!plain.combat.choice_pending() && plain.combat.offers.empty() && plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Choices Paradox: 1 of 5 random cards joins the hand with Retain" << std::endl;
+}
+
 void test_toolbox() {
     // With the relic: 3 Colorless cards are offered at the start of the combat, and the one picked joins the hand.
     RunManager toolbox = make_relic_run(CharacterId::IRONCLAD, { "TOOLBOX" });
@@ -4108,6 +4127,7 @@ int main() {
     test_reptile_trinket();
     test_ringing_triangle();
     test_toolbox();
+    test_choices_paradox();
     test_orange_dough();
     test_diamond_diadem();
     test_pen_nib();

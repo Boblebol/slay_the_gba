@@ -245,6 +245,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "THE_COURIER", "Le Marchand renouvelle ce que vous achetez. Prix -20%." },
     { "THE_ABACUS", "Chaque fois que la Pioche est mélangée, gagnez 6 d'Armure." },
     { "TINGSHA", "Pour chaque carte que vous défaussez pendant votre tour, infligez 3 dégâts à un ennemi aléatoire." },
+    { "CHOICES_PARADOX", "Au début de chaque combat, choisissez 1 carte parmi 5 cartes aléatoires et ajoutez-la à votre Main avec Retenue." },
     { "TOOLBOX", "Au début de chaque combat, choisissez 1 carte Incolore aléatoire parmi 3 et ajoutez-la à votre Main." },
     { "TOUGH_BANDAGES", "Chaque fois que vous défaussez une carte pendant votre tour, gagnez 3 d'Armure." },
     { "TUNING_FORK", "Toutes les 10 Compétences que vous jouez, vous gagnez 7 d'Armure." },

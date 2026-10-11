@@ -2461,7 +2461,7 @@ void CombatEngine::offer_from_draw(uint8_t count) {
     ask_choice(choice);
 }
 
-void CombatEngine::offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded, bool free_this_turn) {
+void CombatEngine::offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded, bool free_this_turn, bool retain) {
     CardChoice choice;
     choice.kind = ChoiceKind::TO_HAND;
     choice.source = Pile::OFFERS;
@@ -2469,6 +2469,7 @@ void CombatEngine::offer_random_cards(const CardFilter& filter, uint8_t count, b
     choice.upgraded = upgraded;
     choice.offer_from_draw = false;
     choice.offer_free = free_this_turn;
+    choice.offer_retain = retain;
     choice.offer_filter = filter;
     ask_choice(choice);
 }
@@ -2502,6 +2503,7 @@ void CombatEngine::deal_offers(const CardChoice& choice) {
         if (offered) continue;
         DeckCard card(id, choice.upgraded);
         card.free_this_turn = choice.offer_free;
+        if (choice.offer_retain) card.added_keywords |= KEYWORD_RETAIN;
         offers.push_back(card);
         offer_origins.push_back(NOT_IN_PILE);
     }

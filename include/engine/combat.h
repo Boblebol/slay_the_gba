@@ -191,6 +191,7 @@ struct CardChoice {
     // turn when `offer_free`). The picked cards go to the hand, the others stay where they were or vanish.
     bool offer_from_draw = true;
     bool offer_free = false;
+    bool offer_retain = false;   // the cards made for the offer have Retain
     CardFilter offer_filter;
     bool free_this_turn = false; // TO_HAND: the cards picked cost 0 this turn (Liquid Memories)
 };
@@ -416,7 +417,7 @@ public:
     void offer_from_draw(uint8_t count);
     // "Choose 1 of `count` random cards to add to your Hand" (Discovery): `count` different random cards of
     // `filter` are made and offered; the picked one goes to the hand, the others vanish.
-    void offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded = false, bool free_this_turn = false);
+    void offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded = false, bool free_this_turn = false, bool retain = false);
     // Cards of a pile, as the choices index them.
     size_t pile_size(Pile pile) const;
     const DeckCard& pile_card(Pile pile, size_t index) const;
