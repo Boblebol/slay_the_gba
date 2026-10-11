@@ -133,6 +133,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Diablotin mercenaire";
         max_hp = 47;
         hp = 47;
+    } else if (type == EnemyType::HAUNTED_SHIP) {
+        name = "Navire hanté";
+        max_hp = 63;
+        hp = 63;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -192,6 +196,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::CORPSE_SLUG: return 27;
         case EnemyType::GAS_BOMB: return 8;
         case EnemyType::GREMLIN_MERC: return 51;
+        case EnemyType::HAUNTED_SHIP: return 67;
         default: return 0;
     }
 }
@@ -670,6 +675,26 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 2;
             current_intent.description = "Héhé (8 dmg, +2 Force)";
+        }
+    } else if (type == EnemyType::HAUNTED_SHIP) {
+        // Haunt, then Swipe and Stomp, and again from Swipe.
+        const int step = turn_number == 1 ? 0 : 1 + (turn_number - 2) % 2;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::WEAK, 3 };
+            current_intent.status_card = CardId::DAZED;
+            current_intent.status_cards = 5;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Hanter (Affaibli 3, 5 Hébété)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 14 : 13;
+            current_intent.description = "Griffe (13 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 5 : 4;
+            current_intent.hits = 3;
+            current_intent.description = "Piétinement (4 dmg x3)";
         }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the

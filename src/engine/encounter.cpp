@@ -44,6 +44,7 @@ constexpr Encounter ACT1B_NORMAL[] = {
     { "CorpseSlugsNormal"sv, 3, { EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG } },
     { "PunchConstructNormal"sv, 1, { EnemyType::PUNCH_CONSTRUCT } },
     { "GremlinMercNormal"sv, 1, { EnemyType::GREMLIN_MERC } },
+    { "HauntedShipNormal"sv, 1, { EnemyType::HAUNTED_SHIP } },
 };
 
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {

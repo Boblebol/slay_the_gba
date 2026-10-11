@@ -1677,6 +1677,55 @@ void test_gremlin_merc_ascension() {
     std::cout << "[PASS] Gremlin Merc: Ascension gives 51 to 53 HP, Gimme 8 x2, Double Smash 7 x2, Hehe 9" << std::endl;
 }
 
+void test_haunted_ship() {
+    // Haunt (3 Weak and 5 Dazed), then Swipe (13) and Stomp (4 x3), and again from Swipe.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::HAUNTED_SHIP);
+    Enemy& ship = combat.enemies[0];
+    assert(ship.type == EnemyType::HAUNTED_SHIP && ship.name == "Navire hanté" && ship.hp == 63 && ship.max_hp == 63);
+    assert(ship.block == 0 && ship.statuses.empty());
+    auto dazed_everywhere = [&combat]() {
+        int count = count_in(combat.draw_pile, CardId::DAZED) + count_in(combat.discard_pile, CardId::DAZED) +
+                    count_in(combat.exhaust_pile, CardId::DAZED);
+        for (const DeckCard& card : combat.hand) count += card.id == CardId::DAZED;
+        return count;
+    };
+    assert(ship.current_intent.type == DEBUFF && ship.intent_damage(combat.player) == 0);
+    assert(ship.current_intent.debuffs[0].type == StatusType::WEAK && ship.current_intent.debuffs[0].amount == 3);
+    assert(ship.current_intent.status_card == CardId::DAZED && ship.current_intent.status_cards == 5);
+    combat.end_player_turn();
+    assert(combat.player.hp == combat.player.max_hp && combat.player.get_status(StatusType::WEAK) >= 1);
+    assert(dazed_everywhere() == 5);
+    assert(combat.last_enemy_actions[0].cards_added == CardId::DAZED && combat.last_enemy_actions[0].cards_added_count == 5);
+    for (int cycle = 0; cycle < 2; ++cycle) {
+        combat.player.statuses.clear();
+        assert(ship.current_intent.type == ATTACK && ship.intent_damage(combat.player) == 13 && ship.current_intent.hits == 1);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 13);
+        combat.player.hp = combat.player.max_hp;
+        assert(ship.current_intent.type == ATTACK && ship.current_intent.hits == 3 && ship.intent_damage(combat.player) == 4);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 12);
+        combat.player.hp = combat.player.max_hp;
+        assert(dazed_everywhere() == 5);
+    }
+    assert(ship.block == 0 && ship.statuses.empty() && ship.hp == 63);
+    std::cout << "[PASS] Haunted Ship: 63 HP, Haunt then Swipe 13 and Stomp 4x3" << std::endl;
+}
+
+void test_haunted_ship_ascension() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::HAUNTED_SHIP);
+    Enemy& ship = combat.enemies[0];
+    assert(ship.ascension_hp() == 67 && ship.hp_spread() == 0);
+    ship.ascend(true, true);
+    combat.plan_enemies();
+    assert(ship.hp == 67 && ship.max_hp == 67);
+    combat.end_player_turn();
+    assert(ship.current_intent.type == ATTACK && ship.intent_damage(combat.player) == 14);
+    combat.end_player_turn();
+    assert(ship.current_intent.hits == 3 && ship.intent_damage(combat.player) == 5);
+    std::cout << "[PASS] Haunted Ship: Ascension gives 67 HP, Swipe 14 and Stomp 5x3" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1737,6 +1786,8 @@ int main() {
     test_gremlin_merc_ascension();
     test_sneaky_gremlin();
     test_sneaky_gremlin_ascension();
+    test_haunted_ship();
+    test_haunted_ship_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
