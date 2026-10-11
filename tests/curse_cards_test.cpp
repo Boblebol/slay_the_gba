@@ -299,6 +299,32 @@ void test_ascension_10_starting_curse() {
 
 } // namespace
 
+void test_guilty() {
+    check_definition(CardId::GUILTY, 0);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::GUILTY, up);
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+    }
+    // Removed from the deck after 5 combats, upgraded or not.
+    for (bool up : { false, true }) {
+        RunManager run;
+        run.start_run(CharacterId::IRONCLAD);
+        const size_t size = run.master_deck.size();
+        run.master_deck.push_back(DeckCard(CardId::GUILTY, up));
+        for (int fight = 1; fight <= 5; ++fight) {
+            run.map.nodes[0].type = RoomType::MONSTER;
+            run.enter_room(0);
+            run.combat.state = CombatState::VICTORY;
+            run.proceed_after_combat();
+            assert(run.master_deck.size() == (fight < 5 ? size + 1 : size));
+        }
+        for (size_t i = 0; i < run.master_deck.size(); ++i) assert(run.master_deck[i].id != CardId::GUILTY);
+    }
+    std::cout << "[PASS] Guilty: X cost, Curse, Unplayable, removed from the deck after 5 combats, same upgraded" << std::endl;
+}
+
 int main() {
     test_injury();
     test_keyword_curses();
@@ -313,6 +339,7 @@ int main() {
     test_spore_mind();
     test_eternal_stays_in_the_deck();
     test_ascension_10_starting_curse();
+    test_guilty();
     std::cout << "All curse card tests passed." << std::endl;
     return 0;
 }

@@ -838,6 +838,8 @@ bn::string_view base_name(engine::CardId id)
         return "Dette";
     case engine::CardId::SPORE_MIND:
         return "Conscience sporique";
+    case engine::CardId::GUILTY:
+        return "Culpabilité";
     case engine::CardId::TACTICIAN:
         return "Tactique";
     case engine::CardId::ABRASIVE:
@@ -1654,6 +1656,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SPORE_MIND:
         stream << "Épuisement.";
+        break;
+    case engine::CardId::GUILTY:
+        stream << "Injouable. Retirée après 5 combats.";
         break;
     case engine::CardId::TACTICIAN:
         stream << "Ruse. Énergie +" << value << ".";

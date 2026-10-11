@@ -5273,6 +5273,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::REGRET:
         case CardId::BAD_LUCK:
         case CardId::DEBT:
+        case CardId::GUILTY:
             // Unplayable: only another card can play them, and nothing happens.
             break;
         case CardId::DEBRIS: {

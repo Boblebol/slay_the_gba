@@ -505,6 +505,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::CURSE, CardPool::CURSE }, // BAD_LUCK
     { CardRarity::CURSE, CardPool::CURSE }, // DEBT
     { CardRarity::CURSE, CardPool::CURSE }, // SPORE_MIND
+    { CardRarity::CURSE, CardPool::CURSE }, // GUILTY
     { CardRarity::UNCOMMON, CardPool::SILENT }, // TACTICIAN
     { CardRarity::RARE, CardPool::SILENT }, // ABRASIVE
     { CardRarity::RARE, CardPool::SILENT }, // MASTER_PLANNER

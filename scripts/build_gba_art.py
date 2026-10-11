@@ -748,6 +748,7 @@ CARDS: list[CardArt] = [
     CardArt("bad_luck", "curse", "bad_luck", "status", (NO_COST, NO_COST)),
     CardArt("debt", "curse", "debt", "status", (NO_COST, NO_COST)),
     CardArt("spore_mind", "curse", "spore_mind", "status", (1, 1)),
+    CardArt("guilty", "curse", "guilty", "status", (NO_COST, NO_COST)),
     CardArt("tactician", "silent", "tactician", "skill", (3, 3)),
     CardArt("abrasive", "silent", "abrasive", "power", (3, 3)),
     CardArt("master_planner", "silent", "master_planner", "power", (2, 1)),
