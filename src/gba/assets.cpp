@@ -73,6 +73,7 @@
 #include "bn_sprite_items_mon_sludge_spinner.h"
 #include "bn_sprite_items_mon_tracker_ruby_raider.h"
 #include "bn_sprite_items_mon_slumbering_beetle.h"
+#include "bn_sprite_items_mon_mecha_knight.h"
 #include "bn_sprite_items_mon_the_forgotten.h"
 #include "bn_sprite_items_mon_the_lost.h"
 #include "bn_sprite_items_mon_tunneler.h"
@@ -265,6 +266,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_axe_ruby_raider, false };
     case engine::EnemyType::TRACKER_RUBY_RAIDER:
         return { &bn::sprite_items::mon_tracker_ruby_raider, false };
+    case engine::EnemyType::MECHA_KNIGHT:
+        return { &bn::sprite_items::mon_mecha_knight, false };
     case engine::EnemyType::CALCIFIED_CULTIST:
         return { &bn::sprite_items::mon_calcified_cultist, false };
     case engine::EnemyType::DAMP_CULTIST:

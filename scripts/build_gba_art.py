@@ -164,6 +164,7 @@ MONSTERS: dict[str, str] = {
     "assassin_ruby_raider": "assassin_ruby_raider",
     "axe_ruby_raider": "axe_ruby_raider",
     "tracker_ruby_raider": "tracker_ruby_raider",
+    "mecha_knight": "mecha_knight",
     "calcified_cultist": "calcified_cultist",
     "damp_cultist": "damp_cultist",
     "sewer_clam": "sewer_clam",

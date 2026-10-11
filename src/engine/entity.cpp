@@ -233,6 +233,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Chasseur-tueur";
         max_hp = 121;
         hp = 121;
+    } else if (type == EnemyType::MECHA_KNIGHT) {
+        name = "Méca-Chevalier";
+        max_hp = 300;
+        hp = 300;
     } else if (type == EnemyType::FOSSIL_STALKER) {
         name = "Traqueur fossilisé";
         max_hp = 51;
@@ -392,6 +396,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::ENTOMANCER: return 165;
         case EnemyType::SPECTRAL_KNIGHT: return 97;
         case EnemyType::SOUL_NEXUS: return 254;
+        case EnemyType::MECHA_KNIGHT: return 320;
         default: return 0;
     }
 }
@@ -1432,6 +1437,35 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = ascended_damage ? 4 : 3;
             current_intent.hits = 3;
             current_intent.description = "Flamme spirituelle (3 dmg x3)";
+        }
+    } else if (type == EnemyType::MECHA_KNIGHT) {
+        // Charge, Flamethrower, Windup, Heavy Cleave, then Flamethrower, Windup, Heavy Cleave again.
+        current_intent.block = 0;
+        current_intent.status_type = StatusType::NONE;
+        current_intent.status_amount = 0;
+        const int step = turn_number == 1 ? 0 : 1 + (turn_number - 2) % 3;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 30 : 25;
+            current_intent.description = "Charge (25 dmg)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 12 : 8;
+            current_intent.status_card = CardId::BURN;
+            current_intent.status_cards = 4;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Lance-flammes (8 dmg, 4 Brûlure)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.base_damage = 0;
+            current_intent.block = 15;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 5;
+            current_intent.description = "Chargement (15 Armure, Force 5)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 40 : 35;
+            current_intent.description = "Balayage lourd (35 dmg)";
         }
     } else if (type == EnemyType::HUNTER_KILLER) {
         // Tenderizing Goop, Bite, Puncture, then a draw between Bite (never twice in a row) and Puncture.
