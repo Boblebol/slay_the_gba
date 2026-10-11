@@ -154,6 +154,26 @@ void test_end_of_turn_effects() {
     std::cout << "[PASS] Doubt, Shame, Decay, Regret, Bad Luck, Debt: effect at end of turn only while in hand" << std::endl;
 }
 
+void test_debt() {
+    // Cost X, Curse, Unplayable, same upgraded; loses 10 gold at the end of the turn only while in hand.
+    check_definition(CardId::DEBT, 0);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::DEBT, up);
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+        assert(combat.gold_lost == 0);
+        combat.end_player_turn();
+        assert(combat.gold_lost == 10);
+    }
+    CombatEngine combat = fight_with(CardId::DEBT);
+    combat.hand.clear();
+    combat.discard_pile.push_back(DeckCard(CardId::DEBT, false));
+    combat.end_player_turn();
+    assert(combat.gold_lost == 0);
+    std::cout << "[PASS] Debt: Unplayable, loses 10 gold at the end of the turn while in hand, base and upgraded" << std::endl;
+}
+
 void test_normality() {
     CombatEngine combat = fight_with(CardId::NORMALITY);
     combat.hand.clear();
@@ -230,6 +250,7 @@ int main() {
     test_ethereal_and_retain();
     test_innate();
     test_end_of_turn_effects();
+    test_debt();
     test_normality();
     test_spore_mind();
     test_eternal_stays_in_the_deck();
