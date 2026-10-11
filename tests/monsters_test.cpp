@@ -2295,6 +2295,46 @@ void test_chomper_ascension() {
     std::cout << "[PASS] Chomper: Ascension gives 63 to 67 HP and Clamp 9 x2" << std::endl;
 }
 
+void test_slumbering_beetle() {
+    // Asleep it only snores, turn after turn, and costs the player nothing.
+    check_monster(EnemyType::SLUMBERING_BEETLE, "Scarabée dormeur", 86, {
+        { STUN, 0, 0, 0 },
+        { STUN, 0, 0, 0 },
+        { STUN, 0, 0, 0 },
+    });
+    // The first hit wakes it: Roll Out 16, +2 Strength after each, every turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLUMBERING_BEETLE);
+    Enemy& beetle = combat.enemies[0];
+    combat.damage_enemy(beetle, 5);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // still snoring: the intent was planned asleep
+    assert(combat.player.hp == combat.player.max_hp);
+    for (int turn = 0; turn < 4; ++turn) {
+        const int strength = 2 * turn;
+        assert(beetle.current_intent.type == ATTACK_BUFF);
+        assert(beetle.intent_damage(combat.player) == 16 + strength);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 16 + strength);
+        assert(beetle.get_status(StatusType::STRENGTH) == strength + 2 && beetle.block == 0);
+    }
+    std::cout << "[PASS] Slumbering Beetle: 86 HP, Snore while asleep, Roll Out 16 +2 Strength once hurt" << std::endl;
+}
+
+void test_slumbering_beetle_ascension() {
+    // 89 HP and a Roll Out of 18 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLUMBERING_BEETLE);
+    Enemy& beetle = combat.enemies[0];
+    beetle.ascend(true, true);
+    combat.plan_enemies();
+    assert(beetle.hp == 89 && beetle.max_hp == 89);
+    combat.damage_enemy(beetle, 5);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(beetle.current_intent.type == ATTACK_BUFF && beetle.intent_damage(combat.player) == 18);
+    std::cout << "[PASS] Slumbering Beetle: Ascension gives 89 HP and Roll Out 18" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -2377,6 +2417,8 @@ int main() {
     test_seapunk_ascension();
     test_chomper();
     test_chomper_ascension();
+    test_slumbering_beetle();
+    test_slumbering_beetle_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

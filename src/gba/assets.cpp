@@ -49,6 +49,7 @@
 #include "bn_sprite_items_mon_sneaky_gremlin.h"
 #include "bn_sprite_items_mon_sludge_spinner.h"
 #include "bn_sprite_items_mon_tracker_ruby_raider.h"
+#include "bn_sprite_items_mon_slumbering_beetle.h"
 #include "bn_sprite_items_mon_the_forgotten.h"
 #include "bn_sprite_items_mon_vine_shambler.h"
 
@@ -271,6 +272,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_sludge_spinner, false };
     case engine::EnemyType::OSTY:
         return { &bn::sprite_items::mon_osty, false };
+    case engine::EnemyType::SLUMBERING_BEETLE:
+        return { &bn::sprite_items::mon_slumbering_beetle, false };
     case engine::EnemyType::FLYCONID:
         return { &bn::sprite_items::mon_flyconid, false };
     case engine::EnemyType::CORPSE_SLUG:
