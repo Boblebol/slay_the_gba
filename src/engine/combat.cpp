@@ -984,6 +984,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 pen_nib_now = true;
             }
             break;
+        case PowerId::VITRUVIAN_MINION:
+            if (card_played && is_minion_card(info.card.id)) minion_played_now = true;
+            break;
         case PowerId::STRIKE_DUMMY:
         case PowerId::FAKE_STRIKE_DUMMY:
             if (card_played && is_strike(info.card.id)) strike_played_now = true;
@@ -1113,6 +1116,7 @@ void CombatEngine::gain_block(int16_t amount) {
             factor *= 2;
         }
         if (double_block_turn) factor *= 2;
+        if (resolving_card && minion_played_now) factor *= 2;
         if (factor > 1) player.block = static_cast<int16_t>(before + (player.block - before) * factor);
     }
     if (player.block > before) {
@@ -1501,6 +1505,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (attack_double_now) percent *= 2;
     if (resolving_card && triple_next_attack) percent *= 3;
     if (pen_nib_now && resolving_card) percent *= 2;
+    if (minion_played_now && resolving_card) percent *= 2;
     if (strike_played_now && resolving_card) {
         base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY) + power_amount(PowerId::FAKE_STRIKE_DUMMY));
     }
@@ -2141,6 +2146,9 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::SURVIVOR:
         case CardId::HAND_TRICK:
         case CardId::SEANCE:
+        case CardId::BEGONE:
+        case CardId::CHARGE:
+        case CardId::GUARDS:
         case CardId::NEOWS_FURY:
         case CardId::THINKING_AHEAD:
         case CardId::PURITY:
@@ -2257,6 +2265,7 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         lamp_doubling = false;
         pen_nib_now = false;
         strike_played_now = false;
+        minion_played_now = false;
         upgraded_attack_now = false;
         // Vigor goes to the first Attack played, all its hits included.
         if (played_type == CardType::ATTACK) {
@@ -5514,6 +5523,53 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::PHANTOM_BLADES: {
             add_power(PowerId::PHANTOM_BLADES, base_value);
             set_log(upgraded ? "Played Phantom Blades+!"sv : "Played Phantom Blades!"sv);
+            break;
+        }
+        case CardId::MINION_STRIKE: {
+            hit(current_target, base_value);
+            draw_cards(1);
+            set_log(upgraded ? "Played Minion Strike+!"sv : "Played Minion Strike!"sv);
+            break;
+        }
+        case CardId::MINION_DIVE_BOMB: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Minion Dive Bomb+!"sv : "Played Minion Dive Bomb!"sv);
+            break;
+        }
+        case CardId::MINION_SACRIFICE: {
+            gain_block(base_value);
+            set_log(upgraded ? "Played Minion Sacrifice+!"sv : "Played Minion Sacrifice!"sv);
+            break;
+        }
+        case CardId::BEGONE: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::TRANSFORM;
+            choice.into = CardId::MINION_STRIKE;
+            choice.upgraded = upgraded;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Begone+!"sv : "Played Begone!"sv);
+            break;
+        }
+        case CardId::CHARGE: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::TRANSFORM;
+            choice.source = Pile::DRAW;
+            choice.count = 2;
+            choice.into = CardId::MINION_DIVE_BOMB;
+            choice.upgraded = upgraded;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Charge+!"sv : "Played Charge!"sv);
+            break;
+        }
+        case CardId::GUARDS: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::TRANSFORM;
+            choice.count = static_cast<uint8_t>(hand.size());
+            choice.optional = true;
+            choice.into = CardId::MINION_SACRIFICE;
+            choice.upgraded = upgraded;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Guards+!"sv : "Played Guards!"sv);
             break;
         }
         case CardId::PRIMAL_FORCE: {

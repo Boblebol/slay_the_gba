@@ -902,6 +902,18 @@ bn::string_view base_name(engine::CardId id)
         return "Découverte";
     case engine::CardId::ABUNDANCE:
         return "Abondance";
+    case engine::CardId::MINION_STRIKE:
+        return "Frappe de sbire";
+    case engine::CardId::MINION_DIVE_BOMB:
+        return "Sbire en piqué";
+    case engine::CardId::MINION_SACRIFICE:
+        return "Sbire sacrificiel";
+    case engine::CardId::BEGONE:
+        return "Hors de ma vue !";
+    case engine::CardId::CHARGE:
+        return "Chargez !!";
+    case engine::CardId::GUARDS:
+        return "Gardes !!!";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1764,6 +1776,24 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::ABUNDANCE:
         stream << "1 Pouvoir+ sur 3, gratuit. Épuisement.";
+        break;
+    case engine::CardId::MINION_STRIKE:
+        stream << "Inflige " << value << ". Pioche 1. Épuisement.";
+        break;
+    case engine::CardId::MINION_DIVE_BOMB:
+        stream << "Inflige " << value << " dégâts. Épuisement.";
+        break;
+    case engine::CardId::MINION_SACRIFICE:
+        stream << "Gagne " << value << " d'Armure. Épuisement.";
+        break;
+    case engine::CardId::BEGONE:
+        stream << "1 carte de la main : Frappe de sbire.";
+        break;
+    case engine::CardId::CHARGE:
+        stream << "2 cartes de la Pioche : Sbire en piqué.";
+        break;
+    case engine::CardId::GUARDS:
+        stream << "Main en Sbires sacrificiels. Épuisement.";
         break;
     case engine::CardId::MAD_SCIENCE:
         stream << (card.upgraded ? "Inné. " : "") << "Inflige " << value << " dégâts.";

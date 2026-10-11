@@ -567,7 +567,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::FURNACE, CardId::PARRY, CardId::SUMMON_FORTH,
                                               CardId::BEAT_INTO_SHAPE, CardId::BIG_BANG, CardId::SEEKING_EDGE,
                                               CardId::SWORD_SAGE, CardId::THE_SMITH,
-                                              CardId::MANIFEST_AUTHORITY, CardId::ROYALTIES, CardId::QUASAR };
+                                              CardId::MANIFEST_AUTHORITY, CardId::ROYALTIES, CardId::QUASAR, CardId::BEGONE, CardId::CHARGE, CardId::GUARDS };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
@@ -1374,7 +1374,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "PAPER_KRANE",                        // Silent, rare: Weak enemies deal 40% less damage to the player
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
         "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
-        "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL", "ORANGE_DOUGH",   // Regent
+        "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL", "ORANGE_DOUGH", "VITRUVIAN_MINION",   // Regent
         "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK", "UNDYING_SIGIL",                       // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
         "BRONZE_SCALES", "GORGET", "AKABEKO",
@@ -1582,6 +1582,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("MUMMIFIED_HAND")) combat.add_power(PowerId::MUMMIFIED_HAND);
     if (has_relic("NUNCHAKU")) combat.add_power(PowerId::NUNCHAKU, 1);
     if (has_relic("PEN_NIB")) combat.add_power(PowerId::PEN_NIB);
+    if (has_relic("VITRUVIAN_MINION")) combat.add_power(PowerId::VITRUVIAN_MINION);
     // Paper Phrog (Ironclad, uncommon): Vulnerable enemies take 75% more damage rather than 50%.
     if (has_relic("PAPER_PHROG")) combat.add_power(PowerId::PAPER_PHROG, 25);
     if (has_relic("STRIKE_DUMMY")) combat.add_power(PowerId::STRIKE_DUMMY, 3);

@@ -112,6 +112,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ODDLY_SMOOTH_STONE", "Démarrez chaque combat avec 1 de Dextérité." },
     { "ORICHALCUM", "Si vous terminez votre tour sans Armure, gagnez 6 d'Armure." },
     { "ORNAMENTAL_FAN", "Chaque fois que vous jouez 3 Attaques en un seul tour, gagnez 4 d'Armure." },
+    { "VITRUVIAN_MINION", "Les cartes Sbire infligent le double de dégâts et donnent le double d'Armure." },
     { "PEN_NIB", "Toutes les 10 Attaques jouées, la 10ème inflige le double de dégâts." },
     { "STRIKE_DUMMY", "Les cartes contenant « Frappe » infligent 3 dégâts supplémentaires." },
     { "FAKE_STRIKE_DUMMY", "Les cartes contenant « Frappe » infligent 1 dégât supplémentaire." },

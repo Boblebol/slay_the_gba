@@ -636,7 +636,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 0, 0, 0, 0, 0, 0, 0,
     156, 157, 0, 0, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173,
     174, 175, 176, 177, 178, 179, 180, 181, 182, 0, 0, 0, 183, 0, 184, 0, 185, 186, 0, 0,
-    187, 188, 189, 0, 0, 190, 191, 192, 0, 193, 194,
+    187, 188, 189, 0, 0, 190, 191, 192, 0, 193, 194, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1261,7 +1261,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 0, 0, 0, 0, 0, 165, 166,
     0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 0, 0, 0,
-    184, 185, 186, 0, 0, 187, 188, 189, 0, 190, 191,
+    184, 185, 186, 0, 0, 187, 188, 189, 0, 190, 191, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1462,6 +1462,12 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_quasar.h"
 #include "bn_sprite_items_card_discovery.h"
 #include "bn_sprite_items_card_abundance.h"
+#include "bn_sprite_items_card_minion_strike.h"
+#include "bn_sprite_items_card_minion_dive_bomb.h"
+#include "bn_sprite_items_card_minion_sacrifice.h"
+#include "bn_sprite_items_card_begone.h"
+#include "bn_sprite_items_card_charge.h"
+#include "bn_sprite_items_card_guards.h"
 
 namespace gba::card_art
 {
@@ -1853,6 +1859,18 @@ namespace gba::card_art
         return &bn::sprite_items::card_discovery;
     case engine::CardId::ABUNDANCE:
         return &bn::sprite_items::card_abundance;
+    case engine::CardId::MINION_STRIKE:
+        return &bn::sprite_items::card_minion_strike;
+    case engine::CardId::MINION_DIVE_BOMB:
+        return &bn::sprite_items::card_minion_dive_bomb;
+    case engine::CardId::MINION_SACRIFICE:
+        return &bn::sprite_items::card_minion_sacrifice;
+    case engine::CardId::BEGONE:
+        return &bn::sprite_items::card_begone;
+    case engine::CardId::CHARGE:
+        return &bn::sprite_items::card_charge;
+    case engine::CardId::GUARDS:
+        return &bn::sprite_items::card_guards;
     default:
         return nullptr;
     }
@@ -1886,7 +1904,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 0, 161, 162, 163, 164, 0, 0,
     0, 0, 0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 0, 182, 0,
-    183, 184, 185, 0, 0, 186, 187, 188, 189, 190, 191,
+    183, 184, 185, 0, 0, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -2523,7 +2541,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 0, 184, 185, 0, 0, 186,
-    187, 188, 189, 0, 190, 191, 192, 193, 0, 194, 195,
+    187, 188, 189, 0, 190, 191, 192, 193, 0, 194, 195, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -3160,7 +3178,7 @@ constexpr uint16_t SHEET_SLOT[] = {
     152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 184, 185, 0, 0, 0, 0, 186, 0, 0, 0,
-    187, 188, 189, 190, 0, 191, 192, 193, 0, 194, 195,
+    187, 188, 189, 190, 0, 191, 192, 193, 0, 194, 195, 0, 0, 0, 0, 0, 0,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
