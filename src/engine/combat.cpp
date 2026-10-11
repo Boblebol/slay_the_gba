@@ -2089,6 +2089,7 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::SECRET_TECHNIQUE:
         case CardId::SECRET_WEAPON:
         case CardId::SEEKER_STRIKE:
+        case CardId::SPLASH:
         case CardId::DUAL_WIELD:
         case CardId::HEIRLOOM_HAMMER:
         case CardId::NIGHTMARE:
@@ -3757,6 +3758,15 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             hit(current_target, base_value);
             offer_from_draw(secondary_value);
             set_log(upgraded ? "Played Seeker Strike+!"sv : "Played Seeker Strike!"sv);
+            break;
+        }
+        case CardId::SPLASH: {
+            // Three Attacks of the pool of another hero, drawn at random among the other four.
+            uint8_t other = static_cast<uint8_t>(next_random() % (static_cast<uint8_t>(CharacterId::COUNT) - 1));
+            if (other >= static_cast<uint8_t>(current_character)) ++other;
+            const CardPool pool = static_cast<CardPool>(other + 1);
+            offer_random_cards(CardFilter(pool, CardType::ATTACK), secondary_value, upgraded, true);
+            set_log(upgraded ? "Played Splash+!"sv : "Played Splash!"sv);
             break;
         }
         case CardId::SECRET_TECHNIQUE:

@@ -884,6 +884,8 @@ bn::string_view base_name(engine::CardId id)
         return "La grande manœuvre";
     case engine::CardId::SEEKER_STRIKE:
         return "Frappe chercheuse";
+    case engine::CardId::SPLASH:
+        return "Clapotis";
     case engine::CardId::MAD_SCIENCE:
         return "Science sans conscience";
     case engine::CardId::BYRD_SWOOP:
@@ -1718,6 +1720,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::THE_GAMBIT:
         stream << "Armure " << value << ". Dégât subi : mort.";
+    case engine::CardId::SPLASH:
+        stream << "1 Attaque" << (card.upgraded ? "+ parmi " : " parmi ") << secondary << " d'un autre héros, à 0.";
+        break;
     case engine::CardId::SEEKER_STRIKE:
         stream << value << " dégâts. Pioche : 1 parmi " << secondary << " en main.";
         break;
