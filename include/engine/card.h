@@ -657,6 +657,8 @@ enum class CardId : uint16_t {
     SPINNER,
     // Status card given by the Phrog Parasite
     INFECTION,
+    // Status card given by the Insatiable
+    FRANTIC_ESCAPE,
     COUNT
 };
 
