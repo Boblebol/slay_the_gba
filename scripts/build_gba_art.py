@@ -771,6 +771,9 @@ CARDS: list[CardArt] = [
     CardArt("alchemize", "colorless", "alchemize", "skill", (1, 1)),
     CardArt("the_gambit", "colorless", "the_gambit", "skill", (0, 0)),
     CardArt("seeker_strike", "colorless", "seeker_strike", "attack", (1, 1)),
+    CardArt("primal_force", "ironclad", "primal_force", "skill", (0, 0)),
+    CardArt("seance", "necrobinder", "seance", "skill", (1, 0)),
+    CardArt("entropy", "colorless", "entropy", "power", (1, 1)),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

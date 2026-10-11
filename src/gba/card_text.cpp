@@ -884,6 +884,12 @@ bn::string_view base_name(engine::CardId id)
         return "La grande manœuvre";
     case engine::CardId::SEEKER_STRIKE:
         return "Frappe chercheuse";
+    case engine::CardId::PRIMAL_FORCE:
+        return "Force primitive";
+    case engine::CardId::SEANCE:
+        return "Séance";
+    case engine::CardId::ENTROPY:
+        return "Entropie";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1718,6 +1724,15 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         stream << "Armure " << value << ". Dégât subi : mort.";
     case engine::CardId::SEEKER_STRIKE:
         stream << value << " dégâts. Pioche : 1 parmi " << secondary << " en main.";
+        break;
+    case engine::CardId::PRIMAL_FORCE:
+        stream << "Attaques de la main en Rocher gigantesque.";
+        break;
+    case engine::CardId::SEANCE:
+        stream << "Éthéré. Pioche : 1 carte en Âme.";
+        break;
+    case engine::CardId::ENTROPY:
+        stream << "Début de tour : transforme 1 carte.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:

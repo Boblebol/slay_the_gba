@@ -148,7 +148,8 @@ enum class ChoiceKind : uint8_t {
     COPY_COLORLESS,       // to the hand, only a Colorless card can be picked (Heirloom Hammer)
     COPY_NEXT_TURN,       // to the hand at the start of the next turn (Nightmare)
     PLAY_REPEATED,        // the picked hand card is played `amount` times, then goes where it goes (Decisions, Decisions)
-    MAKE_SLY              // the picked hand card gains Sly until the end of the turn (Hand Trick)
+    MAKE_SLY,             // the picked hand card gains Sly until the end of the turn (Hand Trick)
+    TRANSFORM             // the picked card becomes `CardChoice::into` (a random card of the hero's pool when NONE) for the combat
 };
 
 // What follows once the cards are picked: the part of a card's text that comes after its choice.
@@ -177,7 +178,8 @@ struct CardChoice {
     bool optional = false; // fewer cards, or none, can be picked ("any number of cards")
     ChoiceThen then = ChoiceThen::NONE;
     uint8_t amount = 0;
-    bool upgraded = false;
+    bool upgraded = false;    // TRANSFORM into a given card: the new card comes upgraded
+    CardId into = CardId::NONE; // TRANSFORM: the card it becomes, NONE for a random one
     Pile source = Pile::HAND; // where the cards are picked
     // Cards of the source the choice is about, from its first one. Set by ask_choice for the discard pile:
     // the card that asks goes there once played, and cannot pick itself.
@@ -390,6 +392,8 @@ public:
     // Sly cards discarded from the hand during the turn wait here until the action that discarded them is over.
     FixedVector<DeckCard, 12> sly_pending;
     void play_sly_pending();
+    // The card becomes `into` for the rest of the combat (a random card of the hero's pool when NONE).
+    void transform_card(DeckCard& card, CardId into, bool upgraded);
     // Strength or Dexterity until the end of the turn.
     void gain_temporary(StatusType type, int8_t amount);
     // The enemy loses Strength until the end of its turn.

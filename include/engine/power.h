@@ -221,7 +221,9 @@ enum class PowerId : uint8_t {
     ROYALTIES,          // `amount` gold at the end of the combat (read by RunManager::proceed_after_combat)
     FORBIDDEN_GRIMOIRE, // one card of the deck can be removed at the end of the combat
     // Potions (appended)
-    STABLE_SERUM        // the hand is kept at the end of the next `amount` turns (read by end_player_turn)
+    STABLE_SERUM,       // the hand is kept at the end of the next `amount` turns (read by end_player_turn)
+    // Transformation (appended)
+    ENTROPY             // at the start of each turn `amount` cards of the hand are transformed (read by start_player_turn)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

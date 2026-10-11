@@ -624,6 +624,9 @@ static constexpr CardDef CARDS[] = {
     { CardId::THE_GAMBIT, "The Gambit", 0, CardType::SKILL, TargetType::SELF, 50, 0, "Gain 50 block. If you take unblocked attack damage this combat, you die.", "The Gambit+", 0, 75, 0, "Gain 75 block. If you take unblocked attack damage this combat, you die." },
     // Choose 1 card among N offered (mechanic #72).
     { CardId::SEEKER_STRIKE, "Seeker Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 3, "Deal 9 dmg. Choose 1 of 3 cards in your draw pile to add into your hand.", "Seeker Strike+", 1, 12, 3, "Deal 12 dmg. Choose 1 of 3 cards in your draw pile to add into your hand." },
+    { CardId::PRIMAL_FORCE, "Primal Force", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Transform all Attacks in your hand into Giant Rock.", "Primal Force+", 0, 0, 0, "Transform all Attacks in your hand into Giant Rock+." },
+    { CardId::SEANCE, "Seance", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Ethereal. Transform a card in your draw pile into Soul.", "Seance+", 0, 0, 0, "Ethereal. Transform a card in your draw pile into Soul.", KEYWORD_ETHEREAL, KEYWORD_ETHEREAL },
+    { CardId::ENTROPY, "Entropy", 1, CardType::POWER, TargetType::SELF, 1, 0, "At the start of your turn, transform 1 card in your hand.", "Entropy+", 1, 1, 0, "Innate. At the start of your turn, transform 1 card in your hand.", 0, KEYWORD_INNATE },
 };
 
 const CardDef& CardDef::get(CardId id) {
