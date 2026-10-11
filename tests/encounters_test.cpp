@@ -45,6 +45,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::NOISEBOT: return "NOISEBOT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
         case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
+        case EnemyType::TURRET_OPERATOR: return "TURRET_OPERATOR";
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
@@ -184,8 +185,15 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak" }));
     // The groups the game had before, where the reference has nothing the engine can play yet.
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::WEAK)) ==
+           std::set<std::string_view>{ "TurretOperatorWeak" });
+    const Encounter& turret = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::WEAK), "TurretOperatorWeak");
+    assert(turret.count == 2 && turret.monsters[0] == EnemyType::LIVING_SHIELD &&
+           turret.monsters[1] == EnemyType::TURRET_OPERATOR);
     for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
-        assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
+        if (zone == ActZone::ACT2) {
+            assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
+        }
         assert(ids_of(encounter_table(zone, EncounterTier::NORMAL)) ==
                (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
     }
@@ -208,12 +216,11 @@ void test_reference_encounters() {
         }
     }
     // Except the ones whose only reference encounter needs a monster the engine does not have yet: the
-    // Forgotten is only met with the Lost (TheLostAndForgottenNormal), the Living Shield with the Turret Operator
-    // (TurretOperatorWeak), the Fat Gremlin with the Gremlin Merc (GremlinMercNormal), like the Sneaky Gremlin.
+    // Forgotten is only met with the Lost (TheLostAndForgottenNormal), the Fat Gremlin with the Gremlin Merc (GremlinMercNormal), like the Sneaky Gremlin.
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
     // The Stabbot and the Noisebot are brought by the Fabricator (FabricatorNormal).
     // The Gas Bomb is brought by the Living Fog (LivingFogNormal).
-    const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
+    const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN,
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
                                                           EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN };

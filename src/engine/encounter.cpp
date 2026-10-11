@@ -53,6 +53,11 @@ constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
 };
 
+// Act 3: the Glory.
+constexpr Encounter ACT3_WEAK[] = {
+    { "TurretOperatorWeak"sv, 2, { EnemyType::LIVING_SHIELD, EnemyType::TURRET_OPERATOR } },
+};
+
 // The groups the game had before the tables, for the lists with no reference encounter in the engine yet.
 constexpr Encounter LEGACY_WEAK[] = {
     { "LegacyCultist"sv, 1, { EnemyType::CULTIST } },
@@ -71,7 +76,7 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT3_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
 } // namespace
