@@ -386,6 +386,8 @@ enum class EnemyType : uint8_t {
     SNEAKY_GREMLIN
     FLYCONID,
     HAUNTED_SHIP
+    FLYCONID,
+    SLUDGE_SPINNER
 };
 
 // What a monster sees of the fight when it chooses its next move.

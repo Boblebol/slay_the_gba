@@ -38,6 +38,9 @@ constexpr Encounter ACT1A_NORMAL[] = {
 constexpr Encounter ACT1B_WEAK[] = {
     { "CorpseSlugsWeak"sv, 2, { EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG } },
 };
+constexpr Encounter ACT1B_WEAK[] = {
+    { "SludgeSpinnerWeak"sv, 1, { EnemyType::SLUDGE_SPINNER } },
+};
 constexpr Encounter ACT1B_NORMAL[] = {
     { "CultistsNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::DAMP_CULTIST } },
     { "SewerClamNormal"sv, 1, { EnemyType::SEWER_CLAM } },
