@@ -771,6 +771,7 @@ CARDS: list[CardArt] = [
     CardArt("alchemize", "colorless", "alchemize", "skill", (1, 1)),
     CardArt("the_gambit", "colorless", "the_gambit", "skill", (0, 0)),
     CardArt("seeker_strike", "colorless", "seeker_strike", "attack", (1, 1)),
+    CardArt("mad_science", "hero", "mad_science_attack", "attack", (1, 1), folder="event"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

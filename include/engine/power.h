@@ -223,6 +223,7 @@ enum class PowerId : uint8_t {
     UNMOVABLE,          // the first Block a card gives each turn is doubled (read by gain_block)
     TRACKING,           // Weak enemies take `amount` % more damage from attacks (read by hit)
     LETHALITY,          // the first Attack each turn deals `amount` % more damage (read by hit)
+    PAPER_PHROG,        // Vulnerable enemies take `amount` % more damage from attacks, on top of Cruelty (read by hit)
     // Effects that outlast the combat (appended)
     ROYALTIES,          // `amount` gold at the end of the combat (read by RunManager::proceed_after_combat)
     FORBIDDEN_GRIMOIRE, // one card of the deck can be removed at the end of the combat
@@ -238,7 +239,8 @@ enum class PowerId : uint8_t {
     INFUSED_CORE,       // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
     DAUGHTER_OF_THE_WIND, // Attack played: `amount` Block (event relic)
     LOST_WISP,          // Power played: `amount` damage to every enemy (event relic)
-    HAND_DRILL          // an enemy's Block broken by the player's damage: `amount` Vulnerable on that enemy
+    HAND_DRILL,         // an enemy's Block broken by the player's damage: `amount` Vulnerable on that enemy
+    UNDYING_SIGIL       // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

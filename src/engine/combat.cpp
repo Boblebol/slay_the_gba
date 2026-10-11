@@ -1455,7 +1455,10 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     bool was_alive = target.is_alive();
     // Percentage modifiers add up; Shadow Step then doubles the total.
     int32_t percent = 100;
-    if (target.get_status(StatusType::VULNERABLE) > 0) percent += power_amount(PowerId::CRUELTY);
+    if (target.get_status(StatusType::VULNERABLE) > 0) {
+        percent += power_amount(PowerId::CRUELTY);
+        percent += power_amount(PowerId::PAPER_PHROG);
+    }
     if (target.get_status(StatusType::WEAK) > 0) percent += power_amount(PowerId::TRACKING);
     if (resolving_card && counters.attacks_played == 0) percent += power_amount(PowerId::LETHALITY);
     if (attack_double_now) percent *= 2;
@@ -3879,6 +3882,11 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Byrd Swoop+!"sv : "Played Byrd Swoop!"sv);
             break;
         }
+        case CardId::MAD_SCIENCE: {
+            hit(current_target, base_value);
+            set_log(upgraded ? "Played Mad Science+!"sv : "Played Mad Science!"sv);
+            break;
+        }
         case CardId::ULTIMATE_STRIKE: {
             hit(current_target, base_value);
             set_log(upgraded ? "Played Ultimate Strike+!"sv : "Played Ultimate Strike!"sv);
@@ -6156,7 +6164,9 @@ void CombatEngine::execute_enemy_turn() {
             acting.enemy = static_cast<int8_t>(i);
             emit(CombatEvent::ENEMY_TURN_START, acting);
             const EnemyIntent played = enemies[i].current_intent;
-            enemies[i].execute_turn(player, power_amount(PowerId::FLAME_BARRIER), has_power(PowerId::REFLECT));
+            // Undying Sigil: an enemy with at least as much Doom as HP deals 50% less damage.
+            const bool sigil_halved = has_power(PowerId::UNDYING_SIGIL) && enemies[i].get_status(StatusType::DOOM) >= enemies[i].hp;
+            enemies[i].execute_turn(player, power_amount(PowerId::FLAME_BARRIER), has_power(PowerId::REFLECT), sigil_halved);
             // The power of the move: kept by the enemy, or put on a player the attack left alive.
             if (played.power != PowerId::NONE && player.is_alive()) {
                 if (!played.power_on_player) {

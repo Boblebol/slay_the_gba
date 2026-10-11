@@ -2004,6 +2004,22 @@ void test_ringing_triangle() {
     std::cout << "[PASS] Ringing Triangle: the first hand is kept at the end of the first turn" << std::endl;
 }
 
+void test_orange_dough() {
+    // With the relic: 2 random Colorless cards join the hand at the start of the combat, on top of the usual 5.
+    RunManager dough = make_relic_run(CharacterId::REGENT, { "ORANGE_DOUGH" });
+    assert(dough.combat.hand.size() == 7);
+    int colorless = 0;
+    for (const DeckCard& card : dough.combat.hand) {
+        if (card_meta(card.id).pool == CardPool::COLORLESS) ++colorless;
+    }
+    assert(colorless >= 2);
+    std::cout << "[PASS] Orange Dough: 2 random Colorless cards are added to the hand at the start of the combat" << std::endl;
+
+    // Without the relic: the usual 5 cards, no Colorless card added.
+    RunManager plain = make_relic_run(CharacterId::REGENT, {});
+    assert(plain.combat.hand.size() == 5);
+}
+
 void test_toolbox() {
     // With the relic: 3 Colorless cards are offered at the start of the combat, and the one picked joins the hand.
     RunManager toolbox = make_relic_run(CharacterId::IRONCLAD, { "TOOLBOX" });
@@ -2438,6 +2454,41 @@ void test_tungsten_rod() {
     without.combat.lose_hp(1);
     assert(without.combat.player.hp == 44);
     std::cout << "[PASS] Tungsten Rod: 1 less HP lost each time" << std::endl;
+}
+
+void test_paper_krane() {
+    // With the relic: a Weak enemy deals 40% less damage (20 x 0.6 = 12), and the Vulnerable player takes 1.5x (18).
+    RunManager with;
+    with.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 451);
+    with.add_relic("PAPER_KRANE");
+    with.potions.clear();
+    enter_room_of_type(with, RoomType::MONSTER);
+    CombatEngine& krane = with.combat;
+    krane.enemies[0].statuses.clear();
+    krane.player.statuses.clear();
+    krane.enemies[0].current_intent.type = EnemyIntentType::ATTACK;
+    krane.enemies[0].current_intent.base_damage = 20;
+    krane.enemies[0].add_status(StatusType::WEAK, 1);
+    assert(krane.enemies[0].intent_damage(krane.player) == 12);
+    krane.player.add_status(StatusType::VULNERABLE, 1);
+    assert(krane.enemies[0].intent_damage(krane.player) == 18);
+    krane.player.statuses.clear();
+    krane.enemies[0].statuses.clear();
+    assert(krane.enemies[0].intent_damage(krane.player) == 20);
+
+    // Without the relic: the Weak enemy deals 25% less (20 x 0.75 = 15), as before.
+    RunManager without;
+    without.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 451);
+    without.potions.clear();
+    enter_room_of_type(without, RoomType::MONSTER);
+    CombatEngine& plain = without.combat;
+    plain.enemies[0].statuses.clear();
+    plain.player.statuses.clear();
+    plain.enemies[0].current_intent.type = EnemyIntentType::ATTACK;
+    plain.enemies[0].current_intent.base_damage = 20;
+    plain.enemies[0].add_status(StatusType::WEAK, 1);
+    assert(plain.enemies[0].intent_damage(plain.player) == 15);
+    std::cout << "[PASS] Paper Krane: Weak enemies deal 40% less damage to the player" << std::endl;
 }
 
 void test_lees_waffle() {
@@ -3459,6 +3510,129 @@ void test_hand_drill() {
     std::cout << "[PASS] Hand Drill: breaking an enemy's Block applies 2 Vulnerable" << std::endl;
 }
 
+void test_precarious_shears() {
+    // Obtained: 2 cards are chosen to leave the deck, then 16 HP are lost (never below 1).
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.hp = 50;
+    size_t deck = run.master_deck.size();
+    run.add_relic("PRECARIOUS_SHEARS");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 2);
+    assert(run.hp == 34);
+    assert(run.resolve_deck_choice(0));
+    assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 2);
+
+    // Losing HP never takes the hero below 1.
+    RunManager low;
+    low.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    low.hp = 10;
+    low.add_relic("PRECARIOUS_SHEARS");
+    assert(low.hp == 1);
+
+    // Without the relic nothing is asked, no card leaves the deck and no HP is lost.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice() && plain.master_deck.size() == deck && plain.hp == 50);
+    std::cout << "[PASS] Precarious Shears: pickup asks for 2 cards to remove and costs 16 HP, nothing without the relic" << std::endl;
+}
+
+void test_paper_phrog() {
+    // With the relic, a Strike (6 damage, x1.5 on a Vulnerable enemy = 9) gets 25% more on top: 11. Other enemies do not.
+    CombatEngine phrog = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAPER_PHROG, 25);
+    phrog.enemies[0].hp = 200;
+    phrog.enemies[0].add_status(StatusType::VULNERABLE, 5);
+    phrog.hand.clear();
+    phrog.hand.push_back(DeckCard(CardId::STRIKE, false));
+    assert(phrog.play_card(0, 0));
+    assert(200 - phrog.enemies[0].hp == 11);
+
+    // Without the relic, the same Strike deals its Vulnerable damage only: 9.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 200;
+    plain.enemies[0].add_status(StatusType::VULNERABLE, 5);
+    plain.hand.clear();
+    plain.hand.push_back(DeckCard(CardId::STRIKE, false));
+    assert(plain.play_card(0, 0));
+    assert(200 - plain.enemies[0].hp == 9);
+    std::cout << "[PASS] Paper Phrog: Vulnerable enemies take 25% more damage from attacks" << std::endl;
+}
+
+void test_silver_crucible() {
+    // The first 3 card rewards seen are Upgraded, the next ones are not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 728);
+    run.add_relic("SILVER_CRUCIBLE");
+    assert(run.has_relic("SILVER_CRUCIBLE"));
+    for (int reward = 0; reward < 4; ++reward) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+        for (const DeckCard& card : run.current_card_rewards) assert(card.upgraded == (reward < 3));
+        run.skip_card_rewards();
+    }
+
+    // Without the relic, no card reward is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 728);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
+    for (const DeckCard& card : plain.current_card_rewards) assert(!card.upgraded);
+    plain.skip_card_rewards();
+
+    // The first Treasure Chest opened is empty; with the relic, a seed whose chest holds a relic without it
+    // holds none on the first chest, and a later chest can still hold one.
+    bool checked = false;
+    bool later_relic = false;
+    for (uint32_t seed = 1; seed < 400 && !(checked && later_relic); ++seed) {
+        RunManager chest;
+        chest.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(chest, RoomType::TREASURE);
+        if (chest.last_treasure_relic.empty()) continue;
+        checked = true;
+        RunManager crucible;
+        crucible.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, seed);
+        crucible.add_relic("SILVER_CRUCIBLE");
+        enter_room_of_type(crucible, RoomType::TREASURE);
+        assert(crucible.last_treasure_relic.empty() && !crucible.has_relic(chest.last_treasure_relic));
+        enter_room_of_type(crucible, RoomType::TREASURE);
+        later_relic = later_relic || !crucible.last_treasure_relic.empty();
+    }
+    assert(checked && later_relic);
+    std::cout << "[PASS] Silver Crucible: first 3 card rewards upgraded, first Treasure Chest empty" << std::endl;
+}
+
+void test_undying_sigil() {
+    // With the relic: an enemy with at least as much Doom as HP deals 50% less damage.
+    CombatEngine sigil = make_combat(CharacterId::IRONCLAD);
+    sigil.add_power(PowerId::UNDYING_SIGIL, 1);
+    sigil.enemies[0].hp = 30;
+    sigil.enemies[0].add_status(StatusType::DOOM, 30);
+    end_turn_attacked(sigil, 10);
+    assert(sigil.last_enemy_actions[0].damage_to_player == 5);
+
+    // Less Doom than HP: the full damage.
+    CombatEngine short_doom = make_combat(CharacterId::IRONCLAD);
+    short_doom.add_power(PowerId::UNDYING_SIGIL, 1);
+    short_doom.enemies[0].hp = 30;
+    short_doom.enemies[0].add_status(StatusType::DOOM, 29);
+    end_turn_attacked(short_doom, 10);
+    assert(short_doom.last_enemy_actions[0].damage_to_player == 10);
+
+    // Without the relic: the full damage, even with lethal Doom.
+    CombatEngine plain = make_combat(CharacterId::IRONCLAD);
+    plain.enemies[0].hp = 30;
+    plain.enemies[0].add_status(StatusType::DOOM, 30);
+    end_turn_attacked(plain, 10);
+    assert(plain.last_enemy_actions[0].damage_to_player == 10);
+    std::cout << "[PASS] Undying Sigil: enemy with Doom at least its HP deals 50% less damage" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3496,6 +3670,7 @@ int main() {
     test_lead_paperweight();
     test_neows_torment();
     test_precise_scissors();
+    test_precarious_shears();
     test_new_leaf();
     test_small_capsule();
     test_nutritious_oyster();
@@ -3544,6 +3719,7 @@ int main() {
     test_reptile_trinket();
     test_ringing_triangle();
     test_toolbox();
+    test_orange_dough();
     test_pen_nib();
     test_strike_dummy();
     test_fake_strike_dummy();
@@ -3555,7 +3731,9 @@ int main() {
     test_unsettling_lamp();
     test_daughter_of_the_wind();
     test_bookmark();
+    test_undying_sigil();
     test_tungsten_rod();
+    test_paper_krane();
     test_mango();
     test_fake_lees_waffle();
     test_fake_mango();
@@ -3591,5 +3769,7 @@ int main() {
     test_tea_of_discourtesy();
     test_the_boot();
     test_hand_drill();
+    test_paper_phrog();
+    test_silver_crucible();
     return 0;
 }

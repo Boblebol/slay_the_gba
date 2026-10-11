@@ -203,6 +203,25 @@ void test_eternal_stays_in_the_deck() {
     std::cout << "[PASS] Eternal curses cannot be removed from the deck, the others can" << std::endl;
 }
 
+void test_ascension_10_starting_curse() {
+    // Ascension 10 puts Ascender's Bane in the starting deck; below it the deck is unchanged.
+    for (uint8_t ascension : { 0, 9 }) {
+        RunManager run;
+        run.start_run(CharacterId::IRONCLAD, ascension, PaletteVariant::CLASSIC, 777);
+        for (size_t i = 0; i < run.master_deck.size(); ++i) {
+            assert(run.master_deck[i].id != CardId::ASCENDERS_BANE);
+        }
+        assert(run.master_deck.size() == 10);
+    }
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 10, PaletteVariant::CLASSIC, 777);
+    assert(run.master_deck.size() == 11);
+    assert(run.master_deck[run.master_deck.size() - 1].id == CardId::ASCENDERS_BANE);
+    assert(!run.remove_card_from_deck(run.master_deck.size() - 1));
+    assert(run.master_deck.size() == 11);
+    std::cout << "[PASS] Ascension 10 starts with Ascender's Bane, Ascension 9 does not" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -214,6 +233,7 @@ int main() {
     test_normality();
     test_spore_mind();
     test_eternal_stays_in_the_deck();
+    test_ascension_10_starting_curse();
     std::cout << "All curse card tests passed." << std::endl;
     return 0;
 }

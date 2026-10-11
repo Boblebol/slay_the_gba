@@ -31,6 +31,10 @@ constexpr uint8_t GIRYA_LIFTS = 3;  // most Strength Girya gives, one lift each
 constexpr int16_t MAW_BANK_GOLD = 12; // Gold Maw Bank gives on each floor climbed, until the merchant gets some
 constexpr uint8_t WONGOS_MYSTERY_TICKET_COMBATS = 5; // fights won before the Ticket pays out
 constexpr int WONGOS_MYSTERY_TICKET_RELICS = 3;      // random relics the Ticket pays out, once
+// Silver Crucible keeps its state in its relic counter: the card rewards upgraded so far (low bits, up to 3),
+// and the flag of the first Treasure Chest opened.
+constexpr uint8_t SILVER_CRUCIBLE_REWARDS = 3;
+constexpr uint8_t SILVER_CRUCIBLE_CHEST_OPENED = 4;
 
 constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 0, "Normal", "Difficulté standard de l'Ascension." },
@@ -113,6 +117,8 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
             master_deck.push_back(cid);
         }
     }
+    // Ascension 10: an unremovable curse that is unplayable and Ethereal joins the starting deck.
+    if (ascension_level >= 10) master_deck.push_back(DeckCard(CardId::ASCENDERS_BANE, false));
 
     // Starting relic
     relics.clear();
@@ -225,7 +231,13 @@ void RunManager::enter_room(int node_index) {
             break;
         case RoomType::TREASURE: {
             gain_gold(50);
-            last_treasure_relic = draw_treasure_relic();
+            last_treasure_relic = {};
+            // Silver Crucible: the first Treasure Chest opened is empty.
+            if (has_relic("SILVER_CRUCIBLE") && (relic_counter("SILVER_CRUCIBLE") & SILVER_CRUCIBLE_CHEST_OPENED) == 0) {
+                set_relic_counter("SILVER_CRUCIBLE", static_cast<uint8_t>(relic_counter("SILVER_CRUCIBLE") | SILVER_CRUCIBLE_CHEST_OPENED));
+            } else {
+                last_treasure_relic = draw_treasure_relic();
+            }
             if (!last_treasure_relic.empty()) {
                 add_relic(last_treasure_relic);
             }
@@ -602,6 +614,12 @@ uint32_t RunManager::reward_seed() const {
 void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity) {
     // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked.
     current_card_rewards.clear();
+    // Silver Crucible: the first card rewards seen are Upgraded.
+    bool upgraded = card_rewards_upgraded;
+    if (has_relic("SILVER_CRUCIBLE") && (relic_counter("SILVER_CRUCIBLE") % SILVER_CRUCIBLE_CHEST_OPENED) < SILVER_CRUCIBLE_REWARDS) {
+        upgraded = true;
+        set_relic_counter("SILVER_CRUCIBLE", static_cast<uint8_t>(relic_counter("SILVER_CRUCIBLE") + 1));
+    }
     FixedVector<CardId, 512> candidates;
     auto keep = [rarity](CardId id) { return rarity == CardRarity::NONE || card_meta(id).rarity == rarity; };
     for (CardId id : card_reward_pool(character)) {
@@ -624,7 +642,7 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity)
     }
     while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
         size_t pick = (boss ? rng.next() : next_random()) % candidates.size();
-        current_card_rewards.push_back(DeckCard(candidates[pick], card_rewards_upgraded));
+        current_card_rewards.push_back(DeckCard(candidates[pick], upgraded));
         candidates.erase(pick);
     }
 }
@@ -957,6 +975,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
     }
     if (relic_id == "EMPTY_CAGE" && has_relic("EMPTY_CAGE")) request_deck_choice(DeckChoiceKind::REMOVE, 2);
+    // Precarious Shears (Ancient): 2 cards chosen out of the deck, then 16 HP lost, never below 1.
+    if (relic_id == "PRECARIOUS_SHEARS" && has_relic("PRECARIOUS_SHEARS")) {
+        request_deck_choice(DeckChoiceKind::REMOVE, 2);
+        hp = std::max<int16_t>(1, hp - 16);
+    }
     if (relic_id == "MEMBERSHIP_CARD" && phase == RunPhase::SHOP) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
     if (relic_id == "THE_COURIER" && phase == RunPhase::SHOP) current_shop.apply_discount(THE_COURIER_DISCOUNT);
     // Circlet (fallback relic): no effect in game, it is only a circlet.
@@ -1301,17 +1324,18 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BAG_OF_PREPARATION", "BURNING_STICKS", "INTIMIDATING_HELMET", "JOSS_PAPER", "KUNAI", "KUSARIGAMA", "LETTER_OPENER",
         "MEAT_ON_THE_BONE", "MUMMIFIED_HAND", "NUNCHAKU", "ORNAMENTAL_FAN", "PEN_NIB", "RAINBOW_RING", "RIPPLE_BASIN", "SHURIKEN", "STRIKE_DUMMY", "MINIATURE_CANNON",
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
-        "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
+        "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", "PAPER_PHROG", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
         "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", "VENERABLE_TEA_SET", "PLANISPHERE", "MEAL_TICKET", "SHOVEL", // Shared, out of combat
         "WHITE_STAR",                         // Shared, rare: an Elite gives one more set of Rare cards
         "VAMBRACE",                           // Shared, uncommon: the first Block of a card each combat is doubled
         "BEATING_REMNANT", "UNSETTLING_LAMP", // Shared, rare: caps the HP lost each turn, doubles the first debuff of the fight
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
+        "PAPER_KRANE",                        // Silent, rare: Weak enemies deal 40% less damage to the player
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
         "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
-        "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
-        "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
+        "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL", "ORANGE_DOUGH",   // Regent
+        "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK", "UNDYING_SIGIL",                       // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
         "BRONZE_SCALES", "GORGET", "AKABEKO",
         // At the merchant (#487)
@@ -1409,6 +1433,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("POLLINOUS_CORE")) combat.add_power(PowerId::POLLINOUS_CORE, 2);
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
     if (has_relic("BOOKMARK")) combat.add_power(PowerId::BOOKMARK, 1);
+    if (has_relic("UNDYING_SIGIL")) combat.add_power(PowerId::UNDYING_SIGIL, 1);
     if (has_relic("VERY_HOT_COCOA")) combat.add_power(PowerId::VERY_HOT_COCOA, 4);
     // Paël's Blood: one more card in every opening draw, the first one included.
     // Fiddle: two more cards in every opening draw, then no draw until the next turn.
@@ -1496,6 +1521,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("MUMMIFIED_HAND")) combat.add_power(PowerId::MUMMIFIED_HAND);
     if (has_relic("NUNCHAKU")) combat.add_power(PowerId::NUNCHAKU, 1);
     if (has_relic("PEN_NIB")) combat.add_power(PowerId::PEN_NIB);
+    // Paper Phrog (Ironclad, uncommon): Vulnerable enemies take 75% more damage rather than 50%.
+    if (has_relic("PAPER_PHROG")) combat.add_power(PowerId::PAPER_PHROG, 25);
     if (has_relic("STRIKE_DUMMY")) combat.add_power(PowerId::STRIKE_DUMMY, 3);
     // Event copy of Strike Dummy: 1 more damage per Strike.
     if (has_relic("FAKE_STRIKE_DUMMY")) combat.add_power(PowerId::FAKE_STRIKE_DUMMY, 1);
@@ -1504,6 +1531,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("THE_BOOT")) combat.add_power(PowerId::THE_BOOT);
     // Tungsten Rod: whenever the player would lose HP, 1 less.
     if (has_relic("TUNGSTEN_ROD")) combat.player.hp_loss_reduction = 1;
+    // Paper Krane: enemies with Weak deal 40% less damage to the player rather than 25%.
+    if (has_relic("PAPER_KRANE")) combat.player.paper_krane = true;
     if (has_relic("RAINBOW_RING")) combat.add_power(PowerId::RAINBOW_RING, 1);
     if (has_relic("RIPPLE_BASIN")) combat.add_power(PowerId::RIPPLE_BASIN, 4);
     if (has_relic("BURNING_STICKS")) combat.add_power(PowerId::BURNING_STICKS);
@@ -1598,6 +1627,10 @@ void RunManager::apply_combat_start_relics() {
     // Ninja Scroll (Silent): 3 Shivs.
     if (has_relic("NINJA_SCROLL")) {
         combat.add_shivs(3);
+    }
+    // Orange Dough (Regent): 2 random Colorless cards added to the hand at the start of each combat.
+    if (has_relic("ORANGE_DOUGH")) {
+        for (int copy = 0; copy < 2; ++copy) combat.create_random_card(CardFilter(CardPool::COLORLESS), Pile::HAND);
     }
     // Vexing Puzzlebox: a random card of the hero's pool, free this turn unless a full hand sends it to the
     // discard pile.
