@@ -41,6 +41,9 @@ constexpr Encounter ACT1B_WEAK[] = {
     { "SludgeSpinnerWeak"sv, 1, { EnemyType::SLUDGE_SPINNER } },
     { "ToadpolesWeak"sv, 2, { EnemyType::TOADPOLE, EnemyType::TOADPOLE } },
 };
+constexpr Encounter ACT1B_WEAK[] = {
+    { "SeapunkWeak"sv, 1, { EnemyType::SEAPUNK } },
+};
 constexpr Encounter ACT1B_NORMAL[] = {
     { "CultistsNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::DAMP_CULTIST } },
     { "SewerClamNormal"sv, 1, { EnemyType::SEWER_CLAM } },
@@ -62,6 +65,7 @@ constexpr Encounter ACT2_NORMAL[] = {
     { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
     { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
     { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
+    { "SeapunkNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::SEAPUNK } },
 };
 
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {

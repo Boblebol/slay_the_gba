@@ -59,6 +59,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::HUNTER_KILLER: return "HUNTER_KILLER";
         case EnemyType::MAWLER: return "MAWLER";
         case EnemyType::FOSSIL_STALKER: return "FOSSIL_STALKER";
+        case EnemyType::SEAPUNK: return "SEAPUNK";
     }
     return {};
 }
@@ -180,6 +181,7 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal",
                                         "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal" }));
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "FossilStalkerNormal" }));
+           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "SeapunkNormal" }));
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
@@ -192,6 +194,7 @@ void test_reference_encounters() {
            std::set<std::string_view>{ "LegacyCultist" });
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
            std::set<std::string_view>{ "HunterKillerNormal" });
+           std::set<std::string_view>{ "SeapunkWeak" });
     for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
         assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
         if (zone == ActZone::ACT2) continue;

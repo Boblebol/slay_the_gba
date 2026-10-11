@@ -26,6 +26,7 @@
 #include "bn_sprite_items_mon_corpse_slug.h"
 #include "bn_sprite_items_mon_gas_bomb.h"
 #include "bn_sprite_items_mon_spiny_toad.h"
+#include "bn_sprite_items_mon_seapunk.h"
 #include "bn_sprite_items_mon_flyconid.h"
 #include "bn_sprite_items_mon_fossil_stalker.h"
 #include "bn_sprite_items_mon_fuzzy_wurm_crawler.h"
@@ -244,6 +245,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_eye_with_teeth, false };
     case engine::EnemyType::SPINY_TOAD:
         return { &bn::sprite_items::mon_spiny_toad, false };
+    case engine::EnemyType::SEAPUNK:
+        return { &bn::sprite_items::mon_seapunk, false };
     case engine::EnemyType::STABBOT:
         return { &bn::sprite_items::mon_stabbot, false };
     case engine::EnemyType::NOISEBOT:
