@@ -505,6 +505,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::CURSE, CardPool::CURSE }, // BAD_LUCK
     { CardRarity::CURSE, CardPool::CURSE }, // DEBT
     { CardRarity::CURSE, CardPool::CURSE }, // SPORE_MIND
+    { CardRarity::CURSE, CardPool::CURSE }, // GUILTY
     { CardRarity::UNCOMMON, CardPool::SILENT }, // TACTICIAN
     { CardRarity::RARE, CardPool::SILENT }, // ABRASIVE
     { CardRarity::RARE, CardPool::SILENT }, // MASTER_PLANNER
@@ -528,7 +529,11 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::RARE, CardPool::COLORLESS }, // ALCHEMIZE
     { CardRarity::RARE, CardPool::COLORLESS }, // THE_GAMBIT
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // SEEKER_STRIKE
+    { CardRarity::RARE, CardPool::COLORLESS }, // SPLASH
     { CardRarity::EVENT, CardPool::EVENT }, // MAD_SCIENCE
+    { CardRarity::UNCOMMON, CardPool::REGENT }, // QUASAR
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // DISCOVERY
+    { CardRarity::ANCIENT, CardPool::EVENT }, // ABUNDANCE
 };
 
 } // namespace engine

@@ -567,7 +567,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::FURNACE, CardId::PARRY, CardId::SUMMON_FORTH,
                                               CardId::BEAT_INTO_SHAPE, CardId::BIG_BANG, CardId::SEEKING_EDGE,
                                               CardId::SWORD_SAGE, CardId::THE_SMITH,
-                                              CardId::MANIFEST_AUTHORITY, CardId::ROYALTIES };
+                                              CardId::MANIFEST_AUTHORITY, CardId::ROYALTIES, CardId::QUASAR };
     static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
                                                    CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
                                                    CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
@@ -781,6 +781,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     if (relic_id == "YUMMY_COOKIE" && has_relic("YUMMY_COOKIE")) upgrade_random_cards(4);
     if (relic_id == "SAND_CASTLE" && has_relic("SAND_CASTLE")) upgrade_random_cards(6);
+    if (relic_id == "POTION_BELT" && has_relic("POTION_BELT")) add_potion_slots(2);
     if (relic_id == "WHETSTONE" && has_relic("WHETSTONE")) upgrade_random_cards(2, CardType::ATTACK);
     // War Paint: upgrades 2 random Skills when obtained.
     if (relic_id == "WAR_PAINT" && has_relic("WAR_PAINT")) upgrade_random_cards(2, CardType::SKILL);
@@ -976,6 +977,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
             if (!candidates.empty()) master_deck[candidates[next_random() % candidates.size()]].upgraded = true;
         }
     }
+    // Grooos câlin (Ancient): 4 cards chosen out of the deck when obtained.
+    if (relic_id == "BIIIG_HUG" && has_relic("BIIIG_HUG")) request_deck_choice(DeckChoiceKind::REMOVE, 4);
     if (relic_id == "EMPTY_CAGE" && has_relic("EMPTY_CAGE")) request_deck_choice(DeckChoiceKind::REMOVE, 2);
     // Precarious Shears (Ancient): 2 cards chosen out of the deck, then 16 HP lost, never below 1.
     if (relic_id == "PRECARIOUS_SHEARS" && has_relic("PRECARIOUS_SHEARS")) {
@@ -1349,6 +1352,8 @@ std::span<const std::string_view> RunManager::active_relics() {
         "RINGING_TRIANGLE",
         // Upgrades on pickup (#465, #464)
         "WHETSTONE", "WAR_PAINT",
+        // Potion slots on pickup (#462)
+        "POTION_BELT",
         // Colorless cards in the card rewards (#486)
         "DINGY_RUG",
         // Out of combat, at the end of a fight without HP lost (#476)
@@ -1411,6 +1416,11 @@ void RunManager::register_relic_powers() {
     if (has_relic("SOZU")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Philosopher's Stone (ancient): one more energy each turn.
     if (has_relic("PHILOSOPHERS_STONE")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Spiked Gauntlets (ancient): one more energy each turn, but Power cards cost 1 more.
+    if (has_relic("SPIKED_GAUNTLETS")) {
+        combat.add_power(PowerId::TURN_ENERGY, 1);
+        combat.add_power(PowerId::SPIKED_GAUNTLETS, 1);
+    }
     if (has_relic("PRISMATIC_GEM")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Whispering Earring: one more energy each turn, and Vakuu plays the first turn of the combat.
     if (has_relic("WHISPERING_EARRING")) {
@@ -1439,6 +1449,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
     if (has_relic("BOOKMARK")) combat.add_power(PowerId::BOOKMARK, 1);
     if (has_relic("UNDYING_SIGIL")) combat.add_power(PowerId::UNDYING_SIGIL, 1);
+    if (has_relic("TOASTY_MITTENS")) combat.add_power(PowerId::TOASTY_MITTENS, 1);
     if (has_relic("VERY_HOT_COCOA")) combat.add_power(PowerId::VERY_HOT_COCOA, 4);
     // Paël's Blood: one more card in every opening draw, the first one included.
     // Fiddle: two more cards in every opening draw, then no draw until the next turn.
@@ -1490,6 +1501,8 @@ void RunManager::register_relic_powers() {
     if (has_relic("GREMLIN_HORN")) combat.add_power(PowerId::GREMLIN_HORN, 1);
     if (has_relic("RAZOR_TOOTH")) combat.add_power(PowerId::RAZOR_TOOTH);
     if (has_relic("THE_ABACUS")) combat.add_power(PowerId::THE_ABACUS, 6);
+    // Grooos câlin (Ancient): a Soot joins the draw pile each time it is shuffled.
+    if (has_relic("BIIIG_HUG")) combat.add_power(PowerId::BIIIG_HUG, 1);
     if (has_relic("PERMAFROST")) combat.add_power(PowerId::PERMAFROST, 7);
     if (has_relic("GAME_PIECE")) combat.add_power(PowerId::GAME_PIECE, 1);
     // Lost Wisp (event relic): each Power played deals 8 damage to every enemy.
@@ -1553,6 +1566,7 @@ void RunManager::register_relic_powers() {
     // More hero relics
     if (has_relic("SELF_FORMING_CLAY")) combat.add_power(PowerId::SELF_FORMING_CLAY, 3);
     if (has_relic("CHARONS_ASHES")) combat.add_power(PowerId::CHARONS_ASHES, 3);
+    if (has_relic("FORGOTTEN_SOUL")) combat.add_power(PowerId::FORGOTTEN_SOUL, 1);
     if (has_relic("RED_SKULL")) combat.add_power(PowerId::RED_SKULL, 3);
     if (has_relic("DEMON_TONGUE")) combat.add_power(PowerId::DEMON_TONGUE);
     if (has_relic("BEATING_REMNANT")) combat.add_power(PowerId::BEATING_REMNANT, BEATING_REMNANT_HP_LOSS);
@@ -1840,6 +1854,11 @@ void RunManager::proceed_after_combat() {
         }
     }
     combat.permanent_gains.clear();
+    // Guilty counts the fights it has sat through in `bonus`, and leaves the deck after the fifth.
+    for (size_t i = master_deck.size(); i > 0; --i) {
+        if (master_deck[i - 1].id != CardId::GUILTY) continue;
+        if (++master_deck[i - 1].bonus >= 5) master_deck.erase(i - 1);
+    }
     if (has_relic("SEAL_OF_GOLD")) gold = combat.gold;
     // What the cards of the fight leave to the run: gold (Hand of Greed, Royalties), potions (Alchemize), an extra
     // card reward (The Hunt), a card to remove from the deck (Forbidden Grimoire).

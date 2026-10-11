@@ -124,6 +124,7 @@ enum class PowerId : uint8_t {
     GREMLIN_HORN,      // enemy killed: `amount` energy and 1 card
     RAZOR_TOOTH,       // an Attack or a Skill played is upgraded for the rest of the combat
     THE_ABACUS,        // draw pile shuffled: `amount` Block
+    BIIIG_HUG,         // draw pile shuffled: `amount` Soot added to the draw pile
     PERMAFROST,        // first Power played: `amount` Block
     GAME_PIECE,        // Power played: draw `amount`
     REPTILE_TRINKET,   // potion used: `amount` Strength until the end of the turn
@@ -160,6 +161,7 @@ enum class PowerId : uint8_t {
     THE_BOOT,          // an Attack hit dealing 1 to THE_BOOT_THRESHOLD damage (before Block) deals THE_BOOT_MINIMUM instead
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy
+    FORGOTTEN_SOUL,    // event relic: card exhausted: `amount` damage to a random enemy
     RED_SKULL,         // HP at RED_SKULL_HP_PERCENT % of Max HP or less: `amount` more Strength (counter = Strength given now)
     DEMON_TONGUE,      // first HP loss of each turn: heal as much (counter = turn of the last heal)
     BRIMSTONE,         // start of turn: `amount` Strength, and 1 Strength per stack to every enemy
@@ -243,7 +245,9 @@ enum class PowerId : uint8_t {
     UNDYING_SIGIL,      // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
     THROWING_AXE,       // the first card played in the combat is played once more (removed once used)
     IRON_CLUB,          // every IRON_CLUB_CARDS cards played: draw `amount` (counter = cards counted)
-    CROSSBOW            // start of turn: add a random Attack to the hand, free this turn
+    CROSSBOW,           // start of turn: add a random Attack to the hand, free this turn
+    SPIKED_GAUNTLETS,   // Power cards cost `amount` more energy (CombatEngine::effective_cost)
+    TOASTY_MITTENS      // start of turn: `amount` Strength, and 1 card of the new hand is exhausted
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

@@ -339,6 +339,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             if (turn_start) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ + power.amount);
             break;
         case PowerId::TURN_STRENGTH:
+        case PowerId::TOASTY_MITTENS: // the exhaust that follows is asked once the hand is drawn
             if (turn_start) player.add_status(StatusType::STRENGTH, power.amount);
             break;
         case PowerId::TURN_STARS:
@@ -828,6 +829,11 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::THE_ABACUS:
             if (event == CombatEvent::DRAW_PILE_SHUFFLED) add_block(power.amount);
             break;
+        case PowerId::BIIIG_HUG:
+            if (event == CombatEvent::DRAW_PILE_SHUFFLED) {
+                for (int16_t copy = 0; copy < power.amount; ++copy) create_card(CardId::SOOT, Pile::DRAW);
+            }
+            break;
         case PowerId::PERMAFROST:
             if (card_played && CardDef::get(info.card.id).type == CardType::POWER && power.counter == 0) {
                 power.counter = 1;
@@ -987,6 +993,9 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::CHARONS_ASHES:
             if (event == CombatEvent::CARD_EXHAUSTED) damage_all_enemies(power.amount);
+            break;
+        case PowerId::FORGOTTEN_SOUL:
+            if (event == CombatEvent::CARD_EXHAUSTED && has_alive_enemies()) damage_enemy(enemies[random_alive_enemy_index()], power.amount);
             break;
         case PowerId::RED_SKULL: {
             // Looked at on every event, a heal being none of them: the Strength follows the HP at the next one.
@@ -1907,6 +1916,8 @@ void CombatEngine::start_player_turn() {
         choice.count = static_cast<uint8_t>(tyranny);
         ask_choice(choice);
     }
+    // Toasty Mittens: one card of the new hand is exhausted.
+    if (has_power(PowerId::TOASTY_MITTENS)) ask_choice(CardChoice{ ChoiceKind::EXHAUST, 1 });
     // Only the cards drawn by effects during the turn count as drawn this turn.
     counters.cards_drawn = 0;
     selected_card_index = 0;
@@ -2009,6 +2020,7 @@ int CombatEngine::effective_cost(const DeckCard& card) const {
             break;
     }
     cost += power_amount(PowerId::SURCHARGE);
+    if (CardDef::get(card.id).type == CardType::POWER) cost += power_amount(PowerId::SPIKED_GAUNTLETS);
     if (CardDef::get(card.id).type == CardType::ATTACK) cost += power_amount(PowerId::TANGLED);
     if (card.cost_one_this_turn) cost = std::min(cost, 1);
     return std::clamp(cost, 0, 99);
@@ -2113,9 +2125,12 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::SECRET_TECHNIQUE:
         case CardId::SECRET_WEAPON:
         case CardId::SEEKER_STRIKE:
+        case CardId::SPLASH:
+        case CardId::DISCOVERY:
         case CardId::DUAL_WIELD:
         case CardId::HEIRLOOM_HAMMER:
         case CardId::NIGHTMARE:
+        case CardId::QUASAR:
         case CardId::DECISIONS_DECISIONS:
         case CardId::BRAND:
         case CardId::BURNING_PACT:
@@ -2129,6 +2144,7 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
         case CardId::SCULPTING_STRIKE:
         case CardId::HEADBUTT:
         case CardId::WISH:
+        case CardId::ABUNDANCE:
         case CardId::HOLOGRAM:
         case CardId::COSMIC_INDIFFERENCE:
         case CardId::GRAVEBLAST:
@@ -3783,6 +3799,15 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             set_log(upgraded ? "Played Seeker Strike+!"sv : "Played Seeker Strike!"sv);
             break;
         }
+        case CardId::SPLASH: {
+            // Three Attacks of the pool of another hero, drawn at random among the other four.
+            uint8_t other = static_cast<uint8_t>(next_random() % (static_cast<uint8_t>(CharacterId::COUNT) - 1));
+            if (other >= static_cast<uint8_t>(current_character)) ++other;
+            const CardPool pool = static_cast<CardPool>(other + 1);
+            offer_random_cards(CardFilter(pool, CardType::ATTACK), secondary_value, upgraded, true);
+            set_log(upgraded ? "Played Splash+!"sv : "Played Splash!"sv);
+            break;
+        }
         case CardId::SECRET_TECHNIQUE:
         case CardId::SECRET_WEAPON: {
             CardChoice choice;
@@ -3904,6 +3929,21 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::BYRD_SWOOP: {
             hit(current_target, base_value);
             set_log(upgraded ? "Played Byrd Swoop+!"sv : "Played Byrd Swoop!"sv);
+            break;
+        }
+        case CardId::QUASAR: {
+            offer_random_cards(CardFilter(CardPool::COLORLESS), static_cast<uint8_t>(base_value), upgraded);
+            set_log(upgraded ? "Played Quasar+!"sv : "Played Quasar!"sv);
+            break;
+        }
+        case CardId::DISCOVERY: {
+            offer_random_cards(CardFilter(), secondary_value, false, true);
+            set_log(upgraded ? "Played Discovery+!"sv : "Played Discovery!"sv);
+            break;
+        }
+        case CardId::ABUNDANCE: {
+            offer_random_cards(CardFilter(CardType::POWER), 3, true, true);
+            set_log(upgraded ? "Played Abundance+!"sv : "Played Abundance!"sv);
             break;
         }
         case CardId::MAD_SCIENCE: {
@@ -5255,6 +5295,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::REGRET:
         case CardId::BAD_LUCK:
         case CardId::DEBT:
+        case CardId::GUILTY:
             // Unplayable: only another card can play them, and nothing happens.
             break;
         case CardId::DEBRIS: {

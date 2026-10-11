@@ -748,6 +748,7 @@ CARDS: list[CardArt] = [
     CardArt("bad_luck", "curse", "bad_luck", "status", (NO_COST, NO_COST)),
     CardArt("debt", "curse", "debt", "status", (NO_COST, NO_COST)),
     CardArt("spore_mind", "curse", "spore_mind", "status", (1, 1)),
+    CardArt("guilty", "curse", "guilty", "status", (NO_COST, NO_COST)),
     CardArt("tactician", "silent", "tactician", "skill", (3, 3)),
     CardArt("abrasive", "silent", "abrasive", "power", (3, 3)),
     CardArt("master_planner", "silent", "master_planner", "power", (2, 1)),
@@ -771,7 +772,11 @@ CARDS: list[CardArt] = [
     CardArt("alchemize", "colorless", "alchemize", "skill", (1, 1)),
     CardArt("the_gambit", "colorless", "the_gambit", "skill", (0, 0)),
     CardArt("seeker_strike", "colorless", "seeker_strike", "attack", (1, 1)),
+    CardArt("splash", "colorless", "splash", "skill", (1, 1)),
     CardArt("mad_science", "hero", "mad_science_attack", "attack", (1, 1), folder="event"),
+    CardArt("quasar", "regent", "quasar", "skill", (0, 0), stars=(2, 2)),
+    CardArt("discovery", "colorless", "discovery", "skill", (1, 1)),
+    CardArt("abundance", "ancient", "abundance", "skill", (1, 0), folder="event"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

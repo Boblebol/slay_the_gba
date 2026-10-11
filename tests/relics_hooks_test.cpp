@@ -2714,6 +2714,22 @@ void test_molten_egg() {
     std::cout << "[PASS] Molten Egg: upgrades an Attack added to the deck" << std::endl;
 }
 
+void test_potion_belt() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 462);
+    int before = run.potion_slots;
+    run.add_relic("POTION_BELT");
+    assert(run.has_relic("POTION_BELT"));
+    assert(run.potion_slots == before + 2);
+
+    // Without the relic, the belt keeps its size.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 462);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("POTION_BELT") && plain.potion_slots == before);
+    std::cout << "[PASS] Potion Belt: 2 more potion slots when obtained" << std::endl;
+}
+
 void test_whetstone() {
     // Obtained: two random Attacks of the deck are upgraded, never more than the deck holds.
     auto upgraded_attacks = [](const RunManager& r) {
@@ -3603,6 +3619,42 @@ void test_precarious_shears() {
     std::cout << "[PASS] Precarious Shears: pickup asks for 2 cards to remove and costs 16 HP, nothing without the relic" << std::endl;
 }
 
+void test_biiig_hug() {
+    // Obtained: 4 cards are chosen to leave the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 763);
+    size_t deck = run.master_deck.size();
+    run.add_relic("BIIIG_HUG");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 4);
+    for (int i = 0; i < 4; ++i) assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 4);
+
+    // In combat, each shuffle of the draw pile adds a Soot to it.
+    CombatEngine hug = make_relic_combat(CharacterId::IRONCLAD, PowerId::BIIIG_HUG, 1);
+    hug.draw_pile.clear();
+    hug.draw_cards(1);
+    assert(hug.draw_pile.empty()); // nothing to shuffle
+    hug.discard_pile.push_back(CardId::STRIKE);
+    hug.draw_cards(1);
+    int soot = 0;
+    for (const auto& card : hug.draw_pile) soot += card.id == CardId::SOOT;
+    for (const auto& card : hug.hand) soot += card.id == CardId::SOOT;
+    assert(soot == 1);
+
+    // Without the relic nothing is removed or added.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 763);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("BIIIG_HUG") && !plain.has_deck_choice() && plain.master_deck.size() == deck);
+    CombatEngine bare = make_relic_combat(CharacterId::IRONCLAD, PowerId::THE_ABACUS, 6);
+    bare.draw_pile.clear();
+    bare.discard_pile.push_back(CardId::STRIKE);
+    bare.draw_cards(1);
+    for (const auto& card : bare.draw_pile) assert(card.id != CardId::SOOT);
+    for (const auto& card : bare.hand) assert(card.id != CardId::SOOT);
+    std::cout << "[PASS] Biiig Hug: pickup removes 4 cards, each shuffle adds a Soot, nothing without the relic" << std::endl;
+}
+
 void test_paper_phrog() {
     // With the relic, a Strike (6 damage, x1.5 on a Vulnerable enemy = 9) gets 25% more on top: 11. Other enemies do not.
     CombatEngine phrog = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAPER_PHROG, 25);
@@ -3622,6 +3674,24 @@ void test_paper_phrog() {
     assert(plain.play_card(0, 0));
     assert(200 - plain.enemies[0].hp == 9);
     std::cout << "[PASS] Paper Phrog: Vulnerable enemies take 25% more damage from attacks" << std::endl;
+}
+
+void test_forgotten_soul() {
+    // With the relic, each exhausted card deals 1 damage to one random enemy.
+    CombatEngine soul = make_relic_combat(CharacterId::IRONCLAD, PowerId::FORGOTTEN_SOUL, 1, true);
+    auto total = [](const CombatEngine& c) { int sum = 0; for (const Enemy& e : c.enemies) sum += e.hp; return sum; };
+    const int before = total(soul);
+    soul.exhaust_card(CardId::STRIKE);
+    assert(total(soul) == before - 1);
+    soul.exhaust_card(CardId::STRIKE);
+    assert(total(soul) == before - 2);
+
+    // Without the relic, nothing happens.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::VELVET_CHOKER, 0, true);
+    const int plain_before = total(plain);
+    plain.exhaust_card(CardId::STRIKE);
+    assert(total(plain) == plain_before);
+    std::cout << "[PASS] Forgotten Soul: an exhausted card deals 1 damage to a random enemy" << std::endl;
 }
 
 void test_silver_crucible() {
@@ -3671,6 +3741,26 @@ void test_silver_crucible() {
     std::cout << "[PASS] Silver Crucible: first 3 card rewards upgraded, first Treasure Chest empty" << std::endl;
 }
 
+void test_toasty_mittens() {
+    // With the relic: each turn starts with 1 Strength more, and 1 card of the hand to exhaust.
+    RunManager mittens = make_relic_run(CharacterId::IRONCLAD, { "TOASTY_MITTENS" });
+    CombatEngine& combat = mittens.combat;
+    assert(combat.player.get_status(StatusType::STRENGTH) == 1);
+    assert(combat.choice_pending() && combat.hand.size() == 5);
+    const uint8_t picks[] = { 0 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending() && combat.hand.size() == 4 && combat.exhaust_pile.size() == 1);
+    end_turn_idle(combat);
+    assert(combat.player.get_status(StatusType::STRENGTH) == 2);
+    assert(combat.choice_pending() && combat.hand.size() == 5);
+
+    // Without it: no Strength, no exhaust.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.player.get_status(StatusType::STRENGTH) == 0);
+    assert(!plain.combat.choice_pending() && plain.combat.hand.size() == 5 && plain.combat.exhaust_pile.empty());
+    std::cout << "[PASS] Toasty Mittens: 1 Strength and 1 exhausted card at the start of each turn" << std::endl;
+}
+
 void test_undying_sigil() {
     // With the relic: an enemy with at least as much Doom as HP deals 50% less damage.
     CombatEngine sigil = make_combat(CharacterId::IRONCLAD);
@@ -3716,6 +3806,22 @@ void test_crossbow() {
     std::cout << "[PASS] Crossbow: a random free Attack joins the hand at the start of the turn" << std::endl;
 }
 
+void test_spiked_gauntlets() {
+    // With the relic: +1 energy each turn, and a Power card costs 1 more.
+    CombatEngine gauntlets = make_relic_combat(CharacterId::IRONCLAD, { RelicPower{ PowerId::TURN_ENERGY, 1 }, RelicPower{ PowerId::SPIKED_GAUNTLETS, 1 } });
+    assert(gauntlets.player.energy == gauntlets.player.max_energy + 1);
+    DeckCard power_card(CardId::INFLAME);
+    DeckCard attack_card(CardId::STRIKE);
+    assert(gauntlets.effective_cost(power_card) == CardDef::get_cost(CardId::INFLAME, false) + 1);
+    assert(gauntlets.effective_cost(attack_card) == CardDef::get_cost(CardId::STRIKE, false));
+
+    // Without the relic: no extra energy, and the Power costs its printed cost.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    assert(plain.player.energy == plain.player.max_energy);
+    assert(plain.effective_cost(power_card) == CardDef::get_cost(CardId::INFLAME, false));
+    std::cout << "[PASS] Spiked Gauntlets: +1 energy per turn, Powers cost 1 more" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -3754,6 +3860,7 @@ int main() {
     test_neows_torment();
     test_precise_scissors();
     test_precarious_shears();
+    test_biiig_hug();
     test_new_leaf();
     test_small_capsule();
     test_nutritious_oyster();
@@ -3818,6 +3925,7 @@ int main() {
     test_daughter_of_the_wind();
     test_bookmark();
     test_undying_sigil();
+    test_toasty_mittens();
     test_tungsten_rod();
     test_paper_krane();
     test_mango();
@@ -3826,6 +3934,7 @@ int main() {
     test_fake_anchor();
     test_old_coin();
     test_pear();
+    test_potion_belt();
     test_whetstone();
     test_dragon_fruit();
     test_toxic_egg();
@@ -3856,7 +3965,9 @@ int main() {
     test_tea_of_discourtesy();
     test_the_boot();
     test_hand_drill();
+    test_spiked_gauntlets();
     test_paper_phrog();
     test_silver_crucible();
+    test_forgotten_soul();
     return 0;
 }

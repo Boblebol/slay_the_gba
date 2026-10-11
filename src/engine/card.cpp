@@ -600,6 +600,7 @@ static constexpr CardDef CARDS[] = {
     { CardId::BAD_LUCK, "Bad Luck", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 13 HP. Eternal.", "Bad Luck+", COST_X, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 13 HP. Eternal.", KEYWORD_UNPLAYABLE | KEYWORD_ETERNAL, KEYWORD_UNPLAYABLE | KEYWORD_ETERNAL },
     { CardId::DEBT, "Debt", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 10 gold.", "Debt+", COST_X, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 10 gold.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
     { CardId::SPORE_MIND, "Spore Mind", 1, CardType::CURSE, TargetType::SELF, 0, 0, "Exhaust.", "Spore Mind+", 1, 0, 0, "Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::GUILTY, "Guilty", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. Removed from your Deck after 5 combats.", "Guilty+", COST_X, 0, 0, "Unplayable. Removed from your Deck after 5 combats.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
     { CardId::TACTICIAN, "Tactician", 3, CardType::SKILL, TargetType::SELF, 1, 0, "Sly. Gain 1 energy.", "Tactician+", 3, 2, 0, "Sly. Gain 2 energy.", KEYWORD_SLY, KEYWORD_SLY },
     { CardId::ABRASIVE, "Abrasive", 3, CardType::POWER, TargetType::SELF, 4, 0, "Sly. Gain 1 Dexterity. Gain 4 Thorns.", "Abrasive+", 3, 6, 0, "Sly. Gain 1 Dexterity. Gain 6 Thorns.", KEYWORD_SLY, KEYWORD_SLY },
     { CardId::MASTER_PLANNER, "Master Planner", 2, CardType::POWER, TargetType::SELF, 0, 0, "Whenever you play a Skill, it gains Sly.", "Master Planner+", 1, 0, 0, "Whenever you play a Skill, it gains Sly." },
@@ -624,8 +625,14 @@ static constexpr CardDef CARDS[] = {
     { CardId::THE_GAMBIT, "The Gambit", 0, CardType::SKILL, TargetType::SELF, 50, 0, "Gain 50 block. If you take unblocked attack damage this combat, you die.", "The Gambit+", 0, 75, 0, "Gain 75 block. If you take unblocked attack damage this combat, you die." },
     // Choose 1 card among N offered (mechanic #72).
     { CardId::SEEKER_STRIKE, "Seeker Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 3, "Deal 9 dmg. Choose 1 of 3 cards in your draw pile to add into your hand.", "Seeker Strike+", 1, 12, 3, "Deal 12 dmg. Choose 1 of 3 cards in your draw pile to add into your hand." },
+    { CardId::SPLASH, "Splash", 1, CardType::SKILL, TargetType::SELF, 0, 3, "Choose 1 of 3 random Attacks from another character to add into your hand. It costs 0 this turn.", "Splash+", 1, 0, 3, "Choose 1 of 3 random upgraded Attacks from another character to add into your hand. It costs 0 this turn." },
     // Event card: a single attack; Innate once upgraded.
     { CardId::MAD_SCIENCE, "Mad Science", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 12, 0, "Deal 12 dmg. ???", "Mad Science+", 1, 12, 0, "Innate. Deal 12 dmg. ???", 0, KEYWORD_INNATE },
+    // Regent: choose 1 of 3 random Colorless cards to add to the hand (mechanics #72, #77).
+    { CardId::QUASAR, "Quasar", 0, CardType::SKILL, TargetType::SELF, 3, 3, "Choose 1 of 3 random Colorless cards to add to your hand.", "Quasar+", 0, 3, 3, "Choose 1 of 3 random upgraded Colorless cards to add to your hand.", 0, 0, 2, 2 },
+    { CardId::DISCOVERY, "Discovery", 1, CardType::SKILL, TargetType::SELF, 0, 3, "Choose 1 of 3 random cards to add into your hand. It's free to play this turn. Exhaust.", "Discovery+", 1, 0, 3, "Choose 1 of 3 random cards to add into your hand. It's free to play this turn.", KEYWORD_EXHAUST, 0 },
+    // Event card: 3 upgraded Powers offered, the picked one is free this turn.
+    { CardId::ABUNDANCE, "Abundance", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Choose 1 of 3 upgraded Powers to add into your hand. It costs 0 this turn. Exhaust.", "Abundance+", 0, 0, 0, "Choose 1 of 3 upgraded Powers to add into your hand. It costs 0 this turn. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
 };
 
 const CardDef& CardDef::get(CardId id) {
