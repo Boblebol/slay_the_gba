@@ -1256,6 +1256,38 @@ void test_cubex_construct_ascension() {
     std::cout << "[PASS] Cubex Construct: Ascension gives 70 HP, Repeater Blast 8, Expel 6x2" << std::endl;
 }
 
+void test_punch_construct() {
+    // Ready 10 Block, Fast Punch 5x2 (1 Frail), Strong Punch 14, and again. The Block fades at its next turn.
+    check_monster(EnemyType::PUNCH_CONSTRUCT, "Assemblage de pugilat", 55, {
+        { DEFEND, 0, 10, 0 },
+        { ATTACK_DEBUFF, 5, 0, 0, 0, 2 },
+        { ATTACK, 14, 0, 0 },
+        { DEFEND, 0, 10, 0 },
+        { ATTACK_DEBUFF, 5, 0, 0, 0, 2 },
+        { ATTACK, 14, 0, 0 },
+    });
+    std::cout << "[PASS] Punch Construct: 55 HP, Ready 10 Block, Fast Punch 5x2, Strong Punch 14, loop" << std::endl;
+}
+
+void test_punch_construct_ascension() {
+    // 60 HP, Fast Punch 6x2 and Strong Punch 16 at Ascension; the Fast Punch gives 1 Frail.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::PUNCH_CONSTRUCT);
+    Enemy& golem = combat.enemies[0];
+    golem.ascend(true, true);
+    combat.plan_enemies();
+    assert(golem.hp == 60 && golem.max_hp == 60);
+    combat.end_player_turn(); // Ready
+    combat.player.hp = combat.player.max_hp;
+    assert(golem.current_intent.type == ATTACK_DEBUFF && golem.current_intent.hits == 2);
+    assert(golem.intent_damage(combat.player) == 6);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 12);
+    assert(combat.player.get_status(StatusType::FRAIL) == 1);
+    combat.player.hp = combat.player.max_hp;
+    assert(golem.current_intent.type == ATTACK && golem.intent_damage(combat.player) == 16);
+    std::cout << "[PASS] Punch Construct: Ascension gives 60 HP, Fast Punch 6x2, Strong Punch 16" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -1581,6 +1613,8 @@ int main() {
     test_noisebot_ascension();
     test_cubex_construct();
     test_cubex_construct_ascension();
+    test_punch_construct();
+    test_punch_construct_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

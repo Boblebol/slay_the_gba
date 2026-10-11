@@ -44,6 +44,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::STABBOT: return "STABBOT";
         case EnemyType::NOISEBOT: return "NOISEBOT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
+        case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
@@ -167,6 +168,7 @@ void test_reference_encounters() {
                                         "InkletsNormal", "NibbitsNormal", "FlyconidNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal" }));
+           (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "PunchConstructNormal" }));
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
