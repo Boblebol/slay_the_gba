@@ -113,6 +113,11 @@ constexpr Encounter ACT3_NORMAL[] = {
     { "AxebotsNormal"sv, 1, { EnemyType::AXEBOT } },
 };
 
+// Act 2: only BowlbugsWeak is made of monsters the engine has (the others need random bugs or the Beetle).
+constexpr Encounter ACT2_WEAK[] = {
+    { "BowlbugsWeak"sv, 1, { EnemyType::BOWLBUG_ROCK } },
+};
+
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
@@ -124,6 +129,8 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT3_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT2_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
 } // namespace

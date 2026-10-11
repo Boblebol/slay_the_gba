@@ -1716,6 +1716,39 @@ void test_bowlbug_silk_ascension() {
     std::cout << "[PASS] Bowlbug Silk: Ascension gives 41 HP, Thrash 5x2" << std::endl;
 }
 
+void test_bowlbug_rock() {
+    // Headbutt 15 every turn while it hurts.
+    check_monster(EnemyType::BOWLBUG_ROCK, "Sphéropode (Pierre)", 45, {
+        { ATTACK, 15, 0, 0 },
+        { ATTACK, 15, 0, 0 },
+        { ATTACK, 15, 0, 0 },
+    });
+    // A Headbutt the Block takes in full throws it off balance: Dizzy next turn, then Headbutt again.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_ROCK);
+    Enemy& bug = combat.enemies[0];
+    combat.player.block = 20;
+    combat.end_player_turn();
+    assert(combat.player.hp == combat.player.max_hp);
+    assert(bug.current_intent.type == STUN);
+    combat.end_player_turn(); // Dizzy: no damage
+    assert(combat.player.hp == combat.player.max_hp);
+    assert(bug.current_intent.type == ATTACK && bug.intent_damage(combat.player) == 15);
+    combat.end_player_turn(); // Headbutt again, unblocked: no stun
+    assert(combat.player.hp == combat.player.max_hp - 15);
+    assert(bug.current_intent.type == ATTACK);
+    std::cout << "[PASS] Rock Bowlbug: 45 HP, Headbutt 15, off balance when blocked then Dizzy" << std::endl;
+}
+
+void test_bowlbug_rock_ascension() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_ROCK);
+    Enemy& bug = combat.enemies[0];
+    bug.ascend(true, true);
+    combat.plan_enemies();
+    assert(bug.hp == 46 && bug.max_hp == 46);
+    assert(bug.current_intent.type == ATTACK && bug.intent_damage(combat.player) == 16);
+    std::cout << "[PASS] Rock Bowlbug: Ascension gives 46 HP, Headbutt 16" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -2976,6 +3009,8 @@ int main() {
     test_turret_operator_ascension();
     test_bowlbug_silk();
     test_bowlbug_silk_ascension();
+    test_bowlbug_rock();
+    test_bowlbug_rock_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

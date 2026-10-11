@@ -282,6 +282,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_axebot, false };
     case engine::EnemyType::TURRET_OPERATOR:
         return { &bn::sprite_items::mon_turret_operator, false };
+    case engine::EnemyType::BOWLBUG_ROCK:
+        return { &bn::sprite_items::mon_bowlbug_rock, false };
     case engine::EnemyType::INKLET:
         return { &bn::sprite_items::mon_inklet, false };
     case engine::EnemyType::NIBBIT:

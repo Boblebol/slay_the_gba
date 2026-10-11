@@ -6320,6 +6320,11 @@ void CombatEngine::execute_enemy_turn() {
                 record.cards_added_count =
                     static_cast<uint8_t>(draw_pile.size() + hand.size() + discard_pile.size() - before);
             }
+            // The Rock Bowlbug is thrown off balance by an attack the player's Block took in full.
+            if (enemies[i].type == EnemyType::BOWLBUG_ROCK && played.type == EnemyIntentType::ATTACK &&
+                enemies[i].is_alive() && hp_before == player.hp) {
+                enemies[i].phase = 1;
+            }
             record.hits = played.hits;
             record.debuff_attempted = record.debuff_attempted || (played.power_on_player && played.power != PowerId::NONE);
             note_osty_hp_lost(static_cast<int16_t>(osty_hp_before - player.minion_hp));

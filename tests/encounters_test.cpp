@@ -52,6 +52,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::BOWLBUG_NECTAR: return "BOWLBUG_NECTAR";
         case EnemyType::AXEBOT: return "AXEBOT";
         case EnemyType::TURRET_OPERATOR: return "TURRET_OPERATOR";
+        case EnemyType::BOWLBUG_ROCK: return "BOWLBUG_ROCK";
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
@@ -226,6 +227,8 @@ void test_reference_encounters() {
     const Encounter& turret = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::WEAK), "TurretOperatorWeak");
     assert(turret.count == 2 && turret.monsters[0] == EnemyType::LIVING_SHIELD &&
            turret.monsters[1] == EnemyType::TURRET_OPERATOR);
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::WEAK)) == std::set<std::string_view>{ "BowlbugsWeak" });
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
     for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
         if (zone == ActZone::ACT2) {
             assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
