@@ -18,6 +18,7 @@
 #include "bn_sprite_items_mon_brute_ruby_raider.h"
 #include "bn_sprite_items_mon_calcified_cultist.h"
 #include "bn_sprite_items_mon_crossbow_ruby_raider.h"
+#include "bn_sprite_items_mon_chomper.h"
 #include "bn_sprite_items_mon_cubex_construct.h"
 #include "bn_sprite_items_mon_cultist.h"
 #include "bn_sprite_items_mon_damp_cultist.h"
