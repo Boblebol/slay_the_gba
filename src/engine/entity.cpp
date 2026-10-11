@@ -129,6 +129,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Mycoptère";
         max_hp = 47;
         hp = 47;
+    } else if (type == EnemyType::ENTOMANCER) {
+        name = "Entomancien";
+        max_hp = 145;
+        hp = 145;
     } else if (type == EnemyType::CORPSE_SLUG) {
         name = "Putrilimace";
         max_hp = 25;
@@ -243,6 +247,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::SPINY_TOAD: return 121;
         case EnemyType::SEAPUNK: return 47;
         case EnemyType::TRACKER_RUBY_RAIDER: return 22;
+        case EnemyType::ENTOMANCER: return 165;
         default: return 0;
     }
 }
@@ -899,6 +904,26 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 3;
             current_intent.description = "Rage (6 dmg, Force 3)";
+        }
+    } else if (type == EnemyType::ENTOMANCER) {
+        // Bees, Spear, Pheromone Spit (Personal Hive 1, Strength 2 then 1), and again.
+        const int phase = (turn_number - 1) % 3;
+        if (phase == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 3;
+            current_intent.hits = ascended_damage ? 8 : 7;
+            current_intent.description = "Bzzzzzz !! (3 dmg x7)";
+        } else if (phase == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 20 : 18;
+            current_intent.description = "Javelot ! (18 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.power = PowerId::PERSONAL_HIVE;
+            current_intent.power_amount = 1;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 3;
+            current_intent.description = "Crachat de phéromones (Ruche 1, Force 3)";
         }
     } else if (type == EnemyType::HUNTER_KILLER) {
         // Tenderizing Goop, Bite, Puncture, then a draw between Bite (never twice in a row) and Puncture.
