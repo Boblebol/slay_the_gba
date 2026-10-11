@@ -45,6 +45,8 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::STABBOT: return "STABBOT";
         case EnemyType::SPINY_TOAD: return "SPINY_TOAD";
         case EnemyType::NOISEBOT: return "NOISEBOT";
+        case EnemyType::PARAFRIGHT: return "PARAFRIGHT";
+        case EnemyType::ZAPBOT: return "ZAPBOT";
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
         case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
         case EnemyType::INKLET: return "INKLET";
@@ -55,12 +57,21 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::GREMLIN_MERC: return "GREMLIN_MERC";
         case EnemyType::SNEAKY_GREMLIN: return "SNEAKY_GREMLIN";
         case EnemyType::HAUNTED_SHIP: return "HAUNTED_SHIP";
+        case EnemyType::GLOBE_HEAD: return "GLOBE_HEAD";
+        case EnemyType::LOUSE_PROGENITOR: return "LOUSE_PROGENITOR";
         case EnemyType::SLUDGE_SPINNER: return "SLUDGE_SPINNER";
         case EnemyType::TOADPOLE: return "TOADPOLE";
         case EnemyType::HUNTER_KILLER: return "HUNTER_KILLER";
         case EnemyType::MAWLER: return "MAWLER";
         case EnemyType::FOSSIL_STALKER: return "FOSSIL_STALKER";
         case EnemyType::SEAPUNK: return "SEAPUNK";
+        case EnemyType::OSTY: return "OSTY";
+        case EnemyType::CHOMPER: return "CHOMPER";
+        case EnemyType::SLUMBERING_BEETLE: return "SLUMBERING_BEETLE";
+        case EnemyType::TUNNELER: return "TUNNELER";
+        case EnemyType::SLIMED_BERSERKER: return "SLIMED_BERSERKER";
+        case EnemyType::FROG_KNIGHT: return "FROG_KNIGHT";
+        case EnemyType::GUARDBOT: return "GUARDBOT";
     }
     return {};
 }
@@ -190,14 +201,18 @@ void test_reference_encounters() {
     }
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
-    // The groups the game had before, where the reference has nothing the engine can play yet.
-    for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
-        assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
-    }
+    // Act 2, and the groups the game had before in Act 3, where the reference has nothing the engine can play yet.
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::WEAK)) == std::set<std::string_view>{ "TunnelerWeak" });
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal" }));
+           (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal", "ChompersNormal", "TunnelerNormal",
+                                        "LouseProgenitorNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
-           (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
+           (std::set<std::string_view>{ "SlimedBerserkerNormal", "FrogKnightNormal", "GlobeHeadNormal",
+                                        "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
+    const Encounter& chompers = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::NORMAL),
+                                               "ChompersNormal");
+    assert(chompers.count == 2 && chompers.monsters[0] == EnemyType::CHOMPER && chompers.monsters[1] == EnemyType::CHOMPER);
 
     // The ruby raiders: three of the five raiders in the engine.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),
@@ -220,12 +235,20 @@ void test_reference_encounters() {
     // Forgotten is only met with the Lost (TheLostAndForgottenNormal), the Living Shield with the Turret Operator
     // (TurretOperatorWeak), the Fat Gremlin with the Gremlin Merc (GremlinMercNormal), like the Sneaky Gremlin.
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
+    // The Stabbot, the Noisebot and the Zapbot are brought by the Fabricator (FabricatorNormal).
     // The Stabbot and the Noisebot are brought by the Fabricator (FabricatorNormal).
+    // The Guardbot is brought by the Fabricator too.
     // The Gas Bomb is brought by the Living Fog (LivingFogNormal).
+    // Titos is summoned by the Entomancer, the Parafright brought by the Obscura, the Slumbering Beetle
+    // waits for the Bowlbugs: none of them is a monster of the engine yet.
+    // The Zapbot and the Guardbot are brought by the Fabricator too.
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
                                                           EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
-                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN };
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
+                                                          EnemyType::OSTY, EnemyType::SLUMBERING_BEETLE,
+                                                          EnemyType::PARAFRIGHT, EnemyType::ZAPBOT,
+                                                          EnemyType::GUARDBOT };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));
