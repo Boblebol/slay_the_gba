@@ -196,8 +196,6 @@ enum class PowerId : uint8_t {
     TENDER,            // card played: lose `amount` Strength and Dexterity until the end of the turn
     // Held by an enemy:
     PERSONAL_HIVE,     // it takes unblocked attack damage: `amount` Dazed into the player's draw pile
-    VITAL_SPARK,       // it takes unblocked attack damage: 1 energy for the player, up to `amount` times a turn (counter = times)
-    HEX,               // while its holder lives, every card left in the hand at the end of the turn is exhausted (Ethereal)
     // Relics of the Ancients (appended)
     PAELS_TEARS,       // end of a turn with unspent energy: `amount` energy next turn
     // Colorless and event cards (appended)
@@ -258,7 +256,9 @@ enum class PowerId : uint8_t {
     // Regent minions (appended)
     VITRUVIAN_MINION,   // the Minion cards deal double damage and give double Block (read by hit and gain_block)
     // Held by an enemy (appended)
-    BURROWED            // its Block is up: the Block broken or its next turn played, the power is spent (amount 0)
+    BURROWED,           // its Block is up: the Block broken or its next turn played, the power is spent (amount 0)
+    VITAL_SPARK,       // it takes unblocked attack damage: 1 energy for the player, up to `amount` times a turn (counter = times)
+    HEX                // while its holder lives, every card left in the hand at the end of the turn is exhausted (Ethereal)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

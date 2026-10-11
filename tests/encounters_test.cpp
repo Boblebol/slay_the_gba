@@ -213,19 +213,15 @@ void test_reference_encounters() {
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
                std::set<std::string_view>{ "CeremonialBeastBoss" });
-        if (zone == ActZone::ACT1B) continue;
-        assert(ids_of(encounter_table(zone, EncounterTier::ELITE)) ==
-               (zone == ActZone::ACT1B ? std::set<std::string_view>{ "LegacyGremlinNob", "TerrorEelElite" }
-                                       : std::set<std::string_view>{ "LegacyGremlinNob" }));
-               std::set<std::string_view>{ zone == ActZone::ACT2 ? "EntomancerElite" : "LegacyGremlinNob" });
-               std::set<std::string_view>{ zone == ActZone::ACT2 ? "InfestedPrismsElite" : "LegacyGremlinNob" });
-               (zone == ActZone::ACT3 ? std::set<std::string_view>{ "SoulNexusElite" }
-                                      : std::set<std::string_view>{ "LegacyGremlinNob" }));
-               (zone == ActZone::ACT3 ? std::set<std::string_view>{ "MechaKnightElite" }
-                                      : std::set<std::string_view>{ "LegacyGremlinNob" }));
     }
+    assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
+           std::set<std::string_view>{ "LegacyGremlinNob" });
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::ELITE)) ==
-           std::set<std::string_view>{ "SkulkingColonyElite" });
+           (std::set<std::string_view>{ "SkulkingColonyElite", "TerrorEelElite" }));
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "EntomancerElite", "InfestedPrismsElite" }));
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::ELITE)) ==
+           (std::set<std::string_view>{ "SoulNexusElite", "MechaKnightElite", "KnightsElite" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
     // Acts 2 and 3: the reference encounters the engine can play, with the groups the game had before in Act 3.
@@ -273,22 +269,12 @@ void test_reference_encounters() {
     // engine yet. The Slumbering Beetle and the Nectar, Silk and Egg Bowlbugs wait for the random bugs of
     // BowlbugsNormal and SlumberingBeetleNormal.
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
-    // The Flail Knight is brought by the Magi Knight and the Spectral Knight (KnightsElite).
-    // The Spectral Knight is brought by the other knights (KnightsElite).
-    const std::set<EnemyType> waiting_for_a_companion = { EnemyType::THE_FORGOTTEN, EnemyType::LIVING_SHIELD,
-                                                          EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
                                                           EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
                                                           EnemyType::OSTY, EnemyType::SLUMBERING_BEETLE,
                                                           EnemyType::PARAFRIGHT, EnemyType::ZAPBOT,
                                                           EnemyType::GUARDBOT, EnemyType::BOWLBUG_NECTAR,
                                                           EnemyType::BOWLBUG_SILK, EnemyType::BOWLBUG_EGG };
-                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
-                                                          EnemyType::FLAIL_KNIGHT };
-                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
-                                                          EnemyType::SPECTRAL_KNIGHT };
-                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
-                                                          EnemyType::MAGI_KNIGHT };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));
