@@ -73,6 +73,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::SLIMED_BERSERKER: return "SLIMED_BERSERKER";
         case EnemyType::FROG_KNIGHT: return "FROG_KNIGHT";
         case EnemyType::GUARDBOT: return "GUARDBOT";
+        case EnemyType::DEVOTED_SCULPTOR: return "DEVOTED_SCULPTOR";
     }
     return {};
 }
@@ -214,6 +215,15 @@ void test_reference_encounters() {
     const Encounter& chompers = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::NORMAL),
                                                "ChompersNormal");
     assert(chompers.count == 2 && chompers.monsters[0] == EnemyType::CHOMPER && chompers.monsters[1] == EnemyType::CHOMPER);
+           (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak" }));
+    // The groups the game had before, where the reference has nothing the engine can play yet.
+    for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
+        assert(ids_of(encounter_table(zone, EncounterTier::NORMAL)) ==
+               (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
+    }
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::WEAK)) ==
+           std::set<std::string_view>{ "DevotedSculptorWeak" });
 
     // The ruby raiders: three of the five raiders in the engine.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),

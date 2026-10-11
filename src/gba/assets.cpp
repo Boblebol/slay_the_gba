@@ -44,6 +44,7 @@
 #include "bn_sprite_items_mon_globe_head.h"
 #include "bn_sprite_items_mon_punch_construct.h"
 #include "bn_sprite_items_mon_bowlbug_nectar.h"
+#include "bn_sprite_items_mon_devoted_sculptor.h"
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_osty.h"
 #include "bn_sprite_items_mon_parafright.h"
@@ -302,6 +303,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_sneaky_gremlin, false };
     case engine::EnemyType::GUARDBOT:
         return { &bn::sprite_items::mon_guardbot, false };
+    case engine::EnemyType::DEVOTED_SCULPTOR:
+        return { &bn::sprite_items::mon_devoted_sculptor, false };
     case engine::EnemyType::TOADPOLE:
         return { &bn::sprite_items::mon_toadpole, false };
     case engine::EnemyType::HUNTER_KILLER:

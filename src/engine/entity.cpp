@@ -145,6 +145,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Gardebot";
         max_hp = 16;
         hp = 16;
+    } else if (type == EnemyType::DEVOTED_SCULPTOR) {
+        name = "Sculpteur dévoué";
+        max_hp = 162;
+        hp = 162;
     } else if (type == EnemyType::FLYCONID) {
         name = "Mycoptère";
         max_hp = 47;
@@ -310,6 +314,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::SLIMED_BERSERKER: return 281;
         case EnemyType::FROG_KNIGHT: return 199;
         case EnemyType::GUARDBOT: return 17;
+        case EnemyType::DEVOTED_SCULPTOR: return 172;
         default: return 0;
     }
 }
@@ -1004,6 +1009,18 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_cards = 3;
             current_intent.status_pile = Pile::DISCARD;
             current_intent.description = "Crissement (3 Hébété)";
+        }
+    } else if (type == EnemyType::DEVOTED_SCULPTOR) {
+        // Forbidden Incantation (+9 Ritual) once, then Savage for the rest of the fight.
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::RITUAL;
+            current_intent.status_amount = 9;
+            current_intent.description = "Incantation interdite (+9 Rituel)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 15 : 12;
+            current_intent.description = "Sauvagerie (12 dmg)";
         }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the

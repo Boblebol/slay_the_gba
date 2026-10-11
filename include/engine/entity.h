@@ -402,6 +402,8 @@ enum class EnemyType : uint8_t {
     GLOBE_HEAD,
     LOUSE_PROGENITOR,
     GUARDBOT
+    TOADPOLE,
+    DEVOTED_SCULPTOR
 };
 
 // What a monster sees of the fight when it chooses its next move.

@@ -1520,6 +1520,30 @@ void test_bowlbug_nectar_ascension() {
     std::cout << "[PASS] Bowlbug (Nectar): Ascension gives 36 HP and +16 Strength" << std::endl;
 }
 
+void test_devoted_sculptor() {
+    // Forbidden Incantation (Ritual 9) once, then Savage 12 for good: Ritual adds its Strength every turn.
+    check_monster(EnemyType::DEVOTED_SCULPTOR, "Sculpteur dévoué", 162, {
+        { BUFF, 0, 0, 0, 9 },
+        { ATTACK, 12, 0, 9, 9 },
+        { ATTACK, 21, 0, 18, 9 },
+        { ATTACK, 30, 0, 27, 9 },
+    });
+    std::cout << "[PASS] Devoted Sculptor: 162 HP, Forbidden Incantation Ritual 9, then Savage 12 (+9 each turn)" << std::endl;
+}
+
+void test_devoted_sculptor_ascension() {
+    // 172 HP and Savage 15 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::DEVOTED_SCULPTOR);
+    Enemy& sculptor = combat.enemies[0];
+    sculptor.ascend(true, true);
+    combat.plan_enemies();
+    assert(sculptor.hp == 172 && sculptor.max_hp == 172);
+    combat.end_player_turn(); // Forbidden Incantation
+    combat.player.hp = combat.player.max_hp;
+    assert(sculptor.current_intent.type == ATTACK && sculptor.intent_damage(combat.player) == 15);
+    std::cout << "[PASS] Devoted Sculptor: Ascension gives 172 HP, Savage 15" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -2770,6 +2794,8 @@ int main() {
     test_guardbot_ascension();
     test_bowlbug_nectar();
     test_bowlbug_nectar_ascension();
+    test_devoted_sculptor();
+    test_devoted_sculptor_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();
