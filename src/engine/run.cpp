@@ -864,6 +864,13 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
         phase = RunPhase::REWARD_SCREEN;
     }
+    // Lost Coffer (Ancient): one card reward is offered and one random potion joins the belt.
+    if (relic_id == "LOST_COFFER" && has_relic("LOST_COFFER")) {
+        RewardRng coffer_rng(next_random());
+        draw_card_rewards(false, coffer_rng);
+        gain_random_potions(1);
+        phase = RunPhase::REWARD_SCREEN;
+    }
     if (relic_id == "DISTINGUISHED_CAPE" && has_relic("DISTINGUISHED_CAPE")) {
         // Two random curses (repetition allowed) drawn from the whole curse pool, then three Apparitions.
         const auto is_curse = [](uint16_t id) { return card_meta(static_cast<CardId>(id)).pool == CardPool::CURSE; };

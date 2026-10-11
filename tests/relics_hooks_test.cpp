@@ -1216,6 +1216,24 @@ void test_lead_paperweight() {
     assert(plain.phase != RunPhase::REWARD_SCREEN && plain.current_card_rewards.empty());
 }
 
+void test_lost_coffer() {
+    // Lost Coffer: on pickup, a card reward is offered and one potion is obtained.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t potions = run.potions.size();
+    run.add_relic("LOST_COFFER");
+    assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+    assert(run.potions.size() == potions + 1);
+
+    // Without the relic nothing is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(plain.phase != RunPhase::REWARD_SCREEN && plain.current_card_rewards.empty());
+    assert(plain.potions.size() == potions);
+    std::cout << "[PASS] Lost Coffer" << std::endl;
+}
+
 void test_neows_torment() {
     // Obtained: one Neow's Fury is added to the deck.
     RunManager run;
@@ -3668,6 +3686,7 @@ int main() {
     test_booming_conch();
     test_arcane_scroll();
     test_lead_paperweight();
+    test_lost_coffer();
     test_neows_torment();
     test_precise_scissors();
     test_precarious_shears();
