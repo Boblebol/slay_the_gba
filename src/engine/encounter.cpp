@@ -56,6 +56,7 @@ constexpr Encounter ACT1B_NORMAL[] = {
 // Act 2: the Hive.
 constexpr Encounter ACT2_WEAK[] = {
     { "TunnelerWeak"sv, 1, { EnemyType::TUNNELER } },
+    { "BowlbugsWeak"sv, 1, { EnemyType::BOWLBUG_ROCK } },
 };
 constexpr Encounter ACT2_NORMAL[] = {
     { "HunterKillerNormal"sv, 1, { EnemyType::HUNTER_KILLER } },
@@ -66,10 +67,16 @@ constexpr Encounter ACT2_NORMAL[] = {
 };
 
 // Act 3: the Glory. The groups the game had before stay beside them: the Louse and the Jaw Worm are met there.
+constexpr Encounter ACT3_WEAK[] = {
+    { "DevotedSculptorWeak"sv, 1, { EnemyType::DEVOTED_SCULPTOR } },
+    { "TurretOperatorWeak"sv, 2, { EnemyType::LIVING_SHIELD, EnemyType::TURRET_OPERATOR } },
+};
 constexpr Encounter ACT3_NORMAL[] = {
     { "SlimedBerserkerNormal"sv, 1, { EnemyType::SLIMED_BERSERKER } },
     { "FrogKnightNormal"sv, 1, { EnemyType::FROG_KNIGHT } },
     { "GlobeHeadNormal"sv, 1, { EnemyType::GLOBE_HEAD } },
+    { "TheLostAndForgottenNormal"sv, 2, { EnemyType::THE_FORGOTTEN, EnemyType::THE_LOST } },
+    { "AxebotsNormal"sv, 1, { EnemyType::AXEBOT } },
     { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
     { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
     { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
@@ -80,9 +87,6 @@ constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
 };
 
 // The groups the game had before the tables, for the lists with no reference encounter in the engine yet.
-constexpr Encounter LEGACY_WEAK[] = {
-    { "LegacyCultist"sv, 1, { EnemyType::CULTIST } },
-};
 constexpr Encounter LEGACY_ELITE[] = {
     { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
 };
@@ -92,7 +96,7 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT3_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
 } // namespace

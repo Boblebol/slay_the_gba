@@ -18,6 +18,7 @@
 #include "bn_sprite_items_mon_brute_ruby_raider.h"
 #include "bn_sprite_items_mon_calcified_cultist.h"
 #include "bn_sprite_items_mon_crossbow_ruby_raider.h"
+#include "bn_sprite_items_mon_bowlbug_rock.h"
 #include "bn_sprite_items_mon_chomper.h"
 #include "bn_sprite_items_mon_cubex_construct.h"
 #include "bn_sprite_items_mon_cultist.h"
@@ -43,12 +44,18 @@
 #include "bn_sprite_items_mon_nibbit.h"
 #include "bn_sprite_items_mon_globe_head.h"
 #include "bn_sprite_items_mon_punch_construct.h"
+#include "bn_sprite_items_mon_bowlbug_nectar.h"
+#include "bn_sprite_items_mon_devoted_sculptor.h"
+#include "bn_sprite_items_mon_axebot.h"
+#include "bn_sprite_items_mon_turret_operator.h"
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_osty.h"
 #include "bn_sprite_items_mon_parafright.h"
 #include "bn_sprite_items_mon_slimed_berserker.h"
 #include "bn_sprite_items_mon_frog_knight.h"
 #include "bn_sprite_items_mon_guardbot.h"
+#include "bn_sprite_items_mon_bowlbug_silk.h"
+#include "bn_sprite_items_mon_bowlbug_egg.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_louse_progenitor.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
@@ -59,6 +66,7 @@
 #include "bn_sprite_items_mon_tracker_ruby_raider.h"
 #include "bn_sprite_items_mon_slumbering_beetle.h"
 #include "bn_sprite_items_mon_the_forgotten.h"
+#include "bn_sprite_items_mon_the_lost.h"
 #include "bn_sprite_items_mon_tunneler.h"
 #include "bn_sprite_items_mon_vine_shambler.h"
 
@@ -271,6 +279,14 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_cubex_construct, false };
     case engine::EnemyType::PUNCH_CONSTRUCT:
         return { &bn::sprite_items::mon_punch_construct, false };
+    case engine::EnemyType::BOWLBUG_NECTAR:
+        return { &bn::sprite_items::mon_bowlbug_nectar, false };
+    case engine::EnemyType::AXEBOT:
+        return { &bn::sprite_items::mon_axebot, false };
+    case engine::EnemyType::TURRET_OPERATOR:
+        return { &bn::sprite_items::mon_turret_operator, false };
+    case engine::EnemyType::BOWLBUG_ROCK:
+        return { &bn::sprite_items::mon_bowlbug_rock, false };
     case engine::EnemyType::INKLET:
         return { &bn::sprite_items::mon_inklet, false };
     case engine::EnemyType::NIBBIT:
@@ -299,6 +315,10 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_sneaky_gremlin, false };
     case engine::EnemyType::GUARDBOT:
         return { &bn::sprite_items::mon_guardbot, false };
+    case engine::EnemyType::DEVOTED_SCULPTOR:
+        return { &bn::sprite_items::mon_devoted_sculptor, false };
+    case engine::EnemyType::BOWLBUG_SILK:
+        return { &bn::sprite_items::mon_bowlbug_silk, false };
     case engine::EnemyType::TOADPOLE:
         return { &bn::sprite_items::mon_toadpole, false };
     case engine::EnemyType::HUNTER_KILLER:
@@ -317,6 +337,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_slimed_berserker, false };
     case engine::EnemyType::FROG_KNIGHT:
         return { &bn::sprite_items::mon_frog_knight, false };
+    case engine::EnemyType::BOWLBUG_EGG:
+        return { &bn::sprite_items::mon_bowlbug_egg, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:
@@ -325,6 +347,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_vine_shambler, false };
     case engine::EnemyType::THE_FORGOTTEN:
         return { &bn::sprite_items::mon_the_forgotten, false };
+    case engine::EnemyType::THE_LOST:
+        return { &bn::sprite_items::mon_the_lost, false };
     default:
         return { &bn::sprite_items::mon_cultist, false };
     }

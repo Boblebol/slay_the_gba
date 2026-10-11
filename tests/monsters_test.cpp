@@ -434,6 +434,69 @@ void test_the_forgotten_ascension() {
     std::cout << "[PASS] The Forgotten: Ascension gives 111 HP and Dread 15" << std::endl;
 }
 
+void test_the_lost() {
+    // Debilitating Smog (takes 2 Strength from the player and gains 2), Eye Lasers (4 x 2 + its Strength), and again.
+    check_monster(EnemyType::THE_LOST, "L'Égaré", 93, {
+        Turn{ DEBUFF, 0, 0, 2 }, Turn{ ATTACK, 6, 0, 2, 0, 2 },
+        Turn{ DEBUFF, 0, 0, 4 }, Turn{ ATTACK, 8, 0, 4, 0, 2 },
+        Turn{ DEBUFF, 0, 0, 6 }, Turn{ ATTACK, 10, 0, 6, 0, 2 } });
+
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THE_LOST);
+    Enemy& enemy = combat.enemies[0];
+    assert(enemy.current_intent.debuffs_player());
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::STRENGTH) == -2 && enemy.get_status(StatusType::STRENGTH) == 2);
+    assert(!enemy.current_intent.debuffs_player());
+    combat.end_player_turn();
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::STRENGTH) == -4 && enemy.get_status(StatusType::STRENGTH) == 4);
+
+    // Killed, it gives back all the Strength it stole.
+    enemy.hp = 1;
+    combat.hand.clear();
+    combat.hand.push_back(CardId::STRIKE);
+    combat.player.energy = combat.player.max_energy;
+    bool played = combat.play_card(0, 0);
+    assert(played && !enemy.is_alive());
+    assert(combat.player.get_status(StatusType::STRENGTH) == 0);
+    std::cout << "[PASS] The Lost: 93 HP, Debilitating Smog steals 2 Strength, Eye Lasers 4x2 + Strength" << std::endl;
+}
+
+void test_the_lost_ascension() {
+    // 99 HP when the monsters are tougher (from A7), Eye Lasers 5 x 2 when they hit harder (from A2).
+    auto fight = [](uint8_t ascension) {
+        RunManager run;
+        run.start_run(CharacterId::IRONCLAD, ascension, PaletteVariant::CLASSIC, 777);
+        run.map.nodes[0].type = RoomType::MONSTER;
+        run.enter_room(0);
+        FixedVector<EnemyType, 3> pack;
+        pack.push_back(EnemyType::THE_LOST);
+        run.combat.start_combat_multi(pack, run.character);
+        Enemy& foe = run.combat.enemies[0];
+        foe.ascend(run.get_enemy_hp_multiplier() > 100, run.get_enemy_damage_multiplier() > 100);
+        run.combat.plan_enemies();
+        return run;
+    };
+    struct Level {
+        uint8_t ascension;
+        int hp;
+        int laser;
+    };
+    for (const Level& level : { Level{ 0, 93, 4 }, Level{ 2, 93, 5 }, Level{ 7, 99, 5 }, Level{ 9, 99, 5 } }) {
+        RunManager run = fight(level.ascension);
+        Enemy& foe = run.combat.enemies[0];
+        assert(foe.hp == level.hp && foe.max_hp == level.hp && foe.damage_percent == 100);
+        assert(foe.current_intent.type == DEBUFF);
+        run.combat.end_player_turn();
+        assert(foe.current_intent.base_damage == level.laser && foe.current_intent.hits == 2);
+        assert(foe.intent_damage(run.combat.player) == level.laser + 2);
+    }
+    Enemy lost;
+    lost.init(EnemyType::THE_LOST);
+    assert(lost.ascension_hp() == 99);
+    std::cout << "[PASS] The Lost: Ascension gives 99 HP and Eye Lasers 5" << std::endl;
+}
+
 void test_living_shield() {
     // Alone: one Shield Slam 6, then Smash (16 damage, then +3 Strength) until the end.
     check_monster(EnemyType::LIVING_SHIELD, "Bouclier vivant", 55, {
@@ -1488,6 +1551,231 @@ void test_guardbot_ascension() {
         assert(bot.current_intent.type == DEFEND && bot.current_intent.block == 15);
     }
     std::cout << "[PASS] Guardbot: Ascension gives 17 to 21 HP, Guard 15 Block" << std::endl;
+}
+
+void test_bowlbug_nectar() {
+    // Thrash 3, Buff (+15 Strength), then Thrash again for good: 3 + 15 Strength = 18 damage.
+    check_monster(EnemyType::BOWLBUG_NECTAR, "Sphéropode (Nectar)", 35, {
+        { ATTACK, 3, 0, 0 },
+        { BUFF, 0, 0, 15 },
+        { ATTACK, 18, 0, 15 },
+        { ATTACK, 18, 0, 15 },
+        { ATTACK, 18, 0, 15 },
+    });
+    std::cout << "[PASS] Bowlbug (Nectar): 35 HP, Thrash 3, Buff +15 Strength, then Thrash 18 on loop" << std::endl;
+}
+
+void test_bowlbug_nectar_ascension() {
+    // 36 HP and +16 Strength at Ascension; Thrash stays at 3 (19 once buffed).
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_NECTAR);
+    Enemy& bug = combat.enemies[0];
+    bug.ascend(true, true);
+    combat.plan_enemies();
+    assert(bug.hp == 36 && bug.max_hp == 36);
+    assert(bug.current_intent.type == ATTACK && bug.intent_damage(combat.player) == 3);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(bug.current_intent.type == EnemyIntentType::BUFF);
+    combat.end_player_turn();
+    assert(bug.get_status(StatusType::STRENGTH) == 16);
+    combat.player.hp = combat.player.max_hp;
+    assert(bug.current_intent.type == ATTACK && bug.intent_damage(combat.player) == 19);
+    std::cout << "[PASS] Bowlbug (Nectar): Ascension gives 36 HP and +16 Strength" << std::endl;
+}
+
+void test_devoted_sculptor() {
+    // Forbidden Incantation (Ritual 9) once, then Savage 12 for good: Ritual adds its Strength every turn.
+    check_monster(EnemyType::DEVOTED_SCULPTOR, "Sculpteur dévoué", 162, {
+        { BUFF, 0, 0, 0, 9 },
+        { ATTACK, 12, 0, 9, 9 },
+        { ATTACK, 21, 0, 18, 9 },
+        { ATTACK, 30, 0, 27, 9 },
+    });
+    std::cout << "[PASS] Devoted Sculptor: 162 HP, Forbidden Incantation Ritual 9, then Savage 12 (+9 each turn)" << std::endl;
+}
+
+void test_devoted_sculptor_ascension() {
+    // 172 HP and Savage 15 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::DEVOTED_SCULPTOR);
+    Enemy& sculptor = combat.enemies[0];
+    sculptor.ascend(true, true);
+    combat.plan_enemies();
+    assert(sculptor.hp == 172 && sculptor.max_hp == 172);
+    combat.end_player_turn(); // Forbidden Incantation
+    combat.player.hp = combat.player.max_hp;
+    assert(sculptor.current_intent.type == ATTACK && sculptor.intent_damage(combat.player) == 15);
+    std::cout << "[PASS] Devoted Sculptor: Ascension gives 172 HP, Savage 15" << std::endl;
+}
+
+void test_axebot() {
+    // 70 to 78 HP. Boot Up 10 Block and 1 Strength, then Hammer Uppercut (14, 2 Frail, 2 Weak) and One-Two (10 x2)
+    // in turn, each hit 1 stronger once the Strength is up.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::AXEBOT);
+    Enemy& bot = combat.enemies[0];
+    assert(bot.type == EnemyType::AXEBOT && bot.name == "Hachebots");
+    assert(bot.hp >= 70 && bot.hp <= 78 && bot.max_hp == bot.hp && bot.max_hp == 70 + bot.hp_bonus);
+    const int16_t hp = bot.hp;
+    assert(bot.block == 0 && bot.statuses.empty());
+    assert(bot.current_intent.type == BUFF && bot.current_intent.block == 10);
+    combat.end_player_turn();
+    assert(bot.block == 10 && bot.get_status(StatusType::STRENGTH) == 1);
+    for (int cycle = 0; cycle < 2; ++cycle) {
+        combat.player.hp = combat.player.max_hp;
+        assert(bot.current_intent.type == ATTACK_DEBUFF && bot.intent_damage(combat.player) == 15);
+        assert(bot.current_intent.debuffs[0].type == StatusType::FRAIL && bot.current_intent.debuffs[0].amount == 2);
+        assert(bot.current_intent.debuffs[1].type == StatusType::WEAK && bot.current_intent.debuffs[1].amount == 2);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 15);
+        assert(combat.player.get_status(StatusType::FRAIL) >= 2 && combat.player.get_status(StatusType::WEAK) >= 2);
+        combat.player.hp = combat.player.max_hp;
+        assert(bot.current_intent.type == ATTACK && bot.current_intent.hits == 2);
+        assert(bot.intent_damage(combat.player) == 11);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 22);
+        assert(bot.get_status(StatusType::STRENGTH) == 1 && bot.hp == hp);
+    }
+    std::cout << "[PASS] Axebot: 70 to 78 HP, Boot Up, Hammer Uppercut, One-Two, loop" << std::endl;
+}
+
+void test_axebot_ascension() {
+    // 76 to 84 HP (70 to 78 plus 6), Hammer Uppercut 18 and One-Two 11x2 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::AXEBOT);
+        Enemy& bot = combat.enemies[0];
+        bot.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = bot.hp;
+        assert(bot.ascension_hp() == 76 && bot.hp_spread() == 8);
+        assert(base >= 70 && base <= 78 && bot.max_hp == 70 + bot.hp_bonus);
+        bot.ascend(true, true);
+        combat.plan_enemies();
+        assert(bot.hp == base + 6 && bot.max_hp == base + 6);
+        combat.end_player_turn(); // Boot Up
+        combat.player.hp = combat.player.max_hp;
+        assert(bot.current_intent.type == ATTACK_DEBUFF && bot.intent_damage(combat.player) == 19);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 19);
+        combat.player.hp = combat.player.max_hp;
+        assert(bot.current_intent.type == ATTACK && bot.current_intent.hits == 2 && bot.intent_damage(combat.player) == 12);
+    }
+    std::cout << "[PASS] Axebot: Ascension gives 76 to 84 HP, Hammer Uppercut 18, One-Two 11x2" << std::endl;
+}
+
+void test_turret_operator() {
+    // Unload 3x5 twice, Reload (+1 Strength), and again: the Strength makes each hit stronger.
+    check_monster(EnemyType::TURRET_OPERATOR, "Opérateur de tourelle", 41, {
+        { ATTACK, 3, 0, 0, 0, 5 },
+        { ATTACK, 3, 0, 0, 0, 5 },
+        { BUFF, 0, 0, 1 },
+        { ATTACK, 4, 0, 1, 0, 5 },
+        { ATTACK, 4, 0, 1, 0, 5 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK, 5, 0, 2, 0, 5 },
+    });
+    std::cout << "[PASS] Turret Operator: 41 HP, Unload 3x5 twice, Reload +1 Strength, loop" << std::endl;
+}
+
+void test_turret_operator_ascension() {
+    // 51 HP and Unload 4x5 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TURRET_OPERATOR);
+    Enemy& operator_ = combat.enemies[0];
+    operator_.ascend(true, true);
+    combat.plan_enemies();
+    assert(operator_.hp == 51 && operator_.max_hp == 51);
+    assert(operator_.current_intent.type == ATTACK && operator_.current_intent.hits == 5);
+    assert(operator_.intent_damage(combat.player) == 4);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 20);
+    std::cout << "[PASS] Turret Operator: Ascension gives 51 HP, Unload 4x5" << std::endl;
+}
+
+void test_bowlbug_silk() {
+    // Toxic Spit (1 Weak), Thrash 4x2, and again.
+    check_monster(EnemyType::BOWLBUG_SILK, "Sphéropode (Soie)", 40, {
+        { DEBUFF, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 2 },
+        { DEBUFF, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 2 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_SILK);
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::WEAK) == 1);
+    std::cout << "[PASS] Bowlbug Silk: 40 HP, Toxic Spit 1 Weak, Thrash 4x2, loop" << std::endl;
+}
+
+void test_bowlbug_silk_ascension() {
+    // 41 HP, Thrash 5x2 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_SILK);
+    Enemy& bug = combat.enemies[0];
+    bug.ascend(true, true);
+    combat.plan_enemies();
+    assert(bug.hp == 41 && bug.max_hp == 41);
+    combat.end_player_turn(); // Toxic Spit
+    combat.player.hp = combat.player.max_hp;
+    assert(bug.current_intent.type == ATTACK && bug.current_intent.hits == 2);
+    assert(bug.intent_damage(combat.player) == 5);
+    std::cout << "[PASS] Bowlbug Silk: Ascension gives 41 HP, Thrash 5x2" << std::endl;
+}
+
+void test_bowlbug_rock() {
+    // Headbutt 15 every turn while it hurts.
+    check_monster(EnemyType::BOWLBUG_ROCK, "Sphéropode (Pierre)", 45, {
+        { ATTACK, 15, 0, 0 },
+        { ATTACK, 15, 0, 0 },
+        { ATTACK, 15, 0, 0 },
+    });
+    // A Headbutt the Block takes in full throws it off balance: Dizzy next turn, then Headbutt again.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_ROCK);
+    Enemy& bug = combat.enemies[0];
+    combat.player.block = 20;
+    combat.end_player_turn();
+    assert(combat.player.hp == combat.player.max_hp);
+    assert(bug.current_intent.type == STUN);
+    combat.end_player_turn(); // Dizzy: no damage
+    assert(combat.player.hp == combat.player.max_hp);
+    assert(bug.current_intent.type == ATTACK && bug.intent_damage(combat.player) == 15);
+    combat.end_player_turn(); // Headbutt again, unblocked: no stun
+    assert(combat.player.hp == combat.player.max_hp - 15);
+    assert(bug.current_intent.type == ATTACK);
+    std::cout << "[PASS] Rock Bowlbug: 45 HP, Headbutt 15, off balance when blocked then Dizzy" << std::endl;
+}
+
+void test_bowlbug_rock_ascension() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_ROCK);
+    Enemy& bug = combat.enemies[0];
+    bug.ascend(true, true);
+    combat.plan_enemies();
+    assert(bug.hp == 46 && bug.max_hp == 46);
+    assert(bug.current_intent.type == ATTACK && bug.intent_damage(combat.player) == 16);
+    std::cout << "[PASS] Rock Bowlbug: Ascension gives 46 HP, Headbutt 16" << std::endl;
+}
+
+void test_bowlbug_egg() {
+    // Bite (7 damage, 7 Block) every turn.
+    check_monster(EnemyType::BOWLBUG_EGG, "Sphéropode (Œuf)", 21, {
+        { ATTACK_DEFEND, 7, 7, 0 },
+        { ATTACK_DEFEND, 7, 7, 0 },
+        { ATTACK_DEFEND, 7, 7, 0 },
+    });
+    std::cout << "[PASS] Bowlbug Egg: 21 HP, Bite 7 damage + 7 Block every turn" << std::endl;
+}
+
+void test_bowlbug_egg_ascension() {
+    // 23 to 24 HP (21 to 22 plus 2) and a Bite of 8 at Ascension; the Block stays 7.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BOWLBUG_EGG);
+        Enemy& egg = combat.enemies[0];
+        egg.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = egg.hp;
+        assert(egg.ascension_hp() == 23 && egg.hp_spread() == 1);
+        assert(base >= 21 && base <= 22 && egg.max_hp == 21 + egg.hp_bonus);
+        egg.ascend(true, true);
+        combat.plan_enemies();
+        assert(egg.hp == base + 2 && egg.max_hp == base + 2 && egg.hp >= 23 && egg.hp <= 24);
+        assert(egg.current_intent.type == ATTACK_DEFEND && egg.intent_damage(combat.player) == 8);
+        combat.end_player_turn();
+        assert(egg.block == 7);
+    }
+    std::cout << "[PASS] Bowlbug Egg: Ascension gives 23 to 24 HP and a Bite of 8" << std::endl;
 }
 
 void test_inklet() {
@@ -2698,6 +2986,8 @@ int main() {
     test_debuff_and_artifact();
     test_the_forgotten();
     test_the_forgotten_ascension();
+    test_the_lost();
+    test_the_lost_ascension();
     test_living_shield();
     test_phase_with_entry_condition();
     test_weighted_draw_without_repetition();
@@ -2738,6 +3028,20 @@ int main() {
     test_globe_head_ascension();
     test_guardbot();
     test_guardbot_ascension();
+    test_bowlbug_nectar();
+    test_bowlbug_nectar_ascension();
+    test_devoted_sculptor();
+    test_devoted_sculptor_ascension();
+    test_axebot();
+    test_axebot_ascension();
+    test_turret_operator();
+    test_turret_operator_ascension();
+    test_bowlbug_silk();
+    test_bowlbug_silk_ascension();
+    test_bowlbug_rock();
+    test_bowlbug_rock_ascension();
+    test_bowlbug_egg();
+    test_bowlbug_egg_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

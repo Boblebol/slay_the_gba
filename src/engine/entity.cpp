@@ -73,6 +73,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "L'Oublié";
         max_hp = 106;
         hp = 106;
+    } else if (type == EnemyType::THE_LOST) {
+        name = "L'Égaré";
+        max_hp = 93;
+        hp = 93;
     } else if (type == EnemyType::LIVING_SHIELD) {
         name = "Bouclier vivant";
         max_hp = 55;
@@ -117,6 +121,22 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Assemblage de pugilat";
         max_hp = 55;
         hp = 55;
+    } else if (type == EnemyType::BOWLBUG_NECTAR) {
+        name = "Sphéropode (Nectar)";
+        max_hp = 35;
+        hp = 35;
+    } else if (type == EnemyType::AXEBOT) {
+        name = "Hachebots";
+        max_hp = 70;
+        hp = 70;
+    } else if (type == EnemyType::TURRET_OPERATOR) {
+        name = "Opérateur de tourelle";
+        max_hp = 41;
+        hp = 41;
+    } else if (type == EnemyType::BOWLBUG_ROCK) {
+        name = "Sphéropode (Pierre)";
+        max_hp = 45;
+        hp = 45;
     } else if (type == EnemyType::INKLET) {
         name = "Encrelin";
         max_hp = 11;
@@ -129,6 +149,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Chevalier rainette";
         max_hp = 191;
         hp = 191;
+    } else if (type == EnemyType::BOWLBUG_EGG) {
+        name = "Sphéropode (Œuf)";
+        max_hp = 21;
+        hp = 21;
     } else if (type == EnemyType::TOADPOLE) {
         name = "Crapautard";
         max_hp = 21;
@@ -141,6 +165,14 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Gardebot";
         max_hp = 16;
         hp = 16;
+    } else if (type == EnemyType::DEVOTED_SCULPTOR) {
+        name = "Sculpteur dévoué";
+        max_hp = 162;
+        hp = 162;
+    } else if (type == EnemyType::BOWLBUG_SILK) {
+        name = "Sphéropode (Soie)";
+        max_hp = 40;
+        hp = 40;
     } else if (type == EnemyType::FLYCONID) {
         name = "Mycoptère";
         max_hp = 47;
@@ -228,11 +260,15 @@ enum TunnelerMove : uint8_t { TUNNELER_BITE, TUNNELER_BURROW, TUNNELER_BELOW, TU
 
 uint8_t Enemy::hp_spread() const {
     switch (type) {
+        case EnemyType::BOWLBUG_SILK: return 3; // 40 to 43, 41 to 44 at Ascension
         case EnemyType::SLUDGE_SPINNER: return 2; // 37 to 39, 41 to 42 at Ascension
         case EnemyType::GUARDBOT: return 4;    // 16 to 20, 17 to 21 at Ascension
+        case EnemyType::BOWLBUG_EGG: return 1; // 21 to 22, 23 to 24 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
         case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
+        case EnemyType::BOWLBUG_NECTAR: return 3; // 35 to 38, 36 to 39 at Ascension
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
+        case EnemyType::AXEBOT: return 8;      // 70 to 78, 76 to 86 at Ascension
         case EnemyType::CORPSE_SLUG: return 2; // 25 to 27, 27 to 29 at Ascension
         case EnemyType::LOUSE_PROGENITOR: return 2; // 134 to 136, 138 to 140 at Ascension
         case EnemyType::GREMLIN_MERC: return 2; // 47 to 49, 51 to 53 at Ascension
@@ -272,6 +308,7 @@ void Enemy::stun() {
 int16_t Enemy::ascension_hp() const {
     switch (type) {
         case EnemyType::THE_FORGOTTEN: return 111;
+        case EnemyType::THE_LOST: return 99;
         case EnemyType::LIVING_SHIELD: return 65;
         case EnemyType::FAT_GREMLIN: return 14;
         case EnemyType::SNEAKY_GREMLIN: return 11;
@@ -281,6 +318,10 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::NOISEBOT: return 19;
         case EnemyType::CUBEX_CONSTRUCT: return 70;
         case EnemyType::PUNCH_CONSTRUCT: return 60;
+        case EnemyType::BOWLBUG_NECTAR: return 36;
+        case EnemyType::AXEBOT: return 76;
+        case EnemyType::TURRET_OPERATOR: return 51;
+        case EnemyType::BOWLBUG_ROCK: return 46;
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
@@ -291,6 +332,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::GLOBE_HEAD: return 158;
         case EnemyType::LOUSE_PROGENITOR: return 138;
         case EnemyType::SLUDGE_SPINNER: return 41;
+        case EnemyType::BOWLBUG_EGG: return 23;
         case EnemyType::TOADPOLE: return 22;
         case EnemyType::HUNTER_KILLER: return 126;
         case EnemyType::MAWLER: return 76;
@@ -304,6 +346,8 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::SLIMED_BERSERKER: return 281;
         case EnemyType::FROG_KNIGHT: return 199;
         case EnemyType::GUARDBOT: return 17;
+        case EnemyType::DEVOTED_SCULPTOR: return 172;
+        case EnemyType::BOWLBUG_SILK: return 41;
         default: return 0;
     }
 }
@@ -611,6 +655,22 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.damage_status = StatusType::DEXTERITY;
             current_intent.description = "Angoisse (13 dmg + Dex)";
         }
+    } else if (type == EnemyType::THE_LOST) {
+        // Debilitating Smog, then Eye Lasers, and again.
+        if (turn_number % 2 == 1) {
+            // Takes 2 Strength from the player and keeps it for itself.
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.debuffs[0] = { StatusType::STRENGTH, -2 };
+            current_intent.steals = true;
+            current_intent.description = "Brouillard paralysant (-2 Force)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 5 : 4;
+            current_intent.hits = 2;
+            current_intent.description = "Lasers oculaires (4x2 dmg)";
+        }
     } else if (type == EnemyType::LIVING_SHIELD) {
         // Shield Slam while it has someone to protect; once alone, Smash until the end.
         if (turn_number > 1 && context.allies == 0 && enter_phase(1)) phase_turn = 1;
@@ -754,6 +814,64 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = ascended_damage ? 16 : 14;
             current_intent.description = "Poing puissant (14 dmg)";
+        }
+    } else if (type == EnemyType::BOWLBUG_NECTAR) {
+        // Thrash (3), Buff (+15 Strength, +16 at Ascension), then Thrash again for good.
+        if (turn_number == 2) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 16 : 15;
+            current_intent.description = "Buff (+15 Force)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 3;
+            current_intent.description = "Furie (3 dmg)";
+        }
+    } else if (type == EnemyType::AXEBOT) {
+        // Boot Up (10 Block, 1 Strength), then Hammer Uppercut and One-Two in turn.
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.block = 10;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 1;
+            current_intent.description = "Démarrage (10 Armure, +1 Force)";
+        } else if (turn_number % 2 == 0) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 18 : 14;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
+            current_intent.debuffs[1] = { StatusType::WEAK, 2 };
+            current_intent.description = "Marteau Uppercut (14 dmg, Fragilisé, Affaibli)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 11 : 10;
+            current_intent.hits = 2;
+            current_intent.description = "Droite-gauche (10 dmg x2)";
+        }
+    } else if (type == EnemyType::TURRET_OPERATOR) {
+        // Unload twice (5 hits of 3), Reload (+1 Strength), and again.
+        if ((turn_number - 1) % 3 != 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 4 : 3;
+            current_intent.hits = 5;
+            current_intent.description = "Déchargement ! (3 dmg x5)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.base_damage = 0;
+            current_intent.block = 0;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 1;
+            current_intent.description = "Rechargement (+1 Force)";
+        }
+    } else if (type == EnemyType::BOWLBUG_ROCK) {
+        // Headbutt every turn; when the player's Block soaked it all, it is off balance (phase 1, set by the
+        // fight) and loses the next turn (Dizzy).
+        if (phase == 1) {
+            stun();
+            phase = 0;
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 16 : 15;
+            current_intent.description = "Coup de boule (15 dmg)";
         }
     } else if (type == EnemyType::INKLET) {
         // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.
@@ -929,6 +1047,24 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.type = EnemyIntentType::DEFEND;
         current_intent.block = 15;
         current_intent.description = "Garde (15 Armure)";
+    } else if (type == EnemyType::BOWLBUG_SILK) {
+        // Toxic Spit (1 Weak), Thrash 4x2, and again.
+        if ((turn_number - 1) % 2 == 0) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::WEAK, 1 };
+            current_intent.description = "Crachat toxique (Affaibli 1)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 5 : 4;
+            current_intent.hits = 2;
+            current_intent.description = "Furie (4 dmg x2)";
+        }
+    } else if (type == EnemyType::BOWLBUG_EGG) {
+        // Bite (7 damage, 7 Block) every turn.
+        current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+        current_intent.base_damage = ascended_damage ? 8 : 7;
+        current_intent.block = 7;
+        current_intent.description = "Morsure (7 dmg, 7 blk)";
     } else if (type == EnemyType::TOADPOLE) {
         // Three moves in a loop, started by its place: in front Spiken, Spike Spit, Whirl; behind Whirl, Spiken,
         // Spike Spit. `phase` holds the offset in the cycle SPIKEN, SPIKE_SPIT, WHIRL.
@@ -986,6 +1122,18 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_cards = 3;
             current_intent.status_pile = Pile::DISCARD;
             current_intent.description = "Crissement (3 Hébété)";
+        }
+    } else if (type == EnemyType::DEVOTED_SCULPTOR) {
+        // Forbidden Incantation (+9 Ritual) once, then Savage for the rest of the fight.
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::RITUAL;
+            current_intent.status_amount = 9;
+            current_intent.description = "Incantation interdite (+9 Rituel)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 15 : 12;
+            current_intent.description = "Sauvagerie (12 dmg)";
         }
     } else if (type == EnemyType::FLYCONID) {
         // Phase 0: Frail Spores or Smash, never the same twice in a row. Once hurt (triggered), it opens the

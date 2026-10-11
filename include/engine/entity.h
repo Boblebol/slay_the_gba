@@ -400,7 +400,15 @@ enum class EnemyType : uint8_t {
     FROG_KNIGHT,
     GLOBE_HEAD,
     LOUSE_PROGENITOR,
-    GUARDBOT
+    GUARDBOT,
+    BOWLBUG_NECTAR,
+    DEVOTED_SCULPTOR,
+    THE_LOST,
+    AXEBOT,
+    TURRET_OPERATOR,
+    BOWLBUG_SILK,
+    BOWLBUG_ROCK,
+    BOWLBUG_EGG
 };
 
 // What a monster sees of the fight when it chooses its next move.

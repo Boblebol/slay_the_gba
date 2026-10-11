@@ -179,6 +179,10 @@ MONSTERS: dict[str, str] = {
     "cubex_construct": "cubex_construct",
     "punch_construct": "punch_construct",
     "globe_head": "globe_head",
+    "bowlbug_nectar": "bowlbug_nectar",
+    "axebot": "axebot",
+    "turret_operator": "turret_operator",
+    "bowlbug_rock": "bowlbug_rock",
     "inklet": "inklet",
     "nibbit": "nibbit",
     "flyconid": "flyconid",
@@ -202,6 +206,10 @@ MONSTERS: dict[str, str] = {
     "frog_knight": "frog_knight",
     "louse_progenitor": "louse_progenitor",
     "guardbot": "guardbot",
+    "devoted_sculptor": "devoted_sculptor",
+    "the_lost": "the_lost",
+    "bowlbug_silk": "bowlbug_silk",
+    "bowlbug_egg": "bowlbug_egg",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
