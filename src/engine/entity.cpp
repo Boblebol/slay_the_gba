@@ -73,6 +73,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "L'Oublié";
         max_hp = 106;
         hp = 106;
+    } else if (type == EnemyType::THE_LOST) {
+        name = "L'Égaré";
+        max_hp = 93;
+        hp = 93;
     } else if (type == EnemyType::LIVING_SHIELD) {
         name = "Bouclier vivant";
         max_hp = 55;
@@ -192,6 +196,7 @@ void Enemy::stun() {
 int16_t Enemy::ascension_hp() const {
     switch (type) {
         case EnemyType::THE_FORGOTTEN: return 111;
+        case EnemyType::THE_LOST: return 99;
         case EnemyType::LIVING_SHIELD: return 65;
         case EnemyType::FAT_GREMLIN: return 14;
         case EnemyType::SNEAKY_GREMLIN: return 11;
@@ -492,6 +497,22 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = ascended_damage ? 15 : 13;
             current_intent.damage_status = StatusType::DEXTERITY;
             current_intent.description = "Angoisse (13 dmg + Dex)";
+        }
+    } else if (type == EnemyType::THE_LOST) {
+        // Debilitating Smog, then Eye Lasers, and again.
+        if (turn_number % 2 == 1) {
+            // Takes 2 Strength from the player and keeps it for itself.
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.debuffs[0] = { StatusType::STRENGTH, -2 };
+            current_intent.steals = true;
+            current_intent.description = "Brouillard paralysant (-2 Force)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 5 : 4;
+            current_intent.hits = 2;
+            current_intent.description = "Lasers oculaires (4x2 dmg)";
         }
     } else if (type == EnemyType::LIVING_SHIELD) {
         // Shield Slam while it has someone to protect; once alone, Smash until the end.

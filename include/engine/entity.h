@@ -383,7 +383,8 @@ enum class EnemyType : uint8_t {
     SNEAKY_GREMLIN,
     HAUNTED_SHIP,
     SLUDGE_SPINNER,
-    TOADPOLE
+    TOADPOLE,
+    THE_LOST
 };
 
 // What a monster sees of the fight when it chooses its next move.
