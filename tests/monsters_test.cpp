@@ -1461,6 +1461,35 @@ void test_globe_head_ascension() {
     std::cout << "[PASS] Globe Head: Ascension gives 158 HP, Slap 14, Thunder Strike 7x3, Burst 17" << std::endl;
 }
 
+void test_guardbot() {
+    // Guard 15 Block, every turn. Its HP are drawn between 16 and 20 at the start of the fight.
+    CombatEngine probe = make_combat(CharacterId::IRONCLAD, EnemyType::GUARDBOT);
+    const Enemy& bot = probe.enemies[0];
+    assert(bot.hp >= 16 && bot.hp <= 20 && bot.max_hp == 16 + bot.hp_bonus && bot.hp_spread() == 4);
+    check_monster(EnemyType::GUARDBOT, "Gardebot", bot.hp, {
+        { DEFEND, 0, 15, 0 },
+        { DEFEND, 0, 15, 0 },
+        { DEFEND, 0, 15, 0 },
+    });
+    std::cout << "[PASS] Guardbot: 16 HP, Guard 15 Block every turn" << std::endl;
+}
+
+void test_guardbot_ascension() {
+    // 17 to 21 HP at Ascension; the move has no damage and keeps its 15 Block.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::GUARDBOT);
+        Enemy& bot = combat.enemies[0];
+        bot.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = bot.hp;
+        assert(bot.ascension_hp() == 17 && bot.hp_spread() == 4);
+        bot.ascend(true, true);
+        combat.plan_enemies();
+        assert(bot.hp == base + 1 && bot.max_hp == base + 1 && bot.hp >= 17 && bot.hp <= 21);
+        assert(bot.current_intent.type == DEFEND && bot.current_intent.block == 15);
+    }
+    std::cout << "[PASS] Guardbot: Ascension gives 17 to 21 HP, Guard 15 Block" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -2707,6 +2736,8 @@ int main() {
     test_slimed_berserker_ascension();
     test_globe_head();
     test_globe_head_ascension();
+    test_guardbot();
+    test_guardbot_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();

@@ -47,6 +47,7 @@
 #include "bn_sprite_items_mon_parafright.h"
 #include "bn_sprite_items_mon_slimed_berserker.h"
 #include "bn_sprite_items_mon_frog_knight.h"
+#include "bn_sprite_items_mon_guardbot.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_louse_progenitor.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
@@ -295,6 +296,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_gas_bomb, false };
     case engine::EnemyType::SNEAKY_GREMLIN:
         return { &bn::sprite_items::mon_sneaky_gremlin, false };
+    case engine::EnemyType::GUARDBOT:
+        return { &bn::sprite_items::mon_guardbot, false };
     case engine::EnemyType::TOADPOLE:
         return { &bn::sprite_items::mon_toadpole, false };
     case engine::EnemyType::HUNTER_KILLER:

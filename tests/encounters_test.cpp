@@ -71,6 +71,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::TUNNELER: return "TUNNELER";
         case EnemyType::SLIMED_BERSERKER: return "SLIMED_BERSERKER";
         case EnemyType::FROG_KNIGHT: return "FROG_KNIGHT";
+        case EnemyType::GUARDBOT: return "GUARDBOT";
     }
     return {};
 }
@@ -255,6 +256,8 @@ void test_reference_encounters() {
     // (TurretOperatorWeak), the Fat Gremlin with the Gremlin Merc (GremlinMercNormal), like the Sneaky Gremlin.
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
     // The Stabbot, the Noisebot and the Zapbot are brought by the Fabricator (FabricatorNormal).
+    // The Stabbot and the Noisebot are brought by the Fabricator (FabricatorNormal).
+    // The Guardbot is brought by the Fabricator too.
     // The Gas Bomb is brought by the Living Fog (LivingFogNormal).
     // Titos is summoned by the Entomancer, the Parafright brought by the Obscura, the Slumbering Beetle
     // waits for the Bowlbugs: none of them is a monster of the engine yet.
@@ -266,6 +269,8 @@ void test_reference_encounters() {
                                                           EnemyType::PARAFRIGHT };
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT, EnemyType::ZAPBOT,
                                                           EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN };
+                                                          EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
+                                                          EnemyType::GUARDBOT };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));

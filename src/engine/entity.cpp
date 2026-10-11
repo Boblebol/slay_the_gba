@@ -137,6 +137,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Écharneur";
         max_hp = 72;
         hp = 72;
+    } else if (type == EnemyType::GUARDBOT) {
+        name = "Gardebot";
+        max_hp = 16;
+        hp = 16;
     } else if (type == EnemyType::FLYCONID) {
         name = "Mycoptère";
         max_hp = 47;
@@ -225,6 +229,7 @@ enum TunnelerMove : uint8_t { TUNNELER_BITE, TUNNELER_BURROW, TUNNELER_BELOW, TU
 uint8_t Enemy::hp_spread() const {
     switch (type) {
         case EnemyType::SLUDGE_SPINNER: return 2; // 37 to 39, 41 to 42 at Ascension
+        case EnemyType::GUARDBOT: return 4;    // 16 to 20, 17 to 21 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
         case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
@@ -298,6 +303,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::TUNNELER: return 92;
         case EnemyType::SLIMED_BERSERKER: return 281;
         case EnemyType::FROG_KNIGHT: return 199;
+        case EnemyType::GUARDBOT: return 17;
         default: return 0;
     }
 }
@@ -918,6 +924,11 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.hits = 3;
             current_intent.description = "Piétinement (4 dmg x3)";
         }
+    } else if (type == EnemyType::GUARDBOT) {
+        // Guard (15 Block), every turn.
+        current_intent.type = EnemyIntentType::DEFEND;
+        current_intent.block = 15;
+        current_intent.description = "Garde (15 Armure)";
     } else if (type == EnemyType::TOADPOLE) {
         // Three moves in a loop, started by its place: in front Spiken, Spike Spit, Whirl; behind Whirl, Spiken,
         // Spike Spit. `phase` holds the offset in the cycle SPIKEN, SPIKE_SPIT, WHIRL.
