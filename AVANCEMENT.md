@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 78,3 %** — 966 faits, 20 partiels, 260 à faire (35 hors périmètre).
+**Avancement global : 79,1 %** — 976 faits, 20 partiels, 250 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -17,16 +17,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Soldat de Fer](#ironclad) | 99 | 1 | 2 | 97,5 % |
 | [La Silencieuse](#silent) | 100 | 1 | 0 | 99,5 % |
 | [Le Défectueux](#defect) | 100 | 1 | 4 | 95,7 % |
-| [Le Régent](#regent) | 93 | 1 | 6 | 93,5 % |
+| [Le Régent](#regent) | 94 | 1 | 5 | 94,5 % |
 | [La Nécrolieuse](#necrobinder) | 99 | 1 | 2 | 97,5 % |
-| [Cartes communes aux cinq éditions](#cartes) | 107 | 0 | 13 | 89,2 % |
-| [Reliques et potions](#reliques) | 266 | 0 | 55 | 82,9 % |
+| [Cartes communes aux cinq éditions](#cartes) | 111 | 0 | 9 | 92,5 % |
+| [Reliques et potions](#reliques) | 271 | 0 | 50 | 84,4 % |
 | [Bestiaire](#bestiaire) | 19 | 1 | 84 | 18,8 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 43 | 1 | 15 | 73,7 % |
 | [Systèmes de jeu](#systemes) | 25 | 4 | 7 | 75,0 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **966** | **20** | **260** | **78,3 %** |
+| **Total** | **976** | **20** | **250** | **79,1 %** |
 
 <a id="ironclad"></a>
 
@@ -427,11 +427,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regent"></a>
 
-## Le Régent — 93,5 %
+## Le Régent — 94,5 %
 
-### Cartes — 95,3 %
+### Cartes — 96,5 %
 
-82 faits, 0 partiel, 4 à faire (5 hors périmètre).
+83 faits, 0 partiel, 3 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -488,7 +488,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Point bleu pâle | Peu commune · Pouvoir | Oui |  |
 | Poussière d'étoiles | Peu commune · Attaque | Oui |  |
 | Prophétie | Peu commune · Compétence | Oui |  |
-| Quasar | Peu commune · Compétence | Non |  |
+| Quasar | Peu commune · Compétence | Oui |  |
 | Rayonnement | Peu commune · Attaque | Oui |  |
 | Reflet miroir | Peu commune · Compétence | Oui |  |
 | Rempart | Peu commune · Compétence | Oui |  |
@@ -688,11 +688,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 89,2 %
+## Cartes communes aux cinq éditions — 92,5 %
 
-### Cartes incolores — 92,5 %
+### Cartes incolores — 96,2 %
 
-49 faits, 0 partiel, 4 à faire (12 hors périmètre).
+51 faits, 0 partiel, 2 à faire (12 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -706,7 +706,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Confiance | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Coordination | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Coup d'avance | Peu commune · Compétence | Oui |  |
-| Découverte | Peu commune · Compétence | Non |  |
+| Découverte | Peu commune · Compétence | Oui |  |
 | Défense ultime | Peu commune · Compétence | Oui |  |
 | Déflagration mentale | Peu commune · Attaque | Oui |  |
 | Entraves des ténèbres | Peu commune · Compétence | Oui |  |
@@ -742,7 +742,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Balise d'espoir | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Bolas | Rare · Attaque | Oui |  |
 | Calamité | Rare · Pouvoir | Oui |  |
-| Clapotis | Rare · Compétence | Non |  |
+| Clapotis | Rare · Compétence | Oui |  |
 | Entropie | Rare · Pouvoir | Non |  |
 | Grabuge | Rare · Pouvoir | Oui |  |
 | Griffonage | Rare · Compétence | Oui |  |
@@ -762,13 +762,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sacrement | Rare · Compétence | Oui |  |
 | Technique secrète | Rare · Compétence | Oui |  |
 
-### Cartes d'évènement — 96,4 %
+### Cartes d'évènement — 100,0 %
 
-27 faits, 0 partiel, 1 à faire.
+28 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Abondance | Ancienne · Compétence | Non |  |
+| Abondance | Ancienne · Compétence | Oui |  |
 | Apothéose | Ancienne · Compétence | Oui |  |
 | Apparition | Ancienne · Compétence | Oui |  |
 | Flamme éclatante | Ancienne · Compétence | Oui |  |
@@ -797,16 +797,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Science sans conscience | Évènement · Attaque | Oui |  |
 | Ténacité torique | Évènement · Compétence | Oui |  |
 
-### Malédictions — 94,4 %
+### Malédictions — 100,0 %
 
-17 faits, 0 partiel, 1 à faire.
+18 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Assuétude | Malédiction · Malédiction | Oui |  |
 | Blessure | Malédiction · Malédiction | Oui |  |
 | Conscience sporique | Malédiction · Malédiction | Oui |  |
-| Culpabilité | Malédiction · Malédiction | Non |  |
+| Culpabilité | Malédiction · Malédiction | Oui |  |
 | Cupidité | Malédiction · Malédiction | Oui |  |
 | Dette | Malédiction · Malédiction | Oui |  |
 | Doute | Malédiction · Malédiction | Oui |  |
@@ -859,18 +859,18 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 82,9 %
+## Reliques et potions — 84,4 %
 
-### Reliques partagées — 88,9 %
+### Reliques partagées — 89,7 %
 
-104 faits, 0 partiel, 13 à faire.
+105 faits, 0 partiel, 12 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Ancre | Commune | Oui |  |
 | Aubergine d'améthyste | Commune | Oui |  |
 | Bracelet Juzu | Commune | Non |  |
-| Ceinture à potions | Commune | Non |  |
+| Ceinture à potions | Commune | Oui |  |
 | Fiole de sang | Commune | Oui |  |
 | Fleur joyeuse | Commune | Oui |  |
 | Fraise | Commune | Oui |  |
@@ -985,9 +985,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Lentille de Fresnel | Évènement | Non |  |
 | Diadème | Secours | Oui |  |
 
-### Reliques d'évènement — 89,7 %
+### Reliques d'évènement — 92,3 %
 
-35 faits, 0 partiel, 4 à faire.
+36 faits, 0 partiel, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1026,14 +1026,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Thé de l'incivilité | Évènement | Oui |  |
 | Ticket mystère de Chez Wongo's | Évènement | Oui |  |
 | Tirelire-gueule | Évènement | Oui |  |
-| Âme oubliée | Évènement | Non |  |
+| Âme oubliée | Évènement | Oui |  |
 | Épée de jade | Évènement | Oui |  |
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 64,7 %
+### Reliques des Anciens — 67,6 %
 
-66 faits, 0 partiel, 36 à faire.
+69 faits, 0 partiel, 33 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1080,13 +1080,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Forces précaires | Ancienne | Oui |  |
 | Fougère délicate | Ancienne | Oui |  |
 | Fruits exotiques | Ancienne | Oui |  |
-| Gantelets à pointes | Ancienne | Non |  |
+| Gantelets à pointes | Ancienne | Oui |  |
 | Gourdin de fer | Ancienne | Oui |  |
 | Grande capsule | Ancienne | Oui |  |
 | Griffe de Paël | Ancienne | Non |  |
 | Griffes | Ancienne | Oui |  |
 | Grimoire poussiéreux | Ancienne | Oui |  |
-| Grooos câlin | Ancienne | Non |  |
+| Grooos câlin | Ancienne | Oui |  |
 | Hache de lancer | Ancienne | Oui |  |
 | Humidificateur en pierre | Ancienne | Oui |  |
 | Huître nourrissante | Ancienne | Oui |  |
@@ -1099,7 +1099,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Manteau de fourrure | Ancienne | Non |  |
 | Marteau de guerre | Ancienne | Oui |  |
 | Masque serti | Ancienne | Oui |  |
-| Mitaines réchauffantes | Ancienne | Non |  |
+| Mitaines réchauffantes | Ancienne | Oui |  |
 | Nouvelle page | Ancienne | Oui |  |
 | Osselets de Neow | Ancienne | Oui |  |
 | Paillettes | Ancienne | Non |  |
