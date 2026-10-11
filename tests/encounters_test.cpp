@@ -50,6 +50,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::CUBEX_CONSTRUCT: return "CUBEX_CONSTRUCT";
         case EnemyType::PUNCH_CONSTRUCT: return "PUNCH_CONSTRUCT";
         case EnemyType::BOWLBUG_NECTAR: return "BOWLBUG_NECTAR";
+        case EnemyType::AXEBOT: return "AXEBOT";
         case EnemyType::INKLET: return "INKLET";
         case EnemyType::NIBBIT: return "NIBBIT";
         case EnemyType::FLYCONID: return "FLYCONID";
@@ -222,6 +223,7 @@ void test_reference_encounters() {
         assert(ids_of(encounter_table(zone, EncounterTier::NORMAL)) ==
                (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
         assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
+        assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
     }
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::WEAK)) ==
@@ -231,6 +233,10 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "TheLostAndForgottenNormal", "LegacyCultistAndLouse", "LegacyJawWorm",
                                         "LegacyLice" }));
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice", "AxebotsNormal" }));
 
     // The ruby raiders: three of the five raiders in the engine.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),

@@ -125,6 +125,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Sphéropode (Nectar)";
         max_hp = 35;
         hp = 35;
+    } else if (type == EnemyType::AXEBOT) {
+        name = "Hachebots";
+        max_hp = 70;
+        hp = 70;
     } else if (type == EnemyType::INKLET) {
         name = "Encrelin";
         max_hp = 11;
@@ -246,6 +250,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
         case EnemyType::BOWLBUG_NECTAR: return 3; // 35 to 38, 36 to 39 at Ascension
         case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
+        case EnemyType::AXEBOT: return 8;      // 70 to 78, 76 to 86 at Ascension
         case EnemyType::CORPSE_SLUG: return 2; // 25 to 27, 27 to 29 at Ascension
         case EnemyType::LOUSE_PROGENITOR: return 2; // 134 to 136, 138 to 140 at Ascension
         case EnemyType::GREMLIN_MERC: return 2; // 47 to 49, 51 to 53 at Ascension
@@ -296,6 +301,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::CUBEX_CONSTRUCT: return 70;
         case EnemyType::PUNCH_CONSTRUCT: return 60;
         case EnemyType::BOWLBUG_NECTAR: return 36;
+        case EnemyType::AXEBOT: return 76;
         case EnemyType::INKLET: return 12;
         case EnemyType::NIBBIT: return 44;
         case EnemyType::FLYCONID: return 51;
@@ -798,6 +804,26 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = 3;
             current_intent.description = "Furie (3 dmg)";
+        }
+    } else if (type == EnemyType::AXEBOT) {
+        // Boot Up (10 Block, 1 Strength), then Hammer Uppercut and One-Two in turn.
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.block = 10;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 1;
+            current_intent.description = "Démarrage (10 Armure, +1 Force)";
+        } else if (turn_number % 2 == 0) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 18 : 14;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
+            current_intent.debuffs[1] = { StatusType::WEAK, 2 };
+            current_intent.description = "Marteau Uppercut (14 dmg, Fragilisé, Affaibli)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 11 : 10;
+            current_intent.hits = 2;
+            current_intent.description = "Droite-gauche (10 dmg x2)";
         }
     } else if (type == EnemyType::INKLET) {
         // Jab on the odd turns; on the even ones, Whirlwind or Piercing Gaze at random.

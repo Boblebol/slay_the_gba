@@ -100,6 +100,14 @@ constexpr Encounter LEGACY_ELITE[] = {
     { "LegacyGremlinNob"sv, 1, { EnemyType::GREMLIN_NOB } },
 };
 
+// Act 3.
+constexpr Encounter ACT3_NORMAL[] = {
+    { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
+    { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
+    { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
+    { "AxebotsNormal"sv, 1, { EnemyType::AXEBOT } },
+};
+
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
@@ -108,6 +116,7 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT3_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
