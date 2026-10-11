@@ -35,6 +35,7 @@
 #include "bn_sprite_items_mon_noisebot.h"
 #include "bn_sprite_items_mon_nibbit.h"
 #include "bn_sprite_items_mon_punch_construct.h"
+#include "bn_sprite_items_mon_devoted_sculptor.h"
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
@@ -264,6 +265,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_gas_bomb, false };
     case engine::EnemyType::SNEAKY_GREMLIN:
         return { &bn::sprite_items::mon_sneaky_gremlin, false };
+    case engine::EnemyType::DEVOTED_SCULPTOR:
+        return { &bn::sprite_items::mon_devoted_sculptor, false };
     case engine::EnemyType::TOADPOLE:
         return { &bn::sprite_items::mon_toadpole, false };
     case engine::EnemyType::FAT_GREMLIN:
