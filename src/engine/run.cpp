@@ -539,7 +539,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                               CardId::ROCKET_PUNCH, CardId::TRASH_TO_TREASURE, CardId::TURBO,
                                               CardId::SCAVENGE,
                                               CardId::HOLOGRAM,
-                                              CardId::BUFFER };
+                                              CardId::BUFFER, CardId::GLASSWORK, CardId::REFRACT, CardId::SPINNER };
     static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
                                               CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
                                               CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,

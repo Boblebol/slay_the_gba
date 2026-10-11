@@ -51,7 +51,7 @@ items = [
   { name = "Orbe glaciaire : 2 d'Armure en fin de tour, 5 à l'Activation", status = "oui" },
   { name = "Orbe ténébreux : se charge de 6 par tour, libère sa charge", status = "oui" },
   { name = "Orbe plasmique : 1 énergie par tour, 2 à l'Activation", status = "oui" },
-  { name = "Orbe vitreux", status = "non", issue = 99 },
+  { name = "Orbe vitreux", status = "oui", issue = 99 },
   { name = "Focalisation : renforce tous les Orbes", status = "oui" },
   { name = "Emplacements d'Orbe variables (Condensateur)", status = "oui" },
   { name = "Compteur d'Orbes affiché en combat", status = "oui" },

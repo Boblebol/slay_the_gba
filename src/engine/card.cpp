@@ -645,6 +645,9 @@ static constexpr CardDef CARDS[] = {
     { CardId::GUARDS, "Guards!!!", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Transform any number of cards in your hand into Minion Sacrifice. Exhaust.", "Guards!!!+", 2, 0, 0, "Transform any number of cards in your hand into Minion Sacrifice+. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
     { CardId::HIDDEN_GEM, "Hidden Gem", 1, CardType::SKILL, TargetType::SELF, 2, 0, "A random card in your draw pile without Echo gains Echo 2.", "Hidden Gem+", 1, 3, 0, "A random card in your draw pile without Echo gains Echo 3." },
     { CardId::TRANSFIGURE, "Transfigure", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Add Echo to a card in your hand. It costs 1 more. Exhaust.", "Transfigure+", 1, 0, 0, "Add Echo to a card in your hand. It costs 1 more.", KEYWORD_EXHAUST, 0 },
+    { CardId::GLASSWORK, "Glasswork", 1, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 block. Channel 1 Glass orb.", "Glasswork+", 1, 8, 0, "Gain 8 block. Channel 1 Glass orb." },
+    { CardId::REFRACT, "Refract", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 0, "Deal 10 damage twice. Channel 2 Glass orbs.", "Refract+", 3, 13, 0, "Deal 13 damage twice. Channel 2 Glass orbs." },
+    { CardId::SPINNER, "Spinner", 1, CardType::POWER, TargetType::SELF, 0, 0, "At the start of your turn, channel 1 Glass orb.", "Spinner+", 1, 0, 0, "Channel 1 Glass orb. At the start of your turn, channel 1 Glass orb." },
 };
 
 const CardDef& CardDef::get(CardId id) {
