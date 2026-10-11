@@ -1951,6 +1951,8 @@ PlayBlocker CombatEngine::play_blocker(int index) const {
 
 bool CombatEngine::costs_nothing(const DeckCard& card) const {
     if (card.free_this_turn) return true;
+    // Brilliant Scarf: the 5th card played each turn is free.
+    if (counters.cards_played() == BRILLIANT_SCARF_CARD - 1 && has_power(PowerId::BRILLIANT_SCARF)) return true;
     CardType type = CardDef::get(card.id).type;
     if (type == CardType::SKILL && has_power(PowerId::CORRUPTION)) return true;
     if (type == CardType::ATTACK && has_power(PowerId::FREE_ATTACK)) return true;

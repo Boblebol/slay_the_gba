@@ -1828,6 +1828,29 @@ void test_velvet_choker() {
     std::cout << "[PASS] Velvet Choker: +1 energy each turn, no more than 6 cards played" << std::endl;
 }
 
+void test_brilliant_scarf() {
+    // With the relic: the 5th card played in a turn costs nothing.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "BRILLIANT_SCARF" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(run.combat.has_power(PowerId::BRILLIANT_SCARF));
+    for (RunManager* r : { &run, &plain }) {
+        r->combat.hand.clear();
+        for (int i = 0; i < 6; ++i) r->combat.hand.push_back(DeckCard{ CardId::DEFEND, false });
+        r->combat.player.energy = 10;
+        for (int i = 0; i < 4; ++i) assert(r->combat.play_card(0, -1));
+    }
+    assert(run.combat.effective_cost(run.combat.hand[0]) == 0);
+    assert(plain.combat.effective_cost(plain.combat.hand[0]) == 1);
+    int before = run.combat.player.energy;
+    assert(run.combat.play_card(0, -1));
+    assert(run.combat.player.energy == before);
+    assert(run.combat.effective_cost(run.combat.hand[0]) == 1);
+    before = plain.combat.player.energy;
+    assert(plain.combat.play_card(0, -1));
+    assert(plain.combat.player.energy == before - 1);
+    std::cout << "[PASS] Brilliant Scarf: the 5th card played each turn is free" << std::endl;
+}
+
 void test_glass_eye() {
     // Obtained: 2 Common, 2 Uncommon and 1 Rare cards join the deck.
     RunManager run;
@@ -3694,6 +3717,7 @@ int main() {
     test_philosophers_stone();
     test_dusty_tome();
     test_velvet_choker();
+    test_brilliant_scarf();
     test_glass_eye();
     test_prismatic_gem();
     test_radiant_pearl();
