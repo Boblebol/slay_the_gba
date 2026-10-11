@@ -49,6 +49,14 @@ constexpr Encounter ACT1B_NORMAL[] = {
     { "HauntedShipNormal"sv, 1, { EnemyType::HAUNTED_SHIP } },
 };
 
+// Act 3: the Glory. The other Act 3 monsters are not in the engine yet, so the legacy groups stay beside it.
+constexpr Encounter ACT3_NORMAL[] = {
+    { "GlobeHeadNormal"sv, 1, { EnemyType::GLOBE_HEAD } },
+    { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
+    { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
+    { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },
+};
+
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
 };
@@ -71,7 +79,7 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { LEGACY_WEAK, ACT3_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
 
 } // namespace
