@@ -2230,6 +2230,97 @@ void test_seapunk_ascension() {
     std::cout << "[PASS] Seapunk: Ascension gives 47 to 49 HP, Sea Kick 13, Bubble Burp 8 Block + 2 Strength" << std::endl;
 }
 
+void test_soul_nexus() {
+    // Calm: Soul Burn (29) every turn. Hurt, it opens with Life Drain (18, Weak 2, Vulnerable 2), then draws
+    // among Soul Burn, Maelstrom (6 four times) and Life Drain, never the move it just played.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SOUL_NEXUS);
+    Enemy& nexus = combat.enemies[0];
+    assert(nexus.type == EnemyType::SOUL_NEXUS && nexus.name == "Amalg'âmes");
+    assert(nexus.hp == 234 && nexus.max_hp == 234);
+    for (int turn = 1; turn <= 4; ++turn) {
+        assert(nexus.phase == 0 && nexus.block == 0 && nexus.statuses.empty());
+        assert(nexus.current_intent.type == ATTACK && nexus.intent_damage(combat.player) == 29);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == 29);
+    }
+
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::SOUL_NEXUS);
+    Enemy& beast = hurt.enemies[0];
+    hurt.damage_enemy(beast, 5);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(beast.phase == 1);
+    assert(beast.current_intent.type == ATTACK_DEBUFF && beast.intent_damage(hurt.player) == 18);
+    assert(beast.current_intent.debuffs[0].type == StatusType::WEAK && beast.current_intent.debuffs[0].amount == 2);
+    assert(beast.current_intent.debuffs[1].type == StatusType::VULNERABLE && beast.current_intent.debuffs[1].amount == 2);
+    bool seen[3] = { false, false, false }; // Soul Burn, Maelstrom, Life Drain
+    int previous = -1;
+    for (int turn = 0; turn < 60; ++turn) {
+        const EnemyIntent& intent = beast.current_intent;
+        assert(beast.phase == 1);
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.player.statuses.clear();
+        int kind, expected;
+        if (intent.type == ATTACK_DEBUFF) {
+            assert(intent.base_damage == 18 && intent.hits == 1);
+            assert(intent.debuffs[0].type == StatusType::WEAK && intent.debuffs[0].amount == 2);
+            assert(intent.debuffs[1].type == StatusType::VULNERABLE && intent.debuffs[1].amount == 2);
+            kind = 2;
+            expected = 18;
+        } else if (intent.hits == 4) {
+            assert(intent.type == ATTACK && intent.base_damage == 6);
+            kind = 1;
+            expected = 24;
+        } else {
+            assert(intent.type == ATTACK && intent.base_damage == 29);
+            kind = 0;
+            expected = 29;
+        }
+        assert(kind != previous || turn == 0); // never twice in a row after the opening
+        if (turn == 0) assert(kind == 2);
+        seen[kind] = true;
+        previous = kind;
+        hurt.end_player_turn();
+        assert(hurt.state == CombatState::PLAYER_TURN);
+        assert(hurt.player.max_hp - hurt.player.hp >= expected);
+        if (kind == 2) {
+            assert(hurt.player.get_status(StatusType::WEAK) == 2 && hurt.player.get_status(StatusType::VULNERABLE) == 2);
+        }
+    }
+    assert(seen[0] && seen[1] && seen[2]);
+    std::cout << "[PASS] Soul Nexus: 234 HP, Soul Burn until hurt, then Life Drain and a draw without repeating" << std::endl;
+}
+
+void test_soul_nexus_ascension() {
+    // 254 HP, Soul Burn of 31, Maelstrom of 7 four times and Life Drain of 19 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SOUL_NEXUS);
+    Enemy& nexus = combat.enemies[0];
+    assert(nexus.ascension_hp() == 254);
+    nexus.ascend(true, true);
+    combat.plan_enemies();
+    assert(nexus.hp == 254 && nexus.max_hp == 254);
+    assert(nexus.current_intent.type == ATTACK && nexus.intent_damage(combat.player) == 31);
+    combat.damage_enemy(nexus, 1);
+    combat.end_player_turn();
+    assert(nexus.current_intent.type == ATTACK_DEBUFF && nexus.intent_damage(combat.player) == 19);
+    bool burn = false, maelstrom = false;
+    for (int turn = 0; turn < 60 && !(burn && maelstrom); ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        if (nexus.current_intent.hits == 4) {
+            assert(nexus.current_intent.base_damage == 7);
+            maelstrom = true;
+        } else if (nexus.current_intent.type == ATTACK) {
+            assert(nexus.current_intent.base_damage == 31);
+            burn = true;
+        }
+    }
+    assert(burn && maelstrom);
+    std::cout << "[PASS] Soul Nexus: Ascension gives 254 HP, Soul Burn 31, Maelstrom 7x4, Life Drain 19" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -2306,6 +2397,8 @@ int main() {
     test_mawler_ascension();
     test_fossil_stalker();
     test_fossil_stalker_ascension();
+    test_soul_nexus();
+    test_soul_nexus_ascension();
     test_seapunk();
     test_seapunk_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;

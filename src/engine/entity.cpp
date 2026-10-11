@@ -169,6 +169,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Rôdeur Traqueur";
         max_hp = 21;
         hp = 21;
+    } else if (type == EnemyType::SOUL_NEXUS) {
+        name = "Amalg'âmes";
+        max_hp = 234;
+        hp = 234;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -243,6 +247,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::SPINY_TOAD: return 121;
         case EnemyType::SEAPUNK: return 47;
         case EnemyType::TRACKER_RUBY_RAIDER: return 22;
+        case EnemyType::SOUL_NEXUS: return 254;
         default: return 0;
     }
 }
@@ -956,6 +961,35 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = ascended_damage ? 4 : 3;
             current_intent.hits = 2;
             current_intent.description = "Fouet (3x2 dmg)";
+        }
+    } else if (type == EnemyType::SOUL_NEXUS) {
+        // Phase 0: Soul Burn every turn. Once hurt (triggered), it opens the next phase with Life Drain, then
+        // draws among Soul Burn, Maelstrom and Life Drain, never the move it just played.
+        enum Move : uint8_t { SOUL_BURN, MAELSTROM, DRAIN_LIFE };
+        if (phase == 0 && hp < max_hp && enter_phase(1)) {
+            phase_turn = 1;
+            use_move(DRAIN_LIFE);
+        } else if (phase == 0) {
+            use_move(SOUL_BURN);
+        } else if (phase_turn > 1) {
+            static constexpr MoveOption ANY[] = { { SOUL_BURN }, { MAELSTROM }, { DRAIN_LIFE } };
+            use_move(draw_move(ANY));
+        }
+        if (last_move == SOUL_BURN) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 31 : 29;
+            current_intent.description = "Brûlure d'âme (29 dmg)";
+        } else if (last_move == MAELSTROM) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.hits = 4;
+            current_intent.description = "Maelstrom (6x4 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 19 : 18;
+            current_intent.debuffs[0] = { StatusType::WEAK, 2 };
+            current_intent.debuffs[1] = { StatusType::VULNERABLE, 2 };
+            current_intent.description = "Drain de vie (18 dmg, Affaibli 2, Vulnérable 2)";
         }
     }
 }
