@@ -1877,6 +1877,73 @@ void test_toadpole_ascension() {
     std::cout << "[PASS] Toadpole: Ascension gives 22 to 26 HP, Spike Spit 4x3 and Whirl 8" << std::endl;
 }
 
+void test_hunter_killer() {
+    // Tenderizing Goop (Tender 1 on the player), Bite 17, Puncture 7x3, then a draw between Bite (never twice
+    // in a row) and Puncture.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::HUNTER_KILLER);
+    Enemy& hunter = combat.enemies[0];
+    assert(hunter.type == EnemyType::HUNTER_KILLER && hunter.name == "Chasseur-tueur");
+    assert(hunter.hp == 121 && hunter.max_hp == 121 && hunter.block == 0 && hunter.statuses.empty());
+
+    assert(hunter.current_intent.type == DEBUFF && hunter.intent_damage(combat.player) == 0);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.state == CombatState::PLAYER_TURN);
+    assert(combat.player.hp == combat.player.max_hp && combat.has_power(PowerId::TENDER));
+    assert(combat.power_amount(PowerId::TENDER) == 1);
+
+    assert(hunter.current_intent.type == ATTACK && hunter.current_intent.hits == 1);
+    assert(hunter.intent_damage(combat.player) == 17);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 17);
+
+    assert(hunter.current_intent.type == ATTACK && hunter.current_intent.hits == 3);
+    assert(hunter.intent_damage(combat.player) == 7);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 21);
+
+    bool saw_bite = false, saw_puncture = false;
+    bool previous_bite = false;
+    for (int turn = 0; turn < 40; ++turn) {
+        const EnemyIntent& intent = hunter.current_intent;
+        assert(intent.type == ATTACK);
+        bool bite = intent.hits == 1;
+        if (bite) {
+            assert(!previous_bite && hunter.intent_damage(combat.player) == 17);
+        } else {
+            assert(intent.hits == 3 && hunter.intent_damage(combat.player) == 7);
+        }
+        saw_bite |= bite;
+        saw_puncture |= !bite;
+        previous_bite = bite;
+        assert(hunter.block == 0 && hunter.statuses.empty() && hunter.hp == 121);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == (bite ? 17 : 21));
+    }
+    assert(saw_bite && saw_puncture);
+    std::cout << "[PASS] Hunter Killer: 121 HP, Tenderizing Goop, Bite, Puncture, then a draw" << std::endl;
+}
+
+void test_hunter_killer_ascension() {
+    // 126 HP, Bite 19 and Puncture 8x3 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::HUNTER_KILLER);
+    Enemy& hunter = combat.enemies[0];
+    assert(hunter.ascension_hp() == 126);
+    hunter.ascend(true, true);
+    combat.plan_enemies();
+    assert(hunter.hp == 126 && hunter.max_hp == 126);
+    assert(hunter.current_intent.type == DEBUFF);
+    pass_turn(combat);
+    assert(hunter.current_intent.type == ATTACK && hunter.intent_damage(combat.player) == 19);
+    pass_turn(combat);
+    assert(hunter.current_intent.hits == 3 && hunter.intent_damage(combat.player) == 8);
+    std::cout << "[PASS] Hunter Killer: Ascension gives 126 HP, a Bite of 19 and a Puncture of 8x3" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1943,6 +2010,8 @@ int main() {
     test_sludge_spinner_ascension();
     test_toadpole();
     test_toadpole_ascension();
+    test_hunter_killer();
+    test_hunter_killer_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

@@ -145,6 +145,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Tisse-boue";
         max_hp = 37;
         hp = 37;
+    } else if (type == EnemyType::HUNTER_KILLER) {
+        name = "Chasseur-tueur";
+        max_hp = 121;
+        hp = 121;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -209,6 +213,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::HAUNTED_SHIP: return 67;
         case EnemyType::SLUDGE_SPINNER: return 41;
         case EnemyType::TOADPOLE: return 22;
+        case EnemyType::HUNTER_KILLER: return 126;
         default: return 0;
     }
 }
@@ -786,6 +791,35 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 3;
             current_intent.description = "Rage (6 dmg, Force 3)";
+        }
+    } else if (type == EnemyType::HUNTER_KILLER) {
+        // Tenderizing Goop, Bite, Puncture, then a draw between Bite (never twice in a row) and Puncture.
+        enum Move : uint8_t { TENDERIZING_GOOP, BITE, PUNCTURE };
+        if (turn_number == 1) {
+            use_move(TENDERIZING_GOOP);
+        } else if (turn_number == 2) {
+            use_move(BITE);
+        } else if (turn_number == 3) {
+            use_move(PUNCTURE);
+        } else {
+            static constexpr MoveOption AFTER[] = { { BITE }, { PUNCTURE, 1, true } };
+            use_move(draw_move(AFTER));
+        }
+        if (last_move == TENDERIZING_GOOP) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.power = PowerId::TENDER;
+            current_intent.power_amount = 1;
+            current_intent.power_on_player = true;
+            current_intent.description = "Suc de décomposition (Décomposition 1)";
+        } else if (last_move == BITE) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 19 : 17;
+            current_intent.description = "Morsure (17 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.hits = 3;
+            current_intent.description = "Perforation (7 dmg x3)";
         }
     }
 }
