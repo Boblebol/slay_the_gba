@@ -253,6 +253,8 @@ enum class PowerId : uint8_t {
     PAELS_FLESH,        // start of the 3rd turn and each one after: `amount` extra energy (Ancient relic)
     // Transformation (appended)
     ENTROPY,            // at the start of each turn `amount` cards of the hand are transformed (read by start_player_turn)
+    // Regent minions (appended)
+    VITRUVIAN_MINION,   // the Minion cards deal double damage and give double Block (read by hit and gain_block)
     // Held by an enemy (appended)
     BURROWED            // its Block is up: the Block broken or its next turn played, the power is spent (amount 0)
 };
