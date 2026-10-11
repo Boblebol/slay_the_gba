@@ -180,6 +180,7 @@ MONSTERS: dict[str, str] = {
     "flyconid": "flyconid",
     "corpse_slug": "corpse_slug",
     "gas_bomb": "gas_bomb",
+    "gremlin_merc": "gremlin_merc",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
