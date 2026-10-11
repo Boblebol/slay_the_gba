@@ -489,7 +489,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                 CardId::BRAND, CardId::BURNING_PACT,
                                                 CardId::JUGGLING,
                                                 CardId::HEADBUTT,
-                                                CardId::STONE_ARMOR, CardId::FLAME_BARRIER, CardId::UNMOVABLE, CardId::COLOSSUS, CardId::CRUELTY };
+                                                CardId::STONE_ARMOR, CardId::FLAME_BARRIER, CardId::UNMOVABLE, CardId::COLOSSUS, CardId::CRUELTY, CardId::PRIMAL_FORCE };
     static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
                                               CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
                                               CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
@@ -596,7 +596,7 @@ std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
                                                    CardId::REAVE, CardId::GRAVE_WARDEN, CardId::CAPTURE_SPIRIT,
                                                    CardId::SEVERANCE, CardId::DIRGE, CardId::HAUNT,
                                                    CardId::DEVOUR_LIFE, CardId::SOUL_STORM,
-                                                   CardId::GLIMPSE_BEYOND, CardId::LETHALITY, CardId::DEBILITATE, CardId::FORBIDDEN_GRIMOIRE };
+                                                   CardId::GLIMPSE_BEYOND, CardId::LETHALITY, CardId::DEBILITATE, CardId::FORBIDDEN_GRIMOIRE, CardId::SEANCE };
 
     switch (char_id) {
         case CharacterId::SILENT: return SILENT_POOL;

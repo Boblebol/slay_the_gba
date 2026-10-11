@@ -1912,6 +1912,13 @@ void CombatEngine::start_player_turn() {
         choice.count = static_cast<uint8_t>(tools);
         ask_choice(choice);
     }
+    // Entropy: one card of the new hand is transformed.
+    if (int16_t entropy = power_amount(PowerId::ENTROPY); entropy > 0) {
+        CardChoice choice;
+        choice.kind = ChoiceKind::TRANSFORM;
+        choice.count = static_cast<uint8_t>(entropy);
+        ask_choice(choice);
+    }
     // Tyranny: one card of the new hand is exhausted for each card it drew.
     if (int16_t tyranny = power_amount(PowerId::TYRANNY); tyranny > 0) {
         CardChoice choice;
@@ -2124,6 +2131,7 @@ bool CombatEngine::opens_choice(const DeckCard& card) {
     switch (card.id) {
         case CardId::SURVIVOR:
         case CardId::HAND_TRICK:
+        case CardId::SEANCE:
         case CardId::NEOWS_FURY:
         case CardId::THINKING_AHEAD:
         case CardId::PURITY:
@@ -2366,6 +2374,8 @@ bool CombatEngine::can_be_picked(const DeckCard& card, ChoiceKind kind) const {
             return !CardDef::has_keyword(card, KEYWORD_RETAIN);
         case ChoiceKind::MAKE_SLY:
             return !CardDef::is_sly(card);
+        case ChoiceKind::TRANSFORM:
+            return true;
         case ChoiceKind::MAKE_FREE: {
             const int cost = effective_cost(card);
             return cost != COST_X && cost > 0;
@@ -2443,6 +2453,13 @@ void CombatEngine::ask_choice(const CardChoice& choice) {
     if (asked.source == Pile::DISCARD) asked.pool = static_cast<uint8_t>(std::min<size_t>(discard_pile.size(), WHOLE_PILE));
     if (!pending_choices.push_back(asked)) return; // more choices than any card combination asks for
     settle_choices();
+}
+
+void CombatEngine::transform_card(DeckCard& card, CardId into, bool upgraded) {
+    if (into == CardId::NONE) into = random_card(CardFilter());
+    if (into == CardId::NONE) return;
+    // A new card: what the old one gained goes with it, and it no longer stands for a card of the deck.
+    card = DeckCard(into, upgraded);
 }
 
 void CombatEngine::ask_pile_choice(Pile source, ChoiceKind kind, uint8_t count) {
@@ -2573,6 +2590,9 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
                 case ChoiceKind::MAKE_SLY:
                     hand[index].sly_this_turn = true;
                     break;
+                case ChoiceKind::TRANSFORM:
+                    transform_card(hand[index], choice.into, choice.upgraded);
+                    break;
                 case ChoiceKind::MAKE_FREE: {
                     const int cost = effective_cost(hand[index]);
                     if (cost != COST_X) hand[index].cost_delta = static_cast<int8_t>(hand[index].cost_delta - cost);
@@ -2612,6 +2632,10 @@ void CombatEngine::apply_choice(const CardChoice& choice, std::span<const uint8_
         FixedVector<DeckCard, 50>& pile = choice.source == Pile::DRAW ? draw_pile : discard_pile;
         if (choice.kind == ChoiceKind::UPGRADE) {
             pile[index].upgraded = true;
+            continue;
+        }
+        if (choice.kind == ChoiceKind::TRANSFORM) {
+            transform_card(pile[index], choice.into, choice.upgraded);
             continue;
         }
         if (choice.kind == ChoiceKind::MAKE_ETHEREAL) {
@@ -5481,6 +5505,27 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::PHANTOM_BLADES: {
             add_power(PowerId::PHANTOM_BLADES, base_value);
             set_log(upgraded ? "Played Phantom Blades+!"sv : "Played Phantom Blades!"sv);
+            break;
+        }
+        case CardId::PRIMAL_FORCE: {
+            for (size_t i = 0; i < hand.size(); ++i) {
+                if (CardDef::get(hand[i].id).type == CardType::ATTACK) transform_card(hand[i], CardId::GIANT_ROCK, upgraded);
+            }
+            set_log(upgraded ? "Played Primal Force+!"sv : "Played Primal Force!"sv);
+            break;
+        }
+        case CardId::SEANCE: {
+            CardChoice choice;
+            choice.kind = ChoiceKind::TRANSFORM;
+            choice.source = Pile::DRAW;
+            choice.into = SOUL_CARD;
+            ask_choice(choice);
+            set_log(upgraded ? "Played Seance+!"sv : "Played Seance!"sv);
+            break;
+        }
+        case CardId::ENTROPY: {
+            add_power(PowerId::ENTROPY, 1);
+            set_log(upgraded ? "Played Entropy+!"sv : "Played Entropy!"sv);
             break;
         }
         case CardId::HAND_OF_GREED: {

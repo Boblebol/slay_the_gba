@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 79,1 %** — 976 faits, 20 partiels, 250 à faire (35 hors périmètre).
+**Avancement global : 80,3 %** — 991 faits, 20 partiels, 235 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -14,27 +14,27 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
-| [Soldat de Fer](#ironclad) | 99 | 1 | 2 | 97,5 % |
+| [Soldat de Fer](#ironclad) | 100 | 1 | 1 | 98,5 % |
 | [La Silencieuse](#silent) | 100 | 1 | 0 | 99,5 % |
 | [Le Défectueux](#defect) | 100 | 1 | 4 | 95,7 % |
 | [Le Régent](#regent) | 94 | 1 | 5 | 94,5 % |
-| [La Nécrolieuse](#necrobinder) | 99 | 1 | 2 | 97,5 % |
-| [Cartes communes aux cinq éditions](#cartes) | 111 | 0 | 9 | 92,5 % |
-| [Reliques et potions](#reliques) | 271 | 0 | 50 | 84,4 % |
+| [La Nécrolieuse](#necrobinder) | 100 | 1 | 1 | 98,5 % |
+| [Cartes communes aux cinq éditions](#cartes) | 112 | 0 | 8 | 93,3 % |
+| [Reliques et potions](#reliques) | 282 | 0 | 39 | 87,9 % |
 | [Bestiaire](#bestiaire) | 19 | 1 | 84 | 18,8 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 43 | 1 | 15 | 73,7 % |
+| [Règles de combat](#regles) | 44 | 1 | 14 | 75,4 % |
 | [Systèmes de jeu](#systemes) | 25 | 4 | 7 | 75,0 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **976** | **20** | **250** | **79,1 %** |
+| **Total** | **991** | **20** | **235** | **80,3 %** |
 
 <a id="ironclad"></a>
 
-## Soldat de Fer — 97,5 %
+## Soldat de Fer — 98,5 %
 
-### Cartes — 98,8 %
+### Cartes — 100,0 %
 
-85 faits, 0 partiel, 1 à faire (4 hors périmètre).
+86 faits, 0 partiel, 0 à faire (4 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -110,7 +110,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | En miettes | Rare · Attaque | Oui |  |
 | Estropier | Rare · Attaque | Oui |  |
 | Feu démoniaque | Rare · Attaque | Oui |  |
-| Force primitive | Rare · Compétence | Non |  |
+| Force primitive | Rare · Compétence | Oui |  |
 | Forme démoniaque | Rare · Pouvoir | Oui |  |
 | Furie | Rare · Attaque | Oui |  |
 | Incendie | Rare · Attaque | Oui |  |
@@ -557,11 +557,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 97,5 %
+## La Nécrolieuse — 98,5 %
 
-### Cartes — 97,7 %
+### Cartes — 98,9 %
 
-85 faits, 0 partiel, 2 à faire (4 hors périmètre).
+86 faits, 0 partiel, 1 à faire (4 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -649,7 +649,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Réanimation | Rare · Compétence | Oui |  |
 | Sacrifice | Rare · Compétence | Oui |  |
 | Sentinelle | Rare · Pouvoir | Oui |  |
-| Séance | Rare · Compétence | Non |  |
+| Séance | Rare · Compétence | Oui |  |
 | Tempête d'âmes | Rare · Attaque | Oui |  |
 | Transfiguration | Rare · Compétence | Non |  |
 | Vision de l'au-delà | Rare · Compétence | Oui |  |
@@ -688,11 +688,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 92,5 %
+## Cartes communes aux cinq éditions — 93,3 %
 
-### Cartes incolores — 96,2 %
+### Cartes incolores — 98,1 %
 
-51 faits, 0 partiel, 2 à faire (12 hors périmètre).
+52 faits, 0 partiel, 1 à faire (12 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -743,7 +743,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Bolas | Rare · Attaque | Oui |  |
 | Calamité | Rare · Pouvoir | Oui |  |
 | Clapotis | Rare · Compétence | Oui |  |
-| Entropie | Rare · Pouvoir | Non |  |
+| Entropie | Rare · Pouvoir | Oui |  |
 | Grabuge | Rare · Pouvoir | Oui |  |
 | Griffonage | Rare · Compétence | Oui |  |
 | Hache dorée | Rare · Attaque | Oui |  |
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 84,4 %
+## Reliques et potions — 87,9 %
 
 ### Reliques partagées — 89,7 %
 
@@ -985,9 +985,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Lentille de Fresnel | Évènement | Non |  |
 | Diadème | Secours | Oui |  |
 
-### Reliques d'évènement — 92,3 %
+### Reliques d'évènement — 94,9 %
 
-36 faits, 0 partiel, 3 à faire.
+37 faits, 0 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -999,7 +999,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Amulette sombrepierre | Évènement | Oui |  |
 | Ancre ??? | Évènement | Oui |  |
 | Attrape-rêves | Évènement | Oui |  |
-| Bing bong | Évènement | Non |  |
+| Bing bong | Évènement | Oui |  |
 | Champi aromatique | Évènement | Oui |  |
 | Feu follet perdu | Évènement | Oui |  |
 | Fille des vents | Évènement | Oui |  |
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 67,6 %
+### Reliques des Anciens — 77,5 %
 
-69 faits, 0 partiel, 33 à faire.
+79 faits, 0 partiel, 23 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1048,23 +1048,23 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Boucle d'oreille susurrante | Ancienne | Oui |  |
 | Boussole dorée | Ancienne | Oui |  |
 | Boîte de Pandore | Ancienne | Oui |  |
-| Boîte à musique | Ancienne | Non |  |
+| Boîte à musique | Ancienne | Oui |  |
 | Bracelet brillant | Ancienne | Non |  |
 | Brouillard en conserve | Ancienne | Oui |  |
 | Cage vide | Ancienne | Oui |  |
-| Caisse d'alchimie | Ancienne | Non |  |
+| Caisse d'alchimie | Ancienne | Oui |  |
 | Caisse de parchemins | Ancienne | Non |  |
 | Caisse à jouets | Ancienne | Non |  |
-| Canne à pêche | Ancienne | Non |  |
+| Canne à pêche | Ancienne | Oui |  |
 | Cape distinguée | Ancienne | Oui |  |
 | Cataplasme | Ancienne | Non |  |
-| Chair de Paël | Ancienne | Non |  |
+| Chair de Paël | Ancienne | Oui |  |
 | Chocolat très chaud | Ancienne | Oui |  |
 | Château de sable | Ancienne | Oui |  |
 | Ciseaux précis | Ancienne | Oui |  |
 | Cloche d'appel | Ancienne | Oui |  |
 | Coffre à bijoux | Ancienne | Oui |  |
-| Coffret perdu | Ancienne | Non |  |
+| Coffret perdu | Ancienne | Oui |  |
 | Conque retentissante | Ancienne | Oui |  |
 | Corne de Paël | Ancienne | Oui |  |
 | Couperet à viande | Ancienne | Oui |  |
@@ -1072,10 +1072,10 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Crevaite électrique | Ancienne | Non |  |
 | Dent archaïque | Ancienne | Non |  |
 | Dent de Paël | Ancienne | Oui |  |
-| Diadème de diamant | Ancienne | Non |  |
+| Diadème de diamant | Ancienne | Oui |  |
 | Délicieux biscuit | Ancienne | Oui |  |
 | Ectoplasme | Ancienne | Oui |  |
-| Embarras du choix | Ancienne | Non |  |
+| Embarras du choix | Ancienne | Oui |  |
 | Excroissance de Paël | Ancienne | Non |  |
 | Forces précaires | Ancienne | Oui |  |
 | Fougère délicate | Ancienne | Oui |  |
@@ -1117,7 +1117,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Pyramide runique | Ancienne | Oui |  |
 | Ras du cou en velours | Ancienne | Oui |  |
 | Rose sanguinolente | Ancienne | Oui |  |
-| Sacrifice de Neow | Ancienne | Non |  |
+| Sacrifice de Neow | Ancienne | Oui |  |
 | Sang de Paël | Ancienne | Oui |  |
 | Saï | Ancienne | Oui |  |
 | Sceau doré | Ancienne | Oui |  |
@@ -1133,9 +1133,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tri-boomerang | Ancienne | Non |  |
 | Verre marin | Ancienne | Non |  |
 | Violon | Ancienne | Oui |  |
-| Écharpe étincelante | Ancienne | Non |  |
+| Écharpe étincelante | Ancienne | Oui |  |
 | Étoile noire | Ancienne | Non |  |
-| Étui à fioles | Ancienne | Non |  |
+| Étui à fioles | Ancienne | Oui |  |
 | Œil de Paël | Ancienne | Oui |  |
 | Œil de geckobra | Ancienne | Oui |  |
 | Œil de verre | Ancienne | Oui |  |
@@ -1424,11 +1424,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regles"></a>
 
-## Règles de combat — 73,7 %
+## Règles de combat — 75,4 %
 
-### Déroulement du combat — 93,5 %
+### Déroulement du combat — 97,8 %
 
-21 faits, 1 partiel, 1 à faire.
+22 faits, 1 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1454,7 +1454,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Cartes évolutives : bonus et coût propres à chaque exemplaire |  | Oui |  |
 | Cartes Statut ajoutées à la main, la Pioche ou la Défausse |  | Oui |  |
 | Coup de grâce : effet quand la carte tue un ennemi |  | Oui |  |
-| Transformer une carte |  | Non | [#79](https://github.com/Boblebol/slay_the_gba/issues/79) |
+| Transformer une carte |  | Oui | [#79](https://github.com/Boblebol/slay_the_gba/issues/79) |
 
 ### Pouvoirs et statuts — 93,8 %
 
