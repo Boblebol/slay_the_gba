@@ -2715,6 +2715,27 @@ void test_lucky_fysh() {
     std::cout << "[PASS] Lucky Fysh: +15 gold each time a card joins the deck" << std::endl;
 }
 
+void test_bing_bong() {
+    // With the relic: each card added to the deck comes with one additional copy.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 524);
+    run.add_relic("BING_BONG");
+    assert(run.has_relic("BING_BONG"));
+    size_t size = run.master_deck.size();
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.master_deck.size() == size + 2);
+    assert(run.master_deck[size].id == CardId::STRIKE && run.master_deck[size + 1].id == CardId::STRIKE);
+
+    // Without the relic: a single card.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 524);
+    plain.add_relic("ANCHOR");
+    size_t plain_size = plain.master_deck.size();
+    plain.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(!plain.has_relic("BING_BONG") && plain.master_deck.size() == plain_size + 1);
+    std::cout << "[PASS] Bing Bong: each card added to the deck is duplicated" << std::endl;
+}
+
 void test_molten_egg() {
     // With the relic, every Attack added to the deck is upgraded; other cards are left as they are.
     RunManager run;
@@ -3988,6 +4009,7 @@ int main() {
     test_the_boot();
     test_hand_drill();
     test_spiked_gauntlets();
+    test_bing_bong();
     test_paper_phrog();
     test_silver_crucible();
     test_forgotten_soul();
