@@ -36,6 +36,7 @@
 #include "bn_sprite_items_mon_nibbit.h"
 #include "bn_sprite_items_mon_punch_construct.h"
 #include "bn_sprite_items_mon_toadpole.h"
+#include "bn_sprite_items_mon_frog_knight.h"
 #include "bn_sprite_items_mon_louse.h"
 #include "bn_sprite_items_mon_fat_gremlin.h"
 #include "bn_sprite_items_mon_living_shield.h"
@@ -266,6 +267,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_sneaky_gremlin, false };
     case engine::EnemyType::TOADPOLE:
         return { &bn::sprite_items::mon_toadpole, false };
+    case engine::EnemyType::FROG_KNIGHT:
+        return { &bn::sprite_items::mon_frog_knight, false };
     case engine::EnemyType::FAT_GREMLIN:
         return { &bn::sprite_items::mon_fat_gremlin, false };
     case engine::EnemyType::LIVING_SHIELD:

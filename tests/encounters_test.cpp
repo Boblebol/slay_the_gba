@@ -55,6 +55,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::HAUNTED_SHIP: return "HAUNTED_SHIP";
         case EnemyType::SLUDGE_SPINNER: return "SLUDGE_SPINNER";
         case EnemyType::TOADPOLE: return "TOADPOLE";
+        case EnemyType::FROG_KNIGHT: return "FROG_KNIGHT";
     }
     return {};
 }
@@ -186,9 +187,11 @@ void test_reference_encounters() {
     // The groups the game had before, where the reference has nothing the engine can play yet.
     for (ActZone zone : { ActZone::ACT2, ActZone::ACT3 }) {
         assert(ids_of(encounter_table(zone, EncounterTier::WEAK)) == std::set<std::string_view>{ "LegacyCultist" });
-        assert(ids_of(encounter_table(zone, EncounterTier::NORMAL)) ==
-               (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
     }
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
+           (std::set<std::string_view>{ "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
+    assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
+           std::set<std::string_view>{ "FrogKnightNormal" });
 
     // The ruby raiders: three of the four raiders in the engine.
     const Encounter& raiders = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL),

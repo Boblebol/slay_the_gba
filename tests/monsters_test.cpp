@@ -1879,6 +1879,60 @@ void test_toadpole_ascension() {
 
 } // namespace
 
+void test_frog_knight() {
+    // Tongue Lash 13 (2 Frail), Strike Down Evil 21, For the Queen (+5 Strength), and again.
+    check_monster(EnemyType::FROG_KNIGHT, "Chevalier rainette", 191, {
+        { ATTACK_DEBUFF, 13, 0, 0 },
+        { ATTACK, 21, 0, 0 },
+        { BUFF, 0, 0, 5 },
+        { ATTACK_DEBUFF, 18, 0, 5 },
+        { ATTACK, 26, 0, 5 },
+        { BUFF, 0, 0, 10 },
+    });
+    std::cout << "[PASS] Frog Knight: 191 HP, Tongue Lash 13, Strike Down Evil 21, For the Queen +5 Strength, loop" << std::endl;
+}
+
+void test_frog_knight_beetle_charge() {
+    // Hurt below half its HP, it opens a phase with Beetle Charge 35, once, then goes back to the cycle.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FROG_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    assert(knight.current_intent.type == ATTACK_DEBUFF);
+    combat.end_player_turn(); // Tongue Lash
+    assert(combat.player.get_status(StatusType::FRAIL) == 2);
+    knight.hp = 95; // 191 / 2 = 95: not below half yet
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Strike Down Evil
+    knight.hp = 94;
+    combat.plan_enemies();
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 35);
+    const EnemyIntentType after[] = { ATTACK_DEBUFF, ATTACK, BUFF, ATTACK_DEBUFF };
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Beetle Charge
+    for (EnemyIntentType intent : after) {
+        assert(knight.current_intent.type == intent);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+    }
+    std::cout << "[PASS] Frog Knight: Beetle Charge 35 once below half HP, then Tongue Lash, Strike, For the Queen" << std::endl;
+}
+
+void test_frog_knight_ascension() {
+    // 199 HP, Tongue Lash 14, Strike Down Evil 23 and Beetle Charge 40 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FROG_KNIGHT);
+    Enemy& knight = combat.enemies[0];
+    knight.ascend(true, true);
+    combat.plan_enemies();
+    assert(knight.hp == 199 && knight.max_hp == 199);
+    assert(knight.current_intent.type == ATTACK_DEBUFF && knight.intent_damage(combat.player) == 14);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 23);
+    knight.hp = 50;
+    combat.plan_enemies();
+    assert(knight.current_intent.type == ATTACK && knight.intent_damage(combat.player) == 40);
+    std::cout << "[PASS] Frog Knight: Ascension gives 199 HP, Tongue Lash 14, Strike 23, Beetle Charge 40" << std::endl;
+}
+
 int main() {
     std::cout << "=== Monsters ===" << std::endl;
     test_fuzzy_wurm_crawler();
@@ -1943,6 +1997,9 @@ int main() {
     test_sludge_spinner_ascension();
     test_toadpole();
     test_toadpole_ascension();
+    test_frog_knight();
+    test_frog_knight_beetle_charge();
+    test_frog_knight_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
