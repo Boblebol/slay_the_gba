@@ -768,6 +768,40 @@ void test_fat_gremlin_ascension() {
     std::cout << "[PASS] Fat Gremlin: Ascension gives 14 to 18 HP" << std::endl;
 }
 
+void test_sneaky_gremlin() {
+    // Spawned (stunned), then Tackle 9 every turn. Its HP are drawn between 10 and 14 at the start of the fight.
+    CombatEngine probe = make_combat(CharacterId::IRONCLAD, EnemyType::SNEAKY_GREMLIN);
+    const Enemy& gremlin = probe.enemies[0];
+    assert(gremlin.hp >= 10 && gremlin.hp <= 14 && gremlin.max_hp == 10 + gremlin.hp_bonus && gremlin.hp_spread() == 4);
+    check_monster(EnemyType::SNEAKY_GREMLIN, "Diablotin sournois", gremlin.hp, {
+        { STUN,   0, 0, 0 },
+        { ATTACK, 9, 0, 0 },
+        { ATTACK, 9, 0, 0 },
+        { ATTACK, 9, 0, 0 },
+    });
+    std::cout << "[PASS] Sneaky Gremlin: 10 to 14 HP, Spawned (stunned), then Tackle 9" << std::endl;
+}
+
+void test_sneaky_gremlin_ascension() {
+    // 11 to 15 HP at Ascension, on the same draw; Tackle 10 at Ascension 9.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SNEAKY_GREMLIN);
+        Enemy& gremlin = combat.enemies[0];
+        gremlin.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = gremlin.hp;
+        assert(base >= 10 && base <= 14 && gremlin.ascension_hp() == 11);
+        gremlin.ascend(true, true);
+        combat.plan_enemies();
+        assert(gremlin.hp == base + 1 && gremlin.max_hp == base + 1 && gremlin.hp >= 11 && gremlin.hp <= 15);
+        assert(gremlin.current_intent.type == STUN);
+        pass_turn(combat);
+        assert(gremlin.current_intent.type == ATTACK && gremlin.intent_damage(combat.player) == 10);
+        pass_turn(combat);
+        assert(gremlin.current_intent.type == ATTACK && gremlin.intent_damage(combat.player) == 10);
+    }
+    std::cout << "[PASS] Sneaky Gremlin: Ascension gives 11 to 15 HP and Tackle 10" << std::endl;
+}
+
 // Puts `card` alone in hand with full energy and plays it on the first enemy.
 bool play_alone(CombatEngine& combat, DeckCard card) {
     combat.hand.clear();
@@ -1256,6 +1290,38 @@ void test_cubex_construct_ascension() {
     std::cout << "[PASS] Cubex Construct: Ascension gives 70 HP, Repeater Blast 8, Expel 6x2" << std::endl;
 }
 
+void test_punch_construct() {
+    // Ready 10 Block, Fast Punch 5x2 (1 Frail), Strong Punch 14, and again. The Block fades at its next turn.
+    check_monster(EnemyType::PUNCH_CONSTRUCT, "Assemblage de pugilat", 55, {
+        { DEFEND, 0, 10, 0 },
+        { ATTACK_DEBUFF, 5, 0, 0, 0, 2 },
+        { ATTACK, 14, 0, 0 },
+        { DEFEND, 0, 10, 0 },
+        { ATTACK_DEBUFF, 5, 0, 0, 0, 2 },
+        { ATTACK, 14, 0, 0 },
+    });
+    std::cout << "[PASS] Punch Construct: 55 HP, Ready 10 Block, Fast Punch 5x2, Strong Punch 14, loop" << std::endl;
+}
+
+void test_punch_construct_ascension() {
+    // 60 HP, Fast Punch 6x2 and Strong Punch 16 at Ascension; the Fast Punch gives 1 Frail.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::PUNCH_CONSTRUCT);
+    Enemy& golem = combat.enemies[0];
+    golem.ascend(true, true);
+    combat.plan_enemies();
+    assert(golem.hp == 60 && golem.max_hp == 60);
+    combat.end_player_turn(); // Ready
+    combat.player.hp = combat.player.max_hp;
+    assert(golem.current_intent.type == ATTACK_DEBUFF && golem.current_intent.hits == 2);
+    assert(golem.intent_damage(combat.player) == 6);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 12);
+    assert(combat.player.get_status(StatusType::FRAIL) == 1);
+    combat.player.hp = combat.player.max_hp;
+    assert(golem.current_intent.type == ATTACK && golem.intent_damage(combat.player) == 16);
+    std::cout << "[PASS] Punch Construct: Ascension gives 60 HP, Fast Punch 6x2, Strong Punch 16" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -1398,6 +1464,33 @@ void test_nibbit_ascension() {
     std::cout << "[PASS] Nibbit: Ascension gives 44 to 48 HP, Butt 13, Slice 7 + 6 Block, Hiss +3 Strength" << std::endl;
 }
 
+void test_gas_bomb() {
+    // Explode every turn: 8 damage.
+    check_monster(EnemyType::GAS_BOMB, "Bombe à gaz", 7, {
+        { ATTACK, 8, 0, 0 },
+        { ATTACK, 8, 0, 0 },
+        { ATTACK, 8, 0, 0 },
+    });
+    std::cout << "[PASS] Gas Bomb: 7 HP, Explode 8 every turn" << std::endl;
+}
+
+void test_gas_bomb_ascension() {
+    // 8 HP and Explode 9 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::GAS_BOMB);
+    Enemy& bomb = combat.enemies[0];
+    assert(bomb.ascension_hp() == 8);
+    bomb.ascend(true, true);
+    combat.plan_enemies();
+    assert(bomb.hp == 8 && bomb.max_hp == 8);
+    for (int turn = 1; turn <= 3; ++turn) {
+        assert(bomb.current_intent.type == ATTACK && bomb.intent_damage(combat.player) == 9);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 9);
+    }
+    std::cout << "[PASS] Gas Bomb: Ascension gives 8 HP and Explode 9" << std::endl;
+}
+
 void test_flyconid() {
     // Calm: Frail Spores (8 damage + 2 Frail) or Smash (11), never the same twice in a row. Hurt, it opens with
     // Vulnerable Spores, then draws among the three moves, again never the same twice in a row.
@@ -1482,6 +1575,308 @@ void test_flyconid_ascension() {
     std::cout << "[PASS] Flyconid: Ascension gives 51 to 53 HP, Spores of 9 and a Smash of 12" << std::endl;
 }
 
+void test_corpse_slug() {
+    // Whip Slap (3 x2), Glomp (8), Goop (2 Frail on the player), and again.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CORPSE_SLUG);
+    Enemy& slug = combat.enemies[0];
+    assert(slug.type == EnemyType::CORPSE_SLUG && slug.name == "Putrilimace");
+    assert(slug.hp >= 25 && slug.hp <= 27 && slug.max_hp == slug.hp && slug.max_hp == 25 + slug.hp_bonus);
+    const int16_t hp = slug.hp;
+    for (int turn = 1; turn <= 6; ++turn) {
+        assert(combat.turn_number == turn);
+        assert(slug.block == 0 && slug.statuses.empty() && slug.hp == hp);
+        combat.player.hp = combat.player.max_hp;
+        combat.player.statuses.clear();
+        const EnemyIntent& intent = slug.current_intent;
+        if (turn % 3 == 1) {
+            assert(intent.type == ATTACK && intent.hits == 2 && slug.intent_damage(combat.player) == 3);
+            combat.end_player_turn();
+            assert(combat.player.max_hp - combat.player.hp == 6);
+            assert(combat.player.statuses.empty());
+        } else if (turn % 3 == 2) {
+            assert(intent.type == ATTACK && intent.hits == 1 && slug.intent_damage(combat.player) == 8);
+            combat.end_player_turn();
+            assert(combat.player.max_hp - combat.player.hp == 8);
+            assert(combat.player.statuses.empty());
+        } else {
+            assert(intent.type == DEBUFF && slug.intent_damage(combat.player) == 0);
+            assert(intent.debuffs[0].type == StatusType::FRAIL && intent.debuffs[0].amount == 2);
+            combat.end_player_turn();
+            assert(combat.player.hp == combat.player.max_hp);
+            assert(combat.player.get_status(StatusType::FRAIL) >= 1);
+        }
+        assert(combat.state == CombatState::PLAYER_TURN);
+    }
+    std::cout << "[PASS] Corpse Slug: 25 to 27 HP, Whip Slap 3x2, Glomp 8, Goop 2 Frail" << std::endl;
+}
+
+void test_corpse_slug_ascension() {
+    // 27 to 29 HP (25 to 27 plus 2) and a Glomp of 9 at Ascension; the Whip Slap stays at 3 x2.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CORPSE_SLUG);
+        Enemy& slug = combat.enemies[0];
+        slug.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = slug.hp;
+        assert(slug.ascension_hp() == 27 && slug.hp_spread() == 2);
+        assert(base >= 25 && base <= 27 && slug.max_hp == 25 + slug.hp_bonus);
+        slug.ascend(true, true);
+        combat.plan_enemies();
+        assert(slug.hp == base + 2 && slug.max_hp == base + 2 && slug.hp >= 27 && slug.hp <= 29);
+        assert(slug.current_intent.hits == 2 && slug.intent_damage(combat.player) == 3);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(slug.current_intent.type == ATTACK && slug.intent_damage(combat.player) == 9);
+    }
+    std::cout << "[PASS] Corpse Slug: Ascension gives 27 to 29 HP and a Glomp of 9" << std::endl;
+}
+
+void test_gremlin_merc() {
+    // Gimme 7 x2, Double Smash 6 x2 + 2 Weak, Hehe 8 + 2 Strength, and again. Each Hehe adds to what follows.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::GREMLIN_MERC);
+    Enemy& merc = combat.enemies[0];
+    assert(merc.type == EnemyType::GREMLIN_MERC && merc.name == "Diablotin mercenaire");
+    assert(merc.hp >= 47 && merc.hp <= 49 && merc.max_hp == 47 + merc.hp_bonus && merc.block == 0);
+    struct Step { EnemyIntentType intent; int damage; int hits; int weak; int strength; };
+    const Step steps[] = {
+        { ATTACK, 7, 2, 0, 0 }, { EnemyIntentType::ATTACK_DEBUFF, 6, 2, 2, 0 }, { EnemyIntentType::ATTACK_BUFF, 8, 1, 0, 2 },
+        { ATTACK, 9, 2, 0, 2 }, { EnemyIntentType::ATTACK_DEBUFF, 8, 2, 2, 2 }, { EnemyIntentType::ATTACK_BUFF, 10, 1, 0, 4 },
+    };
+    for (const Step& step : steps) {
+        assert(merc.current_intent.type == step.intent);
+        assert(merc.intent_damage(combat.player) == step.damage && merc.current_intent.hits == step.hits);
+        combat.player.hp = combat.player.max_hp;
+        combat.player.clear_status(StatusType::WEAK);
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == step.damage * step.hits);
+        assert(combat.player.get_status(StatusType::WEAK) == step.weak);
+        assert(merc.get_status(StatusType::STRENGTH) == step.strength && merc.block == 0);
+    }
+    std::cout << "[PASS] Gremlin Merc: 47 to 49 HP, Gimme 7 x2, Double Smash 6 x2 + 2 Weak, Hehe 8 + 2 Strength" << std::endl;
+}
+
+void test_gremlin_merc_ascension() {
+    // 51 to 53 HP, Gimme 8 x2, Double Smash 7 x2 and Hehe 9 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::GREMLIN_MERC);
+        Enemy& merc = combat.enemies[0];
+        merc.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = merc.hp;
+        assert(merc.ascension_hp() == 51 && merc.hp_spread() == 2);
+        assert(base >= 47 && base <= 49 && merc.max_hp == 47 + merc.hp_bonus);
+        merc.ascend(true, true);
+        combat.plan_enemies();
+        assert(merc.hp == base + 4 && merc.hp >= 51 && merc.hp <= 53);
+        const int damage[] = { 8, 7, 9 };
+        for (int damage_of : damage) {
+            assert(merc.intent_damage(combat.player) == damage_of);
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+        }
+    }
+    std::cout << "[PASS] Gremlin Merc: Ascension gives 51 to 53 HP, Gimme 8 x2, Double Smash 7 x2, Hehe 9" << std::endl;
+}
+
+void test_haunted_ship() {
+    // Haunt (3 Weak and 5 Dazed), then Swipe (13) and Stomp (4 x3), and again from Swipe.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::HAUNTED_SHIP);
+    Enemy& ship = combat.enemies[0];
+    assert(ship.type == EnemyType::HAUNTED_SHIP && ship.name == "Navire hanté" && ship.hp == 63 && ship.max_hp == 63);
+    assert(ship.block == 0 && ship.statuses.empty());
+    auto dazed_everywhere = [&combat]() {
+        int count = count_in(combat.draw_pile, CardId::DAZED) + count_in(combat.discard_pile, CardId::DAZED) +
+                    count_in(combat.exhaust_pile, CardId::DAZED);
+        for (const DeckCard& card : combat.hand) count += card.id == CardId::DAZED;
+        return count;
+    };
+    assert(ship.current_intent.type == DEBUFF && ship.intent_damage(combat.player) == 0);
+    assert(ship.current_intent.debuffs[0].type == StatusType::WEAK && ship.current_intent.debuffs[0].amount == 3);
+    assert(ship.current_intent.status_card == CardId::DAZED && ship.current_intent.status_cards == 5);
+    combat.end_player_turn();
+    assert(combat.player.hp == combat.player.max_hp && combat.player.get_status(StatusType::WEAK) >= 1);
+    assert(dazed_everywhere() == 5);
+    assert(combat.last_enemy_actions[0].cards_added == CardId::DAZED && combat.last_enemy_actions[0].cards_added_count == 5);
+    for (int cycle = 0; cycle < 2; ++cycle) {
+        combat.player.statuses.clear();
+        assert(ship.current_intent.type == ATTACK && ship.intent_damage(combat.player) == 13 && ship.current_intent.hits == 1);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 13);
+        combat.player.hp = combat.player.max_hp;
+        assert(ship.current_intent.type == ATTACK && ship.current_intent.hits == 3 && ship.intent_damage(combat.player) == 4);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 12);
+        combat.player.hp = combat.player.max_hp;
+        assert(dazed_everywhere() == 5);
+    }
+    assert(ship.block == 0 && ship.statuses.empty() && ship.hp == 63);
+    std::cout << "[PASS] Haunted Ship: 63 HP, Haunt then Swipe 13 and Stomp 4x3" << std::endl;
+}
+
+void test_haunted_ship_ascension() {
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::HAUNTED_SHIP);
+    Enemy& ship = combat.enemies[0];
+    assert(ship.ascension_hp() == 67 && ship.hp_spread() == 0);
+    ship.ascend(true, true);
+    combat.plan_enemies();
+    assert(ship.hp == 67 && ship.max_hp == 67);
+    combat.end_player_turn();
+    assert(ship.current_intent.type == ATTACK && ship.intent_damage(combat.player) == 14);
+    combat.end_player_turn();
+    assert(ship.current_intent.hits == 3 && ship.intent_damage(combat.player) == 5);
+    std::cout << "[PASS] Haunted Ship: Ascension gives 67 HP, Swipe 14 and Stomp 5x3" << std::endl;
+}
+
+void test_sludge_spinner() {
+    // Calm: Oil Spray (8 damage + 1 Weak) every turn. Hurt, it opens with Rage (6 damage, +3 Strength to itself),
+    // then draws among Oil Spray, Slam (11) and Rage, never the same move twice in a row.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLUDGE_SPINNER);
+    Enemy& spinner = combat.enemies[0];
+    assert(spinner.type == EnemyType::SLUDGE_SPINNER && spinner.name == "Tisse-boue");
+    assert(spinner.hp >= 37 && spinner.hp <= 39 && spinner.max_hp == 37 + spinner.hp_bonus);
+    for (int turn = 1; turn <= 3; ++turn) {
+        const EnemyIntent& intent = spinner.current_intent;
+        assert(spinner.phase == 0 && intent.type == ATTACK_DEBUFF && spinner.intent_damage(combat.player) == 8);
+        assert(intent.debuffs[0].type == StatusType::WEAK && intent.debuffs[0].amount == 1);
+        combat.player.hp = combat.player.max_hp;
+        combat.player.statuses.clear();
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 8 && combat.player.get_status(StatusType::WEAK) >= 1);
+    }
+
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::SLUDGE_SPINNER);
+    Enemy& angry = hurt.enemies[0];
+    hurt.damage_enemy(angry, 5);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(angry.phase == 1);
+    assert(angry.current_intent.type == ATTACK_BUFF && angry.intent_damage(hurt.player) == 6);
+    assert(angry.current_intent.status_type == StatusType::STRENGTH && angry.current_intent.status_amount == 3);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.player.statuses.clear();
+    hurt.end_player_turn();
+    assert(hurt.player.max_hp - hurt.player.hp == 6 && angry.get_status(StatusType::STRENGTH) == 3);
+    bool seen[3] = { false, false, true };
+    int last = 2;
+    for (int turn = 0; turn < 40; ++turn) {
+        const EnemyIntent& intent = angry.current_intent;
+        int move = intent.type == ATTACK_DEBUFF ? 0 : (intent.type == ATTACK_BUFF ? 2 : 1);
+        assert(angry.phase == 1 && move != last);
+        if (move == 0) assert(intent.base_damage == 8 && intent.debuffs[0].type == StatusType::WEAK);
+        if (move == 1) assert(intent.type == ATTACK && intent.base_damage == 11);
+        if (move == 2) assert(intent.base_damage == 6 && intent.status_amount == 3);
+        seen[move] = true;
+        last = move;
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.end_player_turn();
+        assert(hurt.state == CombatState::PLAYER_TURN);
+    }
+    assert(seen[0] && seen[1] && seen[2]);
+    std::cout << "[PASS] Sludge Spinner: 37 to 39 HP, Oil Spray, Rage once hurt then Slam / Oil Spray / Rage" << std::endl;
+}
+
+void test_sludge_spinner_ascension() {
+    // 41 HP at least, an Oil Spray of 9, a Slam of 12 and a Rage of 7 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLUDGE_SPINNER);
+        Enemy& spinner = combat.enemies[0];
+        spinner.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = spinner.hp;
+        assert(spinner.ascension_hp() == 41 && spinner.hp_spread() == 2);
+        assert(base >= 37 && base <= 39);
+        spinner.ascend(true, true);
+        combat.plan_enemies();
+        assert(spinner.hp == base + 4 && spinner.hp >= 41);
+        assert(spinner.current_intent.type == ATTACK_DEBUFF && spinner.intent_damage(combat.player) == 9);
+    }
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::SLUDGE_SPINNER);
+    Enemy& angry = hurt.enemies[0];
+    angry.ascend(true, true);
+    hurt.plan_enemies();
+    hurt.damage_enemy(angry, 5);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(angry.current_intent.type == ATTACK_BUFF && angry.intent_damage(hurt.player) == 7);
+    bool saw_slam = false;
+    for (int turn = 0; turn < 40; ++turn) {
+        if (angry.current_intent.type == ATTACK) {
+            assert(angry.current_intent.base_damage == 12);
+            saw_slam = true;
+        }
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.end_player_turn();
+    }
+    assert(saw_slam);
+    std::cout << "[PASS] Sludge Spinner: Ascension gives 41+ HP, Oil Spray of 9, Slam of 12, Rage of 7" << std::endl;
+}
+
+void check_toadpole_cycle(CombatEngine& combat, size_t index, const EnemyIntentType* intents, int damage_step) {
+    // Spiken (Thorns 2), Spike Spit (3 x 3, Thorns 2) and Whirl (7), in the order given, over two cycles.
+    Enemy& toad = combat.enemies[index];
+    combat.enemies[1 - index].hp = 0; // its partner would add its own damage; the pattern is kept without it
+    int thorns = 0;
+    for (int turn = 0; turn < 6; ++turn) {
+        const EnemyIntent& intent = toad.current_intent;
+        assert(intent.type == intents[turn]);
+        int hits = 0, damage = 0;
+        if (intent.type == BUFF) {
+            assert(toad.intent_damage(combat.player) == 0);
+            thorns += 2;
+        } else if (intent.type == ATTACK_BUFF) {
+            assert(intent.hits == 3 && toad.intent_damage(combat.player) == 3 + damage_step);
+            hits = 3;
+            damage = 3 + damage_step;
+            thorns += 2;
+        } else {
+            assert(intent.type == ATTACK && intent.hits == 1 && toad.intent_damage(combat.player) == 7 + damage_step);
+            hits = 1;
+            damage = 7 + damage_step;
+        }
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.player.max_hp - combat.player.hp == hits * damage);
+        assert(toad.block == 0 && toad.get_status(StatusType::THORNS) == thorns);
+    }
+}
+
+void test_toadpole() {
+    CombatEngine pair = make_pack({ EnemyType::TOADPOLE, EnemyType::TOADPOLE });
+    for (Enemy& toad : pair.enemies) {
+        assert(toad.type == EnemyType::TOADPOLE && toad.name == "Crapautard");
+        assert(toad.hp >= 21 && toad.hp <= 25 && toad.max_hp == toad.hp && toad.max_hp == 21 + toad.hp_bonus);
+        assert(toad.block == 0 && toad.statuses.empty());
+    }
+    // The one in front starts with Spiken, the one behind with Whirl; each loops through the same three moves.
+    assert(pair.enemies[0].current_intent.type == BUFF);
+    assert(pair.enemies[1].current_intent.type == ATTACK);
+    const EnemyIntentType front[] = { BUFF, ATTACK_BUFF, ATTACK, BUFF, ATTACK_BUFF, ATTACK };
+    const EnemyIntentType behind[] = { ATTACK, BUFF, ATTACK_BUFF, ATTACK, BUFF, ATTACK_BUFF };
+    CombatEngine front_fight = make_pack({ EnemyType::TOADPOLE, EnemyType::TOADPOLE });
+    check_toadpole_cycle(front_fight, 0, front, 0);
+    CombatEngine behind_fight = make_pack({ EnemyType::TOADPOLE, EnemyType::TOADPOLE });
+    check_toadpole_cycle(behind_fight, 1, behind, 0);
+    std::cout << "[PASS] Toadpole: 21 to 25 HP, Spiken, Spike Spit 3x3 and Whirl 7 by position, Thorns 2 each time"
+              << std::endl;
+}
+
+void test_toadpole_ascension() {
+    // 22 to 26 HP, Spike Spit 4x3 and Whirl 8 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_pack({ EnemyType::TOADPOLE, EnemyType::TOADPOLE });
+        Enemy& toad = combat.enemies[0];
+        toad.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = toad.hp;
+        assert(toad.ascension_hp() == 22 && toad.hp_spread() == 4);
+        assert(base >= 21 && base <= 25 && toad.max_hp == 21 + toad.hp_bonus);
+        toad.ascend(true, true);
+        combat.plan_enemies();
+        assert(toad.hp == base + 1 && toad.max_hp == base + 1 && toad.hp >= 22 && toad.hp <= 26);
+        const EnemyIntentType front[] = { BUFF, ATTACK_BUFF, ATTACK, BUFF, ATTACK_BUFF, ATTACK };
+        check_toadpole_cycle(combat, 0, front, 1);
+    }
+    std::cout << "[PASS] Toadpole: Ascension gives 22 to 26 HP, Spike Spit 4x3 and Whirl 8" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -1526,12 +1921,28 @@ int main() {
     test_noisebot_ascension();
     test_cubex_construct();
     test_cubex_construct_ascension();
+    test_punch_construct();
+    test_punch_construct_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();
     test_nibbit_ascension();
+    test_gas_bomb();
+    test_gas_bomb_ascension();
     test_flyconid();
     test_flyconid_ascension();
+    test_corpse_slug();
+    test_corpse_slug_ascension();
+    test_gremlin_merc();
+    test_gremlin_merc_ascension();
+    test_sneaky_gremlin();
+    test_sneaky_gremlin_ascension();
+    test_haunted_ship();
+    test_haunted_ship_ascension();
+    test_sludge_spinner();
+    test_sludge_spinner_ascension();
+    test_toadpole();
+    test_toadpole_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

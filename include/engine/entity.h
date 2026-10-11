@@ -373,9 +373,17 @@ enum class EnemyType : uint8_t {
     STABBOT,
     NOISEBOT,
     CUBEX_CONSTRUCT,
+    PUNCH_CONSTRUCT,
     INKLET,
     NIBBIT,
-    FLYCONID
+    FLYCONID,
+    CORPSE_SLUG,
+    GAS_BOMB,
+    GREMLIN_MERC,
+    SNEAKY_GREMLIN,
+    HAUNTED_SHIP,
+    SLUDGE_SPINNER,
+    TOADPOLE
 };
 
 // What a monster sees of the fight when it chooses its next move.

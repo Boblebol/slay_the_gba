@@ -35,9 +35,18 @@ constexpr Encounter ACT1A_NORMAL[] = {
 };
 
 // Act 1 (B): the Underdocks.
+constexpr Encounter ACT1B_WEAK[] = {
+    { "CorpseSlugsWeak"sv, 2, { EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG } },
+    { "SludgeSpinnerWeak"sv, 1, { EnemyType::SLUDGE_SPINNER } },
+    { "ToadpolesWeak"sv, 2, { EnemyType::TOADPOLE, EnemyType::TOADPOLE } },
+};
 constexpr Encounter ACT1B_NORMAL[] = {
     { "CultistsNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::DAMP_CULTIST } },
     { "SewerClamNormal"sv, 1, { EnemyType::SEWER_CLAM } },
+    { "CorpseSlugsNormal"sv, 3, { EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG, EnemyType::CORPSE_SLUG } },
+    { "PunchConstructNormal"sv, 1, { EnemyType::PUNCH_CONSTRUCT } },
+    { "GremlinMercNormal"sv, 1, { EnemyType::GREMLIN_MERC } },
+    { "HauntedShipNormal"sv, 1, { EnemyType::HAUNTED_SHIP } },
 };
 
 constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
@@ -60,7 +69,7 @@ constexpr Encounter LEGACY_ELITE[] = {
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
-    { LEGACY_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1B_WEAK, ACT1B_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
     { LEGACY_WEAK, LEGACY_NORMAL, LEGACY_ELITE, CEREMONIAL_BEAST_BOSS },
 };
