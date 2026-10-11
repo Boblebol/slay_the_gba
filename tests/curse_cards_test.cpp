@@ -99,6 +99,18 @@ void test_innate() {
     std::cout << "[PASS] Writhe is drawn in the opening hand" << std::endl;
 }
 
+void test_writhe() {
+    // Writhe: X cost, Curse, Unplayable, Innate; same upgraded.
+    check_definition(CardId::WRITHE, KEYWORD_INNATE);
+    for (bool up : { false, true }) {
+        CombatEngine combat = fight_with(CardId::WRITHE, up);
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+    }
+    std::cout << "[PASS] Writhe: X cost, Curse, Unplayable, Innate, same upgraded" << std::endl;
+}
+
 void test_end_of_turn_effects() {
     {
         // Weak and Frail wear off at the end of the enemy turn, so the effect is read at the hook itself.
@@ -210,6 +222,7 @@ int main() {
     test_keyword_curses();
     test_ethereal_and_retain();
     test_innate();
+    test_writhe();
     test_end_of_turn_effects();
     test_normality();
     test_spore_mind();
