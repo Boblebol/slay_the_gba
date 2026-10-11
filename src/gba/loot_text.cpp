@@ -142,6 +142,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "BLOOD_SOAKED_ROSE", "Lorsque vous obtenez cette relique, ajoutez 1 Assuétude à votre Deck. Gagnez 1 ● au début de chaque tour." },
     { "GOLDEN_PEARL", "Lorsque vous obtenez cette relique, gagnez 150 Pièces d'or." },
     { "CURSED_PEARL", "Lorsque vous obtenez cette relique, recevez Cupidité. Obtenez 333 Pièces d'or." },
+    { "NEOWS_SACRIFICE", "Lorsque vous obtenez cette relique, obtenez 1 Ambre gris et ajoutez 1 Culpabilité à votre Deck." },
     { "ECTOPLASM", "Vous ne pouvez plus obtenir de Pièces d'or. Gagnez 1 ● au début de chaque tour." },
     { "DARKSTONE_PERIAPT", "Chaque fois que vous obtenez une Malédiction, augmentez vos PV Max de 6." },
     { "DUSTY_TOME", "Lorsque vous obtenez cette relique, obtenez une Carte d'Ancien." },
