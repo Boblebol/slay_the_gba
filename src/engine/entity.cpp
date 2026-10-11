@@ -153,6 +153,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Diablotin mercenaire";
         max_hp = 47;
         hp = 47;
+    } else if (type == EnemyType::GLOBE_HEAD) {
+        name = "Globocéphale";
+        max_hp = 148;
+        hp = 148;
     } else if (type == EnemyType::HAUNTED_SHIP) {
         name = "Navire hanté";
         max_hp = 63;
@@ -274,6 +278,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::GAS_BOMB: return 8;
         case EnemyType::GREMLIN_MERC: return 51;
         case EnemyType::HAUNTED_SHIP: return 67;
+        case EnemyType::GLOBE_HEAD: return 158;
         case EnemyType::SLUDGE_SPINNER: return 41;
         case EnemyType::TOADPOLE: return 22;
         case EnemyType::HUNTER_KILLER: return 126;
@@ -843,6 +848,26 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 2;
             current_intent.description = "Héhé (8 dmg, +2 Force)";
+        }
+    } else if (type == EnemyType::GLOBE_HEAD) {
+        // Shocking Slap (2 Frail), Thunder Strike (3 hits), Galvanic Burst (+2 Strength), and again.
+        const int step = (turn_number - 1) % 3;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 14 : 13;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
+            current_intent.description = "Claque de choc (13 dmg, Fragilisé 2)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.hits = 3;
+            current_intent.description = "Canalisation kéraunique (6 dmg x3)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = ascended_damage ? 17 : 16;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.description = "Galvanic Burst (16 dmg, +2 Force)";
         }
     } else if (type == EnemyType::HAUNTED_SHIP) {
         // Haunt, then Swipe and Stomp, and again from Swipe.

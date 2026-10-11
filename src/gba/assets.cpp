@@ -40,6 +40,7 @@
 #include "bn_sprite_items_mon_mawler.h"
 #include "bn_sprite_items_mon_zapbot.h"
 #include "bn_sprite_items_mon_nibbit.h"
+#include "bn_sprite_items_mon_globe_head.h"
 #include "bn_sprite_items_mon_punch_construct.h"
 #include "bn_sprite_items_mon_toadpole.h"
 #include "bn_sprite_items_mon_osty.h"
@@ -273,6 +274,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_nibbit, false };
     case engine::EnemyType::GREMLIN_MERC:
         return { &bn::sprite_items::mon_gremlin_merc, false };
+    case engine::EnemyType::GLOBE_HEAD:
+        return { &bn::sprite_items::mon_globe_head, false };
     case engine::EnemyType::HAUNTED_SHIP:
         return { &bn::sprite_items::mon_haunted_ship, false };
     case engine::EnemyType::SLUDGE_SPINNER:

@@ -1425,6 +1425,42 @@ void test_punch_construct_ascension() {
     std::cout << "[PASS] Punch Construct: Ascension gives 60 HP, Fast Punch 6x2, Strong Punch 16" << std::endl;
 }
 
+void test_globe_head() {
+    // Shocking Slap 13 (2 Frail), Thunder Strike 6x3, Galvanic Burst 16 (+2 Strength), and again.
+    check_monster(EnemyType::GLOBE_HEAD, "Globocéphale", 148, {
+        { ATTACK_DEBUFF, 13, 0, 0, 0, 1 },
+        { ATTACK, 6, 0, 0, 0, 3 },
+        { ATTACK_BUFF, 16, 0, 2 },
+        { ATTACK_DEBUFF, 15, 0, 2 },
+        { ATTACK, 8, 0, 2, 0, 3 },
+        { ATTACK_BUFF, 18, 0, 4 },
+    });
+    std::cout << "[PASS] Globe Head: 148 HP, Shocking Slap 13, Thunder Strike 6x3, Galvanic Burst 16, loop" << std::endl;
+}
+
+void test_globe_head_ascension() {
+    // 158 HP, Shocking Slap 14, Thunder Strike 7x3 and Galvanic Burst 17 (+2 Strength) at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::GLOBE_HEAD);
+    Enemy& head = combat.enemies[0];
+    head.ascend(true, true);
+    combat.plan_enemies();
+    assert(head.hp == 158 && head.max_hp == 158);
+    assert(head.current_intent.type == ATTACK_DEBUFF && head.intent_damage(combat.player) == 14);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 14);
+    assert(combat.player.get_status(StatusType::FRAIL) == 2);
+    combat.player.hp = combat.player.max_hp;
+    assert(head.current_intent.type == ATTACK && head.current_intent.hits == 3);
+    assert(head.intent_damage(combat.player) == 7);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 21);
+    combat.player.hp = combat.player.max_hp;
+    assert(head.current_intent.type == ATTACK_BUFF && head.intent_damage(combat.player) == 17);
+    combat.end_player_turn();
+    assert(head.get_status(StatusType::STRENGTH) == 2);
+    std::cout << "[PASS] Globe Head: Ascension gives 158 HP, Slap 14, Thunder Strike 7x3, Burst 17" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -2620,6 +2656,8 @@ int main() {
     test_punch_construct_ascension();
     test_slimed_berserker();
     test_slimed_berserker_ascension();
+    test_globe_head();
+    test_globe_head_ascension();
     test_inklet();
     test_inklet_ascension();
     test_nibbit();
