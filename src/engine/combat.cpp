@@ -2009,6 +2009,7 @@ int CombatEngine::effective_cost(const DeckCard& card) const {
             break;
     }
     cost += power_amount(PowerId::SURCHARGE);
+    if (CardDef::get(card.id).type == CardType::POWER) cost += power_amount(PowerId::SPIKED_GAUNTLETS);
     if (CardDef::get(card.id).type == CardType::ATTACK) cost += power_amount(PowerId::TANGLED);
     if (card.cost_one_this_turn) cost = std::min(cost, 1);
     return std::clamp(cost, 0, 99);

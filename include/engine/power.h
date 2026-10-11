@@ -244,6 +244,8 @@ enum class PowerId : uint8_t {
     THROWING_AXE,       // the first card played in the combat is played once more (removed once used)
     IRON_CLUB,          // every IRON_CLUB_CARDS cards played: draw `amount` (counter = cards counted)
     CROSSBOW            // start of turn: add a random Attack to the hand, free this turn
+    UNDYING_SIGIL,      // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
+    SPIKED_GAUNTLETS    // Power cards cost `amount` more energy (CombatEngine::effective_cost)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

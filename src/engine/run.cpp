@@ -1414,6 +1414,11 @@ void RunManager::register_relic_powers() {
     if (has_relic("SOZU")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Philosopher's Stone (ancient): one more energy each turn.
     if (has_relic("PHILOSOPHERS_STONE")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Spiked Gauntlets (ancient): one more energy each turn, but Power cards cost 1 more.
+    if (has_relic("SPIKED_GAUNTLETS")) {
+        combat.add_power(PowerId::TURN_ENERGY, 1);
+        combat.add_power(PowerId::SPIKED_GAUNTLETS, 1);
+    }
     if (has_relic("PRISMATIC_GEM")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Whispering Earring: one more energy each turn, and Vakuu plays the first turn of the combat.
     if (has_relic("WHISPERING_EARRING")) {
