@@ -2375,6 +2375,27 @@ void test_cauldron() {
     std::cout << "[PASS] Cauldron: 5 random potions brewed on pickup" << std::endl;
 }
 
+void test_alchemical_coffer() {
+    // Obtained: 4 new potion slots, all filled with random potions.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 744);
+    run.potions.clear();
+    const uint8_t slots = run.potion_slots;
+    run.add_relic("ALCHEMICAL_COFFER");
+    assert(run.has_relic("ALCHEMICAL_COFFER"));
+    assert(run.potion_slots == slots + 4);
+    assert(run.potions.size() == 4);
+
+    // Without the relic: no slot, no potion.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 744);
+    plain.potions.clear();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("ALCHEMICAL_COFFER"));
+    assert(plain.potion_slots == slots && plain.potions.empty());
+    std::cout << "[PASS] Alchemical Coffer: 4 potion slots filled on pickup" << std::endl;
+}
+
 void test_pear() {
     // Obtained: 10 more maximum HP, and the current HP follow.
     RunManager run;
@@ -3726,6 +3747,7 @@ int main() {
     test_miniature_cannon();
     test_white_beast_statue();
     test_cauldron();
+    test_alchemical_coffer();
     test_lees_waffle();
     test_bowler_hat();
     test_unsettling_lamp();

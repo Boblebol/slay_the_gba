@@ -934,6 +934,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     // Calling Bell (Ancient): the unique Curse of the Bell joins the deck, then 3 random relics.
     if (relic_id == "CAULDRON" && has_relic("CAULDRON")) gain_random_potions(5);
+    // Alchemical Coffer (Ancient): 4 new potion slots, filled with random potions.
+    if (relic_id == "ALCHEMICAL_COFFER" && has_relic("ALCHEMICAL_COFFER")) {
+        add_potion_slots(4);
+        gain_random_potions(4);
+    }
     if (relic_id == "CALLING_BELL" && has_relic("CALLING_BELL")) {
         add_card_to_deck(DeckCard{ CardId::CURSE_OF_THE_BELL, false });
         gain_random_relics(3);

@@ -207,6 +207,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "SHOVEL", "Vous pouvez Fouiller les Sites de repos pour obtenir une Relique aléatoire." },
     { "LARGE_CAPSULE", "Lorsque vous obtenez cette relique, obtenez 2 Reliques aléatoires. Ajoutez une Frappe et une Défense à votre Deck." },
     { "CALLING_BELL", "Lorsque vous obtenez cette relique, obtenez une Malédiction spéciale et 3 Reliques." },
+    { "ALCHEMICAL_COFFER", "Lorsque vous obtenez cette relique, gagnez 4 nouveaux emplacements de potion avec des Potions aléatoires." },
     { "CAULDRON", "Lorsque vous obtenez cette relique, concoctez 5 Potions aléatoires." },
     { "CHEMICAL_X", "Les effets de vos cartes de coût X sont augmentés de 2." },
     { "LOST_WISP", "Chaque fois que vous jouez un Pouvoir, infligez 8 dégâts à TOUS les ennemis." },
