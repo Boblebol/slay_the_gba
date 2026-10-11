@@ -2207,6 +2207,13 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
             enemy = enemies[0];
         }
 
+        // Music Box: the first Attack of the turn leaves an Ethereal copy in the hand.
+        if (played_type == CardType::ATTACK && play == 0 && counters.attacks_played == 0 && has_power(PowerId::MUSIC_BOX)) {
+            DeckCard copy = card;
+            copy.added_keywords |= KEYWORD_ETHEREAL;
+            create_card(copy, Pile::HAND);
+        }
+
         // Tallies of the card just played
         if (played_type == CardType::ATTACK) {
             counters.attacks_played = bump(counters.attacks_played);
