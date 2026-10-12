@@ -1278,6 +1278,8 @@ bool RunManager::deck_choice_allows(int deck_index) const {
     if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
     switch (deck_choice.kind) {
         case DeckChoiceKind::UPGRADE: return !master_deck[deck_index].upgraded;
+        case DeckChoiceKind::ENCHANT:
+            return CardDef::get(master_deck[deck_index].id).type == CardType::SKILL && can_enchant(master_deck[deck_index], deck_choice.enchantment);
         case DeckChoiceKind::REMOVE:
         case DeckChoiceKind::TRANSFORM: return !CardDef::is_eternal(master_deck[deck_index]);
         case DeckChoiceKind::ENCHANT: return can_enchant(master_deck[deck_index], deck_choice.enchantment);
