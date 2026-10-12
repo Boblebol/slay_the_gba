@@ -3544,6 +3544,134 @@ void test_fake_happy_flower() {
     std::cout << "[PASS] Fake Happy Flower: 1 energy every 5 turns" << std::endl;
 }
 
+void test_hefty_tablet() {
+    // Obtained from Neow: an Injury joins the deck and 3 Rare cards are offered, one of them is taken.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 721);
+    size_t deck = run.master_deck.size();
+    run.add_relic("HEFTY_TABLET");
+    assert(run.has_relic("HEFTY_TABLET") && run.phase == RunPhase::REWARD_SCREEN);
+    assert(run.master_deck.size() == deck + 1 && run.master_deck[deck].id == CardId::INJURY);
+    assert(run.current_card_rewards.size() == 3);
+    for (DeckCard card : run.current_card_rewards) assert(card_meta(card.id).rarity == CardRarity::RARE);
+    CardId picked = run.current_card_rewards[0].id;
+    run.pick_card_reward(0);
+    assert(run.master_deck.size() == deck + 2 && run.master_deck[deck + 1].id == picked);
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, no Injury and no card reward.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 721);
+    plain.add_relic("ANCHOR");
+    assert(plain.master_deck.size() == deck && plain.current_card_rewards.empty());
+    for (const DeckCard& card : plain.master_deck) assert(card.id != CardId::INJURY);
+    std::cout << "[PASS] Hefty Tablet: 1 Rare card out of 3 and an Injury on pickup" << std::endl;
+}
+
+void test_leafy_poultice() {
+    // Obtained from Neow: one Strike and one Defend become other cards, and the Max HP drops by 12.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 723);
+    const auto count = [](const RunManager& r, CardId id) {
+        int n = 0;
+        for (const DeckCard& card : r.master_deck) n += card.id == id;
+        return n;
+    };
+    const int strikes = count(run, CardId::STRIKE);
+    const int defends = count(run, CardId::DEFEND);
+    const size_t deck = run.master_deck.size();
+    const int16_t max_hp = run.max_hp;
+    run.add_relic("LEAFY_POULTICE");
+    assert(run.has_relic("LEAFY_POULTICE") && !run.has_deck_choice());
+    assert(count(run, CardId::STRIKE) == strikes - 1 && count(run, CardId::DEFEND) == defends - 1);
+    assert(run.master_deck.size() == deck && run.max_hp == max_hp - 12 && run.hp <= run.max_hp);
+
+    // Without the relic, the Strikes, the Defends and the Max HP stay as they are.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 723);
+    plain.add_relic("ANCHOR");
+    assert(count(plain, CardId::STRIKE) == strikes && count(plain, CardId::DEFEND) == defends && plain.max_hp == max_hp);
+    std::cout << "[PASS] Leafy Poultice: a Strike and a Defend transformed, 12 Max HP lost" << std::endl;
+}
+
+void test_kaleidoscope() {
+    // Obtained from Neow: 2 card rewards in a row, each one from the pool of another hero, then the rewards end.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 703);
+    size_t deck = run.master_deck.size();
+    run.add_relic("KALEIDOSCOPE");
+    assert(run.has_relic("KALEIDOSCOPE"));
+    for (int set = 0; set < 2; ++set) {
+        assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+        for (DeckCard card : run.current_card_rewards) {
+            const CardPool pool = card_meta(card.id).pool;
+            assert(pool != CardPool::IRONCLAD && pool != CardPool::COLORLESS);
+        }
+        run.pick_card_reward(0);
+    }
+    assert(run.master_deck.size() == deck + 2 && run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, no card reward is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 703);
+    plain.add_relic("ANCHOR");
+    assert(plain.current_card_rewards.empty() && plain.phase != RunPhase::REWARD_SCREEN);
+    std::cout << "[PASS] Kaleidoscope: 2 card rewards from other heroes on pickup" << std::endl;
+}
+
+void test_black_star() {
+    // With the relic, an Elite offers a second relic once the first one is taken.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 730);
+    run.add_relic("BLACK_STAR");
+    enter_room_of_type(run, RoomType::ELITE);
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN && !run.relic_reward.empty());
+    size_t relics = run.relics.size();
+    std::string_view first = run.relic_reward;
+    assert(run.take_relic_reward());
+    assert(run.relics.size() == relics + 1 && run.has_relic(first));
+    assert(!run.relic_reward.empty() && run.relic_reward != first && !run.has_relic(run.relic_reward));
+    assert(run.take_relic_reward());
+    assert(run.relics.size() == relics + 2 && run.relic_reward.empty());
+
+    // Without the relic, the Elite offers a single relic.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 730);
+    plain.add_relic("ANCHOR");
+    enter_room_of_type(plain, RoomType::ELITE);
+    plain.proceed_after_combat();
+    assert(!plain.relic_reward.empty() && plain.take_relic_reward() && plain.relic_reward.empty());
+
+    // With the relic, a Monster room gives no relic at all.
+    RunManager monster = make_relic_run(CharacterId::IRONCLAD, { "BLACK_STAR" });
+    monster.proceed_after_combat();
+    assert(monster.relic_reward.empty() && monster.extra_relic_rewards == 0);
+    std::cout << "[PASS] Black Star: an Elite gives one more relic" << std::endl;
+}
+
+void test_dollys_mirror() {
+    // Obtained: one card of the deck is chosen, and an identical copy of it joins the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 459);
+    size_t deck = run.master_deck.size();
+    run.master_deck[0].upgraded = true;
+    run.add_relic("DOLLYS_MIRROR");
+    assert(run.has_relic("DOLLYS_MIRROR"));
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::DUPLICATE && run.deck_choice.remaining == 1);
+    assert(!run.skip_deck_choice());
+    assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck + 1);
+    assert(run.master_deck[deck].id == run.master_deck[0].id && run.master_deck[deck].upgraded);
+
+    // Without the relic, nothing is asked and the deck keeps its size.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 459);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice() && plain.master_deck.size() == deck);
+    std::cout << "[PASS] Dolly's Mirror: a copy of a chosen card on pickup" << std::endl;
+}
+
 void test_white_star() {
     // With the relic, an Elite offers one more set of Rare cards once its first set is taken or skipped.
     RunManager run;
@@ -4538,5 +4666,10 @@ int main() {
     test_forgotten_soul();
     test_fishing_rod();
     test_glitter();
+    test_hefty_tablet();
+    test_leafy_poultice();
+    test_kaleidoscope();
+    test_black_star();
+    test_dollys_mirror();
     return 0;
 }

@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 87,0 %** — 1077 faits, 17 partiels, 153 à faire (35 hors périmètre).
+**Avancement global : 88,1 %** — 1090 faits, 17 partiels, 140 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
-| [Reliques et potions](#reliques) | 286 | 0 | 35 | 89,1 % |
-| [Bestiaire](#bestiaire) | 67 | 1 | 36 | 64,9 % |
+| [Reliques et potions](#reliques) | 294 | 0 | 27 | 91,6 % |
+| [Bestiaire](#bestiaire) | 72 | 1 | 31 | 69,7 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 28 | 2 | 6 | 80,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1077** | **17** | **153** | **87,0 %** |
+| **Total** | **1090** | **17** | **140** | **88,1 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 89,1 %
+## Reliques et potions — 91,6 %
 
 ### Reliques partagées — 91,5 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 77,5 %
+### Reliques des Anciens — 85,3 %
 
-79 faits, 0 partiel, 23 à faire.
+87 faits, 0 partiel, 15 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1049,7 +1049,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Boussole dorée | Ancienne | Oui |  |
 | Boîte de Pandore | Ancienne | Oui |  |
 | Boîte à musique | Ancienne | Oui |  |
-| Bracelet brillant | Ancienne | Non |  |
+| Bracelet brillant | Ancienne | Oui |  |
 | Brouillard en conserve | Ancienne | Oui |  |
 | Cage vide | Ancienne | Oui |  |
 | Caisse d'alchimie | Ancienne | Oui |  |
@@ -1069,21 +1069,21 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Corne de Paël | Ancienne | Oui |  |
 | Couperet à viande | Ancienne | Oui |  |
 | Creuset en argent | Ancienne | Oui |  |
-| Crevaite électrique | Ancienne | Non |  |
+| Crevaite électrique | Ancienne | Oui |  |
 | Dent archaïque | Ancienne | Non |  |
 | Dent de Paël | Ancienne | Oui |  |
 | Diadème de diamant | Ancienne | Oui |  |
 | Délicieux biscuit | Ancienne | Oui |  |
 | Ectoplasme | Ancienne | Oui |  |
 | Embarras du choix | Ancienne | Oui |  |
-| Excroissance de Paël | Ancienne | Non |  |
+| Excroissance de Paël | Ancienne | Oui |  |
 | Forces précaires | Ancienne | Oui |  |
 | Fougère délicate | Ancienne | Oui |  |
 | Fruits exotiques | Ancienne | Oui |  |
 | Gantelets à pointes | Ancienne | Oui |  |
 | Gourdin de fer | Ancienne | Oui |  |
 | Grande capsule | Ancienne | Oui |  |
-| Griffe de Paël | Ancienne | Non |  |
+| Griffe de Paël | Ancienne | Oui |  |
 | Griffes | Ancienne | Oui |  |
 | Grimoire poussiéreux | Ancienne | Oui |  |
 | Grooos câlin | Ancienne | Oui |  |
@@ -1102,7 +1102,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Mitaines réchauffantes | Ancienne | Oui |  |
 | Nouvelle page | Ancienne | Oui |  |
 | Osselets de Neow | Ancienne | Oui |  |
-| Paillettes | Ancienne | Non |  |
+| Paillettes | Ancienne | Oui |  |
 | Parasol seigneurial | Ancienne | Oui |  |
 | Parchemin arcanique | Ancienne | Oui |  |
 | Parchemin énorme | Ancienne | Non |  |
@@ -1123,14 +1123,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sceau doré | Ancienne | Oui |  |
 | Serre desséchée | Ancienne | Oui |  |
 | Sifflet de Tanx | Ancienne | Oui |  |
-| Soupe nourrissante | Ancienne | Non |  |
+| Soupe nourrissante | Ancienne | Oui |  |
 | Sozu | Ancienne | Oui |  |
 | Tablette lourde | Ancienne | Non |  |
 | Talisman de Neow | Ancienne | Oui |  |
 | Toucher d'Orobas | Ancienne | Non |  |
 | Tourment de Neow | Ancienne | Oui |  |
-| Tresse soyeuse | Ancienne | Non |  |
-| Tri-boomerang | Ancienne | Non |  |
+| Tresse soyeuse | Ancienne | Oui |  |
+| Tri-boomerang | Ancienne | Oui |  |
 | Verre marin | Ancienne | Non |  |
 | Violon | Ancienne | Oui |  |
 | Écharpe étincelante | Ancienne | Oui |  |
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 64,9 %
+## Bestiaire — 69,7 %
 
-### Monstres — 73,6 %
+### Monstres — 80,6 %
 
-53 faits, 0 partiel, 19 à faire.
+58 faits, 0 partiel, 14 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1238,7 +1238,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Rôdeur Traqueur | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur assassin | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur à la hache | Monstre · Acte 1 (A) | Oui |  |
-| Scarabrideur | Monstre · Acte 1 (A) | Non |  |
+| Scarabrideur | Monstre · Acte 1 (A) | Oui |  |
 | Écharneur | Monstre · Acte 1 (A) | Oui |  |
 | Étrangleur | Monstre · Acte 1 (A) | Non |  |
 | Œil denté | Monstre · Acte 1 (A) | Oui |  |
@@ -1262,9 +1262,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Crapineux | Monstre · Acte 2 | Oui |  |
 | Croquebot | Monstre · Acte 2 | Oui |  |
 | Exosquelette | Monstre · Acte 2 | Non |  |
-| L'Obscura | Monstre · Acte 2 | Non |  |
+| L'Obscura | Monstre · Acte 2 | Oui |  |
 | Mante chapardeuse | Faible · Acte 2 | Non |  |
-| Ovicoptère | Monstre · Acte 2 | Non |  |
+| Ovicoptère | Monstre · Acte 2 | Oui |  |
 | Pareffroi | Monstre · Acte 2 | Oui |  |
 | Progéniteur de poux | Monstre · Acte 2 | Oui |  |
 | Sarcopte | Monstre · Acte 2 | Non |  |
@@ -1285,8 +1285,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Hachebots | Monstre · Acte 3 | Oui |  |
 | L'Oublié | Monstre · Acte 3 | Oui |  |
 | L'Égaré | Monstre · Acte 3 | Oui |  |
-| Machiniste | Monstre · Acte 3 | Non |  |
-| Magistrix | Monstre · Acte 3 | Non |  |
+| Machiniste | Monstre · Acte 3 | Oui |  |
+| Magistrix | Monstre · Acte 3 | Oui |  |
 | Opérateur de tourelle | Faible · Acte 3 | Oui |  |
 | Parchemord | Monstre · Acte 3 | Non |  |
 | Poignard-bot | Invocation · Acte 3 | Oui |  |

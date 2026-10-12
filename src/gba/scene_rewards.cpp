@@ -344,7 +344,12 @@ private:
 
     void _loot_taken()
     {
-        _loot.erase(_loot.begin() + _loot_cursor);
+        // Black Star: once a relic is taken, the next one takes its place.
+        if(_loot[_loot_cursor] != Loot::RELIC || _ctx.run.relic_reward.empty())
+        {
+            _loot.erase(_loot.begin() + _loot_cursor);
+        }
+
         _loot_cursor = 0;
 
         if(_loot.empty())
