@@ -97,6 +97,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::TOUGH_EGG: return "TOUGH_EGG";
         case EnemyType::THE_OBSCURA: return "THE_OBSCURA";
         case EnemyType::OVICOPTER: return "OVICOPTER";
+        case EnemyType::FABRICATOR: return "FABRICATOR";
     }
     return {};
 }
@@ -248,8 +249,8 @@ void test_reference_encounters() {
                                         "LouseProgenitorNormal", "OvicopterNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "SlimedBerserkerNormal", "FrogKnightNormal", "GlobeHeadNormal",
-                                        "TheLostAndForgottenNormal", "AxebotsNormal", "LegacyCultistAndLouse",
-                                        "LegacyJawWorm", "LegacyLice" }));
+                                        "TheLostAndForgottenNormal", "AxebotsNormal", "FabricatorNormal",
+                                        "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
     const Encounter& chompers = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::NORMAL),
                                                "ChompersNormal");
     assert(chompers.count == 2 && chompers.monsters[0] == EnemyType::CHOMPER && chompers.monsters[1] == EnemyType::CHOMPER);
@@ -277,7 +278,7 @@ void test_reference_encounters() {
     // Except the ones whose only reference encounter needs a monster the engine does not have yet: the Fat
     // Gremlin and the Sneaky Gremlin wait for their full Gremlin Merc group (GremlinMercNormal).
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
-    // The Stabbot, the Noisebot, the Zapbot and the Guardbot are brought by the Fabricator (FabricatorNormal).
+    // The Stabbot, the Noisebot, the Zapbot and the Guardbot are summoned by the Fabricator (FabricatorNormal).
     // The Gas Bomb is brought by the Living Fog (LivingFogNormal), the Tough Egg laid by the Ovicopter
     // (OvicopterNormal).
     // Titos is summoned by the Entomancer, the Parafright brought by the Obscura: neither is a monster of the
