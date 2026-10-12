@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 88,5 %** — 1096 faits, 16 partiels, 135 à faire (35 hors périmètre).
+**Avancement global : 88,6 %** — 1097 faits, 16 partiels, 134 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -24,9 +24,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Bestiaire](#bestiaire) | 72 | 1 | 31 | 69,7 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
-| [Systèmes de jeu](#systemes) | 29 | 1 | 6 | 81,9 % |
+| [Systèmes de jeu](#systemes) | 30 | 1 | 5 | 84,7 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1096** | **16** | **135** | **88,5 %** |
+| **Total** | **1097** | **16** | **134** | **88,6 %** |
 
 <a id="ironclad"></a>
 
@@ -1516,7 +1516,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 81,9 %
+## Systèmes de jeu — 84,7 %
 
 ### La Tour — 50,0 %
 
@@ -1578,9 +1578,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Ceinture de 3 potions |  | Oui |  |
 | Boire une potion en combat sur GBA |  | Oui | Touche L pendant son tour : ceinture, cible pour les potions lancées sur un ennemi. |
 
-### Ascension — 85,7 %
+### Ascension — 100,0 %
 
-6 faits, 0 partiel, 1 à faire.
+7 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1590,7 +1590,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | A6 : départ avec 10 % de PV en moins |  | Oui | [#29](https://github.com/Boblebol/slay_the_gba/issues/29) |
 | A7 à A9 : PV accrus des monstres, élites et boss |  | Oui | [#29](https://github.com/Boblebol/slay_the_gba/issues/29) |
 | A10 : malédiction Fléau de l'ascendant dans le deck de départ |  | Oui | [#40](https://github.com/Boblebol/slay_the_gba/issues/40) |
-| Choix du niveau d'Ascension sur GBA |  | Non | Toutes les parties démarrent en Ascension 0. [#272](https://github.com/Boblebol/slay_the_gba/issues/272) |
+| Choix du niveau d'Ascension sur GBA |  | Oui | Après la teinte : choix du niveau 0 à celui débloqué par le héros ; le niveau est rappelé sur la carte. [#272](https://github.com/Boblebol/slay_the_gba/issues/272) |
 
 ### Sauvegarde — 75,0 %
 
