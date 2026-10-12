@@ -92,8 +92,9 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "SHRINKER_BEETLE", true, true },
     { "OWL_MAGISTRATE", false, true },
     { "SCROLL_OF_BITING", true, true },
+    { "LAGAVULIN_MATRIARCH", false, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::SCROLL_OF_BITING) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::LAGAVULIN_MATRIARCH) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -167,6 +168,7 @@ void Enemy::init(EnemyType enemy_type) {
         max_hp = 30;
         hp = 30;
     }
+    if (type == EnemyType::LAGAVULIN_MATRIARCH) add_status(StatusType::PLATED_ARMOR, LAGAVULIN_PLATING);
 
     plan_turn(1);
 }
@@ -1596,6 +1598,40 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = move_damage("LASH");
             current_intent.hits = sheet_move("LASH").hits;
             current_intent.description = "Fouet (3x2 dmg)";
+        }
+    } else if (type == EnemyType::LAGAVULIN_MATRIARCH) {
+        // Asleep (a lost turn) behind its Plating, for 3 turns or until it loses HP. Awake, it drops the Plating and
+        // plays Slash, Disembowel, Slash (with Block) and Soul Siphon in a loop.
+        if (phase == 0 && (hp < max_hp || phase_turn > LAGAVULIN_SLEEP_TURNS) && enter_phase(1)) {
+            phase_turn = 1;
+            clear_status(StatusType::PLATED_ARMOR);
+        }
+        const int step = (phase_turn - 1) % 4;
+        if (phase == 0) {
+            current_intent.type = EnemyIntentType::STUN;
+            current_intent.description = "Sommeil";
+        } else if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("SLASH");
+            current_intent.description = "Trancher (19 dmg)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("DISEMBOWEL");
+            current_intent.hits = sheet_move("DISEMBOWEL").hits;
+            current_intent.description = "Éventration (9 dmg x2)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = move_damage("SLASH2");
+            current_intent.block = ascended_damage ? 14 : sheet_move("SLASH2").block;
+            current_intent.description = "Trancher (12 dmg, 12 blk)";
+        } else {
+            // Takes 2 Strength and 2 Dexterity from the player, and gains 2 Strength.
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.debuffs[0] = { StatusType::STRENGTH, -2 };
+            current_intent.debuffs[1] = { StatusType::DEXTERITY, -2 };
+            current_intent.description = "Siphon d'âme (+2 Force, -2 For/Dex)";
         }
     } else if (type == EnemyType::SLUMBERING_BEETLE) {
         // Snores (loses its turn) while it sleeps; the first hit that costs it HP wakes it for good, and it

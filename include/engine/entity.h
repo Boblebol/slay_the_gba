@@ -437,7 +437,8 @@ enum class EnemyType : uint8_t {
     FABRICATOR,  // Act 3
     SHRINKER_BEETLE, // Act 1 (A)
     OWL_MAGISTRATE,  // Act 3
-    SCROLL_OF_BITING // Act 3
+    SCROLL_OF_BITING, // Act 3
+    LAGAVULIN_MATRIARCH // Act 1 (B) boss
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
@@ -463,6 +464,11 @@ constexpr uint8_t NO_MOVE = 0xFF;
 // into the player's draw pile.
 constexpr uint8_t INSATIABLE_SANDPIT = 4;
 constexpr uint8_t INSATIABLE_FRANTIC_ESCAPES = 6;
+
+// The Lagavulin Matriarch starts the fight Asleep behind its Plating: it sleeps this many turns at most, and the
+// first HP it loses wakes it sooner. Awake, it loses its Plating.
+constexpr int16_t LAGAVULIN_PLATING = 12;
+constexpr uint8_t LAGAVULIN_SLEEP_TURNS = 3;
 
 // Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
 // moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire,
