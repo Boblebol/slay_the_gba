@@ -82,6 +82,7 @@ ENGINE_SOURCES  := src/engine/card.cpp \
                    src/engine/shop.cpp \
                    src/engine/save_system.cpp \
                    src/engine/title_menu.cpp \
+                   src/engine/compendium.cpp \
                    src/engine/navigation.cpp \
                    src/engine/event_manager.cpp \
                    src/engine/pokemon_battle_ui.cpp

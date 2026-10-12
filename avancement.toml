@@ -250,7 +250,7 @@ items = [
   { name = "Sauvegarde automatique de la partie sur la cartouche (SRAM)", status = "oui", issue = 13 },
   { name = "Reprise avec « Continuer » à l'écran titre", status = "oui", issue = 13 },
   { name = "Volumes de la musique et des effets conservés", status = "oui", issue = 13 },
-  { name = "Statistiques et Compendium (cartes, reliques, monstres rencontrés)", status = "non", issue = 273, note = "Écrans prévus dans le moteur, sans interface sur GBA." },
+  { name = "Statistiques et Compendium (cartes, reliques, monstres rencontrés)", status = "oui", issue = 273 },
 ]
 
 # ---------------------------------------------------------------------------------------------------------

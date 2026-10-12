@@ -36,6 +36,10 @@ bn::unique_ptr<Scene> create_scene(SceneId id, GameContext& context)
         return make_ancient_scene(context);
     case SceneId::CREDITS:
         return make_credits_scene(context);
+    case SceneId::COMPENDIUM:
+        return make_compendium_scene(context);
+    case SceneId::STATISTICS:
+        return make_statistics_scene(context);
     case SceneId::OPTIONS:
         return make_options_scene(context);
     case SceneId::VICTORY:
