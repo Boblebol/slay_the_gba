@@ -2421,6 +2421,14 @@ void CombatScene::_update_enemy_turn()
     if(step < records)
     {
         const engine::EnemyActionRecord& record = _combat.last_enemy_actions[step];
+
+        // A record for an enemy the scene does not show has nothing to animate.
+        if(record.enemy_index < 0 || record.enemy_index >= _enemies.size() ||
+           record.enemy_index >= int(_combat.enemies.size()))
+        {
+            return;
+        }
+
         EnemyView& view = _enemies[record.enemy_index];
 
         if(local == 0)
