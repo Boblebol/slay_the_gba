@@ -996,6 +996,17 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
             if (id == CardId::STRIKE || id == CardId::DEFEND) transform_card_in_deck(static_cast<int>(i));
         }
     }
+    // Leafy Poultice (Ancient): one random Strike and one random Defend of the deck are transformed, then 12 Max HP lost.
+    if (relic_id == "LEAFY_POULTICE" && has_relic("LEAFY_POULTICE")) {
+        for (CardId target : { CardId::STRIKE, CardId::DEFEND }) {
+            FixedVector<uint8_t, 50> candidates;
+            for (size_t i = 0; i < master_deck.size(); ++i) {
+                if (master_deck[i].id == target) candidates.push_back(static_cast<uint8_t>(i));
+            }
+            if (!candidates.empty()) transform_card_in_deck(candidates[next_random() % candidates.size()]);
+        }
+        lose_max_hp(12);
+    }
     if (relic_id == "PRESERVED_FOG" && has_relic("PRESERVED_FOG")) {
         // Hubris joins only after the removals, so the Eternal curse can never be picked.
         request_deck_choice(DeckChoiceKind::REMOVE, 3);

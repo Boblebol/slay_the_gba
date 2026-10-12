@@ -3568,6 +3568,32 @@ void test_hefty_tablet() {
     std::cout << "[PASS] Hefty Tablet: 1 Rare card out of 3 and an Injury on pickup" << std::endl;
 }
 
+void test_leafy_poultice() {
+    // Obtained from Neow: one Strike and one Defend become other cards, and the Max HP drops by 12.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 723);
+    const auto count = [](const RunManager& r, CardId id) {
+        int n = 0;
+        for (const DeckCard& card : r.master_deck) n += card.id == id;
+        return n;
+    };
+    const int strikes = count(run, CardId::STRIKE);
+    const int defends = count(run, CardId::DEFEND);
+    const size_t deck = run.master_deck.size();
+    const int16_t max_hp = run.max_hp;
+    run.add_relic("LEAFY_POULTICE");
+    assert(run.has_relic("LEAFY_POULTICE") && !run.has_deck_choice());
+    assert(count(run, CardId::STRIKE) == strikes - 1 && count(run, CardId::DEFEND) == defends - 1);
+    assert(run.master_deck.size() == deck && run.max_hp == max_hp - 12 && run.hp <= run.max_hp);
+
+    // Without the relic, the Strikes, the Defends and the Max HP stay as they are.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 723);
+    plain.add_relic("ANCHOR");
+    assert(count(plain, CardId::STRIKE) == strikes && count(plain, CardId::DEFEND) == defends && plain.max_hp == max_hp);
+    std::cout << "[PASS] Leafy Poultice: a Strike and a Defend transformed, 12 Max HP lost" << std::endl;
+}
+
 void test_white_star() {
     // With the relic, an Elite offers one more set of Rare cards once its first set is taken or skipped.
     RunManager run;
@@ -4563,5 +4589,6 @@ int main() {
     test_fishing_rod();
     test_glitter();
     test_hefty_tablet();
+    test_leafy_poultice();
     return 0;
 }
