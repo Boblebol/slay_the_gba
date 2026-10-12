@@ -883,7 +883,7 @@ void test_necrobinder_existing_mechanics() {
     assert(!bury.play_card(0));
     bury.player.energy = 4;
     assert(bury.play_card(0));
-    assert(bury.enemies[0].hp == 150 - 52);
+    assert(bury.enemies[0].hp == 252 - 52);
 
     // Misery: damage, then the target's debuffs are copied to every other enemy.
     CombatEngine misery = make_pack(CharacterId::NECROBINDER);
@@ -4003,7 +4003,7 @@ void test_ascension() {
     RunManager boss_a9;
     boss_a9.start_run(CharacterId::IRONCLAD, 9, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(boss_a9, RoomType::BOSS);
-    assert(boss_a9.combat.enemies[0].max_hp == 150 * 115 / 100);
+    assert(boss_a9.combat.enemies[0].max_hp == 262); // the Ceremonial Beast's own Ascension HP
 
     // After an act boss: full heal, only 75 % of the missing HP from A5.
     RunManager rested;

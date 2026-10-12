@@ -267,12 +267,15 @@ enum class PowerId : uint8_t {
     // On the player, given by an enemy move (appended)
     SHRINK,            // the player's attacks deal 30% less damage (read by hit); -1 at the end of each player turn
     // Held by an enemy (appended)
-    SOAR               // it takes 50% less attack damage (read by hit) until it lands: spent when its next turn starts
+    SOAR,              // it takes 50% less attack damage (read by hit) until it lands: spent when its next turn starts
+    PLOW,              // its holder's HP fall below `amount`: it loses all Strength, is stunned and changes phase (spent)
+    // On the player, given by an enemy move (appended)
+    RINGING            // only one card can be played this turn (read by play_blocker; the Ceremonial Beast)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
 constexpr bool is_player_debuff_power(PowerId id) {
-    return id == PowerId::TANGLED || id == PowerId::TENDER || id == PowerId::SHRINK;
+    return id == PowerId::TANGLED || id == PowerId::TENDER || id == PowerId::SHRINK || id == PowerId::RINGING;
 }
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
