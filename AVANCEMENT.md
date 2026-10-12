@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 89,3 %** — 1106 faits, 16 partiels, 125 à faire (35 hors périmètre).
+**Avancement global : 89,4 %** — 1107 faits, 16 partiels, 124 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -25,8 +25,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 31 | 1 | 4 | 87,5 % |
-| [Interface, audio et cartouches](#interface) | 16 | 6 | 9 | 61,3 % |
-| **Total** | **1106** | **16** | **125** | **89,3 %** |
+| [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
+| **Total** | **1107** | **16** | **124** | **89,4 %** |
 
 <a id="ironclad"></a>
 
@@ -1605,11 +1605,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 61,3 %
+## Interface, audio et cartouches — 64,5 %
 
-### Écrans — 59,5 %
+### Écrans — 64,3 %
 
-10 faits, 5 partiels, 6 à faire.
+11 faits, 5 partiels, 5 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1627,7 +1627,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Indicateurs de vie, d'armure et de progression |  | Partiel | [#20](https://github.com/Boblebol/slay_the_gba/issues/20) |
 | Transitions entre les scènes |  | Partiel | [#18](https://github.com/Boblebol/slay_the_gba/issues/18) |
 | Système de dialogue et d'évènements textuels |  | Partiel | [#19](https://github.com/Boblebol/slay_the_gba/issues/19) |
-| Options (volume, commandes) |  | Non | [#21](https://github.com/Boblebol/slay_the_gba/issues/21) |
+| Options (volume, commandes) |  | Oui |  |
 | Menu pause en combat et sur la carte |  | Non | [#10](https://github.com/Boblebol/slay_the_gba/issues/10) |
 | Menu principal interactif |  | Non | [#9](https://github.com/Boblebol/slay_the_gba/issues/9) |
 | Écran titre animé (nuages, tour, brume) |  | Non | [#7](https://github.com/Boblebol/slay_the_gba/issues/7) |
