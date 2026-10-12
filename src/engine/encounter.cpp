@@ -24,6 +24,7 @@ constexpr EnemyType RUBY_RAIDERS[] = {
 constexpr Encounter ACT1A_WEAK[] = {
     { "FuzzyWurmCrawlerWeak"sv, 1, { EnemyType::FUZZY_WURM_CRAWLER } },
     { "NibbitsWeak"sv, 1, { EnemyType::NIBBIT } },
+    { "ShrinkerBeetleWeak"sv, 1, { EnemyType::SHRINKER_BEETLE } },
 };
 constexpr Encounter ACT1A_NORMAL[] = {
     { "RubyRaidersNormal"sv, 3, {}, RUBY_RAIDERS },
@@ -33,6 +34,7 @@ constexpr Encounter ACT1A_NORMAL[] = {
     { "NibbitsNormal"sv, 2, { EnemyType::NIBBIT, EnemyType::NIBBIT } },
     { "FlyconidNormal"sv, 1, { EnemyType::FLYCONID } },
     { "MawlerNormal"sv, 1, { EnemyType::MAWLER } },
+    { "OvergrowthCrawlers"sv, 2, { EnemyType::FUZZY_WURM_CRAWLER, EnemyType::SHRINKER_BEETLE } },
 };
 
 // Act 1 (B): the Underdocks.
@@ -64,6 +66,8 @@ constexpr Encounter ACT2_NORMAL[] = {
     { "ChompersNormal"sv, 2, { EnemyType::CHOMPER, EnemyType::CHOMPER } },
     { "TunnelerNormal"sv, 2, { EnemyType::CHOMPER, EnemyType::TUNNELER } },
     { "LouseProgenitorNormal"sv, 1, { EnemyType::LOUSE_PROGENITOR } },
+    { "TheObscuraNormal"sv, 1, { EnemyType::THE_OBSCURA } },
+    { "OvicopterNormal"sv, 1, { EnemyType::OVICOPTER } },
 };
 
 // Act 3: the Glory. The groups the game had before stay beside them: the Louse and the Jaw Worm are met there.
@@ -77,6 +81,8 @@ constexpr Encounter ACT3_NORMAL[] = {
     { "GlobeHeadNormal"sv, 1, { EnemyType::GLOBE_HEAD } },
     { "TheLostAndForgottenNormal"sv, 2, { EnemyType::THE_FORGOTTEN, EnemyType::THE_LOST } },
     { "AxebotsNormal"sv, 1, { EnemyType::AXEBOT } },
+    { "FabricatorNormal"sv, 1, { EnemyType::FABRICATOR } },
+    { "OwlMagistrateNormal"sv, 1, { EnemyType::OWL_MAGISTRATE } },
     { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
     { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
     { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },

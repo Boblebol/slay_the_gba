@@ -263,15 +263,22 @@ enum class PowerId : uint8_t {
     VITAL_SPARK,       // it takes unblocked attack damage: 1 energy for the player, up to `amount` times a turn (counter = times)
     HEX,               // while its holder lives, every card left in the hand at the end of the turn is exhausted (Ethereal)
     SANDPIT,           // its holder's turn: -1, and the player is devoured at 0; Frantic Escape adds 1 (the Insatiable)
-    RUINED_HELMET      // the first Strength gained each combat is doubled (counter = 1 once used)
+    RUINED_HELMET,     // the first Strength gained each combat is doubled (counter = 1 once used)
+    // On the player, given by an enemy move (appended)
+    SHRINK,            // the player's attacks deal 30% less damage (read by hit); -1 at the end of each player turn
+    // Held by an enemy (appended)
+    SOAR               // it takes 50% less attack damage (read by hit) until it lands: spent when its next turn starts
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
 constexpr bool is_player_debuff_power(PowerId id) {
-    return id == PowerId::TANGLED || id == PowerId::TENDER;
+    return id == PowerId::TANGLED || id == PowerId::TENDER || id == PowerId::SHRINK;
 }
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
+// Shrink (the Shrinker Beetle): the player's attacks deal SHRINK_PERCENT % of their damage for SHRINK_TURNS turns.
+constexpr int16_t SHRINK_TURNS = 3;
+constexpr int32_t SHRINK_PERCENT = 70;
 constexpr uint8_t PANACHE_CARDS = 5;
 constexpr uint8_t IRON_CLUB_CARDS = 4;
 constexpr uint8_t AUTOMATION_CARDS = 10;

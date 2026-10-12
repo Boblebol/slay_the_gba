@@ -95,6 +95,11 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::WRIGGLER: return "WRIGGLER";
         case EnemyType::THE_INSATIABLE: return "THE_INSATIABLE";
         case EnemyType::TOUGH_EGG: return "TOUGH_EGG";
+        case EnemyType::THE_OBSCURA: return "THE_OBSCURA";
+        case EnemyType::OVICOPTER: return "OVICOPTER";
+        case EnemyType::FABRICATOR: return "FABRICATOR";
+        case EnemyType::SHRINKER_BEETLE: return "SHRINKER_BEETLE";
+        case EnemyType::OWL_MAGISTRATE: return "OWL_MAGISTRATE";
     }
     return {};
 }
@@ -208,10 +213,11 @@ void test_tables_use_existing_monsters_with_a_sprite() {
 
 void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::WEAK)) ==
-           (std::set<std::string_view>{ "FuzzyWurmCrawlerWeak", "NibbitsWeak" }));
+           (std::set<std::string_view>{ "FuzzyWurmCrawlerWeak", "NibbitsWeak", "ShrinkerBeetleWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal",
-                                        "InkletsNormal", "NibbitsNormal", "FlyconidNormal", "MawlerNormal" }));
+                                        "InkletsNormal", "NibbitsNormal", "FlyconidNormal", "MawlerNormal",
+                                        "OvergrowthCrawlers" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal",
                                         "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
@@ -242,11 +248,12 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "DevotedSculptorWeak", "TurretOperatorWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal", "ChompersNormal", "TunnelerNormal",
-                                        "LouseProgenitorNormal" }));
+                                        "LouseProgenitorNormal", "TheObscuraNormal", "OvicopterNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "SlimedBerserkerNormal", "FrogKnightNormal", "GlobeHeadNormal",
-                                        "TheLostAndForgottenNormal", "AxebotsNormal", "LegacyCultistAndLouse",
-                                        "LegacyJawWorm", "LegacyLice" }));
+                                        "TheLostAndForgottenNormal", "AxebotsNormal", "FabricatorNormal",
+                                        "OwlMagistrateNormal", "LegacyCultistAndLouse", "LegacyJawWorm",
+                                        "LegacyLice" }));
     const Encounter& chompers = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::NORMAL),
                                                "ChompersNormal");
     assert(chompers.count == 2 && chompers.monsters[0] == EnemyType::CHOMPER && chompers.monsters[1] == EnemyType::CHOMPER);
@@ -274,7 +281,7 @@ void test_reference_encounters() {
     // Except the ones whose only reference encounter needs a monster the engine does not have yet: the Fat
     // Gremlin and the Sneaky Gremlin wait for their full Gremlin Merc group (GremlinMercNormal).
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
-    // The Stabbot, the Noisebot, the Zapbot and the Guardbot are brought by the Fabricator (FabricatorNormal).
+    // The Stabbot, the Noisebot, the Zapbot and the Guardbot are summoned by the Fabricator (FabricatorNormal).
     // The Gas Bomb is brought by the Living Fog (LivingFogNormal), the Tough Egg laid by the Ovicopter
     // (OvicopterNormal).
     // Titos is summoned by the Entomancer, the Parafright brought by the Obscura: neither is a monster of the
@@ -401,7 +408,8 @@ void test_same_seed_same_fights() {
     for (size_t floor = 1; floor <= fights.size() - 2; ++floor) {
         std::string_view fight = fights[floor - 1];
         if (floor <= WEAK_ENCOUNTER_FLOORS) {
-            assert(fight.starts_with("FuzzyWurmCrawlerWeak") || fight == "NibbitsWeak NIBBIT");
+            assert(fight.starts_with("FuzzyWurmCrawlerWeak") || fight == "NibbitsWeak NIBBIT" ||
+                   fight == "ShrinkerBeetleWeak SHRINKER_BEETLE");
         } else if (fight.starts_with("RubyRaidersNormal")) {
             ++raiders;
         } else if (fight.starts_with("NibbitsNormal")) {
@@ -412,7 +420,8 @@ void test_same_seed_same_fights() {
                 ++inklets;
             } else {
                 assert(fight == "VineShamblerNormal VINE_SHAMBLER" || fight == "CubexConstructNormal CUBEX_CONSTRUCT" ||
-                       fight == "FlyconidNormal FLYCONID" || fight == "MawlerNormal MAWLER");
+                       fight == "FlyconidNormal FLYCONID" || fight == "MawlerNormal MAWLER" ||
+                       fight == "OvergrowthCrawlers FUZZY_WURM_CRAWLER SHRINKER_BEETLE");
                 if (fight.starts_with("VineShamblerNormal") || fight.starts_with("CubexConstructNormal")) ++shamblers;
             }
         }
