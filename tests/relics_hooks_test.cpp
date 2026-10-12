@@ -2018,6 +2018,28 @@ void test_sand_castle() {
     std::cout << "[PASS] Sand Castle: upgrades 6 random cards when obtained" << std::endl;
 }
 
+void test_paels_growth() {
+    // Obtained: one card of the deck is enchanted with Clone.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("PAELS_GROWTH");
+    assert(run.has_relic("PAELS_GROWTH"));
+    int cloned = 0;
+    for (const DeckCard& card : run.master_deck) {
+        if (card.enchantment == Enchantment::CLONE) ++cloned;
+    }
+    assert(cloned == 1);
+
+    // Without the relic, no card is enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("PAELS_GROWTH"));
+    for (const DeckCard& card : plain.master_deck) assert(card.enchantment == Enchantment::NONE);
+
+    std::cout << "[PASS] Paël's Growth: a card is enchanted with Clone when obtained" << std::endl;
+}
+
 void test_paels_horn() {
     // Obtained: two Relax join the deck.
     RunManager run;
@@ -4201,6 +4223,7 @@ int main() {
     test_radiant_pearl();
     test_sand_castle();
     test_paels_horn();
+    test_paels_growth();
     test_paels_eye();
     test_throwing_axe();
     test_cursed_pearl();
