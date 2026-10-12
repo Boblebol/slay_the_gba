@@ -28,6 +28,13 @@ jobs:
       - name: ROM builds
         run: make ironclad
       # A cartridge can build and still hang at boot: static data that fills the internal RAM leaves no stack.
+      # The built cartridge, to play a pull request in an emulator before merging it (kept 7 days).
+      - name: Upload the ROM
+        uses: actions/upload-artifact@v4
+        with:
+          name: slay_ironclad
+          path: slay_ironclad.gba
+          retention-days: 7
       - name: ROM leaves room for its stack
         run: uv run scripts/check_rom_memory.py ironclad
       # The same cartridge, run without a window: it must draw a screen and react to the buttons. Not blocking
