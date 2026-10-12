@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 88,5 %** — 1095 faits, 17 partiels, 135 à faire (35 hors périmètre).
+**Avancement global : 88,5 %** — 1096 faits, 16 partiels, 135 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -24,9 +24,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Bestiaire](#bestiaire) | 72 | 1 | 31 | 69,7 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
-| [Systèmes de jeu](#systemes) | 28 | 2 | 6 | 80,6 % |
+| [Systèmes de jeu](#systemes) | 29 | 1 | 6 | 81,9 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1095** | **17** | **135** | **88,5 %** |
+| **Total** | **1096** | **16** | **135** | **88,5 %** |
 
 <a id="ironclad"></a>
 
@@ -1516,7 +1516,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 80,6 %
+## Systèmes de jeu — 81,9 %
 
 ### La Tour — 50,0 %
 
@@ -1532,9 +1532,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Neow en début de partie |  | Non | [#6](https://github.com/Boblebol/slay_the_gba/issues/6) |
 | Bénédiction d'un Ancien entre les actes |  | Non | La phase existe dans le moteur mais elle est sautée. [#261](https://github.com/Boblebol/slay_the_gba/issues/261) |
 
-### Récompenses — 92,9 %
+### Récompenses — 100,0 %
 
-6 faits, 1 partiel, 0 à faire.
+7 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1543,7 +1543,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Coffre : or et relique jamais en double |  | Oui |  |
 | Potion en récompense de combat |  | Oui | 40 % des combats, tirée par rareté parmi les potions que le moteur résout. Ceinture pleine : en jeter une ou la laisser. |
 | Relique après un élite |  | Oui | Tirée par rareté, jamais en double, jamais celle d'un autre héros. |
-| Relique de boss |  | Partiel | Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. Les reliques d'Ancien du jeu d'origine restent à faire. [#184](https://github.com/Boblebol/slay_the_gba/issues/184) |
+| Relique de boss |  | Oui | Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. [#184](https://github.com/Boblebol/slay_the_gba/issues/184) |
 | Cartes rares et peu communes selon la salle |  | Oui | Chaque carte tire sa rareté : 60 / 37 / 3 % après un combat, 50 / 40 / 10 % après un élite, que des Rares après un boss. Pool bâti depuis les cartes du héros. |
 
 ### Feu de camp — 66,7 %
