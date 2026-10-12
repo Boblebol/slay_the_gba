@@ -24,6 +24,7 @@ enum class SceneId : uint8_t
     SHOP,
     ANCIENT, // the Ancient met at the start of an act, who offers its relics
     CREDITS, // end credits scrolling after a winning run
+    OPTIONS, // volumes and button preset, opened from the title screen
     VICTORY,
     GAME_OVER
 };
