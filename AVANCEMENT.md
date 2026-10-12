@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 87,7 %** — 1085 faits, 17 partiels, 145 à faire (35 hors périmètre).
+**Avancement global : 88,1 %** — 1090 faits, 17 partiels, 140 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 294 | 0 | 27 | 91,6 % |
-| [Bestiaire](#bestiaire) | 67 | 1 | 36 | 64,9 % |
+| [Bestiaire](#bestiaire) | 72 | 1 | 31 | 69,7 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 28 | 2 | 6 | 80,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1085** | **17** | **145** | **87,7 %** |
+| **Total** | **1090** | **17** | **140** | **88,1 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 64,9 %
+## Bestiaire — 69,7 %
 
-### Monstres — 73,6 %
+### Monstres — 80,6 %
 
-53 faits, 0 partiel, 19 à faire.
+58 faits, 0 partiel, 14 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1238,7 +1238,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Rôdeur Traqueur | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur assassin | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur à la hache | Monstre · Acte 1 (A) | Oui |  |
-| Scarabrideur | Monstre · Acte 1 (A) | Non |  |
+| Scarabrideur | Monstre · Acte 1 (A) | Oui |  |
 | Écharneur | Monstre · Acte 1 (A) | Oui |  |
 | Étrangleur | Monstre · Acte 1 (A) | Non |  |
 | Œil denté | Monstre · Acte 1 (A) | Oui |  |
@@ -1262,9 +1262,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Crapineux | Monstre · Acte 2 | Oui |  |
 | Croquebot | Monstre · Acte 2 | Oui |  |
 | Exosquelette | Monstre · Acte 2 | Non |  |
-| L'Obscura | Monstre · Acte 2 | Non |  |
+| L'Obscura | Monstre · Acte 2 | Oui |  |
 | Mante chapardeuse | Faible · Acte 2 | Non |  |
-| Ovicoptère | Monstre · Acte 2 | Non |  |
+| Ovicoptère | Monstre · Acte 2 | Oui |  |
 | Pareffroi | Monstre · Acte 2 | Oui |  |
 | Progéniteur de poux | Monstre · Acte 2 | Oui |  |
 | Sarcopte | Monstre · Acte 2 | Non |  |
@@ -1285,8 +1285,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Hachebots | Monstre · Acte 3 | Oui |  |
 | L'Oublié | Monstre · Acte 3 | Oui |  |
 | L'Égaré | Monstre · Acte 3 | Oui |  |
-| Machiniste | Monstre · Acte 3 | Non |  |
-| Magistrix | Monstre · Acte 3 | Non |  |
+| Machiniste | Monstre · Acte 3 | Oui |  |
+| Magistrix | Monstre · Acte 3 | Oui |  |
 | Opérateur de tourelle | Faible · Acte 3 | Oui |  |
 | Parchemord | Monstre · Acte 3 | Non |  |
 | Poignard-bot | Invocation · Acte 3 | Oui |  |
