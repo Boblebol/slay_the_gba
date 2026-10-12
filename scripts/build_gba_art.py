@@ -1483,6 +1483,12 @@ ICON_STATUS = [
 ]
 
 
+# Both hit effects share one palette: Butano then gives them a single OBJ palette slot, which matters in a
+# fight where three different monsters already take three of the sixteen.
+FX_PALETTE = [(248, 248, 160), (248, 160, 64), (248, 248, 248), (120, 168, 248), (248, 96, 64), (248, 200, 64),
+              (184, 120, 40)]
+
+
 def build_ui() -> None:
     icons = [ICON_ATTACK, ICON_DEFEND, ICON_BUFF, ICON_DEBUFF, ICON_UNKNOWN, ICON_TARGET, ICON_HEART, ICON_GOLD,
              ICON_STUN, ICON_HEAL, ICON_ESCAPE, ICON_STATUS]
@@ -1534,9 +1540,8 @@ def build_ui() -> None:
                 y = 32 + int(math.sin(ang) * r) + random.randint(-6, 6)
                 d.point((x, y), fill=(248, 248, 248, 255))
         frames_img.append(img)
-    pal = [(248, 200, 64), (248, 248, 248), (184, 120, 40)]
-    frames = [rgba_to_sprite(img, palette=pal)[0] for img in frames_img]
-    save_sprite("fx_slash", frames, [TRANSPARENT] + pal, 64)
+    frames = [rgba_to_sprite(img, palette=FX_PALETTE)[0] for img in frames_img]
+    save_sprite("fx_slash", frames, [TRANSPARENT] + FX_PALETTE, 64)
 
     # Hit spark / block ring / buff sparkle: 32x32, 4 frames each, one item.
     frames_img = []
@@ -1565,9 +1570,8 @@ def build_ui() -> None:
                     d.line((x, y - 3, x, y + 3), fill=(248, 96, 64, 255))
                     d.line((x - 3, y, x + 3, y), fill=(248, 200, 64, 255))
             frames_img.append(img)
-    pal = [(248, 248, 160), (248, 160, 64), (248, 248, 248), (120, 168, 248), (248, 96, 64), (248, 200, 64)]
-    frames = [rgba_to_sprite(img, palette=pal)[0] for img in frames_img]
-    save_sprite("fx_burst", frames, [TRANSPARENT] + pal, 32)
+    frames = [rgba_to_sprite(img, palette=FX_PALETTE)[0] for img in frames_img]
+    save_sprite("fx_burst", frames, [TRANSPARENT] + FX_PALETTE, 32)
 
 
 # ---------------------------------------------------------------------------------------------
