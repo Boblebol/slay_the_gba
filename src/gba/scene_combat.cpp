@@ -14,7 +14,9 @@
 #include "bn_sprite_items_fx_burst.h"
 #include "bn_sprite_items_fx_slash.h"
 
+#include "engine/compendium.h"
 #include "engine/potion.h"
+#include "engine/save_system.h"
 
 #include "gba/assets.h"
 #include "gba/audio.h"
@@ -351,6 +353,7 @@ CombatScene::CombatScene(GameContext& context) :
     _player_bar.snap();
 
     _build_enemies();
+    engine::discover_enemies(engine::SaveManager::instance().get_active_profile(), _combat);
 
     if(_ctx.combat_resume)
     {
@@ -530,6 +533,7 @@ void CombatScene::_summon_enemies(int summoner, unsigned summoned)
     }
 
     _layout_enemies();
+    engine::discover_enemies(engine::SaveManager::instance().get_active_profile(), _combat);
 
     for(int index = 0; index < _enemies.size(); ++index)
     {

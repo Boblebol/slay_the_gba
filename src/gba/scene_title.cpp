@@ -28,13 +28,22 @@ namespace
 {
 
 constexpr int LOGO_Y = -62;
-constexpr int MENU_Y = 44;
-constexpr int MENU_SPACING = 12;
+constexpr int MENU_Y = 28;
+constexpr int MENU_SPACING = 11;
+constexpr int MENU_ENTRIES = 4;
+
+enum class MenuEntry : uint8_t
+{
+    CONTINUE,   // only when a run is saved
+    NEW_RUN,
+    COMPENDIUM,
+    STATISTICS
+};
 
 enum class TitleStage : uint8_t
 {
     PRESS_START,
-    MENU,       // "Continuer" / "Nouvelle partie", only when a run is saved
+    MENU,       // "Continuer" (when a run is saved), "Nouvelle partie", "Compendium", "Statistiques"
     PALETTE,
     ASCENSION   // level choice, once the tint is picked and a level above 0 is unlocked
 };
@@ -70,6 +79,17 @@ public:
 
         _palettes = engine::get_character_palettes(current_hero());
         play_music(Music::TITLE);
+
+        // Back from the compendium or the statistics: the logo is already in place and the menu is open.
+        if(_ctx.title_menu)
+        {
+            _ctx.title_menu = false;
+            _timer = 60;
+            _hero_name.set_visible(true);
+            _zone.set_visible(true);
+            _press.clear();
+            _open_menu();
+        }
     }
 
     [[nodiscard]] bn::optional<SceneId> update() final
@@ -112,7 +132,8 @@ private:
     int _ascension = 0;
     int _max_ascension = 0;
     TitleStage _stage = TitleStage::PRESS_START;
-    Label _menu[2];
+    bn::vector<MenuEntry, MENU_ENTRIES> _entries;
+    Label _menu[MENU_ENTRIES];
 
     [[nodiscard]] bn::optional<SceneId> _update_press_start()
     {
@@ -127,17 +148,7 @@ private:
         {
             play_sfx(Sfx::UI_CONFIRM);
             _press.clear();
-
-            if(engine::SaveManager::instance().has_active_run())
-            {
-                _stage = TitleStage::MENU;
-                _menu_index = 0;
-                _refresh_menu();
-            }
-            else
-            {
-                _open_palette();
-            }
+            _open_menu();
         }
 
         return bn::nullopt;
@@ -145,29 +156,39 @@ private:
 
     [[nodiscard]] bn::optional<SceneId> _update_menu()
     {
+        int count = _entries.size();
+
         if(bn::keypad::up_pressed() || bn::keypad::down_pressed())
         {
             play_sfx(Sfx::UI_CURSOR);
-            _menu_index = 1 - _menu_index;
+            _menu_index = (_menu_index + (bn::keypad::down_pressed() ? 1 : count - 1)) % count;
             _refresh_menu();
         }
         else if(bn::keypad::b_pressed())
         {
             play_sfx(Sfx::UI_CANCEL);
             _close_menu();
-            _stage = TitleStage::PRESS_START;
+            _back_to_press_start();
         }
         else if(bn::keypad::a_pressed() || bn::keypad::start_pressed())
         {
             play_sfx(Sfx::UI_CONFIRM);
-            _close_menu();
+            MenuEntry entry = _entries[_menu_index];
 
-            if(_menu_index == 0)
+            switch(entry)
             {
+            case MenuEntry::CONTINUE:
+                _close_menu();
                 return _continue_run();
+            case MenuEntry::COMPENDIUM:
+                return SceneId::COMPENDIUM;
+            case MenuEntry::STATISTICS:
+                return SceneId::STATISTICS;
+            default:
+                _close_menu();
+                _open_palette();
+                break;
             }
-
-            _open_palette();
         }
 
         return bn::nullopt;
@@ -198,11 +219,11 @@ private:
         else if(bn::keypad::b_pressed())
         {
             play_sfx(Sfx::UI_CANCEL);
-            _stage = TitleStage::PRESS_START;
             _hero.set_y(200);
             _variant.clear();
             _description.clear();
             _hint.clear();
+            _open_menu();
         }
         else if(bn::keypad::a_pressed() || bn::keypad::start_pressed())
         {
@@ -333,16 +354,55 @@ private:
         return SceneId::MAP;
     }
 
+    void _open_menu()
+    {
+        _close_menu();
+        _entries.clear();
+
+        if(engine::SaveManager::instance().has_active_run())
+        {
+            _entries.push_back(MenuEntry::CONTINUE);
+        }
+
+        _entries.push_back(MenuEntry::NEW_RUN);
+        _entries.push_back(MenuEntry::COMPENDIUM);
+        _entries.push_back(MenuEntry::STATISTICS);
+        _stage = TitleStage::MENU;
+        _menu_index = 0;
+        _credits.set(0, 72, "Fan-game - Slay the Spire (c) Mega Crit", Align::CENTER, TextColor::GRAY);
+        _refresh_menu();
+    }
+
+    void _back_to_press_start()
+    {
+        _stage = TitleStage::PRESS_START;
+        _press.set(0, 50, "Appuyez sur START", Align::CENTER, TextColor::WHITE);
+    }
+
     void _refresh_menu()
     {
-        constexpr bn::string_view entries[] = { "Continuer", "Nouvelle partie" };
-
-        for(int index = 0; index < 2; ++index)
+        for(int index = 0; index < _entries.size(); ++index)
         {
             bool selected = index == _menu_index;
             TextLine line;
             line.append(selected ? "► " : "  ");
-            line.append(entries[index]);
+
+            switch(_entries[index])
+            {
+            case MenuEntry::CONTINUE:
+                line.append("Continuer");
+                break;
+            case MenuEntry::NEW_RUN:
+                line.append("Nouvelle partie");
+                break;
+            case MenuEntry::COMPENDIUM:
+                line.append("Compendium");
+                break;
+            default:
+                line.append("Statistiques");
+                break;
+            }
+
             _menu[index].set(0, MENU_Y + index * MENU_SPACING, line, Align::CENTER,
                              selected ? TextColor::GOLD : TextColor::WHITE);
         }
@@ -350,8 +410,10 @@ private:
 
     void _close_menu()
     {
-        _menu[0].clear();
-        _menu[1].clear();
+        for(Label& label : _menu)
+        {
+            label.clear();
+        }
     }
 
     void _animate_logo()
