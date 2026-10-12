@@ -16,7 +16,21 @@ void card_name(const engine::DeckCard& card, bn::istring& out);
 // French rules text computed from the engine's values, so it always matches the actual effect.
 void card_description(const engine::DeckCard& card, bn::istring& out);
 
-// Energy cost as printed on the card: a digit, or "X" for a card that spends all the energy.
+// French name of an enchantment ("Tranchant"), empty for NONE.
+[[nodiscard]] bn::string_view enchantment_name(engine::Enchantment enchantment);
+
+// The enchantment of a card as the deck register shows it, on two lines that each fit 142 pixels: its mark,
+// name and amount ("☆ Tranchant 3"), then what it does ("+3 dégâts."). Both empty for a card without one.
+void enchantment_text(const engine::DeckCard& card, bn::istring& title, bn::istring& effect);
+
+// Whether the card holds an enchantment: its name is then marked and shown in purple.
+[[nodiscard]] inline bool is_enchanted(const engine::DeckCard& card)
+{
+    return card.enchantment != engine::Enchantment::NONE;
+}
+
+// Energy cost as printed on the card: a digit, or "X" for a card that spends all the energy. Tezcatara's Ember
+// prints 0.
 [[nodiscard]] bn::string_view card_cost_label(const engine::DeckCard& card);
 
 // Label of an energy cost worked out during a combat: "0" to "12", "X".

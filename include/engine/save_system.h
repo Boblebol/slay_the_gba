@@ -14,9 +14,20 @@ constexpr size_t MONSTER_BITSET_BYTES = 14;  // 112 / 8 = 14 bytes
 constexpr size_t POTION_BITSET_BYTES = 8;    // 63 / 8 = 7.875 -> 8 bytes
 constexpr size_t ANCIENT_BITSET_BYTES = 1;   // 8 / 8 = 1 byte
 
+// The enchantment of a card (mechanic #107) is packed into bits the older saves leave at 0, so they still load:
+// its kind above the upgraded bit, its amount above the CardId.
+constexpr uint8_t SAVE_UPGRADED_BIT = 0x01;
+constexpr uint8_t SAVE_ENCHANTMENT_SHIFT = 1;  // DeckCardSave::upgraded, bits 1 to 4
+constexpr uint8_t SAVE_ENCHANTMENT_MASK = 0x0F;
+constexpr uint8_t SAVE_CARD_ID_BITS = 10;      // DeckCardSave::card_id, bits 0 to 9
+constexpr uint16_t SAVE_CARD_ID_MASK = (1u << SAVE_CARD_ID_BITS) - 1;
+constexpr uint8_t SAVE_ENCHANT_AMOUNT_MAX = 0x3F; // bits 10 to 15
+static_assert(static_cast<uint16_t>(CardId::COUNT) <= SAVE_CARD_ID_MASK, "CardId no longer fits its saved bits");
+static_assert(static_cast<uint8_t>(Enchantment::COUNT) <= SAVE_ENCHANTMENT_MASK + 1, "Enchantment no longer fits its saved bits");
+
 struct DeckCardSave {
-    uint16_t card_id = 0; // CardId
-    uint8_t upgraded = 0;
+    uint16_t card_id = 0; // CardId, and the enchantment amount in the high bits
+    uint8_t upgraded = 0; // upgraded bit, and the enchantment above it
     uint8_t bonus = 0; // permanent bonus of the card (DeckCard::bonus); 0 in the saves written before it existed
 };
 

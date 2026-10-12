@@ -2458,6 +2458,47 @@ void test_miniature_cannon() {
     std::cout << "[PASS] Miniature Cannon: upgraded Attacks deal 3 more damage per hit" << std::endl;
 }
 
+void test_mystic_lighter() {
+    // With the relic, an Enchanted Attack deals 9 more damage per hit (Twin Strike hits twice).
+    auto sharp = [](CardId id) {
+        DeckCard card(id);
+        card.enchantment = Enchantment::SHARP;
+        card.enchant_amount = 1;
+        return card;
+    };
+    CombatEngine lighter = make_relic_combat(CharacterId::IRONCLAD, PowerId::MYSTIC_LIGHTER, MYSTIC_LIGHTER_DAMAGE);
+    lighter.enemies[0].hp = 200;
+    play(lighter, sharp(CardId::STRIKE));
+    assert(lighter.enemies[0].hp == 200 - (6 + 1 + 9));
+    lighter.enemies[0].hp = 200;
+    play(lighter, sharp(CardId::TWIN_STRIKE));
+    assert(lighter.enemies[0].hp == 200 - 2 * (5 + 1 + 9));
+    // A card without an enchantment, or an enchanted Skill, gains nothing from it.
+    lighter.enemies[0].hp = 200;
+    play(lighter, CardId::STRIKE);
+    assert(lighter.enemies[0].hp == 200 - 6);
+    DeckCard defend(CardId::DEFEND);
+    defend.enchantment = Enchantment::NIMBLE;
+    defend.enchant_amount = 1;
+    const int16_t block_before = lighter.player.block;
+    play(lighter, defend);
+    assert(lighter.player.block == block_before + 6);
+
+    // Without it, the Enchanted Strike deals only its own bonus.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 200;
+    play(plain, sharp(CardId::STRIKE));
+    assert(plain.enemies[0].hp == 200 - 7);
+
+    // A run holding it registers it in its fights; a chest or the merchant can hold it (active_relics).
+    assert(std::find(RunManager::active_relics().begin(), RunManager::active_relics().end(), "MYSTIC_LIGHTER") != RunManager::active_relics().end());
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "MYSTIC_LIGHTER" });
+    assert(run.combat.power_amount(PowerId::MYSTIC_LIGHTER) == MYSTIC_LIGHTER_DAMAGE);
+    RunManager without = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(without.combat.power_amount(PowerId::MYSTIC_LIGHTER) == 0);
+    std::cout << "[PASS] Mystic Lighter: Enchanted Attacks deal 9 more damage per hit" << std::endl;
+}
+
 void test_white_beast_statue() {
     // With the statue, every combat reward holds a potion; without it, some do not.
     uint32_t plain_without = 0;
@@ -4189,6 +4230,7 @@ int main() {
     test_strike_dummy();
     test_fake_strike_dummy();
     test_miniature_cannon();
+    test_mystic_lighter();
     test_white_beast_statue();
     test_cauldron();
     test_alchemical_coffer();

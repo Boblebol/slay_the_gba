@@ -14,7 +14,7 @@ RunManager make_run() {
 }
 
 bool offers_cook(const RunManager& run) {
-    FixedVector<CampfireAction, 5> actions = run.campfire_actions();
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> actions = run.campfire_actions();
     for (size_t i = 0; i < actions.size(); ++i) {
         if (actions[i] == CampfireAction::COOK) return true;
     }

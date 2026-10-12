@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 85,7 %** — 1059 faits, 17 partiels, 170 à faire (35 hors périmètre).
+**Avancement global : 85,8 %** — 1060 faits, 17 partiels, 169 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -14,7 +14,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
-| [Soldat de Fer](#ironclad) | 100 | 1 | 1 | 98,5 % |
+| [Soldat de Fer](#ironclad) | 101 | 1 | 0 | 99,5 % |
 | [La Silencieuse](#silent) | 100 | 1 | 0 | 99,5 % |
 | [Le Défectueux](#defect) | 104 | 1 | 0 | 99,5 % |
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
@@ -26,11 +26,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Règles de combat](#regles) | 46 | 0 | 13 | 78,0 % |
 | [Systèmes de jeu](#systemes) | 28 | 2 | 6 | 80,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1059** | **17** | **170** | **85,7 %** |
+| **Total** | **1060** | **17** | **169** | **85,8 %** |
 
 <a id="ironclad"></a>
 
-## Soldat de Fer — 98,5 %
+## Soldat de Fer — 99,5 %
 
 ### Cartes — 100,0 %
 
@@ -129,9 +129,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Briser | Ancienne · Attaque | Oui |  |
 | Corruption | Ancienne · Pouvoir | Oui |  |
 
-### Reliques — 87,5 %
+### Reliques — 100,0 %
 
-7 faits, 0 partiel, 1 à faire.
+8 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -139,7 +139,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Crâne rouge | Commune | Oui |  |
 | Argile autoformante | Peu commune | Oui |  |
 | Krapo en papier | Peu commune | Oui |  |
-| Casque délabré | Rare | Non |  |
+| Casque délabré | Rare | Oui |  |
 | Cendres de Charon | Rare | Oui |  |
 | Langue du Démon | Rare | Oui |  |
 | Soufre | Boutique | Oui |  |

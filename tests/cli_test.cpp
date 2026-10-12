@@ -61,6 +61,12 @@ void test_cartridge_save() {
     constexpr CardId FAR_CARD = static_cast<CardId>(300);
     saved.master_deck.push_back(DeckCard(FAR_CARD, true));
     saved.master_deck.push_back(DeckCard(static_cast<CardId>(511), false));
+    // The enchantment of a card and its amount are saved with it (mechanic #107).
+    DeckCard goopy_strike(CardId::STRIKE, true);
+    goopy_strike.enchantment = Enchantment::GOOPY;
+    goopy_strike.enchant_amount = 7;
+    goopy_strike.bonus = 2;
+    saved.master_deck.push_back(goopy_strike);
     store.settings().music_volume = 3;
     store.autosave_run(saved);
 
@@ -79,8 +85,13 @@ void test_cartridge_save() {
     assert(loaded.hp == 40 && loaded.gold == 321);
     assert(loaded.master_deck.size() == saved.master_deck.size());
     size_t deck_size = loaded.master_deck.size();
+    const DeckCard& enchanted = loaded.master_deck[deck_size - 1];
+    assert(enchanted.id == CardId::STRIKE && enchanted.upgraded && enchanted.bonus == 2);
+    assert(enchanted.enchantment == Enchantment::GOOPY && enchanted.enchant_amount == 7);
+    --deck_size;
     assert(loaded.master_deck[deck_size - 3] == DeckCard(CardId::POISON_STAB, true));
     assert(loaded.master_deck[deck_size - 3].bonus == 12 && loaded.master_deck[deck_size - 2].bonus == 0);
+    assert(loaded.master_deck[deck_size - 3].enchantment == Enchantment::NONE);
     assert(loaded.master_deck[deck_size - 2].id == FAR_CARD && loaded.master_deck[deck_size - 2].upgraded);
     assert(static_cast<uint16_t>(loaded.master_deck[deck_size - 1].id) == 511 && !loaded.master_deck[deck_size - 1].upgraded);
     assert(sizeof(CardId) == 2 && sizeof(DeckCardSave) == 4);

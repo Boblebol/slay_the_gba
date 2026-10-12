@@ -1112,9 +1112,10 @@ void card_name(const engine::DeckCard& card, bn::istring& out)
     out.clear();
     out.append(base_name(card.id));
 
-    if(card.enchantment == engine::Enchantment::INKY)
+    // The mark of an enchanted card: the deck register says which enchantment it is.
+    if(card.enchantment != engine::Enchantment::NONE)
     {
-        out.append(" encré");
+        out.append(" ☆");
     }
 
     // A Status card has no upgraded version, whatever upgraded the hand it was in.
@@ -2782,7 +2783,109 @@ bn::string_view card_cost_label(const engine::DeckCard& card)
         return "-";
     }
 
-    return cost_digit(engine::CardDef::get_cost(card.id, card.upgraded));
+    return cost_digit(engine::CardDef::get_cost(card));
+}
+
+bn::string_view enchantment_name(engine::Enchantment enchantment)
+{
+    switch(enchantment)
+    {
+    case engine::Enchantment::INKY:
+        return "Encrée";
+    case engine::Enchantment::ADROIT:
+        return "Adroit";
+    case engine::Enchantment::NIMBLE:
+        return "Agilité";
+    case engine::Enchantment::TEZCATARAS_EMBER:
+        return "Braise de Tezcatara";
+    case engine::Enchantment::SWIFT:
+        return "Célérité";
+    case engine::Enchantment::CLONE:
+        return "Clonage";
+    case engine::Enchantment::MOMENTUM:
+        return "Élan";
+    case engine::Enchantment::GLAM:
+        return "Glamour";
+    case engine::Enchantment::IMBUED:
+        return "Imprégnation";
+    case engine::Enchantment::INSTINCT:
+        return "Instinct";
+    case engine::Enchantment::ROYALLY_APPROVED:
+        return "Sceau royal";
+    case engine::Enchantment::SHARP:
+        return "Tranchant";
+    case engine::Enchantment::GOOPY:
+        return "Viscosité";
+    default:
+        return "";
+    }
+}
+
+void enchantment_text(const engine::DeckCard& card, bn::istring& title, bn::istring& effect)
+{
+    title.clear();
+    effect.clear();
+
+    if(card.enchantment == engine::Enchantment::NONE)
+    {
+        return;
+    }
+
+    const int amount = card.enchant_amount;
+    bn::ostringstream title_stream(title);
+    title_stream << "☆ " << enchantment_name(card.enchantment);
+
+    if(amount > 0)
+    {
+        title_stream << ' ' << amount;
+    }
+
+    bn::ostringstream stream(effect);
+
+    switch(card.enchantment)
+    {
+    case engine::Enchantment::INKY:
+        stream << "Applique Affaibli " << int(engine::INKY_WEAK) << ".";
+        break;
+    case engine::Enchantment::ADROIT:
+        stream << "Gagne " << amount << " d'Armure.";
+        break;
+    case engine::Enchantment::NIMBLE:
+        stream << "Armure +" << amount << ".";
+        break;
+    case engine::Enchantment::TEZCATARAS_EMBER:
+        stream << "0 ●, +" << amount << " dégâts, Éternel.";
+        break;
+    case engine::Enchantment::SWIFT:
+        stream << "1re fois : pioche " << amount << ".";
+        break;
+    case engine::Enchantment::CLONE:
+        stream << "Copiable au feu de camp.";
+        break;
+    case engine::Enchantment::MOMENTUM:
+        stream << "+" << amount << " dégâts à chaque jeu.";
+        break;
+    case engine::Enchantment::GLAM:
+        stream << "Écho 1 (1 fois/combat).";
+        break;
+    case engine::Enchantment::IMBUED:
+        stream << "Jouée au début du combat.";
+        break;
+    case engine::Enchantment::INSTINCT:
+        stream << "Dégâts doublés.";
+        break;
+    case engine::Enchantment::ROYALLY_APPROVED:
+        stream << "Inné. Retenue.";
+        break;
+    case engine::Enchantment::SHARP:
+        stream << "+" << amount << " dégâts.";
+        break;
+    case engine::Enchantment::GOOPY:
+        stream << "Épuisement. +1 par jeu.";
+        break;
+    default:
+        break;
+    }
 }
 
 bn::string_view cost_label(int cost)
