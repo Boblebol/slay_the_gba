@@ -67,6 +67,7 @@
 #include "bn_sprite_items_mon_bowlbug_egg.h"
 #include "bn_sprite_items_mon_byrdonis.h"
 #include "bn_sprite_items_mon_tough_egg.h"
+#include "bn_sprite_items_mon_ovicopter.h"
 #include "bn_sprite_items_mon_phrog_parasite.h"
 #include "bn_sprite_items_mon_wriggler.h"
 #include "bn_sprite_items_mon_louse.h"
@@ -378,6 +379,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_bowlbug_egg, false };
     case engine::EnemyType::BYRDONIS:
         return { &bn::sprite_items::mon_byrdonis, false };
+    case engine::EnemyType::OVICOPTER:
+        return { &bn::sprite_items::mon_ovicopter, false };
     case engine::EnemyType::TOUGH_EGG:
         return { &bn::sprite_items::mon_tough_egg, false };
     case engine::EnemyType::PHROG_PARASITE:

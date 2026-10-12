@@ -64,6 +64,7 @@ constexpr Encounter ACT2_NORMAL[] = {
     { "ChompersNormal"sv, 2, { EnemyType::CHOMPER, EnemyType::CHOMPER } },
     { "TunnelerNormal"sv, 2, { EnemyType::CHOMPER, EnemyType::TUNNELER } },
     { "LouseProgenitorNormal"sv, 1, { EnemyType::LOUSE_PROGENITOR } },
+    { "OvicopterNormal"sv, 1, { EnemyType::OVICOPTER } },
 };
 
 // Act 3: the Glory. The groups the game had before stay beside them: the Louse and the Jaw Worm are met there.
