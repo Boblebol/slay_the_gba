@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 87,0 %** — 1075 faits, 17 partiels, 154 à faire (35 hors périmètre).
+**Avancement global : 87,0 %** — 1077 faits, 17 partiels, 153 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 286 | 0 | 35 | 89,1 % |
-| [Bestiaire](#bestiaire) | 66 | 1 | 37 | 63,9 % |
+| [Bestiaire](#bestiaire) | 67 | 1 | 36 | 64,9 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 59 | 0 | 0 | 100,0 % |
+| [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 28 | 2 | 6 | 80,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1075** | **17** | **154** | **87,0 %** |
+| **Total** | **1077** | **17** | **153** | **87,0 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 63,9 %
+## Bestiaire — 64,9 %
 
-### Monstres — 72,2 %
+### Monstres — 73,6 %
 
-52 faits, 0 partiel, 20 à faire.
+53 faits, 0 partiel, 19 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1275,7 +1275,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sphéropode (Œuf) | Monstre · Acte 2 | Oui |  |
 | Titos | Invocation · Acte 2 | Oui |  |
 | Tunnelier | Monstre · Acte 2 | Oui |  |
-| Œuf robuste | Monstre · Acte 2 | Non |  |
+| Œuf robuste | Monstre · Acte 2 | Oui |  |
 | Berserker de vase | Monstre · Acte 3 | Oui |  |
 | Bouclier vivant | Faible · Acte 3 | Oui |  |
 | Chevalier rainette | Monstre · Acte 3 | Oui |  |
@@ -1428,7 +1428,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 ### Déroulement du combat — 100,0 %
 
-23 faits, 0 partiel, 0 à faire.
+24 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1437,6 +1437,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Armure remise à zéro au début du tour |  | Oui |  |
 | Jusqu'à 3 ennemis par combat, avec ciblage |  | Oui |  |
 | Intentions ennemies affichées |  | Oui |  |
+| Invocations ennemies en cours de combat, Sbires qui fuient sans leur chef |  | Oui | [#221](https://github.com/Boblebol/slay_the_gba/issues/221) |
 | Calcul des dégâts (Force, Affaibli, Vulnérable) |  | Oui |  |
 | Modificateurs en pourcentage : dégâts (+25 %, +50 %, double), Armure doublée, Vulnérable et Affaibli renforcés |  | Oui | [#89](https://github.com/Boblebol/slay_the_gba/issues/89) |
 | Effets qui dépassent le combat : or, potion, récompense de carte, retrait de carte du deck |  | Oui | [#94](https://github.com/Boblebol/slay_the_gba/issues/94) |
