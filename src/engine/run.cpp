@@ -779,6 +779,12 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         if (!potion_belt_full()) potions.push_back("AMBERGRIS");
         add_card_to_deck(DeckCard{ CardId::GUILTY, false });
     }
+    // Relic of the Ancients (Pael): every Defend of the deck is enchanted with Goopy.
+    if (relic_id == "PAELS_CLAW" && has_relic("PAELS_CLAW")) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            if (master_deck[i].id == CardId::DEFEND) enchant_card_in_deck(static_cast<int>(i), Enchantment::GOOPY);
+        }
+    }
     // Relic of the Ancients: one Ancient card of the hero, drawn at random with the run's generator.
     if (relic_id == "DUSTY_TOME" && has_relic("DUSTY_TOME")) {
         const auto hero_pool = static_cast<CardPool>(static_cast<uint8_t>(character) + 1);
