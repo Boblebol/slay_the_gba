@@ -248,6 +248,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "THE_BOOT", "Chaque fois que vous auriez infligé 4 dégâts d'attaque ou moins (sans armure), vous infligez 5 dégâts à la place." },
     { "THE_COURIER", "Le Marchand renouvelle ce que vous achetez. Prix -20%." },
     { "THE_ABACUS", "Chaque fois que la Pioche est mélangée, gagnez 6 d'Armure." },
+    { "TRI_BOOMERANG", "Choisissez 3 Attaques de votre Deck. Envoûtez-les avec Instinct." },
     { "TINGSHA", "Pour chaque carte que vous défaussez pendant votre tour, infligez 3 dégâts à un ennemi aléatoire." },
     { "CHOICES_PARADOX", "Au début de chaque combat, choisissez 1 carte parmi 5 cartes aléatoires et ajoutez-la à votre Main avec Retenue." },
     { "TOOLBOX", "Au début de chaque combat, choisissez 1 carte Incolore aléatoire parmi 3 et ajoutez-la à votre Main." },

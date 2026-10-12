@@ -30,7 +30,8 @@ enum class DeckChoiceKind : uint8_t {
     NONE,
     UPGRADE,
     REMOVE,
-    TRANSFORM
+    TRANSFORM,
+    ENCHANT_INSTINCT // Tri-boomerang: Attacks to enchant with Instinct
 };
 
 struct DeckChoice {

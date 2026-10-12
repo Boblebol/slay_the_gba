@@ -1559,6 +1559,34 @@ void test_planisphere() {
     std::cout << "[PASS] Planisphere: 5 HP when entering a ? room" << std::endl;
 }
 
+void test_tri_boomerang() {
+    // Obtained: 3 Attacks of the deck are chosen and enchanted with Instinct.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("TRI_BOOMERANG");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ENCHANT_INSTINCT && run.deck_choice.remaining == 3);
+    int skill_index = -1;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (CardDef::get(run.master_deck[i].id).type != CardType::ATTACK) { skill_index = static_cast<int>(i); break; }
+    }
+    assert(skill_index >= 0 && !run.deck_choice_allows(skill_index) && !run.resolve_deck_choice(skill_index));
+    int picked = 0;
+    for (size_t i = 0; i < run.master_deck.size() && picked < 3; ++i) {
+        if (run.deck_choice_allows(static_cast<int>(i))) {
+            assert(run.resolve_deck_choice(static_cast<int>(i)));
+            assert(run.master_deck[i].enchantment == Enchantment::INSTINCT);
+            ++picked;
+        }
+    }
+    assert(picked == 3 && !run.has_deck_choice());
+
+    // Without the relic: nothing is asked and nothing is enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    assert(!plain.has_deck_choice());
+    for (const DeckCard& card : plain.master_deck) assert(card.enchantment == Enchantment::NONE);
+}
+
 void test_pomander() {
     // Obtained: one card of the deck is picked to be upgraded.
     RunManager run;
@@ -4183,6 +4211,7 @@ int main() {
     test_planisphere();
     test_meal_ticket();
     test_pomander();
+    test_tri_boomerang();
     test_neows_talisman();
     test_large_capsule();
     test_astrolabe();
