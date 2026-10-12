@@ -67,7 +67,7 @@ struct CombatCounters {
     uint8_t cards_discarded = 0; // discarded by effects, not by the end of the turn
     uint8_t energy_spent = 0;
     uint8_t hits_dealt = 0;      // attack hits on enemies
-    uint8_t hits_on_enemy[3] = {}; // the same, for each enemy of CombatEngine::enemies
+    uint8_t hits_on_enemy[MAX_ENEMIES] = {}; // the same, for each enemy of CombatEngine::enemies
     uint8_t stars_gained = 0;
     uint8_t stars_spent = 0;
     uint8_t osty_attacks = 0;    // attacks of Osty, one for an attack on every enemy
@@ -220,7 +220,7 @@ class CombatEngine {
 public:
     Player player;
     Enemy enemy; // Primary enemy (kept in sync with enemies[0])
-    FixedVector<Enemy, 3> enemies; // Multi-enemy field (Yu-Gi-Oh / Slay style: 1 to 3 enemies)
+    FixedVector<Enemy, MAX_ENEMIES> enemies; // Multi-enemy field: 1 to MAX_ENEMIES enemies
     int selected_target_index = 0;
     // Ascension of the room (set by the run), given to the enemies summoned during the fight: 100 = none.
     int16_t enemy_hp_percent = 100;
@@ -287,7 +287,7 @@ public:
     // the first turn starts with PowerId::WHISPERING_EARRING registered, cleared when the turn ends.
     bool vakuu_turn_active = false;
 
-    FixedVector<EnemyActionRecord, 3> last_enemy_actions;
+    FixedVector<EnemyActionRecord, MAX_ENEMIES> last_enemy_actions;
 
     CombatState state = CombatState::PLAYER_TURN;
     int turn_number = 1;
@@ -298,7 +298,7 @@ public:
 
     void init_starter_deck(CharacterId character = CharacterId::IRONCLAD);
     void start_combat(EnemyType enemy_type, CharacterId character = CharacterId::IRONCLAD);
-    void start_combat_multi(FixedVector<EnemyType, 3> enemy_types, CharacterId character = CharacterId::IRONCLAD);
+    void start_combat_multi(std::span<const EnemyType> enemy_types, CharacterId character = CharacterId::IRONCLAD);
     // Opens the fight once the draw pile is ready: clears the combat state, then starts the first turn.
     void open_first_turn();
     // The two halves of open_first_turn, for whoever registers powers (relics) between them.
@@ -307,7 +307,7 @@ public:
     void plan_enemies();
     // Brings an enemy into the fight, at the end of CombatEngine::enemies or in the place of a dead one; a
     // Minion of `leader` when one is given. It acts from the next enemy turn on, and its move is planned with the
-    // others'. Its index, or -1 when the 3 places are taken.
+    // others'. Its index, or -1 when the MAX_ENEMIES places are taken.
     int summon_enemy(EnemyType type, int leader = -1);
     // Gives a power to the enemy at `enemy_index`: it holds it until it dies or leaves the fight.
     void add_enemy_power(int enemy_index, PowerId id, int16_t amount = 1);

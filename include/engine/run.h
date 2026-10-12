@@ -305,7 +305,7 @@ private:
     uint32_t rng_state_ = 12345;
     uint32_t next_random();
     // Monsters of a fighting room, drawn from the encounter table of the act and the floor.
-    FixedVector<EnemyType, 3> draw_encounter(RoomType room);
+    FixedVector<EnemyType, MAX_ENEMIES> draw_encounter(RoomType room);
     // Seed of the reward stream of the current room (see RewardRng).
     uint32_t reward_seed() const;
     // Leaves the reward screen: the gold is paid, and a boss opens the next act.

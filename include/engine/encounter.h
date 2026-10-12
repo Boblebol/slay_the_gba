@@ -28,7 +28,7 @@ enum class EncounterTier : uint8_t {
 struct Encounter {
     std::string_view id; // reference id ("SewerClamNormal"), or "Legacy..." for the groups kept from before
     uint8_t count;       // monsters in the fight
-    EnemyType monsters[3];
+    EnemyType monsters[MAX_ENEMIES];
     // When not empty, the `count` monsters are drawn from this pool, all different, instead of `monsters`.
     std::span<const EnemyType> random_pool = {};
 };

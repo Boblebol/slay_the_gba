@@ -2736,6 +2736,79 @@ void test_owl_magistrate_ascension() {
     std::cout << "[PASS] Owl Magistrate: Ascension gives 247 HP, Scrutiny 17, Verdict 36" << std::endl;
 }
 
+void test_scroll_of_biting() {
+    // Chomp 14, More Teeth (Strength 2), Chew 5x2 (7x2 with the Strength): one full cycle of its three moves.
+    const int hp = make_combat(CharacterId::IRONCLAD, EnemyType::SCROLL_OF_BITING).enemies[0].hp;
+    assert(hp >= 30 && hp <= 37);
+    check_monster(EnemyType::SCROLL_OF_BITING, "Parchemord", hp, {
+        { ATTACK, 14, 0, 0 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK, 7, 0, 2, 0, 2 },
+    });
+
+    // Then a draw between Chomp and Chew each turn: Chomp never twice in a row, Chew as often as drawn.
+    bool chomp = false, chew_twice = false;
+    for (uint32_t i = 0; i < 40; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SCROLL_OF_BITING);
+        Enemy& scroll = combat.enemies[0];
+        scroll.reset_pattern(i * 7919 + 1);
+        scroll.plan_turn(1);
+        scroll.roll_hp(i * 104729 + 3);
+        assert(scroll.hp >= 30 && scroll.hp <= 37 && scroll.hp_spread() == 7 && scroll.max_hp == 30 + scroll.hp_bonus);
+        combat.player.max_hp = 500;
+        bool last_chew = false;
+        bool last_chomp = false;
+        for (int turn = 1; turn <= 10; ++turn) {
+            const EnemyIntent& intent = scroll.current_intent;
+            if (turn == 2) {
+                assert(intent.type == BUFF && intent.status_type == StatusType::STRENGTH && intent.status_amount == 2);
+            } else {
+                assert(intent.type == ATTACK);
+                const bool is_chomp = intent.hits == 1;
+                assert(is_chomp ? scroll.intent_damage(combat.player) == 14 + 2 * (turn > 2)
+                                : intent.hits == 2 && scroll.intent_damage(combat.player) == 7);
+                if (turn == 1) assert(is_chomp);
+                if (turn == 3) assert(!is_chomp);
+                if (turn > 3) {
+                    assert(!(is_chomp && last_chomp));
+                    chomp = chomp || is_chomp;
+                    chew_twice = chew_twice || (!is_chomp && last_chew);
+                }
+                last_chomp = is_chomp;
+                last_chew = !is_chomp;
+            }
+            if (turn == 2) last_chomp = last_chew = false;
+            combat.player.hp = combat.player.max_hp;
+            combat.end_player_turn();
+        }
+        assert(scroll.get_status(StatusType::STRENGTH) == 2);
+    }
+    assert(chomp && chew_twice);
+    std::cout << "[PASS] Scroll of Biting: 30 to 37 HP, Chomp 14, More Teeth (+2 Strength), Chew 5x2, then Chomp "
+                 "(never twice) or Chew"
+              << std::endl;
+}
+
+void test_scroll_of_biting_ascension() {
+    // 33 HP and more at Ascension, Chomp 16 and Chew 6x2.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SCROLL_OF_BITING);
+    Enemy& scroll = combat.enemies[0];
+    scroll.roll_hp(1);
+    const int bonus = scroll.hp_bonus;
+    assert(scroll.ascension_hp() == 33);
+    scroll.ascend(true, true);
+    combat.plan_enemies();
+    assert(scroll.hp == 33 + bonus && scroll.max_hp == scroll.hp);
+    combat.player.hp = combat.player.max_hp = 500;
+    assert(scroll.current_intent.type == ATTACK && scroll.intent_damage(combat.player) == 16);
+    combat.end_player_turn();
+    assert(scroll.current_intent.type == BUFF);
+    combat.end_player_turn();
+    assert(scroll.current_intent.type == ATTACK && scroll.current_intent.hits == 2);
+    assert(scroll.intent_damage(combat.player) == 6 + 2);
+    std::cout << "[PASS] Scroll of Biting: Ascension gives 33 HP and more, Chomp 16, Chew 6x2" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -4289,6 +4362,8 @@ int main() {
     test_shrinker_beetle_ascension();
     test_owl_magistrate();
     test_owl_magistrate_ascension();
+    test_scroll_of_biting();
+    test_scroll_of_biting_ascension();
     test_phrog_parasite();
     test_wriggler();
     test_wriggler_ascension();
