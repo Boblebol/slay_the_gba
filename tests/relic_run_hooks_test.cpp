@@ -77,6 +77,40 @@ void test_rest_hook_and_campfire_actions() {
     std::cout << "[PASS] Hook: resting; campfire actions given by Shovel, Girya and Meat Cleaver" << std::endl;
 }
 
+void test_campfire_extra_actions() {
+    // Every extra action together: Dig, Lift, Cook from relics, then Clone from an enchanted card; the menu holds them all.
+    RunManager run = make_run();
+    run.add_relic("SHOVEL");
+    run.add_relic("GIRYA");
+    run.add_relic("MEAT_CLEAVER");
+    assert(run.campfire_actions().size() == 5);
+    assert(run.enchant_card_in_deck(0, Enchantment::CLONE));
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> all = run.campfire_actions();
+    assert(all.size() == 6 && all[0] == CampfireAction::REST && all[1] == CampfireAction::SMITH &&
+           all[2] == CampfireAction::DIG && all[3] == CampfireAction::LIFT && all[4] == CampfireAction::COOK &&
+           all[5] == CampfireAction::CLONE);
+    // Cook: 2 cards removed, +5 Max HP.
+    const size_t deck_before = run.master_deck.size();
+    const int16_t max_hp_before = run.max_hp;
+    run.phase = RunPhase::CAMPFIRE;
+    assert(run.cook_at_campfire());
+    assert(run.has_deck_choice());
+    run.resolve_deck_choice(1);
+    run.resolve_deck_choice(1);
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck_before - 2 && run.max_hp == max_hp_before + 5);
+    // Clone copies the enchanted card, enchantment included; a full deck refuses it and keeps the rest site.
+    run.master_deck.clear();
+    run.master_deck.push_back(CardId::STRIKE);
+    assert(run.enchant_card_in_deck(0, Enchantment::CLONE));
+    run.phase = RunPhase::CAMPFIRE;
+    assert(run.clone_at_campfire(0) && run.master_deck.size() == 2);
+    assert(run.master_deck[1].id == CardId::STRIKE && run.master_deck[1].enchantment == Enchantment::CLONE);
+    while (run.master_deck.size() < run.master_deck.capacity()) run.master_deck.push_back(CardId::STRIKE);
+    run.phase = RunPhase::CAMPFIRE;
+    assert(!run.can_clone(0) && !run.clone_at_campfire(0) && run.phase == RunPhase::CAMPFIRE);
+    std::cout << "[PASS] Campfire: Dig, Lift, Cook and Clone listed together; Cook and Clone resolve" << std::endl;
+}
+
 void test_shop_hook() {
     RunManager run = make_run();
     run.open_shop();
@@ -209,6 +243,7 @@ int main() {
     std::cout << "=== Relics Outside Combat ===" << std::endl;
     test_room_hook();
     test_rest_hook_and_campfire_actions();
+    test_campfire_extra_actions();
     test_shop_hook();
     test_combat_and_reward_hooks();
     test_card_added_hook();

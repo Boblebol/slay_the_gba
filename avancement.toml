@@ -197,7 +197,7 @@ items = [
   { name = "Coffre : or et relique jamais en double", status = "oui" },
   { name = "Potion en récompense de combat", status = "oui", note = "40 % des combats, tirée par rareté parmi les potions que le moteur résout. Ceinture pleine : en jeter une ou la laisser." },
   { name = "Relique après un élite", status = "oui", note = "Tirée par rareté, jamais en double, jamais celle d'un autre héros." },
-  { name = "Relique de boss", status = "partiel", issue = 184, note = "Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. Les reliques d'Ancien du jeu d'origine restent à faire." },
+  { name = "Relique de boss", status = "oui", issue = 184, note = "Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2." },
   { name = "Cartes rares et peu communes selon la salle", status = "oui", note = "Chaque carte tire sa rareté : 60 / 37 / 3 % après un combat, 50 / 40 / 10 % après un élite, que des Rares après un boss. Pool bâti depuis les cartes du héros." },
 ]
 
