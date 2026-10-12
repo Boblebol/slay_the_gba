@@ -1850,6 +1850,7 @@ void CombatEngine::start_combat_multi(std::span<const EnemyType> enemy_types, Ch
     player.max_hp = cdef.starting_hp;
 
     enemies.clear();
+    last_enemy_actions.clear();
     for (size_t i = 0; i < enemy_types.size() && i < MAX_ENEMIES; ++i) {
         Enemy e;
         e.init(enemy_types[i]);
@@ -6444,6 +6445,9 @@ void CombatEngine::trigger_end_of_turn_in_hand(const DeckCard& card) {
 void CombatEngine::end_player_turn() {
     vakuu_turn_active = false;
     if (state != CombatState::PLAYER_TURN) return;
+    // The records describe this end of turn only: when the enemies do not act (they die at the end of the
+    // player's turn, an extra turn skips them), the scene must not replay the turn before, maybe of another fight.
+    last_enemy_actions.clear();
     double_block_turn = false;
     attack_double_now = false;
     // A choice left unanswered is answered for the player.
