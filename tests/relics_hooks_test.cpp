@@ -1122,6 +1122,33 @@ void test_dingy_rug() {
     std::cout << "[PASS] Dingy Rug: " << colorless << " of " << offers << " card rewards are Colorless" << std::endl;
 }
 
+void test_glitter() {
+    for (uint32_t seed = 1; seed <= 20; ++seed) {
+        RunManager with;
+        with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with.add_relic("GLITTER");
+        enter_room_of_type(with, RoomType::MONSTER);
+        with.generate_rewards();
+        assert(with.current_card_rewards.size() > 0);
+        for (size_t i = 0; i < with.current_card_rewards.size(); ++i) {
+            assert(with.current_card_rewards[i].enchantment == Enchantment::GLAM);
+        }
+        // The picked card joins the deck with its enchantment.
+        size_t before = with.master_deck.size();
+        with.pick_card_reward(0);
+        assert(with.master_deck.size() == before + 1 && with.master_deck[before].enchantment == Enchantment::GLAM);
+
+        RunManager without;
+        without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(without, RoomType::MONSTER);
+        without.generate_rewards();
+        for (size_t i = 0; i < without.current_card_rewards.size(); ++i) {
+            assert(without.current_card_rewards[i].enchantment == Enchantment::NONE);
+        }
+    }
+    std::cout << "[PASS] Glitter: every card reward is enchanted with Glam" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -1333,6 +1360,31 @@ void test_small_capsule() {
     plain.add_relic("ANCHOR");
     assert(plain.relics.size() == plain_before + 1);
     std::cout << "[PASS] Small Capsule: one random relic when obtained, none without it" << std::endl;
+}
+
+void test_nutritious_soup() {
+    // Obtained: every Strike of the deck gets Tezcatara's Ember (3 damage), the other cards are left alone.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("NUTRITIOUS_SOUP");
+    assert(run.has_relic("NUTRITIOUS_SOUP"));
+    int strikes = 0;
+    for (const DeckCard& card : run.master_deck) {
+        if (card.id == CardId::STRIKE) {
+            ++strikes;
+            assert(card.enchantment == Enchantment::TEZCATARAS_EMBER && card.enchant_amount == 3);
+        } else {
+            assert(card.enchantment == Enchantment::NONE);
+        }
+    }
+    assert(strikes > 0);
+
+    // Without the relic, no card is enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    for (const DeckCard& card : plain.master_deck) assert(card.enchantment == Enchantment::NONE);
+    std::cout << "[PASS] Nutritious Soup: enchants every Strike with Tezcatara's Ember" << std::endl;
 }
 
 void test_nutritious_oyster() {
@@ -1559,6 +1611,34 @@ void test_planisphere() {
     std::cout << "[PASS] Planisphere: 5 HP when entering a ? room" << std::endl;
 }
 
+void test_tri_boomerang() {
+    // Obtained: 3 Attacks of the deck are chosen and enchanted with Instinct.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("TRI_BOOMERANG");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ENCHANT && run.deck_choice.remaining == 3);
+    int skill_index = -1;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (CardDef::get(run.master_deck[i].id).type != CardType::ATTACK) { skill_index = static_cast<int>(i); break; }
+    }
+    assert(skill_index >= 0 && !run.deck_choice_allows(skill_index) && !run.resolve_deck_choice(skill_index));
+    int picked = 0;
+    for (size_t i = 0; i < run.master_deck.size() && picked < 3; ++i) {
+        if (run.deck_choice_allows(static_cast<int>(i))) {
+            assert(run.resolve_deck_choice(static_cast<int>(i)));
+            assert(run.master_deck[i].enchantment == Enchantment::INSTINCT);
+            ++picked;
+        }
+    }
+    assert(picked == 3 && !run.has_deck_choice());
+
+    // Without the relic: nothing is asked and nothing is enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    assert(!plain.has_deck_choice());
+    for (const DeckCard& card : plain.master_deck) assert(card.enchantment == Enchantment::NONE);
+}
+
 void test_pomander() {
     // Obtained: one card of the deck is picked to be upgraded.
     RunManager run;
@@ -1669,6 +1749,29 @@ void test_astrolabe() {
     plain.add_relic("ANCHOR");
     assert(!plain.has_deck_choice());
     std::cout << "[PASS] Astrolabe: transforms 3 cards then upgrades them when obtained" << std::endl;
+}
+
+void test_beautiful_bracelet() {
+    // Obtained: 4 chosen cards get Swift 2.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    run.add_relic("BEAUTIFUL_BRACELET");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ENCHANT);
+    assert(run.deck_choice.remaining == 4 && !run.deck_choice.optional);
+    for (int i = 0; i < 4; ++i) {
+        assert(run.resolve_deck_choice(i));
+        assert(run.master_deck[i].enchantment == Enchantment::SWIFT && run.master_deck[i].enchant_amount == 2);
+    }
+    assert(!run.has_deck_choice());
+    assert(run.master_deck[4].enchantment == Enchantment::NONE);
+
+    // Without the relic: nothing is asked and no card is enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    assert(plain.master_deck[0].enchantment == Enchantment::NONE);
+    std::cout << "[PASS] Beautiful Bracelet: 4 chosen cards enchanted with Swift 2 when obtained" << std::endl;
 }
 
 void test_neows_bones() {
@@ -2016,6 +2119,54 @@ void test_sand_castle() {
     plain.add_relic("ANCHOR");
     assert(!plain.has_relic("SAND_CASTLE") && upgraded_count(plain) == before);
     std::cout << "[PASS] Sand Castle: upgrades 6 random cards when obtained" << std::endl;
+}
+
+void test_paels_growth() {
+    // Obtained: one card of the deck is enchanted with Clone.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("PAELS_GROWTH");
+    assert(run.has_relic("PAELS_GROWTH"));
+    int cloned = 0;
+    for (const DeckCard& card : run.master_deck) {
+        if (card.enchantment == Enchantment::CLONE) ++cloned;
+    }
+    assert(cloned == 1);
+
+    // Without the relic, no card is enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("PAELS_GROWTH"));
+    for (const DeckCard& card : plain.master_deck) assert(card.enchantment == Enchantment::NONE);
+
+    std::cout << "[PASS] Paël's Growth: a card is enchanted with Clone when obtained" << std::endl;
+}
+
+void test_paels_claw() {
+    // Obtained: every Defend of the deck is enchanted with Goopy; other cards are left alone.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("PAELS_CLAW");
+    assert(run.has_relic("PAELS_CLAW"));
+    int defends = 0;
+    for (const DeckCard& card : run.master_deck) {
+        if (card.id == CardId::DEFEND) {
+            ++defends;
+            assert(card.enchantment == Enchantment::GOOPY);
+        } else {
+            assert(card.enchantment == Enchantment::NONE);
+        }
+    }
+    assert(defends > 0);
+
+    // Without the relic, no Defend is enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    for (const DeckCard& card : plain.master_deck) assert(card.enchantment == Enchantment::NONE);
+
+    std::cout << "[PASS] Paël's Claw: Defends enchanted with Goopy when obtained" << std::endl;
 }
 
 void test_paels_horn() {
@@ -3923,6 +4074,36 @@ void test_precarious_shears() {
     std::cout << "[PASS] Precarious Shears: pickup asks for 2 cards to remove and costs 16 HP, nothing without the relic" << std::endl;
 }
 
+void test_electric_shrymp() {
+    // Obtained: one Skill of the deck is chosen and receives Imbued.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 740);
+    run.add_relic("ELECTRIC_SHRYMP");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ENCHANT && run.deck_choice.remaining == 1);
+    int attack = -1, skill = -1;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        CardType type = CardDef::get(run.master_deck[i].id).type;
+        if (type == CardType::ATTACK && attack < 0) attack = static_cast<int>(i);
+        if (type == CardType::SKILL && skill < 0) skill = static_cast<int>(i);
+    }
+    assert(attack >= 0 && skill >= 0);
+    assert(!run.resolve_deck_choice(attack));
+    assert(run.resolve_deck_choice(skill));
+    assert(!run.has_deck_choice());
+    assert(run.master_deck[skill].enchantment == Enchantment::IMBUED);
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (static_cast<int>(i) != skill) assert(run.master_deck[i].enchantment == Enchantment::NONE);
+    }
+
+    // Without the relic nothing is asked or enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 740);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("ELECTRIC_SHRYMP") && !plain.has_deck_choice());
+    for (const auto& card : plain.master_deck) assert(card.enchantment == Enchantment::NONE);
+    std::cout << "[PASS] Electric Shrymp: pickup enchants a chosen Skill with Imbued, nothing without the relic" << std::endl;
+}
+
 void test_biiig_hug() {
     // Obtained: 4 cards are chosen to leave the deck.
     RunManager run;
@@ -4043,6 +4224,41 @@ void test_silver_crucible() {
     }
     assert(checked && later_relic);
     std::cout << "[PASS] Silver Crucible: first 3 card rewards upgraded, first Treasure Chest empty" << std::endl;
+}
+
+void test_silken_tress() {
+    // With the relic: all the gold goes, and the first card reward is Enchanted with Glam, the next one is not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 727);
+    run.gold = 120;
+    run.add_relic("SILKEN_TRESS");
+    assert(run.gold == 0);
+    for (int reward = 0; reward < 2; ++reward) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+        for (const DeckCard& card : run.current_card_rewards) assert((card.enchantment == Enchantment::GLAM) == (reward == 0));
+        if (reward == 0) {
+            run.pick_card_reward(0);
+            assert(run.master_deck.back().enchantment == Enchantment::GLAM);
+        } else {
+            run.skip_card_rewards();
+        }
+    }
+
+    // Without it: the gold stays and no reward is Enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 727);
+    plain.gold = 120;
+    assert(plain.gold == 120);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
+    for (const DeckCard& card : plain.current_card_rewards) assert(card.enchantment == Enchantment::NONE);
+    plain.skip_card_rewards();
+    std::cout << "[PASS] Silken Tress: gold lost, first card reward Glam-enchanted" << std::endl;
 }
 
 void test_toasty_mittens() {
@@ -4196,9 +4412,11 @@ int main() {
     test_precise_scissors();
     test_precarious_shears();
     test_biiig_hug();
+    test_electric_shrymp();
     test_new_leaf();
     test_small_capsule();
     test_nutritious_oyster();
+    test_nutritious_soup();
     test_lava_rock();
     test_stone_humidifier();
     test_tiny_mailbox();
@@ -4208,9 +4426,11 @@ int main() {
     test_planisphere();
     test_meal_ticket();
     test_pomander();
+    test_tri_boomerang();
     test_neows_talisman();
     test_large_capsule();
     test_astrolabe();
+    test_beautiful_bracelet();
     test_neows_bones();
     test_empty_cage();
     test_pandoras_box();
@@ -4226,6 +4446,8 @@ int main() {
     test_radiant_pearl();
     test_sand_castle();
     test_paels_horn();
+    test_paels_growth();
+    test_paels_claw();
     test_paels_eye();
     test_throwing_axe();
     test_cursed_pearl();
@@ -4312,7 +4534,9 @@ int main() {
     test_bing_bong();
     test_paper_phrog();
     test_silver_crucible();
+    test_silken_tress();
     test_forgotten_soul();
     test_fishing_rod();
+    test_glitter();
     return 0;
 }
