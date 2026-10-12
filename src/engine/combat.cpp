@@ -371,6 +371,14 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 gain_temporary(StatusType::DEXTERITY, static_cast<int8_t>(-power.amount));
             }
             break;
+        case PowerId::SOAR:
+            // It lands when its next turn starts.
+            if (event == CombatEvent::ENEMY_TURN_START && info.enemy == power.holder) power.amount = 0;
+            break;
+        case PowerId::SHRINK:
+            // Worn down at the end of each of the player's turns.
+            if (event == CombatEvent::TURN_END && power.amount > 0) power.amount = static_cast<int16_t>(power.amount - 1);
+            break;
         case PowerId::BURROWED:
             // Spent when its Block is broken (the holder loses its turn) or when its holder acts again.
             if (event == CombatEvent::BLOCK_BROKEN && info.enemy == power.holder && power.amount > 0) {
@@ -1587,6 +1595,10 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
         base = static_cast<int16_t>(base + enchant_damage_now);
         if (enchant_double_now) percent *= 2;
     }
+    // Shrink: the player's attacks deal 30% less damage, whatever else adds up.
+    if (has_power(PowerId::SHRINK)) percent = percent * SHRINK_PERCENT / 100;
+    // Soar: the enemy takes half the attack damage until it lands.
+    if (enemy_power_amount(index_of(target), PowerId::SOAR) > 0) percent /= 2;
     int16_t damage = attack_damage(base, player, target, percent);
     // The Boot: an Attack hit that would deal 1 to 4 damage (before Block) deals 5 instead.
     if (damage > 0 && damage <= THE_BOOT_THRESHOLD && has_power(PowerId::THE_BOOT)) damage = THE_BOOT_MINIMUM;

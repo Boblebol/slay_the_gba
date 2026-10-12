@@ -2598,6 +2598,144 @@ void test_ovicopter_ascension() {
     std::cout << "[PASS] Ovicopter: Ascension gives 126 to 132 HP, Smash 17, Tenderizer 8, Paste +4" << std::endl;
 }
 
+void test_shrinker_beetle() {
+    // Shrinker (the player is Shrunk: their attacks deal 30% less damage for 3 turns), then Chomp 7 and Stomp 13
+    // in turn.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SHRINKER_BEETLE);
+    Enemy& beetle = combat.enemies[0];
+    assert(beetle.name == "Scarabrideur" && beetle.hp >= 38 && beetle.hp <= 40 && beetle.hp == beetle.max_hp);
+    assert(beetle.hp_spread() == 2 && beetle.max_hp == 38 + beetle.hp_bonus);
+    const int16_t hp = beetle.hp;
+    combat.player.max_hp = combat.player.hp = 500;
+    auto play = [&]() {
+        combat.player.hp = combat.player.max_hp;
+        combat.player.block = 0;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+    };
+    // Turn 1: Shrinker, which hurts nobody and Shrinks the player for 3 turns.
+    assert(beetle.current_intent.type == DEBUFF && beetle.intent_damage(combat.player) == 0);
+    assert(beetle.current_intent.power == PowerId::SHRINK && beetle.current_intent.power_on_player);
+    assert(!combat.has_power(PowerId::SHRINK));
+    play();
+    assert(combat.player.hp == 500 && combat.last_enemy_actions[0].power == PowerId::SHRINK);
+    assert(combat.power_amount(PowerId::SHRINK) == SHRINK_TURNS && SHRINK_TURNS == 3);
+    // Then Chomp 7, Stomp 13, Chomp 7, Stomp 13: the player is Shrunk on the three turns after Shrinker.
+    constexpr int DAMAGE[] = { 7, 13, 7, 13 };
+    for (int turn = 0; turn < 4; ++turn) {
+        assert(combat.has_power(PowerId::SHRINK) == (turn < 3));
+        beetle.block = 0;
+        const int16_t before = beetle.hp;
+        combat.hit(beetle, 10); // 10 damage, 7 while Shrunk
+        assert(before - beetle.hp == (turn < 3 ? 7 : 10));
+        beetle.hp = before;
+        assert(beetle.current_intent.type == ATTACK && beetle.intent_damage(combat.player) == DAMAGE[turn]);
+        play();
+        assert(combat.player.max_hp - combat.player.hp == DAMAGE[turn]);
+        assert(beetle.block == 0 && beetle.statuses.empty() && beetle.hp == hp);
+    }
+    assert(combat.power_amount(PowerId::SHRINK) == 0);
+
+    // 30% less, rounded down, after the rest: a Strike of 6 deals 4.
+    CombatEngine strike = make_combat(CharacterId::IRONCLAD, EnemyType::SHRINKER_BEETLE);
+    strike.end_player_turn();
+    strike.enemies[0].block = 0;
+    const int16_t full = strike.enemies[0].hp;
+    strike.hit(strike.enemies[0], 6);
+    assert(full - strike.enemies[0].hp == 4);
+
+    // Artifact keeps the player from being Shrunk.
+    CombatEngine guarded = make_combat(CharacterId::IRONCLAD, EnemyType::SHRINKER_BEETLE);
+    guarded.player.add_status(StatusType::ARTIFACT, 1);
+    guarded.end_player_turn();
+    assert(!guarded.has_power(PowerId::SHRINK) && guarded.player.get_status(StatusType::ARTIFACT) == 0);
+    std::cout << "[PASS] Shrinker Beetle: 38 to 40 HP, Shrinker (-30% attack damage, 3 turns), Chomp 7, Stomp 13"
+              << std::endl;
+}
+
+void test_shrinker_beetle_ascension() {
+    // 40 to 42 HP, Chomp 8 and Stomp 14 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SHRINKER_BEETLE);
+        Enemy& beetle = combat.enemies[0];
+        beetle.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        const int16_t base = beetle.hp;
+        assert(beetle.ascension_hp() == 40 && base >= 38 && base <= 40);
+        beetle.ascend(true, true);
+        combat.plan_enemies();
+        assert(beetle.hp == base + 2 && beetle.max_hp == base + 2 && beetle.hp >= 40 && beetle.hp <= 42);
+        assert(beetle.current_intent.type == DEBUFF);
+        combat.player.hp = combat.player.max_hp = 500;
+        combat.end_player_turn();
+        assert(beetle.current_intent.type == ATTACK && beetle.intent_damage(combat.player) == 8);
+        combat.end_player_turn();
+        assert(beetle.current_intent.type == ATTACK && beetle.intent_damage(combat.player) == 14);
+    }
+    std::cout << "[PASS] Shrinker Beetle: Ascension gives 40 to 42 HP, Chomp 8, Stomp 14" << std::endl;
+}
+
+void test_owl_magistrate() {
+    // Magistrate's Scrutiny 16, Peck Assault 4x6, Judicial Flight (Soar), Verdict 33 with 4 Vulnerable, and again.
+    check_monster(EnemyType::OWL_MAGISTRATE, "Magistrix", 231, {
+        { ATTACK, 16, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 6 },
+        { BUFF, 0, 0, 0 },
+        { ATTACK_DEBUFF, 33, 0, 0 },
+    });
+
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::OWL_MAGISTRATE);
+    Enemy& owl = combat.enemies[0];
+    combat.player.max_hp = combat.player.hp = 500;
+    // The damage the player's attack of `base` deals to the owl.
+    auto dealt = [&](int16_t base) {
+        owl.block = 0;
+        const int16_t before = owl.hp;
+        combat.hit(owl, base);
+        const int lost = before - owl.hp;
+        owl.hp = before;
+        return lost;
+    };
+    combat.end_player_turn(); // Scrutiny
+    combat.end_player_turn(); // Peck Assault
+    assert(owl.current_intent.type == BUFF && owl.current_intent.power == PowerId::SOAR);
+    assert(!owl.current_intent.power_on_player && dealt(10) == 10);
+    combat.end_player_turn(); // Judicial Flight: it Soars, attacks deal it half their damage
+    assert(combat.enemy_power_amount(0, PowerId::SOAR) == 1 && !combat.has_power(PowerId::SHRINK));
+    assert(dealt(10) == 5 && dealt(7) == 3);
+    // Verdict: it lands when its turn starts, then strikes for 33 and gives 4 Vulnerable.
+    assert(owl.current_intent.type == ATTACK_DEBUFF && owl.intent_damage(combat.player) == 33);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 33);
+    assert(combat.enemy_power_amount(0, PowerId::SOAR) == 0 && dealt(10) == 10);
+    assert(combat.player.get_status(StatusType::VULNERABLE) == 4);
+    // And again: Scrutiny on a Vulnerable player.
+    assert(owl.current_intent.type == ATTACK && owl.intent_damage(combat.player) == 24);
+    assert(owl.hp == 231 && owl.statuses.empty());
+    std::cout << "[PASS] Owl Magistrate: 231 HP, Scrutiny 16, Peck Assault 4x6, Soar (half damage until it lands), "
+                 "Verdict 33 + 4 Vulnerable"
+              << std::endl;
+}
+
+void test_owl_magistrate_ascension() {
+    // 247 HP, Scrutiny 17 and Verdict 36 at Ascension; Peck Assault stays 4x6.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::OWL_MAGISTRATE);
+    Enemy& owl = combat.enemies[0];
+    assert(owl.ascension_hp() == 247);
+    owl.ascend(true, true);
+    combat.plan_enemies();
+    assert(owl.hp == 247 && owl.max_hp == 247);
+    combat.player.hp = combat.player.max_hp = 500;
+    assert(owl.current_intent.type == ATTACK && owl.intent_damage(combat.player) == 17);
+    combat.end_player_turn();
+    assert(owl.intent_damage(combat.player) == 4 && owl.current_intent.hits == 6);
+    combat.end_player_turn();
+    assert(owl.current_intent.type == BUFF);
+    combat.end_player_turn();
+    assert(owl.current_intent.type == ATTACK_DEBUFF && owl.intent_damage(combat.player) == 36);
+    std::cout << "[PASS] Owl Magistrate: Ascension gives 247 HP, Scrutiny 17, Verdict 36" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -4147,6 +4285,10 @@ int main() {
     test_the_obscura_ascension();
     test_ovicopter();
     test_ovicopter_ascension();
+    test_shrinker_beetle();
+    test_shrinker_beetle_ascension();
+    test_owl_magistrate();
+    test_owl_magistrate_ascension();
     test_phrog_parasite();
     test_wriggler();
     test_wriggler_ascension();
