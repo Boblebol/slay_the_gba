@@ -198,6 +198,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ASTROLABE", "Lorsque vous obtenez cette relique, Transformez 3 cartes, puis Améliorez-les." },
     { "PANDORAS_BOX", "Transformez TOUTES vos Frappes et vos Défenses." },
     { "PAELS_GROWTH", "Lorsque vous obtenez cette relique, Envoûtez une carte avec Clonage." },
+    { "PAELS_CLAW", "Lorsque vous obtenez cette relique, Envoûtez toutes vos Défenses avec Viscosité." },
     { "PAELS_HORN", "Lorsque vous obtenez cette relique, ajoutez 2 Relaxations à votre Deck." },
     { "PRESERVED_FOG", "Retirez 3 cartes de votre Deck. Ajoutez Hubris à votre Deck." },
     { "PRECISE_SCISSORS", "Lorsque vous obtenez cette relique, retirez 1 carte de votre Deck." },

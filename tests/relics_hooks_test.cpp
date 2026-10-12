@@ -2143,6 +2143,32 @@ void test_paels_growth() {
     std::cout << "[PASS] Paël's Growth: a card is enchanted with Clone when obtained" << std::endl;
 }
 
+void test_paels_claw() {
+    // Obtained: every Defend of the deck is enchanted with Goopy; other cards are left alone.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("PAELS_CLAW");
+    assert(run.has_relic("PAELS_CLAW"));
+    int defends = 0;
+    for (const DeckCard& card : run.master_deck) {
+        if (card.id == CardId::DEFEND) {
+            ++defends;
+            assert(card.enchantment == Enchantment::GOOPY);
+        } else {
+            assert(card.enchantment == Enchantment::NONE);
+        }
+    }
+    assert(defends > 0);
+
+    // Without the relic, no Defend is enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    for (const DeckCard& card : plain.master_deck) assert(card.enchantment == Enchantment::NONE);
+
+    std::cout << "[PASS] Paël's Claw: Defends enchanted with Goopy when obtained" << std::endl;
+}
+
 void test_paels_horn() {
     // Obtained: two Relax join the deck.
     RunManager run;
@@ -4421,6 +4447,7 @@ int main() {
     test_sand_castle();
     test_paels_horn();
     test_paels_growth();
+    test_paels_claw();
     test_paels_eye();
     test_throwing_axe();
     test_cursed_pearl();
