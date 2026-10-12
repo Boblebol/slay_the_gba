@@ -757,6 +757,14 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         hp = std::max<int16_t>(1, hp - 15);
         upgrade_random_cards(2);
     }
+    // Relic of the Ancients (Pael): one random card of the deck gets the Clone enchantment.
+    if (relic_id == "PAELS_GROWTH" && has_relic("PAELS_GROWTH")) {
+        FixedVector<int, 128> candidates;
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            if (can_enchant(master_deck[i], Enchantment::CLONE)) candidates.push_back(static_cast<int>(i));
+        }
+        if (!candidates.empty()) enchant_card_in_deck(candidates[next_random() % candidates.size()], Enchantment::CLONE);
+    }
     // Bone Tea (event): the next combat is counted on pickup, and its starting hand is upgraded at its start.
     if (relic_id == "BONE_TEA" && has_relic("BONE_TEA")) set_relic_counter("BONE_TEA", 1);
     // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
