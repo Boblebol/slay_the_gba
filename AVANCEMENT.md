@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 89,2 %** — 1104 faits, 16 partiels, 127 à faire (35 hors périmètre).
+**Avancement global : 89,3 %** — 1105 faits, 16 partiels, 126 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -25,8 +25,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 31 | 1 | 4 | 87,5 % |
-| [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1104** | **16** | **127** | **89,2 %** |
+| [Interface, audio et cartouches](#interface) | 16 | 6 | 9 | 61,3 % |
+| **Total** | **1105** | **16** | **126** | **89,3 %** |
 
 <a id="ironclad"></a>
 
@@ -1605,11 +1605,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 58,1 %
+## Interface, audio et cartouches — 61,3 %
 
-### Écrans — 54,8 %
+### Écrans — 59,5 %
 
-9 faits, 5 partiels, 7 à faire.
+10 faits, 5 partiels, 6 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1633,7 +1633,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Écran titre animé (nuages, tour, brume) |  | Non | [#7](https://github.com/Boblebol/slay_the_gba/issues/7) |
 | Écran titre propre à chaque édition |  | Non | [#3](https://github.com/Boblebol/slay_the_gba/issues/3) |
 | Crédits et cinématique d'introduction |  | Non | [#1](https://github.com/Boblebol/slay_the_gba/issues/1) |
-| Crédits de fin |  | Non | [#22](https://github.com/Boblebol/slay_the_gba/issues/22) |
+| Crédits de fin |  | Oui | [#22](https://github.com/Boblebol/slay_the_gba/issues/22) |
 
 ### Graphismes et audio — 68,8 %
 
