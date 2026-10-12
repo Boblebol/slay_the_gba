@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 86,9 %** — 1074 faits, 17 partiels, 155 à faire (35 hors périmètre).
+**Avancement global : 87,0 %** — 1075 faits, 17 partiels, 154 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
-| [Reliques et potions](#reliques) | 285 | 0 | 36 | 88,8 % |
+| [Reliques et potions](#reliques) | 286 | 0 | 35 | 89,1 % |
 | [Bestiaire](#bestiaire) | 66 | 1 | 37 | 63,9 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 59 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 28 | 2 | 6 | 80,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1074** | **17** | **155** | **86,9 %** |
+| **Total** | **1075** | **17** | **154** | **87,0 %** |
 
 <a id="ironclad"></a>
 
@@ -859,11 +859,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 88,8 %
+## Reliques et potions — 89,1 %
 
-### Reliques partagées — 90,6 %
+### Reliques partagées — 91,5 %
 
-106 faits, 0 partiel, 11 à faire.
+107 faits, 0 partiel, 10 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -976,7 +976,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Miroir de Dolly | Boutique | Non |  |
 | Pain | Boutique | Oui |  |
 | Pichet hurlant | Boutique | Oui |  |
-| Planétaire | Boutique | Non |  |
+| Planétaire | Boutique | Oui |  |
 | Poignard | Boutique | Non |  |
 | Sceau royal | Boutique | Non |  |
 | Tapis miteux | Boutique | Oui |  |
