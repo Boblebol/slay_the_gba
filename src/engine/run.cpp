@@ -880,6 +880,13 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         draw_card_rewards(false, rng);
         phase = RunPhase::REWARD_SCREEN;
     }
+    // Hefty Tablet (Ancient): an Injury joins the deck, then 1 Rare card is chosen out of 3 on the card reward screen.
+    if (relic_id == "HEFTY_TABLET" && has_relic("HEFTY_TABLET")) {
+        add_card_to_deck(DeckCard{ CardId::INJURY, false });
+        RewardRng tablet_rng(next_random());
+        draw_card_rewards(false, tablet_rng, CardRarity::RARE);
+        phase = RunPhase::REWARD_SCREEN;
+    }
     // Lost Coffer (Ancient): one card reward is offered and one random potion joins the belt.
     if (relic_id == "LOST_COFFER" && has_relic("LOST_COFFER")) {
         RewardRng coffer_rng(next_random());

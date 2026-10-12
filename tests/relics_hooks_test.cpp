@@ -3544,6 +3544,30 @@ void test_fake_happy_flower() {
     std::cout << "[PASS] Fake Happy Flower: 1 energy every 5 turns" << std::endl;
 }
 
+void test_hefty_tablet() {
+    // Obtained from Neow: an Injury joins the deck and 3 Rare cards are offered, one of them is taken.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 721);
+    size_t deck = run.master_deck.size();
+    run.add_relic("HEFTY_TABLET");
+    assert(run.has_relic("HEFTY_TABLET") && run.phase == RunPhase::REWARD_SCREEN);
+    assert(run.master_deck.size() == deck + 1 && run.master_deck[deck].id == CardId::INJURY);
+    assert(run.current_card_rewards.size() == 3);
+    for (DeckCard card : run.current_card_rewards) assert(card_meta(card.id).rarity == CardRarity::RARE);
+    CardId picked = run.current_card_rewards[0].id;
+    run.pick_card_reward(0);
+    assert(run.master_deck.size() == deck + 2 && run.master_deck[deck + 1].id == picked);
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, no Injury and no card reward.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 721);
+    plain.add_relic("ANCHOR");
+    assert(plain.master_deck.size() == deck && plain.current_card_rewards.empty());
+    for (const DeckCard& card : plain.master_deck) assert(card.id != CardId::INJURY);
+    std::cout << "[PASS] Hefty Tablet: 1 Rare card out of 3 and an Injury on pickup" << std::endl;
+}
+
 void test_white_star() {
     // With the relic, an Elite offers one more set of Rare cards once its first set is taken or skipped.
     RunManager run;
@@ -4538,5 +4562,6 @@ int main() {
     test_forgotten_soul();
     test_fishing_rod();
     test_glitter();
+    test_hefty_tablet();
     return 0;
 }
