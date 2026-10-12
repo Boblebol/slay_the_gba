@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 88,7 %** — 1098 faits, 16 partiels, 133 à faire (35 hors périmètre).
+**Avancement global : 89,2 %** — 1104 faits, 16 partiels, 127 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
-| [Reliques et potions](#reliques) | 299 | 0 | 22 | 93,1 % |
+| [Reliques et potions](#reliques) | 305 | 0 | 16 | 95,0 % |
 | [Bestiaire](#bestiaire) | 72 | 1 | 31 | 69,7 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 31 | 1 | 4 | 87,5 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1098** | **16** | **133** | **88,7 %** |
+| **Total** | **1104** | **16** | **127** | **89,2 %** |
 
 <a id="ironclad"></a>
 
@@ -859,11 +859,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 93,1 %
+## Reliques et potions — 95,0 %
 
-### Reliques partagées — 92,3 %
+### Reliques partagées — 97,4 %
 
-108 faits, 0 partiel, 9 à faire.
+114 faits, 0 partiel, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -957,7 +957,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Œuf en fusion | Rare | Oui |  |
 | Œuf gelé | Rare | Oui |  |
 | Œuf toxique | Rare | Oui |  |
-| Aile fétiche | Boutique | Non |  |
+| Aile fétiche | Boutique | Oui |  |
 | Boucle de ceinture | Boutique | Oui |  |
 | Boîte à outils | Boutique | Oui |  |
 | Briquet mystique | Boutique | Oui |  |
@@ -969,20 +969,20 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Fruit du dragon | Boutique | Oui |  |
 | Gaufre de Lee | Boutique | Oui |  |
 | Graine fantôme | Boutique | Oui |  |
-| Kifuda | Boutique | Non |  |
+| Kifuda | Boutique | Oui |  |
 | L'Abaque | Boutique | Oui |  |
 | Lampe à lave | Boutique | Oui |  |
-| Marteau tordu | Boutique | Non |  |
+| Marteau tordu | Boutique | Oui |  |
 | Miroir de Dolly | Boutique | Oui |  |
 | Pain | Boutique | Oui |  |
 | Pichet hurlant | Boutique | Oui |  |
 | Planétaire | Boutique | Oui |  |
-| Poignard | Boutique | Non |  |
-| Sceau royal | Boutique | Non |  |
+| Poignard | Boutique | Oui |  |
+| Sceau royal | Boutique | Oui |  |
 | Tapis miteux | Boutique | Oui |  |
 | Tente miniature | Boutique | Non |  |
 | Triangle résonnant | Boutique | Oui |  |
-| Lentille de Fresnel | Évènement | Non |  |
+| Lentille de Fresnel | Évènement | Oui |  |
 | Diadème | Secours | Oui |  |
 
 ### Reliques d'évènement — 94,9 %
