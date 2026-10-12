@@ -228,18 +228,14 @@ private:
     int _loot_cursor = 0;
     int _belt_cursor = 0;
 
-    // Leaving the screen after a boss opens the next act, announced on its map.
+    // Leaving the screen after a boss opens the next act: its Ancient comes first.
     [[nodiscard]] SceneId _leave()
     {
         engine::RunManager& run = _ctx.run;
 
         if(run.phase == engine::RunPhase::ANCIENT_BLESSING)
         {
-            run.phase = engine::RunPhase::MAP_NAVIGATION;
-            _ctx.nav.reset_to_player_floor();
-            _ctx.map_toast.clear();
-            bn::ostringstream stream(_ctx.map_toast);
-            stream << "ACTE " << int(run.current_act) << " : l'ascension continue !";
+            return SceneId::ANCIENT;
         }
 
         // The Hunt: more cards are offered.

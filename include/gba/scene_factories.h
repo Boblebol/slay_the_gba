@@ -15,6 +15,7 @@ namespace gba
 [[nodiscard]] bn::unique_ptr<Scene> make_event_scene(GameContext& context);
 [[nodiscard]] bn::unique_ptr<Scene> make_campfire_scene(GameContext& context);
 [[nodiscard]] bn::unique_ptr<Scene> make_shop_scene(GameContext& context);
+[[nodiscard]] bn::unique_ptr<Scene> make_ancient_scene(GameContext& context);
 [[nodiscard]] bn::unique_ptr<Scene> make_end_scene(GameContext& context, bool victory);
 
 }

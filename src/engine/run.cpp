@@ -23,6 +23,23 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
     { "MEAT_CLEAVER", CampfireAction::COOK }
 };
 
+// Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
+// list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
+constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
+    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "DOWSING_ROD", "SEA_GLASS", "DRIFTWOOD",
+    "TOUCH_OF_OROBAS", "ARCHAIC_TOOTH", "PAELS_WING", "TOY_BOX", "FUR_COAT",
+};
+
+bool ancient_relic_pending(std::string_view relic_id) {
+    for (std::string_view pending : ANCIENT_RELICS_PENDING) {
+        if (pending == relic_id) return true;
+    }
+    return false;
+}
+
+// Mixed into the seed of the act's first room so the Ancient has a stream of its own (see RunManager::meet_ancient).
+constexpr uint32_t ANCIENT_SEED_SALT = 0xA5C1E7D3u;
+
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
 // Nutritious Soup: the extra damage Tezcatara's Ember gives each enchanted Strike.
 constexpr uint8_t NUTRITIOUS_SOUP_EMBER_DAMAGE = 3;
@@ -87,6 +104,8 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     current_node_index = -1;
     current_encounter = {};
     cook_pending = false;
+    current_ancient = AncientId::COUNT;
+    ancient_offers.clear();
     rng_state_ = seed ? seed : 12345;
 
     const auto& cdef = get_character(character);
@@ -2065,7 +2084,88 @@ void RunManager::advance_act() {
     current_node_index = -1;
     map_seed = next_random();
     regenerate_map();
-    phase = RunPhase::ANCIENT_BLESSING; // Transition with Ancient encounter!
+    // The Ancient has a stream of its own: the run's generator only moved for the seed of the new map.
+    meet_ancient(draw_ancient(current_act, reward_seed() ^ ANCIENT_SEED_SALT));
+}
+
+AncientId RunManager::draw_ancient(uint8_t act, uint32_t seed) {
+    if (act < 1 || act > 3) return AncientId::COUNT;
+    const uint8_t bit = static_cast<uint8_t>(1u << (act - 1));
+    uint32_t count = 0;
+    for (const Ancient& ancient : get_all_ancients()) {
+        if (ancient.act_mask & bit) ++count;
+    }
+    if (count == 0) return AncientId::COUNT;
+    RewardRng rng(seed);
+    uint32_t pick = rng.below(count);
+    for (const Ancient& ancient : get_all_ancients()) {
+        if (!(ancient.act_mask & bit)) continue;
+        if (pick-- == 0) return ancient.id;
+    }
+    return AncientId::COUNT;
+}
+
+void RunManager::meet_ancient(AncientId id) {
+    current_ancient = id;
+    ancient_offers.clear();
+    phase = RunPhase::ANCIENT_BLESSING;
+    if (id >= AncientId::COUNT || relics.size() >= relics.capacity()) return;
+
+    const Ancient& ancient = get_ancient(id);
+    RewardRng rng(reward_seed() ^ ANCIENT_SEED_SALT ^ (static_cast<uint32_t>(id) + 1) * 0x27D4EB2Fu);
+    const auto offered = [&](size_t slot, size_t option) {
+        for (size_t i = 0; i < ancient_offers.size(); ++i) {
+            if (ancient_offers[i].slot == slot && ancient_offers[i].option == option) return true;
+        }
+        return false;
+    };
+    const auto available = [&](size_t slot, size_t option) {
+        std::string_view relic_id = ancient.slots[slot].options[option].id;
+        return !offered(slot, option) && !has_relic(relic_id) && !ancient_relic_pending(relic_id);
+    };
+    for (size_t slot = 0; slot < ancient.slots.size(); ++slot) {
+        const AncientSlot& group = ancient.slots[slot];
+        for (uint8_t n = 0; n < group.picks_allowed && ancient_offers.size() < ancient_offers.capacity(); ++n) {
+            uint32_t count = 0;
+            for (size_t option = 0; option < group.options.size(); ++option) {
+                if (available(slot, option)) ++count;
+            }
+            if (count == 0) break;
+            uint32_t pick = rng.below(count);
+            for (size_t option = 0; option < group.options.size(); ++option) {
+                if (!available(slot, option)) continue;
+                if (pick-- == 0) {
+                    ancient_offers.push_back(AncientOffer{ static_cast<uint8_t>(slot), static_cast<uint8_t>(option) });
+                    break;
+                }
+            }
+        }
+    }
+}
+
+const AncientRelic& RunManager::ancient_offer(int index) const {
+    const AncientOffer& offer = ancient_offers[static_cast<size_t>(index)];
+    return get_ancient(current_ancient).slots[offer.slot].options[offer.option];
+}
+
+bool RunManager::choose_ancient_relic(int index) {
+    if (phase != RunPhase::ANCIENT_BLESSING || index < 0 || static_cast<size_t>(index) >= ancient_offers.size()) {
+        return false;
+    }
+    std::string_view relic_id = ancient_offer(index).id;
+    current_ancient = AncientId::COUNT;
+    ancient_offers.clear();
+    // Back on the map, unless the relic offers cards right away (it sets REWARD_SCREEN when obtained).
+    phase = RunPhase::MAP_NAVIGATION;
+    add_relic(relic_id);
+    return true;
+}
+
+bool RunManager::leave_ancient() {
+    if (phase != RunPhase::ANCIENT_BLESSING || !ancient_offers.empty()) return false;
+    current_ancient = AncientId::COUNT;
+    phase = RunPhase::MAP_NAVIGATION;
+    return true;
 }
 
 bool RunManager::is_run_completed() const {

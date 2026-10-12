@@ -90,6 +90,15 @@
 #include "bn_sprite_items_mon_tunneler.h"
 #include "bn_sprite_items_mon_vine_shambler.h"
 
+#include "bn_sprite_items_ancient_darv.h"
+#include "bn_sprite_items_ancient_neow.h"
+#include "bn_sprite_items_ancient_nonupeipe.h"
+#include "bn_sprite_items_ancient_orobas.h"
+#include "bn_sprite_items_ancient_pael.h"
+#include "bn_sprite_items_ancient_tanx.h"
+#include "bn_sprite_items_ancient_tezcatara.h"
+#include "bn_sprite_items_ancient_vakuu.h"
+
 #include "bn_sprite_items_hand_cards_defect.h"
 #include "bn_sprite_items_hand_cards_ironclad.h"
 #include "bn_sprite_items_hand_cards_necrobinder.h"
@@ -411,6 +420,29 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_the_lost, false };
     default:
         return { &bn::sprite_items::mon_cultist, false };
+    }
+}
+
+const bn::sprite_item& ancient_portrait(engine::AncientId id)
+{
+    switch(id)
+    {
+    case engine::AncientId::DARV:
+        return bn::sprite_items::ancient_darv;
+    case engine::AncientId::OROBAS:
+        return bn::sprite_items::ancient_orobas;
+    case engine::AncientId::PAEL:
+        return bn::sprite_items::ancient_pael;
+    case engine::AncientId::TEZCATARA:
+        return bn::sprite_items::ancient_tezcatara;
+    case engine::AncientId::NONUPEIPE:
+        return bn::sprite_items::ancient_nonupeipe;
+    case engine::AncientId::TANX:
+        return bn::sprite_items::ancient_tanx;
+    case engine::AncientId::VAKUU:
+        return bn::sprite_items::ancient_vakuu;
+    default:
+        return bn::sprite_items::ancient_neow;
     }
 }
 

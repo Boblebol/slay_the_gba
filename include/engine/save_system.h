@@ -25,6 +25,9 @@ constexpr uint8_t SAVE_ENCHANT_AMOUNT_MAX = 0x3F; // bits 10 to 15
 static_assert(static_cast<uint16_t>(CardId::COUNT) <= SAVE_CARD_ID_MASK, "CardId no longer fits its saved bits");
 static_assert(static_cast<uint8_t>(Enchantment::COUNT) <= SAVE_ENCHANTMENT_MASK + 1, "Enchantment no longer fits its saved bits");
 
+// An option of an Ancient's slot is saved on one byte with its slot (see InRunSaveData::ancient_offers).
+constexpr uint8_t SAVE_ANCIENT_SLOT_STRIDE = 32;
+
 struct DeckCardSave {
     uint16_t card_id = 0; // CardId, and the enchantment amount in the high bits
     uint8_t upgraded = 0; // upgraded bit, and the enchantment above it
@@ -60,8 +63,13 @@ struct InRunSaveData {
     uint8_t relic_counter_count = 0;
     uint8_t relic_counter_values[MAX_RELIC_COUNTERS] = { 0 };
     char relic_counter_ids[MAX_RELIC_COUNTERS][24];
+    // The Ancient met at the start of the act, while its relic is not taken: AncientId + 1 (0 when there is none,
+    // as in the saves written before it), then each relic offered as slot * SAVE_ANCIENT_SLOT_STRIDE + option.
+    uint8_t ancient = 0;
+    uint8_t ancient_offer_count = 0;
+    uint8_t ancient_offers[MAX_ANCIENT_OFFERS] = { 0 };
     // Room for what the run will have to remember next, so a new field does not move the ones after it.
-    uint8_t reserved[32] = { 0 };
+    uint8_t reserved[32 - 2 - MAX_ANCIENT_OFFERS] = { 0 };
 };
 
 struct SaveProfile {
