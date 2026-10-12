@@ -977,6 +977,9 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     // Bracelet brillant (Ancient): 4 cards chosen in the deck are enchanted with Swift 2.
     if (relic_id == "BEAUTIFUL_BRACELET" && has_relic("BEAUTIFUL_BRACELET"))
         request_deck_choice(DeckChoiceKind::ENCHANT, 4, false, false, CardId::NONE, Enchantment::SWIFT, 2);
+    // Crevaite électrique (Ancient): one Skill chosen in the deck is enchanted with Imbued when obtained.
+    if (relic_id == "ELECTRIC_SHRYMP" && has_relic("ELECTRIC_SHRYMP"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 1, false, false, CardId::NONE, Enchantment::IMBUED);
     if (relic_id == "EMPTY_CAGE" && has_relic("EMPTY_CAGE")) request_deck_choice(DeckChoiceKind::REMOVE, 2);
     // Precarious Shears (Ancient): 2 cards chosen out of the deck, then 16 HP lost, never below 1.
     if (relic_id == "PRECARIOUS_SHEARS" && has_relic("PRECARIOUS_SHEARS")) {
@@ -1278,11 +1281,12 @@ bool RunManager::deck_choice_allows(int deck_index) const {
     if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
     switch (deck_choice.kind) {
         case DeckChoiceKind::UPGRADE: return !master_deck[deck_index].upgraded;
-        case DeckChoiceKind::ENCHANT:
-            return CardDef::get(master_deck[deck_index].id).type == CardType::SKILL && can_enchant(master_deck[deck_index], deck_choice.enchantment);
         case DeckChoiceKind::REMOVE:
         case DeckChoiceKind::TRANSFORM: return !CardDef::is_eternal(master_deck[deck_index]);
-        case DeckChoiceKind::ENCHANT: return can_enchant(master_deck[deck_index], deck_choice.enchantment);
+        case DeckChoiceKind::ENCHANT:
+            // Imbued is only ever offered on a Skill (Electric Shrymp).
+            if (deck_choice.enchantment == Enchantment::IMBUED && CardDef::get(master_deck[deck_index].id).type != CardType::SKILL) return false;
+            return can_enchant(master_deck[deck_index], deck_choice.enchantment);
         default: return false;
     }
 }
