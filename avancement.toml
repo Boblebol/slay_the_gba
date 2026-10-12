@@ -281,7 +281,7 @@ items = [
   { name = "Écran titre animé (nuages, tour, brume)", status = "non", issue = 7 },
   { name = "Écran titre propre à chaque édition", status = "non", issue = 3 },
   { name = "Crédits et cinématique d'introduction", status = "non", issue = 1 },
-  { name = "Crédits de fin", status = "non", issue = 22 },
+  { name = "Crédits de fin", status = "oui", issue = 22 },
 ]
 
 [[category]]

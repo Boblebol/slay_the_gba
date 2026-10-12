@@ -34,6 +34,8 @@ bn::unique_ptr<Scene> create_scene(SceneId id, GameContext& context)
         return make_shop_scene(context);
     case SceneId::ANCIENT:
         return make_ancient_scene(context);
+    case SceneId::CREDITS:
+        return make_credits_scene(context);
     case SceneId::VICTORY:
         return make_end_scene(context, true);
     case SceneId::GAME_OVER:
