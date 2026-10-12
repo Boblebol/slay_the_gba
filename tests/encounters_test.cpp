@@ -96,6 +96,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::THE_INSATIABLE: return "THE_INSATIABLE";
         case EnemyType::TOUGH_EGG: return "TOUGH_EGG";
         case EnemyType::THE_OBSCURA: return "THE_OBSCURA";
+        case EnemyType::OVICOPTER: return "OVICOPTER";
     }
     return {};
 }
@@ -244,6 +245,7 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal", "ChompersNormal", "TunnelerNormal",
                                         "LouseProgenitorNormal", "TheObscuraNormal" }));
+                                        "LouseProgenitorNormal", "OvicopterNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "SlimedBerserkerNormal", "FrogKnightNormal", "GlobeHeadNormal",
                                         "TheLostAndForgottenNormal", "AxebotsNormal", "LegacyCultistAndLouse",

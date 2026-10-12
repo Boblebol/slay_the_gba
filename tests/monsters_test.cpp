@@ -2441,6 +2441,88 @@ void test_the_obscura_ascension() {
     std::cout << "[PASS] The Obscura: Ascension gives 129 HP, a Gaze of 11 and a Strike of 7" << std::endl;
 }
 
+void test_ovicopter() {
+    // Lay Eggs (a Tough Egg, Minion of it), Smash 16, Tenderizer 7 with 2 Vulnerable, and again while there is room
+    // for an egg; with two eggs already in the fight, Nutritional Paste (+3 Strength) takes the place of Lay Eggs.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::OVICOPTER);
+    Enemy& bird = combat.enemies[0];
+    assert(bird.name == "Ovicoptère" && bird.hp >= 124 && bird.hp <= 130 && bird.hp == bird.max_hp);
+    assert(bird.hp_spread() == 6 && bird.max_hp == 124 + bird.hp_bonus);
+    const int16_t hp = bird.hp;
+    combat.player.max_hp = combat.player.hp = 500;
+    auto play = [&]() {
+        combat.player.hp = combat.player.max_hp;
+        combat.player.block = 0;
+        combat.player.statuses.clear(); // Vulnerable would raise the damage seen
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+    };
+    // Turn 1: Lay Eggs, which hurts nobody and brings a Minion egg in.
+    assert(bird.current_intent.type == SUMMON && bird.current_intent.summons == 1);
+    assert(bird.current_intent.summon_type == EnemyType::TOUGH_EGG && bird.current_intent.summon_minions);
+    assert(bird.intent_damage(combat.player) == 0);
+    play();
+    assert(combat.enemies.size() == 2 && combat.enemies[1].type == EnemyType::TOUGH_EGG);
+    assert(combat.enemies[1].minion && combat.enemies[1].leader == 0);
+    // Turn 2: Smash 16.
+    assert(bird.current_intent.type == ATTACK && bird.intent_damage(combat.player) == 16);
+    play();
+    // Turn 3: Tenderizer 7 and 2 Vulnerable.
+    assert(bird.current_intent.type == ATTACK_DEBUFF && bird.intent_damage(combat.player) == 7);
+    play();
+    assert(combat.player.get_status(StatusType::VULNERABLE) == 2);
+    // Turn 4: one egg in the fight, room for another: Lay Eggs again.
+    assert(bird.current_intent.type == SUMMON);
+    play();
+    assert(combat.count_alive_enemies() == 3);
+    play(); // Smash
+    play(); // Tenderizer
+    // Turn 7: three enemies, no room: Nutritional Paste.
+    assert(combat.turn_number == 7);
+    assert(bird.current_intent.type == BUFF && bird.current_intent.status_type == StatusType::STRENGTH);
+    assert(bird.current_intent.status_amount == 3 && bird.intent_damage(combat.player) == 0);
+    play();
+    assert(bird.get_status(StatusType::STRENGTH) == 3 && bird.hp == hp && bird.block == 0);
+    // Then Smash 16 + 3 and Tenderizer 7 + 3.
+    assert(bird.current_intent.type == ATTACK && bird.intent_damage(combat.player) == 19);
+    play();
+    assert(bird.current_intent.type == ATTACK_DEBUFF && bird.intent_damage(combat.player) == 10);
+    // Eggs dead: the next cycle lays again.
+    play();
+    for (size_t i = 1; i < combat.enemies.size(); ++i) combat.enemies[i].hp = 0;
+    combat.plan_enemies();
+    assert(bird.current_intent.type == SUMMON);
+    std::cout << "[PASS] Ovicopter: Lay Eggs, Smash 16, Tenderizer 7 + Vulnerable, Nutritional Paste when full" << std::endl;
+}
+
+void test_ovicopter_ascension() {
+    // 126 to 132 HP, Smash 17, Tenderizer 8 and Nutritional Paste of 4 Strength at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::OVICOPTER);
+        Enemy& bird = combat.enemies[0];
+        bird.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = bird.hp;
+        assert(bird.ascension_hp() == 126 && base >= 124 && base <= 130);
+        bird.ascend(true, true);
+        combat.plan_enemies();
+        assert(bird.hp == base + 2 && bird.max_hp == base + 2 && bird.hp >= 126 && bird.hp <= 132);
+        assert(bird.current_intent.type == SUMMON);
+        combat.player.hp = combat.player.max_hp = 500;
+        combat.end_player_turn();
+        assert(bird.current_intent.type == ATTACK && bird.intent_damage(combat.player) == 17);
+        combat.end_player_turn();
+        assert(bird.current_intent.type == ATTACK_DEBUFF && bird.intent_damage(combat.player) == 8);
+    }
+    CombatEngine full = make_combat(CharacterId::IRONCLAD, EnemyType::OVICOPTER);
+    Enemy& bird = full.enemies[0];
+    bird.ascend(true, true);
+    PlanContext crowded;
+    crowded.allies = 2;
+    bird.plan_turn(4, crowded);
+    assert(bird.current_intent.type == BUFF && bird.current_intent.status_amount == 4);
+    std::cout << "[PASS] Ovicopter: Ascension gives 126 to 132 HP, Smash 17, Tenderizer 8, Paste +4" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -3986,6 +4068,8 @@ int main() {
     test_tough_egg_ascension();
     test_the_obscura();
     test_the_obscura_ascension();
+    test_ovicopter();
+    test_ovicopter_ascension();
     test_phrog_parasite();
     test_wriggler();
     test_wriggler_ascension();

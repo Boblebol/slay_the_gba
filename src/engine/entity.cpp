@@ -173,6 +173,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "L'Obscura";
         max_hp = 123;
         hp = 123;
+    } else if (type == EnemyType::OVICOPTER) {
+        name = "Ovicoptère";
+        max_hp = 124;
+        hp = 124;
     } else if (type == EnemyType::BYRDONIS) {
         name = "Oizodon";
         max_hp = 81;
@@ -335,6 +339,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::PHROG_PARASITE: return 3; // 61 to 64, 66 and up at Ascension
         case EnemyType::BOWLBUG_EGG: return 1; // 21 to 22, 23 to 24 at Ascension
         case EnemyType::BYRDONIS: return 3;    // 81 to 84, always 90 at Ascension
+        case EnemyType::OVICOPTER: return 6;   // 124 to 130, 126 to 132 at Ascension
         case EnemyType::TOUGH_EGG: return 4;   // 14 to 18, 15 to 19 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
         case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
@@ -416,6 +421,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::BYRDONIS: return static_cast<int16_t>(90 - hp_bonus); // ascend() adds hp_bonus back: 90 exactly
         case EnemyType::TOUGH_EGG: return 15;
         case EnemyType::THE_OBSCURA: return 129;
+        case EnemyType::OVICOPTER: return 126;
         case EnemyType::TOADPOLE: return 22;
         case EnemyType::HUNTER_KILLER: return 126;
         case EnemyType::MAWLER: return 76;
@@ -1268,6 +1274,32 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = ascended_damage ? 7 : 6;
             current_intent.block = 6;
             current_intent.description = "Frappe durcissante (6 dmg, 6 blk)";
+        }
+    } else if (type == EnemyType::OVICOPTER) {
+        // Cycles of three moves: Lay Eggs (a Tough Egg, a Minion) or, when there is no room for one, Nutritional
+        // Paste (+3 Strength), then Smash 16, then Tenderizer 7 with 2 Vulnerable.
+        const int step = (turn_number - 1) % 3;
+        if (step == 0) phase = (turn_number == 1 || context.allies < 2) ? 0 : 1;
+        if (step == 0 && phase == 0) {
+            current_intent.type = EnemyIntentType::SUMMON;
+            current_intent.summon_type = EnemyType::TOUGH_EGG;
+            current_intent.summons = 1;
+            current_intent.summon_minions = true;
+            current_intent.description = "Ponte (Œuf robuste)";
+        } else if (step == 0) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 4 : 3;
+            current_intent.description = "Pâte nutritive (+3 Force)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 17 : 16;
+            current_intent.description = "Fracas (16 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.debuffs[0] = { StatusType::VULNERABLE, 2 };
+            current_intent.description = "Adoucir (7 dmg, Vulnérable 2)";
         }
     } else if (type == EnemyType::BYRDONIS) {
         // Swoop (17 damage) then Peck (3 damage x3), and again.

@@ -432,6 +432,8 @@ enum class EnemyType : uint8_t {
     THE_INSATIABLE, // Act 2 boss
     TOUGH_EGG,
     THE_OBSCURA
+    TOUGH_EGG,
+    OVICOPTER // Act 2
 };
 
 // What a monster sees of the fight when it chooses its next move.
