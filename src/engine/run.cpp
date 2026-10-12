@@ -268,14 +268,43 @@ void RunManager::enter_room(int node_index) {
     }
 }
 
-FixedVector<CampfireAction, 5> RunManager::campfire_actions() const {
-    FixedVector<CampfireAction, 5> actions;
+FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> RunManager::campfire_actions() const {
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> actions;
     actions.push_back(CampfireAction::REST);
     actions.push_back(CampfireAction::SMITH);
     for (const CampfireRelic& entry : CAMPFIRE_RELICS) {
         if (has_relic(entry.relic_id)) actions.push_back(entry.action);
     }
+    // Clone: offered while a card of the deck is enchanted with it.
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (master_deck[i].enchantment == Enchantment::CLONE) {
+            actions.push_back(CampfireAction::CLONE);
+            break;
+        }
+    }
     return actions;
+}
+
+bool RunManager::can_clone(int deck_index) const {
+    return deck_index >= 0 && static_cast<size_t>(deck_index) < master_deck.size() &&
+           master_deck[deck_index].enchantment == Enchantment::CLONE && master_deck.size() < master_deck.capacity();
+}
+
+bool RunManager::clone_at_campfire(int deck_index) {
+    if (!can_clone(deck_index)) return false;
+    // The copy is the same card, enchantment included.
+    if (!add_card_to_deck(master_deck[deck_index])) return false;
+    phase = RunPhase::MAP_NAVIGATION;
+    return true;
+}
+
+bool RunManager::enchant_card_in_deck(int deck_index, Enchantment enchantment, uint8_t amount) {
+    if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
+    DeckCard& card = master_deck[deck_index];
+    if (!can_enchant(card, enchantment)) return false;
+    card.enchantment = enchantment;
+    card.enchant_amount = amount;
+    return true;
 }
 
 void RunManager::rest_at_campfire() {
@@ -1301,6 +1330,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         // On the combat hooks (#299)
         "BAG_OF_PREPARATION", "BURNING_STICKS", "INTIMIDATING_HELMET", "JOSS_PAPER", "KUNAI", "KUSARIGAMA", "LETTER_OPENER",
         "MEAT_ON_THE_BONE", "MUMMIFIED_HAND", "NUNCHAKU", "ORNAMENTAL_FAN", "PEN_NIB", "RAINBOW_RING", "RIPPLE_BASIN", "SHURIKEN", "STRIKE_DUMMY", "MINIATURE_CANNON",
+        "MYSTIC_LIGHTER", // Shop: Enchanted Attacks (#107)
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", "PAPER_PHROG", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
@@ -1528,6 +1558,8 @@ void RunManager::register_relic_powers() {
     // Event copy of Strike Dummy: 1 more damage per Strike.
     if (has_relic("FAKE_STRIKE_DUMMY")) combat.add_power(PowerId::FAKE_STRIKE_DUMMY, 1);
     if (has_relic("MINIATURE_CANNON")) combat.add_power(PowerId::MINIATURE_CANNON, 3);
+    // Mystic Lighter: Enchanted Attacks deal more damage.
+    if (has_relic("MYSTIC_LIGHTER")) combat.add_power(PowerId::MYSTIC_LIGHTER, MYSTIC_LIGHTER_DAMAGE);
     // The Boot (event relic): an Attack hit of 4 damage or less deals 5 instead.
     if (has_relic("THE_BOOT")) combat.add_power(PowerId::THE_BOOT);
     // Tungsten Rod: whenever the player would lose HP, 1 less.
@@ -1838,7 +1870,11 @@ void RunManager::proceed_after_combat() {
     for (const PermanentGain& gain : combat.permanent_gains) {
         if (gain.deck_index < master_deck.size()) {
             DeckCard& card = master_deck[gain.deck_index];
-            card.bonus = static_cast<uint8_t>(std::min(255, card.bonus + gain.amount));
+            if (gain.enchantment) {
+                card.enchant_amount = static_cast<uint8_t>(std::min(255, card.enchant_amount + gain.amount));
+            } else {
+                card.bonus = static_cast<uint8_t>(std::min(255, card.bonus + gain.amount));
+            }
         }
     }
     combat.permanent_gains.clear();

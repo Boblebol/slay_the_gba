@@ -155,19 +155,19 @@ items = [
 section = "regles"
 title = "Enchantements"
 items = [
-  { name = "Adroit", status = "non", issue = 107 },
-  { name = "Agilité", status = "non", issue = 107 },
-  { name = "Braise de Tezcatara", status = "non", issue = 107 },
-  { name = "Célérité", status = "non", issue = 107 },
-  { name = "Clonage", status = "non", issue = 107 },
-  { name = "Élan", status = "non", issue = 107 },
-  { name = "Encrée", status = "non", issue = 107 },
-  { name = "Glamour", status = "non", issue = 107 },
-  { name = "Imprégnation", status = "non", issue = 107 },
-  { name = "Instinct", status = "non", issue = 107 },
-  { name = "Sceau royal", status = "non", issue = 107 },
-  { name = "Tranchant", status = "non", issue = 107 },
-  { name = "Viscosité", status = "non", issue = 107 },
+  { name = "Adroit", status = "oui", issue = 107 },
+  { name = "Agilité", status = "oui", issue = 107 },
+  { name = "Braise de Tezcatara", status = "oui", issue = 107 },
+  { name = "Célérité", status = "oui", issue = 107 },
+  { name = "Clonage", status = "oui", issue = 107 },
+  { name = "Élan", status = "oui", issue = 107 },
+  { name = "Encrée", status = "oui", issue = 107 },
+  { name = "Glamour", status = "oui", issue = 107 },
+  { name = "Imprégnation", status = "oui", issue = 107 },
+  { name = "Instinct", status = "oui", issue = 107 },
+  { name = "Sceau royal", status = "oui", issue = 107 },
+  { name = "Tranchant", status = "oui", issue = 107 },
+  { name = "Viscosité", status = "oui", issue = 107 },
 ]
 
 # ---------------------------------------------------------------------------------------------------------

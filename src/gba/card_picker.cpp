@@ -203,7 +203,8 @@ void CardPicker::_refresh_preview()
     TextLine line;
     card_name(card, line);
     Label& name = _text.emplace_back();
-    name.set(_layout.text_x, _layout.text_y, line, Align::LEFT, card.upgraded ? TextColor::GREEN : TextColor::GOLD);
+    name.set(_layout.text_x, _layout.text_y, line, Align::LEFT,
+             is_enchanted(card) ? TextColor::PURPLE : card.upgraded ? TextColor::GREEN : TextColor::GOLD);
 
     const engine::CardDef& def = engine::CardDef::get(card.id);
     TextLine type;
@@ -226,6 +227,17 @@ void CardPicker::_refresh_preview()
     {
         Label& label = _text.emplace_back();
         label.set(_layout.text_x, _layout.text_y + 24 + index * 10, lines[index], Align::LEFT, TextColor::WHITE);
+    }
+
+    // The enchantment of this copy (mechanic #107): its name, then what it does.
+    TextLine effect;
+    enchantment_text(card, line, effect);
+
+    if(! line.empty())
+    {
+        const int enchant_y = _layout.text_y + 24 + lines.size() * 10 + 2;
+        _text.emplace_back().set(_layout.text_x, enchant_y, line, Align::LEFT, TextColor::PURPLE);
+        _text.emplace_back().set(_layout.text_x, enchant_y + 10, effect, Align::LEFT, TextColor::WHITE);
     }
 
     for(Label& label : _text)

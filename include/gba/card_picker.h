@@ -85,7 +85,7 @@ private:
     bn::vector<Entry, 50> _cards;
     bn::vector<Slot, VISIBLE> _slots;
     bn::optional<bn::sprite_ptr> _preview;
-    bn::vector<Label, 4> _text;
+    bn::vector<Label, 6> _text; // name, type, two lines of text, the enchantment and what it does
     Label _counter;
     int _selected = 0;
     int _first = 0;

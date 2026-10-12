@@ -1106,6 +1106,8 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
 void CombatEngine::gain_block(int16_t amount) {
     // Panic Button: a card gives no Block.
     if (resolving_card && no_card_block_turns > 0) return;
+    // Nimble and Goopy: the card's Block is raised.
+    if (resolving_card && amount > 0) amount = static_cast<int16_t>(amount + enchant_block_now);
     int16_t before = player.block;
     player.gain_block(amount);
     // Paël's Legion doubles the Block a card gives, then sleeps; the Block gained is doubled, Dexterity included.
@@ -1535,6 +1537,11 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
         base = static_cast<int16_t>(base + power_amount(PowerId::STRIKE_DUMMY) + power_amount(PowerId::FAKE_STRIKE_DUMMY));
     }
     if (upgraded_attack_now && resolving_card) base = static_cast<int16_t>(base + power_amount(PowerId::MINIATURE_CANNON));
+    // The enchantment of the card: more damage per hit, then Instinct doubles it.
+    if (resolving_card) {
+        base = static_cast<int16_t>(base + enchant_damage_now);
+        if (enchant_double_now) percent *= 2;
+    }
     int16_t damage = attack_damage(base, player, target, percent);
     // The Boot: an Attack hit that would deal 1 to 4 damage (before Block) deals 5 instead.
     if (damage > 0 && damage <= THE_BOOT_THRESHOLD && has_power(PowerId::THE_BOOT)) damage = THE_BOOT_MINIMUM;
@@ -1548,6 +1555,8 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
         emit(CombatEvent::ATTACK_HIT, info);
         if (lost > 0) emit(CombatEvent::UNBLOCKED_DAMAGE_DEALT, info);
         if (block_before > 0 && target.block == 0) emit(CombatEvent::BLOCK_BROKEN, info);
+        // Inky: the card applies Weak to every enemy it hits.
+        if (resolving_card && inky_now && target.is_alive()) afflict(target, StatusType::WEAK, INKY_WEAK);
         // The enemy's Thorns hurt the player, once per hit.
         damage_player(target.get_status(StatusType::THORNS));
         settle_deaths();
@@ -1843,6 +1852,10 @@ void CombatEngine::reset_combat_state() {
     triple_next_attack = false;
     no_card_block_turns = 0;
     rebound_pending = false;
+    enchant_damage_now = 0;
+    enchant_double_now = false;
+    enchant_block_now = 0;
+    inky_now = false;
     fatal_kills = 0;
     powers.clear();
     powers_in_play.clear();
@@ -1877,12 +1890,29 @@ void CombatEngine::begin_first_turn() {
         }
     }
     for (const DeckCard& card : innate) draw_pile.push_back(card);
+    // Imbued cards wait out of the piles: they are played once the hand is drawn.
+    FixedVector<DeckCard, 50> imbued;
+    for (size_t i = draw_pile.size(); i-- > 0;) {
+        if (draw_pile[i].enchantment == Enchantment::IMBUED) {
+            imbued.push_back(draw_pile[i]);
+            draw_pile.erase(i);
+        }
+    }
 
     start_player_turn();
 
     // More Innate cards than the opening draw: they are all drawn, up to the hand limit.
     for (size_t extra = 5; extra < innate.size(); ++extra) {
         if (!draw_card()) break;
+    }
+    // Imbued: played automatically at the start of the combat, for free, at a random enemy.
+    for (const DeckCard& card : imbued) {
+        if (state != CombatState::PLAYER_TURN) {
+            discard_pile.push_back(card);
+            continue;
+        }
+        autoplay(card);
+        finish_play();
     }
     counters.start_turn();
     // Whispering Earring: this turn is Vakuu's.
@@ -2064,7 +2094,7 @@ bool CombatEngine::costs_nothing(const DeckCard& card) const {
 }
 
 int CombatEngine::effective_cost(const DeckCard& card) const {
-    uint8_t printed = CardDef::get_cost(card.id, card.upgraded);
+    uint8_t printed = CardDef::get_cost(card);
     if (printed == COST_X) return COST_X;
     if (costs_nothing(card)) return 0;
 
@@ -2273,7 +2303,17 @@ int CombatEngine::vakuu_play_turn() {
 void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target, int x_value, uint8_t energy_paid,
                             AfterPlay& after_play) {
     const CardType played_type = CardDef::get(card.id).type;
-    const int plays = 1 + consume_play_modifiers(card);
+    int plays = 1 + consume_play_modifiers(card);
+    // Glam: Echo 1, once per combat. Swift: the first play of the combat draws cards.
+    int swift_draw = 0;
+    if ((card.enchantment == Enchantment::GLAM || card.enchantment == Enchantment::SWIFT) && card.enchant_combat == 0) {
+        card.enchant_combat = 1;
+        if (card.enchantment == Enchantment::GLAM) {
+            ++plays;
+        } else {
+            swift_draw = card.enchant_amount;
+        }
+    }
     // Rebound: the card played right after it goes back on top of the draw pile.
     const bool rebounded = rebound_pending;
     rebound_pending = false;
@@ -2306,9 +2346,28 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
 
         // The counters are updated once the effect is resolved: inside the effect they still describe what
         // happened before this card ("already played this turn", "spent on other cards").
+        // A card played by this one (Havoc) has its own enchantment: this card's is restored after it.
+        const int16_t outer_damage = enchant_damage_now;
+        const bool outer_double = enchant_double_now;
+        const int16_t outer_block = enchant_block_now;
+        const bool outer_inky = inky_now;
+        set_enchant_modifiers(card);
         resolving_card = true;
+        // Adroit: the card also gains Block.
+        if (card.enchantment == Enchantment::ADROIT) gain_block(card.enchant_amount);
         resolve_effect(card, target_idx, x_value, after_play);
         resolving_card = false;
+        enchant_damage_now = outer_damage;
+        enchant_double_now = outer_double;
+        enchant_block_now = outer_block;
+        inky_now = outer_inky;
+        // Momentum: each play adds to the card's damage for the rest of the combat.
+        if (card.enchantment == Enchantment::MOMENTUM) card.enchant_combat = bump(card.enchant_combat, card.enchant_amount);
+        // Goopy: each play adds 1 to the card's Block, in the deck too.
+        if (card.enchantment == Enchantment::GOOPY) {
+            card.enchant_amount = bump(card.enchant_amount);
+            if (card.deck_index != NOT_IN_DECK) permanent_gains.push_back(PermanentGain{ card.deck_index, 1, true });
+        }
         lamp_doubling = false;
         pen_nib_now = false;
         strike_played_now = false;
@@ -2373,6 +2432,39 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         }
     }
     if ((rebounded || nostalgic) && after_play == AfterPlay::DISCARD) after_play = AfterPlay::DRAW_TOP;
+    if (swift_draw > 0 && player.is_alive() && has_alive_enemies()) draw_cards(swift_draw);
+}
+
+void CombatEngine::set_enchant_modifiers(const DeckCard& card) {
+    enchant_damage_now = 0;
+    enchant_double_now = false;
+    enchant_block_now = 0;
+    inky_now = false;
+    switch (card.enchantment) {
+        case Enchantment::SHARP:
+        case Enchantment::TEZCATARAS_EMBER:
+            enchant_damage_now = card.enchant_amount;
+            break;
+        case Enchantment::MOMENTUM:
+            enchant_damage_now = card.enchant_combat;
+            break;
+        case Enchantment::INSTINCT:
+            enchant_double_now = true;
+            break;
+        case Enchantment::NIMBLE:
+        case Enchantment::GOOPY:
+            enchant_block_now = card.enchant_amount;
+            break;
+        case Enchantment::INKY:
+            inky_now = true;
+            break;
+        default:
+            break;
+    }
+    // Mystic Lighter: an Enchanted Attack deals more damage.
+    if (card.enchantment != Enchantment::NONE && CardDef::get(card.id).type == CardType::ATTACK) {
+        enchant_damage_now = static_cast<int16_t>(enchant_damage_now + power_amount(PowerId::MYSTIC_LIGHTER));
+    }
 }
 
 void CombatEngine::place_played_card(const DeckCard& card, AfterPlay after_play) {
@@ -5532,14 +5624,12 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             int16_t damage = static_cast<int16_t>(base_value + played_card.bonus + power_amount(PowerId::ACCURACY));
             // Phantom Blades: the first Shiv of the turn hits harder.
             if (counters.shivs_played == 0) damage = static_cast<int16_t>(damage + power_amount(PowerId::PHANTOM_BLADES));
-            const bool inky = played_card.enchantment == Enchantment::INKY;
             // Fan of Knives: every enemy instead of the one aimed at.
             const bool fan = has_power(PowerId::FAN_OF_KNIVES);
             for (size_t i = 0; i < enemies.size(); ++i) {
                 Enemy& foe = enemies[i];
                 if (!foe.is_alive() || (!fan && &foe != &current_target)) continue;
-                hit(foe, damage);
-                if (inky && foe.is_alive()) afflict(foe, StatusType::WEAK, INKY_WEAK);
+                hit(foe, damage); // an Inky Shiv applies its Weak through hit()
             }
             set_log(upgraded ? "Played Shiv+!"sv : "Played Shiv!"sv);
             break;

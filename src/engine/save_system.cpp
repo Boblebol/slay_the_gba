@@ -242,12 +242,15 @@ void SaveManager::autosave_run(const RunManager& run) {
     // Deck
     r.deck_count = static_cast<uint8_t>(run.master_deck.size());
     for (size_t i = 0; i < run.master_deck.size() && i < 50; ++i) {
-        r.deck[i].card_id = static_cast<uint16_t>(run.master_deck[i].id);
-        r.deck[i].upgraded = run.master_deck[i].upgraded ? 1 : 0;
-        r.deck[i].bonus = run.master_deck[i].bonus;
+        const DeckCard& card = run.master_deck[i];
+        const uint16_t amount = std::min<uint8_t>(card.enchant_amount, SAVE_ENCHANT_AMOUNT_MAX);
+        r.deck[i].card_id = static_cast<uint16_t>(static_cast<uint16_t>(card.id) | (amount << SAVE_CARD_ID_BITS));
+        r.deck[i].upgraded = static_cast<uint8_t>((card.upgraded ? SAVE_UPGRADED_BIT : 0) |
+                                                  (static_cast<uint8_t>(card.enchantment) << SAVE_ENCHANTMENT_SHIFT));
+        r.deck[i].bonus = card.bonus;
 
         // Auto-discover in compendium
-        p.discover_card(r.deck[i].card_id);
+        p.discover_card(static_cast<uint16_t>(card.id));
     }
 
     // Relics
@@ -309,8 +312,13 @@ bool SaveManager::restore_run(RunManager& run) {
     // Restore Deck
     run.master_deck.clear();
     for (uint8_t i = 0; i < r.deck_count && i < 50; ++i) {
-        DeckCard card(static_cast<CardId>(r.deck[i].card_id), r.deck[i].upgraded != 0);
+        DeckCard card(static_cast<CardId>(r.deck[i].card_id & SAVE_CARD_ID_MASK), (r.deck[i].upgraded & SAVE_UPGRADED_BIT) != 0);
         card.bonus = r.deck[i].bonus;
+        const uint8_t enchantment = (r.deck[i].upgraded >> SAVE_ENCHANTMENT_SHIFT) & SAVE_ENCHANTMENT_MASK;
+        if (enchantment < static_cast<uint8_t>(Enchantment::COUNT)) {
+            card.enchantment = static_cast<Enchantment>(enchantment);
+            card.enchant_amount = static_cast<uint8_t>(r.deck[i].card_id >> SAVE_CARD_ID_BITS);
+        }
         run.master_deck.push_back(card);
     }
 

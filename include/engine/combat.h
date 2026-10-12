@@ -212,6 +212,7 @@ enum class AfterPlay : uint8_t {
 struct PermanentGain {
     uint8_t deck_index = NOT_IN_DECK;
     uint8_t amount = 0;
+    bool enchantment = false; // added to the card's enchantment amount (Goopy) instead of its bonus
 };
 
 class CombatEngine {
@@ -252,6 +253,12 @@ public:
     bool minion_played_now = false;   // the card being played is a Minion card (Vitruvian Minion)
     bool strike_played_now = false;   // the card being played contains "Strike" (Strike Dummy)
     bool upgraded_attack_now = false; // the card being played is an upgraded Attack (Miniature Cannon)
+    // What the enchantment of the card being resolved adds (mechanic #107): damage per hit (Sharp, Tezcatara's
+    // Ember, Momentum, Mystic Lighter), doubled damage (Instinct), Block (Nimble, Goopy), Weak on each enemy hit (Inky).
+    int16_t enchant_damage_now = 0;
+    bool enchant_double_now = false;
+    int16_t enchant_block_now = 0;
+    bool inky_now = false;
     bool rebound_pending = false;    // the next card played this turn goes on top of the draw pile (Rebound)
     uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
     // Active powers, in the order they were gained: every relic a run can hold plus a combat's worth of
@@ -303,7 +310,8 @@ public:
     // True when every enemy of the fight ran away: nothing was killed, so nothing is won.
     [[nodiscard]] bool every_enemy_escaped() const;
     void reset_combat_state();
-    // Puts the Innate cards on top of the draw pile and starts the first turn.
+    // Puts the Innate cards on top of the draw pile and starts the first turn. Once the hand is drawn, the
+    // Imbued cards of the draw pile are played for free.
     void begin_first_turn();
     void start_player_turn();
     // Draws one card, reshuffling the discard pile when needed. False when nothing was drawn (full hand, empty piles).
@@ -504,6 +512,8 @@ private:
     void recall_to_hand(CardId id);
     // One play of a card and the extra plays it is entitled to: event, effect, tallies. The card is not moved.
     void run_card(DeckCard& card, int target_index, bool random_target, int x_value, uint8_t energy_paid, AfterPlay& after_play);
+    // Sets the enchant_..._now modifiers for the card about to be resolved.
+    void set_enchant_modifiers(const DeckCard& card);
     // The card's own effect.
     void resolve_effect(DeckCard& played_card, int target_idx, int x_value, AfterPlay& after_play);
     void place_played_card(const DeckCard& card, AfterPlay after_play);

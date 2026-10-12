@@ -452,7 +452,7 @@ private:
         }
 
         stream << ")";
-        _name.set(0, 46, header, Align::CENTER, TextColor::GOLD);
+        _name.set(0, 46, header, Align::CENTER, is_enchanted(card) ? TextColor::PURPLE : TextColor::GOLD);
 
         card_description(card, text);
         bn::vector<TextLine, 2> lines;
