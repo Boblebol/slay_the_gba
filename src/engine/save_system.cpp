@@ -239,6 +239,17 @@ void SaveManager::autosave_run(const RunManager& run) {
     r.phase = static_cast<uint8_t>(run.phase);
     r.card_removals_count = run.card_removals_count;
 
+    // Ancient met at the start of the act, with its offer
+    const bool ancient = run.phase == RunPhase::ANCIENT_BLESSING && run.current_ancient < AncientId::COUNT;
+    r.ancient = ancient ? static_cast<uint8_t>(static_cast<uint8_t>(run.current_ancient) + 1) : 0;
+    r.ancient_offer_count = ancient ? static_cast<uint8_t>(run.ancient_offers.size()) : 0;
+    for (size_t i = 0; i < MAX_ANCIENT_OFFERS; ++i) {
+        const bool used = i < r.ancient_offer_count;
+        r.ancient_offers[i] = used ? static_cast<uint8_t>(run.ancient_offers[i].slot * SAVE_ANCIENT_SLOT_STRIDE +
+                                                          run.ancient_offers[i].option)
+                                   : 0;
+    }
+
     // Deck
     r.deck_count = static_cast<uint8_t>(run.master_deck.size());
     for (size_t i = 0; i < run.master_deck.size() && i < 50; ++i) {
@@ -305,7 +316,8 @@ bool SaveManager::restore_run(RunManager& run) {
     run.map.generate(r.act, r.map_seed, run.ascension_level);
     run.set_rng_state(r.rng_state);
     run.current_node_index = r.current_node_index;
-    // Runs are only saved between rooms: the interrupted room state is not stored.
+    // Runs are saved between rooms, or before the relic of an Ancient is taken (restored below): the state of an
+    // interrupted room is not stored.
     run.phase = RunPhase::MAP_NAVIGATION;
     run.card_removals_count = r.card_removals_count;
 
@@ -345,6 +357,23 @@ bool SaveManager::restore_run(RunManager& run) {
     }
 
     run.regenerate_map(); // relics are back: the Golden Compass changes the Act 2 map
+
+    // Saved before the relic of the Ancient was taken: the same Ancient offers the same relics again.
+    if (r.phase == static_cast<uint8_t>(RunPhase::ANCIENT_BLESSING) && r.ancient > 0 &&
+        r.ancient <= static_cast<uint8_t>(AncientId::COUNT)) {
+        const AncientId id = static_cast<AncientId>(r.ancient - 1);
+        const Ancient& ancient = get_ancient(id);
+        run.current_ancient = id;
+        run.ancient_offers.clear();
+        for (uint8_t i = 0; i < r.ancient_offer_count && i < MAX_ANCIENT_OFFERS; ++i) {
+            const uint8_t slot = r.ancient_offers[i] / SAVE_ANCIENT_SLOT_STRIDE;
+            const uint8_t option = r.ancient_offers[i] % SAVE_ANCIENT_SLOT_STRIDE;
+            if (slot < ancient.slots.size() && option < ancient.slots[slot].options.size()) {
+                run.ancient_offers.push_back(AncientOffer{ slot, option });
+            }
+        }
+        run.phase = RunPhase::ANCIENT_BLESSING;
+    }
 
     return true;
 }

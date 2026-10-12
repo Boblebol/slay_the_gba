@@ -321,6 +321,13 @@ private:
         _ctx.palette = run.palette;
         _ctx.nav.reset_to_player_floor();
         _ctx.map_toast.clear();
+
+        // Saved in front of an Ancient whose relic was not taken yet: the Ancient is met again.
+        if(run.phase == engine::RunPhase::ANCIENT_BLESSING)
+        {
+            return SceneId::ANCIENT;
+        }
+
         bn::ostringstream stream(_ctx.map_toast);
         stream << "Reprise : Acte " << int(run.current_act) << " - Étage " << int(run.current_floor);
         return SceneId::MAP;

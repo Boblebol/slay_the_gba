@@ -9,6 +9,7 @@
 #include "engine/rewards.h"
 #include "engine/shop.h"
 #include "engine/event_manager.h"
+#include "engine/ancient.h"
 
 namespace engine {
 
@@ -81,6 +82,16 @@ constexpr size_t MAX_RELIC_COUNTERS = 8;
 constexpr uint8_t BASE_POTION_SLOTS = 3;
 constexpr uint8_t MAX_POTION_SLOTS = 8;
 
+// A relic an Ancient offers: where it sits in the slots of get_ancient(RunManager::current_ancient).
+struct AncientOffer {
+    uint8_t slot = 0;
+    uint8_t option = 0;
+};
+
+// Every Ancient offers 3 relics at most (2 blessings and 1 curse for Neow, 1 per slot or 3 from one slot for the
+// others).
+constexpr size_t MAX_ANCIENT_OFFERS = 3;
+
 struct AscensionModifier {
     uint8_t level;
     std::string_view title;
@@ -139,6 +150,10 @@ public:
     PaletteVariant palette = PaletteVariant::CLASSIC;
 
     EventEncounter current_event;
+    // The Ancient met at the start of the act (phase ANCIENT_BLESSING), AncientId::COUNT when there is none, and
+    // the relics it offers. The player takes one of them.
+    AncientId current_ancient = AncientId::COUNT;
+    FixedVector<AncientOffer, MAX_ANCIENT_OFFERS> ancient_offers;
     std::string_view current_encounter; // id of the encounter of the last fight entered (see encounter.h)
 
     void start_run(CharacterId char_id, uint8_t ascension = 0, PaletteVariant pal = PaletteVariant::CLASSIC, uint32_t seed = 42);
@@ -255,8 +270,25 @@ public:
     // Keeps the Dexterity of Belt Buckle in line with the potion belt during a fight.
     void refresh_belt_buckle();
     void proceed_after_combat();
+    // Opens the next act on its own map, then meets its Ancient (phase ANCIENT_BLESSING).
     void advance_act();
     bool is_run_completed() const;
+
+    // Ancients
+    // The Ancient met at the start of `act`, drawn with `seed` among the ones of that act. Darv can come at
+    // every act.
+    [[nodiscard]] static AncientId draw_ancient(uint8_t act, uint32_t seed);
+    // Meets `id`: the phase becomes ANCIENT_BLESSING and each slot of the Ancient offers as many relics as it
+    // says, drawn among its options the run does not own and the engine can resolve. Nothing is offered once the
+    // relic list is full.
+    void meet_ancient(AncientId id);
+    // The relic at `index` of ancient_offers.
+    [[nodiscard]] const AncientRelic& ancient_offer(int index) const;
+    // Takes the relic at `index` of the offer and leaves the Ancient. Its effect can open a card reward
+    // (REWARD_SCREEN) or ask for cards of the deck; otherwise the run is back on the map. False for a wrong index.
+    bool choose_ancient_relic(int index);
+    // Leaves an Ancient that has nothing to offer. False while it offers a relic: one has to be taken.
+    bool leave_ancient();
 
     // Ascension rules
     static std::span<const AscensionModifier> get_ascension_modifiers();

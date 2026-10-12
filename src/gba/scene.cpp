@@ -32,6 +32,8 @@ bn::unique_ptr<Scene> create_scene(SceneId id, GameContext& context)
         return make_campfire_scene(context);
     case SceneId::SHOP:
         return make_shop_scene(context);
+    case SceneId::ANCIENT:
+        return make_ancient_scene(context);
     case SceneId::VICTORY:
         return make_end_scene(context, true);
     case SceneId::GAME_OVER:
@@ -68,6 +70,8 @@ SceneId scene_for_run_phase(GameContext& context)
         return SceneId::CAMPFIRE;
     case engine::RunPhase::SHOP:
         return SceneId::SHOP;
+    case engine::RunPhase::ANCIENT_BLESSING:
+        return SceneId::ANCIENT;
     case engine::RunPhase::TREASURE:
     {
         // The chest is resolved by the engine on entry; announce it on the map.

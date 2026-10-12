@@ -2621,12 +2621,7 @@ bn::optional<SceneId> CombatScene::_update_end_banner()
 
     if(run.phase == engine::RunPhase::ANCIENT_BLESSING)
     {
-        run.phase = engine::RunPhase::MAP_NAVIGATION;
-        _ctx.nav.reset_to_player_floor();
-        _ctx.map_toast.clear();
-        bn::ostringstream stream(_ctx.map_toast);
-        stream << "ACTE " << int(run.current_act) << " : l'ascension continue !";
-        return SceneId::MAP;
+        return SceneId::ANCIENT;
     }
 
     return SceneId::REWARDS;

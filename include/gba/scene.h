@@ -22,6 +22,7 @@ enum class SceneId : uint8_t
     EVENT,
     CAMPFIRE,
     SHOP,
+    ANCIENT, // the Ancient met at the start of an act, who offers its relics
     VICTORY,
     GAME_OVER
 };

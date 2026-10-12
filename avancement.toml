@@ -185,7 +185,7 @@ items = [
   { name = "Rencontres propres à chaque acte (81 rencontres du jeu d'origine)", status = "partiel", issue = 225, note = "Tables par acte et par salle (faible, normale, élite, boss), acte 1 en variante A ou B : 5 rencontres d'origine jouables, les anciens groupes ailleurs." },
   { name = "Un boss différent par acte", status = "non", issue = 36 },
   { name = "Neow en début de partie", status = "non", issue = 6 },
-  { name = "Bénédiction d'un Ancien entre les actes", status = "non", issue = 261, note = "La phase existe dans le moteur mais elle est sautée." },
+  { name = "Bénédiction d'un Ancien entre les actes", status = "oui", issue = 261, note = "Au début des actes 2 et 3, un Ancien de l'acte (Darv à tout acte) propose 3 reliques, une à prendre. Les reliques dont l'effet manque ne sont pas proposées." },
 ]
 
 [[category]]
