@@ -1572,7 +1572,7 @@ void CombatEngine::forge(int amount) {
 
 int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     counters.hits_dealt = bump(counters.hits_dealt);
-    if (int8_t at = index_of(target); at >= 0 && at < 3) counters.hits_on_enemy[at] = bump(counters.hits_on_enemy[at]);
+    if (int8_t at = index_of(target); at >= 0 && at < MAX_ENEMIES) counters.hits_on_enemy[at] = bump(counters.hits_on_enemy[at]);
     bool was_alive = target.is_alive();
     // Percentage modifiers add up; Shadow Step then doubles the total.
     int32_t percent = 100;
@@ -1837,12 +1837,12 @@ void CombatEngine::draw_cards(int count) {
 }
 
 void CombatEngine::start_combat(EnemyType enemy_type, CharacterId character) {
-    FixedVector<EnemyType, 3> single_list;
+    FixedVector<EnemyType, MAX_ENEMIES> single_list;
     single_list.push_back(enemy_type);
     start_combat_multi(single_list, character);
 }
 
-void CombatEngine::start_combat_multi(FixedVector<EnemyType, 3> enemy_types, CharacterId character) {
+void CombatEngine::start_combat_multi(std::span<const EnemyType> enemy_types, CharacterId character) {
     current_character = character;
     const auto& cdef = get_character(character);
     player.init();
@@ -1850,7 +1850,7 @@ void CombatEngine::start_combat_multi(FixedVector<EnemyType, 3> enemy_types, Cha
     player.max_hp = cdef.starting_hp;
 
     enemies.clear();
-    for (size_t i = 0; i < enemy_types.size(); ++i) {
+    for (size_t i = 0; i < enemy_types.size() && i < MAX_ENEMIES; ++i) {
         Enemy e;
         e.init(enemy_types[i]);
         e.roll_hp(rng_state_ ^ (0x85EBCA6Bu * static_cast<uint32_t>(i + 1)));
@@ -6202,7 +6202,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         }
         case CardId::BEAT_INTO_SHAPE: {
             // The hits the enemy took this turn before this one, whatever card dealt them.
-            const bool aimed = target_idx >= 0 && target_idx < 3;
+            const bool aimed = target_idx >= 0 && target_idx < MAX_ENEMIES;
             const int earlier_hits = aimed ? counters.hits_on_enemy[target_idx] : 0;
             hit(current_target, base_value);
             forge(secondary_value * (1 + earlier_hits));
