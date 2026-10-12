@@ -26,6 +26,7 @@ enum class SceneId : uint8_t
     CREDITS, // end credits scrolling after a winning run
     COMPENDIUM, // cards, relics, monsters and potions the profile has met
     STATISTICS, // runs, victories and Ascension of the profile
+    OPTIONS, // volumes and button preset, opened from the title screen
     VICTORY,
     GAME_OVER
 };

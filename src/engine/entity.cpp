@@ -91,8 +91,9 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "FABRICATOR", false, true },
     { "SHRINKER_BEETLE", true, true },
     { "OWL_MAGISTRATE", false, true },
+    { "SCROLL_OF_BITING", true, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::OWL_MAGISTRATE) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::SCROLL_OF_BITING) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -1049,6 +1050,34 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = move_damage("VERDICT");
             current_intent.debuffs[0] = { StatusType::VULNERABLE, 4 };
             current_intent.description = "Verdict (33 dmg, Vulnérable 4)";
+        }
+    } else if (type == EnemyType::SCROLL_OF_BITING) {
+        // Chomp 14, More Teeth (Strength 2), Chew 5x2, then a draw between Chomp (never twice in a row) and Chew.
+        enum Move : uint8_t { CHOMP, CHEW, MORE_TEETH };
+        if (turn_number <= 1) {
+            use_move(CHOMP);
+        } else if (turn_number == 2) {
+            use_move(MORE_TEETH);
+        } else if (turn_number == 3) {
+            use_move(CHEW);
+        } else {
+            static constexpr MoveOption OPTIONS[] = { { CHOMP }, { CHEW, 1, true } };
+            draw_move(OPTIONS);
+        }
+        if (last_move == CHOMP) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("CHOMP");
+            current_intent.description = "Croc (14 dmg)";
+        } else if (last_move == CHEW) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("CHEW");
+            current_intent.hits = sheet_move("CHEW").hits;
+            current_intent.description = "Mâchouille (5 dmg x2)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.description = "Plus de dents (+2 Force)";
         }
     } else if (type == EnemyType::SHRINKER_BEETLE) {
         // Shrinker (the player is Shrunk for 3 turns) on the first turn, then Chomp 7 and Stomp 13 in turn.

@@ -164,7 +164,7 @@ FixedVector<int, 3> RunManager::get_available_rooms() const {
     return map.get_next_nodes(current_node_index);
 }
 
-FixedVector<EnemyType, 3> RunManager::draw_encounter(RoomType room) {
+FixedVector<EnemyType, MAX_ENEMIES> RunManager::draw_encounter(RoomType room) {
     std::span<const Encounter> table = encounter_table(act_zone(current_act, map_seed),
                                                        encounter_tier(room, current_floor));
     // A list of one draws nothing, as the rooms with a single choice did before the tables.
@@ -184,9 +184,9 @@ FixedVector<EnemyType, 3> RunManager::draw_encounter(RoomType room) {
     const Encounter& encounter = table[index];
     current_encounter = encounter.id;
 
-    FixedVector<EnemyType, 3> monsters;
+    FixedVector<EnemyType, MAX_ENEMIES> monsters;
     if (encounter.random_pool.empty()) {
-        for (uint8_t i = 0; i < encounter.count && i < 3; ++i) {
+        for (uint8_t i = 0; i < encounter.count && i < MAX_ENEMIES; ++i) {
             monsters.push_back(encounter.monsters[i]);
         }
         return monsters;
@@ -218,7 +218,7 @@ void RunManager::enter_room(int node_index) {
         case RoomType::ELITE:
         case RoomType::BOSS: {
             phase = RunPhase::IN_COMBAT;
-            FixedVector<EnemyType, 3> etypes = draw_encounter(node.type);
+            FixedVector<EnemyType, MAX_ENEMIES> etypes = draw_encounter(node.type);
 
             // Start combat with current HP and master deck
             combat.start_combat_multi(etypes, character);

@@ -74,6 +74,7 @@ public:
         _zone.set_visible(false);
         _press.set(0, 50, "Appuyez sur START", Align::CENTER, TextColor::WHITE);
         _press.set_visible(false);
+        _options_hint.set(0, 62, "SELECT : options", Align::CENTER, TextColor::GRAY);
         _credits.set(0, 72, "Fan-game - Slay the Spire (c) Mega Crit", Align::CENTER, TextColor::GRAY);
         _hero.set_z_order(Z_ACTOR);
 
@@ -88,6 +89,7 @@ public:
             _hero_name.set_visible(true);
             _zone.set_visible(true);
             _press.clear();
+            _options_hint.clear();
             _open_menu();
         }
     }
@@ -120,6 +122,7 @@ private:
     Label _zone;
     Label _press;
     Label _credits;
+    Label _options_hint;
     Label _variant;
     Label _description;
     Label _description_lines[3];
@@ -144,10 +147,17 @@ private:
             _press.set_visible((_timer / 24) % 2 == 0);
         }
 
+        if(_timer > 20 && bn::keypad::select_pressed())
+        {
+            play_sfx(Sfx::UI_OPEN);
+            return SceneId::OPTIONS;
+        }
+
         if(_timer > 20 && (bn::keypad::start_pressed() || bn::keypad::a_pressed()))
         {
             play_sfx(Sfx::UI_CONFIRM);
             _press.clear();
+            _options_hint.clear();
             _open_menu();
         }
 

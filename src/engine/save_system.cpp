@@ -1,5 +1,6 @@
 #include "engine/save_system.h"
 #include "engine/card_db.h"
+#include "engine/options.h"
 #include "engine/relic.h"
 #include "engine/monster.h"
 #include "engine/potion.h"
@@ -515,6 +516,7 @@ bool SaveManager::load_from_storage() {
     storage_->read(&data_, sizeof(SaveData), best_offset + sizeof(SaveHeader));
     sequence_ = best.sequence;
     if (data_.active_slot >= PROFILE_COUNT) data_.active_slot = 0;
+    sanitize_settings(data_.settings);
     return true;
 }
 
