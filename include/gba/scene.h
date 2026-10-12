@@ -23,6 +23,7 @@ enum class SceneId : uint8_t
     CAMPFIRE,
     SHOP,
     ANCIENT, // the Ancient met at the start of an act, who offers its relics
+    CREDITS, // end credits scrolling after a winning run
     VICTORY,
     GAME_OVER
 };
