@@ -245,8 +245,7 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "DevotedSculptorWeak", "TurretOperatorWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal", "ChompersNormal", "TunnelerNormal",
-                                        "LouseProgenitorNormal", "TheObscuraNormal" }));
-                                        "LouseProgenitorNormal", "OvicopterNormal" }));
+                                        "LouseProgenitorNormal", "TheObscuraNormal", "OvicopterNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "SlimedBerserkerNormal", "FrogKnightNormal", "GlobeHeadNormal",
                                         "TheLostAndForgottenNormal", "AxebotsNormal", "FabricatorNormal",
