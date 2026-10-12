@@ -81,7 +81,10 @@ jobs:
             echo "Generated files already up to date."
           else
             git commit -m "build(site): refresh website${VERSION:+ for v$VERSION}"
-            git pull --rebase origin main
+            # A run queued behind another one starts from an older main than the previous run's site commit, so
+            # both touched the same generated files (the ROMs are binary and cannot be merged). This run was
+            # triggered by a newer push, so on a conflict its own generated files win ("theirs" in a rebase).
+            git pull --rebase -X theirs origin main
             git push origin HEAD:main
           fi
 

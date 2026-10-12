@@ -245,6 +245,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "SAI", "Au début de votre tour, gagnez 7 d'Armure." },
     { "SEAL_OF_GOLD", "Au début de votre tour, dépensez 3 Pièces d'or pour gagner 1 ●." },
     { "SYMBIOTIC_VIRUS", "Au début de chaque combat, Canalisez 1 Orbe ténébreux." },
+    { "ORRERY", "Lorsque vous obtenez cette relique, obtenez 5 récompenses de carte." },
     { "THE_BOOT", "Chaque fois que vous auriez infligé 4 dégâts d'attaque ou moins (sans armure), vous infligez 5 dégâts à la place." },
     { "THE_COURIER", "Le Marchand renouvelle ce que vous achetez. Prix -20%." },
     { "THE_ABACUS", "Chaque fois que la Pioche est mélangée, gagnez 6 d'Armure." },
