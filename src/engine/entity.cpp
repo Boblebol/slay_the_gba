@@ -165,6 +165,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Sphéropode (Œuf)";
         max_hp = 21;
         hp = 21;
+    } else if (type == EnemyType::FABRICATOR) {
+        name = "Machiniste";
+        max_hp = 150;
+        hp = 150;
     } else if (type == EnemyType::TOUGH_EGG) {
         name = "Œuf robuste";
         max_hp = 14;
@@ -411,6 +415,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::BOWLBUG_EGG: return 23;
         case EnemyType::BYRDONIS: return static_cast<int16_t>(90 - hp_bonus); // ascend() adds hp_bonus back: 90 exactly
         case EnemyType::TOUGH_EGG: return 15;
+        case EnemyType::FABRICATOR: return 155;
         case EnemyType::TOADPOLE: return 22;
         case EnemyType::HUNTER_KILLER: return 126;
         case EnemyType::MAWLER: return 76;
@@ -1222,6 +1227,35 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.base_damage = ascended_damage ? 8 : 7;
         current_intent.block = 7;
         current_intent.description = "Morsure (7 dmg, 7 blk)";
+    } else if (type == EnemyType::FABRICATOR) {
+        // While there is room for a bot (fewer than 3 enemies alive): Fabricate or Fabricating Strike, 1 in 2, either
+        // one again as often as drawn. Without room: Disintegrate. Every bot summoned is one of the four, drawn at random.
+        enum Move : uint8_t { FABRICATE, FABRICATING_STRIKE, DISINTEGRATE };
+        if (context.allies >= 2) {
+            use_move(DISINTEGRATE);
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 13 : 11;
+            current_intent.description = "Désintégration (11 dmg)";
+        } else {
+            static constexpr MoveOption OPTIONS[] = { { FABRICATE, 1, true }, { FABRICATING_STRIKE, 1, true } };
+            static constexpr MoveOption BOTS[] = { { 0, 1, true }, { 1, 1, true }, { 2, 1, true }, { 3, 1, true } };
+            static constexpr EnemyType BOT_TYPES[] = { EnemyType::STABBOT, EnemyType::NOISEBOT, EnemyType::ZAPBOT,
+                                                       EnemyType::GUARDBOT };
+            const uint8_t move = draw_move(OPTIONS);
+            const uint8_t played = last_move;
+            current_intent.summon_type = BOT_TYPES[draw_move(BOTS)];
+            last_move = played;
+            current_intent.summons = 1;
+            current_intent.summon_minions = true;
+            if (move == FABRICATING_STRIKE) {
+                current_intent.type = EnemyIntentType::ATTACK;
+                current_intent.base_damage = ascended_damage ? 21 : 18;
+                current_intent.description = "Frappe du Machiniste (18 dmg, invoque)";
+            } else {
+                current_intent.type = EnemyIntentType::SUMMON;
+                current_intent.description = "Fabrication";
+            }
+        }
     } else if (type == EnemyType::TOUGH_EGG) {
         // Hatch on its first turn (it does nothing else), then Nibble 4 every turn.
         if (phase_turn == 1) {

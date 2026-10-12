@@ -2341,6 +2341,81 @@ void test_phrog_parasite_ascension() {
     std::cout << "[PASS] Phrog Parasite: Ascension gives 66 HP minimum and a Lash of 5x4" << std::endl;
 }
 
+bool is_fabricator_bot(EnemyType type) {
+    return type == EnemyType::STABBOT || type == EnemyType::NOISEBOT || type == EnemyType::ZAPBOT ||
+           type == EnemyType::GUARDBOT;
+}
+
+void test_fabricator() {
+    // 150 HP. With room for a bot: Fabricate (summons one bot) or Fabricating Strike (18 and one bot), 1 in 2.
+    // With 3 enemies alive: Disintegrate 11.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FABRICATOR);
+    Enemy& fabricator = combat.enemies[0];
+    assert(fabricator.name == "Machiniste" && fabricator.hp == 150 && fabricator.max_hp == 150);
+    bool fabricate = false, strike = false, disintegrate = false;
+    for (int turn = 0; turn < 40; ++turn) {
+        combat.player.hp = combat.player.max_hp = 999;
+        for (size_t i = 1; i < combat.enemies.size(); ++i) combat.enemies[i].hp = 0;
+        if (turn % 4 == 3) {
+            // Two bots in the fight: no room left, Disintegrate, then it fabricates again.
+            while (combat.enemies.size() < 3) combat.summon_enemy(EnemyType::ZAPBOT, 0);
+            for (size_t i = 1; i < combat.enemies.size(); ++i) combat.enemies[i].hp = combat.enemies[i].max_hp;
+            combat.plan_enemies();
+            assert(fabricator.current_intent.type == ATTACK && fabricator.current_intent.summons == 0);
+            assert(fabricator.intent_damage(combat.player) == 11);
+            disintegrate = true;
+            continue;
+        }
+        combat.plan_enemies();
+        const EnemyIntent intent = fabricator.current_intent;
+        assert(intent.summons == 1 && intent.summon_minions && is_fabricator_bot(intent.summon_type));
+        if (intent.type == SUMMON) {
+            fabricate = true;
+            assert(fabricator.intent_damage(combat.player) == 0);
+        } else {
+            strike = true;
+            assert(intent.type == ATTACK && fabricator.intent_damage(combat.player) == 18);
+        }
+        const size_t before = combat.count_alive_enemies();
+        const int16_t hp = combat.player.hp;
+        combat.end_player_turn();
+        assert(combat.count_alive_enemies() == before + 1);
+        // The bot is a Minion of the Fabricator and has not acted yet: only a Strike hurt the player.
+        const uint8_t summoned = combat.last_enemy_actions[0].summoned;
+        assert(summoned != 0 && (summoned & (summoned - 1)) == 0);
+        size_t slot = 0;
+        while (!(summoned & (1u << slot))) ++slot;
+        const Enemy& bot = combat.enemies[slot];
+        assert(bot.minion && bot.leader == 0 && bot.type == intent.summon_type);
+        assert(combat.player.hp == hp - (intent.type == SUMMON ? 0 : 18));
+    }
+    assert(fabricate && strike && disintegrate);
+    std::cout << "[PASS] Fabricator: 150 HP, Fabricate and Fabricating Strike bring a bot, Disintegrate 11 without room" << std::endl;
+}
+
+void test_fabricator_ascension() {
+    // 155 HP, Fabricating Strike 21 and Disintegrate 13 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FABRICATOR);
+    Enemy& fabricator = combat.enemies[0];
+    assert(fabricator.ascension_hp() == 155);
+    fabricator.ascend(true, true);
+    assert(fabricator.hp == 155 && fabricator.max_hp == 155);
+    bool strike = false;
+    for (int turn = 0; turn < 20 && !strike; ++turn) {
+        for (size_t i = 1; i < combat.enemies.size(); ++i) combat.enemies[i].hp = 0;
+        combat.plan_enemies();
+        if (fabricator.current_intent.type == ATTACK) {
+            strike = true;
+            assert(fabricator.intent_damage(combat.player) == 21);
+        }
+    }
+    assert(strike);
+    while (combat.enemies.size() < 3) combat.summon_enemy(EnemyType::ZAPBOT, 0);
+    combat.plan_enemies();
+    assert(fabricator.current_intent.type == ATTACK && fabricator.intent_damage(combat.player) == 13);
+    std::cout << "[PASS] Fabricator: Ascension gives 155 HP, Strike 21 and Disintegrate 13" << std::endl;
+}
+
 void test_tough_egg() {
     // Hatch on its first turn, which does nothing to the player, then Nibble 4 every turn. Its HP are drawn
     // between 14 and 18 at the start of the fight.
@@ -3915,6 +3990,8 @@ int main() {
     test_bygone_effigy_ascension();
     test_byrdonis();
     test_byrdonis_ascension();
+    test_fabricator();
+    test_fabricator_ascension();
     test_tough_egg();
     test_tough_egg_ascension();
     test_phrog_parasite();
