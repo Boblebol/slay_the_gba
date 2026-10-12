@@ -943,6 +943,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
         paels_tooth_picks = deck_choice.remaining;
     }
+    if (relic_id == "TRI_BOOMERANG" && has_relic("TRI_BOOMERANG")) request_deck_choice(DeckChoiceKind::ENCHANT_INSTINCT, 3);
     if (relic_id == "CLAWS" && has_relic("CLAWS")) request_deck_choice(DeckChoiceKind::TRANSFORM, 6, true, false, CardId::MAUL);
     if (relic_id == "NEW_LEAF" && has_relic("NEW_LEAF")) request_deck_choice(DeckChoiceKind::TRANSFORM, 1);
     if (relic_id == "POMANDER" && has_relic("POMANDER")) request_deck_choice(DeckChoiceKind::UPGRADE, 1);
@@ -1305,6 +1306,7 @@ bool RunManager::resolve_deck_choice(int deck_index) {
             }
             break;
         }
+        case DeckChoiceKind::ENCHANT_INSTINCT: done = enchant_card_in_deck(deck_index, Enchantment::INSTINCT); break;
         case DeckChoiceKind::TRANSFORM: done = transform_card_in_deck(deck_index, deck_choice.upgrade_result, deck_choice.transform_into); break;
         case DeckChoiceKind::ENCHANT: done = enchant_card_in_deck(deck_index, deck_choice.enchantment, deck_choice.enchant_amount); break;
         default: break;
