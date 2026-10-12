@@ -3899,6 +3899,36 @@ void test_precarious_shears() {
     std::cout << "[PASS] Precarious Shears: pickup asks for 2 cards to remove and costs 16 HP, nothing without the relic" << std::endl;
 }
 
+void test_electric_shrymp() {
+    // Obtained: one Skill of the deck is chosen and receives Imbued.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 740);
+    run.add_relic("ELECTRIC_SHRYMP");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ENCHANT && run.deck_choice.remaining == 1);
+    int attack = -1, skill = -1;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        CardType type = CardDef::get(run.master_deck[i].id).type;
+        if (type == CardType::ATTACK && attack < 0) attack = static_cast<int>(i);
+        if (type == CardType::SKILL && skill < 0) skill = static_cast<int>(i);
+    }
+    assert(attack >= 0 && skill >= 0);
+    assert(!run.resolve_deck_choice(attack));
+    assert(run.resolve_deck_choice(skill));
+    assert(!run.has_deck_choice());
+    assert(run.master_deck[skill].enchantment == Enchantment::IMBUED);
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (static_cast<int>(i) != skill) assert(run.master_deck[i].enchantment == Enchantment::NONE);
+    }
+
+    // Without the relic nothing is asked or enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 740);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("ELECTRIC_SHRYMP") && !plain.has_deck_choice());
+    for (const auto& card : plain.master_deck) assert(card.enchantment == Enchantment::NONE);
+    std::cout << "[PASS] Electric Shrymp: pickup enchants a chosen Skill with Imbued, nothing without the relic" << std::endl;
+}
+
 void test_biiig_hug() {
     // Obtained: 4 cards are chosen to leave the deck.
     RunManager run;
@@ -4171,6 +4201,7 @@ int main() {
     test_precise_scissors();
     test_precarious_shears();
     test_biiig_hug();
+    test_electric_shrymp();
     test_new_leaf();
     test_small_capsule();
     test_nutritious_oyster();
