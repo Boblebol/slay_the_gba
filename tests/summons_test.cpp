@@ -54,16 +54,16 @@ void test_summon_intent() {
 }
 
 void test_summon_room() {
-    // Three places at most: a move that summons three eggs brings two.
-    CombatEngine combat = summoner(3);
+    // MAX_ENEMIES (six) places at most: a move that summons six eggs brings five.
+    CombatEngine combat = summoner(MAX_ENEMIES);
     combat.end_player_turn();
-    assert(combat.enemies.size() == 3 && combat.count_alive_enemies() == 3);
-    assert(combat.last_enemy_actions[0].summoned == 0b110);
+    assert(combat.enemies.size() == MAX_ENEMIES && combat.count_alive_enemies() == MAX_ENEMIES);
+    assert(combat.last_enemy_actions[0].summoned == 0b111110);
 
     // No place left: nothing comes.
     combat.enemies[0].current_intent = summoner().enemies[0].current_intent;
     combat.end_player_turn();
-    assert(combat.enemies.size() == 3 && combat.last_enemy_actions[0].summoned == 0);
+    assert(combat.enemies.size() == MAX_ENEMIES && combat.last_enemy_actions[0].summoned == 0);
 
     // A dead enemy's place is taken again, by a fresh enemy.
     combat.damage_enemy(combat.enemies[1], 999);
@@ -74,7 +74,7 @@ void test_summon_room() {
     assert(combat.enemies[1].is_alive() && combat.enemies[1].type == EnemyType::TOUGH_EGG);
     assert(combat.enemies[1].hp == combat.enemies[1].max_hp && combat.enemies[1].block == 0);
     assert(combat.enemies[1].current_intent.type == EnemyIntentType::SUMMON); // its pattern starts again
-    std::cout << "[PASS] Summon: 3 enemies at most, a dead enemy's place is taken again" << std::endl;
+    std::cout << "[PASS] Summon: 6 enemies at most, a dead enemy's place is taken again" << std::endl;
 }
 
 void test_minions_flee_without_leader() {
