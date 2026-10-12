@@ -4232,6 +4232,124 @@ void test_electric_shrymp() {
     std::cout << "[PASS] Electric Shrymp: pickup enchants a chosen Skill with Imbued, nothing without the relic" << std::endl;
 }
 
+static int first_deck_card_of_type(const RunManager& run, CardType type) {
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (CardDef::get(run.master_deck[i].id).type == type) return static_cast<int>(i);
+    }
+    return -1;
+}
+
+void test_kifuda() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 801);
+    run.add_relic("KIFUDA");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ENCHANT && run.deck_choice.remaining == 3 && run.deck_choice.optional);
+    assert(run.resolve_deck_choice(0));
+    assert(run.master_deck[0].enchantment == Enchantment::ADROIT && run.master_deck[0].enchant_amount == 3);
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 801);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    for (const auto& card : plain.master_deck) assert(card.enchantment == Enchantment::NONE);
+    std::cout << "[PASS] Kifuda: pickup enchants up to 3 cards with Adroit, nothing without the relic" << std::endl;
+}
+
+void test_gnarled_hammer() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 802);
+    run.add_relic("GNARLED_HAMMER");
+    assert(run.has_deck_choice() && run.deck_choice.remaining == 3 && run.deck_choice.optional);
+    int skill = first_deck_card_of_type(run, CardType::SKILL);
+    int attack = first_deck_card_of_type(run, CardType::ATTACK);
+    assert(skill >= 0 && attack >= 0 && !run.resolve_deck_choice(skill));
+    assert(run.resolve_deck_choice(attack));
+    assert(run.master_deck[attack].enchantment == Enchantment::SHARP && run.master_deck[attack].enchant_amount == 3);
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 802);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    std::cout << "[PASS] Gnarled Hammer: pickup enchants up to 3 Attacks with Sharp 3, nothing without the relic" << std::endl;
+}
+
+void test_punch_dagger() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 803);
+    run.add_relic("PUNCH_DAGGER");
+    assert(run.has_deck_choice() && run.deck_choice.remaining == 1);
+    int skill = first_deck_card_of_type(run, CardType::SKILL);
+    int attack = first_deck_card_of_type(run, CardType::ATTACK);
+    assert(!run.resolve_deck_choice(skill) && run.resolve_deck_choice(attack));
+    assert(run.master_deck[attack].enchantment == Enchantment::MOMENTUM && run.master_deck[attack].enchant_amount == 5);
+    assert(!run.has_deck_choice());
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 803);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    std::cout << "[PASS] Punch Dagger: pickup enchants an Attack with Momentum 5, nothing without the relic" << std::endl;
+}
+
+void test_royal_stamp() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 804);
+    run.add_card_to_deck(DeckCard{ CardId::INFLAME, false });
+    const int power = static_cast<int>(run.master_deck.size()) - 1;
+    assert(CardDef::get(run.master_deck[power].id).type == CardType::POWER);
+    run.add_relic("ROYAL_STAMP");
+    assert(run.has_deck_choice() && run.deck_choice.remaining == 1);
+    assert(!run.resolve_deck_choice(power));
+    int skill = first_deck_card_of_type(run, CardType::SKILL);
+    assert(run.resolve_deck_choice(skill));
+    assert(run.master_deck[skill].enchantment == Enchantment::ROYALLY_APPROVED && !run.has_deck_choice());
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 804);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    std::cout << "[PASS] Royal Stamp: pickup enchants a chosen Attack or Skill, never a Power, nothing without the relic" << std::endl;
+}
+
+void test_wing_charm() {
+    for (uint32_t seed = 1; seed <= 20; ++seed) {
+        RunManager with;
+        with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with.add_relic("WING_CHARM");
+        enter_room_of_type(with, RoomType::MONSTER);
+        with.generate_rewards();
+        assert(with.current_card_rewards.size() > 0);
+        int swift = 0;
+        for (size_t i = 0; i < with.current_card_rewards.size(); ++i) {
+            if (with.current_card_rewards[i].enchantment == Enchantment::SWIFT) {
+                ++swift;
+                assert(with.current_card_rewards[i].enchant_amount == 1);
+            }
+        }
+        assert(swift == 1);
+        RunManager plain;
+        plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        plain.add_relic("ANCHOR");
+        enter_room_of_type(plain, RoomType::MONSTER);
+        plain.generate_rewards();
+        for (size_t i = 0; i < plain.current_card_rewards.size(); ++i) assert(plain.current_card_rewards[i].enchantment == Enchantment::NONE);
+    }
+    std::cout << "[PASS] Wing Charm: one card of each reward gets Swift 1, nothing without the relic" << std::endl;
+}
+
+void test_fresnel_lens() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 805);
+    run.add_relic("FRESNEL_LENS");
+    const size_t before = run.master_deck.size();
+    run.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    assert(run.master_deck[before].enchantment == Enchantment::NIMBLE && run.master_deck[before].enchant_amount == 2);
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.master_deck[before + 1].enchantment == Enchantment::NONE);
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 805);
+    plain.add_relic("ANCHOR");
+    plain.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    assert(plain.master_deck.back().enchantment == Enchantment::NONE);
+    std::cout << "[PASS] Fresnel Lens: a Block card added to the deck gets Nimble 2, nothing without the relic" << std::endl;
+}
+
 void test_biiig_hug() {
     // Obtained: 4 cards are chosen to leave the deck.
     RunManager run;
@@ -4541,6 +4659,12 @@ int main() {
     test_precarious_shears();
     test_biiig_hug();
     test_electric_shrymp();
+    test_kifuda();
+    test_gnarled_hammer();
+    test_punch_dagger();
+    test_royal_stamp();
+    test_wing_charm();
+    test_fresnel_lens();
     test_new_leaf();
     test_small_capsule();
     test_nutritious_oyster();
