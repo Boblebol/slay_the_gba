@@ -549,7 +549,13 @@ uint32_t RunManager::reward_seed() const {
            (static_cast<uint32_t>(current_node_index + 1) * 0xC2B2AE35u);
 }
 
-void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity, bool elite) {
+CharacterId RunManager::random_other_hero() {
+    auto pick = static_cast<uint8_t>(next_random() % (static_cast<uint8_t>(CharacterId::COUNT) - 1));
+    if (pick >= static_cast<uint8_t>(character)) ++pick;
+    return static_cast<CharacterId>(pick);
+}
+
+void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity, bool elite, CharacterId hero) {
     // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked. Without one, each card
     // rolls its own rarity (more Rare ones after an elite); a boss gives Rare cards only.
     if (boss && rarity == CardRarity::NONE) rarity = CardRarity::RARE;
@@ -565,14 +571,15 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity,
         CardRarity of = card_meta(id).rarity;
         return rarity == CardRarity::NONE ? of != CardRarity::BASIC : of == rarity;
     };
-    for (CardId id : card_reward_pool(character)) {
+    const CharacterId from = hero == CharacterId::COUNT ? character : hero;
+    for (CardId id : card_reward_pool(from)) {
         if (keep(id)) candidates.push_back(id);
     }
     // Prismatic Gem: the other heroes' pools are added too (the pools do not overlap).
     if (has_relic("PRISMATIC_GEM")) {
-        for (uint8_t hero = 0; hero < static_cast<uint8_t>(CharacterId::COUNT); ++hero) {
-            if (static_cast<CharacterId>(hero) == character) continue;
-            for (CardId id : card_reward_pool(static_cast<CharacterId>(hero))) {
+        for (uint8_t other = 0; other < static_cast<uint8_t>(CharacterId::COUNT); ++other) {
+            if (static_cast<CharacterId>(other) == from) continue;
+            for (CardId id : card_reward_pool(static_cast<CharacterId>(other))) {
                 if (keep(id)) candidates.push_back(id);
             }
         }
@@ -652,6 +659,8 @@ void RunManager::generate_rewards() {
         relic_reward = draw_relic(rng, character, boss ? RelicSource::BOSS : RelicSource::ELITE,
                                   std::span<const std::string_view>(relics.begin(), relics.size()));
     }
+    // Black Star: an Elite gives one more relic, offered once the first one is taken.
+    extra_relic_rewards = room == RoomType::ELITE && !relic_reward.empty() && has_relic("BLACK_STAR") ? 1 : 0;
     // White Star: an Elite gives one more set of Rare cards, offered once the first set is taken or skipped.
     extra_rare_card_rewards = room == RoomType::ELITE && has_relic("WHITE_STAR") ? 1 : 0;
     on_rewards_generated(room);
@@ -676,6 +685,11 @@ bool RunManager::take_relic_reward() {
     if (has_relic(relic_reward) || relics.size() >= relics.capacity()) return false;
     add_relic(relic_reward);
     relic_reward = {};
+    if (extra_relic_rewards > 0 && relics.size() < relics.capacity()) {
+        --extra_relic_rewards;
+        RewardRng rng(next_random());
+        relic_reward = draw_relic(rng, character, RelicSource::ELITE, std::span<const std::string_view>(relics.begin(), relics.size()));
+    }
     return true;
 }
 
@@ -687,6 +701,7 @@ void RunManager::finish_rewards() {
     potion_reward = {};
     relic_reward = {};
     extra_rare_card_rewards = 0;
+    extra_relic_rewards = 0;
     // The boss of act 1 or 2: its rewards are taken, the next act opens.
     if (current_node_index >= 0 && map.nodes[current_node_index].type == RoomType::BOSS && current_act < 3) {
         advance_act();
@@ -712,6 +727,13 @@ void RunManager::next_card_reward_or_finish() {
         --extra_rare_card_rewards;
         RewardRng rng(next_random());
         draw_card_rewards(false, rng, CardRarity::RARE);
+        return;
+    }
+    // Kaleidoscope: one more set of cards from another hero.
+    if (extra_other_hero_card_rewards > 0) {
+        --extra_other_hero_card_rewards;
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng, CardRarity::NONE, false, random_other_hero());
         return;
     }
     // The Hunt: one more set of cards is offered before the rewards are over.
@@ -880,6 +902,20 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         draw_card_rewards(false, rng);
         phase = RunPhase::REWARD_SCREEN;
     }
+    // Kaleidoscope (Ancient): 2 card rewards, each drawn from the pool of another hero. The first set is offered now.
+    if (relic_id == "KALEIDOSCOPE" && has_relic("KALEIDOSCOPE")) {
+        extra_other_hero_card_rewards = static_cast<uint8_t>(extra_other_hero_card_rewards + 1);
+        RewardRng kaleidoscope_rng(next_random());
+        draw_card_rewards(false, kaleidoscope_rng, CardRarity::NONE, false, random_other_hero());
+        phase = RunPhase::REWARD_SCREEN;
+    }
+    // Hefty Tablet (Ancient): an Injury joins the deck, then 1 Rare card is chosen out of 3 on the card reward screen.
+    if (relic_id == "HEFTY_TABLET" && has_relic("HEFTY_TABLET")) {
+        add_card_to_deck(DeckCard{ CardId::INJURY, false });
+        RewardRng tablet_rng(next_random());
+        draw_card_rewards(false, tablet_rng, CardRarity::RARE);
+        phase = RunPhase::REWARD_SCREEN;
+    }
     // Lost Coffer (Ancient): one card reward is offered and one random potion joins the belt.
     if (relic_id == "LOST_COFFER" && has_relic("LOST_COFFER")) {
         RewardRng coffer_rng(next_random());
@@ -989,6 +1025,17 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
             if (id == CardId::STRIKE || id == CardId::DEFEND) transform_card_in_deck(static_cast<int>(i));
         }
     }
+    // Leafy Poultice (Ancient): one random Strike and one random Defend of the deck are transformed, then 12 Max HP lost.
+    if (relic_id == "LEAFY_POULTICE" && has_relic("LEAFY_POULTICE")) {
+        for (CardId target : { CardId::STRIKE, CardId::DEFEND }) {
+            FixedVector<uint8_t, 50> candidates;
+            for (size_t i = 0; i < master_deck.size(); ++i) {
+                if (master_deck[i].id == target) candidates.push_back(static_cast<uint8_t>(i));
+            }
+            if (!candidates.empty()) transform_card_in_deck(candidates[next_random() % candidates.size()]);
+        }
+        lose_max_hp(12);
+    }
     if (relic_id == "PRESERVED_FOG" && has_relic("PRESERVED_FOG")) {
         // Hubris joins only after the removals, so the Eternal curse can never be picked.
         request_deck_choice(DeckChoiceKind::REMOVE, 3);
@@ -996,6 +1043,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         finish_preserved_fog();
     }
     if (relic_id == "PRECISE_SCISSORS" && has_relic("PRECISE_SCISSORS")) request_deck_choice(DeckChoiceKind::REMOVE, 1);
+    // Dolly's Mirror (shop): one card chosen in the deck gets an additional copy.
+    if (relic_id == "DOLLYS_MIRROR" && has_relic("DOLLYS_MIRROR")) request_deck_choice(DeckChoiceKind::DUPLICATE, 1);
     if (relic_id == "NEOWS_TALISMAN" && has_relic("NEOWS_TALISMAN")) {
         // One random Strike and one random Defend, not yet upgraded, are upgraded.
         const CardId targets[] = { CardId::STRIKE, CardId::DEFEND };
@@ -1322,6 +1371,7 @@ bool RunManager::deck_choice_allows(int deck_index) const {
             // Imbued is only ever offered on a Skill (Electric Shrymp).
             if (deck_choice.enchantment == Enchantment::IMBUED && CardDef::get(master_deck[deck_index].id).type != CardType::SKILL) return false;
             return can_enchant(master_deck[deck_index], deck_choice.enchantment);
+        case DeckChoiceKind::DUPLICATE: return master_deck.size() < master_deck.capacity();
         default: return false;
     }
 }
@@ -1342,6 +1392,11 @@ bool RunManager::resolve_deck_choice(int deck_index) {
         }
         case DeckChoiceKind::TRANSFORM: done = transform_card_in_deck(deck_index, deck_choice.upgrade_result, deck_choice.transform_into); break;
         case DeckChoiceKind::ENCHANT: done = enchant_card_in_deck(deck_index, deck_choice.enchantment, deck_choice.enchant_amount); break;
+        case DeckChoiceKind::DUPLICATE: {
+            const DeckCard copy = master_deck[deck_index];
+            done = add_card_to_deck(copy);
+            break;
+        }
         default: break;
     }
     if (!done) return false;
@@ -1406,6 +1461,8 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRONZE_SCALES", "GORGET", "AKABEKO",
         // At the merchant (#487)
         "THE_COURIER", "ORRERY",
+        // A copy of a card of the deck on pickup (#459)
+        "DOLLYS_MIRROR",
         // Max HP with each gain of Gold (#474)
         "DRAGON_FRUIT",
         // Retained hand on the first turn (#509)
