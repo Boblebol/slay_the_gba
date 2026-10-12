@@ -7,6 +7,7 @@
 #include "engine/power.h"
 #include "engine/card.h"
 #include "engine/fixed_vector.h"
+#include "engine/monster.h"
 
 namespace engine {
 
@@ -459,6 +460,11 @@ constexpr uint8_t NO_MOVE = 0xFF;
 constexpr uint8_t INSATIABLE_SANDPIT = 4;
 constexpr uint8_t INSATIABLE_FRANTIC_ESCAPES = 6;
 
+// Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
+// moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire,
+// and the Ceremonial Beast, still on a stand-in pattern.
+const MonsterData* monster_sheet(EnemyType type);
+
 class Enemy : public CombatEntity {
 public:
     EnemyType type = EnemyType::CULTIST;
@@ -499,6 +505,11 @@ public:
     void stun();
     // HP the reference gives this monster at Ascension, 0 for the monsters that follow the percentages of the run.
     int16_t ascension_hp() const;
+    // Move `move_id` of its sheet in the monster database (monster_sheet): damage, hits and Block. A move the
+    // sheet does not have reads as no damage, no Block and one hit.
+    const MonsterMoveData& sheet_move(std::string_view move_id) const;
+    // Damage of that move, the Ascension one when its attacks follow Ascension (ascended_damage).
+    int16_t move_damage(std::string_view move_id) const;
     // Ascension of a monster with its own values (ascension_hp() > 0): its Ascension HP and/or damage.
     // The intent is planned again by the fight (CombatEngine::plan_enemies).
     void ascend(bool more_hp, bool more_damage);
