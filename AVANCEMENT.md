@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 89,3 %** — 1105 faits, 16 partiels, 126 à faire (35 hors périmètre).
+**Avancement global : 89,3 %** — 1106 faits, 16 partiels, 125 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 305 | 0 | 16 | 95,0 % |
-| [Bestiaire](#bestiaire) | 72 | 1 | 31 | 69,7 % |
+| [Bestiaire](#bestiaire) | 73 | 1 | 30 | 70,7 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 31 | 1 | 4 | 87,5 % |
 | [Interface, audio et cartouches](#interface) | 16 | 6 | 9 | 61,3 % |
-| **Total** | **1105** | **16** | **126** | **89,3 %** |
+| **Total** | **1106** | **16** | **125** | **89,3 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 69,7 %
+## Bestiaire — 70,7 %
 
-### Monstres — 80,6 %
+### Monstres — 81,9 %
 
-58 faits, 0 partiel, 14 à faire.
+59 faits, 0 partiel, 13 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1288,7 +1288,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Machiniste | Monstre · Acte 3 | Oui |  |
 | Magistrix | Monstre · Acte 3 | Oui |  |
 | Opérateur de tourelle | Faible · Acte 3 | Oui |  |
-| Parchemord | Monstre · Acte 3 | Non |  |
+| Parchemord | Monstre · Acte 3 | Oui |  |
 | Poignard-bot | Invocation · Acte 3 | Oui |  |
 | Sculpteur dévoué | Faible · Acte 3 | Oui |  |
 | Sonobot | Invocation · Acte 3 | Oui |  |

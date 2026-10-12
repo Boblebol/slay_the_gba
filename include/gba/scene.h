@@ -24,6 +24,9 @@ enum class SceneId : uint8_t
     SHOP,
     ANCIENT, // the Ancient met at the start of an act, who offers its relics
     CREDITS, // end credits scrolling after a winning run
+    COMPENDIUM, // cards, relics, monsters and potions the profile has met
+    STATISTICS, // runs, victories and Ascension of the profile
+    OPTIONS, // volumes and button preset, opened from the title screen
     VICTORY,
     GAME_OVER
 };
@@ -48,6 +51,7 @@ struct GameContext
     bool combat_resume = false;     // returning from the deck viewer: skip the combat intro
     bn::string<64> map_toast;       // message shown when the map scene opens (treasure, act change...)
     int frame = 0;                  // global frame counter
+    bool title_menu = false;        // back from the compendium or the statistics: the title opens on its menu
 };
 
 class Scene

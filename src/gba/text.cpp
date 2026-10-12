@@ -354,7 +354,14 @@ void Label::_regenerate()
         break;
     }
 
-    gen.generate(_x, _y, _text, _sprites);
+    // The 16 sprite palettes can all be taken in a crowded fight: a text that finds no palette left is not
+    // drawn rather than stopping the game on an error screen.
+    if(! gen.generate_optional(_x, _y, _text, _sprites))
+    {
+        _sprites.clear();
+        return;
+    }
+
     uint32_t index = fill_index(_color);
 
     if(index != FONT_FILL)

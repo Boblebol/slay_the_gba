@@ -16,7 +16,10 @@
 #include "bn_sprite_items_fx_burst.h"
 #include "bn_sprite_items_fx_slash.h"
 
+#include "engine/compendium.h"
+#include "engine/options.h"
 #include "engine/potion.h"
+#include "engine/save_system.h"
 
 #include "gba/assets.h"
 #include "gba/audio.h"
@@ -157,6 +160,34 @@ int status_line_x(int wanted_x, const bn::string_view& text)
 
 // Offsets of the four 64x64 quarters of a 128x128 boss sprite.
 constexpr Point boss_parts[] = { { -32, -32 }, { 32, -32 }, { -32, 32 }, { 32, 32 } };
+
+// Shortcut of the button pressed this frame, following the control preset chosen in the options.
+[[nodiscard]] engine::Shortcut pressed_shortcut()
+{
+    engine::ControlPreset preset = engine::control_preset(engine::SaveManager::instance().settings());
+
+    if(bn::keypad::select_pressed())
+    {
+        return engine::shortcut_for(preset, engine::Button::SELECT);
+    }
+
+    if(bn::keypad::l_pressed())
+    {
+        return engine::shortcut_for(preset, engine::Button::L);
+    }
+
+    if(bn::keypad::start_pressed())
+    {
+        return engine::shortcut_for(preset, engine::Button::START);
+    }
+
+    if(bn::keypad::r_pressed())
+    {
+        return engine::shortcut_for(preset, engine::Button::R);
+    }
+
+    return engine::Shortcut::NONE;
+}
 
 class CombatScene final : public Scene
 {
@@ -398,6 +429,7 @@ CombatScene::CombatScene(GameContext& context) :
     _player_bar.snap();
 
     _build_enemies();
+    engine::discover_enemies(engine::SaveManager::instance().get_active_profile(), _combat);
 
     if(_ctx.combat_resume)
     {
@@ -581,6 +613,7 @@ void CombatScene::_summon_enemies(int summoner, unsigned summoned)
     }
 
     _layout_enemies();
+    engine::discover_enemies(engine::SaveManager::instance().get_active_profile(), _combat);
 
     for(int index = 0; index < _enemies.size(); ++index)
     {
@@ -1410,7 +1443,9 @@ void CombatScene::_update_player_input()
         }
     }
 
-    if(bn::keypad::select_pressed())
+    engine::Shortcut shortcut = pressed_shortcut();
+
+    if(shortcut == engine::Shortcut::DECK)
     {
         play_sfx(Sfx::UI_OPEN);
         _ctx.deck_return = SceneId::COMBAT;
@@ -1419,7 +1454,7 @@ void CombatScene::_update_player_input()
         return;
     }
 
-    if(bn::keypad::l_pressed())
+    if(shortcut == engine::Shortcut::POTIONS)
     {
         if(_ctx.run.potions.empty())
         {
@@ -1434,7 +1469,7 @@ void CombatScene::_update_player_input()
         return;
     }
 
-    if(bn::keypad::start_pressed() || bn::keypad::r_pressed())
+    if(shortcut == engine::Shortcut::END_TURN)
     {
         play_sfx(Sfx::DISCARD);
         _start_enemy_turn();

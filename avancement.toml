@@ -250,7 +250,7 @@ items = [
   { name = "Sauvegarde automatique de la partie sur la cartouche (SRAM)", status = "oui", issue = 13 },
   { name = "Reprise avec « Continuer » à l'écran titre", status = "oui", issue = 13 },
   { name = "Volumes de la musique et des effets conservés", status = "oui", issue = 13 },
-  { name = "Statistiques et Compendium (cartes, reliques, monstres rencontrés)", status = "non", issue = 273, note = "Écrans prévus dans le moteur, sans interface sur GBA." },
+  { name = "Statistiques et Compendium (cartes, reliques, monstres rencontrés)", status = "oui", issue = 273 },
 ]
 
 # ---------------------------------------------------------------------------------------------------------
@@ -275,7 +275,7 @@ items = [
   { name = "Indicateurs de vie, d'armure et de progression", status = "partiel", issue = 20 },
   { name = "Transitions entre les scènes", status = "partiel", issue = 18 },
   { name = "Système de dialogue et d'évènements textuels", status = "partiel", issue = 19 },
-  { name = "Options (volume, commandes)", status = "non", issue = 21 },
+  { name = "Options (volume, commandes)", status = "oui" },
   { name = "Menu pause en combat et sur la carte", status = "non", issue = 10 },
   { name = "Menu principal interactif", status = "non", issue = 9 },
   { name = "Écran titre animé (nuages, tour, brume)", status = "non", issue = 7 },
