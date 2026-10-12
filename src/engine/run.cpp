@@ -1317,6 +1317,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BEATING_REMNANT", "UNSETTLING_LAMP", // Shared, rare: caps the HP lost each turn, doubles the first debuff of the fight
         "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
         "PAPER_KRANE",                        // Silent, rare: Weak enemies deal 40% less damage to the player
+        "RUINED_HELMET",                      // Ironclad, rare: the first Strength gained each combat is doubled
         "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
         "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
         "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL", "ORANGE_DOUGH", "VITRUVIAN_MINION",   // Regent
@@ -1556,6 +1557,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("BEATING_REMNANT")) combat.add_power(PowerId::BEATING_REMNANT, BEATING_REMNANT_HP_LOSS);
     // Vambrace: the first Block a card gives each combat is doubled.
     if (has_relic("VAMBRACE")) combat.add_power(PowerId::VAMBRACE, 1);
+    if (has_relic("RUINED_HELMET")) combat.add_power(PowerId::RUINED_HELMET, 1);
     if (has_relic("CHEMICAL_X")) combat.add_power(PowerId::CHEMICAL_X, CHEMICAL_X_INCREASE);
     // Unsettling Lamp: the first card of the fight that debuffs an enemy has its debuffs doubled.
     if (has_relic("UNSETTLING_LAMP")) combat.add_power(PowerId::UNSETTLING_LAMP, 1);
