@@ -261,7 +261,8 @@ enum class PowerId : uint8_t {
     // Held by an enemy (appended)
     BURROWED,           // its Block is up: the Block broken or its next turn played, the power is spent (amount 0)
     VITAL_SPARK,       // it takes unblocked attack damage: 1 energy for the player, up to `amount` times a turn (counter = times)
-    HEX                // while its holder lives, every card left in the hand at the end of the turn is exhausted (Ethereal)
+    HEX,               // while its holder lives, every card left in the hand at the end of the turn is exhausted (Ethereal)
+    SANDPIT            // its holder's turn: -1, and the player is devoured at 0; Frantic Escape adds 1 (the Insatiable)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

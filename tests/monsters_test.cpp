@@ -2102,6 +2102,164 @@ void test_byrdonis_ascension() {
     std::cout << "[PASS] Byrdonis: Ascension gives 90 HP, Swoop 19 and Peck 4x3" << std::endl;
 }
 
+// Frantic Escapes in every pile of the player.
+int frantic_escapes(const CombatEngine& combat) {
+    int count = count_in(combat.draw_pile, CardId::FRANTIC_ESCAPE) + count_in(combat.discard_pile, CardId::FRANTIC_ESCAPE);
+    for (const DeckCard& card : combat.hand) count += card.id == CardId::FRANTIC_ESCAPE;
+    return count;
+}
+
+void test_the_insatiable() {
+    // Liquify Ground, Thrash (8x2), Lunging Bite (28), Salivate (+2 Strength), then Thrash again.
+    check_monster(EnemyType::THE_INSATIABLE, "L'Insatiable", 321, {
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 8, 0, 0, 0, 2 },
+        { ATTACK, 28, 0, 0 },
+        { BUFF, 0, 0, 2 },
+    });
+
+    // Liquify Ground: the Sandpit (4) held by the boss, and 6 Frantic Escapes shuffled into the draw pile.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THE_INSATIABLE);
+    Enemy& worm = combat.enemies[0];
+    assert(worm.current_intent.power == PowerId::SANDPIT && !worm.current_intent.power_on_player);
+    assert(worm.current_intent.status_card == CardId::FRANTIC_ESCAPE && worm.current_intent.status_pile == Pile::DRAW);
+    combat.end_player_turn();
+    assert(combat.enemy_power_amount(0, PowerId::SANDPIT) == INSATIABLE_SANDPIT);
+    assert(combat.last_enemy_actions[0].cards_added == CardId::FRANTIC_ESCAPE &&
+           combat.last_enemy_actions[0].cards_added_count == INSATIABLE_FRANTIC_ESCAPES);
+    assert(frantic_escapes(combat) == INSATIABLE_FRANTIC_ESCAPES);
+
+    // The whole cycle after it, twice: Thrash, Lunging Bite, Salivate, Thrash. Each Salivate adds 2 Strength.
+    for (int cycle = 0; cycle < 2; ++cycle) {
+        const int strength = 2 * cycle;
+        const int moves[4][3] = { { 8, 2, 0 }, { 28, 1, 0 }, { 0, 1, 2 }, { 8, 2, 2 } };
+        for (const auto& move : moves) {
+            const bool attack = move[0] > 0;
+            assert(worm.current_intent.type == (attack ? ATTACK : BUFF));
+            assert(worm.intent_damage(combat.player) == (attack ? move[0] + strength + (move[2] ? 2 : 0) : 0));
+            assert(worm.current_intent.hits == move[1]);
+            // The player escapes once a turn, so that the Sandpit never runs out.
+            const int16_t sandpit = combat.enemy_power_amount(0, PowerId::SANDPIT);
+            assert(play_alone(combat, DeckCard(CardId::FRANTIC_ESCAPE)));
+            assert(combat.enemy_power_amount(0, PowerId::SANDPIT) == sandpit + 1);
+            combat.player.hp = combat.player.max_hp;
+            combat.player.block = 0;
+            combat.end_player_turn();
+            assert(combat.state == CombatState::PLAYER_TURN);
+            assert(combat.enemy_power_amount(0, PowerId::SANDPIT) == sandpit); // +1, then -1 on the boss's turn
+            assert(combat.player.max_hp - combat.player.hp == (attack ? (move[0] + strength + (move[2] ? 2 : 0)) * move[1] : 0));
+            assert(worm.get_status(StatusType::STRENGTH) == strength + move[2]);
+        }
+    }
+    std::cout << "[PASS] The Insatiable: 321 HP, Liquify Ground (Sandpit 4, 6 Frantic Escapes), Thrash 8x2, "
+                 "Lunging Bite 28, Salivate +2 Strength, loop" << std::endl;
+}
+
+void test_the_insatiable_ascension() {
+    // 341 HP, Thrash 9x2, Lunging Bite 31 and Salivate +3 Strength at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THE_INSATIABLE);
+    Enemy& worm = combat.enemies[0];
+    assert(worm.ascension_hp() == 341 && worm.hp_spread() == 0);
+    worm.ascend(true, true);
+    combat.plan_enemies();
+    assert(worm.hp == 341 && worm.max_hp == 341);
+    assert(worm.current_intent.type == STATUS);
+    combat.end_player_turn();
+    assert(worm.current_intent.type == ATTACK && worm.intent_damage(combat.player) == 9 && worm.current_intent.hits == 2);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(worm.current_intent.type == ATTACK && worm.intent_damage(combat.player) == 31);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(worm.current_intent.type == BUFF && worm.current_intent.status_amount == 3);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(worm.get_status(StatusType::STRENGTH) == 3);
+    assert(worm.current_intent.type == ATTACK && worm.intent_damage(combat.player) == 12 && worm.current_intent.hits == 2);
+    std::cout << "[PASS] The Insatiable: Ascension gives 341 HP, Thrash 9x2, Lunging Bite 31, Salivate +3" << std::endl;
+}
+
+void test_sandpit() {
+    // Without an escape, the Sandpit loses 1 on each of the boss's turns: at 0 the player is devoured, full HP
+    // and Block notwithstanding, before the boss moves.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THE_INSATIABLE);
+    combat.end_player_turn(); // Liquify Ground
+    for (int turn = 1; turn < INSATIABLE_SANDPIT; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        assert(combat.enemy_power_amount(0, PowerId::SANDPIT) == INSATIABLE_SANDPIT - turn);
+    }
+    combat.player.hp = combat.player.max_hp;
+    combat.player.block = 999;
+    combat.end_player_turn();
+    assert(combat.state == CombatState::DEFEAT && combat.player.hp == 0);
+
+    // Frantic Escape: +1 Sandpit, and that copy costs 1 more each time it is played.
+    CombatEngine escape = make_combat(CharacterId::IRONCLAD, EnemyType::THE_INSATIABLE);
+    escape.end_player_turn();
+    DeckCard card(CardId::FRANTIC_ESCAPE);
+    assert(escape.effective_cost(card) == 1);
+    escape.hand.clear();
+    escape.hand.push_back(card);
+    escape.player.energy = 3;
+    assert(escape.play_card(0, 0));
+    assert(escape.player.energy == 2 && escape.enemy_power_amount(0, PowerId::SANDPIT) == INSATIABLE_SANDPIT + 1);
+    // The copy played went to the discard pile, now costing 2.
+    const DeckCard& played = escape.discard_pile[escape.discard_pile.size() - 1];
+    assert(played.id == CardId::FRANTIC_ESCAPE && escape.effective_cost(played) == 2);
+    escape.hand.push_back(played);
+    escape.discard_pile.erase(escape.discard_pile.size() - 1);
+    assert(escape.play_card(0, 0));
+    assert(escape.player.energy == 0 && escape.enemy_power_amount(0, PowerId::SANDPIT) == INSATIABLE_SANDPIT + 2);
+    assert(escape.effective_cost(escape.discard_pile[escape.discard_pile.size() - 1]) == 3);
+
+    // The Sandpit dies with its holder: nothing devours the player of a won fight.
+    escape.damage_enemy(escape.enemies[0], 999);
+    assert(!escape.enemies[0].is_alive());
+    assert(escape.enemy_power_amount(0, PowerId::SANDPIT) == 0);
+    std::cout << "[PASS] Sandpit: -1 each boss turn, devoured at 0; Frantic Escape +1 and costs 1 more" << std::endl;
+}
+
+void test_the_insatiable_whole_fight() {
+    // The whole fight, until the boss dies: the player escapes whenever a Frantic Escape it can pay is in hand and
+    // deals 40 damage a turn. A single phase: Liquify Ground once, then the four moves in a loop to the end.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THE_INSATIABLE);
+    Enemy& worm = combat.enemies[0];
+    int escapes = 0;
+    int turn = 1;
+    while (combat.state == CombatState::PLAYER_TURN && worm.is_alive()) {
+        // The move announced this turn.
+        if (turn == 1) {
+            assert(worm.current_intent.power == PowerId::SANDPIT);
+        } else {
+            const int step = (turn - 2) % 4;
+            assert(worm.current_intent.power == PowerId::NONE);
+            if (step == 0 || step == 3) assert(worm.current_intent.base_damage == 8 && worm.current_intent.hits == 2);
+            if (step == 1) assert(worm.current_intent.base_damage == 28 && worm.current_intent.hits == 1);
+            if (step == 2) assert(worm.current_intent.type == BUFF && worm.current_intent.status_amount == 2);
+        }
+        for (size_t i = combat.hand.size(); i-- > 0;) {
+            if (i < combat.hand.size() && combat.hand[i].id == CardId::FRANTIC_ESCAPE &&
+                combat.effective_cost(combat.hand[i]) <= combat.player.energy && combat.play_card(static_cast<int>(i), 0)) {
+                ++escapes;
+            }
+        }
+        combat.damage_enemy(worm, 40);
+        if (!worm.is_alive()) break;
+        combat.player.hp = combat.player.max_hp;
+        const int16_t sandpit = combat.enemy_power_amount(0, PowerId::SANDPIT);
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN); // never devoured
+        if (turn > 1) assert(combat.enemy_power_amount(0, PowerId::SANDPIT) == sandpit - 1);
+        ++turn;
+    }
+    assert(!worm.is_alive() && combat.player.is_alive() && escapes > 0);
+    assert(turn == 9); // 321 HP, 40 a turn
+    assert(combat.enemy_power_amount(0, PowerId::SANDPIT) == 0);
+    std::cout << "[PASS] The Insatiable: a whole fight to the boss's death, escaping the Sandpit" << std::endl;
+}
+
 void test_wriggler() {
     // Nasty Bite (6 damage), Wriggle (+2 Strength and an Infection), and again with the Strength kept.
     // The starting HP is 17 to 21: the roll of the fight is read, then checked against that range.
@@ -3726,6 +3884,10 @@ int main() {
     test_phrog_parasite();
     test_wriggler();
     test_wriggler_ascension();
+    test_the_insatiable();
+    test_the_insatiable_ascension();
+    test_sandpit();
+    test_the_insatiable_whole_fight();
     test_phrog_parasite_ascension();
     test_inklet();
     test_inklet_ascension();

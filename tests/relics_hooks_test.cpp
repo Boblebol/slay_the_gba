@@ -811,9 +811,13 @@ void test_membership_card() {
     // Without the card, the prices are the ones the stock is drawn with.
     RunManager plain;
     plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    uint32_t plain_seed = plain.rng_state();
+    plain_seed ^= plain_seed << 13;
+    plain_seed ^= plain_seed >> 17;
+    plain_seed ^= plain_seed << 5;
     plain.open_shop();
     ShopInventory drawn;
-    drawn.generate(CharacterId::IRONCLAD, 4242, 0);
+    drawn.generate(CharacterId::IRONCLAD, plain_seed, 0);
     assert(!plain.has_relic("MEMBERSHIP_CARD") && plain.current_shop.card_removal_cost == 75);
     assert(plain.current_shop.cards[0].cost == drawn.cards[0].cost);
 

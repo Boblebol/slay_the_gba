@@ -272,7 +272,7 @@ private:
     // Leaves the reward screen: the gold is paid, and a boss opens the next act.
     void finish_rewards();
     // `rarity` restricts the offer to one rarity; NONE draws from every card of the pool.
-    void draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity = CardRarity::NONE);
+    void draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity = CardRarity::NONE, bool elite = false);
     void next_card_reward_or_finish();
     // What a relic does when obtained.
     void on_relic_obtained(std::string_view relic_id);
