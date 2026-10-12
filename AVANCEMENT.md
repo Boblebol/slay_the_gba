@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 89,4 %** — 1107 faits, 16 partiels, 124 à faire (35 hors périmètre).
+**Avancement global : 89,5 %** — 1108 faits, 16 partiels, 123 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -24,9 +24,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Bestiaire](#bestiaire) | 73 | 1 | 30 | 70,7 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
-| [Systèmes de jeu](#systemes) | 31 | 1 | 4 | 87,5 % |
+| [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
-| **Total** | **1107** | **16** | **124** | **89,4 %** |
+| **Total** | **1108** | **16** | **123** | **89,5 %** |
 
 <a id="ironclad"></a>
 
@@ -1516,7 +1516,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 87,5 %
+## Systèmes de jeu — 90,3 %
 
 ### La Tour — 64,3 %
 
@@ -1592,16 +1592,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | A10 : malédiction Fléau de l'ascendant dans le deck de départ |  | Oui | [#40](https://github.com/Boblebol/slay_the_gba/issues/40) |
 | Choix du niveau d'Ascension sur GBA |  | Oui | Après la teinte : choix du niveau 0 à celui débloqué par le héros ; le niveau est rappelé sur la carte. [#272](https://github.com/Boblebol/slay_the_gba/issues/272) |
 
-### Sauvegarde — 75,0 %
+### Sauvegarde — 100,0 %
 
-3 faits, 0 partiel, 1 à faire.
+4 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Sauvegarde automatique de la partie sur la cartouche (SRAM) |  | Oui | [#13](https://github.com/Boblebol/slay_the_gba/issues/13) |
 | Reprise avec « Continuer » à l'écran titre |  | Oui | [#13](https://github.com/Boblebol/slay_the_gba/issues/13) |
 | Volumes de la musique et des effets conservés |  | Oui | [#13](https://github.com/Boblebol/slay_the_gba/issues/13) |
-| Statistiques et Compendium (cartes, reliques, monstres rencontrés) |  | Non | Écrans prévus dans le moteur, sans interface sur GBA. [#273](https://github.com/Boblebol/slay_the_gba/issues/273) |
+| Statistiques et Compendium (cartes, reliques, monstres rencontrés) |  | Oui | [#273](https://github.com/Boblebol/slay_the_gba/issues/273) |
 
 <a id="interface"></a>
 
