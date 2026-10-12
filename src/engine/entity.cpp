@@ -1,7 +1,127 @@
 #include "engine/entity.h"
+#include "engine/monster.h"
 #include <algorithm>
+#include <iterator>
 
 namespace engine {
+
+namespace {
+// How each EnemyType reads its sheet in the monster database (src/engine/monster.cpp), in EnemyType order.
+struct EnemySheet {
+    std::string_view id; // "" for the monsters that do not follow a sheet (see monster_sheet)
+    bool hp_range;       // its HP are drawn between the lowest and the highest of the sheet (see hp_spread)
+    bool ascension_hp;   // it takes the Ascension HP of the sheet, not the percentages of the run (see ascension_hp)
+};
+
+constexpr EnemySheet ENEMY_SHEETS[] = {
+    { "", false, false }, // CULTIST
+    { "", false, false }, // JAW_WORM
+    { "", false, false }, // LOUSE
+    { "", false, false }, // GREMLIN_NOB
+    { "", false, false }, // CEREMONIAL_BEAST
+    { "FUZZY_WURM_CRAWLER", false, false },
+    { "CROSSBOW_RUBY_RAIDER", false, false },
+    { "BRUTE_RUBY_RAIDER", false, false },
+    { "ASSASSIN_RUBY_RAIDER", false, false },
+    { "AXE_RUBY_RAIDER", false, false },
+    { "CALCIFIED_CULTIST", false, false },
+    { "DAMP_CULTIST", false, false },
+    { "SEWER_CLAM", false, false },
+    { "THE_FORGOTTEN", false, true },
+    { "LIVING_SHIELD", false, true },
+    { "FAT_GREMLIN", true, true },
+    { "VINE_SHAMBLER", false, true },
+    { "EYE_WITH_TEETH", false, false },
+    { "STABBOT", true, true },
+    { "NOISEBOT", true, true },
+    { "CUBEX_CONSTRUCT", false, true },
+    { "PUNCH_CONSTRUCT", false, true },
+    { "INKLET", true, true },
+    { "NIBBIT", true, true },
+    { "FLYCONID", true, true },
+    { "CORPSE_SLUG", true, true },
+    { "GAS_BOMB", false, true },
+    { "GREMLIN_MERC", true, true },
+    { "SNEAKY_GREMLIN", true, true },
+    { "HAUNTED_SHIP", false, true },
+    { "SLUDGE_SPINNER", true, true },
+    { "TOADPOLE", true, true },
+    { "HUNTER_KILLER", false, true },
+    { "MAWLER", false, true },
+    { "FOSSIL_STALKER", true, true },
+    { "SPINY_TOAD", true, true },
+    { "SEAPUNK", true, true },
+    { "TRACKER_RUBY_RAIDER", true, true },
+    { "OSTY", false, false },
+    { "CHOMPER", true, true },
+    { "SLUMBERING_BEETLE", false, true },
+    { "PARAFRIGHT", false, false },
+    { "TUNNELER", false, true },
+    { "ZAPBOT", true, true },
+    { "SLIMED_BERSERKER", false, true },
+    { "FROG_KNIGHT", false, true },
+    { "GLOBE_HEAD", false, true },
+    { "LOUSE_PROGENITOR", true, true },
+    { "GUARDBOT", true, true },
+    { "BOWLBUG_NECTAR", true, true },
+    { "DEVOTED_SCULPTOR", false, true },
+    { "THE_LOST", false, true },
+    { "AXEBOT", true, true },
+    { "TURRET_OPERATOR", false, true },
+    { "BOWLBUG_SILK", true, true },
+    { "BOWLBUG_ROCK", false, true },
+    { "BOWLBUG_EGG", true, true },
+    { "SKULKING_COLONY", false, true },
+    { "TERROR_EEL", false, true },
+    { "ENTOMANCER", false, true },
+    { "INFESTED_PRISM", false, true },
+    { "FLAIL_KNIGHT", false, true },
+    { "SPECTRAL_KNIGHT", false, true },
+    { "MAGI_KNIGHT", false, true },
+    { "SOUL_NEXUS", false, true },
+    { "MECHA_KNIGHT", false, true },
+    { "BYGONE_EFFIGY", false, true },
+    { "BYRDONIS", true, true },
+    { "PHROG_PARASITE", true, true },
+    { "WRIGGLER", true, true },
+    { "THE_INSATIABLE", false, true },
+    { "TOUGH_EGG", true, true },
+    { "THE_OBSCURA", false, true },
+    { "OVICOPTER", true, true },
+    { "FABRICATOR", false, true },
+    { "SHRINKER_BEETLE", true, true },
+    { "OWL_MAGISTRATE", false, true },
+};
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::OWL_MAGISTRATE) + 1,
+              "one sheet per EnemyType");
+
+const EnemySheet* sheet_entry(EnemyType type) {
+    const size_t index = static_cast<size_t>(type);
+    return index < std::size(ENEMY_SHEETS) ? &ENEMY_SHEETS[index] : nullptr;
+}
+
+constexpr MonsterMoveData NO_MOVE_DATA = { "", "", 0, 0, 0, 1 };
+} // namespace
+
+const MonsterData* monster_sheet(EnemyType type) {
+    const EnemySheet* entry = sheet_entry(type);
+    if (entry == nullptr || entry->id.empty()) return nullptr;
+    return find_monster(entry->id);
+}
+
+const MonsterMoveData& Enemy::sheet_move(std::string_view move_id) const {
+    if (const MonsterData* sheet = monster_sheet(type)) {
+        for (const MonsterMoveData& move : sheet->moves) {
+            if (move.id == move_id) return move;
+        }
+    }
+    return NO_MOVE_DATA;
+}
+
+int16_t Enemy::move_damage(std::string_view move_id) const {
+    const MonsterMoveData& move = sheet_move(move_id);
+    return ascended_damage ? move.damage_asc : move.damage;
+}
 
 void Enemy::init(EnemyType enemy_type) {
     type = enemy_type;
@@ -17,7 +137,11 @@ void Enemy::init(EnemyType enemy_type) {
     for (IntentDebuff& debuff : last_debuffs) debuff = {};
     reset_pattern(1);
 
-    if (type == EnemyType::CULTIST) {
+    if (const MonsterData* sheet = monster_sheet(type)) {
+        name = sheet->name;
+        max_hp = sheet->min_hp;
+        hp = max_hp;
+    } else if (type == EnemyType::CULTIST) {
         name = "Cultist";
         max_hp = 50;
         hp = 50;
@@ -37,298 +161,6 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Cerf Auguste";
         max_hp = 150;
         hp = 150;
-    } else if (type == EnemyType::FUZZY_WURM_CRAWLER) {
-        name = "Rampeluche";
-        max_hp = 55;
-        hp = 55;
-    } else if (type == EnemyType::CROSSBOW_RUBY_RAIDER) {
-        name = "Rôdeur Arbalétrier";
-        max_hp = 18;
-        hp = 18;
-    } else if (type == EnemyType::BRUTE_RUBY_RAIDER) {
-        name = "Rôdeur Brute";
-        max_hp = 30;
-        hp = 30;
-    } else if (type == EnemyType::ASSASSIN_RUBY_RAIDER) {
-        name = "Rôdeur assassin";
-        max_hp = 18;
-        hp = 18;
-    } else if (type == EnemyType::AXE_RUBY_RAIDER) {
-        name = "Rôdeur à la hache";
-        max_hp = 20;
-        hp = 20;
-    } else if (type == EnemyType::CALCIFIED_CULTIST) {
-        name = "Adepte calcifié";
-        max_hp = 38;
-        hp = 38;
-    } else if (type == EnemyType::DAMP_CULTIST) {
-        name = "Adepte moisi";
-        max_hp = 51;
-        hp = 51;
-    } else if (type == EnemyType::SEWER_CLAM) {
-        name = "Palourde d'égout";
-        max_hp = 56;
-        hp = 56;
-    } else if (type == EnemyType::THE_FORGOTTEN) {
-        name = "L'Oublié";
-        max_hp = 106;
-        hp = 106;
-    } else if (type == EnemyType::THE_LOST) {
-        name = "L'Égaré";
-        max_hp = 93;
-        hp = 93;
-    } else if (type == EnemyType::LIVING_SHIELD) {
-        name = "Bouclier vivant";
-        max_hp = 55;
-        hp = 55;
-    } else if (type == EnemyType::FAT_GREMLIN) {
-        name = "Gros diablotin";
-        max_hp = 13;
-        hp = 13;
-    } else if (type == EnemyType::SNEAKY_GREMLIN) {
-        name = "Diablotin sournois";
-        max_hp = 10;
-        hp = 10;
-    } else if (type == EnemyType::VINE_SHAMBLER) {
-        name = "Bourbelianes";
-        max_hp = 61;
-        hp = 61;
-    } else if (type == EnemyType::EYE_WITH_TEETH) {
-        name = "Œil denté";
-        max_hp = 6;
-        hp = 6;
-    } else if (type == EnemyType::STABBOT) {
-        name = "Poignard-bot";
-        max_hp = 18;
-        hp = 18;
-    } else if (type == EnemyType::PARAFRIGHT) {
-        name = "Pareffroi";
-        max_hp = 21;
-        hp = 21;
-    } else if (type == EnemyType::ZAPBOT) {
-        name = "Déchargebot";
-        max_hp = 18;
-        hp = 18;
-    } else if (type == EnemyType::NOISEBOT) {
-        name = "Sonobot";
-        max_hp = 18;
-        hp = 18;
-    } else if (type == EnemyType::CUBEX_CONSTRUCT) {
-        name = "Assemblage Cubex";
-        max_hp = 65;
-        hp = 65;
-    } else if (type == EnemyType::PUNCH_CONSTRUCT) {
-        name = "Assemblage de pugilat";
-        max_hp = 55;
-        hp = 55;
-    } else if (type == EnemyType::BOWLBUG_NECTAR) {
-        name = "Sphéropode (Nectar)";
-        max_hp = 35;
-        hp = 35;
-    } else if (type == EnemyType::AXEBOT) {
-        name = "Hachebots";
-        max_hp = 70;
-        hp = 70;
-    } else if (type == EnemyType::TURRET_OPERATOR) {
-        name = "Opérateur de tourelle";
-        max_hp = 41;
-        hp = 41;
-    } else if (type == EnemyType::BOWLBUG_ROCK) {
-        name = "Sphéropode (Pierre)";
-        max_hp = 45;
-        hp = 45;
-    } else if (type == EnemyType::SKULKING_COLONY) {
-        name = "Colonie de rôdeurs";
-        max_hp = 75;
-        hp = 75;
-    } else if (type == EnemyType::MAGI_KNIGHT) {
-        name = "Chevalier mage";
-        max_hp = 82;
-        hp = 82;
-    } else if (type == EnemyType::BYGONE_EFFIGY) {
-        name = "Idole Oubliée";
-        max_hp = 127;
-        hp = 127;
-    } else if (type == EnemyType::INKLET) {
-        name = "Encrelin";
-        max_hp = 11;
-        hp = 11;
-    } else if (type == EnemyType::NIBBIT) {
-        name = "Grignotin";
-        max_hp = 42;
-        hp = 42;
-    } else if (type == EnemyType::FROG_KNIGHT) {
-        name = "Chevalier rainette";
-        max_hp = 191;
-        hp = 191;
-    } else if (type == EnemyType::BOWLBUG_EGG) {
-        name = "Sphéropode (Œuf)";
-        max_hp = 21;
-        hp = 21;
-    } else if (type == EnemyType::FABRICATOR) {
-        name = "Machiniste";
-        max_hp = 150;
-        hp = 150;
-    } else if (type == EnemyType::OWL_MAGISTRATE) {
-        name = "Magistrix";
-        max_hp = 231;
-        hp = 231;
-    } else if (type == EnemyType::SHRINKER_BEETLE) {
-        name = "Scarabrideur";
-        max_hp = 38;
-        hp = 38;
-    } else if (type == EnemyType::TOUGH_EGG) {
-        name = "Œuf robuste";
-        max_hp = 14;
-        hp = 14;
-    } else if (type == EnemyType::THE_OBSCURA) {
-        name = "L'Obscura";
-        max_hp = 123;
-        hp = 123;
-    } else if (type == EnemyType::OVICOPTER) {
-        name = "Ovicoptère";
-        max_hp = 124;
-        hp = 124;
-    } else if (type == EnemyType::BYRDONIS) {
-        name = "Oizodon";
-        max_hp = 81;
-        hp = 81;
-    } else if (type == EnemyType::THE_INSATIABLE) {
-        name = "L'Insatiable";
-        max_hp = 321;
-        hp = 321;
-    } else if (type == EnemyType::WRIGGLER) {
-        name = "Larve";
-        max_hp = 17;
-        hp = 17;
-    } else if (type == EnemyType::PHROG_PARASITE) {
-        name = "Parasite Krapo";
-        max_hp = 61;
-        hp = 61;
-    } else if (type == EnemyType::TOADPOLE) {
-        name = "Crapautard";
-        max_hp = 21;
-        hp = 21;
-    } else if (type == EnemyType::MAWLER) {
-        name = "Écharneur";
-        max_hp = 72;
-        hp = 72;
-    } else if (type == EnemyType::GUARDBOT) {
-        name = "Gardebot";
-        max_hp = 16;
-        hp = 16;
-    } else if (type == EnemyType::DEVOTED_SCULPTOR) {
-        name = "Sculpteur dévoué";
-        max_hp = 162;
-        hp = 162;
-    } else if (type == EnemyType::BOWLBUG_SILK) {
-        name = "Sphéropode (Soie)";
-        max_hp = 40;
-        hp = 40;
-    } else if (type == EnemyType::INFESTED_PRISM) {
-        name = "Prisme infesté";
-        max_hp = 161;
-        hp = 161;
-    } else if (type == EnemyType::FLAIL_KNIGHT) {
-        name = "Chevalier au fléau";
-        max_hp = 101;
-        hp = 101;
-    } else if (type == EnemyType::FLYCONID) {
-        name = "Mycoptère";
-        max_hp = 47;
-        hp = 47;
-    } else if (type == EnemyType::ENTOMANCER) {
-        name = "Entomancien";
-        max_hp = 145;
-        hp = 145;
-    } else if (type == EnemyType::CORPSE_SLUG) {
-        name = "Putrilimace";
-        max_hp = 25;
-        hp = 25;
-    } else if (type == EnemyType::GAS_BOMB) {
-        name = "Bombe à gaz";
-        max_hp = 7;
-        hp = 7;
-    } else if (type == EnemyType::GREMLIN_MERC) {
-        name = "Diablotin mercenaire";
-        max_hp = 47;
-        hp = 47;
-    } else if (type == EnemyType::GLOBE_HEAD) {
-        name = "Globocéphale";
-        max_hp = 148;
-        hp = 148;
-    } else if (type == EnemyType::LOUSE_PROGENITOR) {
-        name = "Progéniteur de poux";
-        max_hp = 134;
-        hp = 134;
-    } else if (type == EnemyType::HAUNTED_SHIP) {
-        name = "Navire hanté";
-        max_hp = 63;
-        hp = 63;
-    } else if (type == EnemyType::SLUDGE_SPINNER) {
-        name = "Tisse-boue";
-        max_hp = 37;
-        hp = 37;
-    } else if (type == EnemyType::SPECTRAL_KNIGHT) {
-        name = "Chevalier spectral";
-        max_hp = 93;
-        hp = 93;
-    } else if (type == EnemyType::HUNTER_KILLER) {
-        name = "Chasseur-tueur";
-        max_hp = 121;
-        hp = 121;
-    } else if (type == EnemyType::MECHA_KNIGHT) {
-        name = "Méca-Chevalier";
-        max_hp = 300;
-        hp = 300;
-    } else if (type == EnemyType::FOSSIL_STALKER) {
-        name = "Traqueur fossilisé";
-        max_hp = 51;
-        hp = 51;
-    } else if (type == EnemyType::SPINY_TOAD) {
-        name = "Crapineux";
-        max_hp = 116;
-        hp = 116;
-    } else if (type == EnemyType::SEAPUNK) {
-        name = "Voyou marin";
-        max_hp = 44;
-        hp = 44;
-    } else if (type == EnemyType::SPECTRAL_KNIGHT) {
-        name = "Chevalier spectral";
-        max_hp = 93;
-        hp = 93;
-    } else if (type == EnemyType::TRACKER_RUBY_RAIDER) {
-        name = "Rôdeur Traqueur";
-        max_hp = 21;
-        hp = 21;
-    } else if (type == EnemyType::OSTY) {
-        name = "Titos";
-        max_hp = 1;
-        hp = 1;
-    } else if (type == EnemyType::CHOMPER) {
-        name = "Croquebot";
-        max_hp = 60;
-        hp = 60;
-    } else if (type == EnemyType::SLUMBERING_BEETLE) {
-        name = "Scarabée dormeur";
-        max_hp = 86;
-        hp = 86;
-    } else if (type == EnemyType::TUNNELER) {
-        name = "Tunnelier";
-        max_hp = 87;
-        hp = 87;
-    } else if (type == EnemyType::SLIMED_BERSERKER) {
-        name = "Berserker de vase";
-        max_hp = 261;
-        hp = 261;
-    } else if (type == EnemyType::TERROR_EEL) {
-        name = "Murène de l'effroi";
-        max_hp = 140;
-        hp = 140;
-    } else if (type == EnemyType::SOUL_NEXUS) {
-        name = "Amalg'âmes";
-        max_hp = 234;
-        hp = 234;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -343,38 +175,11 @@ enum TunnelerMove : uint8_t { TUNNELER_BITE, TUNNELER_BURROW, TUNNELER_BELOW, TU
 }
 
 uint8_t Enemy::hp_spread() const {
-    switch (type) {
-        case EnemyType::BOWLBUG_SILK: return 3; // 40 to 43, 41 to 44 at Ascension
-        case EnemyType::SLUDGE_SPINNER: return 2; // 37 to 39, 41 to 42 at Ascension
-        case EnemyType::GUARDBOT: return 4;    // 16 to 20, 17 to 21 at Ascension
-        case EnemyType::WRIGGLER: return 4;    // 17 to 21, 18 to 22 at Ascension
-        case EnemyType::PHROG_PARASITE: return 3; // 61 to 64, 66 and up at Ascension
-        case EnemyType::BOWLBUG_EGG: return 1; // 21 to 22, 23 to 24 at Ascension
-        case EnemyType::BYRDONIS: return 3;    // 81 to 84, always 90 at Ascension
-        case EnemyType::OVICOPTER: return 6;   // 124 to 130, 126 to 132 at Ascension
-        case EnemyType::TOUGH_EGG: return 4;   // 14 to 18, 15 to 19 at Ascension
-        case EnemyType::SHRINKER_BEETLE: return 2; // 38 to 40, 40 to 42 at Ascension
-        case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
-        case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
-        case EnemyType::BOWLBUG_NECTAR: return 3; // 35 to 38, 36 to 39 at Ascension
-        case EnemyType::FLYCONID: return 2;    // 47 to 49, 51 to 53 at Ascension
-        case EnemyType::AXEBOT: return 8;      // 70 to 78, 76 to 86 at Ascension
-        case EnemyType::CORPSE_SLUG: return 2; // 25 to 27, 27 to 29 at Ascension
-        case EnemyType::LOUSE_PROGENITOR: return 2; // 134 to 136, 138 to 140 at Ascension
-        case EnemyType::GREMLIN_MERC: return 2; // 47 to 49, 51 to 53 at Ascension
-        case EnemyType::FOSSIL_STALKER: return 2; // 51 to 53, 54 to 56 at Ascension
-        case EnemyType::SEAPUNK: return 2;     // 44 to 46, 47 to 49 at Ascension
-        case EnemyType::FAT_GREMLIN: return 4; // 13 to 17, 14 to 18 at Ascension
-        case EnemyType::SNEAKY_GREMLIN: return 4; // 10 to 14, 11 to 15 at Ascension
-        case EnemyType::STABBOT: return 5;     // 18 to 23, 19 to 24 at Ascension
-        case EnemyType::ZAPBOT: return 5;      // 18 to 23, 19 to 24 at Ascension
-        case EnemyType::NOISEBOT: return 5;    // 18 to 23, 19 to 24 at Ascension
-        case EnemyType::INKLET: return 6; // 11 to 17, 12 to 18 at Ascension
-        case EnemyType::NIBBIT: return 4;      // 42 to 46, 44 to 48 at Ascension
-        case EnemyType::TRACKER_RUBY_RAIDER: return 4; // 21 to 25, 22 to 26 at Ascension
-        case EnemyType::CHOMPER: return 4;     // 60 to 64, 63 to 67 at Ascension
-        default: return 0;
-    }
+    const EnemySheet* entry = sheet_entry(type);
+    if (entry == nullptr || !entry->hp_range) return 0;
+    const MonsterData* sheet = monster_sheet(type);
+    if (sheet == nullptr) return 0;
+    return static_cast<uint8_t>(sheet->max_hp - sheet->min_hp);
 }
 
 void Enemy::roll_hp(uint32_t seed) {
@@ -396,70 +201,13 @@ void Enemy::stun() {
 }
 
 int16_t Enemy::ascension_hp() const {
-    switch (type) {
-        case EnemyType::THE_FORGOTTEN: return 111;
-        case EnemyType::THE_LOST: return 99;
-        case EnemyType::LIVING_SHIELD: return 65;
-        case EnemyType::FAT_GREMLIN: return 14;
-        case EnemyType::SNEAKY_GREMLIN: return 11;
-        case EnemyType::VINE_SHAMBLER: return 64;
-        case EnemyType::STABBOT: return 19;
-        case EnemyType::ZAPBOT: return 19;
-        case EnemyType::NOISEBOT: return 19;
-        case EnemyType::CUBEX_CONSTRUCT: return 70;
-        case EnemyType::PUNCH_CONSTRUCT: return 60;
-        case EnemyType::BOWLBUG_NECTAR: return 36;
-        case EnemyType::AXEBOT: return 76;
-        case EnemyType::BYGONE_EFFIGY: return 132;
-        case EnemyType::TURRET_OPERATOR: return 51;
-        case EnemyType::BOWLBUG_ROCK: return 46;
-        case EnemyType::SKULKING_COLONY: return 80;
-        case EnemyType::MAGI_KNIGHT: return 89;
-        case EnemyType::INKLET: return 12;
-        case EnemyType::NIBBIT: return 44;
-        case EnemyType::FLYCONID: return 51;
-        case EnemyType::INFESTED_PRISM: return 171;
-        case EnemyType::FLAIL_KNIGHT: return 108;
-        case EnemyType::CORPSE_SLUG: return 27;
-        case EnemyType::GAS_BOMB: return 8;
-        case EnemyType::GREMLIN_MERC: return 51;
-        case EnemyType::HAUNTED_SHIP: return 67;
-        case EnemyType::GLOBE_HEAD: return 158;
-        case EnemyType::LOUSE_PROGENITOR: return 138;
-        case EnemyType::SLUDGE_SPINNER: return 41;
-        case EnemyType::WRIGGLER: return 18;
-        case EnemyType::THE_INSATIABLE: return 341;
-        case EnemyType::PHROG_PARASITE: return 66;
-        case EnemyType::BOWLBUG_EGG: return 23;
-        case EnemyType::BYRDONIS: return static_cast<int16_t>(90 - hp_bonus); // ascend() adds hp_bonus back: 90 exactly
-        case EnemyType::TOUGH_EGG: return 15;
-        case EnemyType::THE_OBSCURA: return 129;
-        case EnemyType::OVICOPTER: return 126;
-        case EnemyType::FABRICATOR: return 155;
-        case EnemyType::SHRINKER_BEETLE: return 40;
-        case EnemyType::OWL_MAGISTRATE: return 247;
-        case EnemyType::TOADPOLE: return 22;
-        case EnemyType::HUNTER_KILLER: return 126;
-        case EnemyType::MAWLER: return 76;
-        case EnemyType::FOSSIL_STALKER: return 54;
-        case EnemyType::SPINY_TOAD: return 121;
-        case EnemyType::SEAPUNK: return 47;
-        case EnemyType::TRACKER_RUBY_RAIDER: return 22;
-        case EnemyType::CHOMPER: return 63;
-        case EnemyType::SLUMBERING_BEETLE: return 89;
-        case EnemyType::TUNNELER: return 92;
-        case EnemyType::SLIMED_BERSERKER: return 281;
-        case EnemyType::FROG_KNIGHT: return 199;
-        case EnemyType::GUARDBOT: return 17;
-        case EnemyType::DEVOTED_SCULPTOR: return 172;
-        case EnemyType::BOWLBUG_SILK: return 41;
-        case EnemyType::TERROR_EEL: return 150;
-        case EnemyType::ENTOMANCER: return 165;
-        case EnemyType::SPECTRAL_KNIGHT: return 97;
-        case EnemyType::SOUL_NEXUS: return 254;
-        case EnemyType::MECHA_KNIGHT: return 320;
-        default: return 0;
-    }
+    const EnemySheet* entry = sheet_entry(type);
+    if (entry == nullptr || !entry->ascension_hp) return 0;
+    const MonsterData* sheet = monster_sheet(type);
+    if (sheet == nullptr) return 0;
+    // The Byrdonis always has the same HP at Ascension: ascend() adds hp_bonus back.
+    if (type == EnemyType::BYRDONIS) return static_cast<int16_t>(sheet->min_hp_asc - hp_bonus);
+    return sheet->min_hp_asc;
 }
 
 void Enemy::ascend(bool more_hp, bool more_damage) {
@@ -636,7 +384,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Inspiration (+7 Force)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 4;
+            current_intent.base_damage = sheet_move("FIRST_ACID_GOOP").damage;
             current_intent.description = "Acide visqueux (4 dmg)";
         }
     } else if (type == EnemyType::CROSSBOW_RUBY_RAIDER) {
@@ -650,7 +398,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Rechargement (3 blk)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 14;
+            current_intent.base_damage = sheet_move("FIRE").damage;
             current_intent.block = 0;
             current_intent.description = "Feu ! (14 dmg)";
         }
@@ -661,7 +409,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.status_amount = 0;
         if (turn_number % 2 == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 7;
+            current_intent.base_damage = sheet_move("BEAT").damage;
             current_intent.description = "Rouer (7 dmg)";
         } else {
             current_intent.type = EnemyIntentType::BUFF;
@@ -673,7 +421,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
     } else if (type == EnemyType::ASSASSIN_RUBY_RAIDER) {
         // Killshot every turn.
         current_intent.type = EnemyIntentType::ATTACK;
-        current_intent.base_damage = 10;
+        current_intent.base_damage = sheet_move("KILLSHOT").damage;
         current_intent.block = 0;
         current_intent.status_type = StatusType::NONE;
         current_intent.status_amount = 0;
@@ -684,13 +432,13 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.status_amount = 0;
         if (turn_number % 3 == 0) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 12;
+            current_intent.base_damage = sheet_move("BIG_SWING").damage;
             current_intent.block = 0;
             current_intent.description = "Balancier (12 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_DEFEND;
-            current_intent.base_damage = 5;
-            current_intent.block = 5;
+            current_intent.base_damage = sheet_move("SWING_1").damage;
+            current_intent.block = sheet_move("SWING_1").block;
             current_intent.description = "Swing (5 dmg, 5 blk)";
         }
     } else if (type == EnemyType::TRACKER_RUBY_RAIDER) {
@@ -705,7 +453,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Traque (2 Fragilisé)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 1;
+            current_intent.base_damage = move_damage("HOUNDS");
             current_intent.hits = ascended_damage ? 9 : 8;
             current_intent.description = "Lâcher les chiens (1 dmg x8)";
         }
@@ -722,7 +470,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Incantation (+2 Rituel)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 9;
+            current_intent.base_damage = sheet_move("DARK_STRIKE").damage;
             current_intent.description = "Frappe ténébreuse (9 dmg)";
         }
     } else if (type == EnemyType::DAMP_CULTIST) {
@@ -738,7 +486,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Incantation (+5 Rituel)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 1;
+            current_intent.base_damage = sheet_move("DARK_STRIKE").damage;
             current_intent.description = "Frappe ténébreuse (1 dmg)";
         }
     } else if (type == EnemyType::SEWER_CLAM) {
@@ -748,7 +496,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.status_amount = 0;
         if (turn_number % 2 == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 10;
+            current_intent.base_damage = sheet_move("JET").damage;
             current_intent.description = "Jet (10 dmg)";
         } else {
             current_intent.type = EnemyIntentType::BUFF;
@@ -762,7 +510,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         if (turn_number % 2 == 1) {
             // Takes 2 Dexterity from the player and keeps it for itself.
             current_intent.type = EnemyIntentType::DEBUFF;
-            current_intent.block = 8;
+            current_intent.block = sheet_move("MIASMA").block;
             current_intent.status_type = StatusType::DEXTERITY;
             current_intent.status_amount = 2;
             current_intent.debuffs[0] = { StatusType::DEXTERITY, -2 };
@@ -787,8 +535,8 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Brouillard paralysant (-2 Force)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 5 : 4;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("EYE_LASERS");
+            current_intent.hits = sheet_move("EYE_LASERS").hits;
             current_intent.description = "Lasers oculaires (4x2 dmg)";
         }
     } else if (type == EnemyType::LIVING_SHIELD) {
@@ -796,11 +544,11 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         if (turn_number > 1 && context.allies == 0 && enter_phase(1)) phase_turn = 1;
         if (phase == 0) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 6;
+            current_intent.base_damage = move_damage("SHIELD_SLAM");
             current_intent.description = "Heurt de bouclier (6 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_BUFF;
-            current_intent.base_damage = ascended_damage ? 18 : 16;
+            current_intent.base_damage = move_damage("SMASH");
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 3;
             current_intent.description = "Fracas (16 dmg, +3 Force)";
@@ -821,19 +569,19 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Éveil (étourdi)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 10 : 9;
+            current_intent.base_damage = move_damage("TACKLE");
             current_intent.description = "Charge (9 dmg)";
         }
     } else if (type == EnemyType::VINE_SHAMBLER) {
         // Swipe, Grasping Vines, Chomp, and again.
         if (turn_number % 3 == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 7 : 6;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("SWIPE");
+            current_intent.hits = sheet_move("SWIPE").hits;
             current_intent.description = "Griffe (6 dmg x2)";
         } else if (turn_number % 3 == 2) {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.base_damage = move_damage("GRASPING_VINES");
             current_intent.power = PowerId::TANGLED;
             current_intent.power_amount = 1;
             current_intent.power_on_player = true;
@@ -841,7 +589,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Lianes paralysantes (8 dmg, Paralysie)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 18 : 16;
+            current_intent.base_damage = move_damage("CHOMP");
             current_intent.description = "Croc (16 dmg)";
         }
     } else if (type == EnemyType::EYE_WITH_TEETH) {
@@ -854,7 +602,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
     } else if (type == EnemyType::GAS_BOMB) {
         // Explode every turn: 8 damage (9 at Ascension).
         current_intent.type = EnemyIntentType::ATTACK;
-        current_intent.base_damage = ascended_damage ? 9 : 8;
+        current_intent.base_damage = move_damage("EXPLODE");
         current_intent.description = "Explosion (8 dmg)";
     } else if (type == EnemyType::SPINY_TOAD) {
         // Protruding Spikes (+5 Thorns), Spike Explosion (-5 Thorns), Tongue Lash, and again.
@@ -866,30 +614,30 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Épines saillantes (+5 Épines)";
         } else if (phase == 1) {
             current_intent.type = EnemyIntentType::ATTACK_BUFF;
-            current_intent.base_damage = ascended_damage ? 25 : 23;
+            current_intent.base_damage = move_damage("SPIKE_EXPLOSION");
             current_intent.status_amount = -5;
             current_intent.description = "Explosion épineuse (23 dmg, -5 Épines)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.status_type = StatusType::NONE;
-            current_intent.base_damage = ascended_damage ? 19 : 17;
+            current_intent.base_damage = move_damage("TONGUE_LASH");
             current_intent.description = "Fouet de langue (17 dmg)";
         }
     } else if (type == EnemyType::STABBOT) {
         // Stab every turn: 1 Frail.
         current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-        current_intent.base_damage = ascended_damage ? 12 : 11;
+        current_intent.base_damage = move_damage("STAB");
         current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
         current_intent.description = "Coup de poignard (11 dmg, Fragilisé)";
     } else if (type == EnemyType::PARAFRIGHT) {
         // Slam every turn.
         current_intent.type = EnemyIntentType::ATTACK;
-        current_intent.base_damage = ascended_damage ? 17 : 16;
+        current_intent.base_damage = move_damage("SLAM");
         current_intent.description = "Heurt (16 dmg)";
     } else if (type == EnemyType::ZAPBOT) {
         // Zap every turn: 14 damage (15 at Ascension).
         current_intent.type = EnemyIntentType::ATTACK;
-        current_intent.base_damage = ascended_damage ? 15 : 14;
+        current_intent.base_damage = move_damage("ZAP");
         current_intent.description = "Décharge (14 dmg)";
     } else if (type == EnemyType::NOISEBOT) {
         // Noise every turn: 2 Dazed into the discard pile.
@@ -907,12 +655,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Chargement (+2 Force)";
         } else if ((turn_number - 2) % 3 != 2) {
             current_intent.type = EnemyIntentType::ATTACK_BUFF;
-            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.base_damage = move_damage("REPEATER_BLAST");
             current_intent.description = "Tir répéteur (7 dmg, +2 Force)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 6 : 5;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("EXPEL");
+            current_intent.hits = sheet_move("EXPEL").hits;
             current_intent.status_type = StatusType::NONE;
             current_intent.status_amount = 0;
             current_intent.description = "Éjection (5 dmg x2)";
@@ -922,17 +670,17 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         const int step = (turn_number - 1) % 3;
         if (step == 0) {
             current_intent.type = EnemyIntentType::DEFEND;
-            current_intent.block = 10;
+            current_intent.block = sheet_move("READY").block;
             current_intent.description = "PRÊT (10 Armure)";
         } else if (step == 1) {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 6 : 5;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("FAST_PUNCH");
+            current_intent.hits = sheet_move("FAST_PUNCH").hits;
             current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
             current_intent.description = "Poing rapide (5 dmg x2, Fragilisé)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 16 : 14;
+            current_intent.base_damage = move_damage("STRONG_PUNCH");
             current_intent.description = "Poing puissant (14 dmg)";
         }
     } else if (type == EnemyType::BOWLBUG_NECTAR) {
@@ -944,35 +692,35 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Buff (+15 Force)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 3;
+            current_intent.base_damage = move_damage("THRASH");
             current_intent.description = "Furie (3 dmg)";
         }
     } else if (type == EnemyType::AXEBOT) {
         // Boot Up (10 Block, 1 Strength), then Hammer Uppercut and One-Two in turn.
         if (turn_number == 1) {
             current_intent.type = EnemyIntentType::BUFF;
-            current_intent.block = 10;
+            current_intent.block = sheet_move("BOOT_UP").block;
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 1;
             current_intent.description = "Démarrage (10 Armure, +1 Force)";
         } else if (turn_number % 2 == 0) {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 18 : 14;
+            current_intent.base_damage = move_damage("HAMMER_UPPERCUT");
             current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
             current_intent.debuffs[1] = { StatusType::WEAK, 2 };
             current_intent.description = "Marteau Uppercut (14 dmg, Fragilisé, Affaibli)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 11 : 10;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("ONE_TWO");
+            current_intent.hits = sheet_move("ONE_TWO").hits;
             current_intent.description = "Droite-gauche (10 dmg x2)";
         }
     } else if (type == EnemyType::TURRET_OPERATOR) {
         // Unload twice (5 hits of 3), Reload (+1 Strength), and again.
         if ((turn_number - 1) % 3 != 2) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 4 : 3;
-            current_intent.hits = 5;
+            current_intent.base_damage = move_damage("UNLOAD");
+            current_intent.hits = sheet_move("UNLOAD").hits;
             current_intent.description = "Déchargement ! (3 dmg x5)";
         } else {
             current_intent.type = EnemyIntentType::BUFF;
@@ -990,7 +738,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             phase = 0;
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 16 : 15;
+            current_intent.base_damage = move_damage("HEADBUTT");
             current_intent.description = "Coup de boule (15 dmg)";
         }
     } else if (type == EnemyType::SKULKING_COLONY) {
@@ -998,17 +746,17 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         const int step = (turn_number - 1) % 4;
         current_intent.type = EnemyIntentType::ATTACK;
         if (step <= 1) {
-            current_intent.base_damage = ascended_damage ? 16 : 14;
+            current_intent.base_damage = move_damage("ZOOM");
             current_intent.description = "Bourdonnement (14 dmg)";
         } else if (step == 2) {
             current_intent.type = EnemyIntentType::ATTACK_BUFF;
-            current_intent.base_damage = ascended_damage ? 11 : 9;
+            current_intent.base_damage = move_damage("INERTIA");
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = ascended_damage ? 4 : 2;
             current_intent.description = "Inertie (9 dmg, +2 Force)";
         } else {
-            current_intent.base_damage = ascended_damage ? 8 : 7;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("PIERCING_STABS");
+            current_intent.hits = sheet_move("PIERCING_STABS").hits;
             current_intent.description = "Coups perforants (7 dmg x2)";
         }
     } else if (type == EnemyType::MAGI_KNIGHT) {
@@ -1018,23 +766,23 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
                           : static_cast<Move>(RAM + (turn_number - 3) % 3);
         if (move == POWER_SHIELD) {
             current_intent.type = EnemyIntentType::ATTACK_DEFEND;
-            current_intent.base_damage = ascended_damage ? 7 : 6;
-            current_intent.block = 5;
+            current_intent.base_damage = move_damage("POWER_SHIELD");
+            current_intent.block = sheet_move("POWER_SHIELD").block;
             current_intent.description = "Bouclier de puissance (6 dmg, 5 blk)";
         } else if (move == DAMPEN) {
             current_intent.type = EnemyIntentType::DEBUFF;
             current_intent.description = "Atténuation";
         } else if (move == RAM) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 11 : 10;
+            current_intent.base_damage = move_damage("RAM");
             current_intent.description = "Bélier (10 dmg)";
         } else if (move == PREP) {
             current_intent.type = EnemyIntentType::DEFEND;
-            current_intent.block = 5;
+            current_intent.block = sheet_move("PREP").block;
             current_intent.description = "Prep (5 Armure)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 40 : 35;
+            current_intent.base_damage = move_damage("MAGIC_BOMB");
             current_intent.description = "Bombe magique (35 dmg)";
         }
     } else if (type == EnemyType::BYGONE_EFFIGY) {
@@ -1054,7 +802,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Sommeil";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 15 : 13;
+            current_intent.base_damage = move_damage("SLASHES");
             current_intent.description = "Bourrasque (13 dmg)";
         }
     } else if (type == EnemyType::INKLET) {
@@ -1071,14 +819,14 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         }
         current_intent.type = EnemyIntentType::ATTACK;
         if (move == WHIRLWIND) {
-            current_intent.base_damage = ascended_damage ? 3 : 2;
-            current_intent.hits = 3;
+            current_intent.base_damage = move_damage("WHIRLWIND");
+            current_intent.hits = sheet_move("WHIRLWIND").hits;
             current_intent.description = "Tourbillon (2 dmg x3)";
         } else if (move == PIERCING_GAZE) {
-            current_intent.base_damage = ascended_damage ? 11 : 10;
+            current_intent.base_damage = move_damage("PIERCING_GAZE");
             current_intent.description = "Regard perçant (10 dmg)";
         } else {
-            current_intent.base_damage = ascended_damage ? 4 : 3;
+            current_intent.base_damage = move_damage("JAB");
             current_intent.description = "Coup sec (3 dmg)";
         }
     } else if (type == EnemyType::MAWLER) {
@@ -1095,7 +843,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         }
         if (last_move == RIP_AND_TEAR) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 16 : 14;
+            current_intent.base_damage = move_damage("RIP_AND_TEAR");
             current_intent.description = "Déchirure (14 dmg)";
         } else if (last_move == ROAR) {
             current_intent.type = EnemyIntentType::DEBUFF;
@@ -1103,8 +851,8 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Rugissement (Vulnérable 3)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 5 : 4;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("CLAW");
+            current_intent.hits = sheet_move("CLAW").hits;
             current_intent.description = "Griffe (4 dmg x2)";
         }
     } else if (type == EnemyType::NIBBIT) {
@@ -1114,11 +862,11 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         uint8_t move = static_cast<uint8_t>((phase + phase_turn - 1) % 3);
         if (move == 0) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 13 : 12;
+            current_intent.base_damage = move_damage("BUTT");
             current_intent.description = "Derrière (12 dmg)";
         } else if (move == 1) {
             current_intent.type = EnemyIntentType::ATTACK_DEFEND;
-            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.base_damage = move_damage("SLICE");
             current_intent.block = ascended_damage ? 6 : 5;
             current_intent.description = "Slice (6 dmg, 5 blk)";
         } else {
@@ -1131,12 +879,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         // Whip Slap, Glomp, Goop, and again.
         if (turn_number % 3 == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 3;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("WHIP_SLAP");
+            current_intent.hits = sheet_move("WHIP_SLAP").hits;
             current_intent.description = "Fouet (3 dmg x2)";
         } else if (turn_number % 3 == 2) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.base_damage = move_damage("GLOMP");
             current_intent.description = "Câlin brutal (8 dmg)";
         } else {
             current_intent.type = EnemyIntentType::DEBUFF;
@@ -1148,17 +896,17 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.hits = 2;
         if (turn_number % 3 == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.base_damage = move_damage("GIMME");
             current_intent.description = "Donne-moi ça ! (7 dmg x2)";
         } else if (turn_number % 3 == 2) {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.base_damage = move_damage("DOUBLE_SMASH");
             current_intent.debuffs[0] = { StatusType::WEAK, 2 };
             current_intent.description = "Fracas double (6 dmg x2, Affaibli 2)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_BUFF;
-            current_intent.hits = 1;
-            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.hits = sheet_move("HEHE").hits;
+            current_intent.base_damage = move_damage("HEHE");
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 2;
             current_intent.description = "Héhé (8 dmg, +2 Force)";
@@ -1168,17 +916,17 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         const int step = (turn_number - 1) % 3;
         if (step == 0) {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 14 : 13;
+            current_intent.base_damage = move_damage("SHOCKING_SLAP");
             current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
             current_intent.description = "Claque de choc (13 dmg, Fragilisé 2)";
         } else if (step == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 7 : 6;
-            current_intent.hits = 3;
+            current_intent.base_damage = move_damage("THUNDER_STRIKE");
+            current_intent.hits = sheet_move("THUNDER_STRIKE").hits;
             current_intent.description = "Canalisation kéraunique (6 dmg x3)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_BUFF;
-            current_intent.base_damage = ascended_damage ? 17 : 16;
+            current_intent.base_damage = move_damage("GALVANIC_BURST");
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 2;
             current_intent.description = "Galvanic Burst (16 dmg, +2 Force)";
@@ -1191,7 +939,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         const int step = (turn_number - 1) % 3;
         if (step == 0) {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 10 : 9;
+            current_intent.base_damage = move_damage("WEB_CANNON");
             current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
             current_intent.description = "Canon de toile (9 dmg, Fragilisé 2)";
         } else if (step == 1) {
@@ -1203,7 +951,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Repli fortifiant (14 Armure, +5 Force)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 16 : 14;
+            current_intent.base_damage = move_damage("POUNCE");
             current_intent.description = "Bond (14 dmg)";
         }
     } else if (type == EnemyType::HAUNTED_SHIP) {
@@ -1218,18 +966,18 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Hanter (Affaibli 3, 5 Hébété)";
         } else if (step == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 14 : 13;
+            current_intent.base_damage = move_damage("SWIPE");
             current_intent.description = "Griffe (13 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 5 : 4;
-            current_intent.hits = 3;
+            current_intent.base_damage = move_damage("STOMP");
+            current_intent.hits = sheet_move("STOMP").hits;
             current_intent.description = "Piétinement (4 dmg x3)";
         }
     } else if (type == EnemyType::GUARDBOT) {
         // Guard (15 Block), every turn.
         current_intent.type = EnemyIntentType::DEFEND;
-        current_intent.block = 15;
+        current_intent.block = sheet_move("GUARD").block;
         current_intent.description = "Garde (15 Armure)";
     } else if (type == EnemyType::BOWLBUG_SILK) {
         // Toxic Spit (1 Weak), Thrash 4x2, and again.
@@ -1239,15 +987,15 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Crachat toxique (Affaibli 1)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 5 : 4;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("THRASH");
+            current_intent.hits = sheet_move("THRASH").hits;
             current_intent.description = "Furie (4 dmg x2)";
         }
     } else if (type == EnemyType::BOWLBUG_EGG) {
         // Bite (7 damage, 7 Block) every turn.
         current_intent.type = EnemyIntentType::ATTACK_DEFEND;
-        current_intent.base_damage = ascended_damage ? 8 : 7;
-        current_intent.block = 7;
+        current_intent.base_damage = move_damage("BITE");
+        current_intent.block = sheet_move("BITE").block;
         current_intent.description = "Morsure (7 dmg, 7 blk)";
     } else if (type == EnemyType::FABRICATOR) {
         // While there is room for a bot (fewer than 3 enemies alive): Fabricate or Fabricating Strike, 1 in 2, either
@@ -1256,7 +1004,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         if (context.allies >= 2) {
             use_move(DISINTEGRATE);
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 13 : 11;
+            current_intent.base_damage = move_damage("DISINTEGRATE");
             current_intent.description = "Désintégration (11 dmg)";
         } else {
             static constexpr MoveOption OPTIONS[] = { { FABRICATE, 1, true }, { FABRICATING_STRIKE, 1, true } };
@@ -1271,7 +1019,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.summon_minions = true;
             if (move == FABRICATING_STRIKE) {
                 current_intent.type = EnemyIntentType::ATTACK;
-                current_intent.base_damage = ascended_damage ? 21 : 18;
+                current_intent.base_damage = move_damage("FABRICATING_STRIKE");
                 current_intent.description = "Frappe du Machiniste (18 dmg, invoque)";
             } else {
                 current_intent.type = EnemyIntentType::SUMMON;
@@ -1284,12 +1032,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         const int step = (turn_number - 1) % 4;
         if (step == 0) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 17 : 16;
+            current_intent.base_damage = move_damage("MAGISTRATE_SCRUTINY");
             current_intent.description = "Regard du magistrat (16 dmg)";
         } else if (step == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 4;
-            current_intent.hits = 6;
+            current_intent.base_damage = move_damage("PECK_ASSAULT");
+            current_intent.hits = sheet_move("PECK_ASSAULT").hits;
             current_intent.description = "Assaut de becs (4 dmg x6)";
         } else if (step == 2) {
             current_intent.type = EnemyIntentType::BUFF;
@@ -1298,7 +1046,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Envol judiciaire";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 36 : 33;
+            current_intent.base_damage = move_damage("VERDICT");
             current_intent.debuffs[0] = { StatusType::VULNERABLE, 4 };
             current_intent.description = "Verdict (33 dmg, Vulnérable 4)";
         }
@@ -1312,11 +1060,11 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Rétrécissement";
         } else if (turn_number % 2 == 0) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.base_damage = move_damage("CHOMP");
             current_intent.description = "Croc (7 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 14 : 13;
+            current_intent.base_damage = move_damage("STOMP");
             current_intent.description = "Piétinement (13 dmg)";
         }
     } else if (type == EnemyType::TOUGH_EGG) {
@@ -1326,7 +1074,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Éclosion";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 5 : 4;
+            current_intent.base_damage = move_damage("NIBBLE");
             current_intent.description = "Grignotage (4 dmg)";
         }
     } else if (type == EnemyType::THE_OBSCURA) {
@@ -1350,15 +1098,15 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Illusion";
         } else if (last_move == PIERCING_GAZE) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 11 : 10;
+            current_intent.base_damage = move_damage("PIERCING_GAZE");
             current_intent.description = "Regard perçant (10 dmg)";
         } else if (last_move == SAIL) {
             current_intent.type = EnemyIntentType::BUFF;
             current_intent.description = "Voile";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_DEFEND;
-            current_intent.base_damage = ascended_damage ? 7 : 6;
-            current_intent.block = 6;
+            current_intent.base_damage = move_damage("HARDENING_STRIKE");
+            current_intent.block = sheet_move("HARDENING_STRIKE").block;
             current_intent.description = "Frappe durcissante (6 dmg, 6 blk)";
         }
     } else if (type == EnemyType::OVICOPTER) {
@@ -1379,11 +1127,11 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Pâte nutritive (+3 Force)";
         } else if (step == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 17 : 16;
+            current_intent.base_damage = move_damage("SMASH");
             current_intent.description = "Fracas (16 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.base_damage = move_damage("TENDERIZER");
             current_intent.debuffs[0] = { StatusType::VULNERABLE, 2 };
             current_intent.description = "Adoucir (7 dmg, Vulnérable 2)";
         }
@@ -1391,12 +1139,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         // Swoop (17 damage) then Peck (3 damage x3), and again.
         if (turn_number % 2 == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 19 : 17;
+            current_intent.base_damage = move_damage("SWOOP");
             current_intent.description = "Piqué (17 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 4 : 3;
-            current_intent.hits = 3;
+            current_intent.base_damage = move_damage("PECK");
+            current_intent.hits = sheet_move("PECK").hits;
             current_intent.description = "Coup de bec (3 dmg x3)";
         }
     } else if (type == EnemyType::THE_INSATIABLE) {
@@ -1412,12 +1160,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Liquéfaction du sol (Sables mouvants)";
         } else if (step == 0 || step == 3) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 9 : 8;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("THRASH");
+            current_intent.hits = sheet_move("THRASH").hits;
             current_intent.description = "Furie (8 dmg x2)";
         } else if (step == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 31 : 28;
+            current_intent.base_damage = move_damage("LUNGING_BITE");
             current_intent.description = "Morsure brusque (28 dmg)";
         } else {
             current_intent.type = EnemyIntentType::BUFF;
@@ -1429,7 +1177,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         // Nasty Bite (6 damage), then Wriggle (+2 Strength and an Infection into the discard pile), and again.
         if (turn_number % 2 == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.base_damage = move_damage("NASTY_BITE");
             current_intent.description = "Morsure vicieuse (6 dmg)";
         } else {
             current_intent.type = EnemyIntentType::STATUS;
@@ -1450,8 +1198,8 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Infection (3 Infection)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 5 : 4;
-            current_intent.hits = 4;
+            current_intent.base_damage = move_damage("LASH");
+            current_intent.hits = sheet_move("LASH").hits;
             current_intent.description = "Fouet (4 dmg x4)";
         }
     } else if (type == EnemyType::TOADPOLE) {
@@ -1466,14 +1214,14 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Épines (+2 Épines)";
         } else if (move == 1) {
             current_intent.type = EnemyIntentType::ATTACK_BUFF;
-            current_intent.base_damage = ascended_damage ? 4 : 3;
-            current_intent.hits = 3;
+            current_intent.base_damage = move_damage("SPIKE_SPIT");
+            current_intent.hits = sheet_move("SPIKE_SPIT").hits;
             current_intent.status_type = StatusType::THORNS;
             current_intent.status_amount = 2;
             current_intent.description = "Jet d'épines (3x3 dmg, +2 Épines)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.base_damage = move_damage("WHIRL");
             current_intent.description = "Tourbillon (7 dmg)";
         }
     } else if (type == EnemyType::TERROR_EEL) {
@@ -1495,12 +1243,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Aura de terreur (Vulnérable 99)";
         } else if (move == CRASH) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 18 : 16;
+            current_intent.base_damage = move_damage("CRASH");
             current_intent.description = "Fracas (16 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_BUFF;
-            current_intent.base_damage = ascended_damage ? 4 : 3;
-            current_intent.hits = 3;
+            current_intent.base_damage = move_damage("THRASH");
+            current_intent.hits = sheet_move("THRASH").hits;
             current_intent.status_type = StatusType::VIGOR;
             current_intent.status_amount = 6;
             current_intent.description = "Furie (3x3 dmg, +6 Vigueur)";
@@ -1509,12 +1257,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         // Sea Kick, Spinning Kick, Bubble Burp, and again.
         if (turn_number % 3 == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 13 : 11;
+            current_intent.base_damage = move_damage("SEA_KICK");
             current_intent.description = "Coup de pied marin (11 dmg)";
         } else if (turn_number % 3 == 2) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 2;
-            current_intent.hits = 4;
+            current_intent.base_damage = move_damage("SPINNING_KICK");
+            current_intent.hits = sheet_move("SPINNING_KICK").hits;
             current_intent.description = "Coup de pied tournoyant (2 dmg x4)";
         } else {
             current_intent.type = EnemyIntentType::BUFF;
@@ -1531,8 +1279,8 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         // Clamp (two hits), Screech (3 Dazed into the discard pile), and again.
         if (turn_number % 2 == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 9 : 8;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("CLAMP");
+            current_intent.hits = sheet_move("CLAMP").hits;
             current_intent.description = "Pince (8 dmg x2)";
         } else {
             current_intent.type = EnemyIntentType::STATUS;
@@ -1550,7 +1298,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Incantation interdite (+9 Rituel)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 15 : 12;
+            current_intent.base_damage = move_damage("SAVAGE");
             current_intent.description = "Sauvagerie (12 dmg)";
         }
     } else if (type == EnemyType::INFESTED_PRISM) {
@@ -1558,21 +1306,21 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         const int step = (turn_number - 1) % 4;
         if (step == 0) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 17 : 15;
+            current_intent.base_damage = move_damage("JAB");
             current_intent.description = "Coup sec (15 dmg)";
         } else if (step == 1) {
             current_intent.type = EnemyIntentType::ATTACK_DEFEND;
-            current_intent.base_damage = ascended_damage ? 13 : 11;
+            current_intent.base_damage = move_damage("RADIATE");
             current_intent.block = ascended_damage ? 13 : 11;
             current_intent.description = "Irradiation (11 dmg, 11 blk)";
         } else if (step == 2) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 6 : 5;
-            current_intent.hits = 3;
+            current_intent.base_damage = move_damage("WHIRLWIND");
+            current_intent.hits = sheet_move("WHIRLWIND").hits;
             current_intent.description = "Tourbillon (5 dmg x3)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_DEFEND;
-            current_intent.base_damage = ascended_damage ? 10 : 8;
+            current_intent.base_damage = move_damage("PULSATE");
             current_intent.block = ascended_damage ? 22 : 20;
             current_intent.power = PowerId::VITAL_SPARK;
             current_intent.power_amount = ascended_damage ? 3 : 2;
@@ -1594,12 +1342,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Chant de guerre (+3 Force)";
         } else if (last_move == FLAIL) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 10 : 9;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("FLAIL");
+            current_intent.hits = sheet_move("FLAIL").hits;
             current_intent.description = "Fléau (9 dmg x2)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 17 : 15;
+            current_intent.base_damage = move_damage("RAM");
             current_intent.description = "Bélier (15 dmg)";
         }
     } else if (type == EnemyType::FLYCONID) {
@@ -1622,12 +1370,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Spores fragilisantes (Vulnérable 2)";
         } else if (last_move == FRAIL_SPORES) {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.base_damage = move_damage("FRAIL_SPORES");
             current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
             current_intent.description = "Spores fragilisantes (8 dmg, Fragilisé 2)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 12 : 11;
+            current_intent.base_damage = move_damage("SMASH");
             current_intent.description = "Fracas (11 dmg)";
         }
     } else if (type == EnemyType::FROG_KNIGHT) {
@@ -1642,12 +1390,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         }
         if (last_move == TONGUE_LASH) {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 14 : 13;
+            current_intent.base_damage = move_damage("TONGUE_LASH");
             current_intent.debuffs[0] = { StatusType::FRAIL, 2 };
             current_intent.description = "Fouet de langue (13 dmg, Fragilisé 2)";
         } else if (last_move == STRIKE_DOWN_EVIL) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 23 : 21;
+            current_intent.base_damage = move_damage("STRIKE_DOWN_EVIL");
             current_intent.description = "Expier le mal (21 dmg)";
         } else if (last_move == FOR_THE_QUEEN) {
             current_intent.type = EnemyIntentType::BUFF;
@@ -1656,7 +1404,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Pour la Reine (Force 5)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 40 : 35;
+            current_intent.base_damage = move_damage("BEETLE_CHARGE");
             current_intent.description = "Charge scarabée (35 dmg)";
         }
     } else if (type == EnemyType::SLUDGE_SPINNER) {
@@ -1674,16 +1422,16 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         }
         if (last_move == OIL_SPRAY) {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 9 : 8;
+            current_intent.base_damage = move_damage("OIL_SPRAY");
             current_intent.debuffs[0] = { StatusType::WEAK, 1 };
             current_intent.description = "Spray huileux (8 dmg, Affaibli 1)";
         } else if (last_move == SLAM) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 12 : 11;
+            current_intent.base_damage = move_damage("SLAM");
             current_intent.description = "Heurt (11 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_BUFF;
-            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.base_damage = move_damage("RAGE");
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 3;
             current_intent.description = "Rage (6 dmg, Force 3)";
@@ -1693,12 +1441,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         const int phase = (turn_number - 1) % 3;
         if (phase == 0) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 3;
+            current_intent.base_damage = move_damage("BEES");
             current_intent.hits = ascended_damage ? 8 : 7;
             current_intent.description = "Bzzzzzz !! (3 dmg x7)";
         } else if (phase == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 20 : 18;
+            current_intent.base_damage = move_damage("SPEAR");
             current_intent.description = "Javelot ! (18 dmg)";
         } else {
             current_intent.type = EnemyIntentType::BUFF;
@@ -1726,12 +1474,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Sortilège (Éthéré)";
         } else if (last_move == SOUL_SLASH) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 17 : 15;
+            current_intent.base_damage = move_damage("SOUL_SLASH");
             current_intent.description = "Frappe spirituelle (15 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 4 : 3;
-            current_intent.hits = 3;
+            current_intent.base_damage = move_damage("SOUL_FLAME");
+            current_intent.hits = sheet_move("SOUL_FLAME").hits;
             current_intent.description = "Flamme spirituelle (3 dmg x3)";
         }
     } else if (type == EnemyType::MECHA_KNIGHT) {
@@ -1742,11 +1490,11 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         const int step = turn_number == 1 ? 0 : 1 + (turn_number - 2) % 3;
         if (step == 0) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 30 : 25;
+            current_intent.base_damage = move_damage("CHARGE");
             current_intent.description = "Charge (25 dmg)";
         } else if (step == 1) {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 12 : 8;
+            current_intent.base_damage = move_damage("FLAMETHROWER");
             current_intent.status_card = CardId::BURN;
             current_intent.status_cards = 4;
             current_intent.status_pile = Pile::DISCARD;
@@ -1760,7 +1508,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Chargement (15 Armure, Force 5)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 40 : 35;
+            current_intent.base_damage = move_damage("HEAVY_CLEAVE");
             current_intent.description = "Balayage lourd (35 dmg)";
         }
     } else if (type == EnemyType::HUNTER_KILLER) {
@@ -1784,12 +1532,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Suc de décomposition (Décomposition 1)";
         } else if (last_move == BITE) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 19 : 17;
+            current_intent.base_damage = move_damage("BITE");
             current_intent.description = "Morsure (17 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 8 : 7;
-            current_intent.hits = 3;
+            current_intent.base_damage = move_damage("PUNCTURE");
+            current_intent.hits = sheet_move("PUNCTURE").hits;
             current_intent.description = "Perforation (7 dmg x3)";
         }
     } else if (type == EnemyType::FOSSIL_STALKER) {
@@ -1807,17 +1555,17 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         }
         if (last_move == TACKLE) {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 11 : 9;
+            current_intent.base_damage = move_damage("TACKLE");
             current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
             current_intent.description = "Charge (9 dmg, Fragilisé 1)";
         } else if (last_move == LATCH) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 14 : 12;
+            current_intent.base_damage = move_damage("LATCH");
             current_intent.description = "Accrochage (12 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 4 : 3;
-            current_intent.hits = 2;
+            current_intent.base_damage = move_damage("LASH");
+            current_intent.hits = sheet_move("LASH").hits;
             current_intent.description = "Fouet (3x2 dmg)";
         }
     } else if (type == EnemyType::SLUMBERING_BEETLE) {
@@ -1829,7 +1577,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Ronflement";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_BUFF;
-            current_intent.base_damage = ascended_damage ? 18 : 16;
+            current_intent.base_damage = move_damage("ROLL_OUT");
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 2;
             current_intent.description = "Roulade (16 dmg, +2 Force)";
@@ -1847,17 +1595,17 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             stun();
         } else if (last_move == TUNNELER_BITE) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 15 : 13;
+            current_intent.base_damage = move_damage("BITE");
             current_intent.description = "Morsure (13 dmg)";
         } else if (last_move == TUNNELER_BURROW) {
             current_intent.type = EnemyIntentType::DEFEND;
-            current_intent.block = 32;
+            current_intent.block = sheet_move("BURROW").block;
             current_intent.power = PowerId::BURROWED;
             current_intent.power_amount = 1;
             current_intent.description = "Creuser (32 blk, Enfoui)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 26 : 23;
+            current_intent.base_damage = move_damage("BELOW");
             current_intent.description = "Attaque par dessous (23 dmg)";
         }
     } else if (type == EnemyType::SLIMED_BERSERKER) {
@@ -1871,8 +1619,8 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Régurgitation d'ichor (10 Englué)";
         } else if (step == 1) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 5 : 4;
-            current_intent.hits = 4;
+            current_intent.base_damage = move_damage("FURIOUS_PUMMELING");
+            current_intent.hits = sheet_move("FURIOUS_PUMMELING").hits;
             current_intent.description = "Ruée de coups (4 dmg x4)";
         } else if (step == 2) {
             current_intent.type = EnemyIntentType::BUFF;
@@ -1882,7 +1630,7 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Câlin sangsue (Force 3, Affaibli 3)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 33 : 30;
+            current_intent.base_damage = move_damage("SMOTHER");
             current_intent.description = "Smother (30 dmg)";
         }
     } else if (type == EnemyType::SOUL_NEXUS) {
@@ -1900,16 +1648,16 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         }
         if (last_move == SOUL_BURN) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 31 : 29;
+            current_intent.base_damage = move_damage("SOUL_BURN");
             current_intent.description = "Brûlure d'âme (29 dmg)";
         } else if (last_move == MAELSTROM) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = ascended_damage ? 7 : 6;
-            current_intent.hits = 4;
+            current_intent.base_damage = move_damage("MAELSTROM");
+            current_intent.hits = sheet_move("MAELSTROM").hits;
             current_intent.description = "Maelstrom (6x4 dmg)";
         } else {
             current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
-            current_intent.base_damage = ascended_damage ? 19 : 18;
+            current_intent.base_damage = move_damage("DRAIN_LIFE");
             current_intent.debuffs[0] = { StatusType::WEAK, 2 };
             current_intent.debuffs[1] = { StatusType::VULNERABLE, 2 };
             current_intent.description = "Drain de vie (18 dmg, Affaibli 2, Vulnérable 2)";
