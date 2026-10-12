@@ -18,7 +18,7 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "", false, false }, // JAW_WORM
     { "", false, false }, // LOUSE
     { "", false, false }, // GREMLIN_NOB
-    { "", false, false }, // CEREMONIAL_BEAST
+    { "CEREMONIAL_BEAST", false, true },
     { "FUZZY_WURM_CRAWLER", false, false },
     { "CROSSBOW_RUBY_RAIDER", false, false },
     { "BRUTE_RUBY_RAIDER", false, false },
@@ -158,10 +158,6 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Gremlin Nob";
         max_hp = 82;
         hp = 82;
-    } else if (type == EnemyType::CEREMONIAL_BEAST) {
-        name = "Cerf Auguste";
-        max_hp = 150;
-        hp = 150;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -173,6 +169,7 @@ void Enemy::init(EnemyType enemy_type) {
 
 namespace {
 enum TunnelerMove : uint8_t { TUNNELER_BITE, TUNNELER_BURROW, TUNNELER_BELOW, TUNNELER_DIZZY };
+enum CeremonialBeastMove : uint8_t { BEAST_STAMP, BEAST_PLOW, BEAST_STUN, BEAST_CRY, BEAST_STOMP, BEAST_CRUSH };
 }
 
 uint8_t Enemy::hp_spread() const {
@@ -281,6 +278,13 @@ void Enemy::break_burrow() {
     stun();
 }
 
+void Enemy::break_plow() {
+    if (type != EnemyType::CEREMONIAL_BEAST || !enter_phase(1)) return;
+    phase_turn = 1;
+    use_move(BEAST_STUN);
+    stun();
+}
+
 void Enemy::plan_turn(int turn_number, const PlanContext& context) {
     // Start from a blank intent: a field set by last turn's move (a Strength buff) must not leak
     // into this one, since execute_turn() applies whatever the intent holds.
@@ -353,24 +357,43 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Rush (14 dmg)";
         }
     } else if (type == EnemyType::CEREMONIAL_BEAST) {
-        // Opens with a roar, then alternates a heavy trample with an antler guard.
-        if (turn_number == 1) {
+        // Phase 0: Stamp (Plow on itself) once, then Plow (attack, +2 Strength) every turn. Phase 1, entered when
+        // its HP fall below the Plow (break_plow): stunned once, then Beast Cry (Ringing), Stomp, Crush, in a loop.
+        uint8_t move = BEAST_STAMP;
+        if (phase == 0) move = turn_number == 1 ? BEAST_STAMP : BEAST_PLOW;
+        else if (phase_turn == 1) move = BEAST_STUN;
+        else move = static_cast<uint8_t>(BEAST_CRY + (phase_turn - 2) % 3);
+        use_move(move);
+        if (move == BEAST_STAMP) {
             current_intent.type = EnemyIntentType::BUFF;
-            current_intent.base_damage = 0;
-            current_intent.block = 0;
+            current_intent.power = PowerId::PLOW;
+            current_intent.power_amount = ascended_damage ? CEREMONIAL_BEAST_PLOW_ASC : CEREMONIAL_BEAST_PLOW;
+            current_intent.description = "Trépignation (Cavalcade)";
+        } else if (move == BEAST_PLOW) {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = move_damage("PLOW");
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 2;
-            current_intent.description = "Brame (+2 Force)";
-        } else if (turn_number % 2 == 0) {
+            current_intent.description = "Cavalcade (18 dmg, +2 Force)";
+        } else if (move == BEAST_STUN) {
+            stun();
+        } else if (move == BEAST_CRY) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.power = PowerId::RINGING;
+            current_intent.power_amount = 1;
+            current_intent.power_on_player = true;
+            current_intent.power_turn_only = true;
+            current_intent.description = "Cri bestial (Résonnant)";
+        } else if (move == BEAST_STOMP) {
             current_intent.type = EnemyIntentType::ATTACK;
-            current_intent.base_damage = 12;
-            current_intent.block = 0;
-            current_intent.description = "Pietinement (12 dmg)";
+            current_intent.base_damage = move_damage("STOMP");
+            current_intent.description = "Piétinement (15 dmg)";
         } else {
-            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
-            current_intent.base_damage = 7;
-            current_intent.block = 12;
-            current_intent.description = "Ramure (7 dmg, 12 blk)";
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = move_damage("CRUSH");
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 4 : 3;
+            current_intent.description = "Écrasement (17 dmg, +3 Force)";
         }
     } else if (type == EnemyType::FUZZY_WURM_CRAWLER) {
         // Acid Goop, Inhale, Acid Goop, and again.

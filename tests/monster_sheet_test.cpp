@@ -14,7 +14,7 @@ constexpr int ENEMY_TYPES = static_cast<int>(EnemyType::SCROLL_OF_BITING) + 1;
 
 bool is_hand_written(EnemyType type) {
     return type == EnemyType::CULTIST || type == EnemyType::JAW_WORM || type == EnemyType::LOUSE ||
-           type == EnemyType::GREMLIN_NOB || type == EnemyType::CEREMONIAL_BEAST;
+           type == EnemyType::GREMLIN_NOB;
 }
 
 // The monsters whose attacks keep their usual damage at Ascension, while their sheet gives more.
@@ -51,7 +51,7 @@ void test_every_type_has_a_sheet_but_the_hand_written_ones() {
     }
     assert(monster_sheet(EnemyType::CROSSBOW_RUBY_RAIDER) == find_monster("CROSSBOW_RUBY_RAIDER"));
     assert(monster_sheet(static_cast<EnemyType>(ENEMY_TYPES)) == nullptr);
-    std::cout << "  every EnemyType has its sheet, but the five hand-written ones" << std::endl;
+    std::cout << "  every EnemyType has its sheet, but the four hand-written ones" << std::endl;
 }
 
 void test_name_and_hp_come_from_the_sheet() {
@@ -88,8 +88,6 @@ void test_hand_written_monsters_keep_their_values() {
     Enemy enemy;
     enemy.init(EnemyType::JAW_WORM);
     assert(enemy.name == "Jaw Worm" && enemy.max_hp == 42 && enemy.hp_spread() == 0 && enemy.ascension_hp() == 0);
-    enemy.init(EnemyType::CEREMONIAL_BEAST);
-    assert(enemy.max_hp == 150 && enemy.ascension_hp() == 0);
     std::cout << "  the hand-written monsters keep their values" << std::endl;
 }
 
