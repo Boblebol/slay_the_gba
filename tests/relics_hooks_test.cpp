@@ -3619,6 +3619,37 @@ void test_kaleidoscope() {
     std::cout << "[PASS] Kaleidoscope: 2 card rewards from other heroes on pickup" << std::endl;
 }
 
+void test_black_star() {
+    // With the relic, an Elite offers a second relic once the first one is taken.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 730);
+    run.add_relic("BLACK_STAR");
+    enter_room_of_type(run, RoomType::ELITE);
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN && !run.relic_reward.empty());
+    size_t relics = run.relics.size();
+    std::string_view first = run.relic_reward;
+    assert(run.take_relic_reward());
+    assert(run.relics.size() == relics + 1 && run.has_relic(first));
+    assert(!run.relic_reward.empty() && run.relic_reward != first && !run.has_relic(run.relic_reward));
+    assert(run.take_relic_reward());
+    assert(run.relics.size() == relics + 2 && run.relic_reward.empty());
+
+    // Without the relic, the Elite offers a single relic.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 730);
+    plain.add_relic("ANCHOR");
+    enter_room_of_type(plain, RoomType::ELITE);
+    plain.proceed_after_combat();
+    assert(!plain.relic_reward.empty() && plain.take_relic_reward() && plain.relic_reward.empty());
+
+    // With the relic, a Monster room gives no relic at all.
+    RunManager monster = make_relic_run(CharacterId::IRONCLAD, { "BLACK_STAR" });
+    monster.proceed_after_combat();
+    assert(monster.relic_reward.empty() && monster.extra_relic_rewards == 0);
+    std::cout << "[PASS] Black Star: an Elite gives one more relic" << std::endl;
+}
+
 void test_white_star() {
     // With the relic, an Elite offers one more set of Rare cards once its first set is taken or skipped.
     RunManager run;
@@ -4616,5 +4647,6 @@ int main() {
     test_hefty_tablet();
     test_leafy_poultice();
     test_kaleidoscope();
+    test_black_star();
     return 0;
 }

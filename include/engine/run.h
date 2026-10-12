@@ -120,6 +120,7 @@ public:
     int16_t gold_reward = 0;
     uint8_t extra_card_rewards = 0; // card rewards still to offer after this one (The Hunt)
     uint8_t extra_rare_card_rewards = 0; // Rare card rewards still to offer after this one (White Star)
+    uint8_t extra_relic_rewards = 0; // relics still to offer once the one shown is taken (Black Star)
     uint8_t extra_other_hero_card_rewards = 0; // card rewards of another hero still to offer after this one (Kaleidoscope)
     // Potion and relic offered on the reward screen, empty when the fight gave none or once taken.
     std::string_view potion_reward;

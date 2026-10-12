@@ -659,6 +659,8 @@ void RunManager::generate_rewards() {
         relic_reward = draw_relic(rng, character, boss ? RelicSource::BOSS : RelicSource::ELITE,
                                   std::span<const std::string_view>(relics.begin(), relics.size()));
     }
+    // Black Star: an Elite gives one more relic, offered once the first one is taken.
+    extra_relic_rewards = room == RoomType::ELITE && !relic_reward.empty() && has_relic("BLACK_STAR") ? 1 : 0;
     // White Star: an Elite gives one more set of Rare cards, offered once the first set is taken or skipped.
     extra_rare_card_rewards = room == RoomType::ELITE && has_relic("WHITE_STAR") ? 1 : 0;
     on_rewards_generated(room);
@@ -683,6 +685,11 @@ bool RunManager::take_relic_reward() {
     if (has_relic(relic_reward) || relics.size() >= relics.capacity()) return false;
     add_relic(relic_reward);
     relic_reward = {};
+    if (extra_relic_rewards > 0 && relics.size() < relics.capacity()) {
+        --extra_relic_rewards;
+        RewardRng rng(next_random());
+        relic_reward = draw_relic(rng, character, RelicSource::ELITE, std::span<const std::string_view>(relics.begin(), relics.size()));
+    }
     return true;
 }
 
@@ -694,6 +701,7 @@ void RunManager::finish_rewards() {
     potion_reward = {};
     relic_reward = {};
     extra_rare_card_rewards = 0;
+    extra_relic_rewards = 0;
     // The boss of act 1 or 2: its rewards are taken, the next act opens.
     if (current_node_index >= 0 && map.nodes[current_node_index].type == RoomType::BOSS && current_act < 3) {
         advance_act();
