@@ -94,6 +94,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::PHROG_PARASITE: return "PHROG_PARASITE";
         case EnemyType::WRIGGLER: return "WRIGGLER";
         case EnemyType::THE_INSATIABLE: return "THE_INSATIABLE";
+        case EnemyType::TOUGH_EGG: return "TOUGH_EGG";
     }
     return {};
 }
@@ -274,7 +275,8 @@ void test_reference_encounters() {
     // Gremlin and the Sneaky Gremlin wait for their full Gremlin Merc group (GremlinMercNormal).
     // The Eye With Teeth is brought by the Fogmog (FogmogNormal).
     // The Stabbot, the Noisebot, the Zapbot and the Guardbot are brought by the Fabricator (FabricatorNormal).
-    // The Gas Bomb is brought by the Living Fog (LivingFogNormal).
+    // The Gas Bomb is brought by the Living Fog (LivingFogNormal), the Tough Egg laid by the Ovicopter
+    // (OvicopterNormal).
     // Titos is summoned by the Entomancer, the Parafright brought by the Obscura: neither is a monster of the
     // engine yet. The Slumbering Beetle and the Nectar, Silk and Egg Bowlbugs wait for the random bugs of
     // BowlbugsNormal and SlumberingBeetleNormal.
@@ -286,7 +288,7 @@ void test_reference_encounters() {
                                                           EnemyType::PARAFRIGHT, EnemyType::ZAPBOT,
                                                           EnemyType::GUARDBOT, EnemyType::BOWLBUG_NECTAR,
                                                           EnemyType::BOWLBUG_SILK, EnemyType::BOWLBUG_EGG,
-                                                          EnemyType::WRIGGLER };
+                                                          EnemyType::WRIGGLER, EnemyType::TOUGH_EGG };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));

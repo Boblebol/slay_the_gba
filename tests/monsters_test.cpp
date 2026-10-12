@@ -68,6 +68,7 @@ constexpr EnemyIntentType STUN = EnemyIntentType::STUN;
 constexpr EnemyIntentType ESCAPE = EnemyIntentType::ESCAPE;
 constexpr EnemyIntentType ATTACK_DEBUFF = EnemyIntentType::ATTACK_DEBUFF;
 constexpr EnemyIntentType STATUS = EnemyIntentType::STATUS;
+constexpr EnemyIntentType SUMMON = EnemyIntentType::SUMMON;
 
 void test_fuzzy_wurm_crawler() {
     // Acid Goop 4, Inhale (+7 Strength), Acid Goop 4, and again.
@@ -2340,6 +2341,39 @@ void test_phrog_parasite_ascension() {
     std::cout << "[PASS] Phrog Parasite: Ascension gives 66 HP minimum and a Lash of 5x4" << std::endl;
 }
 
+void test_tough_egg() {
+    // Hatch on its first turn, which does nothing to the player, then Nibble 4 every turn. Its HP are drawn
+    // between 14 and 18 at the start of the fight.
+    CombatEngine probe = make_combat(CharacterId::IRONCLAD, EnemyType::TOUGH_EGG);
+    const Enemy& egg = probe.enemies[0];
+    assert(egg.hp >= 14 && egg.hp <= 18 && egg.max_hp == 14 + egg.hp_bonus && egg.hp_spread() == 4);
+    check_monster(EnemyType::TOUGH_EGG, "Œuf robuste", egg.hp, {
+        { SUMMON, 0, 0, 0 },
+        { ATTACK, 4, 0, 0 },
+        { ATTACK, 4, 0, 0 },
+        { ATTACK, 4, 0, 0 },
+    });
+    std::cout << "[PASS] Tough Egg: 14 to 18 HP, Hatch, then Nibble 4 every turn" << std::endl;
+}
+
+void test_tough_egg_ascension() {
+    // 15 to 19 HP (14 to 18 plus 1) and a Nibble of 5 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TOUGH_EGG);
+        Enemy& egg = combat.enemies[0];
+        egg.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = egg.hp;
+        assert(egg.ascension_hp() == 15 && base >= 14 && base <= 18);
+        egg.ascend(true, true);
+        combat.plan_enemies();
+        assert(egg.hp == base + 1 && egg.max_hp == base + 1 && egg.hp >= 15 && egg.hp <= 19);
+        assert(egg.current_intent.type == SUMMON);
+        combat.end_player_turn();
+        assert(egg.current_intent.type == ATTACK && egg.intent_damage(combat.player) == 5);
+    }
+    std::cout << "[PASS] Tough Egg: Ascension gives 15 to 19 HP and a Nibble of 5" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -3881,6 +3915,8 @@ int main() {
     test_bygone_effigy_ascension();
     test_byrdonis();
     test_byrdonis_ascension();
+    test_tough_egg();
+    test_tough_egg_ascension();
     test_phrog_parasite();
     test_wriggler();
     test_wriggler_ascension();

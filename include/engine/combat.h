@@ -35,6 +35,7 @@ struct EnemyActionRecord {
     uint8_t hits = 1;     // hits of its attack
     int16_t healed = 0;   // HP the enemy gave itself back
     bool escaped = false; // it left the fight with this move
+    uint8_t summoned = 0; // enemies the move brought into the fight, one bit each (index in CombatEngine::enemies)
 };
 
 // Which cards an effect may draw at random. A field left at its default does not filter.
@@ -221,6 +222,9 @@ public:
     Enemy enemy; // Primary enemy (kept in sync with enemies[0])
     FixedVector<Enemy, 3> enemies; // Multi-enemy field (Yu-Gi-Oh / Slay style: 1 to 3 enemies)
     int selected_target_index = 0;
+    // Ascension of the room (set by the run), given to the enemies summoned during the fight: 100 = none.
+    int16_t enemy_hp_percent = 100;
+    int16_t enemy_damage_percent = 100;
     int16_t gold_lost = 0; // gold taken during the combat (curses in hand at the end of a turn), paid by the run after it
     int16_t gold_gained = 0; // gold earned during the combat (Hand of Greed), paid by the run after it
     uint8_t extra_card_rewards = 0; // extra card rewards earned during the combat (The Hunt)
@@ -301,6 +305,10 @@ public:
     // Plans the next move of every living enemy, with what each one sees of the fight. On the first turn the
     // patterns start again.
     void plan_enemies();
+    // Brings an enemy into the fight, at the end of CombatEngine::enemies or in the place of a dead one; a
+    // Minion of `leader` when one is given. It acts from the next enemy turn on, and its move is planned with the
+    // others'. Its index, or -1 when the 3 places are taken.
+    int summon_enemy(EnemyType type, int leader = -1);
     // Gives a power to the enemy at `enemy_index`: it holds it until it dies or leaves the fight.
     void add_enemy_power(int enemy_index, PowerId id, int16_t amount = 1);
     // Amount of a power that enemy holds, 0 when it does not.

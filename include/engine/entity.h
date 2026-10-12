@@ -307,8 +307,11 @@ enum class EnemyIntentType : uint8_t {
     STUN,          // loses its turn
     HEAL,          // only heals itself
     ESCAPE,        // leaves the fight: it is not killed and gives nothing
-    STATUS         // only puts cards in the player's piles
+    STATUS,        // only puts cards in the player's piles
+    SUMMON         // brings other enemies into the fight (EnemyIntent::summons), or hatches
 };
+
+enum class EnemyType : uint8_t;
 
 // A status an enemy move gives the player: Weak, Vulnerable or Frail (amount > 0), or Strength or Dexterity
 // taken away (amount < 0).
@@ -345,6 +348,10 @@ struct EnemyIntent {
     bool steals = false;
     // Status of the enemy whose amount is added to the damage of the attack (the Forgotten's Dexterity).
     StatusType damage_status = StatusType::NONE;
+    // Enemies the move brings into the fight (SUMMON), each in a free place: there are 3 at most.
+    EnemyType summon_type{};
+    uint8_t summons = 0;
+    bool summon_minions = false; // they are Minions of the summoner: they flee when it is gone
 
     constexpr bool debuffs_player() const { return debuffs[0].type != StatusType::NONE; }
     constexpr bool gives_cards() const { return status_card != CardId::NONE && status_cards > 0; }
@@ -422,7 +429,8 @@ enum class EnemyType : uint8_t {
     BYRDONIS,
     PHROG_PARASITE,
     WRIGGLER,
-    THE_INSATIABLE // Act 2 boss
+    THE_INSATIABLE, // Act 2 boss
+    TOUGH_EGG
 };
 
 // What a monster sees of the fight when it chooses its next move.
@@ -455,6 +463,7 @@ public:
     uint8_t damage_down_turns = 0; // enemy turns left where its attacks deal 30% less damage (Beetle Juice)
     int16_t temp_strength_loss = 0; // Strength taken away until the end of this enemy's turn
     bool minion = false; // summoned by another enemy: killing it triggers no Fatal effect
+    int8_t leader = -1;  // a Minion's summoner, in CombatEngine::enemies: the Minion flees when it is gone
     uint8_t hang_marks = 0; // Hang cards already played on this enemy: each one doubles the next
     // What its moves stole from the player (a negative amount of Strength or Dexterity), given back when it dies.
     IntentDebuff stolen;
@@ -488,6 +497,9 @@ public:
     // Ascension of a monster with its own values (ascension_hp() > 0): its Ascension HP and/or damage.
     // The intent is planned again by the fight (CombatEngine::plan_enemies).
     void ascend(bool more_hp, bool more_damage);
+    // Ascension of the room, as percentages of HP and damage (100 = none). A monster with its own values takes
+    // them instead (ascend).
+    void apply_ascension(int16_t hp_pct, int16_t damage_pct);
     // Forgets the pattern followed so far: back to the first phase, with `seed` for the random draws.
     void reset_pattern(uint32_t seed);
     // Moves to `next` when the monster is in an earlier phase. True when the phase changed.
