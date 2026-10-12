@@ -3037,6 +3037,8 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Sables";
     case engine::PowerId::SHRINK:
         return "Rétréci";
+    case engine::PowerId::SOAR:
+        return "Envol";
     default:
         return "";
     }
@@ -3062,6 +3064,8 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Sables : à 0, vous êtes dévoré.";
     case engine::PowerId::SHRINK:
         return "Rétréci : vos Attaques -30% de dégâts.";
+    case engine::PowerId::SOAR:
+        return "Envol : dégâts d'Attaque subis -50%.";
     default:
         return "";
     }

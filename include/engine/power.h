@@ -265,7 +265,9 @@ enum class PowerId : uint8_t {
     SANDPIT,           // its holder's turn: -1, and the player is devoured at 0; Frantic Escape adds 1 (the Insatiable)
     RUINED_HELMET,     // the first Strength gained each combat is doubled (counter = 1 once used)
     // On the player, given by an enemy move (appended)
-    SHRINK             // the player's attacks deal 30% less damage (read by hit); -1 at the end of each player turn
+    SHRINK,            // the player's attacks deal 30% less damage (read by hit); -1 at the end of each player turn
+    // Held by an enemy (appended)
+    SOAR               // it takes 50% less attack damage (read by hit) until it lands: spent when its next turn starts
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

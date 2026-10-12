@@ -82,6 +82,7 @@ constexpr Encounter ACT3_NORMAL[] = {
     { "TheLostAndForgottenNormal"sv, 2, { EnemyType::THE_FORGOTTEN, EnemyType::THE_LOST } },
     { "AxebotsNormal"sv, 1, { EnemyType::AXEBOT } },
     { "FabricatorNormal"sv, 1, { EnemyType::FABRICATOR } },
+    { "OwlMagistrateNormal"sv, 1, { EnemyType::OWL_MAGISTRATE } },
     { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
     { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
     { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },

@@ -169,6 +169,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Machiniste";
         max_hp = 150;
         hp = 150;
+    } else if (type == EnemyType::OWL_MAGISTRATE) {
+        name = "Magistrix";
+        max_hp = 231;
+        hp = 231;
     } else if (type == EnemyType::SHRINKER_BEETLE) {
         name = "Scarabrideur";
         max_hp = 38;
@@ -433,6 +437,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::OVICOPTER: return 126;
         case EnemyType::FABRICATOR: return 155;
         case EnemyType::SHRINKER_BEETLE: return 40;
+        case EnemyType::OWL_MAGISTRATE: return 247;
         case EnemyType::TOADPOLE: return 22;
         case EnemyType::HUNTER_KILLER: return 126;
         case EnemyType::MAWLER: return 76;
@@ -1272,6 +1277,30 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
                 current_intent.type = EnemyIntentType::SUMMON;
                 current_intent.description = "Fabrication";
             }
+        }
+    } else if (type == EnemyType::OWL_MAGISTRATE) {
+        // Magistrate's Scrutiny 16, Peck Assault 4x6, Judicial Flight (it Soars: half the attack damage until it lands,
+        // when its next turn starts), Verdict 33 with 4 Vulnerable, and again.
+        const int step = (turn_number - 1) % 4;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 17 : 16;
+            current_intent.description = "Regard du magistrat (16 dmg)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = 4;
+            current_intent.hits = 6;
+            current_intent.description = "Assaut de becs (4 dmg x6)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.power = PowerId::SOAR;
+            current_intent.power_amount = 1;
+            current_intent.description = "Envol judiciaire";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = ascended_damage ? 36 : 33;
+            current_intent.debuffs[0] = { StatusType::VULNERABLE, 4 };
+            current_intent.description = "Verdict (33 dmg, Vulnérable 4)";
         }
     } else if (type == EnemyType::SHRINKER_BEETLE) {
         // Shrinker (the player is Shrunk for 3 turns) on the first turn, then Chomp 7 and Stomp 13 in turn.

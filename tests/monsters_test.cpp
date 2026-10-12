@@ -2674,6 +2674,68 @@ void test_shrinker_beetle_ascension() {
     std::cout << "[PASS] Shrinker Beetle: Ascension gives 40 to 42 HP, Chomp 8, Stomp 14" << std::endl;
 }
 
+void test_owl_magistrate() {
+    // Magistrate's Scrutiny 16, Peck Assault 4x6, Judicial Flight (Soar), Verdict 33 with 4 Vulnerable, and again.
+    check_monster(EnemyType::OWL_MAGISTRATE, "Magistrix", 231, {
+        { ATTACK, 16, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 6 },
+        { BUFF, 0, 0, 0 },
+        { ATTACK_DEBUFF, 33, 0, 0 },
+    });
+
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::OWL_MAGISTRATE);
+    Enemy& owl = combat.enemies[0];
+    combat.player.max_hp = combat.player.hp = 500;
+    // The damage the player's attack of `base` deals to the owl.
+    auto dealt = [&](int16_t base) {
+        owl.block = 0;
+        const int16_t before = owl.hp;
+        combat.hit(owl, base);
+        const int lost = before - owl.hp;
+        owl.hp = before;
+        return lost;
+    };
+    combat.end_player_turn(); // Scrutiny
+    combat.end_player_turn(); // Peck Assault
+    assert(owl.current_intent.type == BUFF && owl.current_intent.power == PowerId::SOAR);
+    assert(!owl.current_intent.power_on_player && dealt(10) == 10);
+    combat.end_player_turn(); // Judicial Flight: it Soars, attacks deal it half their damage
+    assert(combat.enemy_power_amount(0, PowerId::SOAR) == 1 && !combat.has_power(PowerId::SHRINK));
+    assert(dealt(10) == 5 && dealt(7) == 3);
+    // Verdict: it lands when its turn starts, then strikes for 33 and gives 4 Vulnerable.
+    assert(owl.current_intent.type == ATTACK_DEBUFF && owl.intent_damage(combat.player) == 33);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 33);
+    assert(combat.enemy_power_amount(0, PowerId::SOAR) == 0 && dealt(10) == 10);
+    assert(combat.player.get_status(StatusType::VULNERABLE) == 4);
+    // And again: Scrutiny on a Vulnerable player.
+    assert(owl.current_intent.type == ATTACK && owl.intent_damage(combat.player) == 24);
+    assert(owl.hp == 231 && owl.statuses.empty());
+    std::cout << "[PASS] Owl Magistrate: 231 HP, Scrutiny 16, Peck Assault 4x6, Soar (half damage until it lands), "
+                 "Verdict 33 + 4 Vulnerable"
+              << std::endl;
+}
+
+void test_owl_magistrate_ascension() {
+    // 247 HP, Scrutiny 17 and Verdict 36 at Ascension; Peck Assault stays 4x6.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::OWL_MAGISTRATE);
+    Enemy& owl = combat.enemies[0];
+    assert(owl.ascension_hp() == 247);
+    owl.ascend(true, true);
+    combat.plan_enemies();
+    assert(owl.hp == 247 && owl.max_hp == 247);
+    combat.player.hp = combat.player.max_hp = 500;
+    assert(owl.current_intent.type == ATTACK && owl.intent_damage(combat.player) == 17);
+    combat.end_player_turn();
+    assert(owl.intent_damage(combat.player) == 4 && owl.current_intent.hits == 6);
+    combat.end_player_turn();
+    assert(owl.current_intent.type == BUFF);
+    combat.end_player_turn();
+    assert(owl.current_intent.type == ATTACK_DEBUFF && owl.intent_damage(combat.player) == 36);
+    std::cout << "[PASS] Owl Magistrate: Ascension gives 247 HP, Scrutiny 17, Verdict 36" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -4225,6 +4287,8 @@ int main() {
     test_ovicopter_ascension();
     test_shrinker_beetle();
     test_shrinker_beetle_ascension();
+    test_owl_magistrate();
+    test_owl_magistrate_ascension();
     test_phrog_parasite();
     test_wriggler();
     test_wriggler_ascension();

@@ -71,6 +71,7 @@
 #include "bn_sprite_items_mon_ovicopter.h"
 #include "bn_sprite_items_mon_fabricator.h"
 #include "bn_sprite_items_mon_shrinker_beetle.h"
+#include "bn_sprite_items_mon_owl_magistrate.h"
 #include "bn_sprite_items_mon_phrog_parasite.h"
 #include "bn_sprite_items_mon_wriggler.h"
 #include "bn_sprite_items_mon_louse.h"
@@ -392,6 +393,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_fabricator, false };
     case engine::EnemyType::SHRINKER_BEETLE:
         return { &bn::sprite_items::mon_shrinker_beetle, false };
+    case engine::EnemyType::OWL_MAGISTRATE:
+        return { &bn::sprite_items::mon_owl_magistrate, false };
     case engine::EnemyType::PHROG_PARASITE:
         return { &bn::sprite_items::mon_phrog_parasite, false };
     case engine::EnemyType::WRIGGLER:

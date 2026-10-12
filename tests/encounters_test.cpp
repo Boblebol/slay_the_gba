@@ -99,6 +99,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::OVICOPTER: return "OVICOPTER";
         case EnemyType::FABRICATOR: return "FABRICATOR";
         case EnemyType::SHRINKER_BEETLE: return "SHRINKER_BEETLE";
+        case EnemyType::OWL_MAGISTRATE: return "OWL_MAGISTRATE";
     }
     return {};
 }
@@ -251,7 +252,8 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "SlimedBerserkerNormal", "FrogKnightNormal", "GlobeHeadNormal",
                                         "TheLostAndForgottenNormal", "AxebotsNormal", "FabricatorNormal",
-                                        "LegacyCultistAndLouse", "LegacyJawWorm", "LegacyLice" }));
+                                        "OwlMagistrateNormal", "LegacyCultistAndLouse", "LegacyJawWorm",
+                                        "LegacyLice" }));
     const Encounter& chompers = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::NORMAL),
                                                "ChompersNormal");
     assert(chompers.count == 2 && chompers.monsters[0] == EnemyType::CHOMPER && chompers.monsters[1] == EnemyType::CHOMPER);
