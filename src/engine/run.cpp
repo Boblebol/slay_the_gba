@@ -1,6 +1,7 @@
 #include "engine/run.h"
 #include "engine/relic.h"
 #include "engine/encounter.h"
+#include "engine/card_meta.h"
 #include "engine/rewards.h"
 #include "engine/potion.h"
 #include "engine/ancient.h"
@@ -148,7 +149,18 @@ FixedVector<EnemyType, 3> RunManager::draw_encounter(RoomType room) {
     // A list of one draws nothing, as the rooms with a single choice did before the tables.
     // The high bits: the low ones of two draws in a row are too alike, and would tie the monsters drawn
     // from a pool to the encounter picked.
-    const Encounter& encounter = table.size() == 1 ? table[0] : table[(next_random() >> 16) % table.size()];
+    // Never the encounter of the previous fight: it is left out of the draw when this list holds it.
+    size_t previous = table.size();
+    for (size_t i = 0; i < table.size(); ++i) {
+        if (table[i].id == current_encounter) previous = i;
+    }
+    size_t index = 0;
+    if (table.size() > 1) {
+        const bool skips = previous < table.size();
+        index = (next_random() >> 16) % (skips ? table.size() - 1 : table.size());
+        if (skips && index >= previous) ++index;
+    }
+    const Encounter& encounter = table[index];
     current_encounter = encounter.id;
 
     FixedVector<EnemyType, 3> monsters;
@@ -453,149 +465,51 @@ bool RunManager::choose_event_choice(int choice_index, char* out_msg, size_t max
     return false;
 }
 
-std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
-    // Left out on purpose: Cleave (replaced by Thunderclap, whose art and name it borrowed) and Break (Ancient
-    // rarity: given by an Ancient, never by a combat).
-    static constexpr CardId IRONCLAD_POOL[] = { CardId::IRON_WAVE, CardId::ANGER, CardId::TWIN_STRIKE,
-                                                CardId::POMMEL_STRIKE, CardId::SHRUG_IT_OFF, CardId::TAUNT,
-                                                CardId::BODY_SLAM, CardId::THUNDERCLAP, CardId::DISMANTLE,
-                                                CardId::INFLAME, CardId::PERFECTED_STRIKE, CardId::BLUDGEON,
-                                                CardId::BULLY, CardId::SWORD_BOOMERANG, CardId::CONFLAGRATION,
-                                                CardId::EXPECT_A_FIGHT, CardId::PILLAGE, CardId::UPPERCUT,
-                                                CardId::FIGHT_ME, CardId::ASHEN_STRIKE, CardId::TREMBLE,
-                                                CardId::EVIL_EYE, CardId::MOLTEN_FIST, CardId::CINDER,
-                                                CardId::SECOND_WIND, CardId::TRUE_GRIT, CardId::DOMINATE,
-                                                CardId::FIEND_FIRE, CardId::THRASH, CardId::IMPERVIOUS,
-                                                CardId::PACTS_END, CardId::NOT_YET, CardId::BLOOD_WALL,
-                                                CardId::BLOODLETTING, CardId::BREAKTHROUGH, CardId::FORGOTTEN_RITUAL,
-                                                CardId::HEMOKINESIS, CardId::MANGLE, CardId::OFFERING,
-                                                CardId::SETUP_STRIKE, CardId::SPITE, CardId::WHIRLWIND, CardId::FEED,
-                                                CardId::BATTLE_TRANCE, CardId::FEEL_NO_PAIN, CardId::DARK_EMBRACE,
-                                                CardId::DRUM_OF_BATTLE, CardId::BARRICADE, CardId::INFERNO,
-                                                CardId::CRIMSON_MANTLE, CardId::RUPTURE, CardId::AGGRESSION,
-                                                CardId::PYRE, CardId::DEMON_FORM, CardId::JUGGERNAUT, CardId::RAGE,
-                                                CardId::VICIOUS, CardId::HOWL_FROM_BEYOND, CardId::HELLRAISER,
-                                                CardId::STAMPEDE, CardId::CASCADE, CardId::ONE_TWO_PUNCH,
-                                                CardId::TEAR_ASUNDER, CardId::HAVOC, CardId::UNRELENTING,
-                                                CardId::MIDNIGHT, CardId::STOMP, CardId::RAMPAGE, CardId::ARMAMENTS,
-                                                CardId::BRAND, CardId::BURNING_PACT,
-                                                CardId::JUGGLING,
-                                                CardId::HEADBUTT,
-                                                CardId::STONE_ARMOR, CardId::FLAME_BARRIER, CardId::UNMOVABLE, CardId::COLOSSUS, CardId::CRUELTY, CardId::PRIMAL_FORCE };
-    static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
-                                              CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
-                                              CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
-                                              CardId::PRECISE_CUT, CardId::BOUNCING_FLASK, CardId::FLECHETTES,
-                                              CardId::FOOTWORK, CardId::ESCAPE_PLAN, CardId::DASH,
-                                              CardId::BUBBLE_BUBBLE, CardId::OUTBREAK, CardId::ADRENALINE,
-                                              CardId::CALCULATED_GAMBLE, CardId::MIRAGE, CardId::ANTICIPATE,
-                                              CardId::ASSASSINATE, CardId::BACKSTAB, CardId::BLUR,
-                                              CardId::DODGE_AND_ROLL, CardId::FINISHER, CardId::MALAISE,
-                                              CardId::MEMENTO_MORI, CardId::MURDER, CardId::PIERCING_WAIL,
-                                              CardId::PREDATOR, CardId::SIDESTEP, CardId::SKEWER, CardId::EXPERTISE,
-                                              CardId::SNAKEBITE, CardId::ECHOING_SLASH, CardId::GRAND_FINALE,
-                                              CardId::ACCELERANT, CardId::SPEEDSTER, CardId::ENVENOM,
-                                              CardId::SERPENT_FORM, CardId::AFTERIMAGE, CardId::WELL_LAID_PLANS,
-                                              CardId::STRANGLE, CardId::CORROSIVE_WAVE, CardId::NOXIOUS_FUMES,
-                                              CardId::BURST, CardId::BULLET_TIME, CardId::PINPOINT, CardId::POUNCE,
-                                              CardId::BLADE_DANCE, CardId::CLOAK_AND_DAGGER, CardId::LEADING_STRIKE,
-                                              CardId::BLADE_OF_INK, CardId::INFINITE_BLADES, CardId::STORM_OF_STEEL,
-                                              CardId::FAN_OF_KNIVES, CardId::PHANTOM_BLADES, CardId::ACCURACY,
-                                              CardId::UP_MY_SLEEVE, CardId::KNIFE_TRAP, CardId::ACROBATICS,
-                                              CardId::DAGGER_THROW, CardId::PREPARED, CardId::HIDDEN_DAGGERS,
-                                              CardId::EXPOSE, CardId::TACTICIAN, CardId::ABRASIVE,
-                                              CardId::MASTER_PLANNER, CardId::HAND_TRICK, CardId::UNTOUCHABLE,
-                                              CardId::RICOCHET, CardId::REFLEX, CardId::FLICK_FLACK, CardId::SHADOWMELD, CardId::TRACKING, CardId::SHADOW_STEP, CardId::THE_HUNT };
-    static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
-                                              CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
-                                              CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,
-                                              CardId::GLACIER, CardId::METEOR_STRIKE, CardId::ICE_LANCE,
-                                              CardId::SKIM, CardId::ALL_FOR_ONE, CardId::NULL_CARD,
-                                              CardId::GO_FOR_THE_EYES, CardId::SCRAPE, CardId::RAINBOW,
-                                              CardId::CHILL, CardId::FUSION, CardId::REBOOT, CardId::SUPERCRITICAL,
-                                              CardId::DOUBLE_ENERGY, CardId::BOOT_SEQUENCE, CardId::CHARGE_BATTERY,
-                                              CardId::FTL, CardId::HELIX_DRILL, CardId::LIGHTNING_ROD,
-                                              CardId::TEMPEST, CardId::SUNDER, CardId::MACHINE_LEARNING,
-                                              CardId::STORM, CardId::FERAL, CardId::SUBROUTINE, CardId::SHATTER,
-                                              CardId::VOLTAIC, CardId::BARRAGE, CardId::TESLA_COIL, CardId::CHAOS,
-                                              CardId::COMPILE_DRIVER, CardId::DARKNESS, CardId::MULTI_CAST,
-                                              CardId::LOOP, CardId::CONSUMING_SHADOW, CardId::HAILSTORM,
-                                              CardId::THUNDER, CardId::COOLANT, CardId::HOTFIX, CardId::DEFRAGMENT,
-                                              CardId::FOCUSED_STRIKE, CardId::HYPERBEAM, CardId::CAPACITOR,
-                                              CardId::BULK_UP, CardId::SYNCHRONIZE, CardId::ECHO_FORM,
-                                              CardId::SIGNAL_BOOST, CardId::UPROAR, CardId::ADAPTIVE_STRIKE,
-                                              CardId::SYNTHESIS, CardId::GENETIC_ALGORITHM, CardId::MOMENTUM_STRIKE,
-                                              CardId::CLAW, CardId::MODDED, CardId::BOOST_AWAY, CardId::FLAK_CANNON,
-                                              CardId::SMOKESTACK, CardId::COMPACT, CardId::GUNK_UP,
-                                              CardId::ITERATION, CardId::FIGHT_THROUGH, CardId::OVERCLOCK,
-                                              CardId::ROCKET_PUNCH, CardId::TRASH_TO_TREASURE, CardId::TURBO,
-                                              CardId::SCAVENGE,
-                                              CardId::HOLOGRAM,
-                                              CardId::BUFFER, CardId::GLASSWORK, CardId::REFRACT, CardId::SPINNER };
-    static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
-                                              CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
-                                              CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
-                                              CardId::KNOW_THY_PLACE, CardId::LUNAR_BLAST, CardId::PROPHESIZE,
-                                              CardId::SUPERMASSIVE, CardId::CONVERGENCE, CardId::ALIGNMENT,
-                                              CardId::ASTRAL_PULSE, CardId::CLOAK_OF_STARS, CardId::COMET,
-                                              CardId::CRESCENT_SPEAR, CardId::DEVASTATE, CardId::DYING_STAR,
-                                              CardId::GAMMA_BLAST, CardId::GLOW, CardId::GUIDING_STAR,
-                                              CardId::HIDDEN_CACHE, CardId::PARTICLE_WALL, CardId::RADIATE,
-                                              CardId::RESONANCE, CardId::ROYAL_GAMBLE, CardId::SEVEN_STARS,
-                                              CardId::SHINING_STRIKE, CardId::STARDUST, CardId::KNOCKOUT_BLOW,
-                                              CardId::CHILD_OF_THE_STARS, CardId::GENESIS, CardId::BLACK_HOLE,
-                                              CardId::MAKE_IT_SO, CardId::PALE_BLUE_DOT, CardId::ARSENAL,
-                                              CardId::MONOLOGUE, CardId::ORBIT, CardId::PILLAR_OF_CREATION,
-                                              CardId::MONARCHS_GAZE, CardId::BOMBARDMENT, CardId::I_AM_INVINCIBLE,
-                                              CardId::VOID_FORM, CardId::KINGLY_KICK, CardId::KINGLY_PUNCH,
-                                              CardId::COLLISION_COURSE, CardId::CRASH_LANDING, CardId::PHOTON_CUT,
-                                              CardId::GLIMMER, CardId::TYRANNY,
-                                              CardId::COSMIC_INDIFFERENCE,
-                                              CardId::FOREGONE_CONCLUSION,
-                                              CardId::NEUTRON_AEGIS, CardId::REFLECT, CardId::PATTER,
-                                              CardId::TERRAFORMING,
-                                              CardId::REFINE_BLADE, CardId::SPOILS_OF_BATTLE,
-                                              CardId::WROUGHT_IN_WAR, CardId::BULWARK, CardId::CONQUEROR,
-                                              CardId::FURNACE, CardId::PARRY, CardId::SUMMON_FORTH,
-                                              CardId::BEAT_INTO_SHAPE, CardId::BIG_BANG, CardId::SEEKING_EDGE,
-                                              CardId::SWORD_SAGE, CardId::THE_SMITH,
-                                              CardId::MANIFEST_AUTHORITY, CardId::ROYALTIES, CardId::QUASAR, CardId::BEGONE, CardId::CHARGE, CardId::GUARDS };
-    static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
-                                                   CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
-                                                   CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
-                                                   CardId::PUTREFY, CardId::REANIMATE, CardId::AFTERLIFE,
-                                                   CardId::DEATH_MARCH, CardId::DEFILE, CardId::DEFY, CardId::DELAY,
-                                                   CardId::ENFEEBLING_TOUCH, CardId::FEAR, CardId::INVOKE,
-                                                   CardId::PARSE, CardId::PULL_FROM_BELOW, CardId::REAP, CardId::SOW,
-                                                   CardId::ERADICATE, CardId::FRIENDSHIP, CardId::DANSE_MACABRE,
-                                                   CardId::DEMESNE, CardId::SPIRIT_OF_ASH, CardId::PAGESTORM,
-                                                   CardId::SLEIGHT_OF_FLESH, CardId::NEGATIVE_PULSE,
-                                                   CardId::END_OF_DAYS, CardId::BLIGHT_STRIKE, CardId::NO_ESCAPE,
-                                                   CardId::SCOURGE, CardId::DEATHBRINGER, CardId::DEATHS_DOOR,
-                                                   CardId::COUNTDOWN, CardId::REAPER_FORM, CardId::NEUROSURGE,
-                                                   CardId::TIMES_UP, CardId::OBLIVION, CardId::SHROUD,
-                                                   CardId::EIDOLON, CardId::BANSHEES_CRY, CardId::VEILPIERCER,
-                                                   CardId::BORROWED_TIME, CardId::THE_SCYTHE, CardId::MELANCHOLY,
-                                                   CardId::HANG, CardId::SCULPTING_STRIKE,
-                                                   CardId::GRAVEBLAST,
-                                                   CardId::DREDGE,
-                                                   CardId::CLEANSE,
-                                                   CardId::POKE, CardId::SNAP, CardId::RATTLE, CardId::BONE_SHARDS,
-                                                   CardId::SQUEEZE, CardId::FLATTEN, CardId::HIGH_FIVE, CardId::FETCH,
-                                                   CardId::CALCIFY, CardId::RIGHT_HAND_HAND, CardId::NECRO_MASTERY,
-                                                   CardId::SACRIFICE, CardId::SPUR, CardId::SIC_EM,
-                                                   CardId::SENTRY_MODE,
-                                                   CardId::REAVE, CardId::GRAVE_WARDEN, CardId::CAPTURE_SPIRIT,
-                                                   CardId::SEVERANCE, CardId::DIRGE, CardId::HAUNT,
-                                                   CardId::DEVOUR_LIFE, CardId::SOUL_STORM,
-                                                   CardId::GLIMPSE_BEYOND, CardId::LETHALITY, CardId::DEBILITATE, CardId::FORBIDDEN_GRIMOIRE, CardId::SEANCE, CardId::TRANSFIGURE };
+namespace {
 
+// The cards of a hero the engine can draw at random: Basic (the starters), Common, Uncommon and Rare. Ancient, Event,
+// Curse and Quest cards, and the cards that are not in the reference (Cleave), are left out. A combat reward never
+// shows a Basic card: it rolls a Common, Uncommon or Rare one.
+constexpr bool rewardable(const CardMeta& meta, CardPool pool) {
+    return meta.pool == pool && (meta.rarity == CardRarity::BASIC || meta.rarity == CardRarity::COMMON || meta.rarity == CardRarity::UNCOMMON ||
+                                 meta.rarity == CardRarity::RARE);
+}
+
+constexpr size_t reward_pool_size(CardPool pool) {
+    size_t count = 0;
+    for (const CardMeta& meta : CARD_META) count += rewardable(meta, pool);
+    return count;
+}
+
+// The pool of a hero, built at compile time from the table of the reference: a card the engine knows is offered
+// without any list to keep in step.
+template <CardPool POOL>
+struct RewardPool {
+    static constexpr size_t SIZE = reward_pool_size(POOL);
+    CardId ids[SIZE];
+    constexpr RewardPool() : ids() {
+        size_t next = 0;
+        for (size_t i = 0; i < sizeof(CARD_META) / sizeof(CARD_META[0]); ++i) {
+            if (rewardable(CARD_META[i], POOL)) ids[next++] = static_cast<CardId>(i);
+        }
+    }
+};
+
+template <CardPool POOL>
+std::span<const CardId> reward_pool() {
+    static constexpr RewardPool<POOL> pool;
+    return std::span<const CardId>(pool.ids, RewardPool<POOL>::SIZE);
+}
+
+} // namespace
+
+std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
     switch (char_id) {
-        case CharacterId::SILENT: return SILENT_POOL;
-        case CharacterId::DEFECT: return DEFECT_POOL;
-        case CharacterId::REGENT: return REGENT_POOL;
-        case CharacterId::NECROBINDER: return NECROBINDER_POOL;
-        default: return IRONCLAD_POOL;
+        case CharacterId::SILENT: return reward_pool<CardPool::SILENT>();
+        case CharacterId::DEFECT: return reward_pool<CardPool::DEFECT>();
+        case CharacterId::REGENT: return reward_pool<CardPool::REGENT>();
+        case CharacterId::NECROBINDER: return reward_pool<CardPool::NECROBINDER>();
+        default: return reward_pool<CardPool::IRONCLAD>();
     }
 }
 
@@ -604,8 +518,10 @@ uint32_t RunManager::reward_seed() const {
            (static_cast<uint32_t>(current_node_index + 1) * 0xC2B2AE35u);
 }
 
-void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity) {
-    // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked.
+void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity, bool elite) {
+    // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked. Without one, each card
+    // rolls its own rarity (more Rare ones after an elite); a boss gives Rare cards only.
+    if (boss && rarity == CardRarity::NONE) rarity = CardRarity::RARE;
     current_card_rewards.clear();
     // Silver Crucible: the first card rewards seen are Upgraded.
     bool upgraded = card_rewards_upgraded;
@@ -614,7 +530,10 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity)
         set_relic_counter("SILVER_CRUCIBLE", static_cast<uint8_t>(relic_counter("SILVER_CRUCIBLE") + 1));
     }
     FixedVector<CardId, 512> candidates;
-    auto keep = [rarity](CardId id) { return rarity == CardRarity::NONE || card_meta(id).rarity == rarity; };
+    auto keep = [rarity](CardId id) {
+        CardRarity of = card_meta(id).rarity;
+        return rarity == CardRarity::NONE ? of != CardRarity::BASIC : of == rarity;
+    };
     for (CardId id : card_reward_pool(character)) {
         if (keep(id)) candidates.push_back(id);
     }
@@ -630,13 +549,32 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity)
     // Dingy Rug: the Colorless cards are offered too.
     if (has_relic("DINGY_RUG")) {
         for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
-            if (card_meta(static_cast<CardId>(id)).pool == CardPool::COLORLESS) candidates.push_back(static_cast<CardId>(id));
+            if (card_meta(static_cast<CardId>(id)).pool == CardPool::COLORLESS && keep(static_cast<CardId>(id))) candidates.push_back(static_cast<CardId>(id));
         }
     }
+    const uint8_t common_chance = elite ? ELITE_CARD_COMMON_CHANCE : CARD_COMMON_CHANCE;
+    const uint8_t uncommon_chance = elite ? ELITE_CARD_UNCOMMON_CHANCE : CARD_UNCOMMON_CHANCE;
     while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
-        size_t pick = (boss ? rng.next() : next_random()) % candidates.size();
-        current_card_rewards.push_back(DeckCard(candidates[pick], upgraded));
-        candidates.erase(pick);
+        // The rarity of this card; when none of the pool has it left, any card will do.
+        CardRarity wanted = CardRarity::NONE;
+        if (rarity == CardRarity::NONE) {
+            uint32_t roll = (boss ? rng.next() : next_random()) % 100;
+            wanted = roll < common_chance ? CardRarity::COMMON
+                     : (roll < static_cast<uint32_t>(common_chance + uncommon_chance) ? CardRarity::UNCOMMON : CardRarity::RARE);
+            bool any = false;
+            for (CardId id : candidates) any = any || card_meta(id).rarity == wanted;
+            if (!any) wanted = CardRarity::NONE;
+        }
+        size_t matching = 0;
+        for (CardId id : candidates) matching += wanted == CardRarity::NONE || card_meta(id).rarity == wanted;
+        size_t pick = (boss ? rng.next() : next_random()) % matching;
+        for (size_t i = 0; i < candidates.size(); ++i) {
+            if (wanted != CardRarity::NONE && card_meta(candidates[i]).rarity != wanted) continue;
+            if (pick-- > 0) continue;
+            current_card_rewards.push_back(DeckCard(candidates[i], upgraded));
+            candidates.erase(i);
+            break;
+        }
     }
 }
 
@@ -647,7 +585,7 @@ void RunManager::generate_rewards() {
     RewardRng rng(reward_seed());
     bool boss = room == RoomType::BOSS;
 
-    draw_card_rewards(boss, rng);
+    draw_card_rewards(boss, rng, CardRarity::NONE, room == RoomType::ELITE);
     // Prayer Wheel: a normal enemy gives one more set of cards, after the first one (as The Hunt does).
     if (room == RoomType::MONSTER && has_relic("PRAYER_WHEEL")) extra_card_rewards = static_cast<uint8_t>(std::min(255, extra_card_rewards + 1));
 

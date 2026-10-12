@@ -92,6 +92,8 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::SOUL_NEXUS: return "SOUL_NEXUS";
         case EnemyType::BYRDONIS: return "BYRDONIS";
         case EnemyType::PHROG_PARASITE: return "PHROG_PARASITE";
+        case EnemyType::WRIGGLER: return "WRIGGLER";
+        case EnemyType::THE_INSATIABLE: return "THE_INSATIABLE";
         case EnemyType::TOUGH_EGG: return "TOUGH_EGG";
     }
     return {};
@@ -214,10 +216,14 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal",
                                         "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
                                         "FossilStalkerNormal", "SeapunkNormal" }));
+    // Act 2 has its own boss, the Insatiable; the other acts keep the Ceremonial Beast.
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
-               std::set<std::string_view>{ "CeremonialBeastBoss" });
+               std::set<std::string_view>{ zone == ActZone::ACT2 ? "TheInsatiableBoss" : "CeremonialBeastBoss" });
     }
+    const Encounter& insatiable = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::BOSS),
+                                                 "TheInsatiableBoss");
+    assert(insatiable.count == 1 && insatiable.monsters[0] == EnemyType::THE_INSATIABLE);
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
            (std::set<std::string_view>{ "BygoneEffigyElite", "ByrdonisElite", "PhrogParasiteElite",
                                         "LegacyGremlinNob" }));
@@ -274,6 +280,7 @@ void test_reference_encounters() {
     // Titos is summoned by the Entomancer, the Parafright brought by the Obscura: neither is a monster of the
     // engine yet. The Slumbering Beetle and the Nectar, Silk and Egg Bowlbugs wait for the random bugs of
     // BowlbugsNormal and SlumberingBeetleNormal.
+    // The Wriggler is the companion of the Phrog Parasite, which fights alone for now.
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
                                                           EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
@@ -281,7 +288,7 @@ void test_reference_encounters() {
                                                           EnemyType::PARAFRIGHT, EnemyType::ZAPBOT,
                                                           EnemyType::GUARDBOT, EnemyType::BOWLBUG_NECTAR,
                                                           EnemyType::BOWLBUG_SILK, EnemyType::BOWLBUG_EGG,
-                                                          EnemyType::TOUGH_EGG };
+                                                          EnemyType::WRIGGLER, EnemyType::TOUGH_EGG };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));
@@ -415,6 +422,27 @@ void test_same_seed_same_fights() {
     std::cout << "[PASS] Encounter tables: the same seed gives the same fights" << std::endl;
 }
 
+// A room never draws the encounter of the previous fight, in any act, on any seed.
+void test_no_same_encounter_twice_in_a_row() {
+    int fights_checked = 0;
+    for (uint8_t act = 1; act <= 3; ++act) {
+        for (uint32_t seed = 1; seed <= 60; ++seed) {
+            RunManager run = make_run(seed, act);
+            std::string previous;
+            for (int step = 0; step < 40; ++step) {
+                int room = find_room(run, EncounterTier::NORMAL);
+                if (room < 0) break;
+                run.enter_room(room);
+                assert(run.current_encounter != previous);
+                previous = std::string(run.current_encounter);
+                ++fights_checked;
+            }
+        }
+    }
+    assert(fights_checked > 1000);
+    std::cout << "[PASS] Encounter tables: never the same encounter twice in a row" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -424,6 +452,7 @@ int main() {
     test_zone_and_tier();
     test_rooms_meet_every_encounter();
     test_same_seed_same_fights();
+    test_no_same_encounter_twice_in_a_row();
     std::cout << "=== All Encounters Passed! ===" << std::endl;
     return 0;
 }

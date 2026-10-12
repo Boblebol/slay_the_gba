@@ -616,6 +616,8 @@ bn::string_view base_name(engine::CardId id)
         return "Plaie";
     case engine::CardId::INFECTION:
         return "Infection";
+    case engine::CardId::FRANTIC_ESCAPE:
+        return "Fuite éperdue";
     case engine::CardId::FUEL:
         return "Combustible";
     case engine::CardId::BOOST_AWAY:
@@ -2451,6 +2453,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::SLIMED:
         stream << "Pioche " << value << " carte. Épuisement.";
         break;
+    case engine::CardId::FRANTIC_ESCAPE:
+        stream << "Sables mouvants +" << value << ". Coût +1 ensuite.";
+        break;
     case engine::CardId::VOID_CARD:
         stream << "Injouable. Éthéré. Piochée : perd " << value << " ⚡.";
         break;
@@ -2925,6 +2930,8 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Étincelle";
     case engine::PowerId::HEX:
         return "Sortil";
+    case engine::PowerId::SANDPIT:
+        return "Sables";
     default:
         return "";
     }
@@ -2946,6 +2953,8 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Étincelle : frappée, +1 ● (X fois/tour).";
     case engine::PowerId::HEX:
         return "Sortilège : vos cartes sont Éthérées.";
+    case engine::PowerId::SANDPIT:
+        return "Sables : à 0, vous êtes dévoré.";
     default:
         return "";
     }

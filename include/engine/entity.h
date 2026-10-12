@@ -428,6 +428,8 @@ enum class EnemyType : uint8_t {
     BYGONE_EFFIGY,
     BYRDONIS,
     PHROG_PARASITE,
+    WRIGGLER,
+    THE_INSATIABLE, // Act 2 boss
     TOUGH_EGG
 };
 
@@ -446,6 +448,11 @@ struct MoveOption {
 };
 
 constexpr uint8_t NO_MOVE = 0xFF;
+
+// Liquify Ground, the Insatiable's opening move: the Sandpit it starts from, and the Frantic Escapes shuffled
+// into the player's draw pile.
+constexpr uint8_t INSATIABLE_SANDPIT = 4;
+constexpr uint8_t INSATIABLE_FRANTIC_ESCAPES = 6;
 
 class Enemy : public CombatEntity {
 public:

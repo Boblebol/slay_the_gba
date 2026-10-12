@@ -4,11 +4,11 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 85,2 %** — 1052 faits, 19 partiels, 175 à faire (35 hors périmètre).
+**Avancement global : 85,7 %** — 1059 faits, 17 partiels, 170 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
-Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Fuel, Giant Rock, Infection, Luminesce, Metallicize, Minion Dive Bomb, Minion Sacrifice, Minion Strike, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
+Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Frantic Escape, Fuel, Giant Rock, Infection, Luminesce, Metallicize, Minion Dive Bomb, Minion Sacrifice, Minion Strike, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
 
 ## Synthèse
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
-| [Reliques et potions](#reliques) | 283 | 0 | 38 | 88,2 % |
-| [Bestiaire](#bestiaire) | 64 | 1 | 39 | 62,0 % |
+| [Reliques et potions](#reliques) | 284 | 0 | 37 | 88,5 % |
+| [Bestiaire](#bestiaire) | 66 | 1 | 37 | 63,9 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 45 | 0 | 14 | 76,3 % |
-| [Systèmes de jeu](#systemes) | 25 | 4 | 7 | 75,0 % |
+| [Règles de combat](#regles) | 46 | 0 | 13 | 78,0 % |
+| [Systèmes de jeu](#systemes) | 28 | 2 | 6 | 80,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1052** | **19** | **175** | **85,2 %** |
+| **Total** | **1059** | **17** | **170** | **85,7 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 88,2 %
+## Reliques et potions — 88,5 %
 
 ### Reliques partagées — 89,7 %
 
@@ -1140,9 +1140,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Œil de geckobra | Ancienne | Oui |  |
 | Œil de verre | Ancienne | Oui |  |
 
-### Potions — 98,4 %
+### Potions — 100,0 %
 
-62 faits, 0 partiel, 1 à faire.
+63 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1196,7 +1196,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Fée en bouteille | Rare | Oui |  |
 | Goules en bouteille | Rare | Oui |  |
 | Goutte de prescience | Rare | Oui |  |
-| Huile de geckobra | Rare | Non |  |
+| Huile de geckobra | Rare | Oui |  |
 | Jus de coléoptère | Rare | Oui |  |
 | Jus de fruits | Rare | Oui |  |
 | Navire en bouteille | Rare | Oui |  |
@@ -1212,7 +1212,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 62,0 %
+## Bestiaire — 63,9 %
 
 ### Monstres — 72,2 %
 
@@ -1293,14 +1293,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sculpteur dévoué | Faible · Acte 3 | Oui |  |
 | Sonobot | Invocation · Acte 3 | Oui |  |
 
-### Élites — 70,6 %
+### Élites — 76,5 %
 
-12 faits, 0 partiel, 5 à faire.
+13 faits, 0 partiel, 4 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Idole Oubliée | Élite · Acte 1 (A) | Oui |  |
-| Larve | Élite · Acte 1 (A) | Non |  |
+| Larve | Élite · Acte 1 (A) | Oui |  |
 | Oizodon | Élite · Acte 1 (A) | Oui |  |
 | Parasite Krapo | Élite · Acte 1 (A) | Oui |  |
 | Colonie de rôdeurs | Élite · Acte 1 (B) | Oui |  |
@@ -1317,9 +1317,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Chevalier spectral | Élite · Acte 3 | Oui |  |
 | Méca-Chevalier | Élite · Acte 3 | Oui |  |
 
-### Boss — 3,3 %
+### Boss — 10,0 %
 
-0 fait, 1 partiel, 14 à faire.
+1 fait, 1 partiel, 13 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1332,7 +1332,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Poissâme | Boss · Acte 1 (B) | Non |  |
 | Anéantisseur | Boss · Acte 2 | Non |  |
 | Démon de la Connaissance | Boss · Acte 2 | Non |  |
-| L'Insatiable | Boss · Acte 2 | Non |  |
+| L'Insatiable | Boss · Acte 2 | Oui |  |
 | Roquette | Boss · Acte 2 | Non |  |
 | Amalgame Torchetête | Boss · Acte 3 | Non |  |
 | Clepséon | Boss · Acte 3 | Non |  |
@@ -1424,7 +1424,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regles"></a>
 
-## Règles de combat — 76,3 %
+## Règles de combat — 78,0 %
 
 ### Déroulement du combat — 100,0 %
 
@@ -1456,9 +1456,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Coup de grâce : effet quand la carte tue un ennemi |  | Oui |  |
 | Transformer une carte |  | Oui | [#79](https://github.com/Boblebol/slay_the_gba/issues/79) |
 
-### Pouvoirs et statuts — 93,8 %
+### Pouvoirs et statuts — 100,0 %
 
-15 faits, 0 partiel, 1 à faire.
+16 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1477,7 +1477,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Vigueur |  | Oui | [#93](https://github.com/Boblebol/slay_the_gba/issues/93) |
 | Fatalité |  | Oui |  |
 | Désorienté |  | Oui | [#93](https://github.com/Boblebol/slay_the_gba/issues/93) |
-| Sables mouvants (L'Insatiable) |  | Non | [#245](https://github.com/Boblebol/slay_the_gba/issues/245) |
+| Sables mouvants (L'Insatiable) |  | Oui | [#245](https://github.com/Boblebol/slay_the_gba/issues/245) |
 
 ### Mots-clés de cartes — 100,0 %
 
@@ -1515,7 +1515,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 75,0 %
+## Systèmes de jeu — 80,6 %
 
 ### La Tour — 50,0 %
 
@@ -1531,9 +1531,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Neow en début de partie |  | Non | [#6](https://github.com/Boblebol/slay_the_gba/issues/6) |
 | Bénédiction d'un Ancien entre les actes |  | Non | La phase existe dans le moteur mais elle est sautée. [#261](https://github.com/Boblebol/slay_the_gba/issues/261) |
 
-### Récompenses — 78,6 %
+### Récompenses — 92,9 %
 
-5 faits, 1 partiel, 1 à faire.
+6 faits, 1 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1543,7 +1543,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Potion en récompense de combat |  | Oui | 40 % des combats, tirée par rareté parmi les potions que le moteur résout. Ceinture pleine : en jeter une ou la laisser. |
 | Relique après un élite |  | Oui | Tirée par rareté, jamais en double, jamais celle d'un autre héros. |
 | Relique de boss |  | Partiel | Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. Les reliques d'Ancien du jeu d'origine restent à faire. [#184](https://github.com/Boblebol/slay_the_gba/issues/184) |
-| Cartes rares et peu communes selon la salle |  | Non | [#67](https://github.com/Boblebol/slay_the_gba/issues/67) |
+| Cartes rares et peu communes selon la salle |  | Oui | Chaque carte tire sa rareté : 60 / 37 / 3 % après un combat, 50 / 40 / 10 % après un élite, que des Rares après un boss. Pool bâti depuis les cartes du héros. |
 
 ### Feu de camp — 66,7 %
 
@@ -1555,9 +1555,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Forge : améliorer une carte, avec aperçu |  | Oui |  |
 | Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon) |  | Non | [#271](https://github.com/Boblebol/slay_the_gba/issues/271) |
 
-### Marchand — 83,3 %
+### Marchand — 100,0 %
 
-4 faits, 2 partiels, 0 à faire.
+6 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1565,8 +1565,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Retrait d'une carte, à coût croissant |  | Oui |  |
 | Achat de reliques |  | Oui | Rayon des reliques, touches L et R : deux reliques tirées par rareté et une relique du marchand. |
 | Achat de potions |  | Oui | Rayon des potions, touches L et R. Ceinture pleine : la potion achetée en remplace une. |
-| Inventaire tiré au hasard à chaque visite |  | Partiel | Reliques et potions tirées au hasard ; trois cartes fixes par héros. [#270](https://github.com/Boblebol/slay_the_gba/issues/270) |
-| Prix selon la rareté, carte en solde |  | Partiel | Reliques et potions au prix de leur rareté, à 5 % près ; cartes à prix fixe, sans solde. [#270](https://github.com/Boblebol/slay_the_gba/issues/270) |
+| Inventaire tiré au hasard à chaque visite |  | Oui | Cinq cartes du héros et deux cartes incolores tirées par rareté, trois reliques et trois potions, depuis la graine de la partie. L écran montre les trois premières cartes. |
+| Prix selon la rareté, carte en solde |  | Oui | Cartes, reliques et potions au prix de leur rareté, à 5 % près ; une carte du héros à moitié prix. |
 
 ### Potions — 100,0 %
 

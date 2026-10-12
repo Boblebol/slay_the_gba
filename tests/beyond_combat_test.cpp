@@ -110,7 +110,6 @@ void test_extra_card_reward_screen() {
 }
 
 void test_forbidden_grimoire() {
-    assert(in_pool(CharacterId::NECROBINDER, CardId::FORBIDDEN_GRIMOIRE));
     for (bool up : { false, true }) {
         assert(CardDef::get_cost(CardId::FORBIDDEN_GRIMOIRE, up) == 2);
         assert(CardDef::has_keyword(CardId::FORBIDDEN_GRIMOIRE, up, KEYWORD_ETERNAL));

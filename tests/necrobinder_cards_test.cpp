@@ -91,7 +91,6 @@ void test_lethality() {
 }
 
 void test_forbidden_grimoire() {
-    assert_in_pool(CharacterId::NECROBINDER, { CardId::FORBIDDEN_GRIMOIRE });
     for (bool up : { false, true }) {
         assert(CardDef::get_cost(CardId::FORBIDDEN_GRIMOIRE, up) == 2);
         assert(CardDef::get(CardId::FORBIDDEN_GRIMOIRE).type == CardType::POWER);
