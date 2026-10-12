@@ -1564,7 +1564,7 @@ void test_tri_boomerang() {
     RunManager run;
     run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
     run.add_relic("TRI_BOOMERANG");
-    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ENCHANT_INSTINCT && run.deck_choice.remaining == 3);
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ENCHANT && run.deck_choice.remaining == 3);
     int skill_index = -1;
     for (size_t i = 0; i < run.master_deck.size(); ++i) {
         if (CardDef::get(run.master_deck[i].id).type != CardType::ATTACK) { skill_index = static_cast<int>(i); break; }
