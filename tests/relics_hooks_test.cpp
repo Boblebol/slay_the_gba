@@ -4021,6 +4021,41 @@ void test_silver_crucible() {
     std::cout << "[PASS] Silver Crucible: first 3 card rewards upgraded, first Treasure Chest empty" << std::endl;
 }
 
+void test_silken_tress() {
+    // With the relic: all the gold goes, and the first card reward is Enchanted with Glam, the next one is not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 727);
+    run.gold = 120;
+    run.add_relic("SILKEN_TRESS");
+    assert(run.gold == 0);
+    for (int reward = 0; reward < 2; ++reward) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+        for (const DeckCard& card : run.current_card_rewards) assert((card.enchantment == Enchantment::GLAM) == (reward == 0));
+        if (reward == 0) {
+            run.pick_card_reward(0);
+            assert(run.master_deck.back().enchantment == Enchantment::GLAM);
+        } else {
+            run.skip_card_rewards();
+        }
+    }
+
+    // Without it: the gold stays and no reward is Enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 727);
+    plain.gold = 120;
+    assert(plain.gold == 120);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
+    for (const DeckCard& card : plain.current_card_rewards) assert(card.enchantment == Enchantment::NONE);
+    plain.skip_card_rewards();
+    std::cout << "[PASS] Silken Tress: gold lost, first card reward Glam-enchanted" << std::endl;
+}
+
 void test_toasty_mittens() {
     // With the relic: each turn starts with 1 Strength more, and 1 card of the hand to exhaust.
     RunManager mittens = make_relic_run(CharacterId::IRONCLAD, { "TOASTY_MITTENS" });
@@ -4287,6 +4322,7 @@ int main() {
     test_bing_bong();
     test_paper_phrog();
     test_silver_crucible();
+    test_silken_tress();
     test_forgotten_soul();
     test_fishing_rod();
     return 0;

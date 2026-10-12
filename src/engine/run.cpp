@@ -613,6 +613,13 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity,
             break;
         }
     }
+    // Silken Tress (Ancient): every card of the first card reward after the pickup is Enchanted with Glam.
+    if (has_relic("SILKEN_TRESS") && relic_counter("SILKEN_TRESS") == 1) {
+        for (DeckCard& card : current_card_rewards) {
+            if (can_enchant(card, Enchantment::GLAM)) card.enchantment = Enchantment::GLAM;
+        }
+        set_relic_counter("SILKEN_TRESS", 2);
+    }
 }
 
 void RunManager::generate_rewards() {
@@ -756,6 +763,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "FRAGRANT_MUSHROOM" && has_relic("FRAGRANT_MUSHROOM")) {
         hp = std::max<int16_t>(1, hp - 15);
         upgrade_random_cards(2);
+    }
+    // Silken Tress (Ancient): all the gold is lost, and the first card reward to come is Enchanted with Glam.
+    if (relic_id == "SILKEN_TRESS" && has_relic("SILKEN_TRESS")) {
+        gold = 0;
+        set_relic_counter("SILKEN_TRESS", 1);
     }
     // Bone Tea (event): the next combat is counted on pickup, and its starting hand is upgraded at its start.
     if (relic_id == "BONE_TEA" && has_relic("BONE_TEA")) set_relic_counter("BONE_TEA", 1);

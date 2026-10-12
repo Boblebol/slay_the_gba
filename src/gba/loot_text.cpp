@@ -180,6 +180,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "STORYBOOK", "Lorsque vous obtenez cette relique, ajoutez 1 Flamme éclatante à votre Deck." },
     { "NEOWS_TORMENT", "Lorsque vous obtenez cette relique, ajoutez 1 Fureur de Neow à votre Deck." },
     { "SIGNET_RING", "Lorsque vous obtenez cette relique, obtenez 888 Pièces d'or." },
+    { "SILKEN_TRESS", "Perdez tout votre or. Les cartes de votre première récompense de carte sont envoûtées avec Glamour." },
     { "SILVER_CRUCIBLE", "Vos 3 premières récompenses de carte sont Améliorées. Le premier Coffre trésor que vous ouvrez est vide." },
     { "SERE_TALON", "Lorsque vous obtenez cette relique, perdez 9 PV Max. Ajoutez 3 Vœux à votre Deck." },
     { "SHURIKEN", "Chaque fois que vous jouez 3 Attaques en un seul tour, gagnez 1 de Force." },
