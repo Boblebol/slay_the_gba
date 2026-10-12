@@ -2520,6 +2520,23 @@ void test_white_beast_statue() {
     std::cout << "[PASS] White Beast Statue: a potion in every combat reward, not always without it" << std::endl;
 }
 
+void test_ruined_helmet() {
+    // With the relic: the first Strength gained in the combat is doubled; the later ones are not.
+    CombatEngine with = make_relic_combat(CharacterId::IRONCLAD, PowerId::RUINED_HELMET, 1);
+    int16_t start = with.player.get_status(StatusType::STRENGTH);
+    play(with, CardId::INFLAME);
+    assert(with.player.get_status(StatusType::STRENGTH) == start + 4);
+    play(with, CardId::INFLAME);
+    assert(with.player.get_status(StatusType::STRENGTH) == start + 6);
+
+    // Without the relic: the plain amount.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    int16_t plain_start = plain.player.get_status(StatusType::STRENGTH);
+    play(plain, CardId::INFLAME);
+    assert(plain.player.get_status(StatusType::STRENGTH) == plain_start + 2);
+    std::cout << "[PASS] Ruined Helmet: the first Strength gained each combat is doubled" << std::endl;
+}
+
 void test_unsettling_lamp() {
     // With the relic: the first card of the fight that debuffs an enemy doubles its debuffs, a card without one does not count.
     CombatEngine lamp = make_relic_combat(CharacterId::IRONCLAD, PowerId::UNSETTLING_LAMP, 1);
@@ -4220,6 +4237,7 @@ int main() {
     test_lees_waffle();
     test_bowler_hat();
     test_unsettling_lamp();
+    test_ruined_helmet();
     test_daughter_of_the_wind();
     test_bookmark();
     test_undying_sigil();

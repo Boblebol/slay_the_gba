@@ -365,7 +365,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::TURN_STRENGTH:
         case PowerId::TOASTY_MITTENS: // the exhaust that follows is asked once the hand is drawn
-            if (turn_start) player.add_status(StatusType::STRENGTH, power.amount);
+            if (turn_start) gain_strength(power.amount);
             break;
         case PowerId::TURN_STARS:
             if (turn_start) gain_stars(power.amount);
@@ -490,7 +490,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             if (event == CombatEvent::CARD_EXHAUSTED) draw_cards(power.amount);
             break;
         case PowerId::RUPTURE:
-            if (event == CombatEvent::HP_LOST && my_turn) player.add_status(StatusType::STRENGTH, power.amount);
+            if (event == CombatEvent::HP_LOST && my_turn) gain_strength(power.amount);
             break;
         case PowerId::JUGGERNAUT:
             if (event == CombatEvent::BLOCK_GAINED && has_alive_enemies()) {
@@ -570,7 +570,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             }
             break;
         case PowerId::ARSENAL:
-            if (event == CombatEvent::CARD_CREATED) player.add_status(StatusType::STRENGTH, power.amount);
+            if (event == CombatEvent::CARD_CREATED) gain_strength(power.amount);
             break;
         case PowerId::MONOLOGUE:
             if (card_played) gain_temporary(StatusType::STRENGTH, static_cast<int8_t>(power.amount));
@@ -679,7 +679,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::SPARKLING_ROUGE:
             if (turn_start && power.turns == 3) {
-                player.add_status(StatusType::STRENGTH, power.amount);
+                gain_strength(power.amount);
                 player.add_status(StatusType::DEXTERITY, power.amount);
             }
             break;
@@ -971,7 +971,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                     counters.skills_played + (type == CardType::SKILL) > 0 &&
                     counters.powers_played + (type == CardType::POWER) > 0) {
                     power.counter = 1;
-                    player.add_status(StatusType::STRENGTH, power.amount);
+                    gain_strength(power.amount);
                     player.add_status(StatusType::DEXTERITY, power.amount);
                 }
             }
@@ -991,7 +991,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::SHURIKEN:
             if (completes(CardType::ATTACK, counters.attacks_played, SHURIKEN_ATTACKS)) {
-                player.add_status(StatusType::STRENGTH, power.amount);
+                gain_strength(power.amount);
             }
             break;
         case PowerId::PEN_NIB:
@@ -1051,7 +1051,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             break;
         case PowerId::BRIMSTONE:
             if (turn_start) {
-                player.add_status(StatusType::STRENGTH, power.amount);
+                gain_strength(power.amount);
                 for (Enemy& enemy_hit : enemies) {
                     if (enemy_hit.is_alive()) enemy_hit.add_status(StatusType::STRENGTH, power.stacks);
                 }
@@ -1068,7 +1068,7 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             if (turn_start) power.counter = 0;
             if (event == CombatEvent::STARS_SPENT && power.counter == 0) {
                 power.counter = 1;
-                player.add_status(StatusType::STRENGTH, power.amount);
+                gain_strength(power.amount);
             }
             break;
         case PowerId::GALACTIC_DUST:
@@ -1677,9 +1677,25 @@ void CombatEngine::lose_hp(int16_t amount) {
     }
 }
 
+int16_t CombatEngine::gain_strength(int16_t amount) {
+    // Ruined Helmet: the first Strength gained each combat is doubled.
+    if (amount > 0) {
+        ActivePower* helmet = find_power(PowerId::RUINED_HELMET);
+        if (helmet != nullptr && helmet->counter == 0) {
+            helmet->counter = 1;
+            amount = static_cast<int16_t>(amount * 2);
+        }
+    }
+    player.add_status(StatusType::STRENGTH, amount);
+    return amount;
+}
+
 void CombatEngine::gain_temporary(StatusType type, int8_t amount) {
     if (type == StatusType::STRENGTH) {
+        // The doubled amount is the one lost again at the end of the turn.
+        amount = static_cast<int8_t>(gain_strength(amount));
         temp_strength = static_cast<int8_t>(temp_strength + amount);
+        return;
     } else if (type == StatusType::DEXTERITY) {
         temp_dexterity = static_cast<int8_t>(temp_dexterity + amount);
     } else if (type == StatusType::FOCUS) {
@@ -3164,7 +3180,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             break;
         }
         case CardId::INFLAME: {
-            player.add_status(StatusType::STRENGTH, base_value);
+            gain_strength(base_value);
             set_log(upgraded ? "Played Inflame+!"sv : "Played Inflame!"sv);
             break;
         }
@@ -3235,7 +3251,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             for (int blow = 0; blow < 2; ++blow) {
                 hit(current_target, base_value);
             }
-            player.add_status(StatusType::STRENGTH, secondary_value);
+            gain_strength(secondary_value);
             if (current_target.is_alive()) afflict(current_target, StatusType::STRENGTH, 1);
             set_log(upgraded ? "Played Fight Me+!"sv : "Played Fight Me!"sv);
             break;
@@ -3459,7 +3475,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         }
         case CardId::DOMINATE: {
             afflict(current_target, StatusType::VULNERABLE, secondary_value);
-            player.add_status(StatusType::STRENGTH, current_target.get_status(StatusType::VULNERABLE));
+            gain_strength(current_target.get_status(StatusType::VULNERABLE));
             set_log(upgraded ? "Played Dominate+!"sv : "Played Dominate!"sv);
             break;
         }
@@ -3618,7 +3634,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             break;
         }
         case CardId::PROWESS: {
-            player.add_status(StatusType::STRENGTH, base_value);
+            gain_strength(base_value);
             player.add_status(StatusType::DEXTERITY, base_value);
             set_log(upgraded ? "Played Prowess+!"sv : "Played Prowess!"sv);
             break;
@@ -4615,7 +4631,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
             break;
         }
         case CardId::RESONANCE: {
-            player.add_status(StatusType::STRENGTH, base_value);
+            gain_strength(base_value);
             for (size_t i = 0; i < enemies.size(); ++i) {
                 if (enemies[i].is_alive()) {
                     afflict(enemies[i], StatusType::STRENGTH, static_cast<int16_t>(-secondary_value));
@@ -5149,7 +5165,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         }
         case CardId::BULK_UP: {
             change_orb_slots(-secondary_value);
-            player.add_status(StatusType::STRENGTH, base_value);
+            gain_strength(base_value);
             player.add_status(StatusType::DEXTERITY, base_value);
             set_log(upgraded ? "Played Bulk Up+!"sv : "Played Bulk Up!"sv);
             break;
@@ -5881,7 +5897,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::BRAND: {
             lose_hp(base_value);
             ask_choice(CardChoice{ ChoiceKind::EXHAUST, 1 });
-            player.add_status(StatusType::STRENGTH, secondary_value);
+            gain_strength(secondary_value);
             set_log(upgraded ? "Played Brand+!"sv : "Played Brand!"sv);
             break;
         }
@@ -6691,7 +6707,7 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         player.add_status(StatusType::DEXTERITY, 2);
         set_log("Dexterity Potion!");
     } else if (potion_id == "STRENGTH_POTION") {
-        player.add_status(StatusType::STRENGTH, 2);
+        gain_strength(2);
         set_log("Strength Potion!");
     } else if (potion_id == "POISON_POTION") {
         afflict(aimed_enemy(), StatusType::POISON, 6);
@@ -6723,7 +6739,7 @@ bool CombatEngine::use_potion(std::string_view potion_id, int target_index) {
         add_block(static_cast<int16_t>(player.block * 2)); // tripled: twice what is there is added
         set_log("Fortifier!");
     } else if (potion_id == "FYSH_OIL") {
-        player.add_status(StatusType::STRENGTH, 1);
+        gain_strength(1);
         player.add_status(StatusType::DEXTERITY, 1);
         set_log("Fysh Oil!");
     } else if (potion_id == "SNECKO_OIL") {
