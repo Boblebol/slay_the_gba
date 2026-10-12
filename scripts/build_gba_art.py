@@ -224,6 +224,7 @@ MONSTERS: dict[str, str] = {
     "tough_egg": "tough_egg",
     "phrog_parasite": "phrog_parasite",
     "wriggler": "wriggler",
+    "the_obscura": "the_obscura",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.

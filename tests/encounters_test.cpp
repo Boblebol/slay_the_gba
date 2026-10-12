@@ -95,6 +95,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::WRIGGLER: return "WRIGGLER";
         case EnemyType::THE_INSATIABLE: return "THE_INSATIABLE";
         case EnemyType::TOUGH_EGG: return "TOUGH_EGG";
+        case EnemyType::THE_OBSCURA: return "THE_OBSCURA";
     }
     return {};
 }
@@ -242,7 +243,7 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "DevotedSculptorWeak", "TurretOperatorWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal", "ChompersNormal", "TunnelerNormal",
-                                        "LouseProgenitorNormal" }));
+                                        "LouseProgenitorNormal", "TheObscuraNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "SlimedBerserkerNormal", "FrogKnightNormal", "GlobeHeadNormal",
                                         "TheLostAndForgottenNormal", "AxebotsNormal", "LegacyCultistAndLouse",

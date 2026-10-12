@@ -2374,6 +2374,73 @@ void test_tough_egg_ascension() {
     std::cout << "[PASS] Tough Egg: Ascension gives 15 to 19 HP and a Nibble of 5" << std::endl;
 }
 
+void test_the_obscura() {
+    // Illusion (a Parafright joins as a Minion) first, then Hardening Strike 6 (6 Block), then a draw among
+    // Piercing Gaze 10, Sail and Hardening Strike that never repeats the move just played.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THE_OBSCURA);
+    Enemy& obscura = combat.enemies[0];
+    assert(obscura.type == EnemyType::THE_OBSCURA && obscura.name == "L'Obscura");
+    assert(obscura.hp == 123 && obscura.max_hp == 123 && obscura.block == 0 && obscura.statuses.empty());
+    assert(obscura.current_intent.type == SUMMON && obscura.current_intent.summon_type == EnemyType::PARAFRIGHT &&
+           obscura.current_intent.summons == 1 && obscura.intent_damage(combat.player) == 0);
+    combat.end_player_turn();
+    assert(combat.enemies.size() == 2 && combat.enemies[1].type == EnemyType::PARAFRIGHT);
+    assert(combat.enemies[1].minion && combat.enemies[1].leader == 0 && combat.enemies[1].hp == 21);
+
+    bool gaze = false, sail = false, strike = false;
+    int previous = -1;
+    for (int turn = 2; turn <= 40; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.player.block = 0;
+        obscura.block = 0;
+        int kind;
+        if (obscura.current_intent.type == ATTACK) {
+            assert(obscura.intent_damage(combat.player) == 10);
+            kind = 1;
+            gaze = true;
+        } else if (obscura.current_intent.type == BUFF) {
+            kind = 2;
+            sail = true;
+        } else {
+            assert(obscura.current_intent.type == ATTACK_DEFEND && obscura.intent_damage(combat.player) == 6 &&
+                   obscura.current_intent.block == 6);
+            kind = 3;
+            strike = true;
+        }
+        if (turn == 2) assert(kind == 3);
+        assert(kind != previous);
+        previous = kind;
+        combat.end_player_turn();
+        if (kind == 3) assert(obscura.block == 6);
+    }
+    assert(gaze && sail && strike);
+    std::cout << "[PASS] The Obscura: 123 HP, Illusion, then Hardening Strike and a draw without repeats" << std::endl;
+}
+
+void test_the_obscura_ascension() {
+    // 129 HP, Piercing Gaze 11 and Hardening Strike 7 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THE_OBSCURA);
+    Enemy& obscura = combat.enemies[0];
+    obscura.ascend(true, true);
+    combat.plan_enemies();
+    assert(obscura.hp == 129 && obscura.max_hp == 129);
+    assert(obscura.current_intent.type == SUMMON);
+    bool gaze = false, strike = false;
+    for (int turn = 2; turn <= 40 && !(gaze && strike); ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        if (obscura.current_intent.type == ATTACK) {
+            assert(obscura.intent_damage(combat.player) == 11);
+            gaze = true;
+        } else if (obscura.current_intent.type == ATTACK_DEFEND) {
+            assert(obscura.intent_damage(combat.player) == 7);
+            strike = true;
+        }
+    }
+    assert(gaze && strike);
+    std::cout << "[PASS] The Obscura: Ascension gives 129 HP, a Gaze of 11 and a Strike of 7" << std::endl;
+}
+
 void test_inklet() {
     // Jab 3 on the odd turns; on the even ones Whirlwind (2 x3) or Piercing Gaze (10), drawn at random.
     bool whirlwind = false, gaze = false;
@@ -3917,6 +3984,8 @@ int main() {
     test_byrdonis_ascension();
     test_tough_egg();
     test_tough_egg_ascension();
+    test_the_obscura();
+    test_the_obscura_ascension();
     test_phrog_parasite();
     test_wriggler();
     test_wriggler_ascension();

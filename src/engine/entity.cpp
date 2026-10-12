@@ -169,6 +169,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Œuf robuste";
         max_hp = 14;
         hp = 14;
+    } else if (type == EnemyType::THE_OBSCURA) {
+        name = "L'Obscura";
+        max_hp = 123;
+        hp = 123;
     } else if (type == EnemyType::BYRDONIS) {
         name = "Oizodon";
         max_hp = 81;
@@ -411,6 +415,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::BOWLBUG_EGG: return 23;
         case EnemyType::BYRDONIS: return static_cast<int16_t>(90 - hp_bonus); // ascend() adds hp_bonus back: 90 exactly
         case EnemyType::TOUGH_EGG: return 15;
+        case EnemyType::THE_OBSCURA: return 129;
         case EnemyType::TOADPOLE: return 22;
         case EnemyType::HUNTER_KILLER: return 126;
         case EnemyType::MAWLER: return 76;
@@ -1231,6 +1236,38 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = ascended_damage ? 5 : 4;
             current_intent.description = "Grignotage (4 dmg)";
+        }
+    } else if (type == EnemyType::THE_OBSCURA) {
+        // Illusion (summons a Parafright, Minion of the Obscura) on the first turn, then Hardening Strike (triggered),
+        // and a draw among Piercing Gaze, Sail and Hardening Strike that cannot repeat the move just played.
+        enum Move : uint8_t { ILLUSION, PIERCING_GAZE, SAIL, HARDENING_STRIKE };
+        if (turn_number == 1) {
+            use_move(ILLUSION);
+        } else if (enter_phase(1)) {
+            phase_turn = 1;
+            use_move(HARDENING_STRIKE);
+        } else {
+            static constexpr MoveOption OPTIONS[] = { { PIERCING_GAZE }, { SAIL }, { HARDENING_STRIKE } };
+            draw_move(OPTIONS);
+        }
+        if (last_move == ILLUSION) {
+            current_intent.type = EnemyIntentType::SUMMON;
+            current_intent.summon_type = EnemyType::PARAFRIGHT;
+            current_intent.summons = 1;
+            current_intent.summon_minions = true;
+            current_intent.description = "Illusion";
+        } else if (last_move == PIERCING_GAZE) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 11 : 10;
+            current_intent.description = "Regard perçant (10 dmg)";
+        } else if (last_move == SAIL) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.description = "Voile";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = ascended_damage ? 7 : 6;
+            current_intent.block = 6;
+            current_intent.description = "Frappe durcissante (6 dmg, 6 blk)";
         }
     } else if (type == EnemyType::BYRDONIS) {
         // Swoop (17 damage) then Peck (3 damage x3), and again.
