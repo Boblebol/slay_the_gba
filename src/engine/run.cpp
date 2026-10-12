@@ -613,6 +613,12 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity,
             break;
         }
     }
+    // Glitter: every card of the reward is enchanted with Glam.
+    if (has_relic("GLITTER")) {
+        for (DeckCard& offered : current_card_rewards) {
+            if (can_enchant(offered, Enchantment::GLAM)) offered.enchantment = Enchantment::GLAM;
+        }
+    }
 }
 
 void RunManager::generate_rewards() {
