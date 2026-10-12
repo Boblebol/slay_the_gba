@@ -24,6 +24,8 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 };
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+// Nutritious Soup: the extra damage Tezcatara's Ember gives each enchanted Strike.
+constexpr uint8_t NUTRITIOUS_SOUP_EMBER_DAMAGE = 3;
 constexpr int THE_COURIER_DISCOUNT = 20;
 constexpr int COOK_REMOVALS = 2; // cards removed by Cook (Meat Cleaver)
 constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
@@ -605,6 +607,19 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity,
             break;
         }
     }
+    // Glitter: every card of the reward is enchanted with Glam.
+    if (has_relic("GLITTER")) {
+        for (DeckCard& offered : current_card_rewards) {
+            if (can_enchant(offered, Enchantment::GLAM)) offered.enchantment = Enchantment::GLAM;
+        }
+    }
+    // Silken Tress (Ancient): every card of the first card reward after the pickup is Enchanted with Glam.
+    if (has_relic("SILKEN_TRESS") && relic_counter("SILKEN_TRESS") == 1) {
+        for (DeckCard& card : current_card_rewards) {
+            if (can_enchant(card, Enchantment::GLAM)) card.enchantment = Enchantment::GLAM;
+        }
+        set_relic_counter("SILKEN_TRESS", 2);
+    }
 }
 
 void RunManager::generate_rewards() {
@@ -738,6 +753,14 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         add_card_to_deck(DeckCard{ CardId::STRIKE, false });
         add_card_to_deck(DeckCard{ CardId::DEFEND, false });
     }
+    // Relic of the Ancients (Tezcatara): every Strike of the deck is enchanted with Tezcatara's Ember, once, on pickup.
+    if (relic_id == "NUTRITIOUS_SOUP" && has_relic("NUTRITIOUS_SOUP")) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            if (contains(CardDef::get(master_deck[i].id).name, "Strike")) {
+                enchant_card_in_deck(static_cast<int>(i), Enchantment::TEZCATARAS_EMBER, NUTRITIOUS_SOUP_EMBER_DAMAGE);
+            }
+        }
+    }
     if (relic_id == "YUMMY_COOKIE" && has_relic("YUMMY_COOKIE")) upgrade_random_cards(4);
     if (relic_id == "SAND_CASTLE" && has_relic("SAND_CASTLE")) upgrade_random_cards(6);
     if (relic_id == "POTION_BELT" && has_relic("POTION_BELT")) add_potion_slots(2);
@@ -748,6 +771,19 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "FRAGRANT_MUSHROOM" && has_relic("FRAGRANT_MUSHROOM")) {
         hp = std::max<int16_t>(1, hp - 15);
         upgrade_random_cards(2);
+    }
+    // Relic of the Ancients (Pael): one random card of the deck gets the Clone enchantment.
+    if (relic_id == "PAELS_GROWTH" && has_relic("PAELS_GROWTH")) {
+        FixedVector<int, 128> candidates;
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            if (can_enchant(master_deck[i], Enchantment::CLONE)) candidates.push_back(static_cast<int>(i));
+        }
+        if (!candidates.empty()) enchant_card_in_deck(candidates[next_random() % candidates.size()], Enchantment::CLONE);
+    }
+    // Silken Tress (Ancient): all the gold is lost, and the first card reward to come is Enchanted with Glam.
+    if (relic_id == "SILKEN_TRESS" && has_relic("SILKEN_TRESS")) {
+        gold = 0;
+        set_relic_counter("SILKEN_TRESS", 1);
     }
     // Bone Tea (event): the next combat is counted on pickup, and its starting hand is upgraded at its start.
     if (relic_id == "BONE_TEA" && has_relic("BONE_TEA")) set_relic_counter("BONE_TEA", 1);
@@ -770,6 +806,12 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "NEOWS_SACRIFICE" && has_relic("NEOWS_SACRIFICE")) {
         if (!potion_belt_full()) potions.push_back("AMBERGRIS");
         add_card_to_deck(DeckCard{ CardId::GUILTY, false });
+    }
+    // Relic of the Ancients (Pael): every Defend of the deck is enchanted with Goopy.
+    if (relic_id == "PAELS_CLAW" && has_relic("PAELS_CLAW")) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            if (master_deck[i].id == CardId::DEFEND) enchant_card_in_deck(static_cast<int>(i), Enchantment::GOOPY);
+        }
     }
     // Relic of the Ancients: one Ancient card of the hero, drawn at random with the run's generator.
     if (relic_id == "DUSTY_TOME" && has_relic("DUSTY_TOME")) {
@@ -935,6 +977,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
         paels_tooth_picks = deck_choice.remaining;
     }
+    if (relic_id == "TRI_BOOMERANG" && has_relic("TRI_BOOMERANG")) request_deck_choice(DeckChoiceKind::ENCHANT, 3, false, false, CardId::NONE, Enchantment::INSTINCT);
     if (relic_id == "CLAWS" && has_relic("CLAWS")) request_deck_choice(DeckChoiceKind::TRANSFORM, 6, true, false, CardId::MAUL);
     if (relic_id == "NEW_LEAF" && has_relic("NEW_LEAF")) request_deck_choice(DeckChoiceKind::TRANSFORM, 1);
     if (relic_id == "POMANDER" && has_relic("POMANDER")) request_deck_choice(DeckChoiceKind::UPGRADE, 1);
@@ -966,6 +1009,12 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     // Grooos câlin (Ancient): 4 cards chosen out of the deck when obtained.
     if (relic_id == "BIIIG_HUG" && has_relic("BIIIG_HUG")) request_deck_choice(DeckChoiceKind::REMOVE, 4);
+    // Bracelet brillant (Ancient): 4 cards chosen in the deck are enchanted with Swift 2.
+    if (relic_id == "BEAUTIFUL_BRACELET" && has_relic("BEAUTIFUL_BRACELET"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 4, false, false, CardId::NONE, Enchantment::SWIFT, 2);
+    // Crevaite électrique (Ancient): one Skill chosen in the deck is enchanted with Imbued when obtained.
+    if (relic_id == "ELECTRIC_SHRYMP" && has_relic("ELECTRIC_SHRYMP"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 1, false, false, CardId::NONE, Enchantment::IMBUED);
     if (relic_id == "EMPTY_CAGE" && has_relic("EMPTY_CAGE")) request_deck_choice(DeckChoiceKind::REMOVE, 2);
     // Precarious Shears (Ancient): 2 cards chosen out of the deck, then 16 HP lost, never below 1.
     if (relic_id == "PRECARIOUS_SHEARS" && has_relic("PRECARIOUS_SHEARS")) {
@@ -1236,10 +1285,13 @@ void RunManager::add_potion_slots(int count) {
     potion_slots = static_cast<uint8_t>(std::min<int>(MAX_POTION_SLOTS, potion_slots + count));
 }
 
-void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool optional, bool upgrade_result, CardId transform_into) {
+void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool optional, bool upgrade_result, CardId transform_into,
+                                    Enchantment enchantment, uint8_t enchant_amount) {
     deck_choice = {};
     if (kind == DeckChoiceKind::NONE || count <= 0) return;
     deck_choice.kind = kind;
+    deck_choice.enchantment = enchantment;
+    deck_choice.enchant_amount = enchant_amount;
     int candidates = 0;
     for (size_t i = 0; i < master_deck.size(); ++i) {
         if (deck_choice_allows(static_cast<int>(i))) ++candidates;
@@ -1266,6 +1318,10 @@ bool RunManager::deck_choice_allows(int deck_index) const {
         case DeckChoiceKind::UPGRADE: return !master_deck[deck_index].upgraded;
         case DeckChoiceKind::REMOVE:
         case DeckChoiceKind::TRANSFORM: return !CardDef::is_eternal(master_deck[deck_index]);
+        case DeckChoiceKind::ENCHANT:
+            // Imbued is only ever offered on a Skill (Electric Shrymp).
+            if (deck_choice.enchantment == Enchantment::IMBUED && CardDef::get(master_deck[deck_index].id).type != CardType::SKILL) return false;
+            return can_enchant(master_deck[deck_index], deck_choice.enchantment);
         default: return false;
     }
 }
@@ -1285,13 +1341,15 @@ bool RunManager::resolve_deck_choice(int deck_index) {
             break;
         }
         case DeckChoiceKind::TRANSFORM: done = transform_card_in_deck(deck_index, deck_choice.upgrade_result, deck_choice.transform_into); break;
+        case DeckChoiceKind::ENCHANT: done = enchant_card_in_deck(deck_index, deck_choice.enchantment, deck_choice.enchant_amount); break;
         default: break;
     }
     if (!done) return false;
 
     // The cards left may not allow as many picks as asked (deck emptied, everything upgraded).
     DeckChoice next = deck_choice;
-    request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result, next.transform_into);
+    request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result, next.transform_into,
+                      next.enchantment, next.enchant_amount);
     finish_preserved_fog();
     finish_cook();
     return true;
