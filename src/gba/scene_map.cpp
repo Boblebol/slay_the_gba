@@ -168,6 +168,7 @@ private:
     Label _hp;
     Label _gold_label;
     Label _floor;
+    Label _ascension;
     Label _route;
     Label _hints;
     Label _toast;
@@ -355,6 +356,13 @@ private:
         text.clear();
         stream << "Acte " << int(_run.current_act) << " - Étage " << _ctx.nav.get_current_floor() << "/16";
         _floor.set(114, -72, text, Align::RIGHT, TextColor::WHITE);
+
+        if(_run.ascension_level > 0)
+        {
+            text.clear();
+            stream << "Ascension " << int(_run.ascension_level);
+            _ascension.set(114, -62, text, Align::RIGHT, TextColor::GRAY);
+        }
     }
 
     void _refresh_route_text()
