@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 85,8 %** — 1060 faits, 17 partiels, 169 à faire (35 hors périmètre).
+**Avancement global : 86,9 %** — 1074 faits, 17 partiels, 155 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
-| [Reliques et potions](#reliques) | 284 | 0 | 37 | 88,5 % |
+| [Reliques et potions](#reliques) | 285 | 0 | 36 | 88,8 % |
 | [Bestiaire](#bestiaire) | 66 | 1 | 37 | 63,9 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 46 | 0 | 13 | 78,0 % |
+| [Règles de combat](#regles) | 59 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 28 | 2 | 6 | 80,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1060** | **17** | **169** | **85,8 %** |
+| **Total** | **1074** | **17** | **155** | **86,9 %** |
 
 <a id="ironclad"></a>
 
@@ -859,11 +859,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 88,5 %
+## Reliques et potions — 88,8 %
 
-### Reliques partagées — 89,7 %
+### Reliques partagées — 90,6 %
 
-105 faits, 0 partiel, 12 à faire.
+106 faits, 0 partiel, 11 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -960,7 +960,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Aile fétiche | Boutique | Non |  |
 | Boucle de ceinture | Boutique | Oui |  |
 | Boîte à outils | Boutique | Oui |  |
-| Briquet mystique | Boutique | Non |  |
+| Briquet mystique | Boutique | Oui |  |
 | Bâtonnets enflammés | Boutique | Oui |  |
 | Carte de fidélité | Boutique | Oui |  |
 | Chaudron | Boutique | Oui |  |
@@ -1424,7 +1424,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regles"></a>
 
-## Règles de combat — 78,0 %
+## Règles de combat — 100,0 %
 
 ### Déroulement du combat — 100,0 %
 
@@ -1493,25 +1493,25 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Injouable |  | Oui |  |
 | Éternel |  | Oui | [#95](https://github.com/Boblebol/slay_the_gba/issues/95) |
 
-### Enchantements — 0,0 %
+### Enchantements — 100,0 %
 
-0 fait, 0 partiel, 13 à faire.
+13 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Adroit |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Agilité |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Braise de Tezcatara |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Célérité |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Clonage |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Élan |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Encrée |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Glamour |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Imprégnation |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Instinct |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Sceau royal |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Tranchant |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
-| Viscosité |  | Non | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Adroit |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Agilité |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Braise de Tezcatara |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Célérité |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Clonage |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Élan |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Encrée |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Glamour |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Imprégnation |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Instinct |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Sceau royal |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Tranchant |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Viscosité |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
 
 <a id="systemes"></a>
 
