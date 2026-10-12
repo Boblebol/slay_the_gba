@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 88,6 %** — 1097 faits, 16 partiels, 134 à faire (35 hors périmètre).
+**Avancement global : 88,7 %** — 1098 faits, 16 partiels, 133 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -24,9 +24,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Bestiaire](#bestiaire) | 72 | 1 | 31 | 69,7 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
-| [Systèmes de jeu](#systemes) | 30 | 1 | 5 | 84,7 % |
+| [Systèmes de jeu](#systemes) | 31 | 1 | 4 | 87,5 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1097** | **16** | **134** | **88,6 %** |
+| **Total** | **1098** | **16** | **133** | **88,7 %** |
 
 <a id="ironclad"></a>
 
@@ -1516,11 +1516,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 84,7 %
+## Systèmes de jeu — 87,5 %
 
-### La Tour — 50,0 %
+### La Tour — 64,3 %
 
-3 faits, 1 partiel, 3 à faire.
+4 faits, 1 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1530,7 +1530,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Rencontres propres à chaque acte (81 rencontres du jeu d'origine) |  | Partiel | Tables par acte et par salle (faible, normale, élite, boss), acte 1 en variante A ou B : 5 rencontres d'origine jouables, les anciens groupes ailleurs. [#225](https://github.com/Boblebol/slay_the_gba/issues/225) |
 | Un boss différent par acte |  | Non | [#36](https://github.com/Boblebol/slay_the_gba/issues/36) |
 | Neow en début de partie |  | Non | [#6](https://github.com/Boblebol/slay_the_gba/issues/6) |
-| Bénédiction d'un Ancien entre les actes |  | Non | La phase existe dans le moteur mais elle est sautée. [#261](https://github.com/Boblebol/slay_the_gba/issues/261) |
+| Bénédiction d'un Ancien entre les actes |  | Oui | Au début des actes 2 et 3, un Ancien de l'acte (Darv à tout acte) propose 3 reliques, une à prendre. Les reliques dont l'effet manque ne sont pas proposées. [#261](https://github.com/Boblebol/slay_the_gba/issues/261) |
 
 ### Récompenses — 100,0 %
 
