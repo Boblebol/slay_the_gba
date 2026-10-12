@@ -74,6 +74,7 @@ constexpr Encounter ACT2_NORMAL[] = {
 constexpr Encounter ACT3_WEAK[] = {
     { "DevotedSculptorWeak"sv, 1, { EnemyType::DEVOTED_SCULPTOR } },
     { "TurretOperatorWeak"sv, 2, { EnemyType::LIVING_SHIELD, EnemyType::TURRET_OPERATOR } },
+    { "ScrollsOfBitingWeak"sv, 3, { EnemyType::SCROLL_OF_BITING, EnemyType::SCROLL_OF_BITING, EnemyType::SCROLL_OF_BITING } },
 };
 constexpr Encounter ACT3_NORMAL[] = {
     { "SlimedBerserkerNormal"sv, 1, { EnemyType::SLIMED_BERSERKER } },
@@ -83,6 +84,7 @@ constexpr Encounter ACT3_NORMAL[] = {
     { "AxebotsNormal"sv, 1, { EnemyType::AXEBOT } },
     { "FabricatorNormal"sv, 1, { EnemyType::FABRICATOR } },
     { "OwlMagistrateNormal"sv, 1, { EnemyType::OWL_MAGISTRATE } },
+    { "ScrollsOfBitingNormal"sv, 4, { EnemyType::SCROLL_OF_BITING, EnemyType::SCROLL_OF_BITING, EnemyType::SCROLL_OF_BITING, EnemyType::SCROLL_OF_BITING } },
     { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
     { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
     { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },

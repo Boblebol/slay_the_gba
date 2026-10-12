@@ -436,8 +436,12 @@ enum class EnemyType : uint8_t {
     OVICOPTER,   // Act 2
     FABRICATOR,  // Act 3
     SHRINKER_BEETLE, // Act 1 (A)
-    OWL_MAGISTRATE   // Act 3
+    OWL_MAGISTRATE,  // Act 3
+    SCROLL_OF_BITING // Act 3
 };
+
+// Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
+constexpr uint8_t MAX_ENEMIES = 6;
 
 // What a monster sees of the fight when it chooses its next move.
 struct PlanContext {

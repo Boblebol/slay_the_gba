@@ -100,6 +100,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::FABRICATOR: return "FABRICATOR";
         case EnemyType::SHRINKER_BEETLE: return "SHRINKER_BEETLE";
         case EnemyType::OWL_MAGISTRATE: return "OWL_MAGISTRATE";
+        case EnemyType::SCROLL_OF_BITING: return "SCROLL_OF_BITING";
     }
     return {};
 }
@@ -193,8 +194,8 @@ void test_tables_use_existing_monsters_with_a_sprite() {
             assert(!table.empty());
             assert(ids_of(table).size() == table.size()); // no encounter listed twice
             for (const Encounter& encounter : table) {
-                // The GBA shows up to three enemies (bn::vector<EnemyView, 3> in scene_combat.cpp).
-                assert(encounter.count >= 1 && encounter.count <= 3);
+                // A fight holds up to MAX_ENEMIES enemies (CombatEngine::enemies, and their places on the GBA).
+                assert(encounter.count >= 1 && encounter.count <= MAX_ENEMIES);
                 assert(encounter.random_pool.empty() || encounter.random_pool.size() >= encounter.count);
                 for (EnemyType type : possible_monsters(encounter)) {
                     assert(!enemy_identifier(type).empty());
@@ -208,7 +209,7 @@ void test_tables_use_existing_monsters_with_a_sprite() {
             }
         }
     }
-    std::cout << "[PASS] Encounter tables: existing monsters, 1 to 3 per fight, a sprite each" << std::endl;
+    std::cout << "[PASS] Encounter tables: existing monsters, 1 to 6 per fight, a sprite each" << std::endl;
 }
 
 void test_reference_encounters() {
@@ -245,15 +246,23 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "TunnelerWeak", "BowlbugsWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::WEAK)) ==
-           (std::set<std::string_view>{ "DevotedSculptorWeak", "TurretOperatorWeak" }));
+           (std::set<std::string_view>{ "DevotedSculptorWeak", "TurretOperatorWeak", "ScrollsOfBitingWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal", "ChompersNormal", "TunnelerNormal",
                                         "LouseProgenitorNormal", "TheObscuraNormal", "OvicopterNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "SlimedBerserkerNormal", "FrogKnightNormal", "GlobeHeadNormal",
                                         "TheLostAndForgottenNormal", "AxebotsNormal", "FabricatorNormal",
-                                        "OwlMagistrateNormal", "LegacyCultistAndLouse", "LegacyJawWorm",
-                                        "LegacyLice" }));
+                                        "OwlMagistrateNormal", "ScrollsOfBitingNormal", "LegacyCultistAndLouse",
+                                        "LegacyJawWorm", "LegacyLice" }));
+    // Four Scrolls of Biting: the first encounter with more than three monsters.
+    const Encounter& scrolls = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::NORMAL),
+                                              "ScrollsOfBitingNormal");
+    assert(scrolls.count == 4);
+    for (uint8_t i = 0; i < scrolls.count; ++i) assert(scrolls.monsters[i] == EnemyType::SCROLL_OF_BITING);
+    const Encounter& weak_scrolls = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::WEAK),
+                                                   "ScrollsOfBitingWeak");
+    assert(weak_scrolls.count == 3 && weak_scrolls.monsters[2] == EnemyType::SCROLL_OF_BITING);
     const Encounter& chompers = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::NORMAL),
                                                "ChompersNormal");
     assert(chompers.count == 2 && chompers.monsters[0] == EnemyType::CHOMPER && chompers.monsters[1] == EnemyType::CHOMPER);
