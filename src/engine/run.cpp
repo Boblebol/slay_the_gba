@@ -549,7 +549,13 @@ uint32_t RunManager::reward_seed() const {
            (static_cast<uint32_t>(current_node_index + 1) * 0xC2B2AE35u);
 }
 
-void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity, bool elite) {
+CharacterId RunManager::random_other_hero() {
+    auto pick = static_cast<uint8_t>(next_random() % (static_cast<uint8_t>(CharacterId::COUNT) - 1));
+    if (pick >= static_cast<uint8_t>(character)) ++pick;
+    return static_cast<CharacterId>(pick);
+}
+
+void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity, bool elite, CharacterId hero) {
     // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked. Without one, each card
     // rolls its own rarity (more Rare ones after an elite); a boss gives Rare cards only.
     if (boss && rarity == CardRarity::NONE) rarity = CardRarity::RARE;
@@ -565,14 +571,15 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity,
         CardRarity of = card_meta(id).rarity;
         return rarity == CardRarity::NONE ? of != CardRarity::BASIC : of == rarity;
     };
-    for (CardId id : card_reward_pool(character)) {
+    const CharacterId from = hero == CharacterId::COUNT ? character : hero;
+    for (CardId id : card_reward_pool(from)) {
         if (keep(id)) candidates.push_back(id);
     }
     // Prismatic Gem: the other heroes' pools are added too (the pools do not overlap).
     if (has_relic("PRISMATIC_GEM")) {
-        for (uint8_t hero = 0; hero < static_cast<uint8_t>(CharacterId::COUNT); ++hero) {
-            if (static_cast<CharacterId>(hero) == character) continue;
-            for (CardId id : card_reward_pool(static_cast<CharacterId>(hero))) {
+        for (uint8_t other = 0; other < static_cast<uint8_t>(CharacterId::COUNT); ++other) {
+            if (static_cast<CharacterId>(other) == from) continue;
+            for (CardId id : card_reward_pool(static_cast<CharacterId>(other))) {
                 if (keep(id)) candidates.push_back(id);
             }
         }
@@ -712,6 +719,13 @@ void RunManager::next_card_reward_or_finish() {
         --extra_rare_card_rewards;
         RewardRng rng(next_random());
         draw_card_rewards(false, rng, CardRarity::RARE);
+        return;
+    }
+    // Kaleidoscope: one more set of cards from another hero.
+    if (extra_other_hero_card_rewards > 0) {
+        --extra_other_hero_card_rewards;
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng, CardRarity::NONE, false, random_other_hero());
         return;
     }
     // The Hunt: one more set of cards is offered before the rewards are over.
@@ -878,6 +892,13 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         extra_card_rewards = static_cast<uint8_t>(extra_card_rewards + 4);
         RewardRng rng(next_random());
         draw_card_rewards(false, rng);
+        phase = RunPhase::REWARD_SCREEN;
+    }
+    // Kaleidoscope (Ancient): 2 card rewards, each drawn from the pool of another hero. The first set is offered now.
+    if (relic_id == "KALEIDOSCOPE" && has_relic("KALEIDOSCOPE")) {
+        extra_other_hero_card_rewards = static_cast<uint8_t>(extra_other_hero_card_rewards + 1);
+        RewardRng kaleidoscope_rng(next_random());
+        draw_card_rewards(false, kaleidoscope_rng, CardRarity::NONE, false, random_other_hero());
         phase = RunPhase::REWARD_SCREEN;
     }
     // Hefty Tablet (Ancient): an Injury joins the deck, then 1 Rare card is chosen out of 3 on the card reward screen.

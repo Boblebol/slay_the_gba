@@ -164,6 +164,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "ARCANE_SCROLL", "Lorsque vous obtenez cette relique, ajoutez une Carte Rare aléatoire à votre Deck." },
     { "HEFTY_TABLET", "Lorsque vous obtenez cette relique, choisissez 1 carte Rare parmi 3 et ajoutez 1 Blessure à votre Deck." },
     { "LEAFY_POULTICE", "Lorsque vous obtenez cette relique, Transformez 1 Frappe et 1 Défense et perdez 12 PV Max." },
+    { "KALEIDOSCOPE", "Lorsque vous obtenez cette relique, recevez 2 récompenses de cartes d'autres personnages." },
     { "LOST_COFFER", "Lorsque vous obtenez cette relique, gagnez 1 récompense de carte et obtenez 1 Potion aléatoire." },
     { "LEAD_PAPERWEIGHT", "Lorsque vous obtenez cette relique, choisissez 1 carte Incolore parmi 2 à ajouter à votre Deck." },
     { "BLACK_BLOOD", "À la fin de chaque combat, récupérez 12 PV." },

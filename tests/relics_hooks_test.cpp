@@ -3594,6 +3594,31 @@ void test_leafy_poultice() {
     std::cout << "[PASS] Leafy Poultice: a Strike and a Defend transformed, 12 Max HP lost" << std::endl;
 }
 
+void test_kaleidoscope() {
+    // Obtained from Neow: 2 card rewards in a row, each one from the pool of another hero, then the rewards end.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 703);
+    size_t deck = run.master_deck.size();
+    run.add_relic("KALEIDOSCOPE");
+    assert(run.has_relic("KALEIDOSCOPE"));
+    for (int set = 0; set < 2; ++set) {
+        assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+        for (DeckCard card : run.current_card_rewards) {
+            const CardPool pool = card_meta(card.id).pool;
+            assert(pool != CardPool::IRONCLAD && pool != CardPool::COLORLESS);
+        }
+        run.pick_card_reward(0);
+    }
+    assert(run.master_deck.size() == deck + 2 && run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, no card reward is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 703);
+    plain.add_relic("ANCHOR");
+    assert(plain.current_card_rewards.empty() && plain.phase != RunPhase::REWARD_SCREEN);
+    std::cout << "[PASS] Kaleidoscope: 2 card rewards from other heroes on pickup" << std::endl;
+}
+
 void test_white_star() {
     // With the relic, an Elite offers one more set of Rare cards once its first set is taken or skipped.
     RunManager run;
@@ -4590,5 +4615,6 @@ int main() {
     test_glitter();
     test_hefty_tablet();
     test_leafy_poultice();
+    test_kaleidoscope();
     return 0;
 }
