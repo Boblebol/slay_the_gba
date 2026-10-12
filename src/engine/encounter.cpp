@@ -64,6 +64,8 @@ constexpr Encounter ACT2_NORMAL[] = {
     { "ChompersNormal"sv, 2, { EnemyType::CHOMPER, EnemyType::CHOMPER } },
     { "TunnelerNormal"sv, 2, { EnemyType::CHOMPER, EnemyType::TUNNELER } },
     { "LouseProgenitorNormal"sv, 1, { EnemyType::LOUSE_PROGENITOR } },
+    { "TheObscuraNormal"sv, 1, { EnemyType::THE_OBSCURA } },
+    { "OvicopterNormal"sv, 1, { EnemyType::OVICOPTER } },
 };
 
 // Act 3: the Glory. The groups the game had before stay beside them: the Louse and the Jaw Worm are met there.
@@ -77,6 +79,7 @@ constexpr Encounter ACT3_NORMAL[] = {
     { "GlobeHeadNormal"sv, 1, { EnemyType::GLOBE_HEAD } },
     { "TheLostAndForgottenNormal"sv, 2, { EnemyType::THE_FORGOTTEN, EnemyType::THE_LOST } },
     { "AxebotsNormal"sv, 1, { EnemyType::AXEBOT } },
+    { "FabricatorNormal"sv, 1, { EnemyType::FABRICATOR } },
     { "LegacyCultistAndLouse"sv, 2, { EnemyType::CULTIST, EnemyType::LOUSE } },
     { "LegacyJawWorm"sv, 1, { EnemyType::JAW_WORM } },
     { "LegacyLice"sv, 2, { EnemyType::LOUSE, EnemyType::LOUSE } },

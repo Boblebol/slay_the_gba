@@ -2341,6 +2341,81 @@ void test_phrog_parasite_ascension() {
     std::cout << "[PASS] Phrog Parasite: Ascension gives 66 HP minimum and a Lash of 5x4" << std::endl;
 }
 
+bool is_fabricator_bot(EnemyType type) {
+    return type == EnemyType::STABBOT || type == EnemyType::NOISEBOT || type == EnemyType::ZAPBOT ||
+           type == EnemyType::GUARDBOT;
+}
+
+void test_fabricator() {
+    // 150 HP. With room for a bot: Fabricate (summons one bot) or Fabricating Strike (18 and one bot), 1 in 2.
+    // With 3 enemies alive: Disintegrate 11.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FABRICATOR);
+    Enemy& fabricator = combat.enemies[0];
+    assert(fabricator.name == "Machiniste" && fabricator.hp == 150 && fabricator.max_hp == 150);
+    bool fabricate = false, strike = false, disintegrate = false;
+    for (int turn = 0; turn < 40; ++turn) {
+        combat.player.hp = combat.player.max_hp = 999;
+        for (size_t i = 1; i < combat.enemies.size(); ++i) combat.enemies[i].hp = 0;
+        if (turn % 4 == 3) {
+            // Two bots in the fight: no room left, Disintegrate, then it fabricates again.
+            while (combat.enemies.size() < 3) combat.summon_enemy(EnemyType::ZAPBOT, 0);
+            for (size_t i = 1; i < combat.enemies.size(); ++i) combat.enemies[i].hp = combat.enemies[i].max_hp;
+            combat.plan_enemies();
+            assert(fabricator.current_intent.type == ATTACK && fabricator.current_intent.summons == 0);
+            assert(fabricator.intent_damage(combat.player) == 11);
+            disintegrate = true;
+            continue;
+        }
+        combat.plan_enemies();
+        const EnemyIntent intent = fabricator.current_intent;
+        assert(intent.summons == 1 && intent.summon_minions && is_fabricator_bot(intent.summon_type));
+        if (intent.type == SUMMON) {
+            fabricate = true;
+            assert(fabricator.intent_damage(combat.player) == 0);
+        } else {
+            strike = true;
+            assert(intent.type == ATTACK && fabricator.intent_damage(combat.player) == 18);
+        }
+        const size_t before = combat.count_alive_enemies();
+        const int16_t hp = combat.player.hp;
+        combat.end_player_turn();
+        assert(combat.count_alive_enemies() == before + 1);
+        // The bot is a Minion of the Fabricator and has not acted yet: only a Strike hurt the player.
+        const uint8_t summoned = combat.last_enemy_actions[0].summoned;
+        assert(summoned != 0 && (summoned & (summoned - 1)) == 0);
+        size_t slot = 0;
+        while (!(summoned & (1u << slot))) ++slot;
+        const Enemy& bot = combat.enemies[slot];
+        assert(bot.minion && bot.leader == 0 && bot.type == intent.summon_type);
+        assert(combat.player.hp == hp - (intent.type == SUMMON ? 0 : 18));
+    }
+    assert(fabricate && strike && disintegrate);
+    std::cout << "[PASS] Fabricator: 150 HP, Fabricate and Fabricating Strike bring a bot, Disintegrate 11 without room" << std::endl;
+}
+
+void test_fabricator_ascension() {
+    // 155 HP, Fabricating Strike 21 and Disintegrate 13 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FABRICATOR);
+    Enemy& fabricator = combat.enemies[0];
+    assert(fabricator.ascension_hp() == 155);
+    fabricator.ascend(true, true);
+    assert(fabricator.hp == 155 && fabricator.max_hp == 155);
+    bool strike = false;
+    for (int turn = 0; turn < 20 && !strike; ++turn) {
+        for (size_t i = 1; i < combat.enemies.size(); ++i) combat.enemies[i].hp = 0;
+        combat.plan_enemies();
+        if (fabricator.current_intent.type == ATTACK) {
+            strike = true;
+            assert(fabricator.intent_damage(combat.player) == 21);
+        }
+    }
+    assert(strike);
+    while (combat.enemies.size() < 3) combat.summon_enemy(EnemyType::ZAPBOT, 0);
+    combat.plan_enemies();
+    assert(fabricator.current_intent.type == ATTACK && fabricator.intent_damage(combat.player) == 13);
+    std::cout << "[PASS] Fabricator: Ascension gives 155 HP, Strike 21 and Disintegrate 13" << std::endl;
+}
+
 void test_tough_egg() {
     // Hatch on its first turn, which does nothing to the player, then Nibble 4 every turn. Its HP are drawn
     // between 14 and 18 at the start of the fight.
@@ -2372,6 +2447,155 @@ void test_tough_egg_ascension() {
         assert(egg.current_intent.type == ATTACK && egg.intent_damage(combat.player) == 5);
     }
     std::cout << "[PASS] Tough Egg: Ascension gives 15 to 19 HP and a Nibble of 5" << std::endl;
+}
+
+void test_the_obscura() {
+    // Illusion (a Parafright joins as a Minion) first, then Hardening Strike 6 (6 Block), then a draw among
+    // Piercing Gaze 10, Sail and Hardening Strike that never repeats the move just played.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THE_OBSCURA);
+    Enemy& obscura = combat.enemies[0];
+    assert(obscura.type == EnemyType::THE_OBSCURA && obscura.name == "L'Obscura");
+    assert(obscura.hp == 123 && obscura.max_hp == 123 && obscura.block == 0 && obscura.statuses.empty());
+    assert(obscura.current_intent.type == SUMMON && obscura.current_intent.summon_type == EnemyType::PARAFRIGHT &&
+           obscura.current_intent.summons == 1 && obscura.intent_damage(combat.player) == 0);
+    combat.end_player_turn();
+    assert(combat.enemies.size() == 2 && combat.enemies[1].type == EnemyType::PARAFRIGHT);
+    assert(combat.enemies[1].minion && combat.enemies[1].leader == 0 && combat.enemies[1].hp == 21);
+
+    bool gaze = false, sail = false, strike = false;
+    int previous = -1;
+    for (int turn = 2; turn <= 40; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.player.block = 0;
+        obscura.block = 0;
+        int kind;
+        if (obscura.current_intent.type == ATTACK) {
+            assert(obscura.intent_damage(combat.player) == 10);
+            kind = 1;
+            gaze = true;
+        } else if (obscura.current_intent.type == BUFF) {
+            kind = 2;
+            sail = true;
+        } else {
+            assert(obscura.current_intent.type == ATTACK_DEFEND && obscura.intent_damage(combat.player) == 6 &&
+                   obscura.current_intent.block == 6);
+            kind = 3;
+            strike = true;
+        }
+        if (turn == 2) assert(kind == 3);
+        assert(kind != previous);
+        previous = kind;
+        combat.end_player_turn();
+        if (kind == 3) assert(obscura.block == 6);
+    }
+    assert(gaze && sail && strike);
+    std::cout << "[PASS] The Obscura: 123 HP, Illusion, then Hardening Strike and a draw without repeats" << std::endl;
+}
+
+void test_the_obscura_ascension() {
+    // 129 HP, Piercing Gaze 11 and Hardening Strike 7 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THE_OBSCURA);
+    Enemy& obscura = combat.enemies[0];
+    obscura.ascend(true, true);
+    combat.plan_enemies();
+    assert(obscura.hp == 129 && obscura.max_hp == 129);
+    assert(obscura.current_intent.type == SUMMON);
+    bool gaze = false, strike = false;
+    for (int turn = 2; turn <= 40 && !(gaze && strike); ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        if (obscura.current_intent.type == ATTACK) {
+            assert(obscura.intent_damage(combat.player) == 11);
+            gaze = true;
+        } else if (obscura.current_intent.type == ATTACK_DEFEND) {
+            assert(obscura.intent_damage(combat.player) == 7);
+            strike = true;
+        }
+    }
+    assert(gaze && strike);
+    std::cout << "[PASS] The Obscura: Ascension gives 129 HP, a Gaze of 11 and a Strike of 7" << std::endl;
+}
+
+void test_ovicopter() {
+    // Lay Eggs (a Tough Egg, Minion of it), Smash 16, Tenderizer 7 with 2 Vulnerable, and again while there is room
+    // for an egg; with two eggs already in the fight, Nutritional Paste (+3 Strength) takes the place of Lay Eggs.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::OVICOPTER);
+    Enemy& bird = combat.enemies[0];
+    assert(bird.name == "Ovicoptère" && bird.hp >= 124 && bird.hp <= 130 && bird.hp == bird.max_hp);
+    assert(bird.hp_spread() == 6 && bird.max_hp == 124 + bird.hp_bonus);
+    const int16_t hp = bird.hp;
+    combat.player.max_hp = combat.player.hp = 500;
+    auto play = [&]() {
+        combat.player.hp = combat.player.max_hp;
+        combat.player.block = 0;
+        combat.player.statuses.clear(); // Vulnerable would raise the damage seen
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+    };
+    // Turn 1: Lay Eggs, which hurts nobody and brings a Minion egg in.
+    assert(bird.current_intent.type == SUMMON && bird.current_intent.summons == 1);
+    assert(bird.current_intent.summon_type == EnemyType::TOUGH_EGG && bird.current_intent.summon_minions);
+    assert(bird.intent_damage(combat.player) == 0);
+    play();
+    assert(combat.enemies.size() == 2 && combat.enemies[1].type == EnemyType::TOUGH_EGG);
+    assert(combat.enemies[1].minion && combat.enemies[1].leader == 0);
+    // Turn 2: Smash 16.
+    assert(bird.current_intent.type == ATTACK && bird.intent_damage(combat.player) == 16);
+    play();
+    // Turn 3: Tenderizer 7 and 2 Vulnerable.
+    assert(bird.current_intent.type == ATTACK_DEBUFF && bird.intent_damage(combat.player) == 7);
+    play();
+    assert(combat.player.get_status(StatusType::VULNERABLE) == 2);
+    // Turn 4: one egg in the fight, room for another: Lay Eggs again.
+    assert(bird.current_intent.type == SUMMON);
+    play();
+    assert(combat.count_alive_enemies() == 3);
+    play(); // Smash
+    play(); // Tenderizer
+    // Turn 7: three enemies, no room: Nutritional Paste.
+    assert(combat.turn_number == 7);
+    assert(bird.current_intent.type == BUFF && bird.current_intent.status_type == StatusType::STRENGTH);
+    assert(bird.current_intent.status_amount == 3 && bird.intent_damage(combat.player) == 0);
+    play();
+    assert(bird.get_status(StatusType::STRENGTH) == 3 && bird.hp == hp && bird.block == 0);
+    // Then Smash 16 + 3 and Tenderizer 7 + 3.
+    assert(bird.current_intent.type == ATTACK && bird.intent_damage(combat.player) == 19);
+    play();
+    assert(bird.current_intent.type == ATTACK_DEBUFF && bird.intent_damage(combat.player) == 10);
+    // Eggs dead: the next cycle lays again.
+    play();
+    for (size_t i = 1; i < combat.enemies.size(); ++i) combat.enemies[i].hp = 0;
+    combat.plan_enemies();
+    assert(bird.current_intent.type == SUMMON);
+    std::cout << "[PASS] Ovicopter: Lay Eggs, Smash 16, Tenderizer 7 + Vulnerable, Nutritional Paste when full" << std::endl;
+}
+
+void test_ovicopter_ascension() {
+    // 126 to 132 HP, Smash 17, Tenderizer 8 and Nutritional Paste of 4 Strength at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::OVICOPTER);
+        Enemy& bird = combat.enemies[0];
+        bird.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        int16_t base = bird.hp;
+        assert(bird.ascension_hp() == 126 && base >= 124 && base <= 130);
+        bird.ascend(true, true);
+        combat.plan_enemies();
+        assert(bird.hp == base + 2 && bird.max_hp == base + 2 && bird.hp >= 126 && bird.hp <= 132);
+        assert(bird.current_intent.type == SUMMON);
+        combat.player.hp = combat.player.max_hp = 500;
+        combat.end_player_turn();
+        assert(bird.current_intent.type == ATTACK && bird.intent_damage(combat.player) == 17);
+        combat.end_player_turn();
+        assert(bird.current_intent.type == ATTACK_DEBUFF && bird.intent_damage(combat.player) == 8);
+    }
+    CombatEngine full = make_combat(CharacterId::IRONCLAD, EnemyType::OVICOPTER);
+    Enemy& bird = full.enemies[0];
+    bird.ascend(true, true);
+    PlanContext crowded;
+    crowded.allies = 2;
+    bird.plan_turn(4, crowded);
+    assert(bird.current_intent.type == BUFF && bird.current_intent.status_amount == 4);
+    std::cout << "[PASS] Ovicopter: Ascension gives 126 to 132 HP, Smash 17, Tenderizer 8, Paste +4" << std::endl;
 }
 
 void test_inklet() {
@@ -3915,8 +4139,14 @@ int main() {
     test_bygone_effigy_ascension();
     test_byrdonis();
     test_byrdonis_ascension();
+    test_fabricator();
+    test_fabricator_ascension();
     test_tough_egg();
     test_tough_egg_ascension();
+    test_the_obscura();
+    test_the_obscura_ascension();
+    test_ovicopter();
+    test_ovicopter_ascension();
     test_phrog_parasite();
     test_wriggler();
     test_wriggler_ascension();
