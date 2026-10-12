@@ -105,12 +105,14 @@ jobs:
             echo
             echo "## Changements"
             if [ -n "$LAST" ]; then
-              git log --no-merges --pretty='- %s' "$LAST"..HEAD -- . ':!site' ':!AVANCEMENT.md' ':!VERSION'
+              git log --no-merges --pretty='- %s' "$LAST".."$GITHUB_SHA" -- . ':!site' ':!AVANCEMENT.md' ':!VERSION'
             else
               echo "- Première version publiée."
             fi
           } > release_notes.md
           prerelease=""
           if [ "${VERSION%%.*}" = "0" ]; then prerelease="--prerelease"; fi
+          # Tag the commit the ROMs were built from, not the rebased HEAD: PRs merged meanwhile are not in these
+          # ROMs, and tagging past them would make the next run believe they were already released.
           gh release create "v$VERSION" slay_*.gba --title "Slay the GBA v$VERSION" --notes-file release_notes.md \
-            --target "$(git rev-parse HEAD)" $prerelease
+            --target "$GITHUB_SHA" $prerelease
