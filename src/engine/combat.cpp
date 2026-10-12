@@ -229,6 +229,40 @@ void CombatEngine::add_enemy_power(int enemy_index, PowerId id, int16_t amount) 
     powers.push_back(power);
 }
 
+int CombatEngine::summon_enemy(EnemyType type, int leader) {
+    size_t slot = enemies.size();
+    if (slot == enemies.capacity()) {
+        // Full: the place of a dead enemy, the first one.
+        slot = 0;
+        while (slot < enemies.size() && enemies[slot].is_alive()) ++slot;
+        if (slot == enemies.size()) return -1;
+    }
+    const uint32_t seed = rng_state_ ^ (0x9E3779B1u * static_cast<uint32_t>(slot + 1)) ^
+                          (0x85EBCA6Bu * static_cast<uint32_t>(turn_number));
+    Enemy summoned;
+    summoned.init(type);
+    summoned.roll_hp(seed);
+    summoned.apply_ascension(enemy_hp_percent, enemy_damage_percent);
+    summoned.reset_pattern(seed ^ 0x27D4EB2Fu);
+    if (leader >= 0 && static_cast<size_t>(leader) < enemies.size()) {
+        summoned.minion = true;
+        summoned.leader = static_cast<int8_t>(leader);
+    }
+    if (slot == enemies.size()) {
+        enemies.push_back(summoned);
+    } else {
+        enemies[slot] = summoned;
+        // What was bound to the dead enemy does not follow the newcomer.
+        for (size_t p = powers.size(); p-- > 0;) {
+            if (powers[p].target == static_cast<int8_t>(slot)) powers.erase(p);
+        }
+        counters.hits_on_enemy[slot] = 0;
+    }
+    alive_mask_ = static_cast<uint8_t>(alive_mask_ | (1u << slot));
+    if (!enemies.empty()) enemy = enemies[0];
+    return static_cast<int>(slot);
+}
+
 int16_t CombatEngine::enemy_power_amount(int enemy_index, PowerId id) const {
     for (const ActivePower& power : powers) {
         if (power.id == id && power.holder == enemy_index) return power.amount;
@@ -262,6 +296,17 @@ void CombatEngine::settle_deaths() {
             for (size_t p = powers.size(); p-- > 0;) {
                 if (powers[p].holder == static_cast<int8_t>(i)) powers.erase(p);
             }
+            // Its Minions flee the fight without it. Those already passed by this loop are settled again.
+            bool minion_before = false;
+            for (size_t m = 0; m < enemies.size(); ++m) {
+                Enemy& follower = enemies[m];
+                if (!follower.minion || follower.leader != static_cast<int8_t>(i) || !follower.is_alive()) continue;
+                follower.escaped = true;
+                follower.hp = 0;
+                follower.block = 0;
+                minion_before = minion_before || m < i;
+            }
+            if (minion_before) settle_deaths();
             // An enemy that ran away is not a kill: it keeps what it stole and nothing reacts to its death.
             if (enemies[i].escaped) continue;
             // What it stole from the player comes back.
@@ -6535,7 +6580,13 @@ void CombatEngine::end_player_turn() {
 
 void CombatEngine::execute_enemy_turn() {
     last_enemy_actions.clear();
+    // The enemies summoned during this turn only act from the next one.
+    uint8_t to_act = 0;
     for (size_t i = 0; i < enemies.size(); ++i) {
+        if (enemies[i].is_alive()) to_act = static_cast<uint8_t>(to_act | (1u << i));
+    }
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        if (!(to_act & (1u << i))) continue;
         // Poison hits at the start of the poisoned enemy's turn and can kill it before it acts.
         for (int16_t tick = power_amount(PowerId::ACCELERANT); tick >= 0 && enemies[i].is_alive(); --tick) {
             enemies[i].apply_poison_tick();
@@ -6581,6 +6632,15 @@ void CombatEngine::execute_enemy_turn() {
                 record.cards_added = played.status_card;
                 record.cards_added_count =
                     static_cast<uint8_t>(draw_pile.size() + hand.size() + discard_pile.size() - before);
+            }
+            // The enemies the move summons, while there is room for them.
+            if (played.summons > 0 && enemies[i].is_alive() && player.is_alive()) {
+                for (uint8_t n = 0; n < played.summons; ++n) {
+                    const int slot = summon_enemy(played.summon_type, played.summon_minions ? static_cast<int>(i) : -1);
+                    if (slot < 0) break;
+                    record.summoned = static_cast<uint8_t>(record.summoned | (1u << slot));
+                    to_act = static_cast<uint8_t>(to_act & ~(1u << slot));
+                }
             }
             // The Rock Bowlbug is thrown off balance by an attack the player's Block took in full.
             if (enemies[i].type == EnemyType::BOWLBUG_ROCK && played.type == EnemyIntentType::ATTACK &&

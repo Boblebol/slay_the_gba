@@ -221,6 +221,7 @@ MONSTERS: dict[str, str] = {
     "flail_knight": "flail_knight",
     "soul_nexus": "soul_nexus",
     "byrdonis": "byrdonis",
+    "tough_egg": "tough_egg",
     "phrog_parasite": "phrog_parasite",
     "wriggler": "wriggler",
 }

@@ -205,18 +205,10 @@ void RunManager::enter_room(int node_index) {
             combat.player.max_hp = max_hp;
 
             // Ascension: tougher and harder-hitting enemies depending on the room.
-            int16_t hp_percent = get_enemy_hp_multiplier(node.type);
-            int16_t damage_percent = get_enemy_damage_multiplier(node.type);
-            for (Enemy& foe : combat.enemies) {
-                if (foe.ascension_hp() > 0) {
-                    // A monster with its own Ascension values takes them instead of the percentages.
-                    foe.ascend(hp_percent > 100, damage_percent > 100);
-                    continue;
-                }
-                foe.max_hp = static_cast<int16_t>(foe.max_hp * hp_percent / 100);
-                foe.hp = foe.max_hp;
-                foe.damage_percent = damage_percent;
-            }
+            // The enemies summoned during the fight get the same.
+            combat.enemy_hp_percent = get_enemy_hp_multiplier(node.type);
+            combat.enemy_damage_percent = get_enemy_damage_multiplier(node.type);
+            for (Enemy& foe : combat.enemies) foe.apply_ascension(combat.enemy_hp_percent, combat.enemy_damage_percent);
             combat.plan_enemies(); // the moves follow the Ascension values just given
 
             // Replace combat piles with current master deck

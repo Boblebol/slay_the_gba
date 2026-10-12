@@ -96,6 +96,7 @@ items = [
   { name = "Armure remise à zéro au début du tour", status = "oui" },
   { name = "Jusqu'à 3 ennemis par combat, avec ciblage", status = "oui" },
   { name = "Intentions ennemies affichées", status = "oui" },
+  { name = "Invocations ennemies en cours de combat, Sbires qui fuient sans leur chef", status = "oui", issue = 221 },
   { name = "Calcul des dégâts (Force, Affaibli, Vulnérable)", status = "oui" },
   { name = "Modificateurs en pourcentage : dégâts (+25 %, +50 %, double), Armure doublée, Vulnérable et Affaibli renforcés", status = "oui", issue = 89 },
   { name = "Effets qui dépassent le combat : or, potion, récompense de carte, retrait de carte du deck", status = "oui", issue = 94 },

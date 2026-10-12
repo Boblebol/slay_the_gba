@@ -62,6 +62,7 @@ constexpr int ENEMY_TURN_LEAD = 14;
 constexpr int ENEMY_STEP = 30;
 constexpr int ENEMY_STEP_IMPACT = 9;
 constexpr int DEATH_FRAMES = 32;
+constexpr int ARRIVE_FRAMES = 24; // a summoned enemy drops into its place
 // Whispering Earring: frames Vakuu waits before each card he plays, and before he ends the turn.
 constexpr int VAKUU_DELAY = 24;
 
@@ -157,6 +158,7 @@ private:
         int hurt = 0;
         int lunge = 0;
         int death = 0;
+        int arrive = 0;
         bool boss;
         bool gone = false;
         bool intent_visible = true;
@@ -260,6 +262,9 @@ private:
     TextLine _player_status_text;
 
     void _build_enemies();
+    void _create_enemy_parts(EnemyView& view, const EnemyArt& art);
+    void _summon_enemies(int summoner, unsigned summoned);
+    void _layout_enemies();
     void _build_hand(bool deal);
     void _layout_hand();
     void _refresh_card_text();
@@ -426,23 +431,7 @@ void CombatScene::_build_enemies()
         Point slot = enemy_slot(index, count, art.boss);
         int bar_x = slot.x;
         EnemyView& view = _enemies.emplace_back(slot.x, slot.y, bar_x, art.boss);
-
-        if(art.boss)
-        {
-            for(int part = 0; part < 4; ++part)
-            {
-                bn::sprite_ptr sprite = art.item->create_sprite(slot.x + boss_parts[part].x,
-                                                                slot.y + boss_parts[part].y, part);
-                sprite.set_z_order(Z_ACTOR);
-                view.parts.push_back(bn::move(sprite));
-            }
-        }
-        else
-        {
-            bn::sprite_ptr sprite = art.item->create_sprite(slot.x, slot.y);
-            sprite.set_z_order(Z_ACTOR);
-            view.parts.push_back(bn::move(sprite));
-        }
+        _create_enemy_parts(view, art);
 
         if(count >= 3)
         {
@@ -473,6 +462,110 @@ void CombatScene::_build_enemies()
     }
 
     _target = _combat.get_first_alive_enemy_index();
+}
+
+void CombatScene::_create_enemy_parts(EnemyView& view, const EnemyArt& art)
+{
+    view.parts.clear();
+    view.boss = art.boss;
+
+    if(art.boss)
+    {
+        for(int part = 0; part < 4; ++part)
+        {
+            bn::sprite_ptr sprite = art.item->create_sprite(view.x + boss_parts[part].x,
+                                                            view.y + boss_parts[part].y, part);
+            sprite.set_z_order(Z_ACTOR);
+            view.parts.push_back(bn::move(sprite));
+        }
+    }
+    else
+    {
+        bn::sprite_ptr sprite = art.item->create_sprite(view.x, view.y);
+        sprite.set_z_order(Z_ACTOR);
+        view.parts.push_back(bn::move(sprite));
+    }
+}
+
+void CombatScene::_summon_enemies(int summoner, unsigned summoned)
+{
+    int count = int(_combat.enemies.size());
+
+    for(int index = 0; index < count; ++index)
+    {
+        if(! (summoned & (1u << index)))
+        {
+            continue;
+        }
+
+        const engine::Enemy& enemy = _combat.enemies[index];
+        EnemyArt art = enemy_art(enemy.type);
+
+        // A new place at the end of the row, or the place of a dead enemy taken again.
+        while(_enemies.size() <= index)
+        {
+            Point slot = enemy_slot(_enemies.size(), count, art.boss);
+            EnemyView& added = _enemies.emplace_back(slot.x, slot.y, slot.x, art.boss);
+            added.gone = true;
+            added.bar.set_visible(false);
+            added.intent_icon.set_visible(false);
+        }
+
+        EnemyView& view = _enemies[index];
+        _create_enemy_parts(view, art);
+        view.gone = false;
+        view.death = 0;
+        view.hurt = 0;
+        view.lunge = 0;
+        view.arrive = ARRIVE_FRAMES;
+        view.shown_icon = -1;
+        // Its move shows with the others' once the enemy turn is over.
+        view.intent_visible = false;
+        view.intent_icon.set_visible(false);
+        view.bar.set(enemy.hp, enemy.max_hp);
+        view.bar.snap();
+        view.bar.set_visible(true);
+        _snap_hp[index] = enemy.hp;
+        _snap_block[index] = enemy.block;
+    }
+
+    _layout_enemies();
+
+    for(int index = 0; index < _enemies.size(); ++index)
+    {
+        if(summoned & (1u << index))
+        {
+            _fx.spawn(bn::sprite_items::fx_burst, _enemies[index].x, _body_y(_enemies[index]), FX_BUFF, 4, 4);
+        }
+
+        _refresh_enemy_hud(index);
+    }
+
+    if(summoner >= 0 && summoner < _enemies.size())
+    {
+        EnemyView& caller = _enemies[summoner];
+        _popups.spawn(caller.x, _body_y(caller) - 6, "Invocation !", TextColor::GOLD);
+    }
+}
+
+void CombatScene::_layout_enemies()
+{
+    // The row spreads out again when it grows: every enemy moves to its place for the new count.
+    int count = _enemies.size();
+
+    for(int index = 0; index < count; ++index)
+    {
+        EnemyView& view = _enemies[index];
+        Point slot = enemy_slot(index, count, view.boss);
+        view.x = slot.x;
+        view.y = slot.y;
+        view.bar.set_position(slot.x, BAR_Y);
+        view.bar.set_horizontal_scale(count >= 3 ? bn::fixed(0.75) : bn::fixed(1));
+        // The labels under it are written again at the new place.
+        view.status_text = "-";
+        view.shown_block = -1;
+        view.block_icon.reset();
+    }
 }
 
 void CombatScene::_build_hand(bool deal)
@@ -966,6 +1059,14 @@ void CombatScene::_refresh_enemy_hud(int index)
     case engine::EnemyIntentType::DEFEND:
         icon = Icon::DEFEND;
         break;
+    case engine::EnemyIntentType::SUMMON:
+        icon = Icon::UNKNOWN;
+
+        if(intent.summons > 0)
+        {
+            stream << "+" << int(intent.summons);
+        }
+        break;
     default:
         icon = Icon::BUFF;
         break;
@@ -1132,6 +1233,12 @@ void CombatScene::_resolve_diffs(bool attack_card)
         {
             view.death = DEATH_FRAMES;
             killed = true;
+
+            if(enemy.escaped)
+            {
+                // A Minion whose leader just fell.
+                _popups.spawn(view.x, _body_y(view) - 6, "Fuite !", TextColor::GRAY);
+            }
 
             for(bn::sprite_ptr& part : view.parts)
             {
@@ -2296,6 +2403,17 @@ void CombatScene::_update_enemy_turn()
                 play_sfx(Sfx::HEAL);
             }
 
+            if(record.summoned != 0)
+            {
+                _summon_enemies(record.enemy_index, record.summoned);
+                play_sfx(Sfx::BUFF);
+            }
+            else if(record.intent_type == engine::EnemyIntentType::SUMMON)
+            {
+                _fx.spawn(bn::sprite_items::fx_burst, view.x, _body_y(view), FX_BUFF, 4, 4);
+                play_sfx(Sfx::BUFF);
+            }
+
             if(record.intent_type == engine::EnemyIntentType::STUN)
             {
                 _popups.spawn(view.x, _body_y(view) - 6, "Étourdi", TextColor::GRAY);
@@ -2546,6 +2664,21 @@ void CombatScene::_update_enemies()
             x -= reach * 26;
             y -= hop(t, 6);
             --view.lunge;
+        }
+
+        if(view.arrive > 0)
+        {
+            // Drops from above into its place, glowing white until it lands.
+            bn::fixed t = bn::fixed(ARRIVE_FRAMES - view.arrive) / ARRIVE_FRAMES;
+            y -= (1 - ease_out(t)) * 48;
+            bn::sprite_palette_ptr palette = view.parts[0].palette();
+            palette.set_fade(bn::color(31, 31, 31), (1 - t) * bn::fixed(0.75));
+            --view.arrive;
+
+            if(view.arrive == 0)
+            {
+                palette.set_fade(bn::color(), 0);
+            }
         }
 
         if(view.death > 0)

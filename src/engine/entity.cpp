@@ -165,6 +165,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Sphéropode (Œuf)";
         max_hp = 21;
         hp = 21;
+    } else if (type == EnemyType::TOUGH_EGG) {
+        name = "Œuf robuste";
+        max_hp = 14;
+        hp = 14;
     } else if (type == EnemyType::BYRDONIS) {
         name = "Oizodon";
         max_hp = 81;
@@ -327,6 +331,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::PHROG_PARASITE: return 3; // 61 to 64, 66 and up at Ascension
         case EnemyType::BOWLBUG_EGG: return 1; // 21 to 22, 23 to 24 at Ascension
         case EnemyType::BYRDONIS: return 3;    // 81 to 84, always 90 at Ascension
+        case EnemyType::TOUGH_EGG: return 4;   // 14 to 18, 15 to 19 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
         case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
         case EnemyType::BOWLBUG_NECTAR: return 3; // 35 to 38, 36 to 39 at Ascension
@@ -405,6 +410,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::PHROG_PARASITE: return 66;
         case EnemyType::BOWLBUG_EGG: return 23;
         case EnemyType::BYRDONIS: return static_cast<int16_t>(90 - hp_bonus); // ascend() adds hp_bonus back: 90 exactly
+        case EnemyType::TOUGH_EGG: return 15;
         case EnemyType::TOADPOLE: return 22;
         case EnemyType::HUNTER_KILLER: return 126;
         case EnemyType::MAWLER: return 76;
@@ -437,6 +443,16 @@ void Enemy::ascend(bool more_hp, bool more_damage) {
     ascended_damage = more_damage;
     reset_pattern(move_seed);
     plan_turn(1);
+}
+
+void Enemy::apply_ascension(int16_t hp_pct, int16_t damage_pct) {
+    if (ascension_hp() > 0) {
+        ascend(hp_pct > 100, damage_pct > 100);
+        return;
+    }
+    max_hp = static_cast<int16_t>(max_hp * hp_pct / 100);
+    hp = max_hp;
+    damage_percent = damage_pct;
 }
 
 void Enemy::reset_pattern(uint32_t seed) {
@@ -1206,6 +1222,16 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         current_intent.base_damage = ascended_damage ? 8 : 7;
         current_intent.block = 7;
         current_intent.description = "Morsure (7 dmg, 7 blk)";
+    } else if (type == EnemyType::TOUGH_EGG) {
+        // Hatch on its first turn (it does nothing else), then Nibble 4 every turn.
+        if (phase_turn == 1) {
+            current_intent.type = EnemyIntentType::SUMMON;
+            current_intent.description = "Éclosion";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 5 : 4;
+            current_intent.description = "Grignotage (4 dmg)";
+        }
     } else if (type == EnemyType::BYRDONIS) {
         // Swoop (17 damage) then Peck (3 damage x3), and again.
         if (turn_number % 2 == 1) {
