@@ -399,6 +399,13 @@ void SaveManager::record_victory(CharacterId char_id, uint8_t ascension) {
     commit_to_storage();
 }
 
+uint8_t SaveManager::unlocked_ascension(CharacterId char_id) {
+    uint8_t cid = static_cast<uint8_t>(char_id);
+    if (cid >= 5) return 0;
+    uint8_t level = get_active_profile().max_ascension[cid];
+    return level > 10 ? 10 : level;
+}
+
 void SaveManager::record_defeat() {
     SaveProfile& p = get_active_profile();
     p.total_runs++;

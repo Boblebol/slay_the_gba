@@ -168,6 +168,8 @@ public:
 
     // End run bookkeeping
     void record_victory(CharacterId char_id, uint8_t ascension);
+    // Highest Ascension level the active profile may start with this hero (0..10).
+    uint8_t unlocked_ascension(CharacterId char_id);
     void record_defeat();
 
     // Compendium discovery helpers
