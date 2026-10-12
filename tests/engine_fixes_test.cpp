@@ -38,7 +38,7 @@ int count_in(const FixedVector<DeckCard, 10>& pile, CardId id) {
 
 void test_enemy_buff_does_not_leak() {
     // Each move sets the whole intent: Strength only comes with a buff move, never with the attacks after it.
-    for (EnemyType type : { EnemyType::JAW_WORM, EnemyType::LOUSE, EnemyType::GREMLIN_NOB, EnemyType::CEREMONIAL_BEAST }) {
+    for (EnemyType type : { EnemyType::JAW_WORM, EnemyType::LOUSE, EnemyType::GREMLIN_NOB }) {
         CombatEngine combat = make_combat(CharacterId::IRONCLAD, type);
         combat.player.max_hp = 999;
         combat.player.hp = 999;
@@ -57,11 +57,11 @@ void test_enemy_buff_does_not_leak() {
             assert(combat.state == CombatState::PLAYER_TURN);
             assert(foe.get_status(StatusType::STRENGTH) == expected);
         }
-        // Gremlin Nob and the Beast roar once, the Jaw Worm bellows on turns 3 and 5, the Louse never buffs.
+        // Gremlin Nob roars once, the Jaw Worm bellows on turns 3 and 5, the Louse never buffs.
         int16_t final_strength = type == EnemyType::JAW_WORM ? 6 : type == EnemyType::LOUSE ? 0 : 2;
         assert(expected == final_strength);
     }
-    std::cout << "[PASS] Enemy intents: Jaw Worm, Louse, Gremlin Nob and the Beast gain Strength only on their buff moves" << std::endl;
+    std::cout << "[PASS] Enemy intents: Jaw Worm, Louse and Gremlin Nob gain Strength only on their buff moves" << std::endl;
 }
 
 void test_fiend_fire_with_dark_embrace() {

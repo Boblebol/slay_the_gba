@@ -470,9 +470,13 @@ constexpr uint8_t INSATIABLE_FRANTIC_ESCAPES = 6;
 constexpr int16_t LAGAVULIN_PLATING = 12;
 constexpr uint8_t LAGAVULIN_SLEEP_TURNS = 3;
 
+// Stamp, the Ceremonial Beast's opening move: the Plow it gives itself (Ascension: the second value). Once its HP
+// fall below it, the Beast loses its Strength, is stunned, and enters its second phase.
+constexpr int16_t CEREMONIAL_BEAST_PLOW = 150;
+constexpr int16_t CEREMONIAL_BEAST_PLOW_ASC = 160;
+
 // Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
-// moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire,
-// and the Ceremonial Beast, still on a stand-in pattern.
+// moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire.
 const MonsterData* monster_sheet(EnemyType type);
 
 class Enemy : public CombatEntity {
@@ -532,6 +536,8 @@ public:
     bool enter_phase(uint8_t next);
     // The Tunneler's Block was broken while Burrowed (triggered): it enters its next phase, stunned.
     void break_burrow();
+    // The Ceremonial Beast's Plow ran out (triggered): it enters its next phase, stunned.
+    void break_plow();
     // Draws a move among `options` by weight, leaving out the last move played unless it can repeat, and
     // remembers it. When the rule leaves no move, the last one is played again. NO_MOVE for an empty list.
     uint8_t draw_move(std::span<const MoveOption> options);

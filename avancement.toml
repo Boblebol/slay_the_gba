@@ -137,6 +137,8 @@ items = [
   { name = "Fatalité", status = "oui" },
   { name = "Désorienté", status = "oui", issue = 93 },
   { name = "Sables mouvants (L'Insatiable)", status = "oui", issue = 245 },
+  { name = "Cavalcade (Cerf Auguste)", status = "oui", issue = 230 },
+  { name = "Résonnant (Cerf Auguste)", status = "oui", issue = 230 },
 ]
 
 [[category]]
@@ -315,7 +317,6 @@ items = [
 [overrides.potions]
 
 [overrides.monsters]
-CEREMONIAL_BEAST = { status = "partiel", issue = 36, note = "150 PV et trois attaques simplifiées, contre 252 PV et six attaques dans le jeu d'origine." }
 
 [overrides.events]
 ABYSSAL_BATHS = { status = "partiel", note = "Récit raccourci et choix réinventés pour la GBA." }

@@ -2379,6 +2379,146 @@ void test_lagavulin_matriarch_whole_fight() {
     std::cout << "[PASS] Lagavulin Matriarch: a whole fight to the boss's death, asleep then awake" << std::endl;
 }
 
+void test_ceremonial_beast() {
+    // Phase 0: Stamp (Plow 150 on itself), then Plow (18 damage, +2 Strength) every turn.
+    check_monster(EnemyType::CEREMONIAL_BEAST, "Cerf Auguste", 252, {
+        { BUFF, 0, 0, 0 },
+        { ATTACK_BUFF, 18, 0, 2 },
+        { ATTACK_BUFF, 20, 0, 4 },
+        { ATTACK_BUFF, 22, 0, 6 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CEREMONIAL_BEAST);
+    Enemy& beast = combat.enemies[0];
+    assert(beast.current_intent.power == PowerId::PLOW && !beast.current_intent.power_on_player);
+    combat.end_player_turn();
+    assert(combat.enemy_power_amount(0, PowerId::PLOW) == CEREMONIAL_BEAST_PLOW);
+    std::cout << "[PASS] Ceremonial Beast: 252 HP, Stamp (Plow 150), then Plow 18 +2 Strength each turn" << std::endl;
+}
+
+void test_plow() {
+    // The Plow holds while the Beast has at least 150 HP. Below, it loses all its Strength, is stunned, and
+    // enters its second phase: Beast Cry (Ringing), Stomp 15, Crush 17 (+3 Strength), in a loop.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CEREMONIAL_BEAST);
+    Enemy& beast = combat.enemies[0];
+    combat.end_player_turn(); // Stamp
+    combat.end_player_turn(); // Plow: +2 Strength
+    combat.player.hp = combat.player.max_hp;
+    assert(beast.get_status(StatusType::STRENGTH) == 2);
+    combat.damage_enemy(beast, 252 - CEREMONIAL_BEAST_PLOW);
+    assert(beast.hp == CEREMONIAL_BEAST_PLOW && beast.phase == 0);
+    assert(beast.current_intent.type == ATTACK_BUFF && combat.enemy_power_amount(0, PowerId::PLOW) == CEREMONIAL_BEAST_PLOW);
+    combat.damage_enemy(beast, 1);
+    assert(beast.phase == 1 && beast.current_intent.type == STUN);
+    assert(beast.get_status(StatusType::STRENGTH) == 0 && combat.enemy_power_amount(0, PowerId::PLOW) == 0);
+    // Stunned: the turn is lost.
+    combat.end_player_turn();
+    assert(combat.player.hp == combat.player.max_hp);
+    // Beast Cry: the player is Ringing for their next turn, and can play only one card.
+    assert(beast.current_intent.type == DEBUFF && beast.current_intent.power == PowerId::RINGING);
+    combat.end_player_turn();
+    assert(combat.has_power(PowerId::RINGING));
+    combat.hand.clear();
+    combat.hand.push_back(CardId::DEFEND);
+    combat.hand.push_back(CardId::DEFEND);
+    combat.player.energy = 3;
+    assert(combat.play_blocker(0) == PlayBlocker::NONE);
+    assert(combat.play_card(0, 0));
+    assert(combat.play_blocker(0) == PlayBlocker::PLAY_LIMIT);
+    assert(!combat.play_card(0, 0));
+    // Stomp 15; Ringing is gone with the turn.
+    assert(beast.current_intent.type == ATTACK && beast.intent_damage(combat.player) == 15);
+    combat.player.block = 0;
+    combat.end_player_turn();
+    assert(!combat.has_power(PowerId::RINGING));
+    assert(combat.player.max_hp - combat.player.hp == 15);
+    combat.player.hp = combat.player.max_hp;
+    // Crush 17 and +3 Strength, then Beast Cry again, and Stomp with the Strength.
+    assert(beast.current_intent.type == ATTACK_BUFF && beast.intent_damage(combat.player) == 17);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 17 && beast.get_status(StatusType::STRENGTH) == 3);
+    combat.player.hp = combat.player.max_hp;
+    assert(beast.current_intent.type == DEBUFF && beast.current_intent.power == PowerId::RINGING);
+    combat.end_player_turn();
+    assert(beast.current_intent.type == ATTACK && beast.intent_damage(combat.player) == 18);
+    // The Plow is spent: no second stun however low its HP.
+    combat.damage_enemy(beast, 100);
+    assert(beast.is_alive() && beast.current_intent.type == ATTACK);
+
+    // Artifact cancels Ringing.
+    CombatEngine guarded = make_combat(CharacterId::IRONCLAD, EnemyType::CEREMONIAL_BEAST);
+    guarded.end_player_turn();
+    guarded.damage_enemy(guarded.enemies[0], 252 - CEREMONIAL_BEAST_PLOW + 1);
+    guarded.end_player_turn(); // stunned
+    guarded.player.add_status(StatusType::ARTIFACT, 1);
+    guarded.end_player_turn(); // Beast Cry
+    assert(!guarded.has_power(PowerId::RINGING) && guarded.player.get_status(StatusType::ARTIFACT) == 0);
+    std::cout << "[PASS] Plow: below 150 HP, the Beast loses its Strength, is stunned, then Beast Cry (Ringing: "
+                 "one card), Stomp 15, Crush 17 +3 Strength" << std::endl;
+}
+
+void test_ceremonial_beast_ascension() {
+    // 262 HP, Plow 160, Plow 20, Stomp 17 and Crush 19 (+4 Strength) at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CEREMONIAL_BEAST);
+    Enemy& beast = combat.enemies[0];
+    assert(beast.ascension_hp() == 262 && beast.hp_spread() == 0);
+    beast.ascend(true, true);
+    combat.plan_enemies();
+    assert(beast.hp == 262 && beast.max_hp == 262);
+    assert(beast.current_intent.type == BUFF && beast.current_intent.power_amount == CEREMONIAL_BEAST_PLOW_ASC);
+    combat.end_player_turn();
+    assert(combat.enemy_power_amount(0, PowerId::PLOW) == CEREMONIAL_BEAST_PLOW_ASC);
+    assert(beast.current_intent.type == ATTACK_BUFF && beast.intent_damage(combat.player) == 20);
+    combat.damage_enemy(beast, 262 - CEREMONIAL_BEAST_PLOW_ASC + 1);
+    assert(beast.current_intent.type == STUN);
+    combat.end_player_turn(); // stunned
+    combat.end_player_turn(); // Beast Cry
+    assert(beast.current_intent.type == ATTACK && beast.intent_damage(combat.player) == 17);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(beast.current_intent.type == ATTACK_BUFF && beast.intent_damage(combat.player) == 19 &&
+           beast.current_intent.status_amount == 4);
+    std::cout << "[PASS] Ceremonial Beast: Ascension gives 262 HP, Plow 160, Plow 20, Stomp 17, Crush 19 +4" << std::endl;
+}
+
+void test_ceremonial_beast_whole_fight() {
+    // The whole fight, until the Beast dies, at 20 damage a turn: Stamp, Plow until its HP fall below 150 (phase
+    // change: Strength lost, stunned), then Beast Cry, Stomp, Crush in a loop to the end.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CEREMONIAL_BEAST);
+    Enemy& beast = combat.enemies[0];
+    int turn = 1;
+    int phase_change = 0;
+    int ringing_turns = 0;
+    while (combat.state == CombatState::PLAYER_TURN && beast.is_alive()) {
+        ringing_turns += combat.has_power(PowerId::RINGING);
+        if (beast.phase == 0) {
+            assert(beast.current_intent.type == (turn == 1 ? BUFF : ATTACK_BUFF));
+            assert(beast.get_status(StatusType::STRENGTH) == 2 * (turn > 1 ? turn - 2 : 0));
+        }
+        const uint8_t phase_before = beast.phase;
+        combat.damage_enemy(beast, 20);
+        if (!beast.is_alive()) break;
+        if (phase_before == 0 && beast.phase == 1) {
+            // The phase changes on the hit that takes it below the Plow.
+            assert(beast.hp < CEREMONIAL_BEAST_PLOW && beast.hp + 20 >= CEREMONIAL_BEAST_PLOW);
+            assert(beast.current_intent.type == STUN && beast.get_status(StatusType::STRENGTH) == 0);
+            phase_change = turn;
+        } else if (beast.phase == 1) {
+            const int step = (turn - phase_change - 1) % 3;
+            const EnemyIntentType expected[3] = { DEBUFF, ATTACK, ATTACK_BUFF };
+            assert(beast.current_intent.type == expected[step]);
+        }
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        ++turn;
+    }
+    assert(!beast.is_alive() && combat.player.is_alive());
+    assert(phase_change == 6); // 252 - 6 x 20 = 132 < 150
+    assert(turn == 13);        // 252 HP, 20 a turn
+    assert(ringing_turns == 2);
+    std::cout << "[PASS] Ceremonial Beast: a whole fight to its death, through the Plow's phase change" << std::endl;
+}
+
 void test_wriggler() {
     // Nasty Bite (6 damage), Wriggle (+2 Strength and an Infection), and again with the Strength kept.
     // The starting HP is 17 to 21: the roll of the fight is read, then checked against that range.
@@ -4493,6 +4633,10 @@ int main() {
     test_lagavulin_matriarch_woken();
     test_lagavulin_matriarch_ascension();
     test_lagavulin_matriarch_whole_fight();
+    test_ceremonial_beast();
+    test_plow();
+    test_ceremonial_beast_ascension();
+    test_ceremonial_beast_whole_fight();
     test_phrog_parasite_ascension();
     test_inklet();
     test_inklet_ascension();
