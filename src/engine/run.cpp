@@ -1043,6 +1043,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         finish_preserved_fog();
     }
     if (relic_id == "PRECISE_SCISSORS" && has_relic("PRECISE_SCISSORS")) request_deck_choice(DeckChoiceKind::REMOVE, 1);
+    // Dolly's Mirror (shop): one card chosen in the deck gets an additional copy.
+    if (relic_id == "DOLLYS_MIRROR" && has_relic("DOLLYS_MIRROR")) request_deck_choice(DeckChoiceKind::DUPLICATE, 1);
     if (relic_id == "NEOWS_TALISMAN" && has_relic("NEOWS_TALISMAN")) {
         // One random Strike and one random Defend, not yet upgraded, are upgraded.
         const CardId targets[] = { CardId::STRIKE, CardId::DEFEND };
@@ -1369,6 +1371,7 @@ bool RunManager::deck_choice_allows(int deck_index) const {
             // Imbued is only ever offered on a Skill (Electric Shrymp).
             if (deck_choice.enchantment == Enchantment::IMBUED && CardDef::get(master_deck[deck_index].id).type != CardType::SKILL) return false;
             return can_enchant(master_deck[deck_index], deck_choice.enchantment);
+        case DeckChoiceKind::DUPLICATE: return master_deck.size() < master_deck.capacity();
         default: return false;
     }
 }
@@ -1389,6 +1392,11 @@ bool RunManager::resolve_deck_choice(int deck_index) {
         }
         case DeckChoiceKind::TRANSFORM: done = transform_card_in_deck(deck_index, deck_choice.upgrade_result, deck_choice.transform_into); break;
         case DeckChoiceKind::ENCHANT: done = enchant_card_in_deck(deck_index, deck_choice.enchantment, deck_choice.enchant_amount); break;
+        case DeckChoiceKind::DUPLICATE: {
+            const DeckCard copy = master_deck[deck_index];
+            done = add_card_to_deck(copy);
+            break;
+        }
         default: break;
     }
     if (!done) return false;
@@ -1453,6 +1461,8 @@ std::span<const std::string_view> RunManager::active_relics() {
         "BRONZE_SCALES", "GORGET", "AKABEKO",
         // At the merchant (#487)
         "THE_COURIER", "ORRERY",
+        // A copy of a card of the deck on pickup (#459)
+        "DOLLYS_MIRROR",
         // Max HP with each gain of Gold (#474)
         "DRAGON_FRUIT",
         // Retained hand on the first turn (#509)

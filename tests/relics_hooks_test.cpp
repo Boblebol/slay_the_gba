@@ -3650,6 +3650,28 @@ void test_black_star() {
     std::cout << "[PASS] Black Star: an Elite gives one more relic" << std::endl;
 }
 
+void test_dollys_mirror() {
+    // Obtained: one card of the deck is chosen, and an identical copy of it joins the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 459);
+    size_t deck = run.master_deck.size();
+    run.master_deck[0].upgraded = true;
+    run.add_relic("DOLLYS_MIRROR");
+    assert(run.has_relic("DOLLYS_MIRROR"));
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::DUPLICATE && run.deck_choice.remaining == 1);
+    assert(!run.skip_deck_choice());
+    assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck + 1);
+    assert(run.master_deck[deck].id == run.master_deck[0].id && run.master_deck[deck].upgraded);
+
+    // Without the relic, nothing is asked and the deck keeps its size.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 459);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice() && plain.master_deck.size() == deck);
+    std::cout << "[PASS] Dolly's Mirror: a copy of a chosen card on pickup" << std::endl;
+}
+
 void test_white_star() {
     // With the relic, an Elite offers one more set of Rare cards once its first set is taken or skipped.
     RunManager run;
@@ -4648,5 +4670,6 @@ int main() {
     test_leafy_poultice();
     test_kaleidoscope();
     test_black_star();
+    test_dollys_mirror();
     return 0;
 }

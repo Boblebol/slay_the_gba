@@ -31,7 +31,8 @@ enum class DeckChoiceKind : uint8_t {
     UPGRADE,
     REMOVE,
     TRANSFORM,
-    ENCHANT
+    ENCHANT,
+    DUPLICATE // the chosen card gets one more copy in the deck
 };
 
 struct DeckChoice {
