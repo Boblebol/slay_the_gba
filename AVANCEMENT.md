@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 88,1 %** — 1090 faits, 17 partiels, 140 à faire (35 hors périmètre).
+**Avancement global : 88,5 %** — 1095 faits, 17 partiels, 135 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
-| [Reliques et potions](#reliques) | 294 | 0 | 27 | 91,6 % |
+| [Reliques et potions](#reliques) | 299 | 0 | 22 | 93,1 % |
 | [Bestiaire](#bestiaire) | 72 | 1 | 31 | 69,7 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 28 | 2 | 6 | 80,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **1090** | **17** | **140** | **88,1 %** |
+| **Total** | **1095** | **17** | **135** | **88,5 %** |
 
 <a id="ironclad"></a>
 
@@ -859,11 +859,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 91,6 %
+## Reliques et potions — 93,1 %
 
-### Reliques partagées — 91,5 %
+### Reliques partagées — 92,3 %
 
-107 faits, 0 partiel, 10 à faire.
+108 faits, 0 partiel, 9 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -973,7 +973,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | L'Abaque | Boutique | Oui |  |
 | Lampe à lave | Boutique | Oui |  |
 | Marteau tordu | Boutique | Non |  |
-| Miroir de Dolly | Boutique | Non |  |
+| Miroir de Dolly | Boutique | Oui |  |
 | Pain | Boutique | Oui |  |
 | Pichet hurlant | Boutique | Oui |  |
 | Planétaire | Boutique | Oui |  |
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 85,3 %
+### Reliques des Anciens — 89,2 %
 
-87 faits, 0 partiel, 15 à faire.
+91 faits, 0 partiel, 11 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1057,7 +1057,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Caisse à jouets | Ancienne | Non |  |
 | Canne à pêche | Ancienne | Oui |  |
 | Cape distinguée | Ancienne | Oui |  |
-| Cataplasme | Ancienne | Non |  |
+| Cataplasme | Ancienne | Oui |  |
 | Chair de Paël | Ancienne | Oui |  |
 | Chocolat très chaud | Ancienne | Oui |  |
 | Château de sable | Ancienne | Oui |  |
@@ -1091,7 +1091,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Humidificateur en pierre | Ancienne | Oui |  |
 | Huître nourrissante | Ancienne | Oui |  |
 | Joyau prismatique | Ancienne | Oui |  |
-| Kaléidoscope | Ancienne | Non |  |
+| Kaléidoscope | Ancienne | Oui |  |
 | Lanterne-citrouille | Ancienne | Oui |  |
 | Larmes de Paël | Ancienne | Oui |  |
 | Livre d'histoires | Ancienne | Oui |  |
@@ -1125,7 +1125,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sifflet de Tanx | Ancienne | Oui |  |
 | Soupe nourrissante | Ancienne | Oui |  |
 | Sozu | Ancienne | Oui |  |
-| Tablette lourde | Ancienne | Non |  |
+| Tablette lourde | Ancienne | Oui |  |
 | Talisman de Neow | Ancienne | Oui |  |
 | Toucher d'Orobas | Ancienne | Non |  |
 | Tourment de Neow | Ancienne | Oui |  |
@@ -1134,7 +1134,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Verre marin | Ancienne | Non |  |
 | Violon | Ancienne | Oui |  |
 | Écharpe étincelante | Ancienne | Oui |  |
-| Étoile noire | Ancienne | Non |  |
+| Étoile noire | Ancienne | Oui |  |
 | Étui à fioles | Ancienne | Oui |  |
 | Œil de Paël | Ancienne | Oui |  |
 | Œil de geckobra | Ancienne | Oui |  |
