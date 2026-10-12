@@ -1764,6 +1764,7 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::THE_GAMBIT:
         stream << "Armure " << value << ". Dégât subi : mort.";
+        break;
     case engine::CardId::SPLASH:
         stream << "1 Attaque" << (card.upgraded ? "+ parmi " : " parmi ") << secondary << " d'un autre héros, à 0.";
         break;
