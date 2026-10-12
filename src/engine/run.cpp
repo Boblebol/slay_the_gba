@@ -633,6 +633,18 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity,
             break;
         }
     }
+    // Wing Charm: one random card of each card reward is enchanted with Swift 1.
+    if (has_relic("WING_CHARM") && !current_card_rewards.empty()) {
+        FixedVector<uint8_t, 8> eligible;
+        for (size_t i = 0; i < current_card_rewards.size(); ++i) {
+            if (can_enchant(current_card_rewards[i], Enchantment::SWIFT)) eligible.push_back(static_cast<uint8_t>(i));
+        }
+        if (!eligible.empty()) {
+            DeckCard& pick = current_card_rewards[eligible[next_random() % eligible.size()]];
+            pick.enchantment = Enchantment::SWIFT;
+            pick.enchant_amount = 1;
+        }
+    }
     // Glitter: every card of the reward is enchanted with Glam.
     if (has_relic("GLITTER")) {
         for (DeckCard& offered : current_card_rewards) {
@@ -1033,6 +1045,17 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         paels_tooth_picks = deck_choice.remaining;
     }
     if (relic_id == "TRI_BOOMERANG" && has_relic("TRI_BOOMERANG")) request_deck_choice(DeckChoiceKind::ENCHANT, 3, false, false, CardId::NONE, Enchantment::INSTINCT);
+    // Kifuda (shop): up to 3 cards chosen in the deck are enchanted with Adroit 3.
+    if (relic_id == "KIFUDA" && has_relic("KIFUDA")) request_deck_choice(DeckChoiceKind::ENCHANT, 3, true, false, CardId::NONE, Enchantment::ADROIT, 3);
+    // Gnarled Hammer (shop): up to 3 Attacks chosen in the deck are enchanted with Sharp 3.
+    if (relic_id == "GNARLED_HAMMER" && has_relic("GNARLED_HAMMER"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 3, true, false, CardId::NONE, Enchantment::SHARP, 3);
+    // Punch Dagger (shop): one Attack chosen in the deck is enchanted with Momentum 5.
+    if (relic_id == "PUNCH_DAGGER" && has_relic("PUNCH_DAGGER"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 1, false, false, CardId::NONE, Enchantment::MOMENTUM, 5);
+    // Royal Stamp (shop): one Attack or Skill chosen in the deck is enchanted with Royally Approved.
+    if (relic_id == "ROYAL_STAMP" && has_relic("ROYAL_STAMP"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 1, false, false, CardId::NONE, Enchantment::ROYALLY_APPROVED);
     if (relic_id == "CLAWS" && has_relic("CLAWS")) request_deck_choice(DeckChoiceKind::TRANSFORM, 6, true, false, CardId::MAUL);
     if (relic_id == "NEW_LEAF" && has_relic("NEW_LEAF")) request_deck_choice(DeckChoiceKind::TRANSFORM, 1);
     if (relic_id == "POMANDER" && has_relic("POMANDER")) request_deck_choice(DeckChoiceKind::UPGRADE, 1);
@@ -1186,12 +1209,30 @@ void RunManager::on_rewards_generated(RoomType) {
     count_hook(RunHook::REWARDS_GENERATED);
 }
 
+// True when a card description mentions Block ("block" or "Block"), by a plain char loop (no string search on the GBA).
+static bool card_text_gives_block(std::string_view text) {
+    const std::string_view word = "lock";
+    for (size_t i = 1; i + word.size() <= text.size(); ++i) {
+        if (text[i - 1] != 'b' && text[i - 1] != 'B') continue;
+        bool same = true;
+        for (size_t j = 0; j < word.size(); ++j) same = same && text[i + j] == word[j];
+        if (same) return true;
+    }
+    return false;
+}
+
 void RunManager::on_card_added(DeckCard& card) {
     count_hook(RunHook::CARD_ADDED);
     // Frozen Egg: a Power added to the Deck is upgraded.
     if (has_relic("FROZEN_EGG") && CardDef::get(card.id).type == CardType::POWER) card.upgraded = true;
     // Toxic Egg: a Skill added to the Deck is Upgraded.
     if (has_relic("TOXIC_EGG") && CardDef::get(card.id).type == CardType::SKILL) card.upgraded = true;
+    // Fresnel Lens: a card that gives Block, added to the Deck, is enchanted with Nimble 2.
+    if (has_relic("FRESNEL_LENS") && CardDef::get(card.id).type != CardType::POWER && card_text_gives_block(CardDef::get(card.id).description) &&
+        can_enchant(card, Enchantment::NIMBLE)) {
+        card.enchantment = Enchantment::NIMBLE;
+        card.enchant_amount = 2;
+    }
 }
 
 void RunManager::on_gold_gained(int16_t) {
@@ -1389,6 +1430,8 @@ bool RunManager::deck_choice_allows(int deck_index) const {
         case DeckChoiceKind::ENCHANT:
             // Imbued is only ever offered on a Skill (Electric Shrymp).
             if (deck_choice.enchantment == Enchantment::IMBUED && CardDef::get(master_deck[deck_index].id).type != CardType::SKILL) return false;
+            // Royally Approved (Royal Stamp) is only ever offered on an Attack or a Skill.
+            if (deck_choice.enchantment == Enchantment::ROYALLY_APPROVED && CardDef::get(master_deck[deck_index].id).type == CardType::POWER) return false;
             return can_enchant(master_deck[deck_index], deck_choice.enchantment);
         case DeckChoiceKind::DUPLICATE: return master_deck.size() < master_deck.capacity();
         default: return false;
@@ -1461,6 +1504,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         // On the combat hooks (#299)
         "BAG_OF_PREPARATION", "BURNING_STICKS", "INTIMIDATING_HELMET", "JOSS_PAPER", "KUNAI", "KUSARIGAMA", "LETTER_OPENER",
         "MEAT_ON_THE_BONE", "MUMMIFIED_HAND", "NUNCHAKU", "ORNAMENTAL_FAN", "PEN_NIB", "RAINBOW_RING", "RIPPLE_BASIN", "SHURIKEN", "STRIKE_DUMMY", "MINIATURE_CANNON",
+        "KIFUDA", "GNARLED_HAMMER", "PUNCH_DAGGER", "ROYAL_STAMP", "WING_CHARM", // Shop: enchant cards
         "MYSTIC_LIGHTER", // Shop: Enchanted Attacks (#107)
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", "PAPER_PHROG", // Ironclad
