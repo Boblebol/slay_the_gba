@@ -1335,6 +1335,31 @@ void test_small_capsule() {
     std::cout << "[PASS] Small Capsule: one random relic when obtained, none without it" << std::endl;
 }
 
+void test_nutritious_soup() {
+    // Obtained: every Strike of the deck gets Tezcatara's Ember (3 damage), the other cards are left alone.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("NUTRITIOUS_SOUP");
+    assert(run.has_relic("NUTRITIOUS_SOUP"));
+    int strikes = 0;
+    for (const DeckCard& card : run.master_deck) {
+        if (card.id == CardId::STRIKE) {
+            ++strikes;
+            assert(card.enchantment == Enchantment::TEZCATARAS_EMBER && card.enchant_amount == 3);
+        } else {
+            assert(card.enchantment == Enchantment::NONE);
+        }
+    }
+    assert(strikes > 0);
+
+    // Without the relic, no card is enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    for (const DeckCard& card : plain.master_deck) assert(card.enchantment == Enchantment::NONE);
+    std::cout << "[PASS] Nutritious Soup: enchants every Strike with Tezcatara's Ember" << std::endl;
+}
+
 void test_nutritious_oyster() {
     // Obtained: 11 more maximum HP, and the current HP follow.
     RunManager run;
@@ -4174,6 +4199,7 @@ int main() {
     test_new_leaf();
     test_small_capsule();
     test_nutritious_oyster();
+    test_nutritious_soup();
     test_lava_rock();
     test_stone_humidifier();
     test_tiny_mailbox();
