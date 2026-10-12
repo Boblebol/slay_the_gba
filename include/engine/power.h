@@ -266,13 +266,16 @@ enum class PowerId : uint8_t {
     RUINED_HELMET,     // the first Strength gained each combat is doubled (counter = 1 once used)
     // On the player, given by an enemy move (appended)
     SHRINK,            // the player's attacks deal 30% less damage (read by hit); -1 at the end of each player turn
+    CONSTRICT,         // at the end of the player's turn, `amount` damage while a Slithering Strangler lives
+    SMOGGY,            // only one Skill can be played each turn (CombatEngine::play_blocker)
     // Held by an enemy (appended)
-    SOAR               // it takes 50% less attack damage (read by hit) until it lands: spent when its next turn starts
+    SOAR          // it takes 50% less attack damage (read by hit) until it lands: spent when its next turn starts
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
 constexpr bool is_player_debuff_power(PowerId id) {
-    return id == PowerId::TANGLED || id == PowerId::TENDER || id == PowerId::SHRINK;
+    return id == PowerId::TANGLED || id == PowerId::TENDER || id == PowerId::SHRINK ||
+           id == PowerId::CONSTRICT || id == PowerId::SMOGGY;
 }
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;

@@ -437,7 +437,16 @@ enum class EnemyType : uint8_t {
     FABRICATOR,  // Act 3
     SHRINKER_BEETLE, // Act 1 (A)
     OWL_MAGISTRATE,  // Act 3
-    SCROLL_OF_BITING // Act 3
+    SCROLL_OF_BITING, // Act 3
+    FOGMOG,               // Act 1 (A)
+    SNAPPING_JAXFRUIT,    // Act 1 (A)
+    TWIG_SLIME_M,         // Act 1 (A)
+    TWIG_SLIME_S,         // Act 1 (A)
+    LEAF_SLIME_M,         // Act 1 (A)
+    LEAF_SLIME_S,         // Act 1 (A)
+    SLITHERING_STRANGLER, // Act 1 (A)
+    LIVING_FOG,           // Act 1 (B)
+    TWO_TAILED_RAT        // Act 1 (B)
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).

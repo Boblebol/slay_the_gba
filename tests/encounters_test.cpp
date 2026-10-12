@@ -101,6 +101,15 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::SHRINKER_BEETLE: return "SHRINKER_BEETLE";
         case EnemyType::OWL_MAGISTRATE: return "OWL_MAGISTRATE";
         case EnemyType::SCROLL_OF_BITING: return "SCROLL_OF_BITING";
+        case EnemyType::FOGMOG: return "FOGMOG";
+        case EnemyType::SNAPPING_JAXFRUIT: return "SNAPPING_JAXFRUIT";
+        case EnemyType::TWIG_SLIME_M: return "TWIG_SLIME_M";
+        case EnemyType::TWIG_SLIME_S: return "TWIG_SLIME_S";
+        case EnemyType::LEAF_SLIME_M: return "LEAF_SLIME_M";
+        case EnemyType::LEAF_SLIME_S: return "LEAF_SLIME_S";
+        case EnemyType::SLITHERING_STRANGLER: return "SLITHERING_STRANGLER";
+        case EnemyType::LIVING_FOG: return "LIVING_FOG";
+        case EnemyType::TWO_TAILED_RAT: return "TWO_TAILED_RAT";
     }
     return {};
 }
@@ -214,15 +223,17 @@ void test_tables_use_existing_monsters_with_a_sprite() {
 
 void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::WEAK)) ==
-           (std::set<std::string_view>{ "FuzzyWurmCrawlerWeak", "NibbitsWeak", "ShrinkerBeetleWeak" }));
+           (std::set<std::string_view>{ "FuzzyWurmCrawlerWeak", "NibbitsWeak", "ShrinkerBeetleWeak", "SlimesWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal",
                                         "InkletsNormal", "NibbitsNormal", "FlyconidNormal", "MawlerNormal",
-                                        "OvergrowthCrawlers" }));
+                                        "OvergrowthCrawlers", "FogmogNormal", "SnappingJaxfruitNormal", "SlimesNormal",
+                                        "SlitheringStranglerNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal",
                                         "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
-                                        "FossilStalkerNormal", "SeapunkNormal" }));
+                                        "FossilStalkerNormal", "SeapunkNormal", "LivingFogNormal",
+                                        "TwoTailedRatsNormal" }));
     // Act 2 has its own boss, the Insatiable; the other acts keep the Ceremonial Beast.
     for (ActZone zone : ZONES) {
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
@@ -408,7 +419,7 @@ void test_same_seed_same_fights() {
         assert(first == fights_of(seed));
     }
     // A run of Act 1 (A): weak fights on the first floors, then the ruby raiders or the Vine Shambler, both met.
-    uint32_t seed = 1;
+    uint32_t seed = 2;
     assert(act_zone(1, make_run(seed, 1).map_seed) == ActZone::ACT1A);
     std::vector<std::string> fights = fights_of(seed);
     int raiders = 0;
@@ -418,7 +429,8 @@ void test_same_seed_same_fights() {
         std::string_view fight = fights[floor - 1];
         if (floor <= WEAK_ENCOUNTER_FLOORS) {
             assert(fight.starts_with("FuzzyWurmCrawlerWeak") || fight == "NibbitsWeak NIBBIT" ||
-                   fight == "ShrinkerBeetleWeak SHRINKER_BEETLE");
+                   fight == "ShrinkerBeetleWeak SHRINKER_BEETLE" ||
+                   fight == "SlimesWeak LEAF_SLIME_M LEAF_SLIME_S TWIG_SLIME_M TWIG_SLIME_S");
         } else if (fight.starts_with("RubyRaidersNormal")) {
             ++raiders;
         } else if (fight.starts_with("NibbitsNormal")) {
@@ -430,7 +442,11 @@ void test_same_seed_same_fights() {
             } else {
                 assert(fight == "VineShamblerNormal VINE_SHAMBLER" || fight == "CubexConstructNormal CUBEX_CONSTRUCT" ||
                        fight == "FlyconidNormal FLYCONID" || fight == "MawlerNormal MAWLER" ||
-                       fight == "OvergrowthCrawlers FUZZY_WURM_CRAWLER SHRINKER_BEETLE");
+                       fight == "OvergrowthCrawlers FUZZY_WURM_CRAWLER SHRINKER_BEETLE" ||
+                       fight == "FogmogNormal FOGMOG" || fight == "SnappingJaxfruitNormal FLYCONID SNAPPING_JAXFRUIT" ||
+                       fight == "SlimesNormal LEAF_SLIME_M TWIG_SLIME_M" ||
+                       fight == "SlitheringStranglerNormal LEAF_SLIME_M LEAF_SLIME_S SLITHERING_STRANGLER "
+                                "SNAPPING_JAXFRUIT TWIG_SLIME_M TWIG_SLIME_S");
                 if (fight.starts_with("VineShamblerNormal") || fight.starts_with("CubexConstructNormal")) ++shamblers;
             }
         }
