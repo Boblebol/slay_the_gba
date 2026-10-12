@@ -30,7 +30,8 @@ enum class DeckChoiceKind : uint8_t {
     NONE,
     UPGRADE,
     REMOVE,
-    TRANSFORM
+    TRANSFORM,
+    ENCHANT
 };
 
 struct DeckChoice {
@@ -39,6 +40,8 @@ struct DeckChoice {
     bool optional = false;  // "up to N": the choice can be left before the last card
     bool upgrade_result = false; // TRANSFORM only: the new card comes upgraded
     CardId transform_into = CardId::NONE; // TRANSFORM only: fixed result card (NONE = random from the reward pool)
+    Enchantment enchantment = Enchantment::NONE; // ENCHANT only: the enchantment put on each chosen card
+    uint8_t enchant_amount = 0;                  // ENCHANT only: its amount
 };
 
 // Moments of a run, outside the fights, a relic can act on. Each one is a private `on_...` method of RunManager.
@@ -223,7 +226,8 @@ public:
 
     // Asks the player for `count` cards of the deck to upgrade, remove or transform. Nothing is asked when no
     // card of the deck fits.
-    void request_deck_choice(DeckChoiceKind kind, int count, bool optional = false, bool upgrade_result = false, CardId transform_into = CardId::NONE);
+    void request_deck_choice(DeckChoiceKind kind, int count, bool optional = false, bool upgrade_result = false, CardId transform_into = CardId::NONE,
+                              Enchantment enchantment = Enchantment::NONE, uint8_t enchant_amount = 0);
     [[nodiscard]] bool has_deck_choice() const { return deck_choice.kind != DeckChoiceKind::NONE; }
     // True when the card at `deck_index` can be picked for the choice in progress.
     [[nodiscard]] bool deck_choice_allows(int deck_index) const;

@@ -1671,6 +1671,29 @@ void test_astrolabe() {
     std::cout << "[PASS] Astrolabe: transforms 3 cards then upgrades them when obtained" << std::endl;
 }
 
+void test_beautiful_bracelet() {
+    // Obtained: 4 chosen cards get Swift 2.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    run.add_relic("BEAUTIFUL_BRACELET");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ENCHANT);
+    assert(run.deck_choice.remaining == 4 && !run.deck_choice.optional);
+    for (int i = 0; i < 4; ++i) {
+        assert(run.resolve_deck_choice(i));
+        assert(run.master_deck[i].enchantment == Enchantment::SWIFT && run.master_deck[i].enchant_amount == 2);
+    }
+    assert(!run.has_deck_choice());
+    assert(run.master_deck[4].enchantment == Enchantment::NONE);
+
+    // Without the relic: nothing is asked and no card is enchanted.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice());
+    assert(plain.master_deck[0].enchantment == Enchantment::NONE);
+    std::cout << "[PASS] Beautiful Bracelet: 4 chosen cards enchanted with Swift 2 when obtained" << std::endl;
+}
+
 void test_neows_bones() {
     // Obtained: 2 more relics among Neow's own, then 1 random curse. Neow's Bones itself is never drawn again.
     auto is_neow_relic = [](std::string_view id) {
@@ -4211,6 +4234,7 @@ int main() {
     test_neows_talisman();
     test_large_capsule();
     test_astrolabe();
+    test_beautiful_bracelet();
     test_neows_bones();
     test_empty_cage();
     test_pandoras_box();

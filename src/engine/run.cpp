@@ -974,6 +974,9 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     }
     // Grooos câlin (Ancient): 4 cards chosen out of the deck when obtained.
     if (relic_id == "BIIIG_HUG" && has_relic("BIIIG_HUG")) request_deck_choice(DeckChoiceKind::REMOVE, 4);
+    // Bracelet brillant (Ancient): 4 cards chosen in the deck are enchanted with Swift 2.
+    if (relic_id == "BEAUTIFUL_BRACELET" && has_relic("BEAUTIFUL_BRACELET"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 4, false, false, CardId::NONE, Enchantment::SWIFT, 2);
     if (relic_id == "EMPTY_CAGE" && has_relic("EMPTY_CAGE")) request_deck_choice(DeckChoiceKind::REMOVE, 2);
     // Precarious Shears (Ancient): 2 cards chosen out of the deck, then 16 HP lost, never below 1.
     if (relic_id == "PRECARIOUS_SHEARS" && has_relic("PRECARIOUS_SHEARS")) {
@@ -1244,10 +1247,13 @@ void RunManager::add_potion_slots(int count) {
     potion_slots = static_cast<uint8_t>(std::min<int>(MAX_POTION_SLOTS, potion_slots + count));
 }
 
-void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool optional, bool upgrade_result, CardId transform_into) {
+void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool optional, bool upgrade_result, CardId transform_into,
+                                    Enchantment enchantment, uint8_t enchant_amount) {
     deck_choice = {};
     if (kind == DeckChoiceKind::NONE || count <= 0) return;
     deck_choice.kind = kind;
+    deck_choice.enchantment = enchantment;
+    deck_choice.enchant_amount = enchant_amount;
     int candidates = 0;
     for (size_t i = 0; i < master_deck.size(); ++i) {
         if (deck_choice_allows(static_cast<int>(i))) ++candidates;
@@ -1274,6 +1280,7 @@ bool RunManager::deck_choice_allows(int deck_index) const {
         case DeckChoiceKind::UPGRADE: return !master_deck[deck_index].upgraded;
         case DeckChoiceKind::REMOVE:
         case DeckChoiceKind::TRANSFORM: return !CardDef::is_eternal(master_deck[deck_index]);
+        case DeckChoiceKind::ENCHANT: return can_enchant(master_deck[deck_index], deck_choice.enchantment);
         default: return false;
     }
 }
@@ -1293,13 +1300,15 @@ bool RunManager::resolve_deck_choice(int deck_index) {
             break;
         }
         case DeckChoiceKind::TRANSFORM: done = transform_card_in_deck(deck_index, deck_choice.upgrade_result, deck_choice.transform_into); break;
+        case DeckChoiceKind::ENCHANT: done = enchant_card_in_deck(deck_index, deck_choice.enchantment, deck_choice.enchant_amount); break;
         default: break;
     }
     if (!done) return false;
 
     // The cards left may not allow as many picks as asked (deck emptied, everything upgraded).
     DeckChoice next = deck_choice;
-    request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result, next.transform_into);
+    request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result, next.transform_into,
+                      next.enchantment, next.enchant_amount);
     finish_preserved_fog();
     finish_cook();
     return true;

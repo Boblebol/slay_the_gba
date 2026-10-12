@@ -100,6 +100,8 @@ private:
             return "Améliorée !";
         case engine::DeckChoiceKind::REMOVE:
             return "Retirée !";
+        case engine::DeckChoiceKind::ENCHANT:
+            return "Envoûtée !";
         default:
             return "Transformée !";
         }
@@ -135,7 +137,8 @@ private:
         TextLine title;
         bn::ostringstream stream(title);
         stream << (kind == engine::DeckChoiceKind::UPGRADE ? "AMELIORER" :
-                   kind == engine::DeckChoiceKind::REMOVE ? "RETIRER" : "TRANSFORMER")
+                   kind == engine::DeckChoiceKind::REMOVE ? "RETIRER" :
+                   kind == engine::DeckChoiceKind::ENCHANT ? "ENVOUTER" : "TRANSFORMER")
                << " - " << remaining << (remaining > 1 ? " cartes" : " carte");
         _title.set(0, -72, title, Align::CENTER, TextColor::GOLD);
         _hint.set(0, 73, run.deck_choice.optional ? "◄► Carte   A Choisir   B Terminer" : "◄► Carte   A Choisir",
