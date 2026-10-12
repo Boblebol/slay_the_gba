@@ -98,6 +98,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::THE_OBSCURA: return "THE_OBSCURA";
         case EnemyType::OVICOPTER: return "OVICOPTER";
         case EnemyType::FABRICATOR: return "FABRICATOR";
+        case EnemyType::SHRINKER_BEETLE: return "SHRINKER_BEETLE";
     }
     return {};
 }
@@ -211,10 +212,11 @@ void test_tables_use_existing_monsters_with_a_sprite() {
 
 void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::WEAK)) ==
-           (std::set<std::string_view>{ "FuzzyWurmCrawlerWeak", "NibbitsWeak" }));
+           (std::set<std::string_view>{ "FuzzyWurmCrawlerWeak", "NibbitsWeak", "ShrinkerBeetleWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "RubyRaidersNormal", "VineShamblerNormal", "CubexConstructNormal",
-                                        "InkletsNormal", "NibbitsNormal", "FlyconidNormal", "MawlerNormal" }));
+                                        "InkletsNormal", "NibbitsNormal", "FlyconidNormal", "MawlerNormal",
+                                        "OvergrowthCrawlers" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal",
                                         "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
@@ -404,7 +406,8 @@ void test_same_seed_same_fights() {
     for (size_t floor = 1; floor <= fights.size() - 2; ++floor) {
         std::string_view fight = fights[floor - 1];
         if (floor <= WEAK_ENCOUNTER_FLOORS) {
-            assert(fight.starts_with("FuzzyWurmCrawlerWeak") || fight == "NibbitsWeak NIBBIT");
+            assert(fight.starts_with("FuzzyWurmCrawlerWeak") || fight == "NibbitsWeak NIBBIT" ||
+                   fight == "ShrinkerBeetleWeak SHRINKER_BEETLE");
         } else if (fight.starts_with("RubyRaidersNormal")) {
             ++raiders;
         } else if (fight.starts_with("NibbitsNormal")) {
@@ -415,7 +418,8 @@ void test_same_seed_same_fights() {
                 ++inklets;
             } else {
                 assert(fight == "VineShamblerNormal VINE_SHAMBLER" || fight == "CubexConstructNormal CUBEX_CONSTRUCT" ||
-                       fight == "FlyconidNormal FLYCONID" || fight == "MawlerNormal MAWLER");
+                       fight == "FlyconidNormal FLYCONID" || fight == "MawlerNormal MAWLER" ||
+                       fight == "OvergrowthCrawlers FUZZY_WURM_CRAWLER SHRINKER_BEETLE");
                 if (fight.starts_with("VineShamblerNormal") || fight.starts_with("CubexConstructNormal")) ++shamblers;
             }
         }

@@ -433,7 +433,8 @@ enum class EnemyType : uint8_t {
     TOUGH_EGG,
     THE_OBSCURA, // Act 2
     OVICOPTER,   // Act 2
-    FABRICATOR   // Act 3
+    FABRICATOR,  // Act 3
+    SHRINKER_BEETLE // Act 1 (A)
 };
 
 // What a monster sees of the fight when it chooses its next move.

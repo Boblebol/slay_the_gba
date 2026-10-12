@@ -169,6 +169,10 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Machiniste";
         max_hp = 150;
         hp = 150;
+    } else if (type == EnemyType::SHRINKER_BEETLE) {
+        name = "Scarabrideur";
+        max_hp = 38;
+        hp = 38;
     } else if (type == EnemyType::TOUGH_EGG) {
         name = "Œuf robuste";
         max_hp = 14;
@@ -345,6 +349,7 @@ uint8_t Enemy::hp_spread() const {
         case EnemyType::BYRDONIS: return 3;    // 81 to 84, always 90 at Ascension
         case EnemyType::OVICOPTER: return 6;   // 124 to 130, 126 to 132 at Ascension
         case EnemyType::TOUGH_EGG: return 4;   // 14 to 18, 15 to 19 at Ascension
+        case EnemyType::SHRINKER_BEETLE: return 2; // 38 to 40, 40 to 42 at Ascension
         case EnemyType::TOADPOLE: return 4;    // 21 to 25, 22 to 26 at Ascension
         case EnemyType::SPINY_TOAD: return 3;  // 116 to 119, 121 to 124 at Ascension
         case EnemyType::BOWLBUG_NECTAR: return 3; // 35 to 38, 36 to 39 at Ascension
@@ -427,6 +432,7 @@ int16_t Enemy::ascension_hp() const {
         case EnemyType::THE_OBSCURA: return 129;
         case EnemyType::OVICOPTER: return 126;
         case EnemyType::FABRICATOR: return 155;
+        case EnemyType::SHRINKER_BEETLE: return 40;
         case EnemyType::TOADPOLE: return 22;
         case EnemyType::HUNTER_KILLER: return 126;
         case EnemyType::MAWLER: return 76;
@@ -1266,6 +1272,23 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
                 current_intent.type = EnemyIntentType::SUMMON;
                 current_intent.description = "Fabrication";
             }
+        }
+    } else if (type == EnemyType::SHRINKER_BEETLE) {
+        // Shrinker (the player is Shrunk for 3 turns) on the first turn, then Chomp 7 and Stomp 13 in turn.
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.power = PowerId::SHRINK;
+            current_intent.power_amount = SHRINK_TURNS;
+            current_intent.power_on_player = true;
+            current_intent.description = "Rétrécissement";
+        } else if (turn_number % 2 == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 8 : 7;
+            current_intent.description = "Croc (7 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = ascended_damage ? 14 : 13;
+            current_intent.description = "Piétinement (13 dmg)";
         }
     } else if (type == EnemyType::TOUGH_EGG) {
         // Hatch on its first turn (it does nothing else), then Nibble 4 every turn.
