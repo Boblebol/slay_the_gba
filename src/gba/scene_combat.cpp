@@ -6,7 +6,9 @@
 #include "bn_blending.h"
 #include "bn_keypad.h"
 #include "bn_regular_bg_ptr.h"
+#include "bn_optional.h"
 #include "bn_sprite_palette_ptr.h"
+#include "bn_sprite_tiles_ptr.h"
 #include "bn_sprites_mosaic.h"
 #include "bn_sstream.h"
 #include "bn_string.h"
@@ -546,19 +548,23 @@ void CombatScene::_create_enemy_parts(EnemyView& view, const EnemyArt& art)
     view.parts.clear();
     view.boss = art.boss;
 
-    if(art.boss)
+    // A summon can bring a sixth or seventh different monster into a fight: when no OBJ palette is left for its
+    // colours, it borrows the hero's (wrong colours) instead of stopping the game.
+    bn::optional<bn::sprite_palette_ptr> palette = art.item->palette_item().create_palette_optional();
+
+    if(! palette)
     {
-        for(int part = 0; part < 4; ++part)
-        {
-            bn::sprite_ptr sprite = art.item->create_sprite(view.x + boss_parts[part].x,
-                                                            view.y + boss_parts[part].y, part);
-            sprite.set_z_order(Z_ACTOR);
-            view.parts.push_back(bn::move(sprite));
-        }
+        palette = _player.palette();
     }
-    else
+
+    int parts = art.boss ? 4 : 1;
+
+    for(int part = 0; part < parts; ++part)
     {
-        bn::sprite_ptr sprite = art.item->create_sprite(view.x, view.y);
+        int x = art.boss ? view.x + boss_parts[part].x : view.x;
+        int y = art.boss ? view.y + boss_parts[part].y : view.y;
+        bn::sprite_ptr sprite = bn::sprite_ptr::create(x, y, art.item->shape_size(),
+                                                       art.item->tiles_item().create_tiles(part), *palette);
         sprite.set_z_order(Z_ACTOR);
         view.parts.push_back(bn::move(sprite));
     }
