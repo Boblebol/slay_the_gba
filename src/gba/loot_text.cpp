@@ -118,6 +118,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "STRIKE_DUMMY", "Les cartes contenant « Frappe » infligent 3 dégâts supplémentaires." },
     { "FAKE_STRIKE_DUMMY", "Les cartes contenant « Frappe » infligent 1 dégât supplémentaire." },
     { "MINIATURE_CANNON", "Les Attaques améliorées infligent 3 dégâts supplémentaires." },
+    { "NUTRITIOUS_SOUP", "Envoûte toutes les Frappes du Deck avec Braise de Tezcatara." },
     { "MYSTIC_LIGHTER", "Les Attaques Envoûtées infligent 9 dégâts supplémentaires." },
     { "TUNGSTEN_ROD", "Vous perdez 1 PV de moins chaque fois que vous perdriez des PV." },
     { "PAPER_KRANE", "Les ennemis Affaiblis vous infligent 40% de dégâts en moins plutôt que 25%." },

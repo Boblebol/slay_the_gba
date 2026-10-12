@@ -24,6 +24,8 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 };
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+// Nutritious Soup: the extra damage Tezcatara's Ember gives each enchanted Strike.
+constexpr uint8_t NUTRITIOUS_SOUP_EMBER_DAMAGE = 3;
 constexpr int THE_COURIER_DISCOUNT = 20;
 constexpr int COOK_REMOVALS = 2; // cards removed by Cook (Meat Cleaver)
 constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
@@ -758,6 +760,14 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         gain_random_relics(2);
         add_card_to_deck(DeckCard{ CardId::STRIKE, false });
         add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    }
+    // Relic of the Ancients (Tezcatara): every Strike of the deck is enchanted with Tezcatara's Ember, once, on pickup.
+    if (relic_id == "NUTRITIOUS_SOUP" && has_relic("NUTRITIOUS_SOUP")) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            if (contains(CardDef::get(master_deck[i].id).name, "Strike")) {
+                enchant_card_in_deck(static_cast<int>(i), Enchantment::TEZCATARAS_EMBER, NUTRITIOUS_SOUP_EMBER_DAMAGE);
+            }
+        }
     }
     if (relic_id == "YUMMY_COOKIE" && has_relic("YUMMY_COOKIE")) upgrade_random_cards(4);
     if (relic_id == "SAND_CASTLE" && has_relic("SAND_CASTLE")) upgrade_random_cards(6);
