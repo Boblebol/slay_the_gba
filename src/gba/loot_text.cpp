@@ -155,6 +155,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "DARKSTONE_PERIAPT", "Chaque fois que vous obtenez une Malédiction, augmentez vos PV Max de 6." },
     { "DUSTY_TOME", "Lorsque vous obtenez cette relique, obtenez une Carte d'Ancien." },
     { "GLASS_EYE", "Lorsque vous obtenez cette relique, obtenez 2 cartes Communes, 2 cartes Inhabituelles, et 1 carte Rare." },
+    { "GLITTER", "Envoûtez toutes les récompenses de carte avec Glamour." },
     { "PRISMATIC_GEM", "Gagnez 1 ● au début de chaque tour. Les récompenses de carte contiennent désormais des cartes d'autres couleurs." },
     { "WHISPERING_EARRING", "Gagnez 1 ● au début de chaque tour. Vakuu joue votre premier tour à votre place." },
     { "BOOMING_CONCH", "Au début des combats d'Élite, piochez 2 cartes supplémentaires et gagnez 1 ●." },

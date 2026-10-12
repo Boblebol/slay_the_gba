@@ -1122,6 +1122,33 @@ void test_dingy_rug() {
     std::cout << "[PASS] Dingy Rug: " << colorless << " of " << offers << " card rewards are Colorless" << std::endl;
 }
 
+void test_glitter() {
+    for (uint32_t seed = 1; seed <= 20; ++seed) {
+        RunManager with;
+        with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        with.add_relic("GLITTER");
+        enter_room_of_type(with, RoomType::MONSTER);
+        with.generate_rewards();
+        assert(with.current_card_rewards.size() > 0);
+        for (size_t i = 0; i < with.current_card_rewards.size(); ++i) {
+            assert(with.current_card_rewards[i].enchantment == Enchantment::GLAM);
+        }
+        // The picked card joins the deck with its enchantment.
+        size_t before = with.master_deck.size();
+        with.pick_card_reward(0);
+        assert(with.master_deck.size() == before + 1 && with.master_deck[before].enchantment == Enchantment::GLAM);
+
+        RunManager without;
+        without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(without, RoomType::MONSTER);
+        without.generate_rewards();
+        for (size_t i = 0; i < without.current_card_rewards.size(); ++i) {
+            assert(without.current_card_rewards[i].enchantment == Enchantment::NONE);
+        }
+    }
+    std::cout << "[PASS] Glitter: every card reward is enchanted with Glam" << std::endl;
+}
+
 void test_paels_legion() {
     // With the relic: the Block of a card is doubled, then the relic sleeps for 2 turns.
     CombatEngine legion = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_LEGION, 2);
@@ -4289,5 +4316,6 @@ int main() {
     test_silver_crucible();
     test_forgotten_soul();
     test_fishing_rod();
+    test_glitter();
     return 0;
 }
