@@ -26,8 +26,11 @@ namespace
 constexpr int CARD_Y = -36;
 constexpr int PRICE_Y = 0;
 constexpr int CARD_X[] = { -72, 0, 72 };
-constexpr int REMOVE_ITEM = 3;
-constexpr int LEAVE_ITEM = 4;
+constexpr int CARD_SLOTS = 3;
+constexpr int MAX_CARDS = 7;
+constexpr int REMOVE_ITEM = MAX_CARDS;
+constexpr int LEAVE_ITEM = MAX_CARDS + 1;
+constexpr int SALE_Y = 10;
 // Shelves of the merchant, changed with L and R. Relics and potions are lists of names and prices where the
 // cards stand, with the text of the one under the cursor below.
 constexpr int PAGE_CARDS = 0;
@@ -50,11 +53,11 @@ public:
         _gold_icon(create_icon(Icon::GOLD, -106, -72)),
         _picker(CardPickerLayout{ 60, -74, -30, -30, -58, 142 })
     {
-        for(int index = 0; index < int(_shop.cards.size()) && index < 3; ++index)
+        for(int index = 0; index < int(_shop.cards.size()) && index < MAX_CARDS; ++index)
         {
-            bn::sprite_ptr sprite = big_card_item(_shop.cards[index].card.id).create_sprite(CARD_X[index], CARD_Y);
+            bn::sprite_ptr sprite = big_card_item(_shop.cards[index].card.id).create_sprite(CARD_X[0], CARD_Y);
             sprite.set_z_order(Z_CARD);
-            sprite.set_visible(! _shop.cards[index].purchased);
+            sprite.set_visible(false);
             _cards.push_back(bn::move(sprite));
             _card_y[index] = CARD_Y;
         }
@@ -132,12 +135,14 @@ public:
             {
                 play_sfx(Sfx::UI_CURSOR);
                 _cursor = (_cursor + card_count - 1) % card_count;
+                _card_cursor = _cursor;
                 _refresh_all();
             }
             else if(bn::keypad::right_pressed())
             {
                 play_sfx(Sfx::UI_CURSOR);
                 _cursor = (_cursor + 1) % card_count;
+                _card_cursor = _cursor;
                 _refresh_all();
             }
             else if(bn::keypad::down_pressed())
@@ -150,7 +155,7 @@ public:
         else if(bn::keypad::up_pressed())
         {
             play_sfx(Sfx::UI_CURSOR);
-            _cursor = _cursor == LEAVE_ITEM ? REMOVE_ITEM : (_page == PAGE_CARDS ? 1 : _page_size(_page) - 1);
+            _cursor = _cursor == LEAVE_ITEM ? REMOVE_ITEM : (_page == PAGE_CARDS ? _card_cursor : _page_size(_page) - 1);
             _refresh_all();
         }
         else if(bn::keypad::down_pressed() && _cursor == REMOVE_ITEM)
@@ -185,12 +190,13 @@ private:
     bn::regular_bg_ptr _bg;
     bn::sprite_ptr _gold_icon;
     CardPicker _picker;
-    bn::vector<bn::sprite_ptr, 3> _cards;
-    bn::fixed _card_y[3] = {};
-    int _sold_timer[3] = {};
+    bn::vector<bn::sprite_ptr, MAX_CARDS> _cards;
+    bn::fixed _card_y[MAX_CARDS] = {};
+    int _sold_timer[MAX_CARDS] = {};
+    int _card_cursor = 0;
     Label _title;
     Label _gold;
-    bn::vector<Label, 3> _prices;
+    bn::vector<Label, 2 * MAX_CARDS> _prices;
     Label _info;
     Label _desc;
     Label _remove;
@@ -205,6 +211,28 @@ private:
     // Full belt: the potion bought takes the place of one of the belt, chosen in the list.
     bool _replacing = false;
     int _belt_cursor = 0;
+
+    // First card shown: the three of the screen follow the cursor along the seven of the shelf.
+    [[nodiscard]] int _first_card() const
+    {
+        return bn::clamp(_card_cursor - 1, 0, bn::max(0, int(_cards.size()) - CARD_SLOTS));
+    }
+
+    [[nodiscard]] bool _card_shown(int index) const
+    {
+        int slot = index - _first_card();
+        return slot >= 0 && slot < CARD_SLOTS;
+    }
+
+    [[nodiscard]] int _card_x(int index) const
+    {
+        return CARD_X[bn::clamp(index - _first_card(), 0, CARD_SLOTS - 1)];
+    }
+
+    [[nodiscard]] int _card_x_or_zero(int index) const
+    {
+        return _card_shown(index) ? _card_x(index) : CARD_X[0];
+    }
 
     [[nodiscard]] int _page_size(int page) const
     {
@@ -238,7 +266,7 @@ private:
 
         if(_cursor < REMOVE_ITEM)
         {
-            _cursor = 0;
+            _cursor = page == PAGE_CARDS ? _card_cursor : 0;
         }
 
         _refresh_all();
@@ -436,13 +464,13 @@ private:
                 bn::string<16> text;
                 bn::ostringstream stream(text);
                 stream << '-' << item.cost << " Or";
-                _popups.spawn(CARD_X[_cursor], PRICE_Y - 10, text, TextColor::GOLD);
+                _popups.spawn(_card_x(_cursor), PRICE_Y - 10, text, TextColor::GOLD);
                 play_sfx(Sfx::GOLD);
                 _sold_timer[_cursor] = 1;
             }
             else
             {
-                _popups.spawn(CARD_X[_cursor], PRICE_Y - 10, "Pas assez d'or", TextColor::RED);
+                _popups.spawn(_card_x(_cursor), PRICE_Y - 10, "Pas assez d'or", TextColor::RED);
                 play_sfx(Sfx::ERROR);
             }
 
@@ -481,6 +509,13 @@ private:
         {
             bn::sprite_ptr& card = _cards[index];
 
+            if(! _card_shown(index))
+            {
+                continue;
+            }
+
+            card.set_x(_card_x(index));
+
             if(_sold_timer[index] > 0)
             {
                 // Bought: the card lifts off and shrinks away.
@@ -511,9 +546,12 @@ private:
         bn::ostringstream gold_stream(gold);
         gold_stream << _ctx.run.gold;
         _gold.set(-96, -72, gold, Align::LEFT, TextColor::GOLD);
+        bn::string<32> cards_title;
+        bn::ostringstream cards_stream(cards_title);
+        cards_stream << "◄ L  CARTES " << (_card_cursor + 1) << '/' << int(_cards.size()) << "  R ►";
         _title.set(0, -72,
                    _replacing ? "Jeter quelle potion ?"
-                              : (_page == PAGE_CARDS ? "◄ L   CARTES   R ►"
+                              : (_page == PAGE_CARDS ? bn::string_view(cards_title)
                                                      : (_page == PAGE_RELICS ? "◄ L   RELIQUES   R ►"
                                                                              : "◄ L   POTIONS   R ►")),
                    Align::CENTER, TextColor::GOLD);
@@ -525,7 +563,9 @@ private:
         for(int index = 0; index < _cards.size(); ++index)
         {
             // The cards only stand on their own shelf; a card just bought finishes flying away.
-            _cards[index].set_visible(_page == PAGE_CARDS && (! _shop.cards[index].purchased || _sold_timer[index] > 0));
+            _cards[index].set_visible(_page == PAGE_CARDS && _card_shown(index) &&
+                                      (! _shop.cards[index].purchased || _sold_timer[index] > 0));
+            _cards[index].set_x(_card_x_or_zero(index));
         }
 
         if(_page != PAGE_CARDS)
@@ -535,6 +575,11 @@ private:
 
         for(int index = 0; index < _cards.size() && _page == PAGE_CARDS; ++index)
         {
+            if(! _card_shown(index))
+            {
+                continue;
+            }
+
             const engine::ShopCard& item = _shop.cards[index];
             bn::string<16> price;
             bn::ostringstream stream(price);
@@ -549,8 +594,15 @@ private:
             }
 
             TextColor color = item.purchased ? TextColor::GRAY
-                    : (_ctx.run.gold >= item.cost ? TextColor::GOLD : TextColor::RED);
-            _prices.emplace_back().set(CARD_X[index], PRICE_Y, price, Align::CENTER, color);
+                    : (_ctx.run.gold >= item.cost ? (item.on_sale ? TextColor::GREEN : TextColor::GOLD)
+                                                  : TextColor::RED);
+            _prices.emplace_back().set(_card_x(index), PRICE_Y, price, Align::CENTER, color);
+
+            if(item.on_sale && ! item.purchased)
+            {
+                _prices.emplace_back().set(_card_x(index), PRICE_Y + SALE_Y, "PROMO -50%", Align::CENTER,
+                                           TextColor::GREEN);
+            }
         }
 
         if(_replacing)
@@ -598,7 +650,8 @@ private:
     {
         for(int index = 0; index < _cards.size(); ++index)
         {
-            _cards[index].set_visible(visible && _page == PAGE_CARDS && ! _shop.cards[index].purchased);
+            _cards[index].set_visible(visible && _page == PAGE_CARDS && _card_shown(index) &&
+                                      ! _shop.cards[index].purchased);
         }
 
         for(Label& label : _rows)

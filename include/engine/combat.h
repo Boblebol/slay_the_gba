@@ -407,6 +407,8 @@ public:
     void transform_card(DeckCard& card, CardId into, bool upgraded);
     // Strength or Dexterity until the end of the turn.
     void gain_temporary(StatusType type, int8_t amount);
+    // Strength gained by the player; returns the amount applied (Ruined Helmet doubles the first gain of the combat).
+    int16_t gain_strength(int16_t amount);
     // The enemy loses Strength until the end of its turn.
     void sap_strength(Enemy& target, int16_t amount);
     // Schedules an effect: see DelayedEffect.
