@@ -208,6 +208,62 @@ void test_manifest_authority() {
     std::cout << "[PASS] Regent: Manifest Authority" << std::endl;
 }
 
+void test_royalties() {
+    assert_in_pool(CharacterId::REGENT, { CardId::ROYALTIES });
+    const CardDef& def = CardDef::get(CardId::ROYALTIES);
+    assert(def.cost == 1 && def.upgraded_cost == 1 && def.type == CardType::POWER && def.target == TargetType::SELF);
+    assert(card_meta(CardId::ROYALTIES).rarity == CardRarity::RARE);
+
+    for (bool upgraded : { false, true }) {
+        // 30 gold (40 upgraded) at the end of the combat, paid by the run.
+        CombatEngine combat = make_pack(CharacterId::REGENT);
+        play(combat, DeckCard(CardId::ROYALTIES, upgraded));
+        assert(combat.player.energy == combat.player.max_energy - 1);
+        assert(combat.power_amount(PowerId::ROYALTIES) == (upgraded ? 40 : 30));
+        assert(combat.enemies[0].hp == 18 && combat.enemies[2].hp == 42);
+
+        RunManager run;
+        run.start_run(CharacterId::REGENT, 1234);
+        int16_t before = run.gold;
+        run.combat.start_combat(EnemyType::JAW_WORM, CharacterId::REGENT);
+        play(run.combat, DeckCard(CardId::ROYALTIES, upgraded));
+        run.combat.state = CombatState::VICTORY;
+        run.phase = RunPhase::IN_COMBAT;
+        run.proceed_after_combat();
+        assert(run.gold == before + (upgraded ? 40 : 30));
+    }
+    std::cout << "[PASS] Regent: Royalties" << std::endl;
+}
+
+void test_quasar() {
+    assert_in_pool(CharacterId::REGENT, { CardId::QUASAR });
+    assert(card_meta(CardId::QUASAR).rarity == CardRarity::UNCOMMON && card_meta(CardId::QUASAR).pool == CardPool::REGENT);
+    assert(CardDef::get(CardId::QUASAR).type == CardType::SKILL);
+    for (bool upgraded : { false, true }) {
+        assert(CardDef::get_cost(CardId::QUASAR, upgraded) == 0 && CardDef::get_star_cost(CardId::QUASAR, upgraded) == 2);
+        // 0 energy and 2 Stars: 3 different Colorless cards are offered (Upgraded when the card is), 1 goes to the hand.
+        CombatEngine combat = make_pack(CharacterId::REGENT);
+        combat.hand.clear();
+        combat.hand.push_back(DeckCard(CardId::QUASAR, upgraded));
+        combat.player.energy = combat.player.max_energy;
+        combat.player.sovereign_stars = 5;
+        assert(combat.play_card(0, -1));
+        assert(combat.player.energy == combat.player.max_energy && combat.player.sovereign_stars == 3);
+        assert(combat.choice_pending() && combat.offers.size() == 3 && combat.choice_size() == 1);
+        for (size_t i = 0; i < combat.offers.size(); ++i) {
+            assert(card_meta(combat.offers[i].id).pool == CardPool::COLORLESS && combat.offers[i].upgraded == upgraded);
+            for (size_t j = 0; j < i; ++j) assert(combat.offers[j].id != combat.offers[i].id);
+        }
+        const DeckCard picked = combat.offers[1];
+        const uint8_t picks[] = { 1 };
+        assert(combat.resolve_choice(picks));
+        assert(!combat.choice_pending() && combat.offers.empty());
+        assert(combat.hand.size() == 1 && combat.hand[0].id == picked.id && combat.hand[0].upgraded == upgraded);
+        assert(combat.discard_pile.back().id == CardId::QUASAR);
+    }
+    std::cout << "[PASS] Regent: Quasar" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -217,6 +273,8 @@ int main() {
     test_random_card_by_type_and_rarity();
     test_random_card_uses_the_fight_generator();
     test_manifest_authority();
+    test_royalties();
+    test_quasar();
     std::cout << "=== All Regent Cards Passed! ===" << std::endl;
     return 0;
 }

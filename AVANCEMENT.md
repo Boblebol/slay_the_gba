@@ -4,37 +4,37 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 71,4 %** — 880 faits, 20 partiels, 346 à faire (35 hors périmètre).
+**Avancement global : 85,7 %** — 1059 faits, 17 partiels, 170 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
-Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Fuel, Giant Rock, Luminesce, Metallicize, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
+Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Burn, Cleave, Dazed, Debris, Frantic Escape, Fuel, Giant Rock, Infection, Luminesce, Metallicize, Minion Dive Bomb, Minion Sacrifice, Minion Strike, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Void, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
 
 ## Synthèse
 
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
-| [Soldat de Fer](#ironclad) | 98 | 1 | 3 | 96,6 % |
-| [La Silencieuse](#silent) | 99 | 1 | 1 | 98,5 % |
-| [Le Défectueux](#defect) | 100 | 1 | 4 | 95,7 % |
-| [Le Régent](#regent) | 92 | 1 | 7 | 92,5 % |
-| [La Nécrolieuse](#necrobinder) | 98 | 1 | 3 | 96,6 % |
-| [Cartes communes aux cinq éditions](#cartes) | 106 | 0 | 14 | 88,3 % |
-| [Reliques et potions](#reliques) | 186 | 0 | 135 | 57,9 % |
-| [Bestiaire](#bestiaire) | 19 | 1 | 84 | 18,8 % |
+| [Soldat de Fer](#ironclad) | 100 | 1 | 1 | 98,5 % |
+| [La Silencieuse](#silent) | 100 | 1 | 0 | 99,5 % |
+| [Le Défectueux](#defect) | 104 | 1 | 0 | 99,5 % |
+| [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
+| [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
+| [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
+| [Reliques et potions](#reliques) | 284 | 0 | 37 | 88,5 % |
+| [Bestiaire](#bestiaire) | 66 | 1 | 37 | 63,9 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 43 | 1 | 15 | 73,7 % |
-| [Systèmes de jeu](#systemes) | 24 | 4 | 8 | 72,2 % |
+| [Règles de combat](#regles) | 46 | 0 | 13 | 78,0 % |
+| [Systèmes de jeu](#systemes) | 28 | 2 | 6 | 80,6 % |
 | [Interface, audio et cartouches](#interface) | 15 | 6 | 10 | 58,1 % |
-| **Total** | **880** | **20** | **346** | **71,4 %** |
+| **Total** | **1059** | **17** | **170** | **85,7 %** |
 
 <a id="ironclad"></a>
 
-## Soldat de Fer — 96,6 %
+## Soldat de Fer — 98,5 %
 
-### Cartes — 98,8 %
+### Cartes — 100,0 %
 
-85 faits, 0 partiel, 1 à faire (4 hors périmètre).
+86 faits, 0 partiel, 0 à faire (4 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -110,7 +110,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | En miettes | Rare · Attaque | Oui |  |
 | Estropier | Rare · Attaque | Oui |  |
 | Feu démoniaque | Rare · Attaque | Oui |  |
-| Force primitive | Rare · Compétence | Non |  |
+| Force primitive | Rare · Compétence | Oui |  |
 | Forme démoniaque | Rare · Pouvoir | Oui |  |
 | Furie | Rare · Attaque | Oui |  |
 | Incendie | Rare · Attaque | Oui |  |
@@ -129,16 +129,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Briser | Ancienne · Attaque | Oui |  |
 | Corruption | Ancienne · Pouvoir | Oui |  |
 
-### Reliques — 75,0 %
+### Reliques — 87,5 %
 
-6 faits, 0 partiel, 2 à faire.
+7 faits, 0 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Sang ardent | Départ | Oui |  |
 | Crâne rouge | Commune | Oui |  |
 | Argile autoformante | Peu commune | Oui |  |
-| Krapo en papier | Peu commune | Non |  |
+| Krapo en papier | Peu commune | Oui |  |
 | Casque délabré | Rare | Non |  |
 | Cendres de Charon | Rare | Oui |  |
 | Langue du Démon | Rare | Oui |  |
@@ -161,7 +161,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="silent"></a>
 
-## La Silencieuse — 98,5 %
+## La Silencieuse — 99,5 %
 
 ### Cartes — 100,0 %
 
@@ -261,9 +261,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Forme spectrale | Ancienne · Pouvoir | Oui |  |
 | Répression | Ancienne · Attaque | Oui |  |
 
-### Reliques — 87,5 %
+### Reliques — 100,0 %
 
-7 faits, 0 partiel, 1 à faire.
+8 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -273,7 +273,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tingsha | Peu commune | Oui |  |
 | Bandages résistants | Rare | Oui |  |
 | Fléchette hélicoïdale | Rare | Oui |  |
-| Grû en papier | Rare | Non |  |
+| Grû en papier | Rare | Oui |  |
 | Parchemin de ninja | Boutique | Oui |  |
 
 ### Mécaniques — 92,9 %
@@ -292,11 +292,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="defect"></a>
 
-## Le Défectueux — 95,7 %
+## Le Défectueux — 99,5 %
 
-### Cartes — 96,5 %
+### Cartes — 100,0 %
 
-83 faits, 0 partiel, 3 à faire (5 hors périmètre).
+86 faits, 0 partiel, 0 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -349,7 +349,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Prise de masse | Peu commune · Pouvoir | Oui |  |
 | Programme de démarrage | Peu commune · Compétence | Oui |  |
 | Récupération | Peu commune · Compétence | Oui |  |
-| Réfraction | Peu commune · Attaque | Non |  |
+| Réfraction | Peu commune · Attaque | Oui |  |
 | Sauvagerie | Peu commune · Pouvoir | Oui |  |
 | Scission | Peu commune · Attaque | Oui |  |
 | Sous-programme | Peu commune · Pouvoir | Oui |  |
@@ -359,7 +359,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tonnerre | Peu commune · Pouvoir | Oui |  |
 | Ténèbres | Peu commune · Compétence | Oui |  |
 | Valeur nulle | Peu commune · Attaque | Oui |  |
-| Verrerie | Peu commune · Compétence | Non |  |
+| Verrerie | Peu commune · Compétence | Oui |  |
 | Énergie double | Peu commune · Compétence | Oui |  |
 | Éraflure | Peu commune · Attaque | Oui |  |
 | Activation multiple | Rare · Compétence | Oui |  |
@@ -383,7 +383,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Revalorisation | Rare · Pouvoir | Oui |  |
 | Supercritique | Rare · Compétence | Oui |  |
 | Tampon | Rare · Pouvoir | Oui |  |
-| Toupie | Rare · Pouvoir | Non |  |
+| Toupie | Rare · Pouvoir | Oui |  |
 | Tous pour un | Rare · Attaque | Oui |  |
 | Ultralaser | Rare · Attaque | Oui |  |
 | Un pour tous | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
@@ -407,9 +407,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Puce émotionnelle | Rare | Oui |  |
 | Condensateur runique | Boutique | Oui |  |
 
-### Mécaniques — 86,4 %
+### Mécaniques — 95,5 %
 
-9 faits, 1 partiel, 1 à faire.
+10 faits, 1 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -419,7 +419,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Orbe glaciaire : 2 d'Armure en fin de tour, 5 à l'Activation |  | Oui |  |
 | Orbe ténébreux : se charge de 6 par tour, libère sa charge |  | Oui |  |
 | Orbe plasmique : 1 énergie par tour, 2 à l'Activation |  | Oui |  |
-| Orbe vitreux |  | Non | [#99](https://github.com/Boblebol/slay_the_gba/issues/99) |
+| Orbe vitreux |  | Oui | [#99](https://github.com/Boblebol/slay_the_gba/issues/99) |
 | Focalisation : renforce tous les Orbes |  | Oui |  |
 | Emplacements d'Orbe variables (Condensateur) |  | Oui |  |
 | Compteur d'Orbes affiché en combat |  | Oui |  |
@@ -427,11 +427,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regent"></a>
 
-## Le Régent — 92,5 %
+## Le Régent — 99,5 %
 
-### Cartes — 95,3 %
+### Cartes — 100,0 %
 
-82 faits, 0 partiel, 4 à faire (5 hors périmètre).
+86 faits, 0 partiel, 0 à faire (5 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -447,7 +447,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Entaille photonique | Commune · Attaque | Oui |  |
 | Forgé par la guerre | Commune · Attaque | Oui |  |
 | Frappe solaire | Commune · Attaque | Oui |  |
-| HORS DE MA VUE ! | Commune · Compétence | Non |  |
+| HORS DE MA VUE ! | Commune · Compétence | Oui |  |
 | Hiérarchie | Commune · Compétence | Oui |  |
 | Indifférence cosmique | Commune · Compétence | Oui |  |
 | Lame lustrée | Commune · Compétence | Oui |  |
@@ -461,7 +461,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Étoile directrice | Commune · Attaque | Oui |  |
 | Alignement | Peu commune · Compétence | Oui |  |
 | Autorité manifeste | Peu commune · Compétence | Oui |  |
-| CHARGEZ !! | Peu commune · Compétence | Non |  |
+| CHARGEZ !! | Peu commune · Compétence | Oui |  |
 | Conquérant | Peu commune · Compétence | Oui |  |
 | Constellation | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Convergence | Peu commune · Compétence | Oui |  |
@@ -488,7 +488,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Point bleu pâle | Peu commune · Pouvoir | Oui |  |
 | Poussière d'étoiles | Peu commune · Attaque | Oui |  |
 | Prophétie | Peu commune · Compétence | Oui |  |
-| Quasar | Peu commune · Compétence | Non |  |
+| Quasar | Peu commune · Compétence | Oui |  |
 | Rayonnement | Peu commune · Attaque | Oui |  |
 | Reflet miroir | Peu commune · Compétence | Oui |  |
 | Rempart | Peu commune · Compétence | Oui |  |
@@ -508,7 +508,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Couru d'avance | Rare · Compétence | Oui |  |
 | Foreuse céleste | Rare · Attaque | Oui |  |
 | Forme du néant | Rare · Pouvoir | Oui |  |
-| GARDES !!! | Rare · Compétence | Non |  |
+| GARDES !!! | Rare · Compétence | Oui |  |
 | Genèse | Rare · Pouvoir | Oui |  |
 | Grandes décisions | Rare · Compétence | Oui |  |
 | Je suis invincible | Rare · Compétence | Oui |  |
@@ -527,9 +527,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Le trône scellé | Ancienne · Pouvoir | Oui |  |
 | Pluie de météores | Ancienne · Attaque | Oui |  |
 
-### Reliques — 75,0 %
+### Reliques — 100,0 %
 
-6 faits, 0 partiel, 2 à faire.
+8 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -538,30 +538,30 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Poussière galactique | Peu commune | Oui |  |
 | Royalithe | Peu commune | Oui |  |
 | Mini Régent | Rare | Oui |  |
-| Pâte orange | Rare | Non |  |
+| Pâte orange | Rare | Oui |  |
 | Pâtisserie lunaire | Rare | Oui |  |
-| Sbire de Vitruve | Boutique | Non |  |
+| Sbire de Vitruve | Boutique | Oui |  |
 
-### Mécaniques — 75,0 %
+### Mécaniques — 91,7 %
 
-4 faits, 1 partiel, 1 à faire.
+5 faits, 1 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Étoiles : seconde ressource gagnée par les cartes |  | Oui |  |
 | Cartes à coût en Étoiles |  | Oui |  |
 | Forger la Lame souveraine |  | Oui | [#102](https://github.com/Boblebol/slay_the_gba/issues/102) |
-| Sbires (Frappe de sbire, Sbire en piqué) |  | Non | [#103](https://github.com/Boblebol/slay_the_gba/issues/103) |
+| Sbires (Frappe de sbire, Sbire en piqué) |  | Oui | [#103](https://github.com/Boblebol/slay_the_gba/issues/103) |
 | Compteur d'Étoiles affiché en combat |  | Oui |  |
 | Animations du héros (repos, attaque, dégâts, garde) |  | Partiel | Flottement au repos, secousse et fondu de mort ; pas de poses dessinées. [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 96,6 %
+## La Nécrolieuse — 99,5 %
 
-### Cartes — 97,7 %
+### Cartes — 100,0 %
 
-85 faits, 0 partiel, 2 à faire (4 hors périmètre).
+87 faits, 0 partiel, 0 à faire (4 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -649,17 +649,17 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Réanimation | Rare · Compétence | Oui |  |
 | Sacrifice | Rare · Compétence | Oui |  |
 | Sentinelle | Rare · Pouvoir | Oui |  |
-| Séance | Rare · Compétence | Non |  |
+| Séance | Rare · Compétence | Oui |  |
 | Tempête d'âmes | Rare · Attaque | Oui |  |
-| Transfiguration | Rare · Compétence | Non |  |
+| Transfiguration | Rare · Compétence | Oui |  |
 | Vision de l'au-delà | Rare · Compétence | Oui |  |
 | Éradication | Rare · Attaque | Oui |  |
 | Grimoire interdit | Ancienne · Pouvoir | Oui |  |
 | Protecteur | Ancienne · Attaque | Oui |  |
 
-### Reliques — 87,5 %
+### Reliques — 100,0 %
 
-7 faits, 0 partiel, 1 à faire.
+8 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -670,7 +670,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Grand chapeau | Rare | Oui |  |
 | Marque-page | Rare | Oui |  |
 | Tuile en ivoire | Rare | Oui |  |
-| Sceau immortel | Boutique | Non |  |
+| Sceau immortel | Boutique | Oui |  |
 
 ### Mécaniques — 92,9 %
 
@@ -688,11 +688,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 88,3 %
+## Cartes communes aux cinq éditions — 96,7 %
 
-### Cartes incolores — 92,5 %
+### Cartes incolores — 100,0 %
 
-49 faits, 0 partiel, 4 à faire (12 hors périmètre).
+53 faits, 0 partiel, 0 à faire (12 hors périmètre).
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -706,7 +706,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Confiance | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Coordination | Peu commune · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Coup d'avance | Peu commune · Compétence | Oui |  |
-| Découverte | Peu commune · Compétence | Non |  |
+| Découverte | Peu commune · Compétence | Oui |  |
 | Défense ultime | Peu commune · Compétence | Oui |  |
 | Déflagration mentale | Peu commune · Attaque | Oui |  |
 | Entraves des ténèbres | Peu commune · Compétence | Oui |  |
@@ -742,14 +742,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Balise d'espoir | Rare · Pouvoir | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Bolas | Rare · Attaque | Oui |  |
 | Calamité | Rare · Pouvoir | Oui |  |
-| Clapotis | Rare · Compétence | Non |  |
-| Entropie | Rare · Pouvoir | Non |  |
+| Clapotis | Rare · Compétence | Oui |  |
+| Entropie | Rare · Pouvoir | Oui |  |
 | Grabuge | Rare · Pouvoir | Oui |  |
 | Griffonage | Rare · Compétence | Oui |  |
 | Hache dorée | Rare · Attaque | Oui |  |
 | Imitation | Rare · Compétence | Hors périmètre | Effet multijoueur, sans objet sur GBA. |
 | Jackpot | Rare · Attaque | Oui |  |
-| Joyau caché | Rare · Compétence | Non |  |
+| Joyau caché | Rare · Compétence | Oui |  |
 | La grande manœuvre | Rare · Compétence | Oui |  |
 | Main de la cupidité | Rare · Attaque | Oui |  |
 | Maître stratège | Rare · Compétence | Oui |  |
@@ -762,13 +762,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sacrement | Rare · Compétence | Oui |  |
 | Technique secrète | Rare · Compétence | Oui |  |
 
-### Cartes d'évènement — 92,9 %
+### Cartes d'évènement — 100,0 %
 
-26 faits, 0 partiel, 2 à faire.
+28 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Abondance | Ancienne · Compétence | Non |  |
+| Abondance | Ancienne · Compétence | Oui |  |
 | Apothéose | Ancienne · Compétence | Oui |  |
 | Apparition | Ancienne · Compétence | Oui |  |
 | Flamme éclatante | Ancienne · Compétence | Oui |  |
@@ -794,19 +794,19 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Piqué d'oizo | Évènement · Attaque | Oui |  |
 | Rebond | Évènement · Attaque | Oui |  |
 | Repas frénétique | Évènement · Compétence | Oui |  |
-| Science sans conscience | Évènement · Attaque | Non |  |
+| Science sans conscience | Évènement · Attaque | Oui |  |
 | Ténacité torique | Évènement · Compétence | Oui |  |
 
-### Malédictions — 94,4 %
+### Malédictions — 100,0 %
 
-17 faits, 0 partiel, 1 à faire.
+18 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Assuétude | Malédiction · Malédiction | Oui |  |
 | Blessure | Malédiction · Malédiction | Oui |  |
 | Conscience sporique | Malédiction · Malédiction | Oui |  |
-| Culpabilité | Malédiction · Malédiction | Non |  |
+| Culpabilité | Malédiction · Malédiction | Oui |  |
 | Cupidité | Malédiction · Malédiction | Oui |  |
 | Dette | Malédiction · Malédiction | Oui |  |
 | Doute | Malédiction · Malédiction | Oui |  |
@@ -833,9 +833,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Rhabdomancie | Quête · Quête | Non |  |
 | Œuf d'oizodon | Quête · Quête | Non |  |
 
-### Cartes créées en combat et statuts — 82,4 %
+### Cartes créées en combat et statuts — 100,0 %
 
-14 faits, 0 partiel, 3 à faire.
+17 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -844,14 +844,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Combustible | Créée en combat · Compétence | Oui |  |
 | Débris | Statut · Statut | Oui |  |
 | Englué | Statut · Statut | Oui |  |
-| Frappe de sbire | Créée en combat · Attaque | Non |  |
+| Frappe de sbire | Créée en combat · Attaque | Oui |  |
 | Hébété | Statut · Statut | Oui |  |
 | Lame souveraine | Créée en combat · Attaque | Oui |  |
 | Néant | Statut · Statut | Oui |  |
 | Plaie | Statut · Statut | Oui |  |
 | Rocher gigantesque | Créée en combat · Attaque | Oui |  |
-| Sbire en piqué | Créée en combat · Attaque | Non |  |
-| Sbire sacrificiel | Créée en combat · Compétence | Non |  |
+| Sbire en piqué | Créée en combat · Attaque | Oui |  |
+| Sbire sacrificiel | Créée en combat · Compétence | Oui |  |
 | Suie | Statut · Statut | Oui |  |
 | Surin | Créée en combat · Attaque | Oui |  |
 | Âme | Créée en combat · Compétence | Oui |  |
@@ -859,37 +859,37 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 57,9 %
+## Reliques et potions — 88,5 %
 
-### Reliques partagées — 62,4 %
+### Reliques partagées — 89,7 %
 
-73 faits, 0 partiel, 44 à faire.
+105 faits, 0 partiel, 12 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Ancre | Commune | Oui |  |
-| Aubergine d'améthyste | Commune | Non |  |
+| Aubergine d'améthyste | Commune | Oui |  |
 | Bracelet Juzu | Commune | Non |  |
-| Ceinture à potions | Commune | Non |  |
+| Ceinture à potions | Commune | Oui |  |
 | Fiole de sang | Commune | Oui |  |
 | Fleur joyeuse | Commune | Oui |  |
 | Fraise | Commune | Oui |  |
 | Gorgerette | Commune | Oui |  |
 | Lanterne | Commune | Oui |  |
-| Livre des cinq anneaux | Commune | Non |  |
+| Livre des cinq anneaux | Commune | Oui |  |
 | Mannequin d'entraînement | Commune | Oui |  |
 | Masque rouge | Commune | Oui |  |
-| Oreiller royal | Commune | Non |  |
-| Peinture de guerre | Commune | Non |  |
+| Oreiller royal | Commune | Oui |  |
+| Peinture de guerre | Commune | Oui |  |
 | Pendule | Commune | Oui |  |
-| Pierre à aiguiser | Commune | Non |  |
+| Pierre à aiguiser | Commune | Oui |  |
 | Pierre étrangement lisse | Commune | Oui |  |
 | Puzzle centenaire | Commune | Oui |  |
 | Pétard de fête | Commune | Oui |  |
 | Sac de billes | Commune | Oui |  |
 | Sacoche de préparatifs | Commune | Oui |  |
-| Service à thé vénérable | Commune | Non |  |
-| Ticket restaurant | Commune | Non |  |
+| Service à thé vénérable | Commune | Oui |  |
+| Ticket restaurant | Commune | Oui |  |
 | Vajra | Commune | Oui |  |
 | Écailles de bronze | Commune | Oui |  |
 | Akabeko | Peu commune | Oui |  |
@@ -897,14 +897,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Billet funéraire | Peu commune | Oui |  |
 | Bonbon durable | Peu commune | Non |  |
 | Bouclier de parade | Peu commune | Oui |  |
-| Brassard | Peu commune | Non |  |
+| Brassard | Peu commune | Oui |  |
 | Breloque reptile | Peu commune | Oui |  |
 | Candélabre | Peu commune | Oui |  |
-| Canon miniature | Peu commune | Non |  |
-| Chapeau melon | Peu commune | Non |  |
+| Canon miniature | Peu commune | Oui |  |
+| Chapeau melon | Peu commune | Oui |  |
 | Corne de diablotin | Peu commune | Oui |  |
 | Coupe-papier | Peu commune | Oui |  |
-| Crapaud pétrifié | Peu commune | Non |  |
+| Crapaud pétrifié | Peu commune | Oui |  |
 | Diapason | Peu commune | Oui |  |
 | Fard pétillant | Peu commune | Oui |  |
 | Kusarigama | Peu commune | Oui |  |
@@ -914,11 +914,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Orichalque | Peu commune | Oui |  |
 | Pantographe | Peu commune | Oui |  |
 | Pergélisol | Peu commune | Oui |  |
-| Planisphère | Peu commune | Non |  |
-| Plume éternelle | Peu commune | Non |  |
+| Planisphère | Peu commune | Oui |  |
+| Plume éternelle | Peu commune | Oui |  |
 | Pointe de stylo | Peu commune | Oui |  |
-| Poire | Peu commune | Non |  |
-| Poisson chanceux | Peu commune | Non |  |
+| Poire | Peu commune | Oui |  |
+| Poisson chanceux | Peu commune | Oui |  |
 | Sablier de mercure | Peu commune | Oui |  |
 | Taquet d'amarrage | Peu commune | Oui |  |
 | Éventail décoratif | Peu commune | Oui |  |
@@ -931,21 +931,21 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Chandelier | Rare | Oui |  |
 | Crème glacée | Rare | Oui |  |
 | Dent de rasoir | Rare | Oui |  |
-| Girya | Rare | Non |  |
+| Girya | Rare | Oui |  |
 | Jeton de casino | Rare | Oui |  |
 | Kunai | Rare | Oui |  |
 | L'Art de la guerre | Rare | Oui |  |
-| Lampe inquiétante | Rare | Non |  |
+| Lampe inquiétante | Rare | Oui |  |
 | Le Coursier | Rare | Oui |  |
 | Main momifiée | Rare | Oui |  |
-| Mangue | Rare | Non |  |
+| Mangue | Rare | Oui |  |
 | Montre à gousset | Rare | Oui |  |
-| Moulin à prières | Rare | Non |  |
+| Moulin à prières | Rare | Oui |  |
 | Os à viande | Rare | Oui |  |
-| Pelle | Rare | Non |  |
+| Pelle | Rare | Oui |  |
 | Pince robuste | Rare | Oui |  |
 | Pion | Rare | Oui |  |
-| Pièce antique | Rare | Non |  |
+| Pièce antique | Rare | Oui |  |
 | Queue de lézard | Rare | Oui |  |
 | Shuriken | Rare | Oui |  |
 | Soufflet | Rare | Oui |  |
@@ -953,25 +953,25 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tige de tungstène | Rare | Oui |  |
 | Toupie perpétuelle | Rare | Oui |  |
 | Vestige battant | Rare | Oui |  |
-| Étoile blanche | Rare | Non |  |
-| Œuf en fusion | Rare | Non |  |
-| Œuf gelé | Rare | Non |  |
-| Œuf toxique | Rare | Non |  |
+| Étoile blanche | Rare | Oui |  |
+| Œuf en fusion | Rare | Oui |  |
+| Œuf gelé | Rare | Oui |  |
+| Œuf toxique | Rare | Oui |  |
 | Aile fétiche | Boutique | Non |  |
 | Boucle de ceinture | Boutique | Oui |  |
-| Boîte à outils | Boutique | Non |  |
+| Boîte à outils | Boutique | Oui |  |
 | Briquet mystique | Boutique | Non |  |
 | Bâtonnets enflammés | Boutique | Oui |  |
 | Carte de fidélité | Boutique | Oui |  |
 | Chaudron | Boutique | Oui |  |
-| Composé X | Boutique | Non |  |
+| Composé X | Boutique | Oui |  |
 | Fronde du courage | Boutique | Oui |  |
-| Fruit du dragon | Boutique | Non |  |
-| Gaufre de Lee | Boutique | Non |  |
+| Fruit du dragon | Boutique | Oui |  |
+| Gaufre de Lee | Boutique | Oui |  |
 | Graine fantôme | Boutique | Oui |  |
 | Kifuda | Boutique | Non |  |
 | L'Abaque | Boutique | Oui |  |
-| Lampe à lave | Boutique | Non |  |
+| Lampe à lave | Boutique | Oui |  |
 | Marteau tordu | Boutique | Non |  |
 | Miroir de Dolly | Boutique | Non |  |
 | Pain | Boutique | Oui |  |
@@ -979,67 +979,67 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Planétaire | Boutique | Non |  |
 | Poignard | Boutique | Non |  |
 | Sceau royal | Boutique | Non |  |
-| Tapis miteux | Boutique | Non |  |
+| Tapis miteux | Boutique | Oui |  |
 | Tente miniature | Boutique | Non |  |
 | Triangle résonnant | Boutique | Oui |  |
 | Lentille de Fresnel | Évènement | Non |  |
 | Diadème | Secours | Oui |  |
 
-### Reliques d'évènement — 5,1 %
+### Reliques d'évènement — 94,9 %
 
-2 faits, 0 partiel, 37 à faire.
+37 faits, 0 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Anneau du dragon | Départ | Non |  |
-| Destin divin | Départ | Non |  |
-| Noyau infusé | Départ | Non |  |
+| Anneau du dragon | Départ | Oui |  |
+| Destin divin | Départ | Oui |  |
+| Noyau infusé | Départ | Oui |  |
 | Phylactère déchaîné | Départ | Oui |  |
-| Sang noir | Départ | Non |  |
-| Amulette sombrepierre | Évènement | Non |  |
-| Ancre ??? | Évènement | Non |  |
-| Attrape-rêves | Évènement | Non |  |
-| Bing bong | Évènement | Non |  |
-| Champi aromatique | Évènement | Non |  |
-| Feu follet perdu | Évènement | Non |  |
-| Fille des vents | Évènement | Non |  |
-| Fiole de sang ??? | Évènement | Non |  |
-| Fleur joyeuse ??? | Évènement | Non |  |
-| Fromage d'élection | Évènement | Non |  |
-| Gaufre de Lee ??? | Évènement | Non |  |
-| Gros champi | Évènement | Non |  |
-| La botte | Évènement | Non |  |
-| Le tapis du Marchand ??? | Évènement | Non |  |
-| Mangue ??? | Évènement | Non |  |
-| Mannequin d'entraînement ??? | Évènement | Non |  |
-| Manuel d'Histoire | Évènement | Non |  |
-| Monsieur Carnage | Évènement | Non |  |
-| Noyau pollinique | Évènement | Non |  |
+| Sang noir | Départ | Oui |  |
+| Amulette sombrepierre | Évènement | Oui |  |
+| Ancre ??? | Évènement | Oui |  |
+| Attrape-rêves | Évènement | Oui |  |
+| Bing bong | Évènement | Oui |  |
+| Champi aromatique | Évènement | Oui |  |
+| Feu follet perdu | Évènement | Oui |  |
+| Fille des vents | Évènement | Oui |  |
+| Fiole de sang ??? | Évènement | Oui |  |
+| Fleur joyeuse ??? | Évènement | Oui |  |
+| Fromage d'élection | Évènement | Oui |  |
+| Gaufre de Lee ??? | Évènement | Oui |  |
+| Gros champi | Évènement | Oui |  |
+| La botte | Évènement | Oui |  |
+| Le tapis du Marchand ??? | Évènement | Oui |  |
+| Mangue ??? | Évènement | Oui |  |
+| Mannequin d'entraînement ??? | Évènement | Oui |  |
+| Manuel d'Histoire | Évènement | Oui |  |
+| Monsieur Carnage | Évènement | Oui |  |
+| Noyau pollinique | Évènement | Oui |  |
 | Oizillon | Évènement | Non |  |
-| Orichalque ??? | Évènement | Non |  |
-| Perceuse | Évènement | Non |  |
-| Pin’s Exclusif de Fidélité Wongo | Évènement | Non |  |
-| Poison royal | Évènement | Non |  |
-| Service à thé vénérable ??? | Évènement | Non |  |
-| Thé d'os | Évènement | Non |  |
-| Thé de braises | Évènement | Non |  |
-| Thé de l'incivilité | Évènement | Non |  |
-| Ticket mystère de Chez Wongo's | Évènement | Non |  |
-| Tirelire-gueule | Évènement | Non |  |
-| Âme oubliée | Évènement | Non |  |
-| Épée de jade | Évènement | Non |  |
+| Orichalque ??? | Évènement | Oui |  |
+| Perceuse | Évènement | Oui |  |
+| Pin’s Exclusif de Fidélité Wongo | Évènement | Oui |  |
+| Poison royal | Évènement | Oui |  |
+| Service à thé vénérable ??? | Évènement | Oui |  |
+| Thé d'os | Évènement | Oui |  |
+| Thé de braises | Évènement | Oui |  |
+| Thé de l'incivilité | Évènement | Oui |  |
+| Ticket mystère de Chez Wongo's | Évènement | Oui |  |
+| Tirelire-gueule | Évènement | Oui |  |
+| Âme oubliée | Évènement | Oui |  |
+| Épée de jade | Évènement | Oui |  |
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 58,8 %
+### Reliques des Anciens — 77,5 %
 
-60 faits, 0 partiel, 42 à faire.
+79 faits, 0 partiel, 23 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Aile de Paël | Ancienne | Non |  |
 | Anneau à signet | Ancienne | Oui |  |
-| Arbalète | Ancienne | Non |  |
+| Arbalète | Ancienne | Oui |  |
 | Astrolabe | Ancienne | Oui |  |
 | Baguette de rhabdomancie | Ancienne | Non |  |
 | Bois bénis | Ancienne | Oui |  |
@@ -1048,46 +1048,46 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Boucle d'oreille susurrante | Ancienne | Oui |  |
 | Boussole dorée | Ancienne | Oui |  |
 | Boîte de Pandore | Ancienne | Oui |  |
-| Boîte à musique | Ancienne | Non |  |
+| Boîte à musique | Ancienne | Oui |  |
 | Bracelet brillant | Ancienne | Non |  |
 | Brouillard en conserve | Ancienne | Oui |  |
 | Cage vide | Ancienne | Oui |  |
-| Caisse d'alchimie | Ancienne | Non |  |
+| Caisse d'alchimie | Ancienne | Oui |  |
 | Caisse de parchemins | Ancienne | Non |  |
 | Caisse à jouets | Ancienne | Non |  |
-| Canne à pêche | Ancienne | Non |  |
+| Canne à pêche | Ancienne | Oui |  |
 | Cape distinguée | Ancienne | Oui |  |
 | Cataplasme | Ancienne | Non |  |
-| Chair de Paël | Ancienne | Non |  |
+| Chair de Paël | Ancienne | Oui |  |
 | Chocolat très chaud | Ancienne | Oui |  |
 | Château de sable | Ancienne | Oui |  |
 | Ciseaux précis | Ancienne | Oui |  |
 | Cloche d'appel | Ancienne | Oui |  |
 | Coffre à bijoux | Ancienne | Oui |  |
-| Coffret perdu | Ancienne | Non |  |
+| Coffret perdu | Ancienne | Oui |  |
 | Conque retentissante | Ancienne | Oui |  |
 | Corne de Paël | Ancienne | Oui |  |
 | Couperet à viande | Ancienne | Oui |  |
-| Creuset en argent | Ancienne | Non |  |
+| Creuset en argent | Ancienne | Oui |  |
 | Crevaite électrique | Ancienne | Non |  |
 | Dent archaïque | Ancienne | Non |  |
 | Dent de Paël | Ancienne | Oui |  |
-| Diadème de diamant | Ancienne | Non |  |
+| Diadème de diamant | Ancienne | Oui |  |
 | Délicieux biscuit | Ancienne | Oui |  |
 | Ectoplasme | Ancienne | Oui |  |
-| Embarras du choix | Ancienne | Non |  |
+| Embarras du choix | Ancienne | Oui |  |
 | Excroissance de Paël | Ancienne | Non |  |
-| Forces précaires | Ancienne | Non |  |
+| Forces précaires | Ancienne | Oui |  |
 | Fougère délicate | Ancienne | Oui |  |
 | Fruits exotiques | Ancienne | Oui |  |
-| Gantelets à pointes | Ancienne | Non |  |
-| Gourdin de fer | Ancienne | Non |  |
+| Gantelets à pointes | Ancienne | Oui |  |
+| Gourdin de fer | Ancienne | Oui |  |
 | Grande capsule | Ancienne | Oui |  |
 | Griffe de Paël | Ancienne | Non |  |
 | Griffes | Ancienne | Oui |  |
 | Grimoire poussiéreux | Ancienne | Oui |  |
-| Grooos câlin | Ancienne | Non |  |
-| Hache de lancer | Ancienne | Non |  |
+| Grooos câlin | Ancienne | Oui |  |
+| Hache de lancer | Ancienne | Oui |  |
 | Humidificateur en pierre | Ancienne | Oui |  |
 | Huître nourrissante | Ancienne | Oui |  |
 | Joyau prismatique | Ancienne | Oui |  |
@@ -1099,7 +1099,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Manteau de fourrure | Ancienne | Non |  |
 | Marteau de guerre | Ancienne | Oui |  |
 | Masque serti | Ancienne | Oui |  |
-| Mitaines réchauffantes | Ancienne | Non |  |
+| Mitaines réchauffantes | Ancienne | Oui |  |
 | Nouvelle page | Ancienne | Oui |  |
 | Osselets de Neow | Ancienne | Oui |  |
 | Paillettes | Ancienne | Non |  |
@@ -1117,14 +1117,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Pyramide runique | Ancienne | Oui |  |
 | Ras du cou en velours | Ancienne | Oui |  |
 | Rose sanguinolente | Ancienne | Oui |  |
-| Sacrifice de Neow | Ancienne | Non |  |
+| Sacrifice de Neow | Ancienne | Oui |  |
 | Sang de Paël | Ancienne | Oui |  |
 | Saï | Ancienne | Oui |  |
 | Sceau doré | Ancienne | Oui |  |
 | Serre desséchée | Ancienne | Oui |  |
 | Sifflet de Tanx | Ancienne | Oui |  |
 | Soupe nourrissante | Ancienne | Non |  |
-| Sozu | Ancienne | Non |  |
+| Sozu | Ancienne | Oui |  |
 | Tablette lourde | Ancienne | Non |  |
 | Talisman de Neow | Ancienne | Oui |  |
 | Toucher d'Orobas | Ancienne | Non |  |
@@ -1133,37 +1133,37 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tri-boomerang | Ancienne | Non |  |
 | Verre marin | Ancienne | Non |  |
 | Violon | Ancienne | Oui |  |
-| Écharpe étincelante | Ancienne | Non |  |
+| Écharpe étincelante | Ancienne | Oui |  |
 | Étoile noire | Ancienne | Non |  |
-| Étui à fioles | Ancienne | Non |  |
+| Étui à fioles | Ancienne | Oui |  |
 | Œil de Paël | Ancienne | Oui |  |
 | Œil de geckobra | Ancienne | Oui |  |
 | Œil de verre | Ancienne | Oui |  |
 
-### Potions — 81,0 %
+### Potions — 100,0 %
 
-51 faits, 0 partiel, 12 à faire.
+63 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Ampoule explosive | Commune | Oui |  |
 | Potion d'affaiblissement | Commune | Oui |  |
 | Potion d'armure | Commune | Oui |  |
-| Potion d'attaque | Commune | Non |  |
+| Potion d'attaque | Commune | Oui |  |
 | Potion d'énergie | Commune | Oui |  |
 | Potion d'étoiles | Commune | Oui |  |
-| Potion de compétence | Commune | Non |  |
+| Potion de compétence | Commune | Oui |  |
 | Potion de célérité | Commune | Oui |  |
 | Potion de dextérité | Commune | Oui |  |
 | Potion de focalisation | Commune | Oui |  |
 | Potion de force | Commune | Oui |  |
 | Potion de poison | Commune | Oui |  |
-| Potion de pouvoir | Commune | Non |  |
+| Potion de pouvoir | Commune | Oui |  |
 | Potion de vantardise | Commune | Oui |  |
 | Potion de vitesse | Commune | Oui |  |
 | Potion de vulnérabilité | Commune | Oui |  |
 | Potion incendiaire | Commune | Oui |  |
-| Potion incolore | Commune | Non |  |
+| Potion incolore | Commune | Oui |  |
 | Potion macabre | Commune | Oui |  |
 | Potion sanguine | Commune | Oui |  |
 | Bronze liquide | Peu commune | Oui |  |
@@ -1188,35 +1188,35 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sérum de stabilité | Peu commune | Oui |  |
 | Acide orobique | Rare | Oui |  |
 | Chaos distillé | Rare | Oui |  |
-| Concoction cosmique | Rare | Non |  |
+| Concoction cosmique | Rare | Oui |  |
 | Don de Mazaleth | Rare | Oui |  |
-| Décoction entropique | Rare | Non |  |
+| Décoction entropique | Rare | Oui |  |
 | Essence ténébreuse | Rare | Oui |  |
 | Fantôme dans un bocal | Rare | Oui |  |
-| Fée en bouteille | Rare | Non |  |
+| Fée en bouteille | Rare | Oui |  |
 | Goules en bouteille | Rare | Oui |  |
 | Goutte de prescience | Rare | Oui |  |
-| Huile de geckobra | Rare | Non |  |
+| Huile de geckobra | Rare | Oui |  |
 | Jus de coléoptère | Rare | Oui |  |
-| Jus de fruits | Rare | Non |  |
+| Jus de fruits | Rare | Oui |  |
 | Navire en bouteille | Rare | Oui |  |
 | Philtre chanceux | Rare | Oui |  |
 | Potentiel en bouteille | Rare | Oui |  |
 | Potion d'entrave | Rare | Oui |  |
 | Potion de géantification | Rare | Oui |  |
-| Ragoût militaire | Rare | Non |  |
+| Ragoût militaire | Rare | Oui |  |
 | Souvenirs liquides | Rare | Oui |  |
-| Ambre gris | Évènement | Non |  |
-| Potion infecte | Évènement | Non |  |
+| Ambre gris | Évènement | Oui |  |
+| Potion infecte | Évènement | Oui |  |
 | Potion luminescente | Évènement | Oui |  |
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 18,8 %
+## Bestiaire — 63,9 %
 
-### Monstres — 26,4 %
+### Monstres — 72,2 %
 
-19 faits, 0 partiel, 53 à faire.
+52 faits, 0 partiel, 20 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1235,91 +1235,91 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Rampeluche | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur Arbalétrier | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur Brute | Monstre · Acte 1 (A) | Oui |  |
-| Rôdeur Traqueur | Monstre · Acte 1 (A) | Non |  |
+| Rôdeur Traqueur | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur assassin | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur à la hache | Monstre · Acte 1 (A) | Oui |  |
 | Scarabrideur | Monstre · Acte 1 (A) | Non |  |
-| Écharneur | Monstre · Acte 1 (A) | Non |  |
+| Écharneur | Monstre · Acte 1 (A) | Oui |  |
 | Étrangleur | Monstre · Acte 1 (A) | Non |  |
 | Œil denté | Monstre · Acte 1 (A) | Oui |  |
 | Adepte calcifié | Monstre · Acte 1 (B) | Oui |  |
 | Adepte moisi | Monstre · Acte 1 (B) | Oui |  |
-| Assemblage de pugilat | Monstre · Acte 1 (B) · Acte 3 | Non |  |
-| Bombe à gaz | Monstre · Acte 1 (B) | Non |  |
+| Assemblage de pugilat | Monstre · Acte 1 (B) · Acte 3 | Oui |  |
+| Bombe à gaz | Monstre · Acte 1 (B) | Oui |  |
 | Brouillard vivant | Monstre · Acte 1 (B) | Non |  |
-| Crapautard | Faible · Acte 1 (B) | Non |  |
-| Diablotin mercenaire | Monstre · Acte 1 (B) | Non |  |
-| Diablotin sournois | Monstre · Acte 1 (B) | Non |  |
+| Crapautard | Faible · Acte 1 (B) | Oui |  |
+| Diablotin mercenaire | Monstre · Acte 1 (B) | Oui |  |
+| Diablotin sournois | Monstre · Acte 1 (B) | Oui |  |
 | Gros diablotin | Monstre · Acte 1 (B) | Oui |  |
-| Navire hanté | Monstre · Acte 1 (B) | Non |  |
+| Navire hanté | Monstre · Acte 1 (B) | Oui |  |
 | Palourde d'égout | Monstre · Acte 1 (B) | Oui |  |
-| Putrilimace | Monstre · Acte 1 (B) | Non |  |
+| Putrilimace | Monstre · Acte 1 (B) | Oui |  |
 | Rat bicaudé | Monstre · Acte 1 (B) | Non |  |
-| Tisse-boue | Faible · Acte 1 (B) | Non |  |
-| Traqueur fossilisé | Monstre · Acte 1 (B) | Non |  |
-| Voyou marin | Monstre · Acte 1 (B) | Non |  |
-| Chasseur-tueur | Monstre · Acte 2 | Non |  |
-| Crapineux | Monstre · Acte 2 | Non |  |
-| Croquebot | Monstre · Acte 2 | Non |  |
+| Tisse-boue | Faible · Acte 1 (B) | Oui |  |
+| Traqueur fossilisé | Monstre · Acte 1 (B) | Oui |  |
+| Voyou marin | Monstre · Acte 1 (B) | Oui |  |
+| Chasseur-tueur | Monstre · Acte 2 | Oui |  |
+| Crapineux | Monstre · Acte 2 | Oui |  |
+| Croquebot | Monstre · Acte 2 | Oui |  |
 | Exosquelette | Monstre · Acte 2 | Non |  |
 | L'Obscura | Monstre · Acte 2 | Non |  |
 | Mante chapardeuse | Faible · Acte 2 | Non |  |
 | Ovicoptère | Monstre · Acte 2 | Non |  |
-| Pareffroi | Monstre · Acte 2 | Non |  |
-| Progéniteur de poux | Monstre · Acte 2 | Non |  |
+| Pareffroi | Monstre · Acte 2 | Oui |  |
+| Progéniteur de poux | Monstre · Acte 2 | Oui |  |
 | Sarcopte | Monstre · Acte 2 | Non |  |
-| Scarabée dormeur | Monstre · Acte 2 | Non |  |
-| Sphéropode (Nectar) | Monstre · Acte 2 | Non |  |
-| Sphéropode (Pierre) | Monstre · Acte 2 | Non |  |
-| Sphéropode (Soie) | Monstre · Acte 2 | Non |  |
-| Sphéropode (Œuf) | Monstre · Acte 2 | Non |  |
-| Titos | Invocation · Acte 2 | Non |  |
-| Tunnelier | Monstre · Acte 2 | Non |  |
+| Scarabée dormeur | Monstre · Acte 2 | Oui |  |
+| Sphéropode (Nectar) | Monstre · Acte 2 | Oui |  |
+| Sphéropode (Pierre) | Monstre · Acte 2 | Oui |  |
+| Sphéropode (Soie) | Monstre · Acte 2 | Oui |  |
+| Sphéropode (Œuf) | Monstre · Acte 2 | Oui |  |
+| Titos | Invocation · Acte 2 | Oui |  |
+| Tunnelier | Monstre · Acte 2 | Oui |  |
 | Œuf robuste | Monstre · Acte 2 | Non |  |
-| Berserker de vase | Monstre · Acte 3 | Non |  |
+| Berserker de vase | Monstre · Acte 3 | Oui |  |
 | Bouclier vivant | Faible · Acte 3 | Oui |  |
-| Chevalier rainette | Monstre · Acte 3 | Non |  |
-| Déchargebot | Invocation · Acte 3 | Non |  |
-| Gardebot | Invocation · Acte 3 | Non |  |
-| Globocéphale | Monstre · Acte 3 | Non |  |
-| Hachebots | Monstre · Acte 3 | Non |  |
+| Chevalier rainette | Monstre · Acte 3 | Oui |  |
+| Déchargebot | Invocation · Acte 3 | Oui |  |
+| Gardebot | Invocation · Acte 3 | Oui |  |
+| Globocéphale | Monstre · Acte 3 | Oui |  |
+| Hachebots | Monstre · Acte 3 | Oui |  |
 | L'Oublié | Monstre · Acte 3 | Oui |  |
-| L'Égaré | Monstre · Acte 3 | Non |  |
+| L'Égaré | Monstre · Acte 3 | Oui |  |
 | Machiniste | Monstre · Acte 3 | Non |  |
 | Magistrix | Monstre · Acte 3 | Non |  |
-| Opérateur de tourelle | Faible · Acte 3 | Non |  |
+| Opérateur de tourelle | Faible · Acte 3 | Oui |  |
 | Parchemord | Monstre · Acte 3 | Non |  |
 | Poignard-bot | Invocation · Acte 3 | Oui |  |
-| Sculpteur dévoué | Faible · Acte 3 | Non |  |
+| Sculpteur dévoué | Faible · Acte 3 | Oui |  |
 | Sonobot | Invocation · Acte 3 | Oui |  |
 
-### Élites — 0,0 %
+### Élites — 76,5 %
 
-0 fait, 0 partiel, 17 à faire.
+13 faits, 0 partiel, 4 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Idole Oubliée | Élite · Acte 1 (A) | Non |  |
-| Larve | Élite · Acte 1 (A) | Non |  |
-| Oizodon | Élite · Acte 1 (A) | Non |  |
-| Parasite Krapo | Élite · Acte 1 (A) | Non |  |
-| Colonie de rôdeurs | Élite · Acte 1 (B) | Non |  |
+| Idole Oubliée | Élite · Acte 1 (A) | Oui |  |
+| Larve | Élite · Acte 1 (A) | Oui |  |
+| Oizodon | Élite · Acte 1 (A) | Oui |  |
+| Parasite Krapo | Élite · Acte 1 (A) | Oui |  |
+| Colonie de rôdeurs | Élite · Acte 1 (B) | Oui |  |
 | Jardinier spectral | Élite · Acte 1 (B) | Non |  |
-| Murène de l'effroi | Élite · Acte 1 (B) | Non |  |
+| Murène de l'effroi | Élite · Acte 1 (B) | Oui |  |
 | Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
 | Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
 | Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
-| Entomancien | Élite · Acte 2 | Non |  |
-| Prisme infesté | Élite · Acte 2 | Non |  |
-| Amalg'âmes | Élite · Acte 3 | Non |  |
-| Chevalier au fléau | Élite · Acte 3 | Non |  |
-| Chevalier mage | Élite · Acte 3 | Non |  |
-| Chevalier spectral | Élite · Acte 3 | Non |  |
-| Méca-Chevalier | Élite · Acte 3 | Non |  |
+| Entomancien | Élite · Acte 2 | Oui |  |
+| Prisme infesté | Élite · Acte 2 | Oui |  |
+| Amalg'âmes | Élite · Acte 3 | Oui |  |
+| Chevalier au fléau | Élite · Acte 3 | Oui |  |
+| Chevalier mage | Élite · Acte 3 | Oui |  |
+| Chevalier spectral | Élite · Acte 3 | Oui |  |
+| Méca-Chevalier | Élite · Acte 3 | Oui |  |
 
-### Boss — 3,3 %
+### Boss — 10,0 %
 
-0 fait, 1 partiel, 14 à faire.
+1 fait, 1 partiel, 13 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1332,7 +1332,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Poissâme | Boss · Acte 1 (B) | Non |  |
 | Anéantisseur | Boss · Acte 2 | Non |  |
 | Démon de la Connaissance | Boss · Acte 2 | Non |  |
-| L'Insatiable | Boss · Acte 2 | Non |  |
+| L'Insatiable | Boss · Acte 2 | Oui |  |
 | Roquette | Boss · Acte 2 | Non |  |
 | Amalgame Torchetête | Boss · Acte 3 | Non |  |
 | Clepséon | Boss · Acte 3 | Non |  |
@@ -1424,11 +1424,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="regles"></a>
 
-## Règles de combat — 73,7 %
+## Règles de combat — 78,0 %
 
-### Déroulement du combat — 93,5 %
+### Déroulement du combat — 100,0 %
 
-21 faits, 1 partiel, 1 à faire.
+23 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1448,17 +1448,17 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Choix de cartes dans la Pioche ou la Défausse |  | Oui |  |
 | Choix d'une carte parmi 3 propositions (Découverte, etc.) |  | Oui | [#72](https://github.com/Boblebol/slay_the_gba/issues/72) |
 | Cartes à coût X |  | Oui |  |
-| Écho : rejouer une carte |  | Partiel | [#86](https://github.com/Boblebol/slay_the_gba/issues/86) |
+| Écho : rejouer une carte |  | Oui | [#86](https://github.com/Boblebol/slay_the_gba/issues/86) |
 | Cartes jouées automatiquement (Pioche, pile d'épuisement, fin de tour) |  | Oui |  |
 | Coûts modifiés pendant le tour ou le combat |  | Oui |  |
 | Cartes évolutives : bonus et coût propres à chaque exemplaire |  | Oui |  |
 | Cartes Statut ajoutées à la main, la Pioche ou la Défausse |  | Oui |  |
 | Coup de grâce : effet quand la carte tue un ennemi |  | Oui |  |
-| Transformer une carte |  | Non | [#79](https://github.com/Boblebol/slay_the_gba/issues/79) |
+| Transformer une carte |  | Oui | [#79](https://github.com/Boblebol/slay_the_gba/issues/79) |
 
-### Pouvoirs et statuts — 93,8 %
+### Pouvoirs et statuts — 100,0 %
 
-15 faits, 0 partiel, 1 à faire.
+16 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1477,7 +1477,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Vigueur |  | Oui | [#93](https://github.com/Boblebol/slay_the_gba/issues/93) |
 | Fatalité |  | Oui |  |
 | Désorienté |  | Oui | [#93](https://github.com/Boblebol/slay_the_gba/issues/93) |
-| Sables mouvants (L'Insatiable) |  | Non | [#245](https://github.com/Boblebol/slay_the_gba/issues/245) |
+| Sables mouvants (L'Insatiable) |  | Oui | [#245](https://github.com/Boblebol/slay_the_gba/issues/245) |
 
 ### Mots-clés de cartes — 100,0 %
 
@@ -1515,7 +1515,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 72,2 %
+## Systèmes de jeu — 80,6 %
 
 ### La Tour — 50,0 %
 
@@ -1531,9 +1531,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Neow en début de partie |  | Non | [#6](https://github.com/Boblebol/slay_the_gba/issues/6) |
 | Bénédiction d'un Ancien entre les actes |  | Non | La phase existe dans le moteur mais elle est sautée. [#261](https://github.com/Boblebol/slay_the_gba/issues/261) |
 
-### Récompenses — 78,6 %
+### Récompenses — 92,9 %
 
-5 faits, 1 partiel, 1 à faire.
+6 faits, 1 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1543,7 +1543,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Potion en récompense de combat |  | Oui | 40 % des combats, tirée par rareté parmi les potions que le moteur résout. Ceinture pleine : en jeter une ou la laisser. |
 | Relique après un élite |  | Oui | Tirée par rareté, jamais en double, jamais celle d'un autre héros. |
 | Relique de boss |  | Partiel | Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. Les reliques d'Ancien du jeu d'origine restent à faire. [#184](https://github.com/Boblebol/slay_the_gba/issues/184) |
-| Cartes rares et peu communes selon la salle |  | Non | [#67](https://github.com/Boblebol/slay_the_gba/issues/67) |
+| Cartes rares et peu communes selon la salle |  | Oui | Chaque carte tire sa rareté : 60 / 37 / 3 % après un combat, 50 / 40 / 10 % après un élite, que des Rares après un boss. Pool bâti depuis les cartes du héros. |
 
 ### Feu de camp — 66,7 %
 
@@ -1555,9 +1555,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Forge : améliorer une carte, avec aperçu |  | Oui |  |
 | Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon) |  | Non | [#271](https://github.com/Boblebol/slay_the_gba/issues/271) |
 
-### Marchand — 83,3 %
+### Marchand — 100,0 %
 
-4 faits, 2 partiels, 0 à faire.
+6 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1565,8 +1565,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Retrait d'une carte, à coût croissant |  | Oui |  |
 | Achat de reliques |  | Oui | Rayon des reliques, touches L et R : deux reliques tirées par rareté et une relique du marchand. |
 | Achat de potions |  | Oui | Rayon des potions, touches L et R. Ceinture pleine : la potion achetée en remplace une. |
-| Inventaire tiré au hasard à chaque visite |  | Partiel | Reliques et potions tirées au hasard ; trois cartes fixes par héros. [#270](https://github.com/Boblebol/slay_the_gba/issues/270) |
-| Prix selon la rareté, carte en solde |  | Partiel | Reliques et potions au prix de leur rareté, à 5 % près ; cartes à prix fixe, sans solde. [#270](https://github.com/Boblebol/slay_the_gba/issues/270) |
+| Inventaire tiré au hasard à chaque visite |  | Oui | Cinq cartes du héros et deux cartes incolores tirées par rareté, trois reliques et trois potions, depuis la graine de la partie. L écran montre les trois premières cartes. |
+| Prix selon la rareté, carte en solde |  | Oui | Cartes, reliques et potions au prix de leur rareté, à 5 % près ; une carte du héros à moitié prix. |
 
 ### Potions — 100,0 %
 
@@ -1577,9 +1577,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Ceinture de 3 potions |  | Oui |  |
 | Boire une potion en combat sur GBA |  | Oui | Touche L pendant son tour : ceinture, cible pour les potions lancées sur un ennemi. |
 
-### Ascension — 71,4 %
+### Ascension — 85,7 %
 
-5 faits, 0 partiel, 2 à faire.
+6 faits, 0 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1588,7 +1588,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | A5 : soin réduit après un boss |  | Oui | [#29](https://github.com/Boblebol/slay_the_gba/issues/29) |
 | A6 : départ avec 10 % de PV en moins |  | Oui | [#29](https://github.com/Boblebol/slay_the_gba/issues/29) |
 | A7 à A9 : PV accrus des monstres, élites et boss |  | Oui | [#29](https://github.com/Boblebol/slay_the_gba/issues/29) |
-| A10 : malédiction Fléau de l'ascendant dans le deck de départ |  | Non | [#40](https://github.com/Boblebol/slay_the_gba/issues/40) |
+| A10 : malédiction Fléau de l'ascendant dans le deck de départ |  | Oui | [#40](https://github.com/Boblebol/slay_the_gba/issues/40) |
 | Choix du niveau d'Ascension sur GBA |  | Non | Toutes les parties démarrent en Ascension 0. [#272](https://github.com/Boblebol/slay_the_gba/issues/272) |
 
 ### Sauvegarde — 75,0 %

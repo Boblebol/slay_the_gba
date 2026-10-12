@@ -600,6 +600,7 @@ static constexpr CardDef CARDS[] = {
     { CardId::BAD_LUCK, "Bad Luck", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 13 HP. Eternal.", "Bad Luck+", COST_X, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 13 HP. Eternal.", KEYWORD_UNPLAYABLE | KEYWORD_ETERNAL, KEYWORD_UNPLAYABLE | KEYWORD_ETERNAL },
     { CardId::DEBT, "Debt", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 10 gold.", "Debt+", COST_X, 0, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 10 gold.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
     { CardId::SPORE_MIND, "Spore Mind", 1, CardType::CURSE, TargetType::SELF, 0, 0, "Exhaust.", "Spore Mind+", 1, 0, 0, "Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::GUILTY, "Guilty", COST_X, CardType::CURSE, TargetType::SELF, 0, 0, "Unplayable. Removed from your Deck after 5 combats.", "Guilty+", COST_X, 0, 0, "Unplayable. Removed from your Deck after 5 combats.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
     { CardId::TACTICIAN, "Tactician", 3, CardType::SKILL, TargetType::SELF, 1, 0, "Sly. Gain 1 energy.", "Tactician+", 3, 2, 0, "Sly. Gain 2 energy.", KEYWORD_SLY, KEYWORD_SLY },
     { CardId::ABRASIVE, "Abrasive", 3, CardType::POWER, TargetType::SELF, 4, 0, "Sly. Gain 1 Dexterity. Gain 4 Thorns.", "Abrasive+", 3, 6, 0, "Sly. Gain 1 Dexterity. Gain 6 Thorns.", KEYWORD_SLY, KEYWORD_SLY },
     { CardId::MASTER_PLANNER, "Master Planner", 2, CardType::POWER, TargetType::SELF, 0, 0, "Whenever you play a Skill, it gains Sly.", "Master Planner+", 1, 0, 0, "Whenever you play a Skill, it gains Sly." },
@@ -624,6 +625,31 @@ static constexpr CardDef CARDS[] = {
     { CardId::THE_GAMBIT, "The Gambit", 0, CardType::SKILL, TargetType::SELF, 50, 0, "Gain 50 block. If you take unblocked attack damage this combat, you die.", "The Gambit+", 0, 75, 0, "Gain 75 block. If you take unblocked attack damage this combat, you die." },
     // Choose 1 card among N offered (mechanic #72).
     { CardId::SEEKER_STRIKE, "Seeker Strike", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 9, 3, "Deal 9 dmg. Choose 1 of 3 cards in your draw pile to add into your hand.", "Seeker Strike+", 1, 12, 3, "Deal 12 dmg. Choose 1 of 3 cards in your draw pile to add into your hand." },
+    { CardId::PRIMAL_FORCE, "Primal Force", 0, CardType::SKILL, TargetType::SELF, 0, 0, "Transform all Attacks in your hand into Giant Rock.", "Primal Force+", 0, 0, 0, "Transform all Attacks in your hand into Giant Rock+." },
+    { CardId::SEANCE, "Seance", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Ethereal. Transform a card in your draw pile into Soul.", "Seance+", 0, 0, 0, "Ethereal. Transform a card in your draw pile into Soul.", KEYWORD_ETHEREAL, KEYWORD_ETHEREAL },
+    { CardId::ENTROPY, "Entropy", 1, CardType::POWER, TargetType::SELF, 1, 0, "At the start of your turn, transform 1 card in your hand.", "Entropy+", 1, 1, 0, "Innate. At the start of your turn, transform 1 card in your hand.", 0, KEYWORD_INNATE },
+    { CardId::SPLASH, "Splash", 1, CardType::SKILL, TargetType::SELF, 0, 3, "Choose 1 of 3 random Attacks from another character to add into your hand. It costs 0 this turn.", "Splash+", 1, 0, 3, "Choose 1 of 3 random upgraded Attacks from another character to add into your hand. It costs 0 this turn." },
+    // Event card: a single attack; Innate once upgraded.
+    { CardId::MAD_SCIENCE, "Mad Science", 1, CardType::ATTACK, TargetType::SINGLE_ENEMY, 12, 0, "Deal 12 dmg. ???", "Mad Science+", 1, 12, 0, "Innate. Deal 12 dmg. ???", 0, KEYWORD_INNATE },
+    // Regent: choose 1 of 3 random Colorless cards to add to the hand (mechanics #72, #77).
+    { CardId::QUASAR, "Quasar", 0, CardType::SKILL, TargetType::SELF, 3, 3, "Choose 1 of 3 random Colorless cards to add to your hand.", "Quasar+", 0, 3, 3, "Choose 1 of 3 random upgraded Colorless cards to add to your hand.", 0, 0, 2, 2 },
+    { CardId::DISCOVERY, "Discovery", 1, CardType::SKILL, TargetType::SELF, 0, 3, "Choose 1 of 3 random cards to add into your hand. It's free to play this turn. Exhaust.", "Discovery+", 1, 0, 3, "Choose 1 of 3 random cards to add into your hand. It's free to play this turn.", KEYWORD_EXHAUST, 0 },
+    // Event card: 3 upgraded Powers offered, the picked one is free this turn.
+    { CardId::ABUNDANCE, "Abundance", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Choose 1 of 3 upgraded Powers to add into your hand. It costs 0 this turn. Exhaust.", "Abundance+", 0, 0, 0, "Choose 1 of 3 upgraded Powers to add into your hand. It costs 0 this turn. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    // Regent minions: tokens (the upgraded values are not in the bible dump, +3 is assumed) and the cards that make them.
+    { CardId::MINION_STRIKE, "Minion Strike", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 6, 0, "Deal 6 damage. Draw 1 card. Exhaust.", "Minion Strike+", 0, 9, 0, "Deal 9 damage. Draw 1 card. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::MINION_DIVE_BOMB, "Minion Dive Bomb", 0, CardType::ATTACK, TargetType::SINGLE_ENEMY, 13, 0, "Deal 13 damage. Exhaust.", "Minion Dive Bomb+", 0, 16, 0, "Deal 16 damage. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::MINION_SACRIFICE, "Minion Sacrifice", 0, CardType::SKILL, TargetType::SELF, 7, 0, "Gain 7 block. Exhaust.", "Minion Sacrifice+", 0, 10, 0, "Gain 10 block. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::BEGONE, "Begone!", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Choose a card in your hand to Transform into Minion Strike.", "Begone!+", 1, 0, 0, "Choose a card in your hand to Transform into Minion Strike+." },
+    { CardId::CHARGE, "Charge!!", 1, CardType::SKILL, TargetType::SELF, 2, 0, "Choose 2 cards in your draw pile to Transform into Minion Dive Bombs.", "Charge!!+", 1, 2, 0, "Choose 2 cards in your draw pile to Transform into Minion Dive Bombs+." },
+    { CardId::GUARDS, "Guards!!!", 2, CardType::SKILL, TargetType::SELF, 0, 0, "Transform any number of cards in your hand into Minion Sacrifice. Exhaust.", "Guards!!!+", 2, 0, 0, "Transform any number of cards in your hand into Minion Sacrifice+. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
+    { CardId::HIDDEN_GEM, "Hidden Gem", 1, CardType::SKILL, TargetType::SELF, 2, 0, "A random card in your draw pile without Echo gains Echo 2.", "Hidden Gem+", 1, 3, 0, "A random card in your draw pile without Echo gains Echo 3." },
+    { CardId::TRANSFIGURE, "Transfigure", 1, CardType::SKILL, TargetType::SELF, 0, 0, "Add Echo to a card in your hand. It costs 1 more. Exhaust.", "Transfigure+", 1, 0, 0, "Add Echo to a card in your hand. It costs 1 more.", KEYWORD_EXHAUST, 0 },
+    { CardId::GLASSWORK, "Glasswork", 1, CardType::SKILL, TargetType::SELF, 5, 0, "Gain 5 block. Channel 1 Glass orb.", "Glasswork+", 1, 8, 0, "Gain 8 block. Channel 1 Glass orb." },
+    { CardId::REFRACT, "Refract", 3, CardType::ATTACK, TargetType::SINGLE_ENEMY, 10, 0, "Deal 10 damage twice. Channel 2 Glass orbs.", "Refract+", 3, 13, 0, "Deal 13 damage twice. Channel 2 Glass orbs." },
+    { CardId::SPINNER, "Spinner", 1, CardType::POWER, TargetType::SELF, 0, 0, "At the start of your turn, channel 1 Glass orb.", "Spinner+", 1, 0, 0, "Channel 1 Glass orb. At the start of your turn, channel 1 Glass orb." },
+    { CardId::INFECTION, "Infection", 0, CardType::STATUS, TargetType::SELF, 0, 0, "Unplayable.", "Infection", 0, 0, 0, "Unplayable.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
+    { CardId::FRANTIC_ESCAPE, "Frantic Escape", 1, CardType::STATUS, TargetType::SELF, 1, 1, "Increase Sandpit by 1. Increase this card's cost by 1.", "Frantic Escape", 1, 1, 1, "Increase Sandpit by 1. Increase this card's cost by 1." },
 };
 
 const CardDef& CardDef::get(CardId id) {

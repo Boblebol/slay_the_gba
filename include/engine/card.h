@@ -602,6 +602,7 @@ enum class CardId : uint16_t {
     BAD_LUCK,
     DEBT,
     SPORE_MIND,
+    GUILTY,
     // Sly (Silent): played for free when discarded from the hand during the turn
     TACTICIAN,
     ABRASIVE,
@@ -627,10 +628,46 @@ enum class CardId : uint16_t {
     THE_GAMBIT,
     // Choose 1 card among N offered (mechanic #72)
     SEEKER_STRIKE,
+    // Transform a card (mechanic #79)
+    PRIMAL_FORCE,
+    SEANCE,
+    ENTROPY,
+    SPLASH,
+    // Event card: a single attack (Mad Science)
+    MAD_SCIENCE,
+    // Regent: choose 1 of 3 random Colorless cards (Quasar)
+    QUASAR,
+    // Choose 1 of 3 random cards, free this turn (mechanic #72)
+    DISCOVERY,
+    // Event card: choose 1 of 3 upgraded Powers (Abundance)
+    ABUNDANCE,
+    // Regent minions (mechanic #103): tokens, and the cards that transform into them
+    MINION_STRIKE,
+    MINION_DIVE_BOMB,
+    MINION_SACRIFICE,
+    BEGONE,
+    CHARGE,
+    GUARDS,
+    // Echo N on a copy of a card (mechanic #86)
+    HIDDEN_GEM,
+    TRANSFIGURE,
+    // Glass orb (mechanic #99)
+    GLASSWORK,
+    REFRACT,
+    SPINNER,
+    // Status card given by the Phrog Parasite
+    INFECTION,
+    // Status card given by the Insatiable
+    FRANTIC_ESCAPE,
     COUNT
 };
 
 // Where a card created during a fight goes.
+// The cards whose French name contains "Sbire" (Vitruvian Minion).
+constexpr bool is_minion_card(CardId id) {
+    return id == CardId::MINION_STRIKE || id == CardId::MINION_DIVE_BOMB || id == CardId::MINION_SACRIFICE;
+}
+
 enum class Pile : uint8_t {
     HAND,
     DRAW, // at a random place
@@ -657,6 +694,8 @@ struct DeckCard {
     uint8_t bookmark_discount = 0; // energy off this copy until it is played (Bookmark)
     bool free_this_turn = false; // this copy costs 0 until the end of the turn (Bullet Time)
     bool cost_one_this_turn = false; // this copy costs at most 1 until the end of the turn (Enlightenment)
+    int8_t random_cost_this_turn = -1; // this copy costs this many (0 to 3) until the end of the turn, -1 for none (Snecko Oil)
+    uint8_t echo = 0;           // Echo N: the card is replayed N more times each time it is played (Hidden Gem, Transfigure)
     bool sly_combat = false;    // this copy has Sly for the rest of the combat (Master Planner)
     bool sly_this_turn = false; // this copy has Sly until the end of the turn (Hand Trick)
     uint8_t deck_index = NOT_IN_DECK; // position of the card in the run's deck, for the gains that outlive the combat

@@ -14,6 +14,7 @@ struct ShopCard {
     DeckCard card;
     int16_t cost = 50;
     bool purchased = false;
+    bool on_sale = false; // the card of the visit sold at half price
 };
 
 struct ShopRelic {
@@ -30,14 +31,15 @@ struct ShopPotion {
 
 class ShopInventory {
 public:
-    FixedVector<ShopCard, 5> cards;
+    // 5 cards of the hero then 2 Colorless cards.
+    FixedVector<ShopCard, 7> cards;
     FixedVector<ShopRelic, 3> relics;
     FixedVector<ShopPotion, 3> potions;
     int16_t card_removal_cost = 75;
     bool card_removal_used = false;
 
-    // Relics and potions are drawn from `seed`, by rarity and priced by rarity; a relic of `owned_relics` is
-    // never put on sale.
+    // Cards, relics and potions are drawn from `seed`, by rarity and priced by rarity (within 5 %); one card of the
+    // hero is on sale at half price. A relic of `owned_relics` is never put on sale.
     void generate(CharacterId char_id, uint32_t seed, uint8_t previous_removals = 0,
                   std::span<const std::string_view> owned_relics = {});
     bool buy_card(RunManager& run, int index);

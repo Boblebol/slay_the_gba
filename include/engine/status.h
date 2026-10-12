@@ -52,7 +52,8 @@ enum class OrbType : uint8_t {
     LIGHTNING, // Passive: 3 dmg / Evoke: 8 dmg
     FROST,     // Passive: 2 block / Evoke: 5 block
     DARK,      // Passive: +6 charge / Evoke: deal accumulated charge
-    PLASMA     // Passive: +1 Energy / Evoke: +2 Energy
+    PLASMA,    // Passive: +1 Energy / Evoke: +2 Energy
+    GLASS      // Passive: damage to ALL enemies, 1 less each time / Evoke: damage to ALL enemies
 };
 
 constexpr size_t MAX_ORB_SLOTS = 10;
@@ -66,6 +67,10 @@ constexpr int16_t FROST_EVOKE = 5;
 constexpr int16_t DARK_PASSIVE = 6; // also the charge a Dark orb starts with
 constexpr int16_t PLASMA_PASSIVE = 1;
 constexpr int16_t PLASMA_EVOKE = 2;
+// The Glass orb: its passive damage (also the charge it starts with) drops by 1 each time it triggers. The bible dump
+// has no values for it: these are the ones of the Slay the Spire 2 wiki as remembered, to be checked.
+constexpr int16_t GLASS_PASSIVE = 4;
+constexpr int16_t GLASS_EVOKE = 6;
 
 // An orb in one of the Defect's slots. Slot 0 is the oldest orb: the "rightmost" one of the card texts, evoked
 // first when no slot is free. The last slot is the newest, the "leftmost".

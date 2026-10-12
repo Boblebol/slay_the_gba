@@ -40,6 +40,11 @@ constexpr uint8_t POTION_COMMON_CHANCE = 65;
 constexpr uint8_t POTION_UNCOMMON_CHANCE = 25; // the remaining 10 % are Rare
 constexpr uint8_t RELIC_COMMON_CHANCE = 50;
 constexpr uint8_t RELIC_UNCOMMON_CHANCE = 33;  // the remaining 17 % are Rare
+// Rarity of each card of a reward set, in percent. A boss gives only Rare cards.
+constexpr uint8_t CARD_COMMON_CHANCE = 60;
+constexpr uint8_t CARD_UNCOMMON_CHANCE = 37;        // the remaining 3 % are Rare
+constexpr uint8_t ELITE_CARD_COMMON_CHANCE = 50;
+constexpr uint8_t ELITE_CARD_UNCOMMON_CHANCE = 40;  // the remaining 10 % are Rare
 
 // Where a relic comes from, which decides its rarity.
 enum class RelicSource : uint8_t {

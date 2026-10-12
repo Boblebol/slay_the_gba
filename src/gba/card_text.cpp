@@ -614,6 +614,10 @@ bn::string_view base_name(engine::CardId id)
         return "Néant";
     case engine::CardId::WOUND:
         return "Plaie";
+    case engine::CardId::INFECTION:
+        return "Infection";
+    case engine::CardId::FRANTIC_ESCAPE:
+        return "Fuite éperdue";
     case engine::CardId::FUEL:
         return "Combustible";
     case engine::CardId::BOOST_AWAY:
@@ -838,6 +842,8 @@ bn::string_view base_name(engine::CardId id)
         return "Dette";
     case engine::CardId::SPORE_MIND:
         return "Conscience sporique";
+    case engine::CardId::GUILTY:
+        return "Culpabilité";
     case engine::CardId::TACTICIAN:
         return "Tactique";
     case engine::CardId::ABRASIVE:
@@ -884,6 +890,44 @@ bn::string_view base_name(engine::CardId id)
         return "La grande manœuvre";
     case engine::CardId::SEEKER_STRIKE:
         return "Frappe chercheuse";
+    case engine::CardId::PRIMAL_FORCE:
+        return "Force primitive";
+    case engine::CardId::SEANCE:
+        return "Séance";
+    case engine::CardId::ENTROPY:
+        return "Entropie";
+    case engine::CardId::QUASAR:
+        return "Quasar";
+    case engine::CardId::SPLASH:
+        return "Clapotis";
+    case engine::CardId::MAD_SCIENCE:
+        return "Science sans conscience";
+    case engine::CardId::DISCOVERY:
+        return "Découverte";
+    case engine::CardId::ABUNDANCE:
+        return "Abondance";
+    case engine::CardId::MINION_STRIKE:
+        return "Frappe de sbire";
+    case engine::CardId::MINION_DIVE_BOMB:
+        return "Sbire en piqué";
+    case engine::CardId::MINION_SACRIFICE:
+        return "Sbire sacrificiel";
+    case engine::CardId::BEGONE:
+        return "Hors de ma vue !";
+    case engine::CardId::CHARGE:
+        return "Chargez !!";
+    case engine::CardId::GUARDS:
+        return "Gardes !!!";
+    case engine::CardId::HIDDEN_GEM:
+        return "Joyau caché";
+    case engine::CardId::TRANSFIGURE:
+        return "Transfiguration";
+    case engine::CardId::GLASSWORK:
+        return "Verrerie";
+    case engine::CardId::REFRACT:
+        return "Réfraction";
+    case engine::CardId::SPINNER:
+        return "Toupie";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -1651,6 +1695,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::SPORE_MIND:
         stream << "Épuisement.";
         break;
+    case engine::CardId::GUILTY:
+        stream << "Injouable. Retirée après 5 combats.";
+        break;
     case engine::CardId::TACTICIAN:
         stream << "Ruse. Énergie +" << value << ".";
         break;
@@ -1716,12 +1763,69 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::THE_GAMBIT:
         stream << "Armure " << value << ". Dégât subi : mort.";
+    case engine::CardId::SPLASH:
+        stream << "1 Attaque" << (card.upgraded ? "+ parmi " : " parmi ") << secondary << " d'un autre héros, à 0.";
+        break;
     case engine::CardId::SEEKER_STRIKE:
         stream << value << " dégâts. Pioche : 1 parmi " << secondary << " en main.";
+        break;
+    case engine::CardId::PRIMAL_FORCE:
+        stream << "Attaques de la main en Rocher gigantesque.";
+        break;
+    case engine::CardId::SEANCE:
+        stream << "Éthéré. Pioche : 1 carte en Âme.";
+        break;
+    case engine::CardId::ENTROPY:
+        stream << "Début de tour : transforme 1 carte.";
         break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:
         stream << "Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::QUASAR:
+        stream << "1 Incolore" << (card.upgraded ? " améliorée" : "") << " parmi " << value << " en main.";
+        break;
+    case engine::CardId::DISCOVERY:
+        stream << "1 parmi " << secondary << ", coût 0. " << (card.upgraded ? "" : "Épuis.");
+        break;
+    case engine::CardId::ABUNDANCE:
+        stream << "1 Pouvoir+ sur 3, gratuit. Épuisement.";
+        break;
+    case engine::CardId::MINION_STRIKE:
+        stream << "Inflige " << value << ". Pioche 1. Épuisement.";
+        break;
+    case engine::CardId::MINION_DIVE_BOMB:
+        stream << "Inflige " << value << " dégâts. Épuisement.";
+        break;
+    case engine::CardId::MINION_SACRIFICE:
+        stream << "Gagne " << value << " d'Armure. Épuisement.";
+        break;
+    case engine::CardId::BEGONE:
+        stream << "1 carte de la main : Frappe de sbire.";
+        break;
+    case engine::CardId::CHARGE:
+        stream << "2 cartes de la Pioche : Sbire en piqué.";
+        break;
+    case engine::CardId::GUARDS:
+        stream << "Main en Sbires sacrificiels. Épuisement.";
+        break;
+    case engine::CardId::HIDDEN_GEM:
+        stream << "1 carte de la Pioche gagne Écho " << value << ".";
+        break;
+    case engine::CardId::TRANSFIGURE:
+        stream << "1 carte de la main : Écho, coûte +1.";
+        break;
+    case engine::CardId::GLASSWORK:
+        stream << "Armure " << value << ". Canalise 1 Orbe vitreux.";
+        break;
+    case engine::CardId::REFRACT:
+        stream << "Inflige " << value << " x2. Canalise 2 Orbes vitreux.";
+        break;
+    case engine::CardId::SPINNER:
+        stream << "Début de tour : canalise 1 Orbe vitreux.";
+        break;
+    case engine::CardId::MAD_SCIENCE:
+        stream << (card.upgraded ? "Inné. " : "") << "Inflige " << value << " dégâts.";
         break;
     case engine::CardId::ULTIMATE_DEFEND:
         stream << "Gagne " << value << " d'Armure.";
@@ -2328,6 +2432,7 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SOOT:
     case engine::CardId::WOUND:
+    case engine::CardId::INFECTION:
         stream << "Injouable.";
         break;
     case engine::CardId::FOLLY:
@@ -2347,6 +2452,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SLIMED:
         stream << "Pioche " << value << " carte. Épuisement.";
+        break;
+    case engine::CardId::FRANTIC_ESCAPE:
+        stream << "Sables mouvants +" << value << ". Coût +1 ensuite.";
         break;
     case engine::CardId::VOID_CARD:
         stream << "Injouable. Éthéré. Piochée : perd " << value << " ⚡.";
@@ -2816,6 +2924,14 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Décomp";
     case engine::PowerId::PERSONAL_HIVE:
         return "Ruche";
+    case engine::PowerId::BURROWED:
+        return "Enfoui";
+    case engine::PowerId::VITAL_SPARK:
+        return "Étincelle";
+    case engine::PowerId::HEX:
+        return "Sortil";
+    case engine::PowerId::SANDPIT:
+        return "Sables";
     default:
         return "";
     }
@@ -2831,6 +2947,14 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Décomp. : chaque carte, -1 Force/Dex.";
     case engine::PowerId::PERSONAL_HIVE:
         return "Ruche : frappée, Hébété en Pioche.";
+    case engine::PowerId::BURROWED:
+        return "Enfoui : Armure brisée, tour perdu.";
+    case engine::PowerId::VITAL_SPARK:
+        return "Étincelle : frappée, +1 ● (X fois/tour).";
+    case engine::PowerId::HEX:
+        return "Sortilège : vos cartes sont Éthérées.";
+    case engine::PowerId::SANDPIT:
+        return "Sables : à 0, vous êtes dévoré.";
     default:
         return "";
     }
@@ -2844,7 +2968,7 @@ void append_enemy_powers(const engine::CombatEngine& combat, int holder, bn::ist
     {
         bn::string_view label = enemy_power_label(power.id);
 
-        if(label.empty() || power.holder != holder)
+        if(label.empty() || power.holder != holder || power.amount <= 0)
         {
             continue;
         }

@@ -505,6 +505,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::CURSE, CardPool::CURSE }, // BAD_LUCK
     { CardRarity::CURSE, CardPool::CURSE }, // DEBT
     { CardRarity::CURSE, CardPool::CURSE }, // SPORE_MIND
+    { CardRarity::CURSE, CardPool::CURSE }, // GUILTY
     { CardRarity::UNCOMMON, CardPool::SILENT }, // TACTICIAN
     { CardRarity::RARE, CardPool::SILENT }, // ABRASIVE
     { CardRarity::RARE, CardPool::SILENT }, // MASTER_PLANNER
@@ -528,6 +529,27 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::RARE, CardPool::COLORLESS }, // ALCHEMIZE
     { CardRarity::RARE, CardPool::COLORLESS }, // THE_GAMBIT
     { CardRarity::UNCOMMON, CardPool::COLORLESS }, // SEEKER_STRIKE
+    { CardRarity::RARE, CardPool::IRONCLAD }, // PRIMAL_FORCE
+    { CardRarity::RARE, CardPool::NECROBINDER }, // SEANCE
+    { CardRarity::RARE, CardPool::COLORLESS }, // ENTROPY
+    { CardRarity::RARE, CardPool::COLORLESS }, // SPLASH
+    { CardRarity::EVENT, CardPool::EVENT }, // MAD_SCIENCE
+    { CardRarity::UNCOMMON, CardPool::REGENT }, // QUASAR
+    { CardRarity::UNCOMMON, CardPool::COLORLESS }, // DISCOVERY
+    { CardRarity::ANCIENT, CardPool::EVENT }, // ABUNDANCE
+    { CardRarity::NONE, CardPool::NONE }, // MINION_STRIKE
+    { CardRarity::NONE, CardPool::NONE }, // MINION_DIVE_BOMB
+    { CardRarity::NONE, CardPool::NONE }, // MINION_SACRIFICE
+    { CardRarity::COMMON, CardPool::REGENT }, // BEGONE
+    { CardRarity::UNCOMMON, CardPool::REGENT }, // CHARGE
+    { CardRarity::RARE, CardPool::REGENT }, // GUARDS
+    { CardRarity::RARE, CardPool::COLORLESS }, // HIDDEN_GEM
+    { CardRarity::RARE, CardPool::NECROBINDER }, // TRANSFIGURE
+    { CardRarity::UNCOMMON, CardPool::DEFECT }, // GLASSWORK
+    { CardRarity::UNCOMMON, CardPool::DEFECT }, // REFRACT
+    { CardRarity::RARE, CardPool::DEFECT }, // SPINNER
+    { CardRarity::NONE, CardPool::NONE }, // INFECTION
+    { CardRarity::NONE, CardPool::NONE }, // FRANTIC_ESCAPE
 };
 
 } // namespace engine

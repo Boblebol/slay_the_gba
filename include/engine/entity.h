@@ -28,6 +28,7 @@ public:
     // HP this entity may still lose this turn, -1 for no limit (Beating Remnant, set at the start of the player's turn)
     int16_t hp_loss_budget = -1;
     uint8_t hp_loss_reduction = 0;         // every HP loss is this much smaller (Tungsten Rod, the player only)
+    bool paper_krane = false;              // Weak enemies deal 40% less damage to it instead of 25% (Paper Krane, the player only)
 
     bool is_alive() const { return hp > 0; }
 
@@ -233,6 +234,7 @@ public:
         minion_block = 0;
         minion_max_hp = 0;
         hp_loss_reduction = 0;
+        paper_krane = false;
     }
 
     void reset_turn() {
@@ -276,18 +278,19 @@ public:
     int16_t kill_minion();
 };
 
-// Attack damage as in Slay the Spire: (base + Strength + Vigor), x0.75 when the attacker is Weak, x1.5 when the
-// target is Vulnerable, rounded down once at the end, and 1 at most against an Intangible target.
-// `percent` is the total of the other multipliers (Cruelty, Tracking, Lethality, Shadow Step), 100 = none. Debilitate
-// makes Weak x0.5 and Vulnerable x2 on the entity that carries it.
+// Attack damage as in Slay the Spire: (base + Strength + Vigor), x0.75 when the attacker is Weak (x0.6 against a target
+// with Paper Krane), x1.5 when the target is Vulnerable, rounded down once at the end, and 1 at most against an
+// Intangible target. `percent` is the total of the other multipliers (Cruelty, Tracking, Lethality, Shadow Step), 100 =
+// none. Debilitate makes Weak x0.5 and Vulnerable x2 on the entity that carries it.
 inline int16_t attack_damage(int16_t base, const CombatEntity& attacker, const CombatEntity& target, int32_t percent = 100) {
     int32_t damage = base + attacker.get_status(StatusType::STRENGTH) + attacker.get_status(StatusType::VIGOR);
     if (damage <= 0) return 0;
-    int32_t weak = attacker.debilitate_turns > 0 ? 2 : 3;
+    // Weak in twentieths (20 = no Weak), Vulnerable in halves (2 = no Vulnerable): the total is divided by 40.
+    int32_t weak = attacker.debilitate_turns > 0 ? 10 : (target.paper_krane ? 12 : 15);
     int32_t vulnerable = target.debilitate_turns > 0 ? 4 : 3;
-    damage *= attacker.get_status(StatusType::WEAK) > 0 ? weak : 4;
+    damage *= attacker.get_status(StatusType::WEAK) > 0 ? weak : 20;
     damage *= target.get_status(StatusType::VULNERABLE) > 0 ? vulnerable : 2;
-    damage /= 8;
+    damage /= 40;
     if (percent != 100) damage = damage * percent / 100;
     if (damage > 1 && target.get_status(StatusType::INTANGIBLE) > 0) damage = 1;
     return static_cast<int16_t>(damage);
@@ -370,9 +373,56 @@ enum class EnemyType : uint8_t {
     STABBOT,
     NOISEBOT,
     CUBEX_CONSTRUCT,
+    PUNCH_CONSTRUCT,
     INKLET,
     NIBBIT,
-    FLYCONID
+    FLYCONID,
+    CORPSE_SLUG,
+    GAS_BOMB,
+    GREMLIN_MERC,
+    SNEAKY_GREMLIN,
+    HAUNTED_SHIP,
+    SLUDGE_SPINNER,
+    TOADPOLE,
+    HUNTER_KILLER,
+    MAWLER,
+    FOSSIL_STALKER,
+    SPINY_TOAD,
+    SEAPUNK,
+    TRACKER_RUBY_RAIDER,
+    OSTY,
+    CHOMPER,
+    SLUMBERING_BEETLE,
+    PARAFRIGHT,
+    TUNNELER,
+    ZAPBOT,
+    SLIMED_BERSERKER,
+    FROG_KNIGHT,
+    GLOBE_HEAD,
+    LOUSE_PROGENITOR,
+    GUARDBOT,
+    BOWLBUG_NECTAR,
+    DEVOTED_SCULPTOR,
+    THE_LOST,
+    AXEBOT,
+    TURRET_OPERATOR,
+    BOWLBUG_SILK,
+    BOWLBUG_ROCK,
+    BOWLBUG_EGG,
+    SKULKING_COLONY,
+    TERROR_EEL,
+    ENTOMANCER,
+    INFESTED_PRISM,
+    FLAIL_KNIGHT,
+    SPECTRAL_KNIGHT,
+    MAGI_KNIGHT,
+    SOUL_NEXUS,
+    MECHA_KNIGHT,
+    BYGONE_EFFIGY,
+    BYRDONIS,
+    PHROG_PARASITE,
+    WRIGGLER,
+    THE_INSATIABLE // Act 2 boss
 };
 
 // What a monster sees of the fight when it chooses its next move.
@@ -390,6 +440,11 @@ struct MoveOption {
 };
 
 constexpr uint8_t NO_MOVE = 0xFF;
+
+// Liquify Ground, the Insatiable's opening move: the Sandpit it starts from, and the Frantic Escapes shuffled
+// into the player's draw pile.
+constexpr uint8_t INSATIABLE_SANDPIT = 4;
+constexpr uint8_t INSATIABLE_FRANTIC_ESCAPES = 6;
 
 class Enemy : public CombatEntity {
 public:
@@ -437,6 +492,8 @@ public:
     void reset_pattern(uint32_t seed);
     // Moves to `next` when the monster is in an earlier phase. True when the phase changed.
     bool enter_phase(uint8_t next);
+    // The Tunneler's Block was broken while Burrowed (triggered): it enters its next phase, stunned.
+    void break_burrow();
     // Draws a move among `options` by weight, leaving out the last move played unless it can repeat, and
     // remembers it. When the rule leaves no move, the last one is played again. NO_MOVE for an empty list.
     uint8_t draw_move(std::span<const MoveOption> options);
@@ -445,11 +502,11 @@ public:
     // Gives back to the player what this enemy stole. Called when it dies.
     void return_stolen(Player& player);
     // Damage of one hit of the current intent on `target` right now (0 when it does not attack).
-    int16_t intent_damage(const CombatEntity& target) const;
+    int16_t intent_damage(const CombatEntity& target, bool halved = false) const;
     void plan_turn(int turn_number, const PlanContext& context = {});
     // Plays the current intent. An attack is answered by the player's Thorns, plus `damage_back` (Flame Barrier),
     // plus the damage their Block absorbed when `reflect` is set (Reflect).
-    void execute_turn(Player& player, int16_t damage_back = 0, bool reflect = false);
+    void execute_turn(Player& player, int16_t damage_back = 0, bool reflect = false, bool halved = false);
 };
 
 } // namespace engine

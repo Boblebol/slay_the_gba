@@ -429,6 +429,25 @@ void test_poison_and_star_relics() {
     std::cout << "[PASS] Poison and Star relics: Snecko Skull, Mini Regent, Galactic Dust" << std::endl;
 }
 
+void test_paels_flesh() {
+    // With the relic: no extra energy on turns 1 and 2, then 1 extra energy on turn 3 and every turn after.
+    CombatEngine flesh = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_FLESH, 1);
+    assert(flesh.player.energy == 3);
+    end_turn_idle(flesh);
+    assert(flesh.player.energy == 3);
+    end_turn_idle(flesh);
+    assert(flesh.player.energy == 4);
+    end_turn_idle(flesh);
+    assert(flesh.player.energy == 4);
+
+    // Without the relic: 3 energy every turn.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    end_turn_idle(plain);
+    end_turn_idle(plain);
+    assert(plain.player.energy == 3);
+    std::cout << "[PASS] Pael's Flesh: 1 extra energy from the 3rd turn" << std::endl;
+}
+
 void test_paels_blood() {
     // Paël's Blood: 1 more card on the first turn and on each following one.
     RunManager blood = make_relic_run(CharacterId::IRONCLAD, { "PAELS_BLOOD" });
@@ -657,6 +676,90 @@ void test_pumpkin_candle() {
     std::cout << "[PASS] Pumpkin Candle: +1 energy per turn for 5 combats" << std::endl;
 }
 
+void test_wongos_mystery_ticket() {
+    // With the relic: each fight won counts; the fifth pays 3 random relics, once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("WONGOS_MYSTERY_TICKET");
+    const size_t before = run.relics.size(); // the starter relic is already there
+    for (int fight = 1; fight <= 4; ++fight) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.proceed_after_combat();
+        assert(run.relic_counter("WONGOS_MYSTERY_TICKET") == fight);
+        assert(run.relics.size() == before);
+    }
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.proceed_after_combat();
+    assert(run.relics.size() == before + 3);
+    assert(run.relic_counter("WONGOS_MYSTERY_TICKET") == 5);
+    // Paid out once: later fights add nothing.
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.proceed_after_combat();
+    assert(run.relics.size() == before + 3);
+
+    // Without the relic: five fights give no relic.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    const size_t plain_before = plain.relics.size();
+    for (int fight = 1; fight <= 5; ++fight) {
+        enter_room_of_type(plain, RoomType::MONSTER);
+        plain.proceed_after_combat();
+    }
+    assert(!plain.has_relic("WONGOS_MYSTERY_TICKET"));
+    assert(plain.relics.size() == plain_before);
+    std::cout << "[PASS] Wongo's Mystery Ticket: 3 random relics after 5 combats" << std::endl;
+}
+
+void test_ember_tea() {
+    // Brewed: 2 Strength at the start of each of the next 5 combats.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("EMBER_TEA");
+    for (int fight = 1; fight <= 5; ++fight) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        assert(run.combat.player.get_status(StatusType::STRENGTH) == 2);
+        assert(run.relic_counter("EMBER_TEA") == fight);
+    }
+    // Spent after the fifth combat.
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.get_status(StatusType::STRENGTH) == 0);
+
+    // Without the relic: no Strength at the start of the combat.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.combat.player.get_status(StatusType::STRENGTH) == 0);
+    std::cout << "[PASS] Ember Tea: 2 Strength at the start of 5 combats" << std::endl;
+}
+
+void test_tea_of_discourtesy() {
+    // Event relic: at the start of the next combat, 2 Dazed in the draw pile, once.
+    auto count_dazed = [](const CombatEngine& combat) {
+        int count = 0;
+        for (const DeckCard& card : combat.hand) count += card.id == CardId::DAZED;
+        for (const DeckCard& card : combat.draw_pile) count += card.id == CardId::DAZED;
+        return count;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("TEA_OF_DISCOURTESY");
+    size_t deck_size = run.master_deck.size();
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(count_dazed(run.combat) == 2 && run.relic_counter("TEA_OF_DISCOURTESY") == 1);
+    assert(run.master_deck.size() == deck_size);
+
+    // Not again in the following combat.
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(count_dazed(run.combat) == 0);
+
+    // Without the relic: no Dazed.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(count_dazed(plain.combat) == 0 && plain.relic_counter("TEA_OF_DISCOURTESY") == 0);
+    std::cout << "[PASS] Tea of Discourtesy: 2 Dazed in the draw pile at the start of the next combat only" << std::endl;
+}
+
 void test_golden_compass() {
     auto nodes_on_floor = [](const RunManager& r, uint8_t floor) {
         int n = 0;
@@ -708,9 +811,13 @@ void test_membership_card() {
     // Without the card, the prices are the ones the stock is drawn with.
     RunManager plain;
     plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    uint32_t plain_seed = plain.rng_state();
+    plain_seed ^= plain_seed << 13;
+    plain_seed ^= plain_seed >> 17;
+    plain_seed ^= plain_seed << 5;
     plain.open_shop();
     ShopInventory drawn;
-    drawn.generate(CharacterId::IRONCLAD, 4242, 0);
+    drawn.generate(CharacterId::IRONCLAD, plain_seed, 0);
     assert(!plain.has_relic("MEMBERSHIP_CARD") && plain.current_shop.card_removal_cost == 75);
     assert(plain.current_shop.cards[0].cost == drawn.cards[0].cost);
 
@@ -857,6 +964,26 @@ void test_delicate_frond() {
     std::cout << "[PASS] Delicate Frond: every empty potion slot filled at combat start" << std::endl;
 }
 
+void test_wongo_customer_appreciation_badge() {
+    // Wongo customer appreciation badge is an event relic with no effect in game ("Does nothing."):
+    // a run holding it plays exactly like one without it.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    with.add_relic("WONGO_CUSTOMER_APPRECIATION_BADGE");
+    enter_room_of_type(with, RoomType::MONSTER);
+
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    enter_room_of_type(without, RoomType::MONSTER);
+
+    assert(with.has_relic("WONGO_CUSTOMER_APPRECIATION_BADGE"));
+    assert(!without.has_relic("WONGO_CUSTOMER_APPRECIATION_BADGE"));
+    assert(with.max_hp == without.max_hp && with.gold == without.gold);
+    assert(with.combat.player.energy == without.combat.player.energy);
+    assert(with.combat.player.get_status(StatusType::DEXTERITY) == without.combat.player.get_status(StatusType::DEXTERITY));
+    std::cout << "[PASS] Wongo customer appreciation badge: no effect in game" << std::endl;
+}
+
 void test_circlet() {
     // Circlet is a fallback relic with no effect in game: a run holding it plays exactly like one without it.
     RunManager with;
@@ -877,6 +1004,26 @@ void test_circlet() {
     std::cout << "[PASS] Circlet: no effect, with or without the relic" << std::endl;
 }
 
+void test_fake_merchants_rug() {
+    // Le tapis du Marchand ??? is an event relic with no effect in game: a run holding it plays exactly like one without it.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    with.add_relic("FAKE_MERCHANTS_RUG");
+    enter_room_of_type(with, RoomType::MONSTER);
+
+    RunManager without;
+    without.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(without, RoomType::MONSTER);
+
+    assert(with.has_relic("FAKE_MERCHANTS_RUG"));
+    assert(!without.has_relic("FAKE_MERCHANTS_RUG"));
+    assert(with.max_hp == without.max_hp && with.gold == without.gold);
+    assert(with.combat.player.energy == without.combat.player.energy);
+    assert(with.combat.player.get_status(StatusType::DEXTERITY) == without.combat.player.get_status(StatusType::DEXTERITY));
+    assert(with.combat.player.get_status(StatusType::STRENGTH) == without.combat.player.get_status(StatusType::STRENGTH));
+    std::cout << "[PASS] Fake Merchant's Rug: no effect, with or without the relic" << std::endl;
+}
+
 void test_beating_remnant() {
     // With the relic: no more than 20 HP lost in a turn; the budget comes back at the start of the next turn.
     CombatEngine remnant = make_relic_combat(CharacterId::IRONCLAD, PowerId::BEATING_REMNANT, 20);
@@ -895,6 +1042,56 @@ void test_beating_remnant() {
     plain.damage_player(30);
     assert(plain.player.hp == plain_start - 30);
     std::cout << "[PASS] Beating Remnant: no more than 20 HP lost per turn" << std::endl;
+}
+
+void test_vambrace() {
+    // With the relic: the first Block a card gives in the combat is doubled; the later ones are not.
+    CombatEngine with = make_relic_combat(CharacterId::IRONCLAD, PowerId::VAMBRACE, 1);
+    int16_t with_start = with.player.block;
+    with.resolving_card = true;
+    with.gain_block(5);
+    assert(with.player.block == with_start + 10);
+    with.gain_block(5);
+    assert(with.player.block == with_start + 15);
+    with.resolving_card = false;
+    with.start_player_turn();
+    with.resolving_card = true;
+    int16_t next_turn = with.player.block;
+    with.gain_block(4);
+    assert(with.player.block == next_turn + 4);
+    with.resolving_card = false;
+
+    // Block that is not from a card (a relic or a power) is never doubled.
+    CombatEngine other = make_relic_combat(CharacterId::IRONCLAD, PowerId::VAMBRACE, 1);
+    int16_t other_start = other.player.block;
+    other.add_block(6);
+    assert(other.player.block == other_start + 6);
+
+    // Without the relic: the Block of a card is the plain amount.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    int16_t plain_start = plain.player.block;
+    plain.resolving_card = true;
+    plain.gain_block(5);
+    assert(plain.player.block == plain_start + 5);
+    plain.resolving_card = false;
+    std::cout << "[PASS] Vambrace: the first Block a card gives each combat is doubled" << std::endl;
+}
+
+void test_mr_struggles() {
+    // With the relic: at the start of each turn, damage equal to the turn number to every enemy (1, then 2, then 3).
+    CombatEngine carnage = make_relic_combat(CharacterId::IRONCLAD, PowerId::MR_STRUGGLES, 1, true);
+    assert(carnage.enemies[0].hp == 17 && carnage.enemies[2].hp == 41);
+    end_turn_idle(carnage);
+    assert(carnage.enemies[0].hp == 15 && carnage.enemies[2].hp == 39);
+    end_turn_idle(carnage);
+    assert(carnage.enemies[0].hp == 12 && carnage.enemies[2].hp == 36);
+
+    // Without the relic: the enemies lose no HP at the start of a turn.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {}, true);
+    assert(plain.enemies[0].hp == 18 && plain.enemies[2].hp == 42);
+    end_turn_idle(plain);
+    assert(plain.enemies[0].hp == 18 && plain.enemies[2].hp == 42);
+    std::cout << "[PASS] Monsieur Carnage: turn number in damage to every enemy at the start of each turn" << std::endl;
 }
 
 void test_dingy_rug() {
@@ -1042,6 +1239,24 @@ void test_lead_paperweight() {
     assert(plain.phase != RunPhase::REWARD_SCREEN && plain.current_card_rewards.empty());
 }
 
+void test_lost_coffer() {
+    // Lost Coffer: on pickup, a card reward is offered and one potion is obtained.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t potions = run.potions.size();
+    run.add_relic("LOST_COFFER");
+    assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+    assert(run.potions.size() == potions + 1);
+
+    // Without the relic nothing is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(plain.phase != RunPhase::REWARD_SCREEN && plain.current_card_rewards.empty());
+    assert(plain.potions.size() == potions);
+    std::cout << "[PASS] Lost Coffer" << std::endl;
+}
+
 void test_neows_torment() {
     // Obtained: one Neow's Fury is added to the deck.
     RunManager run;
@@ -1185,6 +1400,82 @@ void test_stone_humidifier() {
     std::cout << "[PASS] Stone Humidifier: +5 Max HP at each Rest Site rest" << std::endl;
 }
 
+void test_dream_catcher() {
+    // With the relic: each Rest offers one set of cards; taking one adds it to the deck, skipping adds nothing.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("DREAM_CATCHER");
+    run.hp = 40;
+    size_t deck = run.master_deck.size();
+    run.rest_at_campfire();
+    assert(run.phase == RunPhase::REWARD_SCREEN && run.current_card_rewards.size() == 3);
+    run.pick_card_reward(0);
+    assert(run.master_deck.size() == deck + 1);
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+    run.rest_at_campfire();
+    assert(run.phase == RunPhase::REWARD_SCREEN);
+    run.skip_card_rewards();
+    assert(run.master_deck.size() == deck + 1);
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic: a Rest offers no card.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 40;
+    size_t plain_deck = plain.master_deck.size();
+    plain.rest_at_campfire();
+    assert(!plain.has_relic("DREAM_CATCHER"));
+    assert(plain.phase == RunPhase::MAP_NAVIGATION && plain.master_deck.size() == plain_deck);
+    std::cout << "[PASS] Dream Catcher: a card reward after each Rest" << std::endl;
+}
+
+void test_meal_ticket() {
+    // With the relic: entering a shop heals 15 HP, capped at Max HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("MEAL_TICKET");
+    run.hp = 10;
+    enter_room_of_type(run, RoomType::SHOP);
+    assert(run.hp == 25);
+    run.hp = run.max_hp - 5;
+    enter_room_of_type(run, RoomType::SHOP);
+    assert(run.hp == run.max_hp);
+
+    // Entering another room heals nothing.
+    run.hp = 10;
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.hp == 10);
+
+    // Without the relic: a shop heals nothing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 10;
+    enter_room_of_type(plain, RoomType::SHOP);
+    assert(!plain.has_relic("MEAL_TICKET") && plain.hp == 10);
+    std::cout << "[PASS] Meal Ticket: 15 HP when entering a shop" << std::endl;
+}
+
+void test_shovel() {
+    // With the Shovel: a Rest Site digs up one random relic the run does not own yet.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("SHOVEL");
+    size_t before = run.relics.size();
+    enter_room_of_type(run, RoomType::REST_SITE);
+    assert(run.dig_at_campfire());
+    assert(run.relics.size() == before + 1 && run.phase == RunPhase::MAP_NAVIGATION);
+    assert(run.hook_count(RunHook::RESTED) == 0); // digging is not resting
+
+    // Without the Shovel: nothing is dug up.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    size_t plain_before = plain.relics.size();
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    assert(!plain.dig_at_campfire());
+    assert(plain.relics.size() == plain_before && !plain.has_relic("SHOVEL"));
+    std::cout << "[PASS] Shovel: a random relic dug up at a Rest Site, nothing without it" << std::endl;
+}
+
 void test_tiny_mailbox() {
     // With the relic: each Rest procures 2 potions.
     RunManager run;
@@ -1223,6 +1514,49 @@ void test_regal_pillow() {
     assert(!plain.has_relic("REGAL_PILLOW"));
     assert(plain.hp == 44);  // 20 + 24
     std::cout << "[PASS] Regal Pillow: 15 extra HP at each Rest" << std::endl;
+}
+
+void test_eternal_feather() {
+    // With the relic: entering a Rest Site heals 3 HP per 5 cards of the deck, capped at Max HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("ETERNAL_FEATHER");
+    int expected = static_cast<int>(run.master_deck.size()) / 5 * 3;
+    run.hp = 1;
+    enter_room_of_type(run, RoomType::REST_SITE);
+    assert(run.hp == std::min<int>(run.max_hp, 1 + expected));
+    run.hp = run.max_hp - 1;
+    enter_room_of_type(run, RoomType::REST_SITE);
+    assert(run.hp == run.max_hp);
+
+    // Without the relic: entering a Rest Site heals nothing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 1;
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    assert(!plain.has_relic("ETERNAL_FEATHER") && plain.hp == 1);
+    std::cout << "[PASS] Eternal Feather: heals 3 HP per 5 cards when entering a Rest Site" << std::endl;
+}
+
+void test_planisphere() {
+    // Entering a ? room heals 5 HP; the other rooms do not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 482);
+    run.add_relic("PLANISPHERE");
+    run.hp = 20;
+    enter_room_of_type(run, RoomType::EVENT);
+    assert(run.hp == 25);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.hp == 25);
+
+    // Without the relic: entering a ? room heals nothing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 482);
+    plain.hp = 20;
+    enter_room_of_type(plain, RoomType::EVENT);
+    assert(!plain.has_relic("PLANISPHERE"));
+    assert(plain.hp == 20);
+    std::cout << "[PASS] Planisphere: 5 HP when entering a ? room" << std::endl;
 }
 
 void test_pomander() {
@@ -1473,6 +1807,28 @@ void test_ectoplasm() {
     std::cout << "[PASS] Ectoplasm: no gold gained, +1 energy each turn" << std::endl;
 }
 
+void test_sozu() {
+    RunManager sozu = make_relic_run(CharacterId::IRONCLAD, { "SOZU" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    // One more energy at the start of each turn, only with the relic.
+    assert(sozu.combat.player.energy == plain.combat.player.energy + 1);
+    end_turn_idle(sozu.combat);
+    end_turn_idle(plain.combat);
+    assert(sozu.combat.player.energy == plain.combat.player.energy + 1);
+
+    // No potion can be obtained with the relic; without it they come in.
+    assert(sozu.gain_random_potions(2) == 0 && sozu.potions.empty());
+    assert(plain.gain_random_potions(2) == 2 && plain.potions.size() == 2);
+    sozu.potion_reward = "FIRE_POTION";
+    sozu.phase = RunPhase::REWARD_SCREEN;
+    assert(!sozu.take_potion_reward() && sozu.potions.empty());
+    plain.potions.clear();
+    plain.potion_reward = "FIRE_POTION";
+    plain.phase = RunPhase::REWARD_SCREEN;
+    assert(plain.take_potion_reward() && plain.potions.size() == 1);
+    std::cout << "[PASS] Sozu: 1 energy each turn, no potion obtained" << std::endl;
+}
+
 void test_philosophers_stone() {
     // Every enemy starts the combat with 1 Strength, the player does not.
     RunManager stone = make_relic_run(CharacterId::IRONCLAD, { "PHILOSOPHERS_STONE" });
@@ -1533,6 +1889,29 @@ void test_velvet_choker() {
     for (int i = 0; i < 7; ++i) assert(plain.combat.play_card(0, -1));
     assert(!plain.combat.has_power(PowerId::VELVET_CHOKER));
     std::cout << "[PASS] Velvet Choker: +1 energy each turn, no more than 6 cards played" << std::endl;
+}
+
+void test_brilliant_scarf() {
+    // With the relic: the 5th card played in a turn costs nothing.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "BRILLIANT_SCARF" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(run.combat.has_power(PowerId::BRILLIANT_SCARF));
+    for (RunManager* r : { &run, &plain }) {
+        r->combat.hand.clear();
+        for (int i = 0; i < 6; ++i) r->combat.hand.push_back(DeckCard{ CardId::DEFEND, false });
+        r->combat.player.energy = 10;
+        for (int i = 0; i < 4; ++i) assert(r->combat.play_card(0, -1));
+    }
+    assert(run.combat.effective_cost(run.combat.hand[0]) == 0);
+    assert(plain.combat.effective_cost(plain.combat.hand[0]) == 1);
+    int before = run.combat.player.energy;
+    assert(run.combat.play_card(0, -1));
+    assert(run.combat.player.energy == before);
+    assert(run.combat.effective_cost(run.combat.hand[0]) == 1);
+    before = plain.combat.player.energy;
+    assert(plain.combat.play_card(0, -1));
+    assert(plain.combat.player.energy == before - 1);
+    std::cout << "[PASS] Brilliant Scarf: the 5th card played each turn is free" << std::endl;
 }
 
 void test_glass_eye() {
@@ -1659,6 +2038,29 @@ void test_paels_horn() {
     std::cout << "[PASS] Paël's Horn: 2 Relax added to the deck when obtained" << std::endl;
 }
 
+void test_throwing_axe() {
+    // With the relic: the first card of the combat is played twice, the next ones once.
+    CombatEngine axe = make_relic_combat(CharacterId::IRONCLAD, PowerId::THROWING_AXE, 1);
+    int16_t hp = axe.enemies[0].hp;
+    play(axe, CardId::STRIKE);
+    assert(axe.enemies[0].hp == hp - 12);
+    play(axe, CardId::STRIKE);
+    assert(axe.enemies[0].hp == hp - 18);
+    // Still the first card of the combat on a later turn if none was played before.
+    CombatEngine late = make_relic_combat(CharacterId::IRONCLAD, PowerId::THROWING_AXE, 1);
+    end_turn_idle(late);
+    hp = late.enemies[0].hp;
+    play(late, CardId::STRIKE);
+    assert(late.enemies[0].hp == hp - 12);
+
+    // Without the relic: played once.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    hp = plain.enemies[0].hp;
+    play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].hp == hp - 6);
+    std::cout << "[PASS] Throwing Axe: the first card of the combat is played twice" << std::endl;
+}
+
 void test_paels_eye() {
     // With the relic: ending the first turn without a card exhausts the hand and gives an extra turn.
     CombatEngine eye = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAELS_EYE, 1);
@@ -1692,6 +2094,31 @@ void test_paels_eye() {
     std::cout << "[PASS] Pael's Eye: empty first turn exhausts the hand and gives an extra turn" << std::endl;
 }
 
+void test_music_box() {
+    // With the relic: the first Attack of the turn leaves an Ethereal copy in the hand, and only that one.
+    CombatEngine box = make_relic_combat(CharacterId::IRONCLAD, PowerId::MUSIC_BOX, 1);
+    box.hand.clear();
+    box.player.energy = 9;
+    box.hand.push_back(CardId::STRIKE);
+    box.hand.push_back(CardId::STRIKE);
+    assert(box.play_card(0, 0));
+    assert(box.hand.size() == 2);
+    assert(box.hand[1].id == CardId::STRIKE);
+    assert((box.hand[1].added_keywords & KEYWORD_ETHEREAL) != 0);
+    // The second Attack makes no copy.
+    assert(box.play_card(0, 0));
+    assert(box.hand.size() == 1);
+
+    // Without the relic: no copy.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.hand.clear();
+    plain.player.energy = 9;
+    plain.hand.push_back(CardId::STRIKE);
+    assert(plain.play_card(0, 0));
+    assert(plain.hand.empty());
+    std::cout << "[PASS] Music Box: Ethereal copy of the first Attack each turn" << std::endl;
+}
+
 void test_ringing_triangle() {
     // With the relic: the hand is kept at the end of the first turn, and only that one.
     CombatEngine triangle = make_relic_combat(CharacterId::IRONCLAD, PowerId::RINGING_TRIANGLE, 1);
@@ -1709,6 +2136,83 @@ void test_ringing_triangle() {
     assert(plain.hand.size() == 5);
 
     std::cout << "[PASS] Ringing Triangle: the first hand is kept at the end of the first turn" << std::endl;
+}
+
+void test_orange_dough() {
+    // With the relic: 2 random Colorless cards join the hand at the start of the combat, on top of the usual 5.
+    RunManager dough = make_relic_run(CharacterId::REGENT, { "ORANGE_DOUGH" });
+    assert(dough.combat.hand.size() == 7);
+    int colorless = 0;
+    for (const DeckCard& card : dough.combat.hand) {
+        if (card_meta(card.id).pool == CardPool::COLORLESS) ++colorless;
+    }
+    assert(colorless >= 2);
+    std::cout << "[PASS] Orange Dough: 2 random Colorless cards are added to the hand at the start of the combat" << std::endl;
+
+    // Without the relic: the usual 5 cards, no Colorless card added.
+    RunManager plain = make_relic_run(CharacterId::REGENT, {});
+    assert(plain.combat.hand.size() == 5);
+}
+
+void test_diamond_diadem() {
+    // With the relic: 20 Block at the start of the combat, kept through the start of the 2nd turn only.
+    RunManager diadem = make_relic_run(CharacterId::IRONCLAD, { "DIAMOND_DIADEM" });
+    assert(diadem.combat.player.block == 20);
+    end_turn_idle(diadem.combat);
+    assert(diadem.combat.player.block >= 20);
+    end_turn_idle(diadem.combat);
+    assert(diadem.combat.player.block < 20);
+
+    // Without the relic: no Block at the start, none left on the 2nd turn.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.player.block == 0);
+    end_turn_idle(plain.combat);
+    assert(plain.combat.player.block == 0);
+    std::cout << "[PASS] Diamond Diadem: 20 Block at the start, kept at the 2nd turn" << std::endl;
+}
+
+void test_choices_paradox() {
+    // With the relic: 5 random cards are offered, the one picked joins the hand with Retain.
+    RunManager paradox = make_relic_run(CharacterId::IRONCLAD, { "CHOICES_PARADOX" });
+    CombatEngine& combat = paradox.combat;
+    assert(combat.choice_pending() && combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.offers.size() == 5 && combat.hand.size() == 5);
+    const DeckCard picked = combat.offers[2];
+    const uint8_t picks[] = { 2 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending() && combat.offers.empty());
+    assert(combat.hand.size() == 6 && combat.hand.back().id == picked.id);
+    assert((combat.hand.back().added_keywords & KEYWORD_RETAIN) != 0);
+
+    // Without the relic: no offer at the start of the combat.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(!plain.combat.choice_pending() && plain.combat.offers.empty() && plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Choices Paradox: 1 of 5 random cards joins the hand with Retain" << std::endl;
+}
+
+void test_toolbox() {
+    // With the relic: 3 Colorless cards are offered at the start of the combat, and the one picked joins the hand.
+    RunManager toolbox = make_relic_run(CharacterId::IRONCLAD, { "TOOLBOX" });
+    CombatEngine& combat = toolbox.combat;
+    assert(combat.choice_pending() && combat.pending_choices[0].source == Pile::OFFERS);
+    assert(combat.offers.size() == 3 && combat.choice_size() == 1);
+    assert(combat.hand.size() == 5);
+    for (const DeckCard& offered : combat.offers) assert(card_meta(offered.id).pool == CardPool::COLORLESS);
+    const DeckCard picked = combat.offers[1];
+    const uint8_t picks[] = { 1 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending() && combat.offers.empty());
+    assert(combat.hand.size() == 6 && combat.hand.back().id == picked.id);
+    assert(combat.hand.back().deck_index == NOT_IN_DECK);
+    // Offered once per combat: the next turn is dealt its own hand, with no new offer.
+    end_turn_idle(combat);
+    // A picked card that Retains stays in the hand next to the 5 new cards.
+    assert(!combat.choice_pending() && combat.hand.size() == 5 + (CardDef::has_keyword(picked, KEYWORD_RETAIN) ? 1 : 0));
+
+    // Without the relic: no offer at the start of the combat.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(!plain.combat.choice_pending() && plain.combat.offers.empty() && plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Toolbox: a Colorless card is picked from 3 offers at the start of the combat" << std::endl;
 }
 
 void test_cursed_pearl() {
@@ -1762,6 +2266,14 @@ void test_calling_bell() {
     assert(plain.relics.size() == plain_relics + 1);
     assert(plain.master_deck.size() == plain_deck);
     std::cout << "[PASS] Calling Bell: Curse of the Bell and 3 random relics on pickup" << std::endl;
+}
+
+void test_royal_poison() {
+    // With the relic: 4 HP lost at the start of the fight. Without it: the same run keeps its HP.
+    RunManager poison = make_relic_run(CharacterId::IRONCLAD, { "ROYAL_POISON" });
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(poison.combat.player.hp == plain.combat.player.hp - 4);
+    std::cout << "[PASS] Royal Poison: 4 HP lost at the start of each combat" << std::endl;
 }
 
 void test_ghost_seed() {
@@ -1864,6 +2376,25 @@ static void test_pen_nib() {
     std::cout << "[PASS] Pen Nib doubles every 10th Attack" << std::endl;
 }
 
+void test_iron_club() {
+    // With the relic, the 4th card played draws 1 card and the count starts over.
+    CombatEngine club = make_relic_combat(CharacterId::IRONCLAD, PowerId::IRON_CLUB, 1);
+    club.enemies[0].hp = 200;
+    club.player.energy = 10;
+    for (int i = 0; i < 3; ++i) play(club, CardId::DEFEND);
+    assert(club.hand.empty());
+    play(club, CardId::DEFEND);
+    assert(club.hand.size() == 1 && club.power_counter(PowerId::IRON_CLUB) == 0);
+
+    // Without it, no card is drawn.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::NUNCHAKU, 1);
+    plain.player.energy = 10;
+    for (int i = 0; i < 3; ++i) play(plain, CardId::DEFEND);
+    play(plain, CardId::DEFEND);
+    assert(plain.hand.empty());
+    std::cout << "[PASS] Iron Club draws a card every 4 cards played" << std::endl;
+}
+
 void test_strike_dummy() {
     // With the relic, every card containing "Strike" deals 3 more damage per hit; other cards do not.
     CombatEngine dummy = make_relic_combat(CharacterId::IRONCLAD, PowerId::STRIKE_DUMMY, 3);
@@ -1881,6 +2412,50 @@ void test_strike_dummy() {
     play(plain, CardId::STRIKE);
     assert(plain.enemies[0].hp == 200 - 6);
     std::cout << "[PASS] Strike Dummy: cards containing Strike deal 3 more damage" << std::endl;
+}
+
+void test_fake_strike_dummy() {
+    // With the event relic, every card containing "Strike" deals 1 more damage per hit; other cards do not.
+    CombatEngine dummy = make_relic_combat(CharacterId::IRONCLAD, PowerId::FAKE_STRIKE_DUMMY, 1);
+    dummy.enemies[0].hp = 200;
+    play(dummy, CardId::STRIKE);
+    assert(dummy.enemies[0].hp == 200 - 7);
+    play(dummy, CardId::TWIN_STRIKE);
+    assert(dummy.enemies[0].hp == 200 - 7 - 2 * 6);
+    play(dummy, CardId::BASH);
+    assert(dummy.enemies[0].hp == 200 - 7 - 2 * 6 - 8);
+
+    // Without it, a Strike deals its ordinary damage.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 200;
+    play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].hp == 200 - 6);
+    std::cout << "[PASS] Fake Strike Dummy: cards containing Strike deal 1 more damage" << std::endl;
+}
+
+void test_miniature_cannon() {
+    // With the relic, an upgraded Attack deals 3 more damage per hit (Twin Strike hits twice); an ordinary one does not.
+    CombatEngine cannon = make_relic_combat(CharacterId::IRONCLAD, PowerId::MINIATURE_CANNON, 3);
+    cannon.enemies[0].hp = 200;
+    play(cannon, DeckCard(CardId::STRIKE, true));
+    const int upgraded_hit = 200 - cannon.enemies[0].hp;
+
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 200;
+    play(plain, DeckCard(CardId::STRIKE, true));
+    assert(200 - plain.enemies[0].hp + 3 == upgraded_hit);
+
+    cannon.enemies[0].hp = 200;
+    play(cannon, DeckCard(CardId::TWIN_STRIKE, true));
+    const int twin_with = 200 - cannon.enemies[0].hp;
+    plain.enemies[0].hp = 200;
+    play(plain, DeckCard(CardId::TWIN_STRIKE, true));
+    assert(twin_with == 200 - plain.enemies[0].hp + 2 * 3);
+
+    cannon.enemies[0].hp = 200;
+    play(cannon, CardId::STRIKE);
+    assert(cannon.enemies[0].hp == 200 - 6);
+    std::cout << "[PASS] Miniature Cannon: upgraded Attacks deal 3 more damage per hit" << std::endl;
 }
 
 void test_white_beast_statue() {
@@ -1902,6 +2477,47 @@ void test_white_beast_statue() {
     }
     assert(plain_without > 0);
     std::cout << "[PASS] White Beast Statue: a potion in every combat reward, not always without it" << std::endl;
+}
+
+void test_unsettling_lamp() {
+    // With the relic: the first card of the fight that debuffs an enemy doubles its debuffs, a card without one does not count.
+    CombatEngine lamp = make_relic_combat(CharacterId::IRONCLAD, PowerId::UNSETTLING_LAMP, 1);
+    lamp.enemies[0].hp = 200;
+    play(lamp, CardId::STRIKE);
+    assert(lamp.enemies[0].get_status(StatusType::VULNERABLE) == 0 && lamp.power_counter(PowerId::UNSETTLING_LAMP) == 0);
+    play(lamp, CardId::BASH);
+    assert(lamp.enemies[0].get_status(StatusType::VULNERABLE) == 4);
+    // Only the first one: the next debuff is the plain one.
+    play(lamp, CardId::BASH);
+    assert(lamp.enemies[0].get_status(StatusType::VULNERABLE) == 6);
+
+    // Without the relic: 2 Vulnerable each time.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::NUNCHAKU, 1);
+    plain.enemies[0].hp = 200;
+    play(plain, CardId::BASH);
+    play(plain, CardId::BASH);
+    assert(plain.enemies[0].get_status(StatusType::VULNERABLE) == 4);
+    std::cout << "[PASS] Unsettling Lamp: the first debuffing card of the fight has its debuffs doubled" << std::endl;
+}
+
+void test_daughter_of_the_wind() {
+    // With the relic: each Attack played gives 1 Block; a Skill does not.
+    RunManager wind = make_relic_run(CharacterId::IRONCLAD, { "DAUGHTER_OF_THE_WIND" });
+    int16_t start = wind.combat.player.block;
+    play(wind.combat, CardId::STRIKE);
+    assert(wind.combat.player.block == start + 1);
+    play(wind.combat, CardId::DEFEND);
+    assert(wind.combat.player.block == start + 1 + 5);
+    play(wind.combat, CardId::STRIKE);
+    assert(wind.combat.player.block == start + 1 + 5 + 1);
+
+    // Without the relic: a Strike gives no Block.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    int16_t plain_start = plain.combat.player.block;
+    play(plain.combat, CardId::STRIKE);
+    assert(!plain.has_relic("DAUGHTER_OF_THE_WIND"));
+    assert(plain.combat.player.block == plain_start);
+    std::cout << "[PASS] Daughter of the Wind: 1 Block per Attack played" << std::endl;
 }
 
 void test_bowler_hat() {
@@ -1947,6 +2563,49 @@ void test_cauldron() {
     assert(!plain.has_relic("CAULDRON"));
     assert(plain.potions.empty());
     std::cout << "[PASS] Cauldron: 5 random potions brewed on pickup" << std::endl;
+}
+
+void test_alchemical_coffer() {
+    // Obtained: 4 new potion slots, all filled with random potions.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 744);
+    run.potions.clear();
+    const uint8_t slots = run.potion_slots;
+    run.add_relic("ALCHEMICAL_COFFER");
+    assert(run.has_relic("ALCHEMICAL_COFFER"));
+    assert(run.potion_slots == slots + 4);
+    assert(run.potions.size() == 4);
+
+    // Without the relic: no slot, no potion.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 744);
+    plain.potions.clear();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("ALCHEMICAL_COFFER"));
+    assert(plain.potion_slots == slots && plain.potions.empty());
+    std::cout << "[PASS] Alchemical Coffer: 4 potion slots filled on pickup" << std::endl;
+}
+
+void test_phial_holster() {
+    // Obtained: one more potion slot and 2 random potions.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 709);
+    run.potions.clear();
+    int slots = run.potion_slots;
+    run.add_relic("PHIAL_HOLSTER");
+    assert(run.has_relic("PHIAL_HOLSTER"));
+    assert(run.potion_slots == slots + 1);
+    assert(run.potions.size() == 2);
+
+    // Without the relic: no slot, no potion.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 709);
+    plain.potions.clear();
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("PHIAL_HOLSTER"));
+    assert(plain.potion_slots == slots);
+    assert(plain.potions.empty());
+    std::cout << "[PASS] Phial Holster: 1 potion slot and 2 random potions on pickup" << std::endl;
 }
 
 void test_pear() {
@@ -2030,6 +2689,41 @@ void test_tungsten_rod() {
     std::cout << "[PASS] Tungsten Rod: 1 less HP lost each time" << std::endl;
 }
 
+void test_paper_krane() {
+    // With the relic: a Weak enemy deals 40% less damage (20 x 0.6 = 12), and the Vulnerable player takes 1.5x (18).
+    RunManager with;
+    with.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 451);
+    with.add_relic("PAPER_KRANE");
+    with.potions.clear();
+    enter_room_of_type(with, RoomType::MONSTER);
+    CombatEngine& krane = with.combat;
+    krane.enemies[0].statuses.clear();
+    krane.player.statuses.clear();
+    krane.enemies[0].current_intent.type = EnemyIntentType::ATTACK;
+    krane.enemies[0].current_intent.base_damage = 20;
+    krane.enemies[0].add_status(StatusType::WEAK, 1);
+    assert(krane.enemies[0].intent_damage(krane.player) == 12);
+    krane.player.add_status(StatusType::VULNERABLE, 1);
+    assert(krane.enemies[0].intent_damage(krane.player) == 18);
+    krane.player.statuses.clear();
+    krane.enemies[0].statuses.clear();
+    assert(krane.enemies[0].intent_damage(krane.player) == 20);
+
+    // Without the relic: the Weak enemy deals 25% less (20 x 0.75 = 15), as before.
+    RunManager without;
+    without.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 451);
+    without.potions.clear();
+    enter_room_of_type(without, RoomType::MONSTER);
+    CombatEngine& plain = without.combat;
+    plain.enemies[0].statuses.clear();
+    plain.player.statuses.clear();
+    plain.enemies[0].current_intent.type = EnemyIntentType::ATTACK;
+    plain.enemies[0].current_intent.base_damage = 20;
+    plain.enemies[0].add_status(StatusType::WEAK, 1);
+    assert(plain.enemies[0].intent_damage(plain.player) == 15);
+    std::cout << "[PASS] Paper Krane: Weak enemies deal 40% less damage to the player" << std::endl;
+}
+
 void test_lees_waffle() {
     // Obtained: 7 more maximum HP, and all of the HP is restored.
     RunManager run;
@@ -2070,6 +2764,66 @@ void test_mango() {
     std::cout << "[PASS] Mango: 14 more max HP on pickup" << std::endl;
 }
 
+void test_fake_lees_waffle() {
+    // Obtained: heals 10% of the max HP, capped at the max HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 512);
+    int16_t max_hp = run.max_hp;
+    run.hp = 20;
+    run.add_relic("FAKE_LEES_WAFFLE");
+    assert(run.has_relic("FAKE_LEES_WAFFLE"));
+    assert(run.hp == 20 + max_hp * 10 / 100);
+    assert(run.max_hp == max_hp);
+
+    RunManager near_full;
+    near_full.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 512);
+    near_full.hp = static_cast<int16_t>(near_full.max_hp - 1);
+    near_full.add_relic("FAKE_LEES_WAFFLE");
+    assert(near_full.hp == near_full.max_hp);
+
+    // Without the relic, the HP stays as it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 512);
+    plain.hp = 20;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("FAKE_LEES_WAFFLE"));
+    assert(plain.hp == 20);
+    std::cout << "[PASS] Fake Lee's Waffle: heals 10% of the max HP on pickup" << std::endl;
+}
+
+void test_fake_mango() {
+    // Event relic, obtained: 3 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 514);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("FAKE_MANGO");
+    assert(run.has_relic("FAKE_MANGO"));
+    assert(run.max_hp == max_hp + 3 && run.hp == 53);
+
+    // Without the relic, nothing raises the maximum HP.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 514);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("FAKE_MANGO"));
+    assert(plain.max_hp == max_hp && plain.hp == 50);
+    std::cout << "[PASS] Fake Mango: 3 more max HP on pickup" << std::endl;
+}
+
+void test_fake_anchor() {
+    // Each combat starts with 4 Block, as with Anchor, and none without the relic.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "FAKE_ANCHOR" });
+    assert(run.has_relic("FAKE_ANCHOR"));
+    assert(run.phase == RunPhase::IN_COMBAT && run.combat.player.block == 4);
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, { "ANCHOR" });
+    assert(!plain.has_relic("FAKE_ANCHOR"));
+    assert(plain.combat.player.block == 10);
+    RunManager none = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(none.combat.player.block == 0);
+    std::cout << "[PASS] Fake Anchor: starts each combat with 4 Block" << std::endl;
+}
+
 void test_old_coin() {
     // Obtained: 300 gold, paid once.
     RunManager run;
@@ -2085,6 +2839,85 @@ void test_old_coin() {
     plain.add_relic("ANCHOR");
     assert(!plain.has_relic("OLD_COIN") && plain.gold == gold);
     std::cout << "[PASS] Old Coin: +300 gold when obtained" << std::endl;
+}
+
+void test_lucky_fysh() {
+    // With the relic: each card added to the deck, by any source, gains 15 gold.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 484);
+    run.add_relic("LUCKY_FYSH");
+    assert(run.has_relic("LUCKY_FYSH"));
+    int16_t gold = run.gold;
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.gold == gold + 15);
+    run.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    assert(run.gold == gold + 30);
+
+    // Without the relic, adding a card leaves the gold where it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 484);
+    plain.add_relic("ANCHOR");
+    int16_t plain_gold = plain.gold;
+    plain.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(!plain.has_relic("LUCKY_FYSH") && plain.gold == plain_gold);
+    std::cout << "[PASS] Lucky Fysh: +15 gold each time a card joins the deck" << std::endl;
+}
+
+void test_bing_bong() {
+    // With the relic: each card added to the deck comes with one additional copy.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 524);
+    run.add_relic("BING_BONG");
+    assert(run.has_relic("BING_BONG"));
+    size_t size = run.master_deck.size();
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.master_deck.size() == size + 2);
+    assert(run.master_deck[size].id == CardId::STRIKE && run.master_deck[size + 1].id == CardId::STRIKE);
+
+    // Without the relic: a single card.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 524);
+    plain.add_relic("ANCHOR");
+    size_t plain_size = plain.master_deck.size();
+    plain.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(!plain.has_relic("BING_BONG") && plain.master_deck.size() == plain_size + 1);
+    std::cout << "[PASS] Bing Bong: each card added to the deck is duplicated" << std::endl;
+}
+
+void test_molten_egg() {
+    // With the relic, every Attack added to the deck is upgraded; other cards are left as they are.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 493);
+    run.add_relic("MOLTEN_EGG");
+    assert(run.has_relic("MOLTEN_EGG"));
+    run.add_card_to_deck(DeckCard{ CardId::BASH, false });
+    assert(run.master_deck[run.master_deck.size() - 1].upgraded);
+    run.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    assert(!run.master_deck[run.master_deck.size() - 1].upgraded);
+
+    // Without the relic, an Attack added to the deck stays as it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 493);
+    plain.add_relic("ANCHOR");
+    plain.add_card_to_deck(DeckCard{ CardId::BASH, false });
+    assert(!plain.has_relic("MOLTEN_EGG") && !plain.master_deck[plain.master_deck.size() - 1].upgraded);
+    std::cout << "[PASS] Molten Egg: upgrades an Attack added to the deck" << std::endl;
+}
+
+void test_potion_belt() {
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 462);
+    int before = run.potion_slots;
+    run.add_relic("POTION_BELT");
+    assert(run.has_relic("POTION_BELT"));
+    assert(run.potion_slots == before + 2);
+
+    // Without the relic, the belt keeps its size.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 462);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("POTION_BELT") && plain.potion_slots == before);
+    std::cout << "[PASS] Potion Belt: 2 more potion slots when obtained" << std::endl;
 }
 
 void test_whetstone() {
@@ -2142,6 +2975,26 @@ void test_war_paint() {
     plain.add_relic("ANCHOR");
     assert(!plain.has_relic("WAR_PAINT") && upgraded_of_type(plain, CardType::SKILL) == skills_before);
     std::cout << "[PASS] War Paint: upgrades 2 random Skills when obtained" << std::endl;
+}
+
+void test_toxic_egg() {
+    // With the relic: a Skill added to the Deck comes in upgraded; an Attack does not.
+    RunManager with;
+    with.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 495);
+    with.add_relic("TOXIC_EGG");
+    with.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    with.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(with.master_deck.back().id == CardId::STRIKE && !with.master_deck.back().upgraded);
+    assert(with.master_deck[with.master_deck.size() - 2].id == CardId::DEFEND);
+    assert(with.master_deck[with.master_deck.size() - 2].upgraded);
+
+    // Without the relic: the Skill is added as it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 495);
+    plain.add_relic("ANCHOR");
+    plain.add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    assert(!plain.has_relic("TOXIC_EGG") && !plain.master_deck.back().upgraded);
+    std::cout << "[PASS] Toxic Egg: a Skill added to the Deck is upgraded" << std::endl;
 }
 
 void test_dragon_fruit() {
@@ -2208,8 +3061,1042 @@ void test_orrery() {
     std::cout << "[PASS] Orrery: 5 card rewards on pickup" << std::endl;
 }
 
+void test_book_of_five_rings() {
+    // Obtained: every 5th card added to the Deck heals 20 HP, the first four do not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 478);
+    run.hp = 30;
+    run.add_relic("BOOK_OF_FIVE_RINGS");
+    assert(run.has_relic("BOOK_OF_FIVE_RINGS"));
+    for (int card = 1; card <= 4; ++card) run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 30);
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 50);
+    for (int card = 1; card <= 4; ++card) run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 50);
+    for (int card = 1; card <= 5; ++card) run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.hp == 70);
+
+    // Without the relic, adding cards never heals.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 478);
+    plain.hp = 30;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("BOOK_OF_FIVE_RINGS"));
+    for (int card = 1; card <= 10; ++card) plain.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(plain.hp == 30);
+    std::cout << "[PASS] Book of Five Rings: heals 20 HP on every 5th card added to the Deck" << std::endl;
+}
+
+void test_ring_of_the_drake() {
+    // With the relic: 2 more cards drawn at the start of each of the first 3 turns, then the usual 5.
+    RunManager ring = make_relic_run(CharacterId::IRONCLAD, { "RING_OF_THE_DRAKE" });
+    assert(ring.combat.hand.size() == 7);
+    end_turn_idle(ring.combat);
+    assert(ring.combat.hand.size() == 7);
+    end_turn_idle(ring.combat);
+    assert(ring.combat.hand.size() == 7);
+    end_turn_idle(ring.combat);
+    assert(ring.combat.hand.size() == 5);
+
+    // Without the relic: the usual 5 cards on every turn.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.hand.size() == 5);
+    end_turn_idle(plain.combat);
+    assert(plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Ring of the Drake: 2 more cards drawn on each of the first 3 turns" << std::endl;
+}
+
+void test_venerable_tea_set() {
+    // With the relic: each Rest Site entered gives 2 more energy to the next combat, once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("VENERABLE_TEA_SET");
+    enter_room_of_type(run, RoomType::REST_SITE);
+    enter_room_of_type(run, RoomType::REST_SITE);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 7);
+    assert(run.relic_counter("VENERABLE_TEA_SET") == 0);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 3);
+
+    // Without the relic: the usual 3 energy after a Rest Site.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(!plain.has_relic("VENERABLE_TEA_SET"));
+    assert(plain.combat.player.energy == 3);
+    std::cout << "[PASS] Venerable Tea Set: 2 energy per Rest Site entered, for the next combat" << std::endl;
+}
+
+void test_fake_venerable_tea_set() {
+    // With the relic: each Rest Site entered gives 1 more energy to the next combat, once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    run.add_relic("FAKE_VENERABLE_TEA_SET");
+    enter_room_of_type(run, RoomType::REST_SITE);
+    enter_room_of_type(run, RoomType::REST_SITE);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 5);
+    assert(run.relic_counter("FAKE_VENERABLE_TEA_SET") == 0);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.energy == 3);
+
+    // Without the relic: the usual 3 energy after a Rest Site.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(!plain.has_relic("FAKE_VENERABLE_TEA_SET"));
+    assert(plain.combat.player.energy == 3);
+    std::cout << "[PASS] Venerable Tea Set (event): 1 energy per Rest Site entered, for the next combat" << std::endl;
+}
+
+void test_divine_destiny() {
+    // With the relic: 7 Stars at the start of each combat.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    run.add_relic("DIVINE_DESTINY");
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.sovereign_stars == 7);
+
+    // Without the relic: no Stars at the start of the combat.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    assert(!plain.has_relic("DIVINE_DESTINY"));
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.combat.player.sovereign_stars == 0);
+    std::cout << "[PASS] Divine Destiny (event): 7 Stars at the start of each combat" << std::endl;
+}
+
+void test_bone_tea() {
+    // With the relic: the starting hand of the next combat is upgraded, once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("BONE_TEA");
+    assert(run.relic_counter("BONE_TEA") == 1);
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(!run.combat.hand.empty());
+    for (const DeckCard& card : run.combat.hand) assert(card.upgraded);
+    assert(run.relic_counter("BONE_TEA") == 0);
+    run.proceed_after_combat();
+    enter_room_of_type(run, RoomType::MONSTER);
+    bool any_upgraded = false;
+    for (const DeckCard& card : run.combat.hand) any_upgraded = any_upgraded || card.upgraded;
+    assert(!any_upgraded);
+
+    // Without the relic: the starting hand stays as it is.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(!plain.has_relic("BONE_TEA"));
+    for (const DeckCard& card : plain.combat.hand) assert(!card.upgraded);
+    std::cout << "[PASS] Bone Tea: the starting hand of the next combat is upgraded" << std::endl;
+}
+
+void test_lava_lamp() {
+    // At the end of a fight without HP lost, every card reward of it is upgraded; with HP lost, none is.
+    auto all_upgraded = [](const RunManager& r) {
+        if (r.current_card_rewards.empty()) return false;
+        for (const DeckCard& card : r.current_card_rewards) {
+            if (!card.upgraded) return false;
+        }
+        return true;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 476);
+    run.add_relic("LAVA_LAMP");
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.combat.state = CombatState::VICTORY;
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN && all_upgraded(run));
+    run.skip_card_rewards();
+
+    RunManager hurt;
+    hurt.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 476);
+    hurt.add_relic("LAVA_LAMP");
+    enter_room_of_type(hurt, RoomType::MONSTER);
+    hurt.combat.counters.combat_hp_losses = 1;
+    hurt.combat.state = CombatState::VICTORY;
+    hurt.proceed_after_combat();
+    assert(hurt.phase == RunPhase::REWARD_SCREEN && !hurt.current_card_rewards.empty());
+    for (const DeckCard& card : hurt.current_card_rewards) assert(!card.upgraded);
+    hurt.skip_card_rewards();
+
+    // Without the relic, a fight without HP lost gives no upgraded card.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 476);
+    plain.add_relic("ANCHOR");
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
+    for (const DeckCard& card : plain.current_card_rewards) assert(!card.upgraded);
+    std::cout << "[PASS] Lava Lamp: card rewards upgraded after a fight without HP lost" << std::endl;
+}
+
+void test_prayer_wheel() {
+    // A normal fight gives a second set of cards once the first one is taken or skipped.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "PRAYER_WHEEL" });
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN);
+    run.pick_card_reward(0);
+    assert(run.phase == RunPhase::REWARD_SCREEN && run.current_card_rewards.size() > 0);
+    run.skip_card_rewards();
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, a normal fight gives one set only.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    plain.proceed_after_combat();
+    plain.pick_card_reward(0);
+    assert(plain.phase == RunPhase::MAP_NAVIGATION);
+
+    // An elite fight is not a normal fight: one set only.
+    RunManager elite = make_relic_run(CharacterId::IRONCLAD, { "PRAYER_WHEEL" });
+    enter_room_of_type(elite, RoomType::ELITE);
+    elite.proceed_after_combat();
+    elite.pick_card_reward(0);
+    assert(elite.phase == RunPhase::MAP_NAVIGATION);
+    std::cout << "[PASS] Prayer Wheel: a normal fight gives an extra card reward" << std::endl;
+}
+
+void test_frozen_egg() {
+    // With the relic: a Power added to the Deck is upgraded, another card is not.
+    RunManager with = make_relic_run(CharacterId::IRONCLAD, { "FROZEN_EGG" });
+    with.add_card_to_deck(DeckCard{ CardId::INFLAME, false });
+    assert(with.master_deck.back().id == CardId::INFLAME && with.master_deck.back().upgraded);
+    with.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(with.master_deck.back().id == CardId::STRIKE && !with.master_deck.back().upgraded);
+
+    // Without the relic: the Power stays as it is.
+    RunManager without = make_relic_run(CharacterId::IRONCLAD, {});
+    without.add_card_to_deck(DeckCard{ CardId::INFLAME, false });
+    assert(without.master_deck.back().id == CardId::INFLAME && !without.master_deck.back().upgraded);
+    std::cout << "[PASS] Frozen Egg: a Power added to the Deck is upgraded" << std::endl;
+}
+
+void test_girya() {
+    // Rest sites: each lift gives 1 Strength for the rest of the run, 3 times at most, and uses up the rest site.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.phase = RunPhase::CAMPFIRE;
+    assert(!run.lift_at_campfire() && run.relic_counter("GIRYA") == 0 && run.phase == RunPhase::CAMPFIRE);
+    run.add_relic("GIRYA");
+    for (uint8_t lift = 1; lift <= 3; ++lift) {
+        run.phase = RunPhase::CAMPFIRE;
+        assert(run.lift_at_campfire() && run.relic_counter("GIRYA") == lift);
+        assert(run.phase == RunPhase::MAP_NAVIGATION);
+    }
+    run.phase = RunPhase::CAMPFIRE;
+    assert(!run.lift_at_campfire() && run.relic_counter("GIRYA") == 3 && run.phase == RunPhase::CAMPFIRE);
+
+    // Every combat starts with the Strength lifted so far, and with none without the relic.
+    RunManager fight;
+    fight.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    fight.add_relic("GIRYA");
+    assert(fight.set_relic_counter("GIRYA", 2));
+    enter_room_of_type(fight, RoomType::MONSTER);
+    assert(fight.phase == RunPhase::IN_COMBAT && fight.combat.player.get_status(StatusType::STRENGTH) == 2);
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.player.get_status(StatusType::STRENGTH) == 0);
+    std::cout << "[PASS] Girya: +1 Strength per lift at a rest site, 3 times max, carried into each combat" << std::endl;
+}
+
+void test_petrified_toad() {
+    // Each combat starts with a Potion-Shaped Rock in the belt; drinking it deals 15 damage.
+    RunManager toad = make_relic_run(CharacterId::IRONCLAD, { "PETRIFIED_TOAD" });
+    assert(toad.has_relic("PETRIFIED_TOAD"));
+    assert(toad.potions.size() == 1 && toad.potions[0] == "POTION_SHAPED_ROCK");
+    toad.combat.enemies[0].hp = 40;
+    assert(toad.use_potion(0, 0));
+    assert(toad.combat.enemies[0].hp == 25);
+    assert(toad.potions.empty());
+
+    // Without the relic, no potion is given at the start of the combat.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(!plain.has_relic("PETRIFIED_TOAD") && plain.potions.empty());
+    std::cout << "[PASS] Petrified Toad: a Potion-Shaped Rock at the start of each combat" << std::endl;
+}
+
+void test_fake_happy_flower() {
+    // Every 5 turns the turn starts with 1 more energy; nothing without the relic.
+    RunManager with = make_relic_run(CharacterId::IRONCLAD, { "FAKE_HAPPY_FLOWER" });
+    RunManager without = make_relic_run(CharacterId::IRONCLAD, {});
+    for (int turn = 1; turn <= 5; ++turn) {
+        int expected = turn == 5 ? with.combat.player.max_energy + 1 : with.combat.player.max_energy;
+        assert(with.combat.player.energy == expected);
+        assert(without.combat.player.energy == without.combat.player.max_energy);
+        if (turn < 5) {
+            end_turn_idle(with.combat);
+            end_turn_idle(without.combat);
+        }
+    }
+    std::cout << "[PASS] Fake Happy Flower: 1 energy every 5 turns" << std::endl;
+}
+
+void test_white_star() {
+    // With the relic, an Elite offers one more set of Rare cards once its first set is taken or skipped.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 492);
+    run.add_relic("WHITE_STAR");
+    enter_room_of_type(run, RoomType::ELITE);
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN);
+    run.pick_card_reward(0);
+    assert(run.phase == RunPhase::REWARD_SCREEN);
+    assert(!run.current_card_rewards.empty());
+    for (DeckCard card : run.current_card_rewards) assert(card_meta(card.id).rarity == CardRarity::RARE);
+    run.skip_card_rewards();
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, the Elite offers only its first set.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 492);
+    plain.add_relic("ANCHOR");
+    enter_room_of_type(plain, RoomType::ELITE);
+    plain.proceed_after_combat();
+    plain.pick_card_reward(0);
+    assert(plain.phase == RunPhase::MAP_NAVIGATION);
+
+    // With the relic, a Monster room gives no extra set.
+    RunManager monster = make_relic_run(CharacterId::IRONCLAD, { "WHITE_STAR" });
+    monster.proceed_after_combat();
+    monster.pick_card_reward(0);
+    assert(monster.phase == RunPhase::MAP_NAVIGATION);
+    std::cout << "[PASS] White Star: an Elite offers one more set of Rare cards" << std::endl;
+}
+
+void test_chosen_cheese() {
+    // With the relic: each fight won raises Max HP by 1.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("CHOSEN_CHEESE");
+    int16_t max_hp = run.max_hp;
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.combat.state = CombatState::VICTORY;
+    run.proceed_after_combat();
+    assert(run.max_hp == max_hp + 1);
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.combat.state = CombatState::VICTORY;
+    run.proceed_after_combat();
+    assert(run.max_hp == max_hp + 2);
+
+    // Without the relic: a fight leaves Max HP alone.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    assert(!plain.has_relic("CHOSEN_CHEESE"));
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.max_hp == max_hp);
+    std::cout << "[PASS] Chosen Cheese: +1 Max HP at the end of each combat" << std::endl;
+}
+
+void test_lost_wisp() {
+    // With the relic: each Power played hits every enemy for 8; other cards do not.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "LOST_WISP" });
+    assert(run.combat.has_power(PowerId::LOST_WISP));
+    CombatEngine with = make_relic_combat(CharacterId::IRONCLAD, PowerId::LOST_WISP, 8, true);
+    with.enemies[0].hp = 100;
+    with.enemies[1].hp = 100;
+    with.hand.clear();
+    with.hand.push_back(DeckCard(CardId::INFLAME, false));
+    with.player.energy = 3;
+    assert(with.play_card(0, 0));
+    assert(with.enemies[0].hp == 92 && with.enemies[1].hp == 92);
+    with.hand.clear();
+    with.hand.push_back(DeckCard(CardId::STRIKE, false));
+    with.player.energy = 3;
+    assert(with.play_card(0, 0));
+    assert(with.enemies[0].hp < 92 && with.enemies[1].hp == 92);
+
+    // Without the relic: a Power played deals no damage.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, std::initializer_list<RelicPower>{}, true);
+    plain.enemies[0].hp = 100;
+    plain.enemies[1].hp = 100;
+    plain.hand.clear();
+    plain.hand.push_back(DeckCard(CardId::INFLAME, false));
+    plain.player.energy = 3;
+    assert(plain.play_card(0, 0));
+    assert(!plain.has_power(PowerId::LOST_WISP) && plain.enemies[0].hp == 100 && plain.enemies[1].hp == 100);
+}
+
+void test_chemical_x() {
+    // With the relic: an X card gets 2 more X for the same energy spent (Skewer: a hit of 8 per X).
+    RunManager run = make_relic_run(CharacterId::SILENT, { "CHEMICAL_X" });
+    assert(run.combat.has_power(PowerId::CHEMICAL_X));
+    CombatEngine with = make_relic_combat(CharacterId::SILENT, PowerId::CHEMICAL_X, 2);
+    with.enemies[0].hp = 100;
+    with.hand.clear();
+    with.hand.push_back(DeckCard(CardId::SKEWER, false));
+    with.player.energy = 3;
+    assert(with.play_card(0, 0));
+    assert(with.enemies[0].hp == 100 - 5 * 8 && with.player.energy == 0);
+    assert(with.counters.energy_spent == 3 && with.counters.hits_dealt == 5);
+
+    // Played with no energy, the X is still raised: 2 hits.
+    with.hand.clear();
+    with.hand.push_back(DeckCard(CardId::SKEWER, false));
+    with.player.energy = 0;
+    assert(with.play_card(0, 0));
+    assert(with.enemies[0].hp == 100 - 5 * 8 - 2 * 8);
+
+    // Without the relic: 3 hits for 3 energy, and no X card is changed by it.
+    CombatEngine plain = make_relic_combat(CharacterId::SILENT, PowerId::NUNCHAKU, 1);
+    plain.enemies[0].hp = 100;
+    plain.hand.clear();
+    plain.hand.push_back(DeckCard(CardId::SKEWER, false));
+    plain.player.energy = 3;
+    assert(plain.play_card(0, 0));
+    assert(plain.enemies[0].hp == 100 - 3 * 8 && plain.counters.hits_dealt == 3);
+    std::cout << "[PASS] Chemical X: X cards get 2 more X, the energy spent is unchanged" << std::endl;
+}
+
+void test_fragrant_mushroom() {
+    // Obtained: 15 HP are lost (never below 1), then 2 random cards are upgraded.
+    auto upgraded_count = [](const RunManager& r) {
+        int n = 0;
+        for (size_t i = 0; i < r.master_deck.size(); ++i) {
+            if (r.master_deck[i].upgraded) ++n;
+        }
+        return n;
+    };
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 511);
+    run.hp = 50;
+    int upgraded_before = upgraded_count(run);
+    run.add_relic("FRAGRANT_MUSHROOM");
+    assert(run.has_relic("FRAGRANT_MUSHROOM"));
+    assert(run.hp == 35);
+    assert(run.max_hp == 80);
+    assert(upgraded_count(run) == upgraded_before + 2);
+
+    // Losing HP never takes the hero below 1.
+    RunManager low;
+    low.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 511);
+    low.hp = 10;
+    low.add_relic("FRAGRANT_MUSHROOM");
+    assert(low.hp == 1);
+
+    // Without the relic, no HP is lost and no card is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 511);
+    plain.hp = 50;
+    int plain_before = upgraded_count(plain);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("FRAGRANT_MUSHROOM") && plain.hp == 50 && upgraded_count(plain) == plain_before);
+    std::cout << "[PASS] Fragrant Mushroom: loses 15 HP and upgrades 2 random cards when obtained" << std::endl;
+}
+
+void test_darkstone_periapt() {
+    // Obtained cards: each Curse that joins the deck raises the Max HP by 6, other cards do not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 781);
+    run.add_relic("DARKSTONE_PERIAPT");
+    assert(run.has_relic("DARKSTONE_PERIAPT"));
+    run.hp = 40;
+    run.max_hp = 60;
+    run.add_card_to_deck(DeckCard{ CardId::GREED, false });
+    assert(run.max_hp == 66);
+    assert(run.hp == 46);
+    run.add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+    assert(run.max_hp == 66);
+
+    // Without the relic, a Curse leaves the Max HP alone.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 781);
+    plain.add_relic("ANCHOR");
+    plain.max_hp = 60;
+    plain.add_card_to_deck(DeckCard{ CardId::GREED, false });
+    assert(!plain.has_relic("DARKSTONE_PERIAPT") && plain.max_hp == 60);
+
+    std::cout << "[PASS] Darkstone Periapt: +6 Max HP for each Curse obtained" << std::endl;
+}
+
+void test_big_mushroom() {
+    // Obtained: 20 more maximum HP, and the current HP follow.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    run.hp = 50;
+    int16_t max_hp = run.max_hp;
+    run.add_relic("BIG_MUSHROOM");
+    assert(run.has_relic("BIG_MUSHROOM"));
+    assert(run.max_hp == max_hp + 20 && run.hp == 70);
+
+    // Start of the combat: 2 cards fewer in the first hand, not in the next ones.
+    RunManager mushroom = make_relic_run(CharacterId::IRONCLAD, { "BIG_MUSHROOM" });
+    assert(mushroom.combat.hand.size() == 3);
+    end_turn_idle(mushroom.combat);
+    assert(mushroom.combat.hand.size() == 5);
+
+    // Without the relic, the first hand keeps its 5 cards and nothing raises the maximum HP.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, { "ANCHOR" });
+    assert(plain.combat.hand.size() == 5);
+    RunManager plain_max;
+    plain_max.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    plain_max.add_relic("ANCHOR");
+    assert(plain_max.max_hp == max_hp);
+    std::cout << "[PASS] Big Mushroom: 20 more max HP on pickup, 2 cards fewer in the first hand" << std::endl;
+}
+
+void test_neows_sacrifice() {
+    // Obtained: an Ambergris potion joins the belt and a Guilty curse joins the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    run.potions.clear();
+    size_t deck_size = run.master_deck.size();
+    run.add_relic("NEOWS_SACRIFICE");
+    assert(run.has_relic("NEOWS_SACRIFICE"));
+    assert(run.potions.size() == 1 && run.potions[0] == "AMBERGRIS");
+    assert(run.master_deck.size() == deck_size + 1 && run.master_deck.back().id == CardId::GUILTY);
+
+    // With a full belt, no potion is thrown away, and the Guilty curse still joins the deck.
+    RunManager full;
+    full.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    while (!full.potion_belt_full()) full.potions.push_back("FIRE_POTION");
+    size_t potions_full = full.potions.size();
+    deck_size = full.master_deck.size();
+    full.add_relic("NEOWS_SACRIFICE");
+    assert(full.potions.size() == potions_full && full.master_deck.back().id == CardId::GUILTY);
+    assert(full.master_deck.size() == deck_size + 1);
+
+    // Without the relic, neither the potion nor the curse comes.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 513);
+    plain.potions.clear();
+    deck_size = plain.master_deck.size();
+    plain.add_relic("ANCHOR");
+    assert(plain.potions.size() == 0 && plain.master_deck.size() == deck_size);
+
+    std::cout << "[PASS] Sacrifice de Neow: Ambergris potion and Guilty curse on pickup" << std::endl;
+}
+
+void test_fake_orichalcum() {
+    // With the relic, a turn ended without Block gives 3 Block: the 11 damage of the attack is cut to 8.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "FAKE_ORICHALCUM" });
+    int16_t hp_before = run.combat.player.hp;
+    end_turn_attacked(run.combat, 11);
+    assert(run.combat.player.hp == hp_before - (11 - 3));
+
+    // With Block already, the relic gives nothing: the attack only meets the Block of the turn.
+    RunManager blocked = make_relic_run(CharacterId::IRONCLAD, { "FAKE_ORICHALCUM" });
+    hp_before = blocked.combat.player.hp;
+    blocked.combat.player.block = 2;
+    end_turn_attacked(blocked.combat, 11);
+    assert(blocked.combat.player.hp == hp_before - (11 - 2));
+
+    // Without the relic, the attack lands in full.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    hp_before = plain.combat.player.hp;
+    end_turn_attacked(plain.combat, 11);
+    assert(plain.combat.player.hp == hp_before - 11);
+    std::cout << "[PASS] Orichalque ???: without Block at the end of the turn, gain 3 Block" << std::endl;
+}
+
+void test_maw_bank() {
+    // With the relic, each floor climbed gives 12 Gold, until Gold is spent at the merchant.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("MAW_BANK");
+    assert(run.has_relic("MAW_BANK"));
+    int16_t gold = run.gold;
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.gold == gold + 12);
+
+    // Buying a card at the merchant ends the effect: the next floor gives nothing.
+    run.gold = 999;
+    run.open_shop();
+    assert(run.buy_shop_card(0) && run.gold < 999);
+    run.leave_shop();
+    gold = run.gold;
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.gold == gold);
+
+    // Removing a card at the merchant ends it too.
+    RunManager remover;
+    remover.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    remover.add_relic("MAW_BANK");
+    remover.gold = 999;
+    remover.open_shop();
+    assert(remover.remove_card_at_shop(0) && remover.gold < 999);
+    remover.leave_shop();
+    gold = remover.gold;
+    enter_room_of_type(remover, RoomType::MONSTER);
+    assert(remover.gold == gold);
+
+    // Without the relic, a floor gives no Gold.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("MAW_BANK"));
+    gold = plain.gold;
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.gold == gold);
+    std::cout << "[PASS] Maw Bank: 12 Gold on each floor climbed, until Gold is spent at the merchant" << std::endl;
+}
+
+void test_history_course() {
+    // With the relic: the next turn starts by playing a copy of the last Attack played.
+    CombatEngine history = make_relic_combat(CharacterId::IRONCLAD, PowerId::HISTORY_COURSE, 0);
+    play(history, CardId::STRIKE, 0);
+    int hp_after_play = history.enemies[0].hp;
+    end_turn_idle(history);
+    assert(history.state == CombatState::PLAYER_TURN);
+    assert(history.enemies[0].hp == hp_after_play - 6);
+
+    // A Skill played after the Attack does not replace it.
+    CombatEngine skill = make_relic_combat(CharacterId::IRONCLAD, PowerId::HISTORY_COURSE, 0);
+    play(skill, CardId::STRIKE, 0);
+    play(skill, CardId::DEFEND);
+    int hp_before = skill.enemies[0].hp;
+    end_turn_idle(skill);
+    assert(skill.enemies[0].hp == hp_before - 6);
+
+    // Without the relic, nothing is played.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    play(plain, CardId::STRIKE, 0);
+    int plain_hp = plain.enemies[0].hp;
+    end_turn_idle(plain);
+    assert(plain.enemies[0].hp == plain_hp);
+
+    std::cout << "[PASS] History Course: a copy of the last Attack played at the start of the turn" << std::endl;
+}
+
+void test_pollinous_core() {
+    // With the relic, turn 4 draws 2 more cards than a plain turn; the other turns do not.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "POLLINOUS_CORE" });
+    CombatEngine& with = run.combat;
+    assert(with.has_power(PowerId::POLLINOUS_CORE));
+    for (int turn = 1; turn <= 3; ++turn) {
+        assert(with.hand.size() == 5);
+        end_turn_idle(with);
+    }
+    assert(with.hand.size() == 7);
+    end_turn_idle(with);
+    assert(with.hand.size() == 5);
+
+    // Without the relic, turn 4 draws the usual hand.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, { "ANCHOR" });
+    assert(!plain.combat.has_power(PowerId::POLLINOUS_CORE));
+    for (int turn = 1; turn <= 3; ++turn) end_turn_idle(plain.combat);
+    assert(plain.combat.hand.size() == 5);
+    std::cout << "[PASS] Pollinous Core: every 4 turns, draw 2 more cards" << std::endl;
+}
+
+void test_black_blood() {
+    // Black Blood: 12 HP after every fight, capped at the max HP.
+    RunManager blood = make_relic_run(CharacterId::SILENT, { "BLACK_BLOOD" });
+    blood.combat.player.hp = 30;
+    blood.proceed_after_combat();
+    assert(blood.hp == 42);
+    RunManager near_full = make_relic_run(CharacterId::SILENT, { "BLACK_BLOOD" });
+    near_full.combat.player.hp = near_full.max_hp - 5;
+    near_full.proceed_after_combat();
+    assert(near_full.hp == near_full.max_hp);
+    // Without the relic: no heal.
+    RunManager plain = make_relic_run(CharacterId::SILENT, {});
+    plain.combat.player.hp = 30;
+    plain.proceed_after_combat();
+    assert(plain.hp == 30);
+    std::cout << "[PASS] Black Blood" << std::endl;
+}
+
+void test_fake_blood_vial() {
+    // With the relic: 1 HP back at the start of each fight, up to the maximum.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.hp = 50;
+    run.add_relic("FAKE_BLOOD_VIAL");
+    assert(run.has_relic("FAKE_BLOOD_VIAL"));
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.hp == 51);
+
+    // Without the relic: no heal.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 50;
+    enter_room_of_type(plain, RoomType::MONSTER);
+    assert(plain.combat.player.hp == 50);
+
+    // Full HP stays at the maximum.
+    RunManager full;
+    full.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    full.add_relic("FAKE_BLOOD_VIAL");
+    enter_room_of_type(full, RoomType::MONSTER);
+    assert(full.combat.player.hp == full.max_hp);
+    std::cout << "[PASS] Fake Blood Vial: heals 1 HP at the start of each combat" << std::endl;
+}
+
+void test_infused_core() {
+    // At the start of each combat, 3 Lightning orbs are channeled; each deals 1 more damage, passive or evoked.
+    auto total_hp = [](const CombatEngine& combat) {
+        int sum = 0;
+        for (const Enemy& foe : combat.enemies) sum += foe.hp;
+        return sum;
+    };
+    RunManager core = make_relic_run(CharacterId::DEFECT, { "INFUSED_CORE" });
+    assert(core.combat.player.orbs.size() == 3);
+    for (const Orb& orb : core.combat.player.orbs) assert(orb == OrbType::LIGHTNING);
+
+    int hp = total_hp(core.combat);
+    core.combat.evoke_orb(0);
+    assert(total_hp(core.combat) == hp - (LIGHTNING_EVOKE + 1));
+    assert(core.combat.player.orbs.size() == 2);
+
+    Enemy& first = core.combat.enemies[0];
+    int16_t first_hp = first.hp;
+    core.combat.trigger_orb_passive(0, &first);
+    assert(first.hp == first_hp - (LIGHTNING_PASSIVE + 1));
+
+    // Without the relic, only Cracked Core's Lightning orb is channeled at the start, and the evoke keeps its usual damage.
+    RunManager plain = make_relic_run(CharacterId::DEFECT, {});
+    assert(plain.combat.player.orbs.size() == 1);
+    plain.combat.channel_orb(OrbType::LIGHTNING);
+    int plain_hp = total_hp(plain.combat);
+    plain.combat.evoke_orb(0);
+    assert(total_hp(plain.combat) == plain_hp - LIGHTNING_EVOKE);
+    std::cout << "[PASS] Infused Core: 3 Lightning orbs at the start of each combat, each 1 damage more" << std::endl;
+}
+
+void test_sword_of_jade() {
+    // With the relic: 3 Strength at the start of the combat, so an Attack hits for 3 more.
+    RunManager with = make_relic_run(CharacterId::IRONCLAD, { "SWORD_OF_JADE" });
+    assert(with.combat.player.get_status(StatusType::STRENGTH) == 3);
+    with.combat.enemies[0].hp = 100;
+    with.combat.enemies[0].block = 0;
+    play(with.combat, CardId::STRIKE);
+    assert(with.combat.enemies[0].hp == 100 - (6 + 3));
+
+    // Without the relic: no Strength at the start of the combat.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.player.get_status(StatusType::STRENGTH) == 0);
+    plain.combat.enemies[0].hp = 100;
+    plain.combat.enemies[0].block = 0;
+    play(plain.combat, CardId::STRIKE);
+    assert(plain.combat.enemies[0].hp == 100 - 6);
+    std::cout << "[PASS] Sword of Jade: 3 Strength at the start of each combat" << std::endl;
+}
+
+void test_the_boot() {
+    // Neutralize deals 3 damage: with the relic it deals 5, without it 3. A Strike (6) is not changed.
+    CombatEngine boot = make_relic_combat(CharacterId::SILENT, PowerId::THE_BOOT);
+    boot.enemies[0].hp = 100;
+    play(boot, CardId::NEUTRALIZE);
+    assert(boot.enemies[0].hp == 100 - 5);
+
+    CombatEngine plain = make_relic_combat(CharacterId::SILENT, {});
+    plain.enemies[0].hp = 100;
+    play(plain, CardId::NEUTRALIZE);
+    assert(plain.enemies[0].hp == 100 - 3);
+
+    CombatEngine strike = make_relic_combat(CharacterId::IRONCLAD, PowerId::THE_BOOT);
+    strike.enemies[0].hp = 100;
+    play(strike, CardId::STRIKE);
+    assert(strike.enemies[0].hp == 100 - 6);
+
+    // The damage is raised before Block, as the card text says: 5 damage against 10 Block leaves 5 Block.
+    CombatEngine shielded = make_relic_combat(CharacterId::SILENT, PowerId::THE_BOOT);
+    shielded.enemies[0].hp = 100;
+    shielded.enemies[0].block = 10;
+    play(shielded, CardId::NEUTRALIZE);
+    assert(shielded.enemies[0].hp == 100 && shielded.enemies[0].block == 5);
+    std::cout << "[PASS] The Boot: attacks of 4 damage or less deal 5 instead" << std::endl;
+}
+
+void test_hand_drill() {
+    // With the relic: breaking an enemy's Block (6 Block, Strike for 6) applies 2 Vulnerable.
+    CombatEngine drill = make_relic_combat(CharacterId::IRONCLAD, PowerId::HAND_DRILL, 2);
+    drill.enemies[0].hp = 100;
+    drill.enemies[0].block = 6;
+    play(drill, CardId::STRIKE);
+    assert(drill.enemies[0].block == 0 && drill.enemies[0].hp == 100);
+    assert(drill.enemies[0].get_status(StatusType::VULNERABLE) == 2);
+
+    // A hit that only lowers the Block does not break it: no Vulnerable.
+    CombatEngine held = make_relic_combat(CharacterId::IRONCLAD, PowerId::HAND_DRILL, 2);
+    held.enemies[0].hp = 100;
+    held.enemies[0].block = 10;
+    play(held, CardId::STRIKE);
+    assert(held.enemies[0].block == 4 && held.enemies[0].get_status(StatusType::VULNERABLE) == 0);
+
+    // A hit on an enemy with no Block: no Vulnerable.
+    CombatEngine bare = make_relic_combat(CharacterId::IRONCLAD, PowerId::HAND_DRILL, 2);
+    bare.enemies[0].hp = 100;
+    bare.enemies[0].block = 0;
+    play(bare, CardId::STRIKE);
+    assert(bare.enemies[0].get_status(StatusType::VULNERABLE) == 0);
+
+    // Without the relic: the Block is broken, and no Vulnerable is applied.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 100;
+    plain.enemies[0].block = 6;
+    play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].block == 0 && plain.enemies[0].get_status(StatusType::VULNERABLE) == 0);
+    std::cout << "[PASS] Hand Drill: breaking an enemy's Block applies 2 Vulnerable" << std::endl;
+}
+
+void test_precarious_shears() {
+    // Obtained: 2 cards are chosen to leave the deck, then 16 HP are lost (never below 1).
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.hp = 50;
+    size_t deck = run.master_deck.size();
+    run.add_relic("PRECARIOUS_SHEARS");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 2);
+    assert(run.hp == 34);
+    assert(run.resolve_deck_choice(0));
+    assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 2);
+
+    // Losing HP never takes the hero below 1.
+    RunManager low;
+    low.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    low.hp = 10;
+    low.add_relic("PRECARIOUS_SHEARS");
+    assert(low.hp == 1);
+
+    // Without the relic nothing is asked, no card leaves the deck and no HP is lost.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    plain.hp = 50;
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_deck_choice() && plain.master_deck.size() == deck && plain.hp == 50);
+    std::cout << "[PASS] Precarious Shears: pickup asks for 2 cards to remove and costs 16 HP, nothing without the relic" << std::endl;
+}
+
+void test_biiig_hug() {
+    // Obtained: 4 cards are chosen to leave the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 763);
+    size_t deck = run.master_deck.size();
+    run.add_relic("BIIIG_HUG");
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::REMOVE && run.deck_choice.remaining == 4);
+    for (int i = 0; i < 4; ++i) assert(run.resolve_deck_choice(0));
+    assert(!run.has_deck_choice() && run.master_deck.size() == deck - 4);
+
+    // In combat, each shuffle of the draw pile adds a Soot to it.
+    CombatEngine hug = make_relic_combat(CharacterId::IRONCLAD, PowerId::BIIIG_HUG, 1);
+    hug.draw_pile.clear();
+    hug.draw_cards(1);
+    assert(hug.draw_pile.empty()); // nothing to shuffle
+    hug.discard_pile.push_back(CardId::STRIKE);
+    hug.draw_cards(1);
+    int soot = 0;
+    for (const auto& card : hug.draw_pile) soot += card.id == CardId::SOOT;
+    for (const auto& card : hug.hand) soot += card.id == CardId::SOOT;
+    assert(soot == 1);
+
+    // Without the relic nothing is removed or added.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 763);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("BIIIG_HUG") && !plain.has_deck_choice() && plain.master_deck.size() == deck);
+    CombatEngine bare = make_relic_combat(CharacterId::IRONCLAD, PowerId::THE_ABACUS, 6);
+    bare.draw_pile.clear();
+    bare.discard_pile.push_back(CardId::STRIKE);
+    bare.draw_cards(1);
+    for (const auto& card : bare.draw_pile) assert(card.id != CardId::SOOT);
+    for (const auto& card : bare.hand) assert(card.id != CardId::SOOT);
+    std::cout << "[PASS] Biiig Hug: pickup removes 4 cards, each shuffle adds a Soot, nothing without the relic" << std::endl;
+}
+
+void test_paper_phrog() {
+    // With the relic, a Strike (6 damage, x1.5 on a Vulnerable enemy = 9) gets 25% more on top: 11. Other enemies do not.
+    CombatEngine phrog = make_relic_combat(CharacterId::IRONCLAD, PowerId::PAPER_PHROG, 25);
+    phrog.enemies[0].hp = 200;
+    phrog.enemies[0].add_status(StatusType::VULNERABLE, 5);
+    phrog.hand.clear();
+    phrog.hand.push_back(DeckCard(CardId::STRIKE, false));
+    assert(phrog.play_card(0, 0));
+    assert(200 - phrog.enemies[0].hp == 11);
+
+    // Without the relic, the same Strike deals its Vulnerable damage only: 9.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    plain.enemies[0].hp = 200;
+    plain.enemies[0].add_status(StatusType::VULNERABLE, 5);
+    plain.hand.clear();
+    plain.hand.push_back(DeckCard(CardId::STRIKE, false));
+    assert(plain.play_card(0, 0));
+    assert(200 - plain.enemies[0].hp == 9);
+    std::cout << "[PASS] Paper Phrog: Vulnerable enemies take 25% more damage from attacks" << std::endl;
+}
+
+void test_forgotten_soul() {
+    // With the relic, each exhausted card deals 1 damage to one random enemy.
+    CombatEngine soul = make_relic_combat(CharacterId::IRONCLAD, PowerId::FORGOTTEN_SOUL, 1, true);
+    auto total = [](const CombatEngine& c) { int sum = 0; for (const Enemy& e : c.enemies) sum += e.hp; return sum; };
+    const int before = total(soul);
+    soul.exhaust_card(CardId::STRIKE);
+    assert(total(soul) == before - 1);
+    soul.exhaust_card(CardId::STRIKE);
+    assert(total(soul) == before - 2);
+
+    // Without the relic, nothing happens.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, PowerId::VELVET_CHOKER, 0, true);
+    const int plain_before = total(plain);
+    plain.exhaust_card(CardId::STRIKE);
+    assert(total(plain) == plain_before);
+    std::cout << "[PASS] Forgotten Soul: an exhausted card deals 1 damage to a random enemy" << std::endl;
+}
+
+void test_silver_crucible() {
+    // The first 3 card rewards seen are Upgraded, the next ones are not.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 728);
+    run.add_relic("SILVER_CRUCIBLE");
+    assert(run.has_relic("SILVER_CRUCIBLE"));
+    for (int reward = 0; reward < 4; ++reward) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+        for (const DeckCard& card : run.current_card_rewards) assert(card.upgraded == (reward < 3));
+        run.skip_card_rewards();
+    }
+
+    // Without the relic, no card reward is upgraded.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 728);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
+    for (const DeckCard& card : plain.current_card_rewards) assert(!card.upgraded);
+    plain.skip_card_rewards();
+
+    // The first Treasure Chest opened is empty; with the relic, a seed whose chest holds a relic without it
+    // holds none on the first chest, and a later chest can still hold one.
+    bool checked = false;
+    bool later_relic = false;
+    for (uint32_t seed = 1; seed < 400 && !(checked && later_relic); ++seed) {
+        RunManager chest;
+        chest.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, seed);
+        enter_room_of_type(chest, RoomType::TREASURE);
+        if (chest.last_treasure_relic.empty()) continue;
+        checked = true;
+        RunManager crucible;
+        crucible.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, seed);
+        crucible.add_relic("SILVER_CRUCIBLE");
+        enter_room_of_type(crucible, RoomType::TREASURE);
+        assert(crucible.last_treasure_relic.empty() && !crucible.has_relic(chest.last_treasure_relic));
+        enter_room_of_type(crucible, RoomType::TREASURE);
+        later_relic = later_relic || !crucible.last_treasure_relic.empty();
+    }
+    assert(checked && later_relic);
+    std::cout << "[PASS] Silver Crucible: first 3 card rewards upgraded, first Treasure Chest empty" << std::endl;
+}
+
+void test_toasty_mittens() {
+    // With the relic: each turn starts with 1 Strength more, and 1 card of the hand to exhaust.
+    RunManager mittens = make_relic_run(CharacterId::IRONCLAD, { "TOASTY_MITTENS" });
+    CombatEngine& combat = mittens.combat;
+    assert(combat.player.get_status(StatusType::STRENGTH) == 1);
+    assert(combat.choice_pending() && combat.hand.size() == 5);
+    const uint8_t picks[] = { 0 };
+    assert(combat.resolve_choice(picks));
+    assert(!combat.choice_pending() && combat.hand.size() == 4 && combat.exhaust_pile.size() == 1);
+    end_turn_idle(combat);
+    assert(combat.player.get_status(StatusType::STRENGTH) == 2);
+    assert(combat.choice_pending() && combat.hand.size() == 5);
+
+    // Without it: no Strength, no exhaust.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    assert(plain.combat.player.get_status(StatusType::STRENGTH) == 0);
+    assert(!plain.combat.choice_pending() && plain.combat.hand.size() == 5 && plain.combat.exhaust_pile.empty());
+    std::cout << "[PASS] Toasty Mittens: 1 Strength and 1 exhausted card at the start of each turn" << std::endl;
+}
+
+void test_undying_sigil() {
+    // With the relic: an enemy with at least as much Doom as HP deals 50% less damage.
+    CombatEngine sigil = make_combat(CharacterId::IRONCLAD);
+    sigil.add_power(PowerId::UNDYING_SIGIL, 1);
+    sigil.enemies[0].hp = 30;
+    sigil.enemies[0].add_status(StatusType::DOOM, 30);
+    end_turn_attacked(sigil, 10);
+    assert(sigil.last_enemy_actions[0].damage_to_player == 5);
+
+    // Less Doom than HP: the full damage.
+    CombatEngine short_doom = make_combat(CharacterId::IRONCLAD);
+    short_doom.add_power(PowerId::UNDYING_SIGIL, 1);
+    short_doom.enemies[0].hp = 30;
+    short_doom.enemies[0].add_status(StatusType::DOOM, 29);
+    end_turn_attacked(short_doom, 10);
+    assert(short_doom.last_enemy_actions[0].damage_to_player == 10);
+
+    // Without the relic: the full damage, even with lethal Doom.
+    CombatEngine plain = make_combat(CharacterId::IRONCLAD);
+    plain.enemies[0].hp = 30;
+    plain.enemies[0].add_status(StatusType::DOOM, 30);
+    end_turn_attacked(plain, 10);
+    assert(plain.last_enemy_actions[0].damage_to_player == 10);
+    std::cout << "[PASS] Undying Sigil: enemy with Doom at least its HP deals 50% less damage" << std::endl;
+}
+
+void test_crossbow() {
+    // With the relic: the start of the next turn adds one random free Attack to the hand.
+    CombatEngine with = make_relic_combat(CharacterId::IRONCLAD, PowerId::CROSSBOW, 1);
+    end_turn_idle(with);
+    assert(with.state == CombatState::PLAYER_TURN);
+    int free_attacks = 0;
+    for (size_t i = 0; i < with.hand.size(); ++i) {
+        if (with.hand[i].free_this_turn && CardDef::get(with.hand[i].id).type == CardType::ATTACK) ++free_attacks;
+    }
+    assert(free_attacks == 1);
+
+    // Without the relic, no free card appears.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    end_turn_idle(plain);
+    for (size_t i = 0; i < plain.hand.size(); ++i) assert(!plain.hand[i].free_this_turn);
+
+    std::cout << "[PASS] Crossbow: a random free Attack joins the hand at the start of the turn" << std::endl;
+}
+
+void test_spiked_gauntlets() {
+    // With the relic: +1 energy each turn, and a Power card costs 1 more.
+    CombatEngine gauntlets = make_relic_combat(CharacterId::IRONCLAD, { RelicPower{ PowerId::TURN_ENERGY, 1 }, RelicPower{ PowerId::SPIKED_GAUNTLETS, 1 } });
+    assert(gauntlets.player.energy == gauntlets.player.max_energy + 1);
+    DeckCard power_card(CardId::INFLAME);
+    DeckCard attack_card(CardId::STRIKE);
+    assert(gauntlets.effective_cost(power_card) == CardDef::get_cost(CardId::INFLAME, false) + 1);
+    assert(gauntlets.effective_cost(attack_card) == CardDef::get_cost(CardId::STRIKE, false));
+
+    // Without the relic: no extra energy, and the Power costs its printed cost.
+    CombatEngine plain = make_relic_combat(CharacterId::IRONCLAD, {});
+    assert(plain.player.energy == plain.player.max_energy);
+    assert(plain.effective_cost(power_card) == CardDef::get_cost(CardId::INFLAME, false));
+    std::cout << "[PASS] Spiked Gauntlets: +1 energy per turn, Powers cost 1 more" << std::endl;
+}
+
+// Fishing Rod: every 3rd normal fight won upgrades one random card; Elites do not count.
+void test_fishing_rod() {
+    auto upgraded = [](const RunManager& run) {
+        int n = 0;
+        for (const DeckCard& card : run.master_deck) n += card.upgraded ? 1 : 0;
+        return n;
+    };
+    for (bool with_relic : { true, false }) {
+        RunManager run;
+        run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 7);
+        if (with_relic) run.add_relic("FISHING_ROD");
+        int base = upgraded(run);
+        auto win = [&](RoomType room) {
+            run.map.nodes[0].type = room;
+            run.enter_room(0);
+            run.proceed_after_combat();
+        };
+        win(RoomType::MONSTER);
+        win(RoomType::ELITE);
+        win(RoomType::MONSTER);
+        assert(upgraded(run) == base);
+        win(RoomType::MONSTER);
+        assert(upgraded(run) == base + (with_relic ? 1 : 0));
+    }
+    std::cout << "[PASS] Fishing Rod upgrades a card every 3 normal fights" << std::endl;
+}
+
 int main() {
-    std::cout << "=== Relics on Combat Hooks ===" << std::endl;
+  std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
     test_skill_and_power_relics();
     test_exhaust_and_creation_relics();
@@ -2218,34 +4105,50 @@ int main() {
     test_hp_relics();
     test_poison_and_star_relics();
     test_combat_start_relics();
+    test_paels_flesh();
     test_paels_blood();
     test_relics_in_a_run();
+    test_black_blood();
     test_very_hot_cocoa();
     test_strawberry();
     test_golden_compass();
     test_paels_tooth();
+    test_music_box();
     test_membership_card();
     test_the_courier();
     test_yummy_cookie();
     test_delicate_frond();
     test_seal_of_gold();
     test_pumpkin_candle();
+    test_wongos_mystery_ticket();
+    test_ember_tea();
     test_paels_legion();
     test_golden_pearl();
+    test_venerable_tea_set();
+    test_fake_venerable_tea_set();
+    test_divine_destiny();
+    test_bone_tea();
     std::cout << "All relic hook tests passed." << std::endl;
     test_booming_conch();
     test_arcane_scroll();
     test_lead_paperweight();
     test_orrery();
+    test_lost_coffer();
     test_neows_torment();
     test_precise_scissors();
+    test_precarious_shears();
+    test_biiig_hug();
     test_new_leaf();
     test_small_capsule();
     test_nutritious_oyster();
     test_lava_rock();
     test_stone_humidifier();
     test_tiny_mailbox();
+    test_dream_catcher();
     test_regal_pillow();
+    test_eternal_feather();
+    test_planisphere();
+    test_meal_ticket();
     test_pomander();
     test_neows_talisman();
     test_large_capsule();
@@ -2256,37 +4159,100 @@ int main() {
     test_runic_pyramid();
     test_ectoplasm();
     test_philosophers_stone();
+    test_sozu();
     test_dusty_tome();
     test_velvet_choker();
+    test_brilliant_scarf();
     test_glass_eye();
     test_prismatic_gem();
     test_radiant_pearl();
     test_sand_castle();
     test_paels_horn();
     test_paels_eye();
+    test_throwing_axe();
     test_cursed_pearl();
     test_calling_bell();
     test_war_paint();
+    test_fragrant_mushroom();
+    test_lava_lamp();
+    test_petrified_toad();
+    test_mr_struggles();
     test_belt_buckle();
     test_circlet();
+    test_wongo_customer_appreciation_badge();
+    test_fake_merchants_rug();
     test_dingy_rug();
     test_beating_remnant();
+    test_vambrace();
     test_ghost_seed();
+    test_royal_poison();
     test_reptile_trinket();
     test_ringing_triangle();
+    test_toolbox();
+    test_choices_paradox();
+    test_orange_dough();
+    test_diamond_diadem();
     test_pen_nib();
+    test_iron_club();
     test_strike_dummy();
+    test_fake_strike_dummy();
+    test_miniature_cannon();
     test_white_beast_statue();
     test_cauldron();
+    test_alchemical_coffer();
     test_lees_waffle();
     test_bowler_hat();
+    test_unsettling_lamp();
+    test_daughter_of_the_wind();
     test_bookmark();
+    test_undying_sigil();
+    test_toasty_mittens();
     test_tungsten_rod();
+    test_paper_krane();
     test_mango();
+    test_fake_lees_waffle();
+    test_fake_mango();
+    test_phial_holster();
+    test_fake_anchor();
     test_old_coin();
     test_pear();
+    test_potion_belt();
     test_whetstone();
     test_dragon_fruit();
+    test_toxic_egg();
     test_amethyst_aubergine();
+    test_sword_of_jade();
+    test_lucky_fysh();
+    test_book_of_five_rings();
+    test_prayer_wheel();
+    test_molten_egg();
+    test_frozen_egg();
+    test_girya();
+    test_shovel();
+    test_white_star();
+    test_chemical_x();
+    test_ring_of_the_drake();
+    test_darkstone_periapt();
+    test_big_mushroom();
+    test_neows_sacrifice();
+    test_fake_orichalcum();
+    test_maw_bank();
+    test_fake_happy_flower();
+    test_history_course();
+    test_crossbow();
+    test_pollinous_core();
+    test_chosen_cheese();
+    test_fake_blood_vial();
+    test_infused_core();
+    test_lost_wisp();
+    test_tea_of_discourtesy();
+    test_the_boot();
+    test_hand_drill();
+    test_spiked_gauntlets();
+    test_bing_bong();
+    test_paper_phrog();
+    test_silver_crucible();
+    test_forgotten_soul();
+    test_fishing_rod();
     return 0;
 }
