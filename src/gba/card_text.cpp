@@ -624,6 +624,8 @@ bn::string_view base_name(engine::CardId id)
         return "Carte au trésor";
     case engine::CardId::BYRDONIS_EGG:
         return "Œuf d'oizodon";
+    case engine::CardId::TOXIC:
+        return "Toxicité";
     case engine::CardId::FRANTIC_ESCAPE:
         return "Fuite éperdue";
     case engine::CardId::BECKON:
@@ -2465,6 +2467,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::BURN:
         stream << "Injouable. Fin de tour en main : " << value << " dégâts.";
+        break;
+    case engine::CardId::TOXIC:
+        stream << "Fin de tour : " << value << " dégâts. Épuisement.";
         break;
     case engine::CardId::DAZED:
         stream << "Injouable. Éthéré.";

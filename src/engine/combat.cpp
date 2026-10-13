@@ -5618,6 +5618,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::DOWSING:
         case CardId::SPOILS_MAP:
         case CardId::BYRDONIS_EGG:
+        case CardId::TOXIC:
         case CardId::SOOT:
         case CardId::VOID_CARD:
         case CardId::WOUND:
@@ -6512,7 +6513,8 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
 
 void CombatEngine::trigger_end_of_turn_in_hand(const DeckCard& card) {
     switch (card.id) {
-        case CardId::BURN: damage_player(CardDef::get_value(card.id, card.upgraded)); break;
+        case CardId::BURN:
+        case CardId::TOXIC: damage_player(CardDef::get_value(card.id, card.upgraded)); break;
         case CardId::DOUBT: player.add_status(StatusType::WEAK, 1); break;
         case CardId::SHAME: player.add_status(StatusType::FRAIL, 1); break;
         case CardId::DECAY: damage_player(2); break;

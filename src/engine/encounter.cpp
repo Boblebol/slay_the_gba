@@ -79,6 +79,7 @@ constexpr Encounter ACT2_NORMAL[] = {
     { "TheObscuraNormal"sv, 1, { EnemyType::THE_OBSCURA } },
     { "OvicopterNormal"sv, 1, { EnemyType::OVICOPTER } },
     { "ExoskeletonsNormal"sv, 4, { EnemyType::EXOSKELETON, EnemyType::EXOSKELETON, EnemyType::EXOSKELETON, EnemyType::EXOSKELETON } },
+    { "MytesNormal"sv, 2, { EnemyType::MYTE, EnemyType::MYTE } },
 };
 
 // Act 3: the Glory. The groups the game had before stay beside them: the Louse and the Jaw Worm are met there.

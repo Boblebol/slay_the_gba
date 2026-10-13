@@ -555,6 +555,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::QUEST, CardPool::QUEST }, // DOWSING
     { CardRarity::QUEST, CardPool::QUEST }, // SPOILS_MAP
     { CardRarity::QUEST, CardPool::QUEST }, // BYRDONIS_EGG
+    { CardRarity::NONE, CardPool::NONE }, // TOXIC
 };
 
 } // namespace engine

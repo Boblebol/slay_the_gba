@@ -251,6 +251,7 @@ MONSTERS: dict[str, str] = {
     "decimillipede_back": "decimillipede_segment_back",
     "decimillipede_front": "decimillipede_segment_front",
     "decimillipede_middle": "decimillipede_segment_middle",
+    "myte": "myte",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
@@ -887,6 +888,7 @@ CARDS: list[CardArt] = [
     CardArt("dowsing", "status", "dowsing", "status", (NO_COST, NO_COST), folder="quest"),
     CardArt("spoils_map", "status", "spoils_map", "status", (NO_COST, NO_COST), folder="quest"),
     CardArt("byrdonis_egg", "status", "byrdonis_egg", "status", (NO_COST, NO_COST), folder="quest"),
+    CardArt("toxic", "status", "slimed", "status", (1, 1)),  # no portrait of its own in the reference
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

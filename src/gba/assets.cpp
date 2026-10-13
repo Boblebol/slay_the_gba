@@ -95,6 +95,7 @@
 #include "bn_sprite_items_mon_decimillipede_back.h"
 #include "bn_sprite_items_mon_decimillipede_front.h"
 #include "bn_sprite_items_mon_decimillipede_middle.h"
+#include "bn_sprite_items_mon_myte.h"
 #include "bn_sprite_items_mon_two_tailed_rat.h"
 #include "bn_sprite_items_mon_crusher.h"
 #include "bn_sprite_items_mon_rocket.h"
@@ -341,6 +342,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_decimillipede_front, false };
     case engine::EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE:
         return { &bn::sprite_items::mon_decimillipede_middle, false };
+    case engine::EnemyType::MYTE:
+        return { &bn::sprite_items::mon_myte, false };
     case engine::EnemyType::FUZZY_WURM_CRAWLER:
         return { &bn::sprite_items::mon_fuzzy_wurm_crawler, false };
     case engine::EnemyType::CROSSBOW_RUBY_RAIDER:

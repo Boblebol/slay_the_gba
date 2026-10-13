@@ -51,10 +51,12 @@ void check_monster(EnemyType type, std::string_view name, int hp, std::initializ
         assert(enemy.intent_damage(combat.player) == turn.damage);
 
         combat.player.hp = combat.player.max_hp; // long cycles must not kill the player
-        // The Beckons the player holds at the end of the turn cost HP too.
+        // The Beckons and the Toxics the player holds at the end of the turn cost HP too.
         int held_loss = 0;
         for (const DeckCard& card : combat.hand) {
-            if (card.id == CardId::BECKON) held_loss += CardDef::get_value(card.id, card.upgraded);
+            if (card.id == CardId::BECKON || card.id == CardId::TOXIC) {
+                held_loss += CardDef::get_value(card.id, card.upgraded);
+            }
         }
         combat.end_player_turn();
         assert(combat.state == CombatState::PLAYER_TURN);
@@ -6271,6 +6273,83 @@ void test_frog_knight_ascension() {
     std::cout << "[PASS] Frog Knight: Ascension gives 199 HP, Tongue Lash 14, Strike 23, Beetle Charge 40" << std::endl;
 }
 
+int count_toxics(const CombatEngine& combat) {
+    return count_cards(combat.draw_pile, CardId::TOXIC) + count_cards(combat.hand, CardId::TOXIC) +
+           count_cards(combat.discard_pile, CardId::TOXIC) + count_cards(combat.exhaust_pile, CardId::TOXIC);
+}
+
+void test_myte() {
+    // Alone (first place): Toxic (2 Toxic in the hand), Bite 13, Suck 4 (+2 Strength), and again; Strength adds to
+    // every attack, and the Toxics held at the end of the turn cost 5 HP each (counted by check_monster).
+    check_monster(EnemyType::MYTE, "Sarcopte", 61, {
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 13, 0, 0 },
+        { ATTACK_BUFF, 4, 0, 2 },
+        { STATUS, 0, 0, 2 },
+        { ATTACK, 15, 0, 2 },
+        { ATTACK_BUFF, 6, 0, 4 },
+    }, 6);
+
+    // Toxic Abundance puts 2 Toxics in the player's hand.
+    CombatEngine combat = make_pack({ EnemyType::MYTE });
+    Enemy& myte = combat.enemies[0];
+    assert(myte.current_intent.type == STATUS && myte.current_intent.status_card == CardId::TOXIC &&
+           myte.current_intent.status_cards == 2 && myte.current_intent.status_pile == Pile::HAND);
+    pass_turn(combat);
+    assert(count_cards(combat.hand, CardId::TOXIC) == 2 && count_toxics(combat) == 2);
+    // A Toxic costs 1, and played it is Exhausted.
+    assert(CardDef::get(CardId::TOXIC).type == CardType::STATUS && CardDef::get_cost(CardId::TOXIC, false) == 1);
+    assert(CardDef::has_keyword(CardId::TOXIC, false, KEYWORD_EXHAUST));
+    int toxic = -1;
+    for (size_t i = 0; i < combat.hand.size(); ++i) {
+        if (combat.hand[i].id == CardId::TOXIC) toxic = static_cast<int>(i);
+    }
+    const int energy = combat.player.energy;
+    assert(combat.play_card(toxic));
+    assert(combat.player.energy == energy - 1 && count_cards(combat.exhaust_pile, CardId::TOXIC) == 1);
+    // The one still held costs 5 HP at the end of the turn, on top of Bite.
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 5 + 13);
+
+    // Two mytes: the first opens with Toxic, the second with Suck, then each follows the loop.
+    CombatEngine pack = make_pack({ EnemyType::MYTE, EnemyType::MYTE });
+    assert(pack.enemies.size() == 2);
+    assert(pack.enemies[0].current_intent.type == STATUS);
+    assert(pack.enemies[1].current_intent.type == ATTACK_BUFF && pack.enemies[1].intent_damage(pack.player) == 4);
+    pass_turn(pack);
+    assert(pack.enemies[0].current_intent.type == ATTACK && pack.enemies[0].intent_damage(pack.player) == 13);
+    assert(pack.enemies[1].current_intent.type == STATUS && pack.enemies[1].get_status(StatusType::STRENGTH) == 2);
+    pass_turn(pack);
+    assert(pack.enemies[0].current_intent.type == ATTACK_BUFF);
+    assert(pack.enemies[1].current_intent.type == ATTACK && pack.enemies[1].intent_damage(pack.player) == 15);
+    std::cout << "[PASS] Myte: 61 HP, Toxic Abundance (2 Toxic in hand), Bite 13, Suck 4 + 2 Strength, by its place"
+              << std::endl;
+}
+
+void test_myte_ascension() {
+    // 64 HP and more, Bite 15, Suck 6 and 3 Strength at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_pack({ EnemyType::MYTE });
+        Enemy& myte = combat.enemies[0];
+        myte.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        const int16_t base = myte.hp;
+        assert(myte.ascension_hp() == 64 && myte.hp_spread() == 6);
+        assert(base >= 61 && base <= 67 && myte.max_hp == 61 + myte.hp_bonus);
+        myte.ascend(true, true);
+        combat.plan_enemies();
+        assert(myte.hp == base + 3 && myte.max_hp == base + 3 && myte.hp >= 64);
+        assert(myte.current_intent.type == STATUS);
+        pass_turn(combat);
+        assert(myte.current_intent.type == ATTACK && myte.intent_damage(combat.player) == 15);
+        pass_turn(combat);
+        assert(myte.current_intent.type == ATTACK_BUFF && myte.intent_damage(combat.player) == 6);
+        pass_turn(combat);
+        assert(myte.get_status(StatusType::STRENGTH) == 3);
+    }
+    std::cout << "[PASS] Myte: Ascension gives 64 HP and more, Bite 15, Suck 6 and 3 Strength" << std::endl;
+}
+
 int main() {
     std::cout << "=== Monsters ===" << std::endl;
     test_fuzzy_wurm_crawler();
@@ -6491,6 +6570,8 @@ int main() {
     test_entomancer_ascension();
     test_flail_knight();
     test_flail_knight_ascension();
+    test_myte();
+    test_myte_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }
