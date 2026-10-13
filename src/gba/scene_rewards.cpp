@@ -52,6 +52,7 @@ public:
             sprite.set_z_order(Z_CARD);
             _cards.push_back(bn::move(sprite));
         }
+        _create_cards();
 
         _title.set(0, -72, "VICTOIRE !", Align::CENTER, TextColor::GOLD);
         bn::string<24> gold;
@@ -105,6 +106,11 @@ public:
         ++_timer;
         int count = _cards.size();
 
+        if(_sacrificed)
+        {
+            return _update_sacrifice();
+        }
+
         if(_chosen < 0 && _timer > 20 && count > 0)
         {
             if(bn::keypad::left_pressed())
@@ -125,6 +131,43 @@ public:
                 _exit_timer = 0;
                 _ctx.run.pick_card_reward(_chosen);
                 play_sfx(Sfx::UI_CONFIRM);
+            }
+            else if(bn::keypad::select_pressed() && _ctx.run.reroll_card_rewards())
+            {
+                // Driftwood: the new cards fall from above the screen, as the first ones did.
+                play_sfx(Sfx::UI_CONFIRM);
+                _create_cards();
+                _timer = 0;
+                _selected = 0;
+                _refresh_hint();
+                _refresh_text();
+                return bn::nullopt;
+            }
+            else if(bn::keypad::b_pressed() && _ctx.run.can_sacrifice_card_rewards())
+            {
+                // Paël's Wing: the cards go up in smoke; every second sacrifice gives a relic.
+                engine::RunManager& run = _ctx.run;
+                size_t owned = run.relics.size();
+                bool relic = run.sacrifice_card_rewards();
+                play_sfx(relic ? Sfx::BUFF : Sfx::UI_CONFIRM);
+
+                if(relic && run.relics.size() > owned)
+                {
+                    TextLine text;
+                    bn::ostringstream stream(text);
+                    stream << "+ " << relic_name(run.relics[owned]);
+                    _popups.spawn(0, 20, text, TextColor::GOLD);
+                }
+                else
+                {
+                    _popups.spawn(0, 20, "Sacrifié à Paël", TextColor::PURPLE);
+                }
+
+                _sacrificed = true;
+                _exit_timer = 0;
+                _hint.clear();
+                _reroll_hint.clear();
+                return bn::nullopt;
             }
             else if(bn::keypad::start_pressed())
             {
@@ -215,6 +258,7 @@ private:
     Label _title;
     Label _gold;
     Label _hint;
+    Label _reroll_hint;
     Label _prompt;
     Label _name;
     bn::vector<Label, 2> _desc;
@@ -222,6 +266,7 @@ private:
     int _timer = 0;
     int _selected = 1;
     int _chosen = -1;
+    bool _sacrificed = false;
     int _exit_timer = 0;
     Step _step = Step::CARDS;
     bn::vector<Loot, 2> _loot;
@@ -259,7 +304,67 @@ private:
         _loot_text.clear();
         _hint.set(116, -40, "START Passer", Align::RIGHT, TextColor::GRAY);
         _prompt.set(-116, -40, "Choisissez une carte", Align::LEFT, TextColor::WHITE);
+        _refresh_hint();
         _refresh_text();
+    }
+
+    // One sprite per card of the reward, above the screen until they are dealt.
+    void _create_cards()
+    {
+        const engine::RunManager& run = _ctx.run;
+        _cards.clear();
+
+        for(int index = 0; index < int(run.current_card_rewards.size()); ++index)
+        {
+            bn::sprite_ptr sprite = big_card_item(run.current_card_rewards[index].id).create_sprite(CARD_X[index], -130);
+            sprite.set_z_order(Z_CARD);
+            _cards.push_back(bn::move(sprite));
+        }
+    }
+
+    // Paël's Wing: the sacrificed cards rise and fade out, then the rewards go on.
+    [[nodiscard]] bn::optional<SceneId> _update_sacrifice()
+    {
+        ++_exit_timer;
+        _popups.update();
+
+        for(bn::sprite_ptr& card : _cards)
+        {
+            card.set_y(card.y() - 3);
+        }
+
+        if(_exit_timer > 40)
+        {
+            return _leave();
+        }
+
+        return bn::nullopt;
+    }
+
+    // Driftwood: the free reroll of the reward, while it has not been used.
+    void _refresh_hint()
+    {
+        TextLine text;
+        bn::ostringstream stream(text);
+
+        if(_ctx.run.can_sacrifice_card_rewards())
+        {
+            stream << "B Sacrifier";
+        }
+
+        if(_ctx.run.can_reroll_card_rewards())
+        {
+            stream << (text.empty() ? "" : "  ") << "SELECT Relancer";
+        }
+
+        if(text.empty())
+        {
+            _reroll_hint.clear();
+        }
+        else
+        {
+            _reroll_hint.set(116, -56, text, Align::RIGHT, TextColor::GRAY);
+        }
     }
 
     void _update_loot()

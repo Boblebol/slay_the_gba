@@ -3894,6 +3894,24 @@ void test_darkstone_periapt() {
     std::cout << "[PASS] Darkstone Periapt: +6 Max HP for each Curse obtained" << std::endl;
 }
 
+void test_byrdpip() {
+    // Obtained: Byrd Swoop joins the Deck, once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 515);
+    size_t deck = run.master_deck.size();
+    run.add_relic("BYRDPIP");
+    assert(run.has_relic("BYRDPIP"));
+    assert(run.master_deck.size() == deck + 1 && run.master_deck.back().id == CardId::BYRD_SWOOP && !run.master_deck.back().upgraded);
+
+    // Without the relic, no Byrd Swoop in the Deck.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 515);
+    plain.add_relic("ANCHOR");
+    assert(plain.master_deck.size() == deck);
+    for (const DeckCard& card : plain.master_deck) assert(card.id != CardId::BYRD_SWOOP);
+    std::cout << "[PASS] Byrdpip: Byrd Swoop joins the Deck on pickup" << std::endl;
+}
+
 void test_big_mushroom() {
     // Obtained: 20 more maximum HP, and the current HP follow.
     RunManager run;
@@ -4658,6 +4676,236 @@ void test_fishing_rod() {
     std::cout << "[PASS] Fishing Rod upgrades a card every 3 normal fights" << std::endl;
 }
 
+// Wins the fight of a normal combat room entered at once.
+void win_combat(RunManager& run) {
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.combat.state = CombatState::VICTORY;
+    run.proceed_after_combat();
+    run.skip_card_rewards();
+}
+
+void test_toy_box() {
+    // Obtained: 5 relics right after the box; every 3 fights won, the left-most of them melts away.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 768);
+    const size_t owned = run.relics.size();
+    run.add_relic("TOY_BOX");
+    assert(run.has_relic("TOY_BOX"));
+    assert(run.relics.size() == owned + 1 + 5);
+    FixedVector<std::string_view, 5> wax;
+    for (size_t i = owned + 1; i < run.relics.size(); ++i) wax.push_back(run.relics[i]);
+    for (size_t melted = 0; melted < 5; ++melted) {
+        win_combat(run);
+        win_combat(run);
+        assert(run.has_relic(wax[melted]));
+        win_combat(run);
+        assert(!run.has_relic(wax[melted]));
+        for (size_t later = melted + 1; later < wax.size(); ++later) assert(run.has_relic(wax[later]));
+        assert(run.relics.size() == owned + 1 + 5 - (melted + 1));
+    }
+    // Every Wax Relic gone: the other relics stay.
+    for (int fight = 0; fight < 3; ++fight) win_combat(run);
+    assert(run.relics.size() == owned + 1 && run.has_relic("TOY_BOX") && run.has_relic("BURNING_BLOOD"));
+
+    // Without the relic, no relic is gained or lost.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 768);
+    plain.add_relic("ANCHOR");
+    const size_t plain_owned = plain.relics.size();
+    for (int fight = 0; fight < 3; ++fight) win_combat(plain);
+    assert(!plain.has_relic("TOY_BOX") && plain.relics.size() == plain_owned);
+    std::cout << "[PASS] Toy Box: 5 Wax Relics, the left-most melts every 3 fights" << std::endl;
+}
+
+void test_fur_coat() {
+    // Obtained at the start of the act: 8 of its normal combats are marked, and their enemies have 1 HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 773);
+    run.add_relic("FUR_COAT");
+    assert(run.has_relic("FUR_COAT"));
+    int marked = -1;
+    int unmarked = -1;
+    int count = 0;
+    for (size_t i = 0; i < run.map.nodes.size(); ++i) {
+        if (!run.fur_coat_room(static_cast<int>(i))) {
+            if (run.map.nodes[i].type == RoomType::MONSTER) unmarked = static_cast<int>(i);
+            continue;
+        }
+        assert(run.map.nodes[i].type == RoomType::MONSTER);
+        marked = static_cast<int>(i);
+        ++count;
+    }
+    assert(count == 8 && marked >= 0 && unmarked >= 0);
+    run.enter_room(marked);
+    assert(run.phase == RunPhase::IN_COMBAT && !run.combat.enemies.empty());
+    for (const Enemy& foe : run.combat.enemies) assert(foe.hp == 1);
+    run.enter_room(unmarked);
+    for (const Enemy& foe : run.combat.enemies) assert(foe.hp > 1);
+
+    // The next act has no marks.
+    run.current_act = 2;
+    for (size_t i = 0; i < run.map.nodes.size(); ++i) assert(!run.fur_coat_room(static_cast<int>(i)));
+
+    // Without the relic, no room is marked.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 773);
+    assert(!plain.has_relic("FUR_COAT"));
+    for (size_t i = 0; i < plain.map.nodes.size(); ++i) assert(!plain.fur_coat_room(static_cast<int>(i)));
+    plain.enter_room(marked);
+    for (const Enemy& foe : plain.combat.enemies) assert(foe.hp > 1);
+    std::cout << "[PASS] Fur Coat: 8 combats of the act marked, their enemies at 1 HP" << std::endl;
+}
+
+// A room of the floor after the current room that its paths do not reach, -1 when they reach them all.
+int room_off_the_paths(const RunManager& run) {
+    FixedVector<int, 3> paths = run.map.get_next_nodes(run.current_node_index);
+    const uint8_t next_floor = static_cast<uint8_t>(run.map.nodes[run.current_node_index].floor + 1);
+    for (size_t i = 0; i < run.map.nodes.size(); ++i) {
+        if (run.map.nodes[i].floor != next_floor) continue;
+        bool on_path = false;
+        for (int next : paths) on_path = on_path || next == static_cast<int>(i);
+        if (!on_path) return static_cast<int>(i);
+    }
+    return -1;
+}
+
+void test_winged_boots() {
+    // 3 times, a room of the next floor off the paths can be chosen; the paths themselves cost nothing.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 712);
+    run.add_relic("WINGED_BOOTS");
+    assert(run.has_relic("WINGED_BOOTS") && run.relic_counter("WINGED_BOOTS") == 3);
+    run.enter_room(run.get_available_rooms()[0]);
+    int flights = 3;
+    int floor = 0;
+    while (flights > 0 && floor < 13) {
+        ++floor;
+        FixedVector<int, 3> rooms = run.get_available_rooms();
+        const uint8_t next_floor = static_cast<uint8_t>(run.map.nodes[run.current_node_index].floor + 1);
+        for (int room : rooms) assert(run.map.nodes[room].floor == next_floor);
+        for (size_t i = 1; i < rooms.size(); ++i) assert(run.map.nodes[rooms[i - 1]].lane < run.map.nodes[rooms[i]].lane);
+        int off = room_off_the_paths(run);
+        if (off < 0) {
+            run.enter_room(rooms[0]);
+            assert(run.relic_counter("WINGED_BOOTS") == flights);
+            continue;
+        }
+        bool offered = false;
+        for (int room : rooms) offered = offered || room == off;
+        assert(offered);
+        run.enter_room(off);
+        --flights;
+        assert(run.current_node_index == off && run.relic_counter("WINGED_BOOTS") == flights);
+    }
+    assert(flights == 0);
+    // No flight left: only the paths again.
+    FixedVector<int, 3> paths = run.map.get_next_nodes(run.current_node_index);
+    FixedVector<int, 3> rooms = run.get_available_rooms();
+    assert(rooms.size() == paths.size());
+    for (size_t i = 0; i < rooms.size(); ++i) assert(rooms[i] == paths[i]);
+
+    // Without the relic, only the paths.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 712);
+    plain.enter_room(plain.get_available_rooms()[0]);
+    assert(!plain.has_relic("WINGED_BOOTS"));
+    FixedVector<int, 3> plain_paths = plain.map.get_next_nodes(plain.current_node_index);
+    FixedVector<int, 3> plain_rooms = plain.get_available_rooms();
+    assert(plain_rooms.size() == plain_paths.size());
+    for (size_t i = 0; i < plain_rooms.size(); ++i) assert(plain_rooms[i] == plain_paths[i]);
+    std::cout << "[PASS] Winged Boots: 3 rooms off the paths of the map" << std::endl;
+}
+
+void test_driftwood() {
+    // Each card reward can be drawn again once: new cards, then no second reroll; the next reward has its own.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 745);
+    run.add_relic("DRIFTWOOD");
+    run.add_relic("SILVER_CRUCIBLE");
+    assert(run.has_relic("DRIFTWOOD"));
+    bool changed = false;
+    for (int reward = 0; reward < 4; ++reward) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+        assert(run.can_reroll_card_rewards());
+        FixedVector<DeckCard, 3> before = run.current_card_rewards;
+        assert(run.reroll_card_rewards());
+        assert(run.current_card_rewards.size() == before.size());
+        for (size_t i = 0; i < before.size(); ++i) changed = changed || run.current_card_rewards[i].id != before[i].id;
+        // Silver Crucible still counts the reward once: the first 3 are upgraded, rerolled or not.
+        for (const DeckCard& card : run.current_card_rewards) assert(card.upgraded == (reward < 3));
+        assert(!run.can_reroll_card_rewards() && !run.reroll_card_rewards());
+        assert(run.phase == RunPhase::REWARD_SCREEN);
+        run.skip_card_rewards();
+    }
+    assert(changed);
+
+    // Without the relic, the reward cannot be drawn again.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 745);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
+    FixedVector<DeckCard, 3> offered = plain.current_card_rewards;
+    assert(!plain.can_reroll_card_rewards() && !plain.reroll_card_rewards());
+    for (size_t i = 0; i < offered.size(); ++i) assert(plain.current_card_rewards[i].id == offered[i].id);
+    std::cout << "[PASS] Driftwood: each card reward can be rerolled once" << std::endl;
+}
+
+void test_paels_wing() {
+    // A card reward can be given up to Paël instead of a card; every second one gives a random relic.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 753);
+    run.add_relic("PAELS_WING");
+    assert(run.has_relic("PAELS_WING"));
+    const size_t deck = run.master_deck.size();
+    size_t owned = run.relics.size();
+    for (int sacrifice = 1; sacrifice <= 4; ++sacrifice) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        run.potion_reward = {};
+        assert(run.phase == RunPhase::REWARD_SCREEN && run.can_sacrifice_card_rewards());
+        bool relic = run.sacrifice_card_rewards();
+        assert(relic == (sacrifice % 2 == 0));
+        if (relic) ++owned;
+        assert(run.relics.size() == owned && run.master_deck.size() == deck);
+        assert(run.phase != RunPhase::REWARD_SCREEN);
+    }
+
+    // Without the relic, the card reward cannot be sacrificed.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 753);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    const size_t plain_owned = plain.relics.size();
+    assert(!plain.can_sacrifice_card_rewards() && !plain.sacrifice_card_rewards());
+    assert(plain.phase == RunPhase::REWARD_SCREEN && plain.relics.size() == plain_owned);
+    std::cout << "[PASS] Paël's Wing: card rewards sacrificed, a relic every 2" << std::endl;
+}
+
+void test_dowsing_rod() {
+    // Obtained: one Dowsing joins the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 720);
+    const size_t deck = run.master_deck.size();
+    run.add_relic("DOWSING_ROD");
+    assert(run.has_relic("DOWSING_ROD"));
+    assert(run.master_deck.size() == deck + 1 && run.master_deck.back().id == CardId::DOWSING && !run.master_deck.back().upgraded);
+
+    // Without the relic, no Dowsing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 720);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("DOWSING_ROD") && plain.master_deck.size() == deck);
+    for (const DeckCard& card : plain.master_deck) assert(card.id != CardId::DOWSING);
+    std::cout << "[PASS] Dowsing Rod: adds 1 Dowsing to the deck when obtained" << std::endl;
+}
+
 void test_touch_of_orobas() {
     // Obtained: the starter relic (Burning Blood for the Ironclad) becomes its Ancient version.
     RunManager run;
@@ -4717,6 +4965,118 @@ void test_archaic_tooth() {
     }
     assert(has_bash);
     std::cout << "[PASS] Archaic Tooth: a starter card Transformed into its Ancient version" << std::endl;
+}
+
+void test_sword_of_stone() {
+    // The fifth Elite defeated turns it into the Sword of Jade; normal fights do not count.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 528);
+    run.add_relic("SWORD_OF_STONE");
+    assert(run.has_relic("SWORD_OF_STONE"));
+    const size_t owned = run.relics.size();
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.combat.state = CombatState::VICTORY;
+    run.proceed_after_combat();
+    run.skip_card_rewards();
+    for (int elite = 1; elite <= 5; ++elite) {
+        enter_room_of_type(run, RoomType::ELITE);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        assert(run.has_relic("SWORD_OF_STONE") == (elite < 5));
+        assert(run.has_relic("SWORD_OF_JADE") == (elite == 5));
+        assert(run.relics.size() >= owned);
+        run.relic_reward = {};
+        run.skip_card_rewards();
+    }
+    // The Sword of Jade then gives its 3 Strength at the start of each fight.
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.get_status(StatusType::STRENGTH) == 3);
+
+    // Without the relic, Elites give no Sword of Jade.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 528);
+    for (int elite = 1; elite <= 5; ++elite) {
+        enter_room_of_type(plain, RoomType::ELITE);
+        plain.combat.state = CombatState::VICTORY;
+        plain.proceed_after_combat();
+        plain.relic_reward = {};
+        plain.skip_card_rewards();
+    }
+    assert(!plain.has_relic("SWORD_OF_STONE") && !plain.has_relic("SWORD_OF_JADE"));
+    std::cout << "[PASS] Sword of Stone: becomes the Sword of Jade after 5 Elites" << std::endl;
+}
+
+void test_miniature_tent() {
+    // Each campfire action can be done once at the same rest site, until the player leaves or none is left.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 490);
+    run.add_relic("MINIATURE_TENT");
+    run.add_relic("GIRYA");
+    assert(run.has_relic("MINIATURE_TENT"));
+    run.hp = 20;
+    enter_room_of_type(run, RoomType::REST_SITE);
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> actions = run.campfire_actions();
+    assert(actions.size() == 4 && actions[0] == CampfireAction::REST && actions[1] == CampfireAction::SMITH &&
+           actions[2] == CampfireAction::LIFT && actions[3] == CampfireAction::LEAVE);
+    run.rest_at_campfire();
+    assert(run.hp > 20 && run.phase == RunPhase::CAMPFIRE);
+    actions = run.campfire_actions();
+    assert(actions.size() == 3 && actions[0] == CampfireAction::SMITH && actions[2] == CampfireAction::LEAVE);
+    assert(run.smith_at_campfire(0) && run.master_deck[0].upgraded && run.phase == RunPhase::CAMPFIRE);
+    // The last action done: nothing is left but leaving, the map comes back.
+    assert(run.lift_at_campfire() && run.phase == RunPhase::MAP_NAVIGATION);
+
+    // A new rest site offers every action again; the player may leave at once.
+    enter_room_of_type(run, RoomType::REST_SITE);
+    assert(run.campfire_actions().size() == 4);
+    run.rest_at_campfire();
+    assert(run.phase == RunPhase::CAMPFIRE);
+    run.leave_campfire();
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, one action uses up the rest site, and leaving is not an action.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 490);
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    actions = plain.campfire_actions();
+    assert(actions.size() == 2 && actions[1] == CampfireAction::SMITH);
+    plain.rest_at_campfire();
+    assert(plain.phase == RunPhase::MAP_NAVIGATION);
+    std::cout << "[PASS] Miniature Tent: every campfire action once per rest site" << std::endl;
+}
+
+void test_sea_glass() {
+    // Obtained: 15 distinct cards of one other hero are offered, any number of them join the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 743);
+    const size_t deck = run.master_deck.size();
+    run.add_relic("SEA_GLASS");
+    assert(run.has_relic("SEA_GLASS"));
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ADD && run.deck_choice.optional);
+    assert(run.deck_choice_offers.size() == SEA_GLASS_CARDS && run.deck_choice.remaining == SEA_GLASS_CARDS);
+    CardPool hero = card_meta(run.deck_choice_offers[0].id).pool;
+    assert(hero != CardPool::IRONCLAD);
+    for (size_t i = 0; i < run.deck_choice_offers.size(); ++i) {
+        assert(card_meta(run.deck_choice_offers[i].id).pool == hero);
+        assert(card_meta(run.deck_choice_offers[i].id).rarity != CardRarity::BASIC);
+        for (size_t j = 0; j < i; ++j) assert(run.deck_choice_offers[i].id != run.deck_choice_offers[j].id);
+    }
+    CardId first = run.deck_choice_offers[0].id;
+    CardId third = run.deck_choice_offers[2].id;
+    assert(run.resolve_deck_choice(0));
+    assert(run.master_deck.size() == deck + 1 && run.master_deck.back().id == first);
+    assert(run.deck_choice_offers.size() == SEA_GLASS_CARDS - 1 && run.deck_choice.remaining == SEA_GLASS_CARDS - 1);
+    assert(run.resolve_deck_choice(1));
+    assert(run.master_deck.size() == deck + 2 && run.master_deck.back().id == third);
+    assert(!run.resolve_deck_choice(40));
+    assert(run.skip_deck_choice() && !run.has_deck_choice() && run.master_deck.size() == deck + 2);
+
+    // Without the relic, nothing is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 743);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("SEA_GLASS") && !plain.has_deck_choice() && plain.deck_choice_offers.empty());
+    std::cout << "[PASS] Sea Glass: 15 cards of another hero, any number added to the deck" << std::endl;
 }
 
 int main() {
@@ -4875,6 +5235,7 @@ int main() {
     test_ring_of_the_drake();
     test_darkstone_periapt();
     test_big_mushroom();
+    test_byrdpip();
     test_neows_sacrifice();
     test_fake_orichalcum();
     test_maw_bank();
@@ -4893,6 +5254,12 @@ int main() {
     test_bing_bong();
     test_paper_phrog();
     test_silver_crucible();
+    test_toy_box();
+    test_fur_coat();
+    test_winged_boots();
+    test_driftwood();
+    test_paels_wing();
+    test_dowsing_rod();
     test_silken_tress();
     test_forgotten_soul();
     test_fishing_rod();
@@ -4902,5 +5269,8 @@ int main() {
     test_kaleidoscope();
     test_black_star();
     test_dollys_mirror();
+    test_sword_of_stone();
+    test_miniature_tent();
+    test_sea_glass();
     return 0;
 }

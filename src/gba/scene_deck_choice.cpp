@@ -21,8 +21,8 @@ namespace
 
 constexpr int LEAVE_FRAMES = 40;
 
-// Cards of the deck to upgrade, remove or transform, asked by the run (a relic just obtained). Same picker
-// as the forge of the campfire.
+// Cards of the deck to upgrade, remove or transform, or offered cards to add (Sea Glass), asked by the run (a relic
+// just obtained). Same picker as the forge of the campfire.
 class DeckChoiceScene final : public Scene
 {
 public:
@@ -104,6 +104,8 @@ private:
             return "Envoûtée !";
         case engine::DeckChoiceKind::DUPLICATE:
             return "Copiée !";
+        case engine::DeckChoiceKind::ADD:
+            return "Ajoutée !";
         default:
             return "Transformée !";
         }
@@ -125,11 +127,15 @@ private:
         engine::DeckChoiceKind kind = run.deck_choice.kind;
         _picker.set_preview_upgraded(kind == engine::DeckChoiceKind::UPGRADE);
 
-        for(int index = 0; index < int(run.master_deck.size()); ++index)
+        // Sea Glass: the cards offered, not the deck's.
+        bool offers = kind == engine::DeckChoiceKind::ADD;
+        int count = offers ? int(run.deck_choice_offers.size()) : int(run.master_deck.size());
+
+        for(int index = 0; index < count; ++index)
         {
             if(run.deck_choice_allows(index))
             {
-                _picker.add(run.master_deck[index], index);
+                _picker.add(offers ? run.deck_choice_offers[index] : run.master_deck[index], index);
             }
         }
 
@@ -141,7 +147,8 @@ private:
         stream << (kind == engine::DeckChoiceKind::UPGRADE ? "AMELIORER" :
                    kind == engine::DeckChoiceKind::REMOVE ? "RETIRER" :
                    kind == engine::DeckChoiceKind::ENCHANT ? "ENVOUTER" :
-                   kind == engine::DeckChoiceKind::DUPLICATE ? "COPIER" : "TRANSFORMER")
+                   kind == engine::DeckChoiceKind::DUPLICATE ? "COPIER" :
+                   kind == engine::DeckChoiceKind::ADD ? "AJOUTER" : "TRANSFORMER")
                << " - " << remaining << (remaining > 1 ? " cartes" : " carte");
         _title.set(0, -72, title, Align::CENTER, TextColor::GOLD);
         _hint.set(0, 73, run.deck_choice.optional ? "◄► Carte   A Choisir   B Terminer" : "◄► Carte   A Choisir",

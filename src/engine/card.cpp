@@ -652,6 +652,7 @@ static constexpr CardDef CARDS[] = {
     { CardId::FRANTIC_ESCAPE, "Frantic Escape", 1, CardType::STATUS, TargetType::SELF, 1, 1, "Increase Sandpit by 1. Increase this card's cost by 1.", "Frantic Escape", 1, 1, 1, "Increase Sandpit by 1. Increase this card's cost by 1." },
     { CardId::BECKON, "Beckon", 0, CardType::STATUS, TargetType::SELF, 6, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 6 HP.", "Beckon", 0, 6, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 6 HP.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
     { CardId::WITHER, "Wither", 0, CardType::STATUS, TargetType::SELF, 0, 0, "Unplayable.", "Wither", 0, 0, 0, "Unplayable.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
+    { CardId::DOWSING, "Dowsing", COST_X, CardType::QUEST, TargetType::SELF, 5, 0, "Unplayable. After entering 5 more ? rooms, transforms into an Abundance.", "Dowsing+", COST_X, 5, 0, "Unplayable. After entering 5 more ? rooms, transforms into an Abundance.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
 };
 
 bool can_enchant(const DeckCard& card, Enchantment enchantment) {
