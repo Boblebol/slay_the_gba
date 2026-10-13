@@ -43,12 +43,7 @@ public:
         const engine::RunManager& run = context.run;
         play_music(Music::MAP);
 
-        for(int index = 0; index < int(run.current_card_rewards.size()); ++index)
-        {
-            bn::sprite_ptr sprite = big_card_item(run.current_card_rewards[index].id).create_sprite(CARD_X[index], -130);
-            sprite.set_z_order(Z_CARD);
-            _cards.push_back(bn::move(sprite));
-        }
+        _create_cards();
 
         _title.set(0, -72, "VICTOIRE !", Align::CENTER, TextColor::GOLD);
         bn::string<24> gold;
@@ -122,6 +117,17 @@ public:
                 _exit_timer = 0;
                 _ctx.run.pick_card_reward(_chosen);
                 play_sfx(Sfx::UI_CONFIRM);
+            }
+            else if(bn::keypad::select_pressed() && _ctx.run.reroll_card_rewards())
+            {
+                // Driftwood: the new cards fall from above the screen, as the first ones did.
+                play_sfx(Sfx::UI_CONFIRM);
+                _create_cards();
+                _timer = 0;
+                _selected = 0;
+                _refresh_hint();
+                _refresh_text();
+                return bn::nullopt;
             }
             else if(bn::keypad::start_pressed())
             {
@@ -212,6 +218,7 @@ private:
     Label _title;
     Label _gold;
     Label _hint;
+    Label _reroll_hint;
     Label _prompt;
     Label _name;
     bn::vector<Label, 2> _desc;
@@ -256,7 +263,35 @@ private:
         _loot_text.clear();
         _hint.set(116, -40, "START Passer", Align::RIGHT, TextColor::GRAY);
         _prompt.set(-116, -40, "Choisissez une carte", Align::LEFT, TextColor::WHITE);
+        _refresh_hint();
         _refresh_text();
+    }
+
+    // One sprite per card of the reward, above the screen until they are dealt.
+    void _create_cards()
+    {
+        const engine::RunManager& run = _ctx.run;
+        _cards.clear();
+
+        for(int index = 0; index < int(run.current_card_rewards.size()); ++index)
+        {
+            bn::sprite_ptr sprite = big_card_item(run.current_card_rewards[index].id).create_sprite(CARD_X[index], -130);
+            sprite.set_z_order(Z_CARD);
+            _cards.push_back(bn::move(sprite));
+        }
+    }
+
+    // Driftwood: the free reroll of the reward, while it has not been used.
+    void _refresh_hint()
+    {
+        if(_ctx.run.can_reroll_card_rewards())
+        {
+            _reroll_hint.set(116, -56, "SELECT Relancer", Align::RIGHT, TextColor::GRAY);
+        }
+        else
+        {
+            _reroll_hint.clear();
+        }
     }
 
     void _update_loot()
