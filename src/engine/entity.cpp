@@ -108,8 +108,10 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "SOUL_FYSH", false, true },
     { "WATERFALL_GIANT", false, true },
     { "AEONGLASS", false, true },
+    { "CRUSHER", false, true },
+    { "ROCKET", false, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::AEONGLASS) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::ROCKET) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -1991,6 +1993,70 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
                 current_intent.status_cards = 1;
                 current_intent.description = "Intensité croissante (+2 Force, 1 Érosion)";
             }
+        }
+    } else if (type == EnemyType::CRUSHER) {
+        // Thrash, Enlarging Strike, Bug Sting (Weak and Frail), Adapt (+2 Strength), Guarded Strike (Block), in a loop.
+        const int step = (turn_number - 1) % 5;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("THRASH");
+            current_intent.description = "Furie (12 dmg)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("ENLARGING_STRIKE");
+            current_intent.description = "Frappe embrassante (4 dmg)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("BUG_STING");
+            current_intent.hits = sheet_move("BUG_STING").hits;
+            current_intent.debuffs[0] = { StatusType::WEAK, 2 };
+            current_intent.debuffs[1] = { StatusType::FRAIL, 2 };
+            current_intent.description = "Piqûre d'insecte (6 dmg x2, Affaibli, Fragilisé)";
+        } else if (step == 3) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            // Two assignments, not a ternary: a string_view built from a char pointer calls strlen, which the GBA lacks.
+            if (ascended_damage) {
+                current_intent.status_amount = CRUSHER_ADAPT_ASC;
+                current_intent.description = "Adaptation (+3 Force)";
+            } else {
+                current_intent.status_amount = CRUSHER_ADAPT;
+                current_intent.description = "Adaptation (+2 Force)";
+            }
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = move_damage("GUARDED_STRIKE");
+            current_intent.block = sheet_move("GUARDED_STRIKE").block;
+            current_intent.description = "Frappe prudente (12 dmg, 18 Armure)";
+        }
+    } else if (type == EnemyType::ROCKET) {
+        // Targeting Reticle, Precision Beam, Charge Up (+2 Strength), Laser, Recharge (a lost turn), in a loop.
+        const int step = (turn_number - 1) % 5;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("TARGETING_RETICLE");
+            current_intent.description = "Réticule de ciblage (3 dmg)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("PRECISION_BEAM");
+            current_intent.description = "Rayon précis (18 dmg)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            if (ascended_damage) {
+                current_intent.status_amount = ROCKET_CHARGE_UP_ASC;
+                current_intent.description = "Chargement (+3 Force)";
+            } else {
+                current_intent.status_amount = ROCKET_CHARGE_UP;
+                current_intent.description = "Chargement (+2 Force)";
+            }
+        } else if (step == 3) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("LASER");
+            current_intent.description = "Laser (31 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::STUN;
+            current_intent.description = "Recharge";
         }
     } else if (type == EnemyType::LAGAVULIN_MATRIARCH) {
         // Asleep (a lost turn) behind its Plating, for 3 turns or until it loses HP. Awake, it drops the Plating and

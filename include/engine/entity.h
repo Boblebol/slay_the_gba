@@ -453,7 +453,9 @@ enum class EnemyType : uint8_t {
     KNOWLEDGE_DEMON,      // Act 2 boss
     SOUL_FYSH,            // Act 1 (B) boss
     WATERFALL_GIANT,      // Act 1 (B) boss
-    AEONGLASS             // Act 3 boss
+    AEONGLASS,            // Act 3 boss
+    CRUSHER,              // Act 2 boss, with the Rocket
+    ROCKET                // Act 2 boss, with the Crusher
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
@@ -534,6 +536,13 @@ constexpr int16_t WATERFALL_GIANT_PRESSURE_GUN_ASC = 22;   // guessed
 // monster database names the buff without its amount: guessed, in line with the other bosses' +2 / +3 Strength.
 constexpr int16_t AEONGLASS_STRENGTH = 2;     // guessed
 constexpr int16_t AEONGLASS_STRENGTH_ASC = 3; // guessed
+
+// Strength the Crusher's Adapt and the Rocket's Charge Up give them (the second value at Ascension 9), from the
+// monster database.
+constexpr int16_t CRUSHER_ADAPT = 2;
+constexpr int16_t CRUSHER_ADAPT_ASC = 3;
+constexpr int16_t ROCKET_CHARGE_UP = 2;
+constexpr int16_t ROCKET_CHARGE_UP_ASC = 3;
 
 // Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
 // moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire.

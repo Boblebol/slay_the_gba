@@ -3130,6 +3130,126 @@ void test_aeonglass_whole_fight() {
     std::cout << "[PASS] Aeonglass: a whole fight to the boss's death, three full cycles" << std::endl;
 }
 
+void test_crusher() {
+    // Thrash 12, Enlarging Strike 4, Bug Sting 6x2, Adapt (+2 Strength), Guarded Strike 12 + 18 Block, in a loop.
+    check_monster(EnemyType::CRUSHER, "Anéantisseur", 209, {
+        { ATTACK, 12, 0, 0 },
+        { ATTACK, 4, 0, 0 },
+        { ATTACK_DEBUFF, 6, 0, 0, 0, 2 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK_DEFEND, 14, 18, 2 },
+        { ATTACK, 14, 0, 2 },
+        { ATTACK, 6, 0, 2 },
+        { ATTACK_DEBUFF, 8, 0, 2, 0, 2 },
+        { BUFF, 0, 0, 4 },
+        { ATTACK_DEFEND, 16, 18, 4 },
+    });
+
+    // Bug Sting leaves the player Weak 2 and Frail 2.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::CRUSHER);
+    pass_turn(combat);
+    pass_turn(combat);
+    assert(combat.player.get_status(StatusType::WEAK) == 0 && combat.player.get_status(StatusType::FRAIL) == 0);
+    pass_turn(combat);
+    assert(combat.player.get_status(StatusType::WEAK) == 2 && combat.player.get_status(StatusType::FRAIL) == 2);
+    std::cout << "[PASS] Crusher: 209 HP, Thrash 12, Enlarging Strike 4, Bug Sting 6x2 (Weak 2, Frail 2), Adapt +2 "
+                 "Strength, Guarded Strike 12 + 18 Block"
+              << std::endl;
+}
+
+void test_rocket() {
+    // Targeting Reticle 3, Precision Beam 18, Charge Up (+2 Strength), Laser 31, Recharge (a lost turn), in a loop.
+    check_monster(EnemyType::ROCKET, "Roquette", 199, {
+        { ATTACK, 3, 0, 0 },
+        { ATTACK, 18, 0, 0 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK, 33, 0, 2 },
+        { STUN, 0, 0, 2 },
+        { ATTACK, 5, 0, 2 },
+        { ATTACK, 20, 0, 2 },
+        { BUFF, 0, 0, 4 },
+        { ATTACK, 35, 0, 4 },
+        { STUN, 0, 0, 4 },
+    });
+    std::cout << "[PASS] Rocket: 199 HP, Targeting Reticle 3, Precision Beam 18, Charge Up +2 Strength, Laser 31, "
+                 "Recharge"
+              << std::endl;
+}
+
+void test_crusher_and_rocket_ascension() {
+    // At Ascension: the Crusher has 219 HP, Thrash 14, Bug Sting 7x2, Adapt +3 Strength and Guarded Strike 14; the
+    // Rocket 209 HP, Targeting Reticle 4, Precision Beam 20, Charge Up +3 Strength and Laser 35.
+    CombatEngine crusher_combat = make_combat(CharacterId::IRONCLAD, EnemyType::CRUSHER);
+    Enemy& crusher = crusher_combat.enemies[0];
+    assert(crusher.ascension_hp() == 219 && crusher.hp_spread() == 0);
+    crusher.ascend(true, true);
+    crusher_combat.plan_enemies();
+    assert(crusher.hp == 219 && crusher.max_hp == 219);
+    const int crusher_damage[5] = { 14, 4, 7, 0, 17 };
+    for (int step = 0; step < 5; ++step) {
+        assert(crusher.intent_damage(crusher_combat.player) == crusher_damage[step]);
+        pass_turn(crusher_combat);
+    }
+    assert(crusher.get_status(StatusType::STRENGTH) == CRUSHER_ADAPT_ASC && crusher.block == 18);
+
+    CombatEngine rocket_combat = make_combat(CharacterId::IRONCLAD, EnemyType::ROCKET);
+    Enemy& rocket = rocket_combat.enemies[0];
+    assert(rocket.ascension_hp() == 209 && rocket.hp_spread() == 0);
+    rocket.ascend(true, true);
+    rocket_combat.plan_enemies();
+    assert(rocket.hp == 209 && rocket.max_hp == 209);
+    const int rocket_damage[5] = { 4, 20, 0, 38, 0 };
+    for (int step = 0; step < 5; ++step) {
+        assert(rocket.intent_damage(rocket_combat.player) == rocket_damage[step]);
+        pass_turn(rocket_combat);
+    }
+    assert(rocket.get_status(StatusType::STRENGTH) == ROCKET_CHARGE_UP_ASC);
+    std::cout << "[PASS] Crusher and Rocket: Ascension gives 219 and 209 HP, Thrash 14, Bug Sting 7x2, Guarded "
+                 "Strike 14, Reticle 4, Beam 20, Laser 35, +3 Strength"
+              << std::endl;
+}
+
+void test_crusher_and_rocket_whole_fight() {
+    // The KaiserCrabBoss encounter, until both die: the Crusher takes 40 a turn, the Rocket 30. A single phase each,
+    // five moves in a loop; the Crusher falls first and the Rocket keeps its own cycle alone; the fight is won only
+    // once both are dead.
+    CombatEngine combat = make_pack({ EnemyType::CRUSHER, EnemyType::ROCKET });
+    assert(combat.enemies.size() == 2);
+    Enemy& crusher = combat.enemies[0];
+    Enemy& rocket = combat.enemies[1];
+    assert(crusher.type == EnemyType::CRUSHER && rocket.type == EnemyType::ROCKET);
+    assert(crusher.hp == 209 && rocket.hp == 199);
+    const EnemyIntentType crusher_moves[5] = { ATTACK, ATTACK, ATTACK_DEBUFF, BUFF, ATTACK_DEFEND };
+    const EnemyIntentType rocket_moves[5] = { ATTACK, ATTACK, BUFF, ATTACK, STUN };
+    int turn = 1;
+    int crusher_death = 0;
+    while (true) {
+        const int step = (turn - 1) % 5;
+        assert(crusher.phase == 0 && rocket.phase == 0);
+        if (crusher.is_alive()) {
+            assert(crusher.current_intent.type == crusher_moves[step]);
+            assert(crusher.get_status(StatusType::STRENGTH) == CRUSHER_ADAPT * ((turn - 1) / 5 + (step >= 4)));
+            // Guarded Strike's 18 Block lasts until the Crusher's next turn.
+            assert(crusher.block == (step == 0 && turn > 1 ? 18 : 0));
+            combat.damage_enemy(crusher, 40);
+            if (!crusher.is_alive()) crusher_death = turn;
+        }
+        assert(rocket.current_intent.type == rocket_moves[step]);
+        assert(rocket.get_status(StatusType::STRENGTH) == ROCKET_CHARGE_UP * ((turn - 1) / 5 + (step >= 3)));
+        combat.damage_enemy(rocket, 30);
+        if (!rocket.is_alive()) break;
+        // One of the two still stands: the fight goes on.
+        assert(combat.has_alive_enemies() && combat.state == CombatState::PLAYER_TURN);
+        pass_turn(combat);
+        ++turn;
+    }
+    assert(!crusher.is_alive() && !rocket.is_alive() && combat.player.is_alive() && !combat.has_alive_enemies());
+    assert(crusher_death == 6); // 209 HP at 40 a turn, 18 of them blocked on turn 6
+    assert(turn == 7);          // 199 HP at 30 a turn
+    std::cout << "[PASS] Crusher and Rocket: a whole fight, the Crusher dies first, victory once the Rocket falls"
+              << std::endl;
+}
+
 void test_ceremonial_beast() {
     // Phase 0: Stamp (Plow 150 on itself), then Plow (18 damage, +2 Strength) every turn.
     check_monster(EnemyType::CEREMONIAL_BEAST, "Cerf Auguste", 252, {
@@ -5813,6 +5933,10 @@ int main() {
     test_aeonglass();
     test_aeonglass_ascension();
     test_aeonglass_whole_fight();
+    test_crusher();
+    test_rocket();
+    test_crusher_and_rocket_ascension();
+    test_crusher_and_rocket_whole_fight();
     test_ceremonial_beast();
     test_plow();
     test_ceremonial_beast_ascension();
