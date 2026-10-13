@@ -111,6 +111,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::LIVING_FOG: return "LIVING_FOG";
         case EnemyType::TWO_TAILED_RAT: return "TWO_TAILED_RAT";
         case EnemyType::LAGAVULIN_MATRIARCH: return "LAGAVULIN_MATRIARCH";
+        case EnemyType::KNOWLEDGE_DEMON: return "KNOWLEDGE_DEMON";
     }
     return {};
 }
@@ -235,14 +236,17 @@ void test_reference_encounters() {
                                         "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
                                         "FossilStalkerNormal", "SeapunkNormal", "LivingFogNormal",
                                         "TwoTailedRatsNormal" }));
-    // Act 1 (B) and Act 2 have their own boss, the Lagavulin Matriarch and the Insatiable; the other acts keep
-    // the Ceremonial Beast.
+    // Act 1 (B) has its own boss, the Lagavulin Matriarch, and Act 2 two of them, the Insatiable and the Knowledge
+    // Demon; the other acts keep the Ceremonial Beast.
     for (ActZone zone : ZONES) {
-        const std::string_view boss = zone == ActZone::ACT2    ? "TheInsatiableBoss"
-                                      : zone == ActZone::ACT1B ? "LagavulinMatriarchBoss"
-                                                               : "CeremonialBeastBoss";
+        if (zone == ActZone::ACT2) continue;
+        const std::string_view boss = zone == ActZone::ACT1B ? "LagavulinMatriarchBoss" : "CeremonialBeastBoss";
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) == std::set<std::string_view>{ boss });
     }
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::BOSS)) ==
+           (std::set<std::string_view>{ "TheInsatiableBoss", "KnowledgeDemonBoss" }));
+    const Encounter& demon = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::BOSS), "KnowledgeDemonBoss");
+    assert(demon.count == 1 && demon.monsters[0] == EnemyType::KNOWLEDGE_DEMON);
     const Encounter& matriarch = find_encounter(encounter_table(ActZone::ACT1B, EncounterTier::BOSS),
                                                 "LagavulinMatriarchBoss");
     assert(matriarch.count == 1 && matriarch.monsters[0] == EnemyType::LAGAVULIN_MATRIARCH);

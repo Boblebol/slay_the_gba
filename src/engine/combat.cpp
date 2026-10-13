@@ -400,6 +400,16 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
                 }
             }
             break;
+        // The curses of the Knowledge Demon's Curse of Knowledge.
+        case PowerId::MIND_ROT:
+            if (turn_start) turn_draw_bonus_ = static_cast<int16_t>(turn_draw_bonus_ - power.amount);
+            break;
+        case PowerId::WASTE_AWAY:
+            if (turn_start) player.energy = static_cast<int8_t>(std::max(0, player.energy - power.amount));
+            break;
+        case PowerId::DISINTEGRATION:
+            if (event == CombatEvent::TURN_END) damage_player(power.amount);
+            break;
         case PowerId::BURROWED:
             // Spent when its Block is broken (the holder loses its turn) or when its holder acts again.
             if (event == CombatEvent::BLOCK_BROKEN && info.enemy == power.holder && power.amount > 0) {

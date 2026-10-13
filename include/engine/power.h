@@ -272,13 +272,18 @@ enum class PowerId : uint8_t {
     SOAR,              // it takes 50% less attack damage (read by hit) until it lands: spent when its next turn starts
     PLOW,              // its holder's HP fall below `amount`: it loses all Strength, is stunned and changes phase (spent)
     // On the player, given by an enemy move (appended)
-    RINGING            // only one card can be played this turn (read by play_blocker; the Ceremonial Beast)
+    RINGING,           // only one card can be played this turn (read by play_blocker; the Ceremonial Beast)
+    // On the player, given by the Knowledge Demon's Curse of Knowledge (appended)
+    MIND_ROT,          // start of turn: draw `amount` fewer cards
+    WASTE_AWAY,        // start of turn: `amount` less energy
+    DISINTEGRATION     // end of the player's turn: `amount` damage
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
 constexpr bool is_player_debuff_power(PowerId id) {
     return id == PowerId::TANGLED || id == PowerId::TENDER || id == PowerId::SHRINK ||
-           id == PowerId::CONSTRICT || id == PowerId::SMOGGY || id == PowerId::RINGING;
+           id == PowerId::CONSTRICT || id == PowerId::SMOGGY || id == PowerId::RINGING ||
+           id == PowerId::MIND_ROT || id == PowerId::WASTE_AWAY || id == PowerId::DISINTEGRATION;
 }
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;

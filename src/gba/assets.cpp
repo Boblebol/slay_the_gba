@@ -15,6 +15,7 @@
 #include "bn_sprite_items_boss_ceremonial_beast.h"
 #include "bn_sprite_items_boss_the_insatiable.h"
 #include "bn_sprite_items_boss_lagavulin_matriarch.h"
+#include "bn_sprite_items_boss_knowledge_demon.h"
 #include "bn_sprite_items_mon_assassin_ruby_raider.h"
 #include "bn_sprite_items_mon_axe_ruby_raider.h"
 #include "bn_sprite_items_mon_brute_ruby_raider.h"
@@ -289,6 +290,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::boss_the_insatiable, true };
     case engine::EnemyType::LAGAVULIN_MATRIARCH:
         return { &bn::sprite_items::boss_lagavulin_matriarch, true };
+    case engine::EnemyType::KNOWLEDGE_DEMON:
+        return { &bn::sprite_items::boss_knowledge_demon, true };
     case engine::EnemyType::FUZZY_WURM_CRAWLER:
         return { &bn::sprite_items::mon_fuzzy_wurm_crawler, false };
     case engine::EnemyType::CROSSBOW_RUBY_RAIDER:
