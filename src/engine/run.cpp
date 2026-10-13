@@ -26,7 +26,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
-    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "DOWSING_ROD", "SEA_GLASS", "DRIFTWOOD",
+    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "DOWSING_ROD", "DRIFTWOOD",
     "TOUCH_OF_OROBAS", "ARCHAIC_TOOTH", "PAELS_WING", "TOY_BOX", "FUR_COAT",
 };
 
@@ -786,6 +786,20 @@ void RunManager::add_relic(std::string_view relic_id) {
 void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
     if (relic_id == "SMALL_CAPSULE" && has_relic("SMALL_CAPSULE")) gain_random_relics(1);
+    // Sea Glass: 15 cards of another hero's pool, any number of them to add to the deck.
+    if (relic_id == "SEA_GLASS" && has_relic("SEA_GLASS")) {
+        deck_choice_offers.clear();
+        FixedVector<CardId, 512> pool;
+        for (CardId id : card_reward_pool(random_other_hero())) {
+            if (card_meta(id).rarity != CardRarity::BASIC) pool.push_back(id);
+        }
+        while (deck_choice_offers.size() < deck_choice_offers.capacity() && !pool.empty()) {
+            size_t pick = next_random() % pool.size();
+            deck_choice_offers.push_back(DeckCard(pool[pick]));
+            pool.erase(pick);
+        }
+        request_deck_choice(DeckChoiceKind::ADD, static_cast<int>(deck_choice_offers.size()), true);
+    }
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     if (relic_id == "LOOMING_FRUIT" && has_relic("LOOMING_FRUIT")) gain_max_hp(31);
     if (relic_id == "NUTRITIOUS_OYSTER" && has_relic("NUTRITIOUS_OYSTER")) gain_max_hp(11);
@@ -1402,7 +1416,8 @@ void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool option
     deck_choice.enchantment = enchantment;
     deck_choice.enchant_amount = enchant_amount;
     int candidates = 0;
-    for (size_t i = 0; i < master_deck.size(); ++i) {
+    const size_t choices = kind == DeckChoiceKind::ADD ? deck_choice_offers.size() : master_deck.size();
+    for (size_t i = 0; i < choices; ++i) {
         if (deck_choice_allows(static_cast<int>(i))) ++candidates;
     }
     if (candidates == 0) {
@@ -1422,6 +1437,10 @@ void RunManager::finish_preserved_fog() {
 }
 
 bool RunManager::deck_choice_allows(int deck_index) const {
+    if (deck_choice.kind == DeckChoiceKind::ADD) {
+        return deck_index >= 0 && static_cast<size_t>(deck_index) < deck_choice_offers.size() &&
+               master_deck.size() < master_deck.capacity();
+    }
     if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
     switch (deck_choice.kind) {
         case DeckChoiceKind::UPGRADE: return !master_deck[deck_index].upgraded;
@@ -1459,6 +1478,10 @@ bool RunManager::resolve_deck_choice(int deck_index) {
             done = add_card_to_deck(copy);
             break;
         }
+        case DeckChoiceKind::ADD:
+            done = add_card_to_deck(deck_choice_offers[deck_index]);
+            if (done) deck_choice_offers.erase(static_cast<size_t>(deck_index));
+            break;
         default: break;
     }
     if (!done) return false;
@@ -1475,6 +1498,7 @@ bool RunManager::resolve_deck_choice(int deck_index) {
 bool RunManager::skip_deck_choice() {
     if (!has_deck_choice() || !deck_choice.optional) return false;
     deck_choice = {};
+    deck_choice_offers.clear();
     return true;
 }
 
