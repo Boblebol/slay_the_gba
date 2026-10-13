@@ -283,7 +283,9 @@ enum class PowerId : uint8_t {
     // Held by an enemy (appended): the Waterfall Giant
     STEAM_ERUPTION,    // killed, its holder deals `amount` damage at the end of the player's next turn (Enemy::about_to_blow)
     // On the player, given by the Queen's Puppet Strings (appended)
-    CHAINS_OF_BINDING  // start of turn: the first `amount` cards of the hand are Bound (unplayable this turn); -1 a turn
+    CHAINS_OF_BINDING, // start of turn: the first `amount` cards of the hand are Bound (unplayable this turn); -1 a turn
+    // Held by an enemy (appended): the Thieving Hopper
+    FLUTTER            // it takes 50% less attack damage (read by hit); -1 for each attack hit it takes, gone at 0
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

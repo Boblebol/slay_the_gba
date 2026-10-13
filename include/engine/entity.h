@@ -347,6 +347,8 @@ struct EnemyIntent {
     IntentDebuff debuffs[MAX_INTENT_DEBUFFS];
     // The enemy keeps count of what its debuffs took from the player and gives it back when it dies.
     bool steals = false;
+    // The attack takes a card from the player's draw pile (the discard pile when it is empty): Enemy::stolen_card.
+    bool steals_card = false;
     // Status of the enemy whose amount is added to the damage of the attack (the Forgotten's Dexterity).
     StatusType damage_status = StatusType::NONE;
     // Enemies the move brings into the fight (SUMMON), each in a free place: there are 3 at most.
@@ -465,8 +467,12 @@ enum class EnemyType : uint8_t {
     DECIMILLIPEDE_SEGMENT_BACK,   // Act 2 elite, the three segments of the Decimillipede
     DECIMILLIPEDE_SEGMENT_FRONT,  // Act 2 elite
     DECIMILLIPEDE_SEGMENT_MIDDLE, // Act 2 elite
-    MYTE                          // Act 2
+    MYTE,                         // Act 2
+    THIEVING_HOPPER               // Act 2
 };
+
+// Flutter the Thieving Hopper gives itself: the attack hits it takes at half damage.
+constexpr int16_t THIEVING_HOPPER_FLUTTER = 5;
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
 constexpr uint8_t MAX_ENEMIES = 6;
@@ -595,6 +601,9 @@ public:
     uint8_t hang_marks = 0; // Hang cards already played on this enemy: each one doubles the next
     // What its moves stole from the player (a negative amount of Strength or Dexterity), given back when it dies.
     IntentDebuff stolen;
+    // The card it took from the player (CardId::NONE for none): back in the discard pile when it dies, lost from the
+    // deck when it runs away (RunManager::proceed_after_combat).
+    DeckCard stolen_card;
     // Its attacks use the damage the reference gives for Ascension (see ascend).
     bool ascended_damage = false;
     // Debuffs of the last move played: what the player received, NONE for the ones Artifact cancelled.

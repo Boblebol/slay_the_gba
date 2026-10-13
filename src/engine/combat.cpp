@@ -350,6 +350,10 @@ void CombatEngine::settle_deaths() {
             if (enemies[i].escaped) continue;
             // What it stole from the player comes back.
             enemies[i].return_stolen(player);
+            if (enemies[i].stolen_card.id != CardId::NONE) {
+                discard_pile.push_back(enemies[i].stolen_card);
+                enemies[i].stolen_card = DeckCard{};
+            }
             // Melancholy gets cheaper each time someone dies.
             change_cost_of_copies(CardId::MELANCHOLY, -1);
             EventInfo info;
@@ -413,6 +417,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::SOAR:
             // It lands when its next turn starts.
             if (event == CombatEvent::ENEMY_TURN_START && info.enemy == power.holder) power.amount = 0;
+            break;
+        case PowerId::FLUTTER:
+            // Worn down by each attack hit its holder takes.
+            if (event == CombatEvent::ATTACK_HIT && info.enemy == power.holder && power.amount > 0) {
+                power.amount = static_cast<int16_t>(power.amount - 1);
+            }
             break;
         case PowerId::SHRINK:
             // Worn down at the end of each of the player's turns.
@@ -1663,6 +1673,8 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (has_power(PowerId::SHRINK)) percent = percent * SHRINK_PERCENT / 100;
     // Soar: the enemy takes half the attack damage until it lands.
     if (enemy_power_amount(index_of(target), PowerId::SOAR) > 0) percent /= 2;
+    // Flutter: the same, while it lasts.
+    if (enemy_power_amount(index_of(target), PowerId::FLUTTER) > 0) percent /= 2;
     int16_t damage = attack_damage(base, player, target, percent);
     // The Boot: an Attack hit that would deal 1 to 4 damage (before Block) deals 5 instead.
     if (damage > 0 && damage <= THE_BOOT_THRESHOLD && has_power(PowerId::THE_BOOT)) damage = THE_BOOT_MINIMUM;
@@ -6723,6 +6735,16 @@ void CombatEngine::execute_enemy_turn() {
                     add_enemy_power(static_cast<int>(i), played.power, played.power_amount);
                 } else if (afflict_player(played.power, played.power_amount, played.power_turn_only)) {
                     record.power = played.power;
+                }
+            }
+            // Thievery: the attack takes a card from the draw pile (the discard pile when it is empty).
+            if (played.steals_card && player.is_alive() && enemies[i].is_alive() &&
+                enemies[i].stolen_card.id == CardId::NONE) {
+                auto& pile = draw_pile.empty() ? discard_pile : draw_pile;
+                if (!pile.empty()) {
+                    const size_t taken = next_random() % pile.size();
+                    enemies[i].stolen_card = pile[taken];
+                    pile.erase(taken);
                 }
             }
             // The Waterfall Giant's Explosion: it dies of its own blast.

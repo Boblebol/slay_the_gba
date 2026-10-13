@@ -3072,6 +3072,8 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Enfumé";
     case engine::PowerId::SOAR:
         return "Envol";
+    case engine::PowerId::FLUTTER:
+        return "Battmt";
     case engine::PowerId::PLOW:
         return "Cavalc";
     case engine::PowerId::RINGING:
@@ -3121,6 +3123,8 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Enfumé : 1 seule Compétence par tour.";
     case engine::PowerId::SOAR:
         return "Envol : dégâts d'Attaque subis -50%.";
+    case engine::PowerId::FLUTTER:
+        return "Battement : Attaques subies -50%, -1/coup.";
     case engine::PowerId::PLOW:
         return "Cavalcade : sous X PV, étourdi, -Force.";
     case engine::PowerId::RINGING:

@@ -6350,6 +6350,129 @@ void test_myte_ascension() {
     std::cout << "[PASS] Myte: Ascension gives 64 HP and more, Bite 15, Suck 6 and 3 Strength" << std::endl;
 }
 
+size_t cards_held(const CombatEngine& combat) {
+    return combat.draw_pile.size() + combat.hand.size() + combat.discard_pile.size() + combat.exhaust_pile.size();
+}
+
+void test_thieving_hopper() {
+    // Thievery 17 (steals a card), Flutter, Hat Trick 21, Nab 14, then it runs away.
+    check_monster(EnemyType::THIEVING_HOPPER, "Mante chapardeuse", 79, {
+        { ATTACK_DEBUFF, 17, 0, 0 },
+        { BUFF, 0, 0, 0 },
+        { ATTACK, 21, 0, 0 },
+        { ATTACK, 14, 0, 0 },
+    });
+
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THIEVING_HOPPER);
+    Enemy& hopper = combat.enemies[0];
+    combat.player.max_hp = combat.player.hp = 500;
+    const size_t cards = cards_held(combat);
+    assert(hopper.current_intent.steals_card && hopper.stolen_card.id == CardId::NONE);
+    combat.end_player_turn(); // Thievery: one card of the player is gone
+    assert(hopper.stolen_card.id != CardId::NONE && cards_held(combat) == cards - 1);
+    const CardId taken = hopper.stolen_card.id;
+    // Flutter: attacks deal it half their damage, and each hit wears it down by 1.
+    assert(hopper.current_intent.type == BUFF && hopper.current_intent.power == PowerId::FLUTTER);
+    combat.end_player_turn();
+    assert(combat.enemy_power_amount(0, PowerId::FLUTTER) == THIEVING_HOPPER_FLUTTER);
+    auto dealt = [&](int16_t base) {
+        hopper.block = 0;
+        const int16_t before = hopper.hp;
+        combat.hit(hopper, base);
+        const int lost = before - hopper.hp;
+        hopper.hp = before;
+        return lost;
+    };
+    assert(dealt(10) == 5 && combat.enemy_power_amount(0, PowerId::FLUTTER) == 4);
+    for (int i = 0; i < 4; ++i) dealt(10);
+    assert(combat.enemy_power_amount(0, PowerId::FLUTTER) == 0 && dealt(10) == 10);
+    // Killed, it gives the card back to the discard pile.
+    hopper.hp = 1;
+    combat.hand.clear();
+    combat.hand.push_back(CardId::STRIKE);
+    combat.player.energy = combat.player.max_energy;
+    const size_t before_kill = cards_held(combat);
+    const int taken_before = count_cards(combat.discard_pile, taken);
+    assert(combat.play_card(0, 0));
+    assert(!hopper.is_alive() && !hopper.escaped && hopper.stolen_card.id == CardId::NONE);
+    assert(cards_held(combat) == before_kill + 1 && count_cards(combat.discard_pile, taken) >= taken_before + 1);
+
+    // Left alive, it runs away on its fifth turn with the card.
+    CombatEngine fled = make_combat(CharacterId::IRONCLAD, EnemyType::THIEVING_HOPPER);
+    fled.player.max_hp = fled.player.hp = 500;
+    for (int turn = 0; turn < 4; ++turn) pass_turn(fled);
+    assert(fled.enemies[0].current_intent.type == ESCAPE);
+    fled.player.hp = fled.player.max_hp;
+    fled.end_player_turn();
+    assert(fled.enemies[0].escaped && fled.enemies[0].stolen_card.id != CardId::NONE);
+    assert(fled.state == CombatState::VICTORY && fled.every_enemy_escaped() && cards_held(fled) == cards - 1);
+    std::cout << "[PASS] Thieving Hopper: 79 HP, Thievery 17 steals a card, Flutter 5, Hat Trick 21, Nab 14, Escape"
+              << std::endl;
+}
+
+void test_thieving_hopper_steals_from_the_deck() {
+    // The card it ran away with leaves the run's deck; killed, it takes nothing away.
+    auto fight = []() {
+        RunManager run;
+        run.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 777);
+        run.map.nodes[0].type = RoomType::MONSTER;
+        run.enter_room(0);
+        FixedVector<EnemyType, MAX_ENEMIES> pack;
+        pack.push_back(EnemyType::THIEVING_HOPPER);
+        run.combat.start_combat_multi(pack, run.character);
+        run.combat.draw_pile.clear();
+        run.combat.hand.clear();
+        run.combat.discard_pile.clear();
+        for (size_t i = 0; i < run.master_deck.size(); ++i) {
+            DeckCard card = run.master_deck[i];
+            card.deck_index = static_cast<uint8_t>(i);
+            run.combat.draw_pile.push_back(card);
+        }
+        run.combat.player.max_hp = run.combat.player.hp = 500;
+        return run;
+    };
+    RunManager fled = fight();
+    const size_t deck = fled.master_deck.size();
+    for (int turn = 0; turn < 5; ++turn) fled.combat.end_player_turn();
+    assert(fled.combat.every_enemy_escaped());
+    const DeckCard taken = fled.combat.enemies[0].stolen_card;
+    assert(taken.id != CardId::NONE && taken.deck_index < deck);
+    fled.proceed_after_combat();
+    assert(fled.master_deck.size() == deck - 1);
+
+    RunManager won = fight();
+    won.combat.end_player_turn(); // Thievery
+    assert(won.combat.enemies[0].stolen_card.id != CardId::NONE);
+    won.combat.enemies[0].hp = 1;
+    won.combat.hand.clear();
+    won.combat.hand.push_back(CardId::STRIKE);
+    won.combat.player.energy = won.combat.player.max_energy;
+    assert(won.combat.play_card(0, 0));
+    assert(won.combat.state == CombatState::VICTORY && !won.combat.every_enemy_escaped());
+    won.proceed_after_combat();
+    assert(won.master_deck.size() == deck);
+    std::cout << "[PASS] Thieving Hopper: the card it runs away with leaves the deck, killed it gives it back" << std::endl;
+}
+
+void test_thieving_hopper_ascension() {
+    // 84 HP, Thievery 19, Hat Trick 23, Nab 16 at Ascension.
+    CombatEngine combat = make_pack({ EnemyType::THIEVING_HOPPER });
+    Enemy& hopper = combat.enemies[0];
+    combat.player.max_hp = combat.player.hp = 500;
+    assert(hopper.ascension_hp() == 84 && hopper.hp_spread() == 0);
+    hopper.ascend(true, true);
+    combat.plan_enemies();
+    assert(hopper.hp == 84 && hopper.max_hp == 84);
+    assert(hopper.current_intent.type == ATTACK_DEBUFF && hopper.intent_damage(combat.player) == 19);
+    pass_turn(combat);
+    assert(hopper.current_intent.type == BUFF);
+    pass_turn(combat);
+    assert(hopper.current_intent.type == ATTACK && hopper.intent_damage(combat.player) == 23);
+    pass_turn(combat);
+    assert(hopper.current_intent.type == ATTACK && hopper.intent_damage(combat.player) == 16);
+    std::cout << "[PASS] Thieving Hopper: Ascension gives 84 HP, Thievery 19, Hat Trick 23 and Nab 16" << std::endl;
+}
+
 int main() {
     std::cout << "=== Monsters ===" << std::endl;
     test_fuzzy_wurm_crawler();
@@ -6572,6 +6695,9 @@ int main() {
     test_flail_knight_ascension();
     test_myte();
     test_myte_ascension();
+    test_thieving_hopper();
+    test_thieving_hopper_steals_from_the_deck();
+    test_thieving_hopper_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

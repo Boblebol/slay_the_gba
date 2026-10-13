@@ -2315,6 +2315,16 @@ void RunManager::proceed_after_combat() {
         }
     }
     combat.permanent_gains.clear();
+    // The cards stolen by an enemy that ran away (the Thieving Hopper) are lost: highest place first.
+    for (size_t place = master_deck.size(); place > 0; --place) {
+        for (Enemy& foe : combat.enemies) {
+            if (foe.escaped && foe.stolen_card.id != CardId::NONE && foe.stolen_card.deck_index == place - 1) {
+                master_deck.erase(place - 1);
+                foe.stolen_card = DeckCard{};
+                break;
+            }
+        }
+    }
     // Guilty counts the fights it has sat through in `bonus`, and leaves the deck after the fifth.
     for (size_t i = master_deck.size(); i > 0; --i) {
         if (master_deck[i - 1].id != CardId::GUILTY) continue;
