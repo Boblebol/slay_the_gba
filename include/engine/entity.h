@@ -453,7 +453,9 @@ enum class EnemyType : uint8_t {
     KNOWLEDGE_DEMON,      // Act 2 boss
     SOUL_FYSH,            // Act 1 (B) boss
     WATERFALL_GIANT,      // Act 1 (B) boss
-    AEONGLASS             // Act 3 boss
+    AEONGLASS,            // Act 3 boss
+    KIN_FOLLOWER,         // Act 1 (A) boss, with the Kin Priest
+    KIN_PRIEST            // Act 1 (A) boss
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
@@ -534,6 +536,13 @@ constexpr int16_t WATERFALL_GIANT_PRESSURE_GUN_ASC = 22;   // guessed
 // monster database names the buff without its amount: guessed, in line with the other bosses' +2 / +3 Strength.
 constexpr int16_t AEONGLASS_STRENGTH = 2;     // guessed
 constexpr int16_t AEONGLASS_STRENGTH_ASC = 3; // guessed
+
+// Strength the Kin Follower's Power Dance and the Kin Priest's Ritual give them (the second value at Ascension 9),
+// from the monster database.
+constexpr int16_t KIN_POWER_DANCE = 2;
+constexpr int16_t KIN_POWER_DANCE_ASC = 3;
+constexpr int16_t KIN_RITUAL = 2;
+constexpr int16_t KIN_RITUAL_ASC = 3;
 
 // Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
 // moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire.
