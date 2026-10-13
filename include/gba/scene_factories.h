@@ -20,6 +20,7 @@ namespace gba
 [[nodiscard]] bn::unique_ptr<Scene> make_compendium_scene(GameContext& context);
 [[nodiscard]] bn::unique_ptr<Scene> make_statistics_scene(GameContext& context);
 [[nodiscard]] bn::unique_ptr<Scene> make_options_scene(GameContext& context);
+[[nodiscard]] bn::unique_ptr<Scene> make_pause_scene(GameContext& context);
 [[nodiscard]] bn::unique_ptr<Scene> make_end_scene(GameContext& context, bool victory);
 
 }

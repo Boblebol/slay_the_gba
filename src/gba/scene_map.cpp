@@ -421,6 +421,15 @@ private:
             return SceneId::DECK;
         }
 
+        if(bn::keypad::start_pressed())
+        {
+            play_sfx(Sfx::UI_OPEN);
+            _ctx.pause_return = SceneId::MAP;
+            _ctx.pause_cursor = 0;
+            _ctx.transition = Transition::QUICK;
+            return SceneId::PAUSE;
+        }
+
         if(bn::keypad::a_pressed())
         {
             int target = _ctx.nav.get_selected_target_node();

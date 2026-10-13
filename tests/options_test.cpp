@@ -39,7 +39,7 @@ void test_preset_changes_buttons_and_wraps() {
     assert(shortcut_for(ControlPreset::QUICK, Button::L) == Shortcut::END_TURN);
     assert(shortcut_for(ControlPreset::QUICK, Button::R) == Shortcut::POTIONS);
     for (ControlPreset preset : { ControlPreset::CLASSIC, ControlPreset::QUICK }) {
-        assert(shortcut_for(preset, Button::START) == Shortcut::END_TURN);
+        assert(shortcut_for(preset, Button::START) == Shortcut::PAUSE); // #10: START pauses
         assert(shortcut_for(preset, Button::SELECT) == Shortcut::DECK);
         assert(shortcut_for(preset, Button::A) == Shortcut::NONE);
     }

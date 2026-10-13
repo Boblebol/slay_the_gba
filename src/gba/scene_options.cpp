@@ -18,7 +18,7 @@ namespace gba
 namespace
 {
 
-// Options reached from the title screen (SELECT): two volumes, the button preset and the legend of the buttons.
+// Options reached from the title screen (SELECT) or the pause menu: two volumes, the button preset and the legend of the buttons.
 // The settings are written to the cartridge when the screen is left.
 constexpr int TITLE_Y = -68;
 constexpr int ROW_Y = -48;
@@ -32,10 +32,16 @@ constexpr int HINT_Y = 70;
 class OptionsScene final : public Scene
 {
 public:
-    explicit OptionsScene(GameContext&) :
+    explicit OptionsScene(GameContext& context) :
+        _ctx(context),
         _bg(bn::regular_bg_items::bg_victory.create_bg(BG_ORIGIN_X, BG_ORIGIN_Y))
     {
-        play_music(Music::TITLE);
+        // From the pause menu the music of the fight or of the map keeps playing.
+        if(context.options_return == SceneId::TITLE)
+        {
+            play_music(Music::TITLE);
+        }
+
         engine::sanitize_settings(engine::SaveManager::instance().settings());
         _title.set(0, TITLE_Y, "OPTIONS", Align::CENTER, TextColor::GOLD);
         _hint.set(0, HINT_Y, "◄ ► : changer   B : enregistrer", Align::CENTER, TextColor::GRAY);
@@ -79,7 +85,13 @@ public:
         {
             play_sfx(Sfx::UI_CANCEL);
             engine::SaveManager::instance().commit_to_storage();
-            return SceneId::TITLE;
+
+            if(_ctx.options_return != SceneId::TITLE)
+            {
+                _ctx.transition = Transition::QUICK;
+            }
+
+            return _ctx.options_return;
         }
 
         return bn::nullopt;
@@ -139,6 +151,7 @@ private:
         }
     }
 
+    GameContext& _ctx;
     bn::regular_bg_ptr _bg;
     Label _title;
     Label _hint;
