@@ -104,8 +104,9 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "LAGAVULIN_MATRIARCH", false, true },
     { "VANTOM", false, true },
     { "TEST_SUBJECT", false, true },
+    { "WATERFALL_GIANT", false, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::TEST_SUBJECT) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::WATERFALL_GIANT) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -147,6 +148,8 @@ void Enemy::init(EnemyType enemy_type) {
     escaped = false;
     last_heal = 0;
     wounding_hits = 0;
+    explosion = 0;
+    hp_loss_budget = -1;
     hp_bonus = 0;
     for (IntentDebuff& debuff : last_debuffs) debuff = {};
     reset_pattern(1);
@@ -315,6 +318,21 @@ bool Enemy::respawn() {
     temp_strength_loss = 0;
     damage_down_turns = 0;
     plan_turn(0); // Respawn, the first move of its new life
+    return true;
+}
+
+bool Enemy::about_to_blow(int16_t steam) {
+    if (type != EnemyType::WATERFALL_GIANT || is_alive() || escaped || steam <= 0 || !enter_phase(1)) return false;
+    hp = 1;
+    hp_loss_budget = 0; // nothing hurts it any more: only its Explosion ends it
+    block = 0;
+    statuses.clear();
+    fresh_debuffs = 0;
+    temp_strength_loss = 0;
+    damage_down_turns = 0;
+    explosion = steam;
+    phase_turn = 0;
+    plan_turn(0); // About to Blow
     return true;
 }
 
@@ -1904,6 +1922,51 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.debuffs[0] = { StatusType::STRENGTH, -2 };
             current_intent.debuffs[1] = { StatusType::DEXTERITY, -2 };
             current_intent.description = "Siphon d'âme (+2 Force, -2 For/Dex)";
+        }
+    } else if (type == EnemyType::WATERFALL_GIANT) {
+        // Pressurize (Steam Eruption), then Stomp, Ram, Siphon, Pressure Gun, Pressure Up in a loop, each with 3 Steam
+        // Eruption. Killed (triggered, see about_to_blow): About to Blow (a lost turn), then its Explosion.
+        const int16_t steam = WATERFALL_GIANT_STEAM;
+        const int step = phase_turn < 2 ? -1 : (phase_turn - 2) % 5;
+        if (phase == 1) {
+            if (phase_turn == 1) {
+                current_intent.type = EnemyIntentType::STUN;
+                current_intent.description = "Surchauffe";
+            } else {
+                current_intent.type = EnemyIntentType::ATTACK;
+                current_intent.base_damage = explosion;
+                current_intent.description = "Explosion";
+            }
+        } else if (step < 0) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.power = PowerId::STEAM_ERUPTION;
+            current_intent.power_amount = ascended_damage ? WATERFALL_GIANT_PRESSURIZE_ASC : WATERFALL_GIANT_PRESSURIZE;
+            current_intent.description = "Pressurisation (Éruption de vapeur)";
+        } else {
+            current_intent.power = PowerId::STEAM_ERUPTION;
+            current_intent.power_amount = steam;
+            if (step == 0) {
+                current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+                current_intent.base_damage = move_damage("STOMP");
+                current_intent.debuffs[0] = { StatusType::WEAK, 1 };
+                current_intent.description = "Piétinement (15 dmg, Faible)";
+            } else if (step == 1) {
+                current_intent.type = EnemyIntentType::ATTACK_BUFF;
+                current_intent.base_damage = move_damage("RAM");
+                current_intent.description = "Bélier (10 dmg)";
+            } else if (step == 2) {
+                current_intent.type = EnemyIntentType::HEAL;
+                current_intent.heal = WATERFALL_GIANT_SIPHON_HEAL;
+                current_intent.description = "Siphon (soin 15)";
+            } else if (step == 3) {
+                current_intent.type = EnemyIntentType::ATTACK;
+                current_intent.base_damage = ascended_damage ? WATERFALL_GIANT_PRESSURE_GUN_ASC : WATERFALL_GIANT_PRESSURE_GUN;
+                current_intent.description = "Pistolet à pression (20 dmg)";
+            } else {
+                current_intent.type = EnemyIntentType::ATTACK_BUFF;
+                current_intent.base_damage = move_damage("PRESSURE_UP");
+                current_intent.description = "Montée en pression (13 dmg)";
+            }
         }
     } else if (type == EnemyType::VANTOM) {
         // Ink Blot, Inky Lance, Dismember (3 Wounds), Prepare (+2 Strength), in a loop.

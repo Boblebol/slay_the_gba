@@ -249,6 +249,7 @@ BOSSES: dict[str, str] = {
     "lagavulin_matriarch": "lagavulin_matriarch",
     "test_subject": "test_subject",
     "vantom": "vantom",
+    "waterfall_giant": "waterfall_giant",
 }
 
 

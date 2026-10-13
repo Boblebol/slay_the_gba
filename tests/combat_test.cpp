@@ -4003,9 +4003,16 @@ void test_ascension() {
     RunManager boss_a9;
     boss_a9.start_run(CharacterId::IRONCLAD, 9, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(boss_a9, RoomType::BOSS);
-    // Act 1 (B) on this seed: the Lagavulin Matriarch takes the Ascension HP of its sheet; the Ceremonial Beast its own.
+    // Act 1 (B) on this seed: the Lagavulin Matriarch or the Waterfall Giant takes the Ascension HP of its sheet; the
+    // Ceremonial Beast its own.
     const Enemy& boss = boss_a9.combat.enemies[0];
-    assert(boss.type == EnemyType::LAGAVULIN_MATRIARCH ? boss.max_hp == 233 : boss.max_hp == 262);
+    if (boss.type == EnemyType::LAGAVULIN_MATRIARCH) {
+        assert(boss.max_hp == 233);
+    } else if (boss.type == EnemyType::WATERFALL_GIANT) {
+        assert(boss.max_hp == 250);
+    } else {
+        assert(boss.max_hp == 262);
+    }
 
     // After an act boss: full heal, only 75 % of the missing HP from A5.
     RunManager rested;
