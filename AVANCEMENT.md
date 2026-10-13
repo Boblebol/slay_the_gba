@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 91,3 %** — 1133 faits, 15 partiels, 101 à faire (35 hors périmètre).
+**Avancement global : 92,0 %** — 1141 faits, 15 partiels, 93 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -22,11 +22,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 305 | 0 | 16 | 95,0 % |
 | [Bestiaire](#bestiaire) | 96 | 0 | 8 | 92,3 % |
-| [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
+| [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
-| **Total** | **1133** | **15** | **101** | **91,3 %** |
+| **Total** | **1141** | **15** | **93** | **92,0 %** |
 
 <a id="ironclad"></a>
 
@@ -1341,7 +1341,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 2,3 %
+## Évènements et Anciens — 14,6 %
 
 ### Évènements — 2,6 %
 
@@ -1407,20 +1407,20 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Vallon des Murmures | Acte 1 (A) | Non |  |
 | À coups de poing | Acte 1 (B) | Non |  |
 
-### Anciens — 0,0 %
+### Anciens — 100,0 %
 
-0 fait, 0 partiel, 8 à faire.
+8 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Neow | Acte 1 | Non |  |
-| Darv | Tous actes | Non |  |
-| Orobas | Acte 2 | Non |  |
-| Paël | Acte 2 | Non |  |
-| Tezcatara | Acte 2 | Non |  |
-| Nonupeipée | Acte 3 | Non |  |
-| Tanx | Acte 3 | Non |  |
-| Vakuu | Acte 3 | Non |  |
+| Neow | Acte 1 | Oui |  |
+| Darv | Tous actes | Oui |  |
+| Orobas | Acte 2 | Oui |  |
+| Paël | Acte 2 | Oui |  |
+| Tezcatara | Acte 2 | Oui |  |
+| Nonupeipée | Acte 3 | Oui |  |
+| Tanx | Acte 3 | Oui |  |
+| Vakuu | Acte 3 | Oui |  |
 
 <a id="regles"></a>
 
