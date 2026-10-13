@@ -116,6 +116,11 @@ public:
     int16_t hp = 80;
     int16_t max_hp = 80;
     int16_t gold = 99;
+    // Run statistics shown on the end screen (#11, #12), saved with the run.
+    uint32_t play_frames = 0; // frames spent in the scenes of the run (60 per second on the GBA)
+    uint8_t combats_won = 0;  // every fight won, elites and bosses included
+    uint8_t elites_won = 0;
+    uint8_t bosses_won = 0;
 
     FixedVector<DeckCard, 50> master_deck;
     FixedVector<std::string_view, 25> relics;
@@ -302,6 +307,10 @@ public:
     // when the deck holds no marked Spoils Map.
     [[nodiscard]] int spoils_map_node() const;
     bool is_run_completed() const;
+    // One more frame of play time (stops at the largest count instead of wrapping around).
+    void count_play_frame() {
+        if (play_frames != UINT32_MAX) ++play_frames;
+    }
 
     // Ancients
     // The Ancient met at the start of `act`, drawn with `seed` among the ones of that act. Darv can come at

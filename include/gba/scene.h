@@ -77,4 +77,7 @@ public:
 // Scene to open for the room the run just entered (combat, event, shop...).
 [[nodiscard]] SceneId scene_for_run_phase(GameContext& context);
 
+// True for the scenes of a run in progress, whose frames count in the play time of the run (#11, #12).
+[[nodiscard]] bool scene_counts_play_time(SceneId id);
+
 }

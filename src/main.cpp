@@ -73,10 +73,16 @@ int main()
         bn::unique_ptr<gba::Scene> scene = gba::create_scene(next, *context);
         bn::optional<gba::SceneId> result;
         int frame = 0;
+        bool play_time = gba::scene_counts_play_time(next);
 
         while(! result)
         {
             ++context->frame;
+
+            if(play_time)
+            {
+                context->run.count_play_frame();
+            }
 
             if(frame <= fade_frames)
             {
