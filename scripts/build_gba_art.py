@@ -246,6 +246,8 @@ MONSTERS: dict[str, str] = {
     "torch_head_amalgam": "torch_head_amalgam",
     "crusher": "crusher",
     "rocket": "rocket",
+    "phantasmal_gardener": "phantasmal_gardener",
+    "exoskeleton": "exoskeleton",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
@@ -879,6 +881,7 @@ CARDS: list[CardArt] = [
     CardArt("frantic_escape", "status", "debris", "status", (1, 1)),  # no portrait of its own in the reference
     CardArt("beckon", "status", "void", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
     CardArt("wither", "status", "soot", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
+    CardArt("dowsing", "status", "dowsing", "status", (NO_COST, NO_COST), folder="quest"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

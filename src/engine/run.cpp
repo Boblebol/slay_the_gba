@@ -26,8 +26,8 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
-    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "DOWSING_ROD", "SEA_GLASS",
-    "TOUCH_OF_OROBAS", "ARCHAIC_TOOTH", "TOY_BOX", "FUR_COAT",
+    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "SEA_GLASS",
+    "TOY_BOX", "FUR_COAT",
 };
 
 bool ancient_relic_pending(std::string_view relic_id) {
@@ -814,9 +814,47 @@ void RunManager::add_relic(std::string_view relic_id) {
     }
 }
 
+// Ancient version of a starter relic, given by Touch of Orobas (empty when `starter` has none).
+static std::string_view ancient_starter_relic(std::string_view starter) {
+    if (starter == "BURNING_BLOOD") return "BLACK_BLOOD";
+    if (starter == "RING_OF_THE_SNAKE") return "RING_OF_THE_DRAKE";
+    if (starter == "CRACKED_CORE") return "INFUSED_CORE";
+    if (starter == "DIVINE_RIGHT") return "DIVINE_DESTINY";
+    if (starter == "BOUND_PHYLACTERY") return "PHYLACTERY_UNBOUND";
+    return {};
+}
+
+// Ancient version of a starter card, given by Archaic Tooth (NONE when `starter` has none).
+static CardId ancient_starter_card(CardId starter) {
+    switch (starter) {
+        case CardId::BASH: return CardId::BREAK;
+        case CardId::NEUTRALIZE: return CardId::SUPPRESS;
+        case CardId::DUALCAST: return CardId::QUADCAST;
+        case CardId::FALLING_STAR: return CardId::METEOR_SHOWER;
+        case CardId::UNLEASH: return CardId::PROTECTOR;
+        default: return CardId::NONE;
+    }
+}
+
 void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
+    // Touch of Orobas: the starter relic is replaced by its Ancient version, when the run still has it.
+    if (relic_id == "TOUCH_OF_OROBAS" && has_relic("TOUCH_OF_OROBAS")) {
+        std::string_view starter = get_character(character).starting_relic_id;
+        std::string_view ancient = ancient_starter_relic(starter);
+        for (size_t i = 0; i < relics.size() && !ancient.empty(); ++i) {
+            if (relics[i] == starter) relics[i] = ancient;
+        }
+    }
+    // Archaic Tooth: the first starter card of the deck with an Ancient version is Transformed into it, upgrade kept.
+    if (relic_id == "ARCHAIC_TOOTH" && has_relic("ARCHAIC_TOOTH")) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            CardId ancient = ancient_starter_card(master_deck[i].id);
+            if (ancient != CardId::NONE && transform_card_in_deck(static_cast<int>(i), master_deck[i].upgraded, ancient)) break;
+        }
+    }
     if (relic_id == "SMALL_CAPSULE" && has_relic("SMALL_CAPSULE")) gain_random_relics(1);
+    if (relic_id == "DOWSING_ROD" && has_relic("DOWSING_ROD")) add_card_to_deck(DeckCard{ CardId::DOWSING, false });
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     if (relic_id == "LOOMING_FRUIT" && has_relic("LOOMING_FRUIT")) gain_max_hp(31);
     if (relic_id == "NUTRITIOUS_OYSTER" && has_relic("NUTRITIOUS_OYSTER")) gain_max_hp(11);
@@ -1172,6 +1210,14 @@ void RunManager::on_room_entered(RoomType room) {
     if (room == RoomType::REST_SITE && has_relic("FAKE_VENERABLE_TEA_SET") &&
         relic_counter("FAKE_VENERABLE_TEA_SET") < UINT8_MAX) {
         set_relic_counter("FAKE_VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("FAKE_VENERABLE_TEA_SET") + 1));
+    }
+    // Dowsing counts the ? rooms entered in `bonus`, and becomes an Abundance (upgrade kept) at its base value.
+    if (room == RoomType::EVENT) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            DeckCard& card = master_deck[i];
+            if (card.id != CardId::DOWSING) continue;
+            if (++card.bonus >= CardDef::get(CardId::DOWSING).base_value) card = DeckCard(CardId::ABUNDANCE, card.upgraded);
+        }
     }
     // Planisphere: each ? room entered heals 5 HP.
     if (room == RoomType::EVENT && has_relic("PLANISPHERE")) heal(5);
