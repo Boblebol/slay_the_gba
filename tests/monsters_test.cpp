@@ -27,6 +27,7 @@ struct Turn {
     int ritual = 0;   // Ritual the enemy holds after its turn
     int hits = 1;     // times the attack hits, `damage` each
     int plating = 0;  // Plating the enemy holds after its turn
+    int intangible = 0; // Intangible the enemy holds after its turn
 };
 
 // Lets the enemy play `turns` one after the other against a player who never plays a card.
@@ -47,16 +48,22 @@ void check_monster(EnemyType type, std::string_view name, int hp, std::initializ
         assert(enemy.intent_damage(combat.player) == turn.damage);
 
         combat.player.hp = combat.player.max_hp; // long cycles must not kill the player
+        // The Beckons the player holds at the end of the turn cost HP too.
+        int held_loss = 0;
+        for (const DeckCard& card : combat.hand) {
+            if (card.id == CardId::BECKON) held_loss += CardDef::get_value(card.id, card.upgraded);
+        }
         combat.end_player_turn();
         assert(combat.state == CombatState::PLAYER_TURN);
-        assert(combat.player.max_hp - combat.player.hp == turn.damage * turn.hits);
+        assert(combat.player.max_hp - combat.player.hp == turn.damage * turn.hits + held_loss);
         assert(enemy.block == turn.block);
         assert(enemy.get_status(StatusType::STRENGTH) == turn.strength);
         assert(enemy.get_status(StatusType::RITUAL) == turn.ritual);
         assert(enemy.get_status(StatusType::PLATED_ARMOR) == turn.plating);
+        assert(enemy.get_status(StatusType::INTANGIBLE) == turn.intangible);
         // Nothing else: no other status, and no move costs the monster HP.
-        assert(enemy.statuses.size() ==
-               static_cast<size_t>((turn.strength != 0) + (turn.ritual != 0) + (turn.plating != 0)));
+        assert(enemy.statuses.size() == static_cast<size_t>((turn.strength != 0) + (turn.ritual != 0) +
+                                                            (turn.plating != 0) + (turn.intangible != 0)));
         assert(enemy.hp == hp);
         ++turn_number;
     }
@@ -2777,6 +2784,131 @@ void test_vantom_whole_fight() {
     assert(turn == 9);                  // 173 HP, 20 a turn
     assert(vantom_wounds(combat) == 6); // two Dismembers
     std::cout << "[PASS] Vantom: a whole fight to the boss's death, two full cycles" << std::endl;
+}
+
+// Beckons in every pile of the player.
+int beckons(const CombatEngine& combat) {
+    int count = count_in(combat.draw_pile, CardId::BECKON) + count_in(combat.discard_pile, CardId::BECKON);
+    for (const DeckCard& card : combat.hand) count += card.id == CardId::BECKON;
+    return count;
+}
+
+void test_soul_fysh() {
+    // Beckon, De-Gas 16, Gaze 7, Fade (Intangible 2 on itself, 1 left once the round ends), Scream 13 with
+    // Vulnerable 3, twice: the second De-Gas and Gaze hit a Vulnerable player.
+    check_monster(EnemyType::SOUL_FYSH, "Poissâme", 211, {
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 16, 0, 0 },
+        { ATTACK, 7, 0, 0 },
+        { BUFF, 0, 0, 0, 0, 1, 0, 1 },
+        { ATTACK_DEBUFF, 13, 0, 0 },
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 24, 0, 0 },
+        { ATTACK, 10, 0, 0 },
+        { BUFF, 0, 0, 0, 0, 1, 0, 1 },
+        { ATTACK_DEBUFF, 13, 0, 0 },
+    });
+
+    // Beckon shuffles 2 Beckons into the draw pile, Gaze puts 1 in the discard pile after its attack.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SOUL_FYSH);
+    Enemy& fysh = combat.enemies[0];
+    assert(fysh.current_intent.status_card == CardId::BECKON && fysh.current_intent.status_pile == Pile::DRAW);
+    combat.hand.clear();
+    combat.end_player_turn();
+    assert(combat.last_enemy_actions[0].cards_added == CardId::BECKON &&
+           combat.last_enemy_actions[0].cards_added_count == SOUL_FYSH_BECKONS);
+    assert(beckons(combat) == SOUL_FYSH_BECKONS);
+    combat.hand.clear();
+    combat.end_player_turn(); // De-Gas
+    assert(fysh.current_intent.status_card == CardId::BECKON && fysh.current_intent.status_pile == Pile::DISCARD);
+    combat.hand.clear();
+    const int before = beckons(combat);
+    combat.end_player_turn(); // Gaze
+    assert(combat.last_enemy_actions[0].cards_added == CardId::BECKON &&
+           combat.last_enemy_actions[0].cards_added_count == SOUL_FYSH_GAZE_BECKONS);
+    assert(beckons(combat) == before + SOUL_FYSH_GAZE_BECKONS);
+
+    // Fade: Intangible 2 on itself, so each hit of the player's next turn deals 1.
+    assert(fysh.current_intent.type == BUFF && fysh.current_intent.status_type == StatusType::INTANGIBLE &&
+           fysh.current_intent.status_amount == SOUL_FYSH_INTANGIBLE);
+    combat.hand.clear();
+    combat.end_player_turn();
+    assert(fysh.get_status(StatusType::INTANGIBLE) == 1);
+    combat.damage_enemy(fysh, 30);
+    assert(fysh.hp == 210);
+
+    // Scream: 13 damage and Vulnerable 3 on the player. Intangible is gone after it.
+    assert(fysh.current_intent.type == ATTACK_DEBUFF && fysh.current_intent.debuffs[0].type == StatusType::VULNERABLE);
+    combat.player.hp = combat.player.max_hp;
+    combat.hand.clear();
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 13);
+    assert(combat.player.get_status(StatusType::VULNERABLE) == SOUL_FYSH_SCREAM_VULNERABLE);
+    assert(fysh.get_status(StatusType::INTANGIBLE) == 0);
+    std::cout << "[PASS] Soul Fysh: 211 HP, Beckon, De-Gas 16, Gaze 7, Fade (Intangible 2), Scream 13 + Vulnerable 3"
+              << std::endl;
+}
+
+void test_beckon() {
+    // Unplayable; held at the end of the turn, it costs 6 HP.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SOUL_FYSH);
+    combat.hand.clear();
+    combat.hand.push_back(DeckCard(CardId::BECKON));
+    combat.player.energy = combat.player.max_energy;
+    assert(!combat.can_play_card(0));
+    assert(CardDef::get(CardId::BECKON).type == CardType::STATUS);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // the Soul Fysh's Beckon deals no damage
+    assert(combat.player.max_hp - combat.player.hp == 6);
+    std::cout << "[PASS] Beckon: unplayable, 6 HP lost when held at the end of the turn" << std::endl;
+}
+
+void test_soul_fysh_ascension() {
+    // 221 HP, De-Gas 18, Gaze 8 and Scream 15 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SOUL_FYSH);
+    Enemy& fysh = combat.enemies[0];
+    assert(fysh.ascension_hp() == 221 && fysh.hp_spread() == 0);
+    fysh.ascend(true, true);
+    combat.plan_enemies();
+    assert(fysh.hp == 221 && fysh.max_hp == 221);
+    const int damage[5] = { 0, 18, 8, 0, 15 };
+    for (int step = 0; step < 5; ++step) {
+        assert(fysh.intent_damage(combat.player) == damage[step]);
+        combat.player.hp = combat.player.max_hp;
+        combat.hand.clear();
+        combat.end_player_turn();
+    }
+    std::cout << "[PASS] Soul Fysh: Ascension gives 221 HP, De-Gas 18, Gaze 8, Scream 15" << std::endl;
+}
+
+void test_soul_fysh_whole_fight() {
+    // The whole fight, until the boss dies: the player deals 30 damage a turn. One phase, its five moves in a loop;
+    // on the turn after Fade, the Intangible boss loses 1 HP only.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SOUL_FYSH);
+    Enemy& fysh = combat.enemies[0];
+    const EnemyIntentType expected[5] = { STATUS, ATTACK, ATTACK, BUFF, ATTACK_DEBUFF };
+    int turn = 1;
+    int intangible_turns = 0;
+    while (combat.state == CombatState::PLAYER_TURN && fysh.is_alive()) {
+        assert(fysh.current_intent.type == expected[(turn - 1) % 5]);
+        const int16_t hp_before = fysh.hp;
+        const bool intangible = fysh.get_status(StatusType::INTANGIBLE) > 0;
+        combat.damage_enemy(fysh, 30);
+        if (intangible) {
+            ++intangible_turns;
+            assert(turn % 5 == 0 && hp_before - fysh.hp == 1);
+        }
+        if (!fysh.is_alive()) break;
+        combat.player.hp = combat.player.max_hp;
+        combat.player.clear_status(StatusType::VULNERABLE);
+        combat.hand.clear();
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        ++turn;
+    }
+    assert(!fysh.is_alive() && combat.player.is_alive());
+    assert(intangible_turns >= 1);
+    std::cout << "[PASS] Soul Fysh: a whole fight to the boss's death, through its Fade" << std::endl;
 }
 
 int aeonglass_withers(const CombatEngine& combat) {
@@ -5542,6 +5674,10 @@ int main() {
     test_vantom();
     test_vantom_ascension();
     test_vantom_whole_fight();
+    test_soul_fysh();
+    test_beckon();
+    test_soul_fysh_ascension();
+    test_soul_fysh_whole_fight();
     test_aeonglass();
     test_aeonglass_ascension();
     test_aeonglass_whole_fight();

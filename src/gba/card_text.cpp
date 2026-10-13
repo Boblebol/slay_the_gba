@@ -620,6 +620,8 @@ bn::string_view base_name(engine::CardId id)
         return "Érosion";
     case engine::CardId::FRANTIC_ESCAPE:
         return "Fuite éperdue";
+    case engine::CardId::BECKON:
+        return "Appel";
     case engine::CardId::FUEL:
         return "Combustible";
     case engine::CardId::BOOST_AWAY:
@@ -2460,6 +2462,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::FRANTIC_ESCAPE:
         stream << "Sables mouvants +" << value << ". Coût +1 ensuite.";
+        break;
+    case engine::CardId::BECKON:
+        stream << "Injouable. Fin de tour en main : -" << value << " PV.";
         break;
     case engine::CardId::VOID_CARD:
         stream << "Injouable. Éthéré. Piochée : perd " << value << " ⚡.";
