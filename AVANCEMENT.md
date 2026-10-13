@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 93,9 %** — 1165 faits, 15 partiels, 69 à faire (35 hors périmètre).
+**Avancement global : 94,0 %** — 1167 faits, 13 partiels, 69 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -25,8 +25,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
-| [Interface, audio et cartouches](#interface) | 18 | 6 | 7 | 67,7 % |
-| **Total** | **1165** | **15** | **69** | **93,9 %** |
+| [Interface, audio et cartouches](#interface) | 20 | 4 | 7 | 71,0 % |
+| **Total** | **1167** | **13** | **69** | **94,0 %** |
 
 <a id="ironclad"></a>
 
@@ -1607,11 +1607,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 67,7 %
+## Interface, audio et cartouches — 71,0 %
 
-### Écrans — 69,0 %
+### Écrans — 73,8 %
 
-12 faits, 5 partiels, 4 à faire.
+14 faits, 3 partiels, 4 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1624,8 +1624,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Boutique |  | Oui |  |
 | Feu de camp |  | Oui |  |
 | Registre du deck |  | Oui |  |
-| Défaite (Game Over) |  | Partiel | [#11](https://github.com/Boblebol/slay_the_gba/issues/11) |
-| Victoire |  | Partiel | [#12](https://github.com/Boblebol/slay_the_gba/issues/12) |
+| Défaite (Game Over) |  | Oui | [#11](https://github.com/Boblebol/slay_the_gba/issues/11) |
+| Victoire |  | Oui | [#12](https://github.com/Boblebol/slay_the_gba/issues/12) |
 | Indicateurs de vie, d'armure et de progression |  | Partiel | [#20](https://github.com/Boblebol/slay_the_gba/issues/20) |
 | Transitions entre les scènes |  | Partiel | [#18](https://github.com/Boblebol/slay_the_gba/issues/18) |
 | Système de dialogue et d'évènements textuels |  | Partiel | [#19](https://github.com/Boblebol/slay_the_gba/issues/19) |
