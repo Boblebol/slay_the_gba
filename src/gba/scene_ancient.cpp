@@ -28,6 +28,7 @@ namespace
 // does fills the panel at the bottom.
 constexpr int PORTRAIT_X = 84;
 constexpr int PORTRAIT_Y = -42;
+constexpr int KIND_Y = -2; // under the portrait: blessing or curse of Neow
 constexpr int TEXT_LEFT = -114;
 constexpr int ROW_Y = -26;
 constexpr int ROW_STEP = 12;
@@ -37,6 +38,10 @@ constexpr int PANEL_TEXT_WIDTH = 224;
 constexpr int PANEL_LINES = 4;
 constexpr int LEAVE_FRAMES = 50;
 constexpr int MAX_ROWS = int(engine::MAX_ANCIENT_OFFERS);
+
+// Neow greets the hero in the panel before showing the offer, at the start of the run.
+constexpr bn::string_view NEOW_GREETING = "« Salutations, petite flamme... Atteins le sommet, et je te relèverai "
+                                          "encore. Prends un présent pour la route. »";
 
 class AncientScene final : public Scene
 {
@@ -61,6 +66,7 @@ public:
                   TextColor::GOLD);
         _epithet.set(TEXT_LEFT, -58, bn::string_view(_ancient.epithet.data(), _ancient.epithet.size()), Align::LEFT,
                      TextColor::GRAY);
+        _greeting = _ancient.id == engine::AncientId::NEOW && !_ctx.run.ancient_offers.empty();
         _refresh();
     }
 
@@ -87,6 +93,18 @@ public:
         }
 
         int count = int(run.ancient_offers.size());
+
+        if(_greeting)
+        {
+            if(bn::keypad::a_pressed())
+            {
+                play_sfx(Sfx::UI_CONFIRM);
+                _greeting = false;
+                _refresh();
+            }
+
+            return bn::nullopt;
+        }
 
         if(count == 0)
         {
@@ -148,6 +166,7 @@ private:
     int _timer = 0;
     int _cursor = 0;
     int _leave_timer = 0;
+    bool _greeting = false;
 
     void _refresh()
     {
@@ -155,6 +174,23 @@ private:
         int count = int(run.ancient_offers.size());
         _rows.clear();
         _desc.clear();
+
+        if(_greeting)
+        {
+            _prompt.clear();
+            _kind.clear();
+            bn::vector<TextLine, PANEL_LINES> lines;
+            wrap_text(NEOW_GREETING, PANEL_TEXT_WIDTH, lines);
+
+            for(int index = 0; index < lines.size(); ++index)
+            {
+                _desc.emplace_back().set(0, PANEL_TEXT_Y + index * PANEL_LINE_HEIGHT, lines[index], Align::CENTER,
+                                         TextColor::WHITE);
+            }
+
+            _hint.set(0, 68, "A Continuer", Align::CENTER, TextColor::GRAY);
+            return;
+        }
 
         if(count == 0)
         {
@@ -185,11 +221,11 @@ private:
         const engine::AncientSlot& slot = _ancient.slots[run.ancient_offers[_cursor].slot];
         if(slot.group_name == "blessing")
         {
-            _kind.set(116, -40, "Bénédiction", Align::RIGHT, TextColor::BLUE);
+            _kind.set(PORTRAIT_X, KIND_Y, "Bénédiction", Align::CENTER, TextColor::BLUE);
         }
         else if(slot.group_name == "curse")
         {
-            _kind.set(116, -40, "Avec un prix", Align::RIGHT, TextColor::RED);
+            _kind.set(PORTRAIT_X, KIND_Y, "Avec un prix", Align::CENTER, TextColor::RED);
         }
         else
         {
@@ -224,8 +260,16 @@ private:
         engine::RunManager& run = _ctx.run;
         _ctx.nav.reset_to_player_floor();
         _ctx.map_toast.clear();
-        bn::ostringstream stream(_ctx.map_toast);
-        stream << "ACTE " << int(run.current_act) << " : l'ascension continue !";
+        if(run.current_act <= 1)
+        {
+            // Neow at the start of the run: the map opens on the hero's zone.
+            _ctx.map_toast.append(hero_zone_name());
+        }
+        else
+        {
+            bn::ostringstream stream(_ctx.map_toast);
+            stream << "ACTE " << int(run.current_act) << " : l'ascension continue !";
+        }
 
         if(run.phase == engine::RunPhase::REWARD_SCREEN)
         {
