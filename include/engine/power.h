@@ -279,7 +279,9 @@ enum class PowerId : uint8_t {
     // On the player, given by the Knowledge Demon's Curse of Knowledge (appended)
     MIND_ROT,          // start of turn: draw `amount` fewer cards
     WASTE_AWAY,        // start of turn: `amount` less energy
-    DISINTEGRATION     // end of the player's turn: `amount` damage
+    DISINTEGRATION,    // end of the player's turn: `amount` damage
+    // Held by an enemy (appended): the Waterfall Giant
+    STEAM_ERUPTION     // killed, its holder deals `amount` damage at the end of the player's next turn (Enemy::about_to_blow)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

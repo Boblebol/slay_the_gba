@@ -251,6 +251,7 @@ BOSSES: dict[str, str] = {
     "test_subject": "test_subject",
     "vantom": "vantom",
     "soul_fysh": "soul_fysh",
+    "waterfall_giant": "waterfall_giant",
     "aeonglass": "aeonglass",
 }
 

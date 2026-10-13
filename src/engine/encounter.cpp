@@ -123,6 +123,7 @@ constexpr Encounter ACT3_ELITE[] = {
 constexpr Encounter ACT1B_BOSS[] = {
     { "LagavulinMatriarchBoss"sv, 1, { EnemyType::LAGAVULIN_MATRIARCH } },
     { "SoulFyshBoss"sv, 1, { EnemyType::SOUL_FYSH } },
+    { "WaterfallGiantBoss"sv, 1, { EnemyType::WATERFALL_GIANT } },
 };
 constexpr Encounter ACT3_BOSS[] = {
     { "TestSubjectBoss"sv, 1, { EnemyType::TEST_SUBJECT } },

@@ -302,6 +302,12 @@ void CombatEngine::settle_deaths() {
     for (size_t i = 0; i < enemies.size(); ++i) {
         if (alive_mask_ & (1u << i)) enemies[i].respawn();
     }
+    // The Waterfall Giant killed with Steam Eruption is About to Blow: it stays in the fight until its Explosion.
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        if ((alive_mask_ & (1u << i)) && enemies[i].type == EnemyType::WATERFALL_GIANT) {
+            enemies[i].about_to_blow(enemy_power_amount(static_cast<int>(i), PowerId::STEAM_ERUPTION));
+        }
+    }
     for (size_t i = 0; i < enemies.size(); ++i) {
         uint8_t bit = static_cast<uint8_t>(1u << i);
         if ((alive_mask_ & bit) && !enemies[i].is_alive()) {
@@ -6683,6 +6689,12 @@ void CombatEngine::execute_enemy_turn() {
                 } else if (afflict_player(played.power, played.power_amount, played.power_turn_only)) {
                     record.power = played.power;
                 }
+            }
+            // The Waterfall Giant's Explosion: it dies of its own blast.
+            if (enemies[i].type == EnemyType::WATERFALL_GIANT && enemies[i].phase == 1 &&
+                played.type == EnemyIntentType::ATTACK) {
+                enemies[i].hp_loss_budget = -1;
+                enemies[i].hp = 0;
             }
             // Painful Stabs: a Wound into the discard pile for each hit that cost the player HP.
             if (player.is_alive() && enemies[i].is_alive()) {

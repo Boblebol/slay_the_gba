@@ -34,7 +34,8 @@ bool keeps_damage_at_ascension(EnemyType type) {
 
 // The Forgotten's Dread deals 13 damage (15 at Ascension) plus its Dexterity: its sheet gives it no damage.
 bool has_unlisted_damage(EnemyType type) {
-    return type == EnemyType::THE_FORGOTTEN;
+    // The Waterfall Giant's Pressure Gun has no damage in its sheet (guessed, WATERFALL_GIANT_PRESSURE_GUN).
+    return type == EnemyType::THE_FORGOTTEN || type == EnemyType::WATERFALL_GIANT;
 }
 
 bool damage_in_sheet(const MonsterData& sheet, int16_t damage, bool ascended) {

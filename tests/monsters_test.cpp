@@ -2701,6 +2701,134 @@ void test_test_subject_whole_fight() {
     std::cout << "[PASS] Test Subject: a whole fight to the boss's death, through its three lives" << std::endl;
 }
 
+void test_waterfall_giant() {
+    // Pressurize, then Stomp 15 (Weak), Ram 10, Siphon (heal), Pressure Gun 20, Pressure Up 13, and again.
+    check_monster(EnemyType::WATERFALL_GIANT, "Géant de la Cascade", 240, {
+        { BUFF, 0, 0, 0 },
+        { ATTACK_DEBUFF, 15, 0, 0 },
+        { ATTACK_BUFF, 10, 0, 0 },
+        { EnemyIntentType::HEAL, 0, 0, 0 },
+        { ATTACK, WATERFALL_GIANT_PRESSURE_GUN, 0, 0 },
+        { ATTACK_BUFF, 13, 0, 0 },
+        { ATTACK_DEBUFF, 15, 0, 0 },
+        { ATTACK_BUFF, 10, 0, 0 },
+    });
+
+    // Steam Eruption: 15 from Pressurize, then 3 more with every move. Stomp makes the player Weak; Siphon heals.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::WATERFALL_GIANT);
+    Enemy& boss = combat.enemies[0];
+    const int16_t steam_after[] = { 15, 18, 21, 24, 27, 30, 33 };
+    for (int turn = 0; turn < 7; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        if (turn == 3) {
+            assert(boss.current_intent.type == EnemyIntentType::HEAL);
+            combat.damage_enemy(boss, 40);
+        }
+        combat.end_player_turn();
+        assert(combat.enemy_power_amount(0, PowerId::STEAM_ERUPTION) == steam_after[turn]);
+        if (turn == 1) assert(combat.player.get_status(StatusType::WEAK) == 1);
+        if (turn == 3) assert(boss.hp == 240 - 40 + WATERFALL_GIANT_SIPHON_HEAL);
+    }
+    std::cout << "[PASS] Waterfall Giant: 240 HP, Pressurize 15, Stomp 15 + Weak, Ram 10, Siphon, Pressure Gun, "
+                 "Pressure Up 13, 3 Steam Eruption a move" << std::endl;
+}
+
+void test_steam_eruption() {
+    // Killed with Steam Eruption: it stays at 1 HP, beyond harm, Overheats (a lost turn), then Explodes for its Steam
+    // Eruption at the end of the player's next turn and dies of it.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::WATERFALL_GIANT);
+    Enemy& boss = combat.enemies[0];
+    combat.end_player_turn(); // Pressurize: 15
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Stomp: 18
+    assert(combat.enemy_power_amount(0, PowerId::STEAM_ERUPTION) == 18);
+    combat.player.hp = combat.player.max_hp;
+    combat.damage_enemy(boss, 999);
+    assert(boss.is_alive() && boss.hp == 1 && boss.phase == 1 && boss.statuses.empty());
+    assert(boss.current_intent.type == STUN && boss.explosion == 18);
+    combat.damage_enemy(boss, 50); // beyond harm
+    assert(boss.hp == 1 && combat.state == CombatState::PLAYER_TURN);
+    combat.end_player_turn(); // About to Blow
+    assert(combat.player.hp == combat.player.max_hp && boss.is_alive());
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 18);
+    combat.damage_enemy(boss, 50);
+    assert(boss.hp == 1);
+    combat.end_player_turn(); // Explosion
+    assert(combat.player.max_hp - combat.player.hp == 18);
+    assert(!boss.is_alive() && combat.state == CombatState::VICTORY);
+
+    // Killed before it holds any Steam Eruption: it simply dies.
+    CombatEngine early = make_combat(CharacterId::IRONCLAD, EnemyType::WATERFALL_GIANT);
+    early.damage_enemy(early.enemies[0], 999);
+    assert(!early.enemies[0].is_alive() && !early.has_alive_enemies());
+
+    // The Explosion can kill the player.
+    CombatEngine deadly = make_combat(CharacterId::IRONCLAD, EnemyType::WATERFALL_GIANT);
+    deadly.end_player_turn();
+    deadly.damage_enemy(deadly.enemies[0], 999);
+    deadly.player.hp = 10;
+    deadly.end_player_turn();
+    deadly.end_player_turn();
+    assert(deadly.state == CombatState::DEFEAT);
+    std::cout << "[PASS] Waterfall Giant: killed, it Overheats beyond harm, then Explodes for its Steam Eruption"
+              << std::endl;
+}
+
+void test_waterfall_giant_ascension() {
+    // 250 HP, Pressurize 20, Stomp 16, Ram 11, Pressure Gun 22 and Pressure Up 14 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::WATERFALL_GIANT);
+    Enemy& boss = combat.enemies[0];
+    assert(boss.ascension_hp() == 250 && boss.hp_spread() == 0);
+    boss.ascend(true, true);
+    combat.plan_enemies();
+    assert(boss.hp == 250 && boss.max_hp == 250);
+    assert(boss.current_intent.type == BUFF && boss.current_intent.power_amount == WATERFALL_GIANT_PRESSURIZE_ASC);
+    combat.end_player_turn();
+    assert(combat.enemy_power_amount(0, PowerId::STEAM_ERUPTION) == 20);
+    const int expected[] = { 16, 11, 0, WATERFALL_GIANT_PRESSURE_GUN_ASC, 14 };
+    for (int damage : expected) {
+        assert(boss.intent_damage(combat.player) == damage);
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+    }
+    std::cout << "[PASS] Waterfall Giant: Ascension gives 250 HP, Pressurize 20, Stomp 16, Ram 11, Pressure Gun 22, "
+                 "Pressure Up 14" << std::endl;
+}
+
+void test_waterfall_giant_whole_fight() {
+    // The whole fight, until the boss dies: the player deals 30 damage a turn. Phase 0 (Pressurize, then its five
+    // moves in a loop) until it is killed on turn 9 with 36 Steam Eruption; phase 1: Overheat on turn 9 (beyond
+    // harm), Explosion on turn 10, which kills it.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::WATERFALL_GIANT);
+    Enemy& boss = combat.enemies[0];
+    const EnemyIntentType loop[5] = { ATTACK_DEBUFF, ATTACK_BUFF, EnemyIntentType::HEAL, ATTACK, ATTACK_BUFF };
+    int turn = 1;
+    int blown_on = 0;
+    while (combat.state == CombatState::PLAYER_TURN) {
+        if (boss.phase == 0) {
+            assert(boss.current_intent.type == (turn == 1 ? BUFF : loop[(turn - 2) % 5]));
+        }
+        combat.damage_enemy(boss, 30);
+        assert(boss.is_alive());
+        if (blown_on == 0 && boss.phase == 1) {
+            blown_on = turn;
+            assert(boss.hp == 1 && boss.explosion == 36);
+        }
+        if (boss.phase == 1) {
+            assert(boss.hp == 1);
+            assert(boss.current_intent.type == (turn == blown_on ? STUN : ATTACK));
+        }
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        if (combat.state == CombatState::VICTORY) assert(combat.player.max_hp - combat.player.hp == 36);
+        ++turn;
+    }
+    assert(combat.state == CombatState::VICTORY && !boss.is_alive() && combat.player.is_alive());
+    assert(blown_on == 9 && turn == 11);
+    std::cout << "[PASS] Waterfall Giant: a whole fight to the boss's death, through About to Blow and its Explosion"
+              << std::endl;
+}
+
 int vantom_wounds(const CombatEngine& combat) {
     return count_cards(combat.draw_pile, CardId::WOUND) + count_cards(combat.hand, CardId::WOUND) +
            count_cards(combat.discard_pile, CardId::WOUND);
@@ -5671,6 +5799,10 @@ int main() {
     test_test_subject_thorns_respawn();
     test_test_subject_ascension();
     test_test_subject_whole_fight();
+    test_waterfall_giant();
+    test_steam_eruption();
+    test_waterfall_giant_ascension();
+    test_waterfall_giant_whole_fight();
     test_vantom();
     test_vantom_ascension();
     test_vantom_whole_fight();
