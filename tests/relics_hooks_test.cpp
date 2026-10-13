@@ -4945,6 +4945,45 @@ void test_sword_of_stone() {
     std::cout << "[PASS] Sword of Stone: becomes the Sword of Jade after 5 Elites" << std::endl;
 }
 
+void test_miniature_tent() {
+    // Each campfire action can be done once at the same rest site, until the player leaves or none is left.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 490);
+    run.add_relic("MINIATURE_TENT");
+    run.add_relic("GIRYA");
+    assert(run.has_relic("MINIATURE_TENT"));
+    run.hp = 20;
+    enter_room_of_type(run, RoomType::REST_SITE);
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> actions = run.campfire_actions();
+    assert(actions.size() == 4 && actions[0] == CampfireAction::REST && actions[1] == CampfireAction::SMITH &&
+           actions[2] == CampfireAction::LIFT && actions[3] == CampfireAction::LEAVE);
+    run.rest_at_campfire();
+    assert(run.hp > 20 && run.phase == RunPhase::CAMPFIRE);
+    actions = run.campfire_actions();
+    assert(actions.size() == 3 && actions[0] == CampfireAction::SMITH && actions[2] == CampfireAction::LEAVE);
+    assert(run.smith_at_campfire(0) && run.master_deck[0].upgraded && run.phase == RunPhase::CAMPFIRE);
+    // The last action done: nothing is left but leaving, the map comes back.
+    assert(run.lift_at_campfire() && run.phase == RunPhase::MAP_NAVIGATION);
+
+    // A new rest site offers every action again; the player may leave at once.
+    enter_room_of_type(run, RoomType::REST_SITE);
+    assert(run.campfire_actions().size() == 4);
+    run.rest_at_campfire();
+    assert(run.phase == RunPhase::CAMPFIRE);
+    run.leave_campfire();
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic, one action uses up the rest site, and leaving is not an action.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 490);
+    enter_room_of_type(plain, RoomType::REST_SITE);
+    actions = plain.campfire_actions();
+    assert(actions.size() == 2 && actions[1] == CampfireAction::SMITH);
+    plain.rest_at_campfire();
+    assert(plain.phase == RunPhase::MAP_NAVIGATION);
+    std::cout << "[PASS] Miniature Tent: every campfire action once per rest site" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -5134,5 +5173,6 @@ int main() {
     test_black_star();
     test_dollys_mirror();
     test_sword_of_stone();
+    test_miniature_tent();
     return 0;
 }

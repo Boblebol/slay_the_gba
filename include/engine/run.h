@@ -65,10 +65,11 @@ enum class CampfireAction : uint8_t {
     DIG,  // Shovel
     LIFT, // Girya
     COOK, // Meat Cleaver
-    CLONE // a card of the deck is enchanted with Clone
+    CLONE, // a card of the deck is enchanted with Clone
+    LEAVE  // Miniature Tent: the rest site is left once the player has done what they wanted
 };
 
-constexpr size_t MAX_CAMPFIRE_ACTIONS = 6;
+constexpr size_t MAX_CAMPFIRE_ACTIONS = 7;
 
 // A number a relic keeps from room to room ("every 3 combats", "3 times max"), saved with the run.
 struct RelicCounter {
@@ -166,6 +167,8 @@ public:
     // Rest, Smith, then the actions the relics of the run give, in the order of the menu.
     [[nodiscard]] FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> campfire_actions() const;
     void rest_at_campfire();
+    // Miniature Tent: leaves the rest site, whose actions are otherwise offered until each one is done.
+    void leave_campfire();
     bool can_rest() const;
     bool smith_at_campfire(int card_index);
     bool can_smith() const;
@@ -311,6 +314,8 @@ public:
     void set_rng_state(uint32_t state) { rng_state_ = state ? state : 12345; }
 
 private:
+    // What follows a campfire action: the map, or with Miniature Tent the rest site again, without that action.
+    void end_campfire_action(CampfireAction action);
     uint32_t rng_state_ = 12345;
     uint32_t next_random();
     // Monsters of a fighting room, drawn from the encounter table of the act and the floor.

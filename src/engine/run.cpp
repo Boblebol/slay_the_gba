@@ -336,19 +336,27 @@ void RunManager::enter_room(int node_index) {
 }
 
 FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> RunManager::campfire_actions() const {
-    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> actions;
-    actions.push_back(CampfireAction::REST);
-    actions.push_back(CampfireAction::SMITH);
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> all;
+    all.push_back(CampfireAction::REST);
+    all.push_back(CampfireAction::SMITH);
     for (const CampfireRelic& entry : CAMPFIRE_RELICS) {
-        if (has_relic(entry.relic_id)) actions.push_back(entry.action);
+        if (has_relic(entry.relic_id)) all.push_back(entry.action);
     }
     // Clone: offered while a card of the deck is enchanted with it.
     for (size_t i = 0; i < master_deck.size(); ++i) {
         if (master_deck[i].enchantment == Enchantment::CLONE) {
-            actions.push_back(CampfireAction::CLONE);
+            all.push_back(CampfireAction::CLONE);
             break;
         }
     }
+    if (!has_relic("MINIATURE_TENT")) return all;
+    // Miniature Tent: the actions already done at this rest site (bits of its counter) are no longer offered, and
+    // the rest site can be left at any time.
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> actions;
+    for (CampfireAction action : all) {
+        if ((relic_counter("MINIATURE_TENT") & (1u << static_cast<uint8_t>(action))) == 0) actions.push_back(action);
+    }
+    actions.push_back(CampfireAction::LEAVE);
     return actions;
 }
 
@@ -361,7 +369,7 @@ bool RunManager::clone_at_campfire(int deck_index) {
     if (!can_clone(deck_index)) return false;
     // The copy is the same card, enchantment included.
     if (!add_card_to_deck(master_deck[deck_index])) return false;
-    phase = RunPhase::MAP_NAVIGATION;
+    end_campfire_action(CampfireAction::CLONE);
     return true;
 }
 
@@ -382,7 +390,7 @@ void RunManager::rest_at_campfire() {
         hp = std::min<int16_t>(max_hp, hp + heal_amount);
     }
     on_rested();
-    phase = RunPhase::MAP_NAVIGATION;
+    end_campfire_action(CampfireAction::REST);
     // Dream Catcher: after a Rest, one set of cards is offered for the deck (the player may skip it).
     if (has_relic("DREAM_CATCHER")) {
         card_rewards_upgraded = false; // the Lava Lamp upgrade belongs to the fight's rewards only
@@ -392,13 +400,25 @@ void RunManager::rest_at_campfire() {
     }
 }
 
+void RunManager::end_campfire_action(CampfireAction action) {
+    phase = RunPhase::MAP_NAVIGATION;
+    if (!has_relic("MINIATURE_TENT")) return;
+    set_relic_counter("MINIATURE_TENT", static_cast<uint8_t>(relic_counter("MINIATURE_TENT") | 1u << static_cast<uint8_t>(action)));
+    // The other actions are offered again; with none left but leaving, the rest site is over.
+    if (campfire_actions().size() > 1) phase = RunPhase::CAMPFIRE;
+}
+
+void RunManager::leave_campfire() {
+    phase = RunPhase::MAP_NAVIGATION;
+}
+
 bool RunManager::can_rest() const {
     return hp < max_hp;
 }
 
 bool RunManager::smith_at_campfire(int card_index) {
     if (upgrade_card_in_deck(card_index)) {
-        phase = RunPhase::MAP_NAVIGATION;
+        end_campfire_action(CampfireAction::SMITH);
         return true;
     }
     return false;
@@ -409,14 +429,14 @@ bool RunManager::cook_at_campfire() {
     request_deck_choice(DeckChoiceKind::REMOVE, COOK_REMOVALS);
     cook_pending = true;
     finish_cook(); // no removable card: the Max HP comes at once
-    phase = RunPhase::MAP_NAVIGATION;
+    end_campfire_action(CampfireAction::COOK);
     return true;
 }
 
 bool RunManager::lift_at_campfire() {
     if (!has_relic("GIRYA") || relic_counter("GIRYA") >= GIRYA_LIFTS) return false;
     set_relic_counter("GIRYA", static_cast<uint8_t>(relic_counter("GIRYA") + 1));
-    phase = RunPhase::MAP_NAVIGATION;
+    end_campfire_action(CampfireAction::LIFT);
     return true;
 }
 
@@ -429,7 +449,7 @@ void RunManager::finish_cook() {
 bool RunManager::dig_at_campfire() {
     if (!has_relic("SHOVEL")) return false;
     if (gain_random_relics(1) == 0) return false;
-    phase = RunPhase::MAP_NAVIGATION;
+    end_campfire_action(CampfireAction::DIG);
     return true;
 }
 
@@ -1275,6 +1295,8 @@ void RunManager::on_room_entered(RoomType room) {
         relic_counter("FAKE_VENERABLE_TEA_SET") < UINT8_MAX) {
         set_relic_counter("FAKE_VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("FAKE_VENERABLE_TEA_SET") + 1));
     }
+    // Miniature Tent: every action of the campfire is offered again at each new rest site.
+    if (room == RoomType::REST_SITE && has_relic("MINIATURE_TENT")) set_relic_counter("MINIATURE_TENT", 0);
     // Dowsing counts the ? rooms entered in `bonus`, and becomes an Abundance (upgrade kept) at its base value.
     if (room == RoomType::EVENT) {
         for (size_t i = 0; i < master_deck.size(); ++i) {
@@ -1660,7 +1682,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Start and end of turn
         "CAPTAINS_WHEEL", "HORN_CLEAT", "CANDELABRA", "CHANDELIER", "SPARKLING_ROUGE", "HAPPY_FLOWER", "PENDULUM", "BREAD", "BOOKMARK",
         "MERCURY_HOURGLASS", "CLOAK_CLASP", "POCKETWATCH", "PARRYING_SHIELD", "STONE_CALENDAR", "ART_OF_WAR", "ORICHALCUM",
-        "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP", "MEMBERSHIP_CARD", "CAULDRON",
+        "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP", "MEMBERSHIP_CARD", "CAULDRON", "MINIATURE_TENT",
         // Combat events
         "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "REPTILE_TRINKET", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
         "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA", "GAMBLING_CHIP", "HELICAL_DART", "NINJA_SCROLL",
