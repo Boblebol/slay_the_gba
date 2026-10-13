@@ -239,6 +239,8 @@ MONSTERS: dict[str, str] = {
     "slithering_strangler": "slithering_strangler",
     "living_fog": "living_fog",
     "two_tailed_rat": "two_tailed_rat",
+    "kin_follower": "kin_follower",
+    "kin_priest": "kin_priest",
     # The Queen's boss fight holds two monsters: monster-sized art, so that both fit the arena side by side.
     "queen": "queen",
     "torch_head_amalgam": "torch_head_amalgam",

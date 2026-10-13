@@ -81,6 +81,8 @@
 #include "bn_sprite_items_mon_fabricator.h"
 #include "bn_sprite_items_mon_shrinker_beetle.h"
 #include "bn_sprite_items_mon_fogmog.h"
+#include "bn_sprite_items_mon_kin_follower.h"
+#include "bn_sprite_items_mon_kin_priest.h"
 #include "bn_sprite_items_mon_snapping_jaxfruit.h"
 #include "bn_sprite_items_mon_twig_slime_m.h"
 #include "bn_sprite_items_mon_twig_slime_s.h"
@@ -309,6 +311,10 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::boss_soul_fysh, true };
     case engine::EnemyType::WATERFALL_GIANT:
         return { &bn::sprite_items::boss_waterfall_giant, true };
+    case engine::EnemyType::KIN_FOLLOWER:
+        return { &bn::sprite_items::mon_kin_follower, false };
+    case engine::EnemyType::KIN_PRIEST:
+        return { &bn::sprite_items::mon_kin_priest, false };
     // The Queen and the Torch Head Amalgam share their boss fight: monster-sized, side by side.
     case engine::EnemyType::QUEEN:
         return { &bn::sprite_items::mon_queen, false };

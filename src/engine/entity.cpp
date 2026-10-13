@@ -108,6 +108,8 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "SOUL_FYSH", false, true },
     { "WATERFALL_GIANT", false, true },
     { "AEONGLASS", false, true },
+    { "KIN_FOLLOWER", true, true },
+    { "KIN_PRIEST", false, true },
     { "QUEEN", false, true },
     { "TORCH_HEAD_AMALGAM", false, true },
 };
@@ -2133,6 +2135,56 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
                 current_intent.type = EnemyIntentType::ATTACK_BUFF;
                 current_intent.base_damage = move_damage("PRESSURE_UP");
                 current_intent.description = "Montée en pression (13 dmg)";
+            }
+        }
+    } else if (type == EnemyType::KIN_FOLLOWER) {
+        // Quick Slash 5, Boomerang 2x2, Power Dance (+2 Strength, 3 at Ascension), in a loop.
+        const int step = (turn_number - 1) % 3;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("QUICK_SLASH");
+            current_intent.description = "Coup vif (5 dmg)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("BOOMERANG");
+            current_intent.hits = sheet_move("BOOMERANG").hits;
+            current_intent.description = "Boomerang (2 dmg x2)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? KIN_POWER_DANCE_ASC : KIN_POWER_DANCE;
+            if (ascended_damage) {
+                current_intent.description = "Transe Martiale (+3 Force)";
+            } else {
+                current_intent.description = "Transe Martiale (+2 Force)";
+            }
+        }
+    } else if (type == EnemyType::KIN_PRIEST) {
+        // Orb of Frailty 8 (Frail 1), Orb of Weakness 8 (Weak 1), Beam 3x3, Ritual (+2 Strength), in a loop.
+        const int step = (turn_number - 1) % 4;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("ORB_OF_FRAILTY");
+            current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
+            current_intent.description = "Orbe de fragilité (8 dmg, Fragilisé)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("ORB_OF_WEAKNESS");
+            current_intent.debuffs[0] = { StatusType::WEAK, 1 };
+            current_intent.description = "Orbe de faiblesse (8 dmg, Affaibli)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("BEAM");
+            current_intent.hits = sheet_move("BEAM").hits;
+            current_intent.description = "Rayon animique (3 dmg x3)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? KIN_RITUAL_ASC : KIN_RITUAL;
+            if (ascended_damage) {
+                current_intent.description = "Sombre rituel (+3 Force)";
+            } else {
+                current_intent.description = "Sombre rituel (+2 Force)";
             }
         }
     } else if (type == EnemyType::VANTOM) {
