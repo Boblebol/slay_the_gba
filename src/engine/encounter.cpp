@@ -138,6 +138,7 @@ constexpr Encounter ACT1A_BOSS[] = {
 constexpr Encounter ACT2_BOSS[] = {
     { "TheInsatiableBoss"sv, 1, { EnemyType::THE_INSATIABLE } },
     { "KnowledgeDemonBoss"sv, 1, { EnemyType::KNOWLEDGE_DEMON } },
+    { "KaiserCrabBoss"sv, 2, { EnemyType::CRUSHER, EnemyType::ROCKET } },
 };
 
 // [zone][tier], in the order of ActZone and EncounterTier.

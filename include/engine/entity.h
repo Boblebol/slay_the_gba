@@ -457,7 +457,9 @@ enum class EnemyType : uint8_t {
     KIN_FOLLOWER,         // Act 1 (A) boss, with the Kin Priest
     KIN_PRIEST,           // Act 1 (A) boss
     QUEEN,                // Act 3 boss, with the Torch Head Amalgam
-    TORCH_HEAD_AMALGAM    // Act 3 boss, with the Queen
+    TORCH_HEAD_AMALGAM,   // Act 3 boss, with the Queen
+    CRUSHER,              // Act 2 boss, with the Rocket
+    ROCKET                // Act 2 boss, with the Crusher
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
@@ -555,6 +557,13 @@ constexpr int16_t QUEEN_YOU_ARE_MINE = 99;
 constexpr int16_t QUEEN_BURN_BRIGHT_BLOCK = 20;
 constexpr int16_t QUEEN_BURN_BRIGHT_STRENGTH = 1; // guessed: the reference gives Strength without an amount
 constexpr int16_t QUEEN_ENRAGE_STRENGTH = 2;
+
+// Strength the Crusher's Adapt and the Rocket's Charge Up give them (the second value at Ascension 9), from the
+// monster database.
+constexpr int16_t CRUSHER_ADAPT = 2;
+constexpr int16_t CRUSHER_ADAPT_ASC = 3;
+constexpr int16_t ROCKET_CHARGE_UP = 2;
+constexpr int16_t ROCKET_CHARGE_UP_ASC = 3;
 
 // Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
 // moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire.

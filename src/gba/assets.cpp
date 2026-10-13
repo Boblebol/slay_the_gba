@@ -91,6 +91,8 @@
 #include "bn_sprite_items_mon_slithering_strangler.h"
 #include "bn_sprite_items_mon_living_fog.h"
 #include "bn_sprite_items_mon_two_tailed_rat.h"
+#include "bn_sprite_items_mon_crusher.h"
+#include "bn_sprite_items_mon_rocket.h"
 #include "bn_sprite_items_mon_owl_magistrate.h"
 #include "bn_sprite_items_mon_scroll_of_biting.h"
 #include "bn_sprite_items_mon_phrog_parasite.h"
@@ -305,6 +307,10 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::boss_test_subject, true };
     case engine::EnemyType::AEONGLASS:
         return { &bn::sprite_items::boss_aeonglass, true };
+    case engine::EnemyType::CRUSHER:
+        return { &bn::sprite_items::mon_crusher, false };
+    case engine::EnemyType::ROCKET:
+        return { &bn::sprite_items::mon_rocket, false };
     case engine::EnemyType::VANTOM:
         return { &bn::sprite_items::boss_vantom, true };
     case engine::EnemyType::SOUL_FYSH:

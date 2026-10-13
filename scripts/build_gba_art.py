@@ -244,10 +244,15 @@ MONSTERS: dict[str, str] = {
     # The Queen's boss fight holds two monsters: monster-sized art, so that both fit the arena side by side.
     "queen": "queen",
     "torch_head_amalgam": "torch_head_amalgam",
+    "crusher": "crusher",
+    "rocket": "rocket",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
 TRANSLUCENT_MONSTERS = {"eye_with_teeth"}
+# Monsters that share one picture in the dump: each keeps its part of it, as fractions (left, right) of the
+# drawn width. The Crusher and the Rocket are the two halves of the Kaiser Crab.
+MONSTER_CROPS: dict[str, tuple[float, float]] = {"crusher": (0.0, 0.55), "rocket": (0.45, 1.0)}
 BOSSES: dict[str, str] = {
     "ceremonial_beast": "ceremonial_beast",
     "the_insatiable": "the_insatiable",
@@ -276,6 +281,10 @@ def build_monsters() -> None:
         source = Image.open(BIBLE / "monsters" / f"{src}.webp")
         if name in TRANSLUCENT_MONSTERS:
             source = solid_art(source)
+        if name in MONSTER_CROPS:
+            left, top, right, bottom = source.getbbox()
+            start, end = MONSTER_CROPS[name]
+            source = source.crop((left + round((right - left) * start), top, left + round((right - left) * end), bottom))
         art = fit_art(source, (62, 62))
         canvas = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
         canvas.paste(art, (1, 1), art)
