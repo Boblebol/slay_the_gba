@@ -382,6 +382,13 @@ private:
         text.append(bn::string_view(name.data(), name.size()));
         TextColor color = node.type == engine::RoomType::ELITE || node.type == engine::RoomType::BOSS
                 ? TextColor::RED : TextColor::WHITE;
+
+        // Spoils Map: the room it marks is named with its Gold.
+        if(target == _run.spoils_map_node())
+        {
+            text.append(" : 600 Or");
+            color = TextColor::GOLD;
+        }
         _route.set(0, 58, text, Align::CENTER, color);
     }
 

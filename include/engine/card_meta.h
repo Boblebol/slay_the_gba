@@ -553,6 +553,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::NONE, CardPool::NONE }, // BECKON
     { CardRarity::NONE, CardPool::NONE }, // WITHER
     { CardRarity::QUEST, CardPool::QUEST }, // DOWSING
+    { CardRarity::QUEST, CardPool::QUEST }, // SPOILS_MAP
 };
 
 } // namespace engine
