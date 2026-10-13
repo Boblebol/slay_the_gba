@@ -1179,6 +1179,14 @@ void RunManager::on_room_entered(RoomType room) {
         relic_counter("FAKE_VENERABLE_TEA_SET") < UINT8_MAX) {
         set_relic_counter("FAKE_VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("FAKE_VENERABLE_TEA_SET") + 1));
     }
+    // Dowsing counts the ? rooms entered in `bonus`, and becomes an Abundance (upgrade kept) at its base value.
+    if (room == RoomType::EVENT) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            DeckCard& card = master_deck[i];
+            if (card.id != CardId::DOWSING) continue;
+            if (++card.bonus >= CardDef::get(CardId::DOWSING).base_value) card = DeckCard(CardId::ABUNDANCE, card.upgraded);
+        }
+    }
     // Planisphere: each ? room entered heals 5 HP.
     if (room == RoomType::EVENT && has_relic("PLANISPHERE")) heal(5);
     // Meal Ticket: entering a shop heals 15 HP.
