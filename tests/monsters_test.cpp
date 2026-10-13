@@ -2380,6 +2380,139 @@ void test_lagavulin_matriarch_whole_fight() {
     std::cout << "[PASS] Lagavulin Matriarch: a whole fight to the boss's death, asleep then awake" << std::endl;
 }
 
+void test_knowledge_demon() {
+    // Curse of Knowledge, Slap 17, Knowledge Overwhelming 8x3, Ponder 11 (+2 Strength, heals 30), and again 2 stronger.
+    check_monster(EnemyType::KNOWLEDGE_DEMON, "Démon de la Connaissance", 379, {
+        { DEBUFF, 0, 0, 0 },
+        { ATTACK, 17, 0, 0 },
+        { ATTACK, 8, 0, 0, 0, 3 },
+        { ATTACK_BUFF, 11, 0, 2 },
+        { DEBUFF, 0, 0, 2 },
+        { ATTACK, 19, 0, 2 },
+        { ATTACK, 10, 0, 2, 0, 3 },
+        { ATTACK_BUFF, 13, 0, 4 },
+    });
+    std::cout << "[PASS] Knowledge Demon: 379 HP, Curse of Knowledge, Slap 17, Knowledge Overwhelming 8x3, "
+                 "Ponder 11 +2 Strength" << std::endl;
+}
+
+void test_knowledge_demon_curses() {
+    // Each Curse of Knowledge puts its own curse on the player: Mind Rot (1 card fewer), then Waste Away (1 energy
+    // less), then Disintegration (6 damage at the end of each turn). Then no more curses.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::KNOWLEDGE_DEMON);
+    Enemy& demon = combat.enemies[0];
+    const int8_t energy = combat.player.energy;
+    const size_t hand = combat.hand.size();
+    assert(demon.current_intent.power == PowerId::MIND_ROT && demon.current_intent.power_on_player);
+    combat.end_player_turn();
+    assert(combat.power_amount(PowerId::MIND_ROT) == KNOWLEDGE_DEMON_MIND_ROT);
+    assert(combat.hand.size() == hand - 1 && combat.player.energy == energy);
+    for (int turn = 2; turn <= 4; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+    }
+    assert(demon.current_intent.type == DEBUFF && demon.current_intent.power == PowerId::WASTE_AWAY);
+    combat.end_player_turn();
+    assert(combat.power_amount(PowerId::WASTE_AWAY) == KNOWLEDGE_DEMON_WASTE_AWAY);
+    assert(combat.player.energy == energy - 1 && combat.hand.size() == hand - 1);
+    for (int turn = 6; turn <= 8; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+    }
+    assert(demon.current_intent.type == DEBUFF && demon.current_intent.power == PowerId::DISINTEGRATION);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.power_amount(PowerId::DISINTEGRATION) == KNOWLEDGE_DEMON_DISINTEGRATION);
+    assert(combat.player.hp == combat.player.max_hp);
+    // Slap 21 (4 Strength), and the Disintegration first.
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == KNOWLEDGE_DEMON_DISINTEGRATION + 21);
+    // Three curses given: the fourth cycle starts with Slap.
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(demon.phase == 1 && demon.current_intent.type == ATTACK && demon.current_intent.power == PowerId::NONE);
+
+    // Artifact cancels a curse.
+    CombatEngine guarded = make_combat(CharacterId::IRONCLAD, EnemyType::KNOWLEDGE_DEMON);
+    guarded.player.add_status(StatusType::ARTIFACT, 1);
+    guarded.end_player_turn();
+    assert(!guarded.has_power(PowerId::MIND_ROT) && guarded.player.get_status(StatusType::ARTIFACT) == 0);
+
+    // Ponder heals it by 30, never above its Max HP.
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::KNOWLEDGE_DEMON);
+    Enemy& pondering = hurt.enemies[0];
+    for (int turn = 1; turn <= 3; ++turn) {
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.end_player_turn();
+    }
+    assert(pondering.current_intent.type == ATTACK_BUFF && pondering.current_intent.heal == KNOWLEDGE_DEMON_PONDER_HEAL);
+    hurt.damage_enemy(pondering, 50);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(pondering.hp == 379 - 50 + 30 && pondering.get_status(StatusType::STRENGTH) == 2);
+    std::cout << "[PASS] Knowledge Demon: Mind Rot, Waste Away, Disintegration, then no more curses; Ponder heals 30"
+              << std::endl;
+}
+
+void test_knowledge_demon_ascension() {
+    // 399 HP, Slap 18, Knowledge Overwhelming 9x3 and Ponder 13 with +3 Strength at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::KNOWLEDGE_DEMON);
+    Enemy& demon = combat.enemies[0];
+    assert(demon.ascension_hp() == 399 && demon.hp_spread() == 0);
+    demon.ascend(true, true);
+    combat.plan_enemies();
+    assert(demon.hp == 399 && demon.max_hp == 399);
+    assert(demon.current_intent.type == DEBUFF);
+    combat.end_player_turn();
+    assert(demon.current_intent.type == ATTACK && demon.intent_damage(combat.player) == 18);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(demon.current_intent.type == ATTACK && demon.intent_damage(combat.player) == 9 && demon.current_intent.hits == 3);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(demon.current_intent.type == ATTACK_BUFF && demon.intent_damage(combat.player) == 13);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(demon.get_status(StatusType::STRENGTH) == KNOWLEDGE_DEMON_PONDER_STRENGTH_ASC);
+    std::cout << "[PASS] Knowledge Demon: Ascension gives 399 HP, Slap 18, Knowledge Overwhelming 9x3, Ponder 13 +3 "
+                 "Strength" << std::endl;
+}
+
+void test_knowledge_demon_whole_fight() {
+    // The whole fight, until the boss dies: the player deals 30 damage a turn. Two phases: three cycles opened by
+    // Curse of Knowledge (turns 1 to 12), then Slap, Knowledge Overwhelming and Ponder in a loop from turn 13.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::KNOWLEDGE_DEMON);
+    Enemy& demon = combat.enemies[0];
+    int turn = 1;
+    int phase_two_on = 0;
+    while (combat.state == CombatState::PLAYER_TURN && demon.is_alive()) {
+        if (phase_two_on == 0 && demon.phase == 1) phase_two_on = turn;
+        const EnemyIntent& intent = demon.current_intent;
+        if (demon.phase == 0) {
+            const EnemyIntentType expected[4] = { DEBUFF, ATTACK, ATTACK, ATTACK_BUFF };
+            assert(intent.type == expected[(turn - 1) % 4]);
+            if ((turn - 1) % 4 == 0) assert(intent.power_on_player && intent.power != PowerId::NONE);
+        } else {
+            const EnemyIntentType expected[3] = { ATTACK, ATTACK, ATTACK_BUFF };
+            assert(intent.type == expected[(turn - phase_two_on) % 3] && intent.power == PowerId::NONE);
+        }
+        combat.damage_enemy(demon, 30);
+        if (!demon.is_alive()) break;
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        ++turn;
+    }
+    assert(!demon.is_alive() && combat.player.is_alive());
+    assert(phase_two_on == 13);
+    assert(turn == 17); // 379 HP, 30 a turn, healed 30 by each of the 4 Ponders played before
+    assert(combat.has_power(PowerId::MIND_ROT) && combat.has_power(PowerId::WASTE_AWAY) &&
+           combat.has_power(PowerId::DISINTEGRATION));
+    std::cout << "[PASS] Knowledge Demon: a whole fight to the boss's death, three curses then the loop" << std::endl;
+}
+
 int cards_anywhere(const CombatEngine& combat, CardId id) {
     return count_cards(combat.draw_pile, id) + count_cards(combat.hand, id) + count_cards(combat.discard_pile, id);
 }
@@ -5306,6 +5439,10 @@ int main() {
     test_lagavulin_matriarch_woken();
     test_lagavulin_matriarch_ascension();
     test_lagavulin_matriarch_whole_fight();
+    test_knowledge_demon();
+    test_knowledge_demon_curses();
+    test_knowledge_demon_ascension();
+    test_knowledge_demon_whole_fight();
     test_test_subject();
     test_test_subject_respawn();
     test_test_subject_thorns_respawn();
