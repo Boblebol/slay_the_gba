@@ -288,6 +288,16 @@ uint8_t CombatEngine::power_counter(PowerId id) const {
 }
 
 void CombatEngine::settle_deaths() {
+    // Plow: an enemy still standing whose HP fell below it loses all its Strength, is stunned and changes phase.
+    for (size_t p = powers.size(); p-- > 0;) {
+        const ActivePower& plow = powers[p];
+        if (plow.id != PowerId::PLOW || plow.holder < 0 || static_cast<size_t>(plow.holder) >= enemies.size()) continue;
+        Enemy& beast = enemies[plow.holder];
+        if (!beast.is_alive() || beast.hp >= plow.amount) continue;
+        powers.erase(p);
+        beast.clear_status(StatusType::STRENGTH);
+        beast.break_plow();
+    }
     for (size_t i = 0; i < enemies.size(); ++i) {
         uint8_t bit = static_cast<uint8_t>(1u << i);
         if ((alive_mask_ & bit) && !enemies[i].is_alive()) {
@@ -2135,6 +2145,8 @@ PlayBlocker CombatEngine::play_blocker(int index) const {
             return PlayBlocker::PLAY_LIMIT;
         }
     }
+    // Ringing (the Ceremonial Beast's Beast Cry): one card this turn.
+    if (has_power(PowerId::RINGING) && counters.cards_played() >= 1) return PlayBlocker::PLAY_LIMIT;
     // Velvet Choker: the card limit of the turn.
     if (has_power(PowerId::VELVET_CHOKER) && counters.cards_played() >= power_amount(PowerId::VELVET_CHOKER)) {
         return PlayBlocker::PLAY_LIMIT;

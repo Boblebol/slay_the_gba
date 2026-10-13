@@ -269,13 +269,16 @@ enum class PowerId : uint8_t {
     CONSTRICT,         // at the end of the player's turn, `amount` damage while a Slithering Strangler lives
     SMOGGY,            // only one Skill can be played each turn (CombatEngine::play_blocker)
     // Held by an enemy (appended)
-    SOAR          // it takes 50% less attack damage (read by hit) until it lands: spent when its next turn starts
+    SOAR,              // it takes 50% less attack damage (read by hit) until it lands: spent when its next turn starts
+    PLOW,              // its holder's HP fall below `amount`: it loses all Strength, is stunned and changes phase (spent)
+    // On the player, given by an enemy move (appended)
+    RINGING            // only one card can be played this turn (read by play_blocker; the Ceremonial Beast)
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
 constexpr bool is_player_debuff_power(PowerId id) {
     return id == PowerId::TANGLED || id == PowerId::TENDER || id == PowerId::SHRINK ||
-           id == PowerId::CONSTRICT || id == PowerId::SMOGGY;
+           id == PowerId::CONSTRICT || id == PowerId::SMOGGY || id == PowerId::RINGING;
 }
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;

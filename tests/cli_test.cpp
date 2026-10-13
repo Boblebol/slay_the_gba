@@ -931,18 +931,18 @@ int main() {
     // Act 1 boss: opens with a buff, then attacks; each enemy action is recorded for replay.
     CombatEngine boss_combat;
     boss_combat.start_combat(EnemyType::CEREMONIAL_BEAST, CharacterId::IRONCLAD);
-    assert(boss_combat.enemies[0].max_hp == 150);
+    assert(boss_combat.enemies[0].max_hp == 252);
     assert(boss_combat.enemies[0].current_intent.type == EnemyIntentType::BUFF);
     boss_combat.end_player_turn();
     assert(boss_combat.last_enemy_actions.size() == 1);
     assert(boss_combat.last_enemy_actions[0].intent_type == EnemyIntentType::BUFF);
     assert(boss_combat.last_enemy_actions[0].damage_to_player == 0);
-    assert(boss_combat.enemies[0].get_status(StatusType::STRENGTH) == 2);
+    assert(boss_combat.enemy_power_amount(0, PowerId::PLOW) == CEREMONIAL_BEAST_PLOW);
     int boss_hp_before = boss_combat.player.hp;
     boss_combat.end_player_turn();
     const auto& trample = boss_combat.last_enemy_actions[0];
-    assert(trample.intent_type == EnemyIntentType::ATTACK);
-    assert(trample.damage_to_player + trample.damage_blocked == 14);
+    assert(trample.intent_type == EnemyIntentType::ATTACK_BUFF);
+    assert(trample.damage_to_player + trample.damage_blocked == 18);
     assert(trample.player_hp_after == boss_combat.player.hp);
     assert(boss_combat.player.hp == boss_hp_before - trample.damage_to_player);
     std::cout << "[PASS] Ceremonial Beast boss & per-enemy action records verified" << std::endl;

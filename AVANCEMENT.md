@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 89,5 %** — 1108 faits, 16 partiels, 123 à faire (35 hors périmètre).
+**Avancement global : 89,6 %** — 1111 faits, 15 partiels, 123 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 305 | 0 | 16 | 95,0 % |
-| [Bestiaire](#bestiaire) | 73 | 1 | 30 | 70,7 % |
+| [Bestiaire](#bestiaire) | 74 | 0 | 30 | 71,2 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
-| [Règles de combat](#regles) | 60 | 0 | 0 | 100,0 % |
+| [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
-| **Total** | **1108** | **16** | **123** | **89,5 %** |
+| **Total** | **1111** | **15** | **123** | **89,6 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,7 +1212,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 70,7 %
+## Bestiaire — 71,2 %
 
 ### Monstres — 81,9 %
 
@@ -1317,13 +1317,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Chevalier spectral | Élite · Acte 3 | Oui |  |
 | Méca-Chevalier | Élite · Acte 3 | Oui |  |
 
-### Boss — 10,0 %
+### Boss — 13,3 %
 
-1 fait, 1 partiel, 13 à faire.
+2 faits, 0 partiel, 13 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Cerf Auguste | Boss · Acte 1 (A) | Partiel | 150 PV et trois attaques simplifiées, contre 252 PV et six attaques dans le jeu d'origine. [#36](https://github.com/Boblebol/slay_the_gba/issues/36) |
+| Cerf Auguste | Boss · Acte 1 (A) | Oui |  |
 | Disciple de la Tribu | Boss · Acte 1 (A) | Non |  |
 | Prêtre de la Tribu | Boss · Acte 1 (A) | Non |  |
 | Vantôme | Boss · Acte 1 (A) | Non |  |
@@ -1459,7 +1459,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 ### Pouvoirs et statuts — 100,0 %
 
-16 faits, 0 partiel, 0 à faire.
+18 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1479,6 +1479,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Fatalité |  | Oui |  |
 | Désorienté |  | Oui | [#93](https://github.com/Boblebol/slay_the_gba/issues/93) |
 | Sables mouvants (L'Insatiable) |  | Oui | [#245](https://github.com/Boblebol/slay_the_gba/issues/245) |
+| Cavalcade (Cerf Auguste) |  | Oui | [#230](https://github.com/Boblebol/slay_the_gba/issues/230) |
+| Résonnant (Cerf Auguste) |  | Oui | [#230](https://github.com/Boblebol/slay_the_gba/issues/230) |
 
 ### Mots-clés de cartes — 100,0 %
 
