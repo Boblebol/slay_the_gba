@@ -451,7 +451,8 @@ enum class EnemyType : uint8_t {
     VANTOM,               // Act 1 (A) boss
     TEST_SUBJECT,         // Act 3 boss
     KNOWLEDGE_DEMON,      // Act 2 boss
-    SOUL_FYSH             // Act 1 (B) boss
+    SOUL_FYSH,            // Act 1 (B) boss
+    WATERFALL_GIANT       // Act 1 (B) boss
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
@@ -516,6 +517,18 @@ constexpr uint8_t TEST_SUBJECT_RESPAWNS = 2;
 constexpr int16_t TEST_SUBJECT_HP[TEST_SUBJECT_RESPAWNS + 1] = { 100, 150, 200 };     // guessed
 constexpr int16_t TEST_SUBJECT_HP_ASC[TEST_SUBJECT_RESPAWNS + 1] = { 110, 165, 220 }; // guessed
 
+// The Waterfall Giant's moves give it Steam Eruption (PowerId::STEAM_ERUPTION): Pressurize this much (Ascension: the
+// second value), its other moves 3. Killed while it holds some, it is About to Blow (Enemy::about_to_blow) and its
+// Explosion deals that much damage to the player at the end of their next turn.
+constexpr int16_t WATERFALL_GIANT_PRESSURIZE = 15;
+constexpr int16_t WATERFALL_GIANT_PRESSURIZE_ASC = 20;
+constexpr int16_t WATERFALL_GIANT_STEAM = 3;
+// The monster database gives no number for Siphon's heal nor Pressure Gun's damage: guessed, in line with its other
+// moves (Stomp 15, Pressure Up 13).
+constexpr int16_t WATERFALL_GIANT_SIPHON_HEAL = 15;        // guessed
+constexpr int16_t WATERFALL_GIANT_PRESSURE_GUN = 20;       // guessed
+constexpr int16_t WATERFALL_GIANT_PRESSURE_GUN_ASC = 22;   // guessed
+
 // Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
 // moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire.
 const MonsterData* monster_sheet(EnemyType type);
@@ -542,6 +555,7 @@ public:
     bool escaped = false;
     int16_t last_heal = 0; // HP its last move gave it back
     uint8_t wounding_hits = 0; // hits of its last move that cost the player HP (Painful Stabs)
+    int16_t explosion = 0; // damage of the Waterfall Giant's Explosion: its Steam Eruption when it was killed
     // HP drawn at the start of the fight on top of its lowest HP, for the monsters whose HP vary (see hp_spread).
     uint8_t hp_bonus = 0;
 
@@ -583,6 +597,10 @@ public:
     // The Test Subject was killed with a life left (triggered): back to full HP in its next phase, cleared of its
     // statuses and Block, it announces Respawn. False for any other enemy, or one without a life left.
     bool respawn();
+    // The Waterfall Giant was killed holding `steam` Steam Eruption (triggered): it stays at 1 HP and loses no more
+    // (hp_loss_budget 0), cleared of its statuses and Block, and announces About to Blow, then its Explosion of
+    // `steam` damage. False for any other enemy, one already About to Blow, or no Steam Eruption.
+    bool about_to_blow(int16_t steam);
     // Draws a move among `options` by weight, leaving out the last move played unless it can repeat, and
     // remembers it. When the rule leaves no move, the last one is played again. NO_MOVE for an empty list.
     uint8_t draw_move(std::span<const MoveOption> options);

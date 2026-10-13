@@ -3063,6 +3063,8 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Poignd";
     case engine::PowerId::NEMESIS:
         return "Némési";
+    case engine::PowerId::STEAM_ERUPTION:
+        return "Vapeur";
     default:
         return "";
     }
@@ -3108,6 +3110,8 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Coups de poignard : Plaie par coup reçu.";
     case engine::PowerId::NEMESIS:
         return "Némésis : Intangible un tour sur deux.";
+    case engine::PowerId::STEAM_ERUPTION:
+        return "Éruption de vapeur : tué, explose X dégâts.";
     default:
         return "";
     }
