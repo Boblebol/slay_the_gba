@@ -26,7 +26,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
-    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "SEA_GLASS",
+    "MASSIVE_SCROLL", "SCROLL_BOXES", "SEA_GLASS",
     "TOY_BOX", "FUR_COAT",
 };
 
@@ -41,6 +41,8 @@ bool ancient_relic_pending(std::string_view relic_id) {
 constexpr uint32_t ANCIENT_SEED_SALT = 0xA5C1E7D3u;
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+// Winged Boots: rooms off the paths of the map the relic allows.
+constexpr uint8_t WINGED_BOOTS_FLIGHTS = 3;
 // Paël's Wing: card rewards sacrificed for each relic.
 constexpr uint8_t PAELS_WING_SACRIFICES = 2;
 // Nutritious Soup: the extra damage Tezcatara's Ember gives each enchanted Strike.
@@ -163,6 +165,18 @@ FixedVector<int, 3> RunManager::get_available_rooms() const {
     if (current_node_index < 0) {
         return map.get_starting_nodes();
     }
+    // Winged Boots: while a flight is left, every room of the next floor can be reached, from left to right.
+    if (has_relic("WINGED_BOOTS") && relic_counter("WINGED_BOOTS") > 0 &&
+        static_cast<size_t>(current_node_index) < map.nodes.size()) {
+        const uint8_t next_floor = static_cast<uint8_t>(map.nodes[current_node_index].floor + 1);
+        FixedVector<int, 3> rooms;
+        for (uint8_t lane = 0; lane < 3; ++lane) {
+            for (size_t i = 0; i < map.nodes.size() && rooms.size() < rooms.capacity(); ++i) {
+                if (map.nodes[i].floor == next_floor && map.nodes[i].lane == lane) rooms.push_back(static_cast<int>(i));
+            }
+        }
+        if (!rooms.empty()) return rooms;
+    }
     return map.get_next_nodes(current_node_index);
 }
 
@@ -208,6 +222,12 @@ FixedVector<EnemyType, MAX_ENEMIES> RunManager::draw_encounter(RoomType room) {
 }
 
 void RunManager::enter_room(int node_index) {
+    // Winged Boots: a room off the paths of the current one spends one of the flights.
+    if (current_node_index >= 0 && has_relic("WINGED_BOOTS") && relic_counter("WINGED_BOOTS") > 0) {
+        bool on_path = false;
+        for (int next : map.get_next_nodes(current_node_index)) on_path = on_path || next == node_index;
+        if (!on_path) set_relic_counter("WINGED_BOOTS", static_cast<uint8_t>(relic_counter("WINGED_BOOTS") - 1));
+    }
     current_node_index = node_index;
     const auto& node = map.nodes[node_index];
     current_floor = node.floor + 1;
@@ -854,6 +874,8 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
     }
     if (relic_id == "SMALL_CAPSULE" && has_relic("SMALL_CAPSULE")) gain_random_relics(1);
+    // Winged Boots: 3 rooms off the paths of the map.
+    if (relic_id == "WINGED_BOOTS" && has_relic("WINGED_BOOTS")) set_relic_counter("WINGED_BOOTS", WINGED_BOOTS_FLIGHTS);
     if (relic_id == "DOWSING_ROD" && has_relic("DOWSING_ROD")) add_card_to_deck(DeckCard{ CardId::DOWSING, false });
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     if (relic_id == "LOOMING_FRUIT" && has_relic("LOOMING_FRUIT")) gain_max_hp(31);
