@@ -308,6 +308,25 @@ void CombatEngine::settle_deaths() {
             enemies[i].about_to_blow(enemy_power_amount(static_cast<int>(i), PowerId::STEAM_ERUPTION));
         }
     }
+    // A Decimillipede segment killed while another one stands is Severed: it stays in the fight until it reattaches.
+    // Once none stands, the Severed ones die with the last.
+    bool segment_standing = false;
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        const Enemy& segment = enemies[i];
+        if ((alive_mask_ & (1u << i)) && segment.decimillipede_segment() && segment.is_alive() && !segment.severed()) {
+            segment_standing = true;
+        }
+    }
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        Enemy& segment = enemies[i];
+        if (!(alive_mask_ & (1u << i)) || !segment.decimillipede_segment()) continue;
+        if (segment_standing) {
+            segment.sever();
+        } else if (segment.severed()) {
+            segment.hp_loss_budget = -1;
+            segment.hp = 0;
+        }
+    }
     for (size_t i = 0; i < enemies.size(); ++i) {
         uint8_t bit = static_cast<uint8_t>(1u << i);
         if ((alive_mask_ & bit) && !enemies[i].is_alive()) {
@@ -6710,6 +6729,8 @@ void CombatEngine::execute_enemy_turn() {
                 enemies[i].hp_loss_budget = -1;
                 enemies[i].hp = 0;
             }
+            // A Decimillipede segment's Reattach: it can be hurt again.
+            if (enemies[i].severed() && played.type == EnemyIntentType::HEAL) enemies[i].hp_loss_budget = -1;
             // Painful Stabs: a Wound into the discard pile for each hit that cost the player HP.
             if (player.is_alive() && enemies[i].is_alive()) {
                 const int16_t stabs = enemy_power_amount(static_cast<int>(i), PowerId::PAINFUL_STABS);

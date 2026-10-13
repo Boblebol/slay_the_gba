@@ -461,7 +461,10 @@ enum class EnemyType : uint8_t {
     CRUSHER,              // Act 2 boss, with the Rocket
     ROCKET,               // Act 2 boss, with the Crusher
     PHANTASMAL_GARDENER,  // Act 1 (B) elite
-    EXOSKELETON           // Act 2
+    EXOSKELETON,          // Act 2
+    DECIMILLIPEDE_SEGMENT_BACK,   // Act 2 elite, the three segments of the Decimillipede
+    DECIMILLIPEDE_SEGMENT_FRONT,  // Act 2 elite
+    DECIMILLIPEDE_SEGMENT_MIDDLE  // Act 2 elite
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
@@ -567,6 +570,13 @@ constexpr int16_t CRUSHER_ADAPT_ASC = 3;
 constexpr int16_t ROCKET_CHARGE_UP = 2;
 constexpr int16_t ROCKET_CHARGE_UP_ASC = 3;
 
+// The Decimillipede is three segments. A segment killed while another one still stands is Severed
+// (Enemy::sever): it stays in the fight at 1 HP and loses no more, plays Dead (a lost turn), then Reattach gives it
+// back DECIMILLIPEDE_REATTACH_PERCENT of its maximum HP, and it draws its moves again. The fight is won once no
+// segment stands: the Severed ones die with the last. The monster database gives neither the HP of Reattach nor how
+// often a segment comes back: half its HP is guessed (as the Darklings of the first game), each time it is killed.
+constexpr int16_t DECIMILLIPEDE_REATTACH_PERCENT = 50; // guessed
+
 // Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
 // moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire.
 const MonsterData* monster_sheet(EnemyType type);
@@ -639,6 +649,14 @@ public:
     // (hp_loss_budget 0), cleared of its statuses and Block, and announces About to Blow, then its Explosion of
     // `steam` damage. False for any other enemy, one already About to Blow, or no Steam Eruption.
     bool about_to_blow(int16_t steam);
+    // One of the Decimillipede's segments.
+    bool decimillipede_segment() const;
+    // A Decimillipede segment killed while another one stands (triggered): back at 1 HP, it loses no more
+    // (hp_loss_budget 0), cleared of its statuses and Block, and announces Dead, then Reattach. False for any other
+    // enemy, or one still alive.
+    bool sever();
+    // A segment Severed and not reattached yet.
+    bool severed() const { return decimillipede_segment() && hp_loss_budget == 0 && is_alive(); }
     // Draws a move among `options` by weight, leaving out the last move played unless it can repeat, and
     // remembers it. When the rule leaves no move, the last one is played again. NO_MOVE for an empty list.
     uint8_t draw_move(std::span<const MoveOption> options);

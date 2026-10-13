@@ -5329,6 +5329,104 @@ void test_exoskeleton_ascension() {
     std::cout << "[PASS] Exoskeleton: Ascension gives 26 to 30 HP, Skitter 1x4 and Mandibles 9" << std::endl;
 }
 
+void test_decimillipede() {
+    // Each segment: Writhe 5x2, Constrict 8 (Weak 1 on the player), Bulk 6 (+2 Strength), in a loop.
+    const EnemyType segments[] = { EnemyType::DECIMILLIPEDE_SEGMENT_BACK, EnemyType::DECIMILLIPEDE_SEGMENT_FRONT,
+                                   EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE };
+    for (EnemyType segment : segments) {
+        check_monster(segment, "Dix-Mille-Pattes", 40, {
+            { ATTACK, 5, 0, 0, 0, 2 },
+            { ATTACK_DEBUFF, 8, 0, 0 },
+            { ATTACK_BUFF, 6, 0, 2 },
+            { ATTACK, 7, 0, 2, 0, 2 },
+            { ATTACK_DEBUFF, 10, 0, 2 },
+            { ATTACK_BUFF, 8, 0, 4 },
+        }, 6);
+    }
+    // Constrict leaves the player Weak.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::DECIMILLIPEDE_SEGMENT_FRONT);
+    pass_turn(combat);
+    assert(combat.enemies[0].current_intent.debuffs[0].type == StatusType::WEAK);
+    pass_turn(combat);
+    assert(combat.player.get_status(StatusType::WEAK) == 1);
+    std::cout << "[PASS] Decimillipede: 40 HP, Writhe 5x2, Constrict 8 + Weak, Bulk 6 + 2 Strength, in a loop"
+              << std::endl;
+}
+
+void test_decimillipede_reattach() {
+    // A segment killed while another stands is Severed: 1 HP beyond harm, Dead (a lost turn), then Reattach gives it
+    // half its HP back and it draws its moves. The fight is won once no segment stands.
+    CombatEngine combat = make_pack({ EnemyType::DECIMILLIPEDE_SEGMENT_BACK, EnemyType::DECIMILLIPEDE_SEGMENT_FRONT,
+                                      EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE });
+    assert(combat.enemies.size() == 3);
+    for (const Enemy& segment : combat.enemies) {
+        assert(segment.current_intent.type == ATTACK && segment.current_intent.hits == 2);
+        assert(segment.intent_damage(combat.player) == 5);
+    }
+    pass_turn(combat);
+    pass_turn(combat);
+    pass_turn(combat); // Bulk: 2 Strength each
+    Enemy& back = combat.enemies[0];
+    assert(back.get_status(StatusType::STRENGTH) == 2);
+    combat.damage_enemy(back, 999);
+    assert(back.is_alive() && back.hp == 1 && back.severed() && back.statuses.empty());
+    assert(back.current_intent.type == STUN && combat.state == CombatState::PLAYER_TURN);
+    combat.damage_enemy(back, 50); // beyond harm
+    assert(back.hp == 1);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Dead: only the two others attack, Writhe 7x2 each
+    assert(combat.player.max_hp - combat.player.hp == 28);
+    assert(back.hp == 1 && back.current_intent.type == EnemyIntentType::HEAL);
+    assert(back.current_intent.heal == back.max_hp / 2 - 1);
+    pass_turn(combat); // Reattach
+    assert(back.hp == back.max_hp / 2 && !back.severed());
+    const EnemyIntentType drawn = back.current_intent.type;
+    assert(drawn == ATTACK || drawn == ATTACK_DEBUFF || drawn == ATTACK_BUFF);
+    combat.damage_enemy(back, 3);
+    assert(back.hp == back.max_hp / 2 - 3);
+
+    // Its draws never repeat a move.
+    EnemyIntentType previous = drawn;
+    for (int turn = 0; turn < 6; ++turn) {
+        pass_turn(combat);
+        assert(back.current_intent.type != previous);
+        previous = back.current_intent.type;
+    }
+
+    // Killed again, it is Severed again. Two Severed, the last one standing takes them all down with it.
+    combat.damage_enemy(back, 999);
+    assert(back.severed());
+    combat.damage_enemy(combat.enemies[1], 999);
+    assert(combat.enemies[1].severed() && combat.has_alive_enemies());
+    combat.damage_enemy(combat.enemies[2], 999);
+    for (const Enemy& segment : combat.enemies) assert(!segment.is_alive());
+    assert(!combat.has_alive_enemies());
+    std::cout << "[PASS] Decimillipede: a segment killed while another stands is Severed, then Reattaches; the last "
+                 "one takes them all down"
+              << std::endl;
+}
+
+void test_decimillipede_ascension() {
+    // 46 to 52 HP, Writhe 6x2, Constrict 9 and Bulk 7 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_pack({ EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE });
+        Enemy& segment = combat.enemies[0];
+        segment.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        const int16_t base = segment.hp;
+        assert(segment.ascension_hp() == 46 && segment.hp_spread() == 6);
+        assert(base >= 40 && base <= 46 && segment.max_hp == 40 + segment.hp_bonus);
+        segment.ascend(true, true);
+        combat.plan_enemies();
+        assert(segment.hp == base + 6 && segment.max_hp == base + 6 && segment.hp >= 46 && segment.hp <= 52);
+        assert(segment.current_intent.hits == 2 && segment.intent_damage(combat.player) == 6);
+        pass_turn(combat);
+        assert(segment.intent_damage(combat.player) == 9);
+        pass_turn(combat);
+        assert(segment.intent_damage(combat.player) == 7);
+    }
+    std::cout << "[PASS] Decimillipede: Ascension gives 46 to 52 HP, Writhe 6x2, Constrict 9 and Bulk 7" << std::endl;
+}
+
 void test_hunter_killer() {
     // Tenderizing Goop (Tender 1 on the player), Bite 17, Puncture 7x3, then a draw between Bite (never twice
     // in a row) and Puncture.
@@ -6367,6 +6465,9 @@ int main() {
     test_phantasmal_gardener_ascension();
     test_exoskeleton();
     test_exoskeleton_ascension();
+    test_decimillipede();
+    test_decimillipede_reattach();
+    test_decimillipede_ascension();
     test_hunter_killer();
     test_hunter_killer_ascension();
     test_mawler();
