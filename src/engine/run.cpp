@@ -357,6 +357,13 @@ FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> RunManager::campfire_actions()
             break;
         }
     }
+    // Byrdonis Egg: offered while the deck holds one.
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (master_deck[i].id == CardId::BYRDONIS_EGG) {
+            all.push_back(CampfireAction::HATCH);
+            break;
+        }
+    }
     if (!has_relic("MINIATURE_TENT")) return all;
     // Miniature Tent: the actions already done at this rest site (bits of its counter) are no longer offered, and
     // the rest site can be left at any time.
@@ -366,6 +373,17 @@ FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> RunManager::campfire_actions()
     }
     actions.push_back(CampfireAction::LEAVE);
     return actions;
+}
+
+bool RunManager::hatch_at_campfire() {
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (master_deck[i].id != CardId::BYRDONIS_EGG) continue;
+        master_deck.erase(i);
+        if (!has_relic("BYRDPIP")) add_relic("BYRDPIP");
+        end_campfire_action(CampfireAction::HATCH);
+        return true;
+    }
+    return false;
 }
 
 bool RunManager::can_clone(int deck_index) const {

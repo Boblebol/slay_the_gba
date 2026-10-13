@@ -138,6 +138,18 @@ public:
                     play_sfx(Sfx::UI_OPEN);
                     _open_clone();
                 }
+                else if(action == engine::CampfireAction::HATCH)
+                {
+                    // Byrdonis Egg: the egg leaves the deck for the Byrdpip, then the rest site is used up.
+                    if(_ctx.run.hatch_at_campfire())
+                    {
+                        _popups.spawn(0, -20, "Oizillon obtenu !", TextColor::GREEN);
+                        play_sfx(Sfx::BUFF);
+                        _stage = Stage::DONE;
+                        _done_timer = 0;
+                        _clear_options();
+                    }
+                }
                 else if(action != engine::CampfireAction::SMITH)
                 {
                     // An action the engine does not resolve yet.
@@ -330,6 +342,9 @@ private:
                 break;
             case engine::CampfireAction::LEAVE:
                 stream << "Partir";
+                break;
+            case engine::CampfireAction::HATCH:
+                stream << "Faire éclore : l'Œuf d'oizodon";
                 break;
             default:
                 stream << "Cuisiner : -2 cartes, +5 PV Max";

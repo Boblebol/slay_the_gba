@@ -106,9 +106,48 @@ void test_spoils_map() {
     std::cout << "[PASS] Spoils Map: X cost, Quest, Unplayable, 600 Gold in a room of the next act" << std::endl;
 }
 
+void test_byrdonis_egg() {
+    for (bool up : { false, true }) {
+        assert(CardDef::get_cost(CardId::BYRDONIS_EGG, up) == COST_X);
+        assert(CardDef::get(CardId::BYRDONIS_EGG).type == CardType::QUEST);
+        assert(CardDef::has_keyword(CardId::BYRDONIS_EGG, up, KEYWORD_UNPLAYABLE));
+
+        // Unplayable.
+        CombatEngine combat = make_fight();
+        combat.hand.push_back(DeckCard(CardId::BYRDONIS_EGG, up));
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+
+        // Without an egg, the Rest Site has no Hatch action and nothing hatches.
+        RunManager run;
+        run.start_run(CharacterId::IRONCLAD);
+        enter(run, RoomType::REST_SITE);
+        const auto has_hatch = [&run] {
+            for (CampfireAction action : run.campfire_actions()) {
+                if (action == CampfireAction::HATCH) return true;
+            }
+            return false;
+        };
+        assert(!has_hatch() && !run.hatch_at_campfire());
+
+        // With one, the Rest Site offers to hatch it: the egg leaves the deck for the Byrdpip, and the site is used up.
+        const size_t size = run.master_deck.size();
+        run.master_deck.push_back(DeckCard(CardId::BYRDONIS_EGG, up));
+        assert(has_hatch() && !run.has_relic("BYRDPIP"));
+        assert(run.hatch_at_campfire());
+        // The Byrdpip comes with its Byrd Swoop card.
+        assert(run.master_deck.size() == size + 1 && run.master_deck.back().id == CardId::BYRD_SWOOP && run.has_relic("BYRDPIP"));
+        for (const DeckCard& card : run.master_deck) assert(card.id != CardId::BYRDONIS_EGG);
+        assert(run.phase == RunPhase::MAP_NAVIGATION && !has_hatch());
+    }
+    std::cout << "[PASS] Byrdonis Egg: X cost, Quest, Unplayable, hatches into the Byrdpip at a Rest Site" << std::endl;
+}
+
 int main() {
     test_dowsing();
     test_spoils_map();
+    test_byrdonis_egg();
     std::cout << "All quest card tests passed." << std::endl;
     return 0;
 }
