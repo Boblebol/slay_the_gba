@@ -298,6 +298,10 @@ void CombatEngine::settle_deaths() {
         beast.clear_status(StatusType::STRENGTH);
         beast.break_plow();
     }
+    // The Test Subject killed with a life left respawns: it did not die, and nothing reacts to a death.
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        if (alive_mask_ & (1u << i)) enemies[i].respawn();
+    }
     for (size_t i = 0; i < enemies.size(); ++i) {
         uint8_t bit = static_cast<uint8_t>(1u << i);
         if ((alive_mask_ & bit) && !enemies[i].is_alive()) {
@@ -6664,6 +6668,8 @@ void CombatEngine::execute_enemy_turn() {
                 return;
             }
             const EnemyIntent played = enemies[i].current_intent;
+            const uint8_t phase_before = enemies[i].phase;
+            const bool intangible_before = enemies[i].get_status(StatusType::INTANGIBLE) > 0;
             // Undying Sigil: an enemy with at least as much Doom as HP deals 50% less damage.
             const bool sigil_halved = has_power(PowerId::UNDYING_SIGIL) && enemies[i].get_status(StatusType::DOOM) >= enemies[i].hp;
             enemies[i].execute_turn(player, power_amount(PowerId::FLAME_BARRIER), has_power(PowerId::REFLECT), sigil_halved);
@@ -6674,6 +6680,15 @@ void CombatEngine::execute_enemy_turn() {
                 } else if (afflict_player(played.power, played.power_amount, played.power_turn_only)) {
                     record.power = played.power;
                 }
+            }
+            // Painful Stabs: a Wound into the discard pile for each hit that cost the player HP.
+            if (player.is_alive() && enemies[i].is_alive()) {
+                const int16_t stabs = enemy_power_amount(static_cast<int>(i), PowerId::PAINFUL_STABS);
+                for (int n = 0; n < stabs * enemies[i].wounding_hits; ++n) create_card(CardId::WOUND, Pile::DISCARD, false);
+            }
+            // Nemesis: a turn started without Intangible ends with 1.
+            if (!intangible_before && enemies[i].is_alive() && enemy_power_amount(static_cast<int>(i), PowerId::NEMESIS) > 0) {
+                enemies[i].add_status(StatusType::INTANGIBLE, 1);
             }
             // The cards of the move, for a player still standing. A full pile takes no more (a full hand sends
             // the card to the discard pile).
@@ -6715,6 +6730,9 @@ void CombatEngine::execute_enemy_turn() {
                     settle_deaths();
                 }
             }
+
+            // The Test Subject respawned by its own turn (Thorns): its Respawn is its next move.
+            if (enemies[i].phase != phase_before && enemies[i].type == EnemyType::TEST_SUBJECT) enemies[i].phase_turn = 0;
 
             // The Strength it lost "until the end of its turn" comes back.
             afflict(enemies[i], StatusType::STRENGTH, enemies[i].temp_strength_loss);

@@ -448,6 +448,8 @@ enum class EnemyType : uint8_t {
     LIVING_FOG,           // Act 1 (B)
     TWO_TAILED_RAT,       // Act 1 (B)
     LAGAVULIN_MATRIARCH,  // Act 1 (B) boss
+    VANTOM,               // Act 1 (A) boss
+    TEST_SUBJECT,         // Act 3 boss
     KNOWLEDGE_DEMON       // Act 2 boss
 };
 
@@ -498,6 +500,13 @@ constexpr int16_t KNOWLEDGE_DEMON_DISINTEGRATION = 6;
 constexpr int16_t CEREMONIAL_BEAST_PLOW = 150;
 constexpr int16_t CEREMONIAL_BEAST_PLOW_ASC = 160;
 
+// The Test Subject has three lives: killed, it respawns (Enemy::respawn) with the HP of its next phase, twice. The
+// monster database gives it no HP: these are guessed, in line with the other Act 3 bosses. The first life is also
+// the HP of its sheet (src/engine/monster.cpp).
+constexpr uint8_t TEST_SUBJECT_RESPAWNS = 2;
+constexpr int16_t TEST_SUBJECT_HP[TEST_SUBJECT_RESPAWNS + 1] = { 100, 150, 200 };     // guessed
+constexpr int16_t TEST_SUBJECT_HP_ASC[TEST_SUBJECT_RESPAWNS + 1] = { 110, 165, 220 }; // guessed
+
 // Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
 // moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire.
 const MonsterData* monster_sheet(EnemyType type);
@@ -523,6 +532,7 @@ public:
     // It left the fight (ESCAPE): out like a dead enemy (0 HP), but it was not killed.
     bool escaped = false;
     int16_t last_heal = 0; // HP its last move gave it back
+    uint8_t wounding_hits = 0; // hits of its last move that cost the player HP (Painful Stabs)
     // HP drawn at the start of the fight on top of its lowest HP, for the monsters whose HP vary (see hp_spread).
     uint8_t hp_bonus = 0;
 
@@ -561,6 +571,9 @@ public:
     void break_burrow();
     // The Ceremonial Beast's Plow ran out (triggered): it enters its next phase, stunned.
     void break_plow();
+    // The Test Subject was killed with a life left (triggered): back to full HP in its next phase, cleared of its
+    // statuses and Block, it announces Respawn. False for any other enemy, or one without a life left.
+    bool respawn();
     // Draws a move among `options` by weight, leaving out the last move played unless it can repeat, and
     // remembers it. When the rule leaves no move, the last one is played again. NO_MOVE for an empty list.
     uint8_t draw_move(std::span<const MoveOption> options);

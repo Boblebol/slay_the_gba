@@ -248,6 +248,8 @@ BOSSES: dict[str, str] = {
     "the_insatiable": "the_insatiable",
     "lagavulin_matriarch": "lagavulin_matriarch",
     "knowledge_demon": "knowledge_demon",
+    "test_subject": "test_subject",
+    "vantom": "vantom",
 }
 
 

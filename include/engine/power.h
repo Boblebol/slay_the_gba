@@ -273,6 +273,9 @@ enum class PowerId : uint8_t {
     PLOW,              // its holder's HP fall below `amount`: it loses all Strength, is stunned and changes phase (spent)
     // On the player, given by an enemy move (appended)
     RINGING,           // only one card can be played this turn (read by play_blocker; the Ceremonial Beast)
+    // Held by an enemy (appended): the Test Subject gains them when it respawns
+    PAINFUL_STABS,     // each hit of its attacks that costs the player HP adds `amount` Wounds to their discard pile
+    NEMESIS,           // at the end of each of its turns started without Intangible, it gains 1 Intangible
     // On the player, given by the Knowledge Demon's Curse of Knowledge (appended)
     MIND_ROT,          // start of turn: draw `amount` fewer cards
     WASTE_AWAY,        // start of turn: `amount` less energy

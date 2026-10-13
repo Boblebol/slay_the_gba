@@ -112,6 +112,8 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::TWO_TAILED_RAT: return "TWO_TAILED_RAT";
         case EnemyType::LAGAVULIN_MATRIARCH: return "LAGAVULIN_MATRIARCH";
         case EnemyType::KNOWLEDGE_DEMON: return "KNOWLEDGE_DEMON";
+        case EnemyType::TEST_SUBJECT: return "TEST_SUBJECT";
+        case EnemyType::VANTOM: return "VANTOM";
     }
     return {};
 }
@@ -236,23 +238,29 @@ void test_reference_encounters() {
                                         "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
                                         "FossilStalkerNormal", "SeapunkNormal", "LivingFogNormal",
                                         "TwoTailedRatsNormal" }));
-    // Act 1 (B) has its own boss, the Lagavulin Matriarch, and Act 2 two of them, the Insatiable and the Knowledge
-    // Demon; the other acts keep the Ceremonial Beast.
+    // Act 1 (A) draws its boss between the Ceremonial Beast and the Vantom, Act 2 between the Insatiable and the
+    // Knowledge Demon; Act 1 (B) and Act 3 have their own boss, the Lagavulin Matriarch and the Test Subject.
+    assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::BOSS)) ==
+           (std::set<std::string_view>{ "CeremonialBeastBoss", "VantomBoss" }));
     for (ActZone zone : ZONES) {
-        if (zone == ActZone::ACT2) continue;
-        const std::string_view boss = zone == ActZone::ACT1B ? "LagavulinMatriarchBoss" : "CeremonialBeastBoss";
+        if (zone == ActZone::ACT1A || zone == ActZone::ACT2) continue;
+        const std::string_view boss = zone == ActZone::ACT1B ? "LagavulinMatriarchBoss" : "TestSubjectBoss";
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) == std::set<std::string_view>{ boss });
     }
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::BOSS)) ==
            (std::set<std::string_view>{ "TheInsatiableBoss", "KnowledgeDemonBoss" }));
     const Encounter& demon = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::BOSS), "KnowledgeDemonBoss");
     assert(demon.count == 1 && demon.monsters[0] == EnemyType::KNOWLEDGE_DEMON);
+    const Encounter& vantom = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::BOSS), "VantomBoss");
+    assert(vantom.count == 1 && vantom.monsters[0] == EnemyType::VANTOM);
     const Encounter& matriarch = find_encounter(encounter_table(ActZone::ACT1B, EncounterTier::BOSS),
                                                 "LagavulinMatriarchBoss");
     assert(matriarch.count == 1 && matriarch.monsters[0] == EnemyType::LAGAVULIN_MATRIARCH);
     const Encounter& insatiable = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::BOSS),
                                                  "TheInsatiableBoss");
     assert(insatiable.count == 1 && insatiable.monsters[0] == EnemyType::THE_INSATIABLE);
+    const Encounter& subject = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::BOSS), "TestSubjectBoss");
+    assert(subject.count == 1 && subject.monsters[0] == EnemyType::TEST_SUBJECT);
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
            (std::set<std::string_view>{ "BygoneEffigyElite", "ByrdonisElite", "PhrogParasiteElite",
                                         "LegacyGremlinNob" }));
@@ -463,7 +471,8 @@ void test_same_seed_same_fights() {
         }
     }
     assert(raiders > 0 && shamblers > 0);
-    assert(fights[fights.size() - 1] == "CeremonialBeastBoss CEREMONIAL_BEAST");
+    assert(fights[fights.size() - 1] == "CeremonialBeastBoss CEREMONIAL_BEAST" ||
+           fights[fights.size() - 1] == "VantomBoss VANTOM");
     std::cout << "[PASS] Encounter tables: the same seed gives the same fights" << std::endl;
 }
 
