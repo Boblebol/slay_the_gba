@@ -272,7 +272,10 @@ enum class PowerId : uint8_t {
     SOAR,              // it takes 50% less attack damage (read by hit) until it lands: spent when its next turn starts
     PLOW,              // its holder's HP fall below `amount`: it loses all Strength, is stunned and changes phase (spent)
     // On the player, given by an enemy move (appended)
-    RINGING            // only one card can be played this turn (read by play_blocker; the Ceremonial Beast)
+    RINGING,           // only one card can be played this turn (read by play_blocker; the Ceremonial Beast)
+    // Held by an enemy (appended): the Test Subject gains them when it respawns
+    PAINFUL_STABS,     // each hit of its attacks that costs the player HP adds `amount` Wounds to their discard pile
+    NEMESIS            // at the end of each of its turns started without Intangible, it gains 1 Intangible
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.

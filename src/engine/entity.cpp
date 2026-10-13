@@ -103,8 +103,9 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "TWO_TAILED_RAT", true, true },
     { "LAGAVULIN_MATRIARCH", false, true },
     { "VANTOM", false, true },
+    { "TEST_SUBJECT", false, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::VANTOM) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::TEST_SUBJECT) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -145,6 +146,7 @@ void Enemy::init(EnemyType enemy_type) {
     ascended_damage = false;
     escaped = false;
     last_heal = 0;
+    wounding_hits = 0;
     hp_bonus = 0;
     for (IntentDebuff& debuff : last_debuffs) debuff = {};
     reset_pattern(1);
@@ -182,6 +184,10 @@ void Enemy::init(EnemyType enemy_type) {
 namespace {
 enum TunnelerMove : uint8_t { TUNNELER_BITE, TUNNELER_BURROW, TUNNELER_BELOW, TUNNELER_DIZZY };
 enum CeremonialBeastMove : uint8_t { BEAST_STAMP, BEAST_PLOW, BEAST_STUN, BEAST_CRY, BEAST_STOMP, BEAST_CRUSH };
+enum TestSubjectMove : uint8_t {
+    SUBJECT_RESPAWN, SUBJECT_BITE, SUBJECT_SKULL_BASH, SUBJECT_MULTI_CLAW, SUBJECT_LACERATE, SUBJECT_POUNCE,
+    SUBJECT_GROWL
+};
 }
 
 uint8_t Enemy::hp_spread() const {
@@ -295,6 +301,21 @@ void Enemy::break_plow() {
     phase_turn = 1;
     use_move(BEAST_STUN);
     stun();
+}
+
+bool Enemy::respawn() {
+    if (type != EnemyType::TEST_SUBJECT || is_alive() || escaped || phase >= TEST_SUBJECT_RESPAWNS) return false;
+    const bool ascended_hp = max_hp == TEST_SUBJECT_HP_ASC[phase];
+    enter_phase(static_cast<uint8_t>(phase + 1));
+    max_hp = ascended_hp ? TEST_SUBJECT_HP_ASC[phase] : TEST_SUBJECT_HP[phase];
+    hp = max_hp;
+    block = 0;
+    statuses.clear();
+    fresh_debuffs = 0;
+    temp_strength_loss = 0;
+    damage_down_turns = 0;
+    plan_turn(0); // Respawn, the first move of its new life
+    return true;
 }
 
 void Enemy::plan_turn(int turn_number, const PlanContext& context) {
@@ -1799,6 +1820,57 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.hits = sheet_move("LASH").hits;
             current_intent.description = "Fouet (3x2 dmg)";
         }
+    } else if (type == EnemyType::TEST_SUBJECT) {
+        // First life: Bite, Skull Bash, in a loop. Each new life (respawn) opens on Respawn, which gives it Painful
+        // Stabs, then Nemesis; then Multi-Claw every turn in its second life, and Lacerate, Big Pounce, Burning
+        // Growl in a loop in its third.
+        uint8_t move = SUBJECT_RESPAWN;
+        if (phase == 0) move = phase_turn % 2 == 1 ? SUBJECT_BITE : SUBJECT_SKULL_BASH;
+        else if (phase_turn > 1 && phase == 1) move = SUBJECT_MULTI_CLAW;
+        else if (phase_turn > 1) move = static_cast<uint8_t>(SUBJECT_LACERATE + (phase_turn - 2) % 3);
+        use_move(move);
+        if (move == SUBJECT_RESPAWN) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.power = phase == 1 ? PowerId::PAINFUL_STABS : PowerId::NEMESIS;
+            current_intent.power_amount = 1;
+            // Two assignments, not a ternary: a string_view built from a char pointer calls strlen, which the GBA lacks.
+            if (phase == 1) {
+                current_intent.description = "Réanimation (Coups de poignard)";
+            } else {
+                current_intent.description = "Réanimation (Némésis)";
+            }
+        } else if (move == SUBJECT_BITE) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("BITE");
+            current_intent.description = "Morsure (20 dmg)";
+        } else if (move == SUBJECT_SKULL_BASH) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("SKULL_BASH");
+            current_intent.debuffs[0] = { StatusType::VULNERABLE, 1 };
+            current_intent.description = "Coup de boule (14 dmg, Vulnérable)";
+        } else if (move == SUBJECT_MULTI_CLAW) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("MULTI_CLAW");
+            current_intent.hits = sheet_move("MULTI_CLAW").hits;
+            current_intent.description = "Multi-Griffes (10 dmg)";
+        } else if (move == SUBJECT_LACERATE) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("PHASE3_LACERATE");
+            current_intent.hits = sheet_move("PHASE3_LACERATE").hits;
+            current_intent.description = "Lacération (10 dmg x3)";
+        } else if (move == SUBJECT_POUNCE) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("BIG_POUNCE");
+            current_intent.description = "Ruée bestiale (45 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 3 : 2;
+            current_intent.status_card = CardId::BURN;
+            current_intent.status_cards = ascended_damage ? 5 : 3;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Grognement ardent (+2 Force, 3 Brûlure)";
+        }
     } else if (type == EnemyType::LAGAVULIN_MATRIARCH) {
         // Asleep (a lost turn) behind its Plating, for 3 turns or until it loses HP. Awake, it drops the Plating and
         // plays Slash, Disembowel, Slash (with Block) and Soul Siphon in a loop.
@@ -1959,6 +2031,7 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect, bool
     clear_block();
     decay_plating();
     last_heal = 0;
+    wounding_hits = 0;
 
     // Ritual gained this turn only starts granting Strength at the end of the next one.
     int16_t ritual = get_status(StatusType::RITUAL);
@@ -1978,7 +2051,9 @@ void Enemy::execute_turn(Player& player, int16_t damage_back, bool reflect, bool
     if (current_intent.base_damage > 0) {
         for (uint8_t hit = 0; hit < current_intent.hits && is_alive() && player.is_alive(); ++hit) {
             const int16_t block_before = player.block;
+            const int16_t hp_before = player.hp;
             player.take_damage_with_minion(intent_damage(player, halved));
+            if (player.hp < hp_before) ++wounding_hits;
             // The attacker gets hurt back: the player's Thorns, Flame Barrier, and the damage Reflect sends back.
             int16_t back = static_cast<int16_t>(player.get_status(StatusType::THORNS) + damage_back);
             if (reflect) back = static_cast<int16_t>(back + block_before - player.block);
