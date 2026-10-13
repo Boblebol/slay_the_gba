@@ -232,6 +232,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "LEES_WAFFLE", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 7 et récupérez tous vos PV." },
     { "MANGO", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 14." },
     { "FAKE_LEES_WAFFLE", "Lorsque vous obtenez cette relique, récupérez 10% de vos PV." },
+    { "BYRDPIP", "Lorsque vous obtenez cette relique, obtenez la carte Piqué d'oizo. Un Oizillon vous accompagnera en combat." },
     { "FAKE_MANGO", "Lorsque vous obtenez cette relique, augmentez vos PV Max de 3." },
     { "CHOSEN_CHEESE", "À la fin de chaque combat, augmentez vos PV Max de 1." },
     { "STONE_HUMIDIFIER", "Lorsque vous vous Reposez à un Site de repos, augmentez vos PV Max de 5." },

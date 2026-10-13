@@ -3851,6 +3851,24 @@ void test_darkstone_periapt() {
     std::cout << "[PASS] Darkstone Periapt: +6 Max HP for each Curse obtained" << std::endl;
 }
 
+void test_byrdpip() {
+    // Obtained: Byrd Swoop joins the Deck, once.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 515);
+    size_t deck = run.master_deck.size();
+    run.add_relic("BYRDPIP");
+    assert(run.has_relic("BYRDPIP"));
+    assert(run.master_deck.size() == deck + 1 && run.master_deck.back().id == CardId::BYRD_SWOOP && !run.master_deck.back().upgraded);
+
+    // Without the relic, no Byrd Swoop in the Deck.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 515);
+    plain.add_relic("ANCHOR");
+    assert(plain.master_deck.size() == deck);
+    for (const DeckCard& card : plain.master_deck) assert(card.id != CardId::BYRD_SWOOP);
+    std::cout << "[PASS] Byrdpip: Byrd Swoop joins the Deck on pickup" << std::endl;
+}
+
 void test_big_mushroom() {
     // Obtained: 20 more maximum HP, and the current HP follow.
     RunManager run;
@@ -4831,6 +4849,7 @@ int main() {
     test_ring_of_the_drake();
     test_darkstone_periapt();
     test_big_mushroom();
+    test_byrdpip();
     test_neows_sacrifice();
     test_fake_orichalcum();
     test_maw_bank();
