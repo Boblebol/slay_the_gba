@@ -26,8 +26,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
-    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "DOWSING_ROD", "SEA_GLASS", "DRIFTWOOD",
-    "TOUCH_OF_OROBAS", "ARCHAIC_TOOTH", "PAELS_WING", "TOY_BOX", "FUR_COAT",
+    "MASSIVE_SCROLL", "SCROLL_BOXES", "SEA_GLASS",
 };
 
 bool ancient_relic_pending(std::string_view relic_id) {
@@ -41,6 +40,20 @@ bool ancient_relic_pending(std::string_view relic_id) {
 constexpr uint32_t ANCIENT_SEED_SALT = 0xA5C1E7D3u;
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+// Sword of Stone: Elites to defeat before it becomes the Sword of Jade.
+constexpr uint8_t SWORD_OF_STONE_ELITES = 5;
+// Toy Box: its counter keeps the Wax Relics left (low bits) and the fights won since the last one melted (high bits).
+constexpr uint8_t TOY_BOX_WAX_RELICS = 5;
+constexpr uint8_t TOY_BOX_COMBATS = 3;
+constexpr uint8_t TOY_BOX_WAX_MASK = 0x07;
+constexpr uint8_t TOY_BOX_COMBAT_SHIFT = 3;
+// Fur Coat: combats marked on the map, drawn from a stream of their own seeded by the map.
+constexpr uint8_t FUR_COAT_COMBATS = 8;
+constexpr uint32_t FUR_COAT_SEED_SALT = 0xF0C0A7u;
+// Winged Boots: rooms off the paths of the map the relic allows.
+constexpr uint8_t WINGED_BOOTS_FLIGHTS = 3;
+// Paël's Wing: card rewards sacrificed for each relic.
+constexpr uint8_t PAELS_WING_SACRIFICES = 2;
 // Nutritious Soup: the extra damage Tezcatara's Ember gives each enchanted Strike.
 constexpr uint8_t NUTRITIOUS_SOUP_EMBER_DAMAGE = 3;
 constexpr int THE_COURIER_DISCOUNT = 20;
@@ -157,9 +170,41 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     phase = RunPhase::MAP_NAVIGATION;
 }
 
+bool RunManager::fur_coat_room(int node_index) const {
+    // The counter keeps the act of the pickup (high bits) and the first floor still ahead then (low bits): with the
+    // map seed, they draw the same rooms again, after a reload too.
+    if (!has_relic("FUR_COAT") || node_index < 0 || static_cast<size_t>(node_index) >= map.nodes.size()) return false;
+    const uint8_t counter = relic_counter("FUR_COAT");
+    if (counter == 0 || counter >> 4 != current_act) return false;
+    const uint8_t from_floor = counter & 0x0F;
+    FixedVector<int, 64> combats;
+    for (size_t i = 0; i < map.nodes.size() && combats.size() < combats.capacity(); ++i) {
+        if (map.nodes[i].type == RoomType::MONSTER && map.nodes[i].floor >= from_floor) combats.push_back(static_cast<int>(i));
+    }
+    RewardRng rng(map_seed ^ FUR_COAT_SEED_SALT);
+    for (uint8_t marked = 0; marked < FUR_COAT_COMBATS && !combats.empty(); ++marked) {
+        size_t pick = rng.below(static_cast<uint32_t>(combats.size()));
+        if (combats[pick] == node_index) return true;
+        combats.erase(pick);
+    }
+    return false;
+}
+
 FixedVector<int, 3> RunManager::get_available_rooms() const {
     if (current_node_index < 0) {
         return map.get_starting_nodes();
+    }
+    // Winged Boots: while a flight is left, every room of the next floor can be reached, from left to right.
+    if (has_relic("WINGED_BOOTS") && relic_counter("WINGED_BOOTS") > 0 &&
+        static_cast<size_t>(current_node_index) < map.nodes.size()) {
+        const uint8_t next_floor = static_cast<uint8_t>(map.nodes[current_node_index].floor + 1);
+        FixedVector<int, 3> rooms;
+        for (uint8_t lane = 0; lane < 3; ++lane) {
+            for (size_t i = 0; i < map.nodes.size() && rooms.size() < rooms.capacity(); ++i) {
+                if (map.nodes[i].floor == next_floor && map.nodes[i].lane == lane) rooms.push_back(static_cast<int>(i));
+            }
+        }
+        if (!rooms.empty()) return rooms;
     }
     return map.get_next_nodes(current_node_index);
 }
@@ -206,6 +251,12 @@ FixedVector<EnemyType, MAX_ENEMIES> RunManager::draw_encounter(RoomType room) {
 }
 
 void RunManager::enter_room(int node_index) {
+    // Winged Boots: a room off the paths of the current one spends one of the flights.
+    if (current_node_index >= 0 && has_relic("WINGED_BOOTS") && relic_counter("WINGED_BOOTS") > 0) {
+        bool on_path = false;
+        for (int next : map.get_next_nodes(current_node_index)) on_path = on_path || next == node_index;
+        if (!on_path) set_relic_counter("WINGED_BOOTS", static_cast<uint8_t>(relic_counter("WINGED_BOOTS") - 1));
+    }
     current_node_index = node_index;
     const auto& node = map.nodes[node_index];
     current_floor = node.floor + 1;
@@ -230,6 +281,9 @@ void RunManager::enter_room(int node_index) {
             combat.enemy_hp_percent = get_enemy_hp_multiplier(node.type);
             combat.enemy_damage_percent = get_enemy_damage_multiplier(node.type);
             for (Enemy& foe : combat.enemies) foe.apply_ascension(combat.enemy_hp_percent, combat.enemy_damage_percent);
+            if (fur_coat_room(node_index)) {
+                for (Enemy& foe : combat.enemies) foe.hp = 1;
+            }
             combat.plan_enemies(); // the moves follow the Ascension values just given
 
             // Replace combat piles with current master deck
@@ -597,6 +651,8 @@ CharacterId RunManager::random_other_hero() {
 void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity, bool elite, CharacterId hero) {
     // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked. Without one, each card
     // rolls its own rarity (more Rare ones after an elite); a boss gives Rare cards only.
+    last_card_reward_draw = CardRewardDraw{ boss, rarity, elite, hero, relic_counter("SILVER_CRUCIBLE"),
+                                            relic_counter("SILKEN_TRESS"), false };
     if (boss && rarity == CardRarity::NONE) rarity = CardRarity::RARE;
     current_card_rewards.clear();
     // Silver Crucible: the first card rewards seen are Upgraded.
@@ -772,6 +828,33 @@ void RunManager::skip_card_rewards() {
     next_card_reward_or_finish();
 }
 
+bool RunManager::can_sacrifice_card_rewards() const {
+    return has_relic("PAELS_WING") && !current_card_rewards.empty();
+}
+
+bool RunManager::sacrifice_card_rewards() {
+    if (!can_sacrifice_card_rewards()) return false;
+    bool relic = tick_relic_counter("PAELS_WING", PAELS_WING_SACRIFICES) && gain_random_relics(1) > 0;
+    next_card_reward_or_finish();
+    return relic;
+}
+
+bool RunManager::can_reroll_card_rewards() const {
+    return has_relic("DRIFTWOOD") && !current_card_rewards.empty() && !last_card_reward_draw.rerolled;
+}
+
+bool RunManager::reroll_card_rewards() {
+    if (!can_reroll_card_rewards()) return false;
+    // The relics that change the reward see it as the same one: their counters are put back as they were.
+    const CardRewardDraw draw = last_card_reward_draw;
+    if (has_relic("SILVER_CRUCIBLE")) set_relic_counter("SILVER_CRUCIBLE", draw.silver_crucible);
+    if (has_relic("SILKEN_TRESS")) set_relic_counter("SILKEN_TRESS", draw.silken_tress);
+    RewardRng rng(next_random());
+    draw_card_rewards(draw.boss, rng, draw.rarity, draw.elite, draw.hero);
+    last_card_reward_draw.rerolled = true;
+    return true;
+}
+
 void RunManager::next_card_reward_or_finish() {
     // White Star: one more set of Rare cards after an Elite.
     if (extra_rare_card_rewards > 0) {
@@ -803,9 +886,59 @@ void RunManager::add_relic(std::string_view relic_id) {
     }
 }
 
+// Ancient version of a starter relic, given by Touch of Orobas (empty when `starter` has none).
+static std::string_view ancient_starter_relic(std::string_view starter) {
+    if (starter == "BURNING_BLOOD") return "BLACK_BLOOD";
+    if (starter == "RING_OF_THE_SNAKE") return "RING_OF_THE_DRAKE";
+    if (starter == "CRACKED_CORE") return "INFUSED_CORE";
+    if (starter == "DIVINE_RIGHT") return "DIVINE_DESTINY";
+    if (starter == "BOUND_PHYLACTERY") return "PHYLACTERY_UNBOUND";
+    return {};
+}
+
+// Ancient version of a starter card, given by Archaic Tooth (NONE when `starter` has none).
+static CardId ancient_starter_card(CardId starter) {
+    switch (starter) {
+        case CardId::BASH: return CardId::BREAK;
+        case CardId::NEUTRALIZE: return CardId::SUPPRESS;
+        case CardId::DUALCAST: return CardId::QUADCAST;
+        case CardId::FALLING_STAR: return CardId::METEOR_SHOWER;
+        case CardId::UNLEASH: return CardId::PROTECTOR;
+        default: return CardId::NONE;
+    }
+}
+
 void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
+    // Touch of Orobas: the starter relic is replaced by its Ancient version, when the run still has it.
+    if (relic_id == "TOUCH_OF_OROBAS" && has_relic("TOUCH_OF_OROBAS")) {
+        std::string_view starter = get_character(character).starting_relic_id;
+        std::string_view ancient = ancient_starter_relic(starter);
+        for (size_t i = 0; i < relics.size() && !ancient.empty(); ++i) {
+            if (relics[i] == starter) relics[i] = ancient;
+        }
+    }
+    // Archaic Tooth: the first starter card of the deck with an Ancient version is Transformed into it, upgrade kept.
+    if (relic_id == "ARCHAIC_TOOTH" && has_relic("ARCHAIC_TOOTH")) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            CardId ancient = ancient_starter_card(master_deck[i].id);
+            if (ancient != CardId::NONE && transform_card_in_deck(static_cast<int>(i), master_deck[i].upgraded, ancient)) break;
+        }
+    }
     if (relic_id == "SMALL_CAPSULE" && has_relic("SMALL_CAPSULE")) gain_random_relics(1);
+    // Toy Box: 5 random relics, the Wax Relics, right after the box; they melt away one by one (on_combat_won).
+    if (relic_id == "TOY_BOX" && has_relic("TOY_BOX")) {
+        int wax = gain_random_relics(TOY_BOX_WAX_RELICS);
+        set_relic_counter("TOY_BOX", static_cast<uint8_t>(wax));
+    }
+    // Fur Coat: marks combats of the rooms still ahead in this act (see fur_coat_room).
+    if (relic_id == "FUR_COAT" && has_relic("FUR_COAT")) {
+        const uint8_t from_floor = current_node_index >= 0 ? static_cast<uint8_t>(map.nodes[current_node_index].floor + 1) : 0;
+        set_relic_counter("FUR_COAT", static_cast<uint8_t>(current_act << 4 | (from_floor & 0x0F)));
+    }
+    // Winged Boots: 3 rooms off the paths of the map.
+    if (relic_id == "WINGED_BOOTS" && has_relic("WINGED_BOOTS")) set_relic_counter("WINGED_BOOTS", WINGED_BOOTS_FLIGHTS);
+    if (relic_id == "DOWSING_ROD" && has_relic("DOWSING_ROD")) add_card_to_deck(DeckCard{ CardId::DOWSING, false });
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     if (relic_id == "LOOMING_FRUIT" && has_relic("LOOMING_FRUIT")) gain_max_hp(31);
     if (relic_id == "NUTRITIOUS_OYSTER" && has_relic("NUTRITIOUS_OYSTER")) gain_max_hp(11);
@@ -1164,6 +1297,14 @@ void RunManager::on_room_entered(RoomType room) {
     }
     // Miniature Tent: every action of the campfire is offered again at each new rest site.
     if (room == RoomType::REST_SITE && has_relic("MINIATURE_TENT")) set_relic_counter("MINIATURE_TENT", 0);
+    // Dowsing counts the ? rooms entered in `bonus`, and becomes an Abundance (upgrade kept) at its base value.
+    if (room == RoomType::EVENT) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            DeckCard& card = master_deck[i];
+            if (card.id != CardId::DOWSING) continue;
+            if (++card.bonus >= CardDef::get(CardId::DOWSING).base_value) card = DeckCard(CardId::ABUNDANCE, card.upgraded);
+        }
+    }
     // Planisphere: each ? room entered heals 5 HP.
     if (room == RoomType::EVENT && has_relic("PLANISPHERE")) heal(5);
     // Meal Ticket: entering a shop heals 15 HP.
@@ -1202,9 +1343,34 @@ void RunManager::on_combat_won(RoomType room) {
             gain_random_relics(WONGOS_MYSTERY_TICKET_RELICS);
         }
     }
+    // Toy Box: every 3 fights won, the left-most Wax Relic (the first one after the box) melts away.
+    if (has_relic("TOY_BOX") && (relic_counter("TOY_BOX") & TOY_BOX_WAX_MASK) > 0) {
+        uint8_t wax = relic_counter("TOY_BOX") & TOY_BOX_WAX_MASK;
+        uint8_t combats = static_cast<uint8_t>((relic_counter("TOY_BOX") >> TOY_BOX_COMBAT_SHIFT) + 1);
+        if (combats >= TOY_BOX_COMBATS) {
+            combats = 0;
+            --wax;
+            for (size_t i = 0; i + 1 < relics.size(); ++i) {
+                if (relics[i] == "TOY_BOX") {
+                    relics.erase(i + 1);
+                    break;
+                }
+            }
+        }
+        set_relic_counter("TOY_BOX", static_cast<uint8_t>(combats << TOY_BOX_COMBAT_SHIFT | wax));
+    }
     // Fishing Rod: every 3 normal fights won, one random card of the deck is upgraded.
     if (room == RoomType::MONSTER && has_relic("FISHING_ROD") && tick_relic_counter("FISHING_ROD", FISHING_ROD_COMBATS)) {
         upgrade_random_cards(1);
+    }
+    // Sword of Stone: the fifth Elite killed turns it into the Sword of Jade, in its place among the relics.
+    if (room == RoomType::ELITE && has_relic("SWORD_OF_STONE")) {
+        set_relic_counter("SWORD_OF_STONE", static_cast<uint8_t>(relic_counter("SWORD_OF_STONE") + 1));
+        if (relic_counter("SWORD_OF_STONE") >= SWORD_OF_STONE_ELITES) {
+            for (std::string_view& relic : relics) {
+                if (relic == "SWORD_OF_STONE") relic = "SWORD_OF_JADE";
+            }
+        }
     }
     // War Hammer: killing an Elite upgrades 4 random cards of the deck.
     if (room == RoomType::ELITE && has_relic("WAR_HAMMER")) upgrade_random_cards(4);

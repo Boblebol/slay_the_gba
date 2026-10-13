@@ -204,6 +204,13 @@ public:
     static std::span<const CardId> card_reward_pool(CharacterId char_id);
     void pick_card_reward(int reward_index);
     void skip_card_rewards();
+    // Driftwood: the card reward on screen can be drawn again, once per reward.
+    [[nodiscard]] bool can_reroll_card_rewards() const;
+    bool reroll_card_rewards();
+    // Paël's Wing: the card reward on screen is given up to Paël, and every second one gives a random relic. True
+    // when this one gave it.
+    [[nodiscard]] bool can_sacrifice_card_rewards() const;
+    bool sacrifice_card_rewards();
     // Takes the potion of the reward screen. With a full belt, `replace_index` is the potion thrown away to make
     // room; without it the potion stays on offer.
     bool take_potion_reward(int replace_index = -1);
@@ -212,6 +219,8 @@ public:
     // Stores the relic, then resolves what it does when obtained.
     void add_relic(std::string_view relic_id);
     bool has_relic(std::string_view relic_id) const;
+    // Fur Coat: one of the combats of the act it marked, where the enemies have 1 HP.
+    [[nodiscard]] bool fur_coat_room(int node_index) const;
 
     // Effects a relic has when obtained. Each one is also usable on its own.
     // Raises the maximum HP, and the current HP by as much.
@@ -312,6 +321,18 @@ private:
     // Monsters of a fighting room, drawn from the encounter table of the act and the floor.
     FixedVector<EnemyType, MAX_ENEMIES> draw_encounter(RoomType room);
     // Seed of the reward stream of the current room (see RewardRng).
+    // What the card reward on screen was drawn with, so that Driftwood draws it again the same way.
+    struct CardRewardDraw {
+        bool boss = false;
+        CardRarity rarity = CardRarity::NONE;
+        bool elite = false;
+        CharacterId hero = CharacterId::COUNT;
+        uint8_t silver_crucible = 0; // relic counters before the draw, which the draw moves
+        uint8_t silken_tress = 0;
+        bool rerolled = false;
+    };
+    CardRewardDraw last_card_reward_draw;
+
     uint32_t reward_seed() const;
     // Leaves the reward screen: the gold is paid, and a boss opens the next act.
     void finish_rewards();
