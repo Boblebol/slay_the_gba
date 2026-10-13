@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 93,2 %** — 1156 faits, 15 partiels, 78 à faire (35 hors périmètre).
+**Avancement global : 93,2 %** — 1157 faits, 15 partiels, 77 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 117 | 0 | 3 | 97,5 % |
-| [Reliques et potions](#reliques) | 316 | 0 | 5 | 98,4 % |
+| [Reliques et potions](#reliques) | 317 | 0 | 4 | 98,8 % |
 | [Bestiaire](#bestiaire) | 98 | 0 | 6 | 94,2 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 18 | 6 | 7 | 67,7 % |
-| **Total** | **1156** | **15** | **78** | **93,2 %** |
+| **Total** | **1157** | **15** | **77** | **93,2 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 98,4 %
+## Reliques et potions — 98,8 %
 
 ### Reliques partagées — 98,3 %
 
@@ -985,9 +985,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Lentille de Fresnel | Évènement | Oui |  |
 | Diadème | Secours | Oui |  |
 
-### Reliques d'évènement — 97,4 %
+### Reliques d'évènement — 100,0 %
 
-38 faits, 0 partiel, 1 à faire.
+39 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1015,7 +1015,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Manuel d'Histoire | Évènement | Oui |  |
 | Monsieur Carnage | Évènement | Oui |  |
 | Noyau pollinique | Évènement | Oui |  |
-| Oizillon | Évènement | Non |  |
+| Oizillon | Évènement | Oui |  |
 | Orichalque ??? | Évènement | Oui |  |
 | Perceuse | Évènement | Oui |  |
 | Pin’s Exclusif de Fidélité Wongo | Évènement | Oui |  |
