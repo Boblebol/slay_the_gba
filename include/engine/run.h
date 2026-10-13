@@ -97,6 +97,9 @@ struct AncientOffer {
 // others).
 constexpr size_t MAX_ANCIENT_OFFERS = 3;
 
+// Spoils Map: the extra Gold of the room it marks in the next act.
+constexpr int16_t SPOILS_MAP_GOLD = 600;
+
 struct AscensionModifier {
     uint8_t level;
     std::string_view title;
@@ -291,6 +294,9 @@ public:
     void proceed_after_combat();
     // Opens the next act on its own map, then meets its Ancient (phase ANCIENT_BLESSING).
     void advance_act();
+    // Spoils Map: the room of the current act's map it marks (the card keeps it as node index + 1 in `bonus`), -1
+    // when the deck holds no marked Spoils Map.
+    [[nodiscard]] int spoils_map_node() const;
     bool is_run_completed() const;
 
     // Ancients
@@ -364,6 +370,8 @@ private:
     void on_card_added(DeckCard& card);
     void on_gold_gained(int16_t amount);
     void count_hook(RunHook hook);
+    // Spoils Map: each copy of the deck marks a room of the act's map just drawn (see spoils_map_node).
+    void mark_spoils_map_sites();
     int upgrade_random_cards(int count, bool any_type, CardType type);
 };
 

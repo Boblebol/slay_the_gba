@@ -38,6 +38,8 @@ bool ancient_relic_pending(std::string_view relic_id) {
 
 // Mixed into the seed of the act's first room so the Ancient has a stream of its own (see RunManager::meet_ancient).
 constexpr uint32_t ANCIENT_SEED_SALT = 0xA5C1E7D3u;
+// Mixed into the map seed to draw the rooms the Spoils Maps mark, without moving the run's generator.
+constexpr uint32_t SPOILS_MAP_SEED_SALT = 0x5B011E5Du;
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
 // Sword of Stone: Elites to defeat before it becomes the Sword of Jade.
@@ -261,6 +263,12 @@ void RunManager::enter_room(int node_index) {
     const auto& node = map.nodes[node_index];
     current_floor = node.floor + 1;
     on_room_entered(node.type);
+    // Spoils Map: the room it marks holds its Gold, and the card leaves the deck once the Gold is found.
+    for (size_t i = master_deck.size(); i > 0; --i) {
+        if (master_deck[i - 1].id != CardId::SPOILS_MAP || master_deck[i - 1].bonus != node_index + 1) continue;
+        master_deck.erase(i - 1);
+        gain_gold(SPOILS_MAP_GOLD);
+    }
     // Maw Bank: each floor climbed gives Gold, until the run spends some at the merchant (counter set to 1).
     if (has_relic("MAW_BANK") && relic_counter("MAW_BANK") == 0) gain_gold(MAW_BANK_GOLD);
 
@@ -2362,8 +2370,30 @@ void RunManager::advance_act() {
     current_node_index = -1;
     map_seed = next_random();
     regenerate_map();
+    mark_spoils_map_sites();
     // The Ancient has a stream of its own: the run's generator only moved for the seed of the new map.
     meet_ancient(draw_ancient(current_act, reward_seed() ^ ANCIENT_SEED_SALT));
+}
+
+void RunManager::mark_spoils_map_sites() {
+    // Any room but the boss can be marked. A map not found in its act is marked again in the next one.
+    FixedVector<uint8_t, MAX_MAP_NODES> sites;
+    for (size_t i = 0; i < map.nodes.size(); ++i) {
+        if (map.nodes[i].type != RoomType::BOSS) sites.push_back(static_cast<uint8_t>(i));
+    }
+    if (sites.empty()) return;
+    RewardRng rng(map_seed ^ SPOILS_MAP_SEED_SALT);
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (master_deck[i].id != CardId::SPOILS_MAP) continue;
+        master_deck[i].bonus = static_cast<uint8_t>(sites[rng.below(static_cast<uint32_t>(sites.size()))] + 1);
+    }
+}
+
+int RunManager::spoils_map_node() const {
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (master_deck[i].id == CardId::SPOILS_MAP && master_deck[i].bonus > 0) return master_deck[i].bonus - 1;
+    }
+    return -1;
 }
 
 AncientId RunManager::draw_ancient(uint8_t act, uint32_t seed) {

@@ -665,6 +665,8 @@ enum class CardId : uint16_t {
     WITHER,
     // Quest card: transforms into Abundance after 5 ? rooms
     DOWSING,
+    // Quest card: the next act marks a room holding 600 Gold
+    SPOILS_MAP,
     COUNT
 };
 

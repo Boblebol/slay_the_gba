@@ -882,6 +882,7 @@ CARDS: list[CardArt] = [
     CardArt("beckon", "status", "void", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
     CardArt("wither", "status", "soot", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
     CardArt("dowsing", "status", "dowsing", "status", (NO_COST, NO_COST), folder="quest"),
+    CardArt("spoils_map", "status", "spoils_map", "status", (NO_COST, NO_COST), folder="quest"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
