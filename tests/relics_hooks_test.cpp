@@ -4615,6 +4615,25 @@ void test_fishing_rod() {
     std::cout << "[PASS] Fishing Rod upgrades a card every 3 normal fights" << std::endl;
 }
 
+void test_touch_of_orobas() {
+    // Obtained: the starter relic (Burning Blood for the Ironclad) becomes its Ancient version.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    assert(run.has_relic("BURNING_BLOOD"));
+    run.add_relic("TOUCH_OF_OROBAS");
+    assert(run.has_relic("TOUCH_OF_OROBAS"));
+    assert(run.has_relic("BLACK_BLOOD") && !run.has_relic("BURNING_BLOOD"));
+
+    // Without the relic, the starter relic stays.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("TOUCH_OF_OROBAS") && plain.has_relic("BURNING_BLOOD"));
+    assert(!plain.has_relic("BLACK_BLOOD"));
+
+    std::cout << "[PASS] Touch of Orobas: starter relic replaced by its Ancient version" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -4644,6 +4663,7 @@ int main() {
     test_ember_tea();
     test_paels_legion();
     test_golden_pearl();
+    test_touch_of_orobas();
     test_venerable_tea_set();
     test_fake_venerable_tea_set();
     test_divine_destiny();
