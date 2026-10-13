@@ -89,7 +89,8 @@ public:
                     // Meat Cleaver: the run asks for 2 cards to remove, then the map is back (see DeckChoiceScene).
                     play_sfx(Sfx::UI_OPEN);
                     _ctx.run.cook_at_campfire();
-                    return scene_after_deck_choice(_ctx, SceneId::MAP);
+                    return scene_after_deck_choice(_ctx, _ctx.run.phase == engine::RunPhase::CAMPFIRE ? SceneId::CAMPFIRE
+                                                                                                   : SceneId::MAP);
                 }
                 else if(action == engine::CampfireAction::LIFT)
                 {
@@ -123,6 +124,13 @@ public:
                         _popups.spawn(0, 10, "Rien à fouiller", TextColor::GRAY);
                         play_sfx(Sfx::ERROR);
                     }
+                }
+                else if(action == engine::CampfireAction::LEAVE)
+                {
+                    // Miniature Tent: the player is done with the rest site.
+                    play_sfx(Sfx::UI_CONFIRM);
+                    _ctx.run.leave_campfire();
+                    return SceneId::MAP;
                 }
                 else if(action == engine::CampfireAction::CLONE)
                 {
@@ -213,6 +221,19 @@ public:
                 {
                     return SceneId::REWARDS;
                 }
+
+                // Miniature Tent: the actions not done yet are offered again.
+                if(_ctx.run.phase == engine::RunPhase::CAMPFIRE)
+                {
+                    _actions = _ctx.run.campfire_actions();
+                    _cursor = 0;
+                    _picker.clear();
+                    _stage = Stage::MENU;
+                    _refresh_hp();
+                    _refresh_options();
+                    break;
+                }
+
                 _ctx.run.phase = engine::RunPhase::MAP_NAVIGATION;
                 return SceneId::MAP;
             }
@@ -306,6 +327,9 @@ private:
                 break;
             case engine::CampfireAction::CLONE:
                 stream << "Cloner : dupliquer une carte";
+                break;
+            case engine::CampfireAction::LEAVE:
+                stream << "Partir";
                 break;
             default:
                 stream << "Cuisiner : -2 cartes, +5 PV Max";

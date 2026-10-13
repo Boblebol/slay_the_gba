@@ -13,7 +13,7 @@ inline constexpr uint8_t VOLUME_MAX = 10;
 
 enum class ControlPreset : uint8_t
 {
-    CLASSIC, // L opens the potion belt, R or START ends the turn
+    CLASSIC, // L opens the potion belt, R ends the turn
     QUICK,   // L ends the turn, R opens the potion belt (both hands on the shoulder buttons)
     COUNT
 };
@@ -29,7 +29,8 @@ enum class Shortcut : uint8_t
     NONE,
     END_TURN,
     POTIONS,
-    DECK
+    DECK,
+    PAUSE // START opens the pause menu (#10), which can still end the turn
 };
 
 enum class OptionRow : uint8_t
@@ -67,7 +68,7 @@ constexpr void sanitize_settings(GameSettings& settings)
     case Button::R:
         return quick ? Shortcut::POTIONS : Shortcut::END_TURN;
     case Button::START:
-        return Shortcut::END_TURN;
+        return Shortcut::PAUSE;
     case Button::SELECT:
         return Shortcut::DECK;
     default:
@@ -131,7 +132,7 @@ inline constexpr int LEGEND_LINE_COUNT = 5;
     case 0:
         return quick ? "L : fin du tour    R : potions" : "L : potions    R : fin du tour";
     case 1:
-        return "SELECT : deck    START : fin du tour";
+        return "SELECT : deck    START : pause";
     case 2:
         return "Croix : choisir carte ou cible";
     case 3:
@@ -139,6 +140,22 @@ inline constexpr int LEGEND_LINE_COUNT = 5;
     default:
         return "B : retour / annuler";
     }
+}
+
+// Key reminders of the combat screen, for the chosen preset.
+[[nodiscard]] constexpr const char* end_turn_reminder(ControlPreset preset)
+{
+    return preset == ControlPreset::QUICK ? "L : fin du tour" : "R : fin du tour";
+}
+
+[[nodiscard]] constexpr const char* potions_reminder(ControlPreset preset)
+{
+    return preset == ControlPreset::QUICK ? "R : potions" : "L : potions";
+}
+
+[[nodiscard]] constexpr const char* belt_reminder(ControlPreset preset)
+{
+    return preset == ControlPreset::QUICK ? "R : potions   L : fin du tour" : "L : potions   R : fin du tour";
 }
 
 } // namespace engine
