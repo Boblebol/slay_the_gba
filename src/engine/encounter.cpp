@@ -117,6 +117,9 @@ constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
 constexpr Encounter LAGAVULIN_MATRIARCH_BOSS[] = {
     { "LagavulinMatriarchBoss"sv, 1, { EnemyType::LAGAVULIN_MATRIARCH } },
 };
+constexpr Encounter TEST_SUBJECT_BOSS[] = {
+    { "TestSubjectBoss"sv, 1, { EnemyType::TEST_SUBJECT } },
+};
 constexpr Encounter THE_INSATIABLE_BOSS[] = {
     { "TheInsatiableBoss"sv, 1, { EnemyType::THE_INSATIABLE } },
 };
@@ -126,7 +129,7 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, LAGAVULIN_MATRIARCH_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, THE_INSATIABLE_BOSS },
-    { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, TEST_SUBJECT_BOSS },
 };
 
 } // namespace

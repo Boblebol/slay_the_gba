@@ -10,7 +10,7 @@ using namespace engine;
 
 namespace {
 
-constexpr int ENEMY_TYPES = static_cast<int>(EnemyType::LAGAVULIN_MATRIARCH) + 1;
+constexpr int ENEMY_TYPES = static_cast<int>(EnemyType::TEST_SUBJECT) + 1;
 
 bool is_hand_written(EnemyType type) {
     return type == EnemyType::CULTIST || type == EnemyType::JAW_WORM || type == EnemyType::LOUSE ||
