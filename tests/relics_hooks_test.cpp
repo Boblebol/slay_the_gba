@@ -4615,6 +4615,66 @@ void test_fishing_rod() {
     std::cout << "[PASS] Fishing Rod upgrades a card every 3 normal fights" << std::endl;
 }
 
+// A room of the floor after the current room that its paths do not reach, -1 when they reach them all.
+int room_off_the_paths(const RunManager& run) {
+    FixedVector<int, 3> paths = run.map.get_next_nodes(run.current_node_index);
+    const uint8_t next_floor = static_cast<uint8_t>(run.map.nodes[run.current_node_index].floor + 1);
+    for (size_t i = 0; i < run.map.nodes.size(); ++i) {
+        if (run.map.nodes[i].floor != next_floor) continue;
+        bool on_path = false;
+        for (int next : paths) on_path = on_path || next == static_cast<int>(i);
+        if (!on_path) return static_cast<int>(i);
+    }
+    return -1;
+}
+
+void test_winged_boots() {
+    // 3 times, a room of the next floor off the paths can be chosen; the paths themselves cost nothing.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 712);
+    run.add_relic("WINGED_BOOTS");
+    assert(run.has_relic("WINGED_BOOTS") && run.relic_counter("WINGED_BOOTS") == 3);
+    run.enter_room(run.get_available_rooms()[0]);
+    int flights = 3;
+    int floor = 0;
+    while (flights > 0 && floor < 13) {
+        ++floor;
+        FixedVector<int, 3> rooms = run.get_available_rooms();
+        const uint8_t next_floor = static_cast<uint8_t>(run.map.nodes[run.current_node_index].floor + 1);
+        for (int room : rooms) assert(run.map.nodes[room].floor == next_floor);
+        for (size_t i = 1; i < rooms.size(); ++i) assert(run.map.nodes[rooms[i - 1]].lane < run.map.nodes[rooms[i]].lane);
+        int off = room_off_the_paths(run);
+        if (off < 0) {
+            run.enter_room(rooms[0]);
+            assert(run.relic_counter("WINGED_BOOTS") == flights);
+            continue;
+        }
+        bool offered = false;
+        for (int room : rooms) offered = offered || room == off;
+        assert(offered);
+        run.enter_room(off);
+        --flights;
+        assert(run.current_node_index == off && run.relic_counter("WINGED_BOOTS") == flights);
+    }
+    assert(flights == 0);
+    // No flight left: only the paths again.
+    FixedVector<int, 3> paths = run.map.get_next_nodes(run.current_node_index);
+    FixedVector<int, 3> rooms = run.get_available_rooms();
+    assert(rooms.size() == paths.size());
+    for (size_t i = 0; i < rooms.size(); ++i) assert(rooms[i] == paths[i]);
+
+    // Without the relic, only the paths.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 712);
+    plain.enter_room(plain.get_available_rooms()[0]);
+    assert(!plain.has_relic("WINGED_BOOTS"));
+    FixedVector<int, 3> plain_paths = plain.map.get_next_nodes(plain.current_node_index);
+    FixedVector<int, 3> plain_rooms = plain.get_available_rooms();
+    assert(plain_rooms.size() == plain_paths.size());
+    for (size_t i = 0; i < plain_rooms.size(); ++i) assert(plain_rooms[i] == plain_paths[i]);
+    std::cout << "[PASS] Winged Boots: 3 rooms off the paths of the map" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -4786,6 +4846,7 @@ int main() {
     test_bing_bong();
     test_paper_phrog();
     test_silver_crucible();
+    test_winged_boots();
     test_silken_tress();
     test_forgotten_soul();
     test_fishing_rod();
