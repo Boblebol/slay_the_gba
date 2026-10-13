@@ -131,15 +131,16 @@ constexpr Encounter ACT1A_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
     { "VantomBoss"sv, 1, { EnemyType::VANTOM } },
 };
-constexpr Encounter THE_INSATIABLE_BOSS[] = {
+constexpr Encounter ACT2_BOSS[] = {
     { "TheInsatiableBoss"sv, 1, { EnemyType::THE_INSATIABLE } },
+    { "KnowledgeDemonBoss"sv, 1, { EnemyType::KNOWLEDGE_DEMON } },
 };
 
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, ACT1A_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, LAGAVULIN_MATRIARCH_BOSS },
-    { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, THE_INSATIABLE_BOSS },
+    { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, ACT2_BOSS },
     { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, ACT3_BOSS },
 };
 
