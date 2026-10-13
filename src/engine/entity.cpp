@@ -104,6 +104,8 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "LAGAVULIN_MATRIARCH", false, true },
     { "VANTOM", false, true },
     { "TEST_SUBJECT", false, true },
+    { "KNOWLEDGE_DEMON", false, true },
+    { "SOUL_FYSH", false, true },
     { "WATERFALL_GIANT", false, true },
 };
 static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::WATERFALL_GIANT) + 1,
@@ -1837,6 +1839,77 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = move_damage("LASH");
             current_intent.hits = sheet_move("LASH").hits;
             current_intent.description = "Fouet (3x2 dmg)";
+        }
+    } else if (type == EnemyType::SOUL_FYSH) {
+        // Beckon, De-Gas, Gaze, Fade and Scream, in a loop.
+        const int step = (turn_number - 1) % 5;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_card = CardId::BECKON;
+            current_intent.status_cards = SOUL_FYSH_BECKONS;
+            current_intent.status_pile = Pile::DRAW;
+            current_intent.description = "Appel (2 Appel)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("DE_GAS");
+            current_intent.description = "Dégazage (16 dmg)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("GAZE");
+            current_intent.status_card = CardId::BECKON;
+            current_intent.status_cards = SOUL_FYSH_GAZE_BECKONS;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Fixation (7 dmg, 1 Appel)";
+        } else if (step == 3) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::INTANGIBLE;
+            current_intent.status_amount = SOUL_FYSH_INTANGIBLE;
+            current_intent.description = "Camouflage (Intangible 2)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("SCREAM");
+            current_intent.debuffs[0] = { StatusType::VULNERABLE, SOUL_FYSH_SCREAM_VULNERABLE };
+            current_intent.description = "Hurlement (13 dmg, Vuln 3)";
+        }
+    } else if (type == EnemyType::KNOWLEDGE_DEMON) {
+        // Curse of Knowledge, Slap, Knowledge Overwhelming, Ponder, three times: each Curse of Knowledge puts its own
+        // curse on the player. Then (phase 1) only Slap, Knowledge Overwhelming and Ponder, in a loop.
+        constexpr int CURSE_CYCLE = 4;
+        if (phase == 0 && phase_turn > KNOWLEDGE_DEMON_CURSE_TIMES * CURSE_CYCLE && enter_phase(1)) phase_turn = 1;
+        const int step = phase == 0 ? (phase_turn - 1) % CURSE_CYCLE : (phase_turn - 1) % (CURSE_CYCLE - 1) + 1;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.power_on_player = true;
+            const int curse = (phase_turn - 1) / CURSE_CYCLE;
+            if (curse == 0) {
+                current_intent.power = PowerId::MIND_ROT;
+                current_intent.power_amount = KNOWLEDGE_DEMON_MIND_ROT;
+                current_intent.description = "Malédiction du savoir (Esprit pourri)";
+            } else if (curse == 1) {
+                current_intent.power = PowerId::WASTE_AWAY;
+                current_intent.power_amount = KNOWLEDGE_DEMON_WASTE_AWAY;
+                current_intent.description = "Malédiction du savoir (Dépérissement)";
+            } else {
+                current_intent.power = PowerId::DISINTEGRATION;
+                current_intent.power_amount = KNOWLEDGE_DEMON_DISINTEGRATION;
+                current_intent.description = "Malédiction du savoir (Désintégration)";
+            }
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("SLAP");
+            current_intent.description = "Claque (17 dmg)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("KNOWLEDGE_OVERWHELMING");
+            current_intent.hits = sheet_move("KNOWLEDGE_OVERWHELMING").hits;
+            current_intent.description = "Savoir accablant (8 dmg x3)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = move_damage("PONDER");
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? KNOWLEDGE_DEMON_PONDER_STRENGTH_ASC : KNOWLEDGE_DEMON_PONDER_STRENGTH;
+            current_intent.heal = KNOWLEDGE_DEMON_PONDER_HEAL;
+            current_intent.description = "Contemplation (11 dmg, +2 Force, soin 30)";
         }
     } else if (type == EnemyType::TEST_SUBJECT) {
         // First life: Bite, Skull Bash, in a loop. Each new life (respawn) opens on Respawn, which gives it Painful

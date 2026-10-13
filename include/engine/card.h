@@ -659,6 +659,8 @@ enum class CardId : uint16_t {
     INFECTION,
     // Status card given by the Insatiable
     FRANTIC_ESCAPE,
+    // Status card given by the Soul Fysh (its effect is guessed, see SOUL_FYSH_BECKONS)
+    BECKON,
     COUNT
 };
 
