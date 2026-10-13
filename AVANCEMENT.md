@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 89,6 %** — 1112 faits, 15 partiels, 122 à faire (35 hors périmètre).
+**Avancement global : 90,4 %** — 1121 faits, 15 partiels, 113 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 305 | 0 | 16 | 95,0 % |
-| [Bestiaire](#bestiaire) | 75 | 0 | 29 | 72,1 % |
+| [Bestiaire](#bestiaire) | 84 | 0 | 20 | 80,8 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
-| **Total** | **1112** | **15** | **122** | **89,6 %** |
+| **Total** | **1121** | **15** | **113** | **90,4 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,24 +1212,24 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 72,1 %
+## Bestiaire — 80,8 %
 
-### Monstres — 81,9 %
+### Monstres — 94,4 %
 
-59 faits, 0 partiel, 13 à faire.
+68 faits, 0 partiel, 4 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Assemblage Cubex | Monstre · Acte 1 (A) · Acte 3 | Oui |  |
 | Bourbelianes | Monstre · Acte 1 (A) | Oui |  |
 | Encrelin | Monstre · Acte 1 (A) | Oui |  |
-| Fongibrume | Monstre · Acte 1 (A) | Non |  |
+| Fongibrume | Monstre · Acte 1 (A) | Oui |  |
 | Grignotin | Monstre · Acte 1 (A) | Oui |  |
-| Jaxier à clapet | Monstre · Acte 1 (A) | Non |  |
-| Limon brindille (M) | Monstre · Acte 1 (A) | Non |  |
-| Limon brindille (S) | Monstre · Acte 1 (A) | Non |  |
-| Limon feuillu (M) | Monstre · Acte 1 (A) | Non |  |
-| Limon feuillu (S) | Monstre · Acte 1 (A) | Non |  |
+| Jaxier à clapet | Monstre · Acte 1 (A) | Oui |  |
+| Limon brindille (M) | Monstre · Acte 1 (A) | Oui |  |
+| Limon brindille (S) | Monstre · Acte 1 (A) | Oui |  |
+| Limon feuillu (M) | Monstre · Acte 1 (A) | Oui |  |
+| Limon feuillu (S) | Monstre · Acte 1 (A) | Oui |  |
 | Mycoptère | Monstre · Acte 1 (A) | Oui |  |
 | Oizillon | Invocation · Acte 1 (A) | Non |  |
 | Rampeluche | Monstre · Acte 1 (A) | Oui |  |
@@ -1240,13 +1240,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Rôdeur à la hache | Monstre · Acte 1 (A) | Oui |  |
 | Scarabrideur | Monstre · Acte 1 (A) | Oui |  |
 | Écharneur | Monstre · Acte 1 (A) | Oui |  |
-| Étrangleur | Monstre · Acte 1 (A) | Non |  |
+| Étrangleur | Monstre · Acte 1 (A) | Oui |  |
 | Œil denté | Monstre · Acte 1 (A) | Oui |  |
 | Adepte calcifié | Monstre · Acte 1 (B) | Oui |  |
 | Adepte moisi | Monstre · Acte 1 (B) | Oui |  |
 | Assemblage de pugilat | Monstre · Acte 1 (B) · Acte 3 | Oui |  |
 | Bombe à gaz | Monstre · Acte 1 (B) | Oui |  |
-| Brouillard vivant | Monstre · Acte 1 (B) | Non |  |
+| Brouillard vivant | Monstre · Acte 1 (B) | Oui |  |
 | Crapautard | Faible · Acte 1 (B) | Oui |  |
 | Diablotin mercenaire | Monstre · Acte 1 (B) | Oui |  |
 | Diablotin sournois | Monstre · Acte 1 (B) | Oui |  |
@@ -1254,7 +1254,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Navire hanté | Monstre · Acte 1 (B) | Oui |  |
 | Palourde d'égout | Monstre · Acte 1 (B) | Oui |  |
 | Putrilimace | Monstre · Acte 1 (B) | Oui |  |
-| Rat bicaudé | Monstre · Acte 1 (B) | Non |  |
+| Rat bicaudé | Monstre · Acte 1 (B) | Oui |  |
 | Tisse-boue | Faible · Acte 1 (B) | Oui |  |
 | Traqueur fossilisé | Monstre · Acte 1 (B) | Oui |  |
 | Voyou marin | Monstre · Acte 1 (B) | Oui |  |
