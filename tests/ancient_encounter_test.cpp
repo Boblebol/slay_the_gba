@@ -45,8 +45,8 @@ uint8_t option_of(AncientId id, size_t slot, std::string_view relic_id) {
 }
 
 bool pending(std::string_view relic_id) {
-    for (std::string_view id : { "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "DOWSING_ROD", "SEA_GLASS",
-                                 "TOUCH_OF_OROBAS", "ARCHAIC_TOOTH", "PAELS_WING", "TOY_BOX", "FUR_COAT" }) {
+    for (std::string_view id : { "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "SEA_GLASS",
+                                 "PAELS_WING", "TOY_BOX", "FUR_COAT" }) {
         if (id == relic_id) return true;
     }
     return false;
