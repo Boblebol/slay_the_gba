@@ -26,7 +26,8 @@ enum class SceneId : uint8_t
     CREDITS, // end credits scrolling after a winning run
     COMPENDIUM, // cards, relics, monsters and potions the profile has met
     STATISTICS, // runs, victories and Ascension of the profile
-    OPTIONS, // volumes and button preset, opened from the title screen
+    OPTIONS, // volumes and button preset, opened from the title screen or the pause menu
+    PAUSE, // pause menu opened with START in combat and on the map (#10)
     VICTORY,
     GAME_OVER
 };
@@ -52,6 +53,11 @@ struct GameContext
     bn::string<64> map_toast;       // message shown when the map scene opens (treasure, act change...)
     int frame = 0;                  // global frame counter
     bool title_menu = false;        // back from the compendium or the statistics: the title opens on its menu
+    SceneId pause_return = SceneId::MAP;   // scene the pause menu was opened from (COMBAT or MAP)
+    SceneId options_return = SceneId::TITLE; // scene the options go back to
+    int pause_cursor = 0;           // entry of the pause menu, kept while the deck or the options are open
+    bool deck_relics = false;       // the deck viewer opens on the relic list
+    bool pause_end_turn = false;    // "Finir le tour" picked in the pause menu: the fight ends the turn on resume
 };
 
 class Scene

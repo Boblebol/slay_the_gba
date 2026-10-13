@@ -663,6 +663,8 @@ enum class CardId : uint16_t {
     BECKON,
     // Status card given by the Aeonglass
     WITHER,
+    // Quest card: transforms into Abundance after 5 ? rooms
+    DOWSING,
     COUNT
 };
 

@@ -459,7 +459,9 @@ enum class EnemyType : uint8_t {
     QUEEN,                // Act 3 boss, with the Torch Head Amalgam
     TORCH_HEAD_AMALGAM,   // Act 3 boss, with the Queen
     CRUSHER,              // Act 2 boss, with the Rocket
-    ROCKET                // Act 2 boss, with the Crusher
+    ROCKET,               // Act 2 boss, with the Crusher
+    PHANTASMAL_GARDENER,  // Act 1 (B) elite
+    EXOSKELETON           // Act 2
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).

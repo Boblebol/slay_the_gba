@@ -31,13 +31,16 @@ struct Turn {
 };
 
 // Lets the enemy play `turns` one after the other against a player who never plays a card.
-void check_monster(EnemyType type, std::string_view name, int hp, std::initializer_list<Turn> turns) {
+// `hp` is the lowest HP of the sheet; a monster whose HP are drawn in a range (`hp_range`, the highest being `hp` +
+// `hp_range`) may start anywhere in it.
+void check_monster(EnemyType type, std::string_view name, int hp, std::initializer_list<Turn> turns, int hp_range = 0) {
     CombatEngine combat = make_combat(CharacterId::IRONCLAD, type);
     assert(combat.enemies.size() == 1);
     Enemy& enemy = combat.enemies[0];
     assert(enemy.type == type);
     assert(enemy.name == name);
-    assert(enemy.hp == hp && enemy.max_hp == hp);
+    assert(enemy.hp >= hp && enemy.hp <= hp + hp_range && enemy.max_hp == enemy.hp);
+    hp = enemy.hp;
     // Nothing but the Plating some monsters start the fight with.
     assert(enemy.block == 0 && enemy.statuses.size() == static_cast<size_t>(enemy.get_status(StatusType::PLATED_ARMOR) > 0));
 
@@ -596,7 +599,7 @@ void test_living_shield() {
 // A fight against `types`, the player never playing a card.
 CombatEngine make_pack(std::initializer_list<EnemyType> types) {
     CombatEngine combat;
-    FixedVector<EnemyType, 3> pack;
+    FixedVector<EnemyType, MAX_ENEMIES> pack;
     for (EnemyType type : types) pack.push_back(type);
     combat.start_combat_multi(pack, CharacterId::IRONCLAD);
     return combat;
@@ -5230,6 +5233,102 @@ void test_toadpole_ascension() {
     std::cout << "[PASS] Toadpole: Ascension gives 22 to 26 HP, Spike Spit 4x3 and Whirl 8" << std::endl;
 }
 
+void test_phantasmal_gardener() {
+    // Flail 1x3, Enlarge (+2 Strength), Bite 5, Lash 7, and again; Strength adds to every hit.
+    check_monster(EnemyType::PHANTASMAL_GARDENER, "Jardinier spectral", 26, {
+        { ATTACK, 1, 0, 0, 0, 3 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK, 7, 0, 2 },
+        { ATTACK, 9, 0, 2 },
+        { ATTACK, 3, 0, 2, 0, 3 },
+        { BUFF, 0, 0, 4 },
+        { ATTACK, 9, 0, 4 },
+        { ATTACK, 11, 0, 4 },
+    }, 5);
+    // Four gardeners: each starts the loop at its own place (Flail, Bite, Lash, Enlarge).
+    CombatEngine pack = make_pack({ EnemyType::PHANTASMAL_GARDENER, EnemyType::PHANTASMAL_GARDENER,
+                                    EnemyType::PHANTASMAL_GARDENER, EnemyType::PHANTASMAL_GARDENER });
+    assert(pack.enemies.size() == 4);
+    const EnemyIntentType first[] = { ATTACK, ATTACK, ATTACK, BUFF };
+    const int damage[] = { 1, 5, 7, 0 };
+    for (size_t i = 0; i < 4; ++i) {
+        const Enemy& gardener = pack.enemies[i];
+        assert(gardener.current_intent.type == first[i] && gardener.intent_damage(pack.player) == damage[i]);
+        assert(gardener.current_intent.hits == (i == 0 ? 3 : 1));
+    }
+    pass_turn(pack);
+    const EnemyIntentType second[] = { BUFF, ATTACK, ATTACK, ATTACK };
+    for (size_t i = 0; i < 4; ++i) assert(pack.enemies[i].current_intent.type == second[i]);
+    std::cout << "[PASS] Phantasmal Gardener: 26 HP, Flail, Enlarge, Bite and Lash in a loop, started by its place"
+              << std::endl;
+}
+
+void test_phantasmal_gardener_ascension() {
+    // 27 HP, Enlarge gives 3 Strength at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_pack({ EnemyType::PHANTASMAL_GARDENER });
+        Enemy& gardener = combat.enemies[0];
+        gardener.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        const int16_t base = gardener.hp;
+        assert(gardener.ascension_hp() == 27 && gardener.hp_spread() == 5);
+        assert(base >= 26 && base <= 31 && gardener.max_hp == 26 + gardener.hp_bonus);
+        gardener.ascend(true, true);
+        combat.plan_enemies();
+        assert(gardener.hp == base + 1 && gardener.max_hp == base + 1 && gardener.hp >= 27 && gardener.hp <= 32);
+        pass_turn(combat);
+        assert(gardener.current_intent.type == BUFF && gardener.current_intent.status_amount == 3);
+        pass_turn(combat);
+        assert(gardener.get_status(StatusType::STRENGTH) == 3);
+    }
+    std::cout << "[PASS] Phantasmal Gardener: Ascension gives 27 to 32 HP and Enlarge of 3 Strength" << std::endl;
+}
+
+void test_exoskeleton() {
+    // Alone (first place): Skitter 1x3, then Mandibles 8 and Skitter in turn (the draw never repeats a move).
+    check_monster(EnemyType::EXOSKELETON, "Exosquelette", 24, {
+        { ATTACK, 1, 0, 0, 0, 3 },
+        { ATTACK, 8, 0, 0 },
+        { ATTACK, 1, 0, 0, 0, 3 },
+        { ATTACK, 8, 0, 0 },
+    }, 4);
+    // Four exoskeletons: Skitter, Mandibles then Enrage, Enrage, then a draw.
+    CombatEngine pack = make_pack({ EnemyType::EXOSKELETON, EnemyType::EXOSKELETON, EnemyType::EXOSKELETON,
+                                    EnemyType::EXOSKELETON });
+    assert(pack.enemies.size() == 4);
+    assert(pack.enemies[0].current_intent.type == ATTACK && pack.enemies[0].current_intent.hits == 3);
+    assert(pack.enemies[1].current_intent.type == ATTACK && pack.enemies[1].current_intent.hits == 1 &&
+           pack.enemies[1].intent_damage(pack.player) == 8);
+    assert(pack.enemies[2].current_intent.type == BUFF);
+    assert(pack.enemies[3].current_intent.type == ATTACK);
+    pass_turn(pack);
+    assert(pack.enemies[1].current_intent.type == BUFF);
+    assert(pack.enemies[2].current_intent.type == ATTACK);
+    assert(pack.enemies[2].get_status(StatusType::STRENGTH) == 2);
+    pass_turn(pack);
+    assert(pack.enemies[1].get_status(StatusType::STRENGTH) == 2);
+    assert(pack.enemies[1].current_intent.type == ATTACK);
+    std::cout << "[PASS] Exoskeleton: 24 HP, Skitter 1x3, Mandibles 8 and Enrage, started by its place" << std::endl;
+}
+
+void test_exoskeleton_ascension() {
+    // 26 to 30 HP, Skitter 1x4 and Mandibles 9 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_pack({ EnemyType::EXOSKELETON });
+        Enemy& bug = combat.enemies[0];
+        bug.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        const int16_t base = bug.hp;
+        assert(bug.ascension_hp() == 26 && bug.hp_spread() == 4);
+        assert(base >= 24 && base <= 28 && bug.max_hp == 24 + bug.hp_bonus);
+        bug.ascend(true, true);
+        combat.plan_enemies();
+        assert(bug.hp == base + 2 && bug.max_hp == base + 2 && bug.hp >= 26 && bug.hp <= 30);
+        assert(bug.current_intent.hits == 4 && bug.intent_damage(combat.player) == 1);
+        pass_turn(combat);
+        assert(bug.current_intent.hits == 1 && bug.intent_damage(combat.player) == 9);
+    }
+    std::cout << "[PASS] Exoskeleton: Ascension gives 26 to 30 HP, Skitter 1x4 and Mandibles 9" << std::endl;
+}
+
 void test_hunter_killer() {
     // Tenderizing Goop (Tender 1 on the player), Bite 17, Puncture 7x3, then a draw between Bite (never twice
     // in a row) and Puncture.
@@ -6264,6 +6363,10 @@ int main() {
     test_sludge_spinner_ascension();
     test_toadpole();
     test_toadpole_ascension();
+    test_phantasmal_gardener();
+    test_phantasmal_gardener_ascension();
+    test_exoskeleton();
+    test_exoskeleton_ascension();
     test_hunter_killer();
     test_hunter_killer_ascension();
     test_mawler();
