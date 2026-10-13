@@ -121,6 +121,8 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::AEONGLASS: return "AEONGLASS";
         case EnemyType::QUEEN: return "QUEEN";
         case EnemyType::TORCH_HEAD_AMALGAM: return "TORCH_HEAD_AMALGAM";
+        case EnemyType::CRUSHER: return "CRUSHER";
+        case EnemyType::ROCKET: return "ROCKET";
         case EnemyType::PHANTASMAL_GARDENER: return "PHANTASMAL_GARDENER";
         case EnemyType::EXOSKELETON: return "EXOSKELETON";
     }
@@ -248,19 +250,21 @@ void test_reference_encounters() {
                                         "FossilStalkerNormal", "SeapunkNormal", "LivingFogNormal",
                                         "TwoTailedRatsNormal" }));
     // Act 1 (A) draws its boss between the Ceremonial Beast, the Vantom and the Kin, Act 1 (B) between the Lagavulin
-    // Matriarch, the Soul Fysh and the Waterfall Giant, Act 2 between the Insatiable and the Knowledge Demon, Act 3
-    // between the Test Subject, the Aeonglass and the Queen.
+    // Matriarch, the Soul Fysh and the Waterfall Giant, Act 2 between the Insatiable, the Knowledge Demon and the
+    // Crusher with the Rocket, Act 3 between the Test Subject, the Aeonglass and the Queen.
     for (ActZone zone : ZONES) {
         std::set<std::string_view> bosses{ "TestSubjectBoss", "AeonglassBoss", "QueenBoss" };
         if (zone == ActZone::ACT1A) bosses = { "CeremonialBeastBoss", "VantomBoss", "TheKinBoss" };
-        if (zone == ActZone::ACT2) bosses = { "TheInsatiableBoss", "KnowledgeDemonBoss" };
+        if (zone == ActZone::ACT2) bosses = { "TheInsatiableBoss", "KnowledgeDemonBoss", "KaiserCrabBoss" };
         if (zone == ActZone::ACT1B) bosses = { "LagavulinMatriarchBoss", "SoulFyshBoss", "WaterfallGiantBoss" };
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) == bosses);
     }
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::BOSS)) ==
-           (std::set<std::string_view>{ "TheInsatiableBoss", "KnowledgeDemonBoss" }));
+           (std::set<std::string_view>{ "TheInsatiableBoss", "KnowledgeDemonBoss", "KaiserCrabBoss" }));
     const Encounter& demon = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::BOSS), "KnowledgeDemonBoss");
     assert(demon.count == 1 && demon.monsters[0] == EnemyType::KNOWLEDGE_DEMON);
+    const Encounter& crab = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::BOSS), "KaiserCrabBoss");
+    assert(crab.count == 2 && crab.monsters[0] == EnemyType::CRUSHER && crab.monsters[1] == EnemyType::ROCKET);
     const Encounter& vantom = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::BOSS), "VantomBoss");
     assert(vantom.count == 1 && vantom.monsters[0] == EnemyType::VANTOM);
     const Encounter& kin = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::BOSS), "TheKinBoss");
