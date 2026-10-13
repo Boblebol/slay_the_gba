@@ -150,6 +150,7 @@ private:
         if(_timer > 20 && bn::keypad::select_pressed())
         {
             play_sfx(Sfx::UI_OPEN);
+            _ctx.options_return = SceneId::TITLE;
             return SceneId::OPTIONS;
         }
 

@@ -4654,6 +4654,217 @@ void test_fur_coat() {
     std::cout << "[PASS] Fur Coat: 8 combats of the act marked, their enemies at 1 HP" << std::endl;
 }
 
+// A room of the floor after the current room that its paths do not reach, -1 when they reach them all.
+int room_off_the_paths(const RunManager& run) {
+    FixedVector<int, 3> paths = run.map.get_next_nodes(run.current_node_index);
+    const uint8_t next_floor = static_cast<uint8_t>(run.map.nodes[run.current_node_index].floor + 1);
+    for (size_t i = 0; i < run.map.nodes.size(); ++i) {
+        if (run.map.nodes[i].floor != next_floor) continue;
+        bool on_path = false;
+        for (int next : paths) on_path = on_path || next == static_cast<int>(i);
+        if (!on_path) return static_cast<int>(i);
+    }
+    return -1;
+}
+
+void test_winged_boots() {
+    // 3 times, a room of the next floor off the paths can be chosen; the paths themselves cost nothing.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 712);
+    run.add_relic("WINGED_BOOTS");
+    assert(run.has_relic("WINGED_BOOTS") && run.relic_counter("WINGED_BOOTS") == 3);
+    run.enter_room(run.get_available_rooms()[0]);
+    int flights = 3;
+    int floor = 0;
+    while (flights > 0 && floor < 13) {
+        ++floor;
+        FixedVector<int, 3> rooms = run.get_available_rooms();
+        const uint8_t next_floor = static_cast<uint8_t>(run.map.nodes[run.current_node_index].floor + 1);
+        for (int room : rooms) assert(run.map.nodes[room].floor == next_floor);
+        for (size_t i = 1; i < rooms.size(); ++i) assert(run.map.nodes[rooms[i - 1]].lane < run.map.nodes[rooms[i]].lane);
+        int off = room_off_the_paths(run);
+        if (off < 0) {
+            run.enter_room(rooms[0]);
+            assert(run.relic_counter("WINGED_BOOTS") == flights);
+            continue;
+        }
+        bool offered = false;
+        for (int room : rooms) offered = offered || room == off;
+        assert(offered);
+        run.enter_room(off);
+        --flights;
+        assert(run.current_node_index == off && run.relic_counter("WINGED_BOOTS") == flights);
+    }
+    assert(flights == 0);
+    // No flight left: only the paths again.
+    FixedVector<int, 3> paths = run.map.get_next_nodes(run.current_node_index);
+    FixedVector<int, 3> rooms = run.get_available_rooms();
+    assert(rooms.size() == paths.size());
+    for (size_t i = 0; i < rooms.size(); ++i) assert(rooms[i] == paths[i]);
+
+    // Without the relic, only the paths.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 712);
+    plain.enter_room(plain.get_available_rooms()[0]);
+    assert(!plain.has_relic("WINGED_BOOTS"));
+    FixedVector<int, 3> plain_paths = plain.map.get_next_nodes(plain.current_node_index);
+    FixedVector<int, 3> plain_rooms = plain.get_available_rooms();
+    assert(plain_rooms.size() == plain_paths.size());
+    for (size_t i = 0; i < plain_rooms.size(); ++i) assert(plain_rooms[i] == plain_paths[i]);
+    std::cout << "[PASS] Winged Boots: 3 rooms off the paths of the map" << std::endl;
+}
+
+void test_driftwood() {
+    // Each card reward can be drawn again once: new cards, then no second reroll; the next reward has its own.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 745);
+    run.add_relic("DRIFTWOOD");
+    run.add_relic("SILVER_CRUCIBLE");
+    assert(run.has_relic("DRIFTWOOD"));
+    bool changed = false;
+    for (int reward = 0; reward < 4; ++reward) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+        assert(run.can_reroll_card_rewards());
+        FixedVector<DeckCard, 3> before = run.current_card_rewards;
+        assert(run.reroll_card_rewards());
+        assert(run.current_card_rewards.size() == before.size());
+        for (size_t i = 0; i < before.size(); ++i) changed = changed || run.current_card_rewards[i].id != before[i].id;
+        // Silver Crucible still counts the reward once: the first 3 are upgraded, rerolled or not.
+        for (const DeckCard& card : run.current_card_rewards) assert(card.upgraded == (reward < 3));
+        assert(!run.can_reroll_card_rewards() && !run.reroll_card_rewards());
+        assert(run.phase == RunPhase::REWARD_SCREEN);
+        run.skip_card_rewards();
+    }
+    assert(changed);
+
+    // Without the relic, the reward cannot be drawn again.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 745);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
+    FixedVector<DeckCard, 3> offered = plain.current_card_rewards;
+    assert(!plain.can_reroll_card_rewards() && !plain.reroll_card_rewards());
+    for (size_t i = 0; i < offered.size(); ++i) assert(plain.current_card_rewards[i].id == offered[i].id);
+    std::cout << "[PASS] Driftwood: each card reward can be rerolled once" << std::endl;
+}
+
+void test_paels_wing() {
+    // A card reward can be given up to Paël instead of a card; every second one gives a random relic.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 753);
+    run.add_relic("PAELS_WING");
+    assert(run.has_relic("PAELS_WING"));
+    const size_t deck = run.master_deck.size();
+    size_t owned = run.relics.size();
+    for (int sacrifice = 1; sacrifice <= 4; ++sacrifice) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        run.potion_reward = {};
+        assert(run.phase == RunPhase::REWARD_SCREEN && run.can_sacrifice_card_rewards());
+        bool relic = run.sacrifice_card_rewards();
+        assert(relic == (sacrifice % 2 == 0));
+        if (relic) ++owned;
+        assert(run.relics.size() == owned && run.master_deck.size() == deck);
+        assert(run.phase != RunPhase::REWARD_SCREEN);
+    }
+
+    // Without the relic, the card reward cannot be sacrificed.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 753);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    const size_t plain_owned = plain.relics.size();
+    assert(!plain.can_sacrifice_card_rewards() && !plain.sacrifice_card_rewards());
+    assert(plain.phase == RunPhase::REWARD_SCREEN && plain.relics.size() == plain_owned);
+    std::cout << "[PASS] Paël's Wing: card rewards sacrificed, a relic every 2" << std::endl;
+}
+
+void test_dowsing_rod() {
+    // Obtained: one Dowsing joins the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 720);
+    const size_t deck = run.master_deck.size();
+    run.add_relic("DOWSING_ROD");
+    assert(run.has_relic("DOWSING_ROD"));
+    assert(run.master_deck.size() == deck + 1 && run.master_deck.back().id == CardId::DOWSING && !run.master_deck.back().upgraded);
+
+    // Without the relic, no Dowsing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 720);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("DOWSING_ROD") && plain.master_deck.size() == deck);
+    for (const DeckCard& card : plain.master_deck) assert(card.id != CardId::DOWSING);
+    std::cout << "[PASS] Dowsing Rod: adds 1 Dowsing to the deck when obtained" << std::endl;
+}
+
+void test_touch_of_orobas() {
+    // Obtained: the starter relic (Burning Blood for the Ironclad) becomes its Ancient version.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    assert(run.has_relic("BURNING_BLOOD"));
+    run.add_relic("TOUCH_OF_OROBAS");
+    assert(run.has_relic("TOUCH_OF_OROBAS"));
+    assert(run.has_relic("BLACK_BLOOD") && !run.has_relic("BURNING_BLOOD"));
+
+    // Without the relic, the starter relic stays.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 778);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("TOUCH_OF_OROBAS") && plain.has_relic("BURNING_BLOOD"));
+    assert(!plain.has_relic("BLACK_BLOOD"));
+
+    std::cout << "[PASS] Touch of Orobas: starter relic replaced by its Ancient version" << std::endl;
+}
+
+void test_archaic_tooth() {
+    // Obtained: Bash, the Ironclad's starter card, becomes Break; its upgrade stays.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    size_t size = run.master_deck.size();
+    int bash = -1;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (run.master_deck[i].id == CardId::BASH) bash = static_cast<int>(i);
+    }
+    assert(bash >= 0);
+    run.master_deck[bash].upgraded = true;
+    run.add_relic("ARCHAIC_TOOTH");
+    assert(run.has_relic("ARCHAIC_TOOTH"));
+    assert(run.master_deck.size() == size);
+    assert(run.master_deck[bash].id == CardId::BREAK && run.master_deck[bash].upgraded);
+    for (const DeckCard& card : run.master_deck) assert(card.id != CardId::BASH);
+
+    // The Silent's Neutralize becomes Suppress.
+    RunManager silent;
+    silent.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 779);
+    silent.add_relic("ARCHAIC_TOOTH");
+    bool suppress = false;
+    for (const DeckCard& card : silent.master_deck) {
+        assert(card.id != CardId::NEUTRALIZE);
+        suppress = suppress || card.id == CardId::SUPPRESS;
+    }
+    assert(suppress);
+
+    // Without the relic, Bash stays.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("ARCHAIC_TOOTH"));
+    bool has_bash = false;
+    for (const DeckCard& card : plain.master_deck) {
+        assert(card.id != CardId::BREAK);
+        has_bash = has_bash || card.id == CardId::BASH;
+    }
+    assert(has_bash);
+    std::cout << "[PASS] Archaic Tooth: a starter card Transformed into its Ancient version" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -4683,6 +4894,8 @@ int main() {
     test_ember_tea();
     test_paels_legion();
     test_golden_pearl();
+    test_touch_of_orobas();
+    test_archaic_tooth();
     test_venerable_tea_set();
     test_fake_venerable_tea_set();
     test_divine_destiny();
@@ -4826,6 +5039,10 @@ int main() {
     test_paper_phrog();
     test_silver_crucible();
     test_fur_coat();
+    test_winged_boots();
+    test_driftwood();
+    test_paels_wing();
+    test_dowsing_rod();
     test_silken_tress();
     test_forgotten_soul();
     test_fishing_rod();
