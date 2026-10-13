@@ -449,7 +449,8 @@ enum class EnemyType : uint8_t {
     TWO_TAILED_RAT,       // Act 1 (B)
     LAGAVULIN_MATRIARCH,  // Act 1 (B) boss
     VANTOM,               // Act 1 (A) boss
-    TEST_SUBJECT          // Act 3 boss
+    TEST_SUBJECT,         // Act 3 boss
+    AEONGLASS             // Act 3 boss
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
@@ -492,6 +493,11 @@ constexpr int16_t CEREMONIAL_BEAST_PLOW_ASC = 160;
 constexpr uint8_t TEST_SUBJECT_RESPAWNS = 2;
 constexpr int16_t TEST_SUBJECT_HP[TEST_SUBJECT_RESPAWNS + 1] = { 100, 150, 200 };     // guessed
 constexpr int16_t TEST_SUBJECT_HP_ASC[TEST_SUBJECT_RESPAWNS + 1] = { 110, 165, 220 }; // guessed
+
+// Increasing Intensity, the Aeonglass's third move: the Strength it gives itself (Ascension: the second value). The
+// monster database names the buff without its amount: guessed, in line with the other bosses' +2 / +3 Strength.
+constexpr int16_t AEONGLASS_STRENGTH = 2;     // guessed
+constexpr int16_t AEONGLASS_STRENGTH_ASC = 3; // guessed
 
 // Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
 // moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire.

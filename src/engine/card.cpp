@@ -650,6 +650,7 @@ static constexpr CardDef CARDS[] = {
     { CardId::SPINNER, "Spinner", 1, CardType::POWER, TargetType::SELF, 0, 0, "At the start of your turn, channel 1 Glass orb.", "Spinner+", 1, 0, 0, "Channel 1 Glass orb. At the start of your turn, channel 1 Glass orb." },
     { CardId::INFECTION, "Infection", 0, CardType::STATUS, TargetType::SELF, 0, 0, "Unplayable.", "Infection", 0, 0, 0, "Unplayable.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
     { CardId::FRANTIC_ESCAPE, "Frantic Escape", 1, CardType::STATUS, TargetType::SELF, 1, 1, "Increase Sandpit by 1. Increase this card's cost by 1.", "Frantic Escape", 1, 1, 1, "Increase Sandpit by 1. Increase this card's cost by 1." },
+    { CardId::WITHER, "Wither", 0, CardType::STATUS, TargetType::SELF, 0, 0, "Unplayable.", "Wither", 0, 0, 0, "Unplayable.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
 };
 
 bool can_enchant(const DeckCard& card, Enchantment enchantment) {

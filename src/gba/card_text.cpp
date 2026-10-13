@@ -616,6 +616,8 @@ bn::string_view base_name(engine::CardId id)
         return "Plaie";
     case engine::CardId::INFECTION:
         return "Infection";
+    case engine::CardId::WITHER:
+        return "Érosion";
     case engine::CardId::FRANTIC_ESCAPE:
         return "Fuite éperdue";
     case engine::CardId::FUEL:
@@ -2435,6 +2437,7 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::SOOT:
     case engine::CardId::WOUND:
     case engine::CardId::INFECTION:
+    case engine::CardId::WITHER:
         stream << "Injouable.";
         break;
     case engine::CardId::FOLLY:
