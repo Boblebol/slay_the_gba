@@ -663,6 +663,12 @@ enum class CardId : uint16_t {
     BECKON,
     // Status card given by the Aeonglass
     WITHER,
+    // Quest card: transforms into Abundance after 5 ? rooms
+    DOWSING,
+    // Quest card: the next act marks a room holding 600 Gold
+    SPOILS_MAP,
+    // Quest card: hatches into the Byrdpip at a Rest Site
+    BYRDONIS_EGG,
     COUNT
 };
 

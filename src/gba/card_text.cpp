@@ -618,6 +618,12 @@ bn::string_view base_name(engine::CardId id)
         return "Infection";
     case engine::CardId::WITHER:
         return "Érosion";
+    case engine::CardId::DOWSING:
+        return "Rhabdomancie";
+    case engine::CardId::SPOILS_MAP:
+        return "Carte au trésor";
+    case engine::CardId::BYRDONIS_EGG:
+        return "Œuf d'oizodon";
     case engine::CardId::FRANTIC_ESCAPE:
         return "Fuite éperdue";
     case engine::CardId::BECKON:
@@ -2441,6 +2447,15 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::INFECTION:
     case engine::CardId::WITHER:
         stream << "Injouable.";
+        break;
+    case engine::CardId::DOWSING:
+        stream << "Injouable. 5 salles ? : devient Abondance.";
+        break;
+    case engine::CardId::SPOILS_MAP:
+        stream << "Injouable. 600 Or caché à l'Acte suivant.";
+        break;
+    case engine::CardId::BYRDONIS_EGG:
+        stream << "Injouable. Éclot à un Site de repos.";
         break;
     case engine::CardId::FOLLY:
         stream << "Injouable. Inné. Éthéré. Éternel.";

@@ -26,8 +26,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
-    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "DOWSING_ROD", "SEA_GLASS", "DRIFTWOOD",
-    "PAELS_WING", "TOY_BOX", "FUR_COAT",
+    "MASSIVE_SCROLL", "SCROLL_BOXES",
 };
 
 bool ancient_relic_pending(std::string_view relic_id) {
@@ -39,8 +38,24 @@ bool ancient_relic_pending(std::string_view relic_id) {
 
 // Mixed into the seed of the act's first room so the Ancient has a stream of its own (see RunManager::meet_ancient).
 constexpr uint32_t ANCIENT_SEED_SALT = 0xA5C1E7D3u;
+// Mixed into the map seed to draw the rooms the Spoils Maps mark, without moving the run's generator.
+constexpr uint32_t SPOILS_MAP_SEED_SALT = 0x5B011E5Du;
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+// Sword of Stone: Elites to defeat before it becomes the Sword of Jade.
+constexpr uint8_t SWORD_OF_STONE_ELITES = 5;
+// Toy Box: its counter keeps the Wax Relics left (low bits) and the fights won since the last one melted (high bits).
+constexpr uint8_t TOY_BOX_WAX_RELICS = 5;
+constexpr uint8_t TOY_BOX_COMBATS = 3;
+constexpr uint8_t TOY_BOX_WAX_MASK = 0x07;
+constexpr uint8_t TOY_BOX_COMBAT_SHIFT = 3;
+// Fur Coat: combats marked on the map, drawn from a stream of their own seeded by the map.
+constexpr uint8_t FUR_COAT_COMBATS = 8;
+constexpr uint32_t FUR_COAT_SEED_SALT = 0xF0C0A7u;
+// Winged Boots: rooms off the paths of the map the relic allows.
+constexpr uint8_t WINGED_BOOTS_FLIGHTS = 3;
+// Paël's Wing: card rewards sacrificed for each relic.
+constexpr uint8_t PAELS_WING_SACRIFICES = 2;
 // Nutritious Soup: the extra damage Tezcatara's Ember gives each enchanted Strike.
 constexpr uint8_t NUTRITIOUS_SOUP_EMBER_DAMAGE = 3;
 constexpr int THE_COURIER_DISCOUNT = 20;
@@ -157,9 +172,41 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     phase = RunPhase::MAP_NAVIGATION;
 }
 
+bool RunManager::fur_coat_room(int node_index) const {
+    // The counter keeps the act of the pickup (high bits) and the first floor still ahead then (low bits): with the
+    // map seed, they draw the same rooms again, after a reload too.
+    if (!has_relic("FUR_COAT") || node_index < 0 || static_cast<size_t>(node_index) >= map.nodes.size()) return false;
+    const uint8_t counter = relic_counter("FUR_COAT");
+    if (counter == 0 || counter >> 4 != current_act) return false;
+    const uint8_t from_floor = counter & 0x0F;
+    FixedVector<int, 64> combats;
+    for (size_t i = 0; i < map.nodes.size() && combats.size() < combats.capacity(); ++i) {
+        if (map.nodes[i].type == RoomType::MONSTER && map.nodes[i].floor >= from_floor) combats.push_back(static_cast<int>(i));
+    }
+    RewardRng rng(map_seed ^ FUR_COAT_SEED_SALT);
+    for (uint8_t marked = 0; marked < FUR_COAT_COMBATS && !combats.empty(); ++marked) {
+        size_t pick = rng.below(static_cast<uint32_t>(combats.size()));
+        if (combats[pick] == node_index) return true;
+        combats.erase(pick);
+    }
+    return false;
+}
+
 FixedVector<int, 3> RunManager::get_available_rooms() const {
     if (current_node_index < 0) {
         return map.get_starting_nodes();
+    }
+    // Winged Boots: while a flight is left, every room of the next floor can be reached, from left to right.
+    if (has_relic("WINGED_BOOTS") && relic_counter("WINGED_BOOTS") > 0 &&
+        static_cast<size_t>(current_node_index) < map.nodes.size()) {
+        const uint8_t next_floor = static_cast<uint8_t>(map.nodes[current_node_index].floor + 1);
+        FixedVector<int, 3> rooms;
+        for (uint8_t lane = 0; lane < 3; ++lane) {
+            for (size_t i = 0; i < map.nodes.size() && rooms.size() < rooms.capacity(); ++i) {
+                if (map.nodes[i].floor == next_floor && map.nodes[i].lane == lane) rooms.push_back(static_cast<int>(i));
+            }
+        }
+        if (!rooms.empty()) return rooms;
     }
     return map.get_next_nodes(current_node_index);
 }
@@ -206,10 +253,22 @@ FixedVector<EnemyType, MAX_ENEMIES> RunManager::draw_encounter(RoomType room) {
 }
 
 void RunManager::enter_room(int node_index) {
+    // Winged Boots: a room off the paths of the current one spends one of the flights.
+    if (current_node_index >= 0 && has_relic("WINGED_BOOTS") && relic_counter("WINGED_BOOTS") > 0) {
+        bool on_path = false;
+        for (int next : map.get_next_nodes(current_node_index)) on_path = on_path || next == node_index;
+        if (!on_path) set_relic_counter("WINGED_BOOTS", static_cast<uint8_t>(relic_counter("WINGED_BOOTS") - 1));
+    }
     current_node_index = node_index;
     const auto& node = map.nodes[node_index];
     current_floor = node.floor + 1;
     on_room_entered(node.type);
+    // Spoils Map: the room it marks holds its Gold, and the card leaves the deck once the Gold is found.
+    for (size_t i = master_deck.size(); i > 0; --i) {
+        if (master_deck[i - 1].id != CardId::SPOILS_MAP || master_deck[i - 1].bonus != node_index + 1) continue;
+        master_deck.erase(i - 1);
+        gain_gold(SPOILS_MAP_GOLD);
+    }
     // Maw Bank: each floor climbed gives Gold, until the run spends some at the merchant (counter set to 1).
     if (has_relic("MAW_BANK") && relic_counter("MAW_BANK") == 0) gain_gold(MAW_BANK_GOLD);
 
@@ -230,6 +289,9 @@ void RunManager::enter_room(int node_index) {
             combat.enemy_hp_percent = get_enemy_hp_multiplier(node.type);
             combat.enemy_damage_percent = get_enemy_damage_multiplier(node.type);
             for (Enemy& foe : combat.enemies) foe.apply_ascension(combat.enemy_hp_percent, combat.enemy_damage_percent);
+            if (fur_coat_room(node_index)) {
+                for (Enemy& foe : combat.enemies) foe.hp = 1;
+            }
             combat.plan_enemies(); // the moves follow the Ascension values just given
 
             // Replace combat piles with current master deck
@@ -282,20 +344,46 @@ void RunManager::enter_room(int node_index) {
 }
 
 FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> RunManager::campfire_actions() const {
-    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> actions;
-    actions.push_back(CampfireAction::REST);
-    actions.push_back(CampfireAction::SMITH);
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> all;
+    all.push_back(CampfireAction::REST);
+    all.push_back(CampfireAction::SMITH);
     for (const CampfireRelic& entry : CAMPFIRE_RELICS) {
-        if (has_relic(entry.relic_id)) actions.push_back(entry.action);
+        if (has_relic(entry.relic_id)) all.push_back(entry.action);
     }
     // Clone: offered while a card of the deck is enchanted with it.
     for (size_t i = 0; i < master_deck.size(); ++i) {
         if (master_deck[i].enchantment == Enchantment::CLONE) {
-            actions.push_back(CampfireAction::CLONE);
+            all.push_back(CampfireAction::CLONE);
             break;
         }
     }
+    // Byrdonis Egg: offered while the deck holds one.
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (master_deck[i].id == CardId::BYRDONIS_EGG) {
+            all.push_back(CampfireAction::HATCH);
+            break;
+        }
+    }
+    if (!has_relic("MINIATURE_TENT")) return all;
+    // Miniature Tent: the actions already done at this rest site (bits of its counter) are no longer offered, and
+    // the rest site can be left at any time.
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> actions;
+    for (CampfireAction action : all) {
+        if ((relic_counter("MINIATURE_TENT") & (1u << static_cast<uint8_t>(action))) == 0) actions.push_back(action);
+    }
+    actions.push_back(CampfireAction::LEAVE);
     return actions;
+}
+
+bool RunManager::hatch_at_campfire() {
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (master_deck[i].id != CardId::BYRDONIS_EGG) continue;
+        master_deck.erase(i);
+        if (!has_relic("BYRDPIP")) add_relic("BYRDPIP");
+        end_campfire_action(CampfireAction::HATCH);
+        return true;
+    }
+    return false;
 }
 
 bool RunManager::can_clone(int deck_index) const {
@@ -307,7 +395,7 @@ bool RunManager::clone_at_campfire(int deck_index) {
     if (!can_clone(deck_index)) return false;
     // The copy is the same card, enchantment included.
     if (!add_card_to_deck(master_deck[deck_index])) return false;
-    phase = RunPhase::MAP_NAVIGATION;
+    end_campfire_action(CampfireAction::CLONE);
     return true;
 }
 
@@ -328,7 +416,7 @@ void RunManager::rest_at_campfire() {
         hp = std::min<int16_t>(max_hp, hp + heal_amount);
     }
     on_rested();
-    phase = RunPhase::MAP_NAVIGATION;
+    end_campfire_action(CampfireAction::REST);
     // Dream Catcher: after a Rest, one set of cards is offered for the deck (the player may skip it).
     if (has_relic("DREAM_CATCHER")) {
         card_rewards_upgraded = false; // the Lava Lamp upgrade belongs to the fight's rewards only
@@ -338,13 +426,25 @@ void RunManager::rest_at_campfire() {
     }
 }
 
+void RunManager::end_campfire_action(CampfireAction action) {
+    phase = RunPhase::MAP_NAVIGATION;
+    if (!has_relic("MINIATURE_TENT")) return;
+    set_relic_counter("MINIATURE_TENT", static_cast<uint8_t>(relic_counter("MINIATURE_TENT") | 1u << static_cast<uint8_t>(action)));
+    // The other actions are offered again; with none left but leaving, the rest site is over.
+    if (campfire_actions().size() > 1) phase = RunPhase::CAMPFIRE;
+}
+
+void RunManager::leave_campfire() {
+    phase = RunPhase::MAP_NAVIGATION;
+}
+
 bool RunManager::can_rest() const {
     return hp < max_hp;
 }
 
 bool RunManager::smith_at_campfire(int card_index) {
     if (upgrade_card_in_deck(card_index)) {
-        phase = RunPhase::MAP_NAVIGATION;
+        end_campfire_action(CampfireAction::SMITH);
         return true;
     }
     return false;
@@ -355,14 +455,14 @@ bool RunManager::cook_at_campfire() {
     request_deck_choice(DeckChoiceKind::REMOVE, COOK_REMOVALS);
     cook_pending = true;
     finish_cook(); // no removable card: the Max HP comes at once
-    phase = RunPhase::MAP_NAVIGATION;
+    end_campfire_action(CampfireAction::COOK);
     return true;
 }
 
 bool RunManager::lift_at_campfire() {
     if (!has_relic("GIRYA") || relic_counter("GIRYA") >= GIRYA_LIFTS) return false;
     set_relic_counter("GIRYA", static_cast<uint8_t>(relic_counter("GIRYA") + 1));
-    phase = RunPhase::MAP_NAVIGATION;
+    end_campfire_action(CampfireAction::LIFT);
     return true;
 }
 
@@ -375,7 +475,7 @@ void RunManager::finish_cook() {
 bool RunManager::dig_at_campfire() {
     if (!has_relic("SHOVEL")) return false;
     if (gain_random_relics(1) == 0) return false;
-    phase = RunPhase::MAP_NAVIGATION;
+    end_campfire_action(CampfireAction::DIG);
     return true;
 }
 
@@ -574,9 +674,26 @@ CharacterId RunManager::random_other_hero() {
     return static_cast<CharacterId>(pick);
 }
 
+// Cards of a card reward; Lasting Candy adds one more (current_card_rewards holds it).
+static constexpr size_t CARD_REWARD_SIZE = 3;
+
+void RunManager::add_power_card_reward() {
+    FixedVector<CardId, 128> powers;
+    for (CardId id : card_reward_pool(character)) {
+        if (CardDef::get(id).type != CardType::POWER || card_meta(id).rarity == CardRarity::BASIC) continue;
+        bool offered = false;
+        for (const DeckCard& card : current_card_rewards) offered = offered || card.id == id;
+        if (!offered) powers.push_back(id);
+    }
+    if (powers.empty() || current_card_rewards.size() >= current_card_rewards.capacity()) return;
+    current_card_rewards.push_back(DeckCard(powers[next_random() % powers.size()], card_rewards_upgraded));
+}
+
 void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity, bool elite, CharacterId hero) {
     // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked. Without one, each card
     // rolls its own rarity (more Rare ones after an elite); a boss gives Rare cards only.
+    last_card_reward_draw = CardRewardDraw{ boss, rarity, elite, hero, relic_counter("SILVER_CRUCIBLE"),
+                                            relic_counter("SILKEN_TRESS"), false };
     if (boss && rarity == CardRarity::NONE) rarity = CardRarity::RARE;
     current_card_rewards.clear();
     // Silver Crucible: the first card rewards seen are Upgraded.
@@ -611,7 +728,7 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity,
     }
     const uint8_t common_chance = elite ? ELITE_CARD_COMMON_CHANCE : CARD_COMMON_CHANCE;
     const uint8_t uncommon_chance = elite ? ELITE_CARD_UNCOMMON_CHANCE : CARD_UNCOMMON_CHANCE;
-    while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
+    while (current_card_rewards.size() < CARD_REWARD_SIZE && !candidates.empty()) {
         // The rarity of this card; when none of the pool has it left, any card will do.
         CardRarity wanted = CardRarity::NONE;
         if (rarity == CardRarity::NONE) {
@@ -668,6 +785,8 @@ void RunManager::generate_rewards() {
     bool boss = room == RoomType::BOSS;
 
     draw_card_rewards(boss, rng, CardRarity::NONE, room == RoomType::ELITE);
+    // Lasting Candy: every other fight, the card reward offers one more card, a Power.
+    if (has_relic("LASTING_CANDY") && tick_relic_counter("LASTING_CANDY", 2)) add_power_card_reward();
     // Prayer Wheel: a normal enemy gives one more set of cards, after the first one (as The Hunt does).
     if (room == RoomType::MONSTER && has_relic("PRAYER_WHEEL")) extra_card_rewards = static_cast<uint8_t>(std::min(255, extra_card_rewards + 1));
 
@@ -752,6 +871,33 @@ void RunManager::skip_card_rewards() {
     next_card_reward_or_finish();
 }
 
+bool RunManager::can_sacrifice_card_rewards() const {
+    return has_relic("PAELS_WING") && !current_card_rewards.empty();
+}
+
+bool RunManager::sacrifice_card_rewards() {
+    if (!can_sacrifice_card_rewards()) return false;
+    bool relic = tick_relic_counter("PAELS_WING", PAELS_WING_SACRIFICES) && gain_random_relics(1) > 0;
+    next_card_reward_or_finish();
+    return relic;
+}
+
+bool RunManager::can_reroll_card_rewards() const {
+    return has_relic("DRIFTWOOD") && !current_card_rewards.empty() && !last_card_reward_draw.rerolled;
+}
+
+bool RunManager::reroll_card_rewards() {
+    if (!can_reroll_card_rewards()) return false;
+    // The relics that change the reward see it as the same one: their counters are put back as they were.
+    const CardRewardDraw draw = last_card_reward_draw;
+    if (has_relic("SILVER_CRUCIBLE")) set_relic_counter("SILVER_CRUCIBLE", draw.silver_crucible);
+    if (has_relic("SILKEN_TRESS")) set_relic_counter("SILKEN_TRESS", draw.silken_tress);
+    RewardRng rng(next_random());
+    draw_card_rewards(draw.boss, rng, draw.rarity, draw.elite, draw.hero);
+    last_card_reward_draw.rerolled = true;
+    return true;
+}
+
 void RunManager::next_card_reward_or_finish() {
     // White Star: one more set of Rare cards after an Elite.
     if (extra_rare_card_rewards > 0) {
@@ -823,6 +969,33 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
     }
     if (relic_id == "SMALL_CAPSULE" && has_relic("SMALL_CAPSULE")) gain_random_relics(1);
+    // Sea Glass: 15 cards of another hero's pool, any number of them to add to the deck.
+    if (relic_id == "SEA_GLASS" && has_relic("SEA_GLASS")) {
+        deck_choice_offers.clear();
+        FixedVector<CardId, 512> pool;
+        for (CardId id : card_reward_pool(random_other_hero())) {
+            if (card_meta(id).rarity != CardRarity::BASIC) pool.push_back(id);
+        }
+        while (deck_choice_offers.size() < deck_choice_offers.capacity() && !pool.empty()) {
+            size_t pick = next_random() % pool.size();
+            deck_choice_offers.push_back(DeckCard(pool[pick]));
+            pool.erase(pick);
+        }
+        request_deck_choice(DeckChoiceKind::ADD, static_cast<int>(deck_choice_offers.size()), true);
+    }
+    // Toy Box: 5 random relics, the Wax Relics, right after the box; they melt away one by one (on_combat_won).
+    if (relic_id == "TOY_BOX" && has_relic("TOY_BOX")) {
+        int wax = gain_random_relics(TOY_BOX_WAX_RELICS);
+        set_relic_counter("TOY_BOX", static_cast<uint8_t>(wax));
+    }
+    // Fur Coat: marks combats of the rooms still ahead in this act (see fur_coat_room).
+    if (relic_id == "FUR_COAT" && has_relic("FUR_COAT")) {
+        const uint8_t from_floor = current_node_index >= 0 ? static_cast<uint8_t>(map.nodes[current_node_index].floor + 1) : 0;
+        set_relic_counter("FUR_COAT", static_cast<uint8_t>(current_act << 4 | (from_floor & 0x0F)));
+    }
+    // Winged Boots: 3 rooms off the paths of the map.
+    if (relic_id == "WINGED_BOOTS" && has_relic("WINGED_BOOTS")) set_relic_counter("WINGED_BOOTS", WINGED_BOOTS_FLIGHTS);
+    if (relic_id == "DOWSING_ROD" && has_relic("DOWSING_ROD")) add_card_to_deck(DeckCard{ CardId::DOWSING, false });
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     if (relic_id == "LOOMING_FRUIT" && has_relic("LOOMING_FRUIT")) gain_max_hp(31);
     if (relic_id == "NUTRITIOUS_OYSTER" && has_relic("NUTRITIOUS_OYSTER")) gain_max_hp(11);
@@ -838,6 +1011,9 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "FAKE_LEES_WAFFLE" && has_relic("FAKE_LEES_WAFFLE")) heal(max_hp * 10 / 100);
     if (relic_id == "PEAR" && has_relic("PEAR")) gain_max_hp(10);
     if (relic_id == "FAKE_MANGO" && has_relic("FAKE_MANGO")) gain_max_hp(3);
+    // Byrdpip (event): the card Byrd Swoop joins the Deck. The Byrdpip that follows the player in battle does nothing
+    // (a summon of 9999 HP whose only move is NOTHING), so the engine has nothing more to resolve.
+    if (relic_id == "BYRDPIP" && has_relic("BYRDPIP")) add_card_to_deck(DeckCard{ CardId::BYRD_SWOOP, false });
     if (relic_id == "LARGE_CAPSULE" && has_relic("LARGE_CAPSULE")) {
         gain_random_relics(2);
         add_card_to_deck(DeckCard{ CardId::STRIKE, false });
@@ -1179,6 +1355,16 @@ void RunManager::on_room_entered(RoomType room) {
         relic_counter("FAKE_VENERABLE_TEA_SET") < UINT8_MAX) {
         set_relic_counter("FAKE_VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("FAKE_VENERABLE_TEA_SET") + 1));
     }
+    // Miniature Tent: every action of the campfire is offered again at each new rest site.
+    if (room == RoomType::REST_SITE && has_relic("MINIATURE_TENT")) set_relic_counter("MINIATURE_TENT", 0);
+    // Dowsing counts the ? rooms entered in `bonus`, and becomes an Abundance (upgrade kept) at its base value.
+    if (room == RoomType::EVENT) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            DeckCard& card = master_deck[i];
+            if (card.id != CardId::DOWSING) continue;
+            if (++card.bonus >= CardDef::get(CardId::DOWSING).base_value) card = DeckCard(CardId::ABUNDANCE, card.upgraded);
+        }
+    }
     // Planisphere: each ? room entered heals 5 HP.
     if (room == RoomType::EVENT && has_relic("PLANISPHERE")) heal(5);
     // Meal Ticket: entering a shop heals 15 HP.
@@ -1217,9 +1403,34 @@ void RunManager::on_combat_won(RoomType room) {
             gain_random_relics(WONGOS_MYSTERY_TICKET_RELICS);
         }
     }
+    // Toy Box: every 3 fights won, the left-most Wax Relic (the first one after the box) melts away.
+    if (has_relic("TOY_BOX") && (relic_counter("TOY_BOX") & TOY_BOX_WAX_MASK) > 0) {
+        uint8_t wax = relic_counter("TOY_BOX") & TOY_BOX_WAX_MASK;
+        uint8_t combats = static_cast<uint8_t>((relic_counter("TOY_BOX") >> TOY_BOX_COMBAT_SHIFT) + 1);
+        if (combats >= TOY_BOX_COMBATS) {
+            combats = 0;
+            --wax;
+            for (size_t i = 0; i + 1 < relics.size(); ++i) {
+                if (relics[i] == "TOY_BOX") {
+                    relics.erase(i + 1);
+                    break;
+                }
+            }
+        }
+        set_relic_counter("TOY_BOX", static_cast<uint8_t>(combats << TOY_BOX_COMBAT_SHIFT | wax));
+    }
     // Fishing Rod: every 3 normal fights won, one random card of the deck is upgraded.
     if (room == RoomType::MONSTER && has_relic("FISHING_ROD") && tick_relic_counter("FISHING_ROD", FISHING_ROD_COMBATS)) {
         upgrade_random_cards(1);
+    }
+    // Sword of Stone: the fifth Elite killed turns it into the Sword of Jade, in its place among the relics.
+    if (room == RoomType::ELITE && has_relic("SWORD_OF_STONE")) {
+        set_relic_counter("SWORD_OF_STONE", static_cast<uint8_t>(relic_counter("SWORD_OF_STONE") + 1));
+        if (relic_counter("SWORD_OF_STONE") >= SWORD_OF_STONE_ELITES) {
+            for (std::string_view& relic : relics) {
+                if (relic == "SWORD_OF_STONE") relic = "SWORD_OF_JADE";
+            }
+        }
     }
     // War Hammer: killing an Elite upgrades 4 random cards of the deck.
     if (room == RoomType::ELITE && has_relic("WAR_HAMMER")) upgrade_random_cards(4);
@@ -1439,7 +1650,8 @@ void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool option
     deck_choice.enchantment = enchantment;
     deck_choice.enchant_amount = enchant_amount;
     int candidates = 0;
-    for (size_t i = 0; i < master_deck.size(); ++i) {
+    const size_t choices = kind == DeckChoiceKind::ADD ? deck_choice_offers.size() : master_deck.size();
+    for (size_t i = 0; i < choices; ++i) {
         if (deck_choice_allows(static_cast<int>(i))) ++candidates;
     }
     if (candidates == 0) {
@@ -1459,6 +1671,10 @@ void RunManager::finish_preserved_fog() {
 }
 
 bool RunManager::deck_choice_allows(int deck_index) const {
+    if (deck_choice.kind == DeckChoiceKind::ADD) {
+        return deck_index >= 0 && static_cast<size_t>(deck_index) < deck_choice_offers.size() &&
+               master_deck.size() < master_deck.capacity();
+    }
     if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
     switch (deck_choice.kind) {
         case DeckChoiceKind::UPGRADE: return !master_deck[deck_index].upgraded;
@@ -1496,6 +1712,10 @@ bool RunManager::resolve_deck_choice(int deck_index) {
             done = add_card_to_deck(copy);
             break;
         }
+        case DeckChoiceKind::ADD:
+            done = add_card_to_deck(deck_choice_offers[deck_index]);
+            if (done) deck_choice_offers.erase(static_cast<size_t>(deck_index));
+            break;
         default: break;
     }
     if (!done) return false;
@@ -1512,6 +1732,7 @@ bool RunManager::resolve_deck_choice(int deck_index) {
 bool RunManager::skip_deck_choice() {
     if (!has_deck_choice() || !deck_choice.optional) return false;
     deck_choice = {};
+    deck_choice_offers.clear();
     return true;
 }
 
@@ -1531,7 +1752,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Start and end of turn
         "CAPTAINS_WHEEL", "HORN_CLEAT", "CANDELABRA", "CHANDELIER", "SPARKLING_ROUGE", "HAPPY_FLOWER", "PENDULUM", "BREAD", "BOOKMARK",
         "MERCURY_HOURGLASS", "CLOAK_CLASP", "POCKETWATCH", "PARRYING_SHIELD", "STONE_CALENDAR", "ART_OF_WAR", "ORICHALCUM",
-        "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP", "MEMBERSHIP_CARD", "CAULDRON",
+        "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP", "MEMBERSHIP_CARD", "CAULDRON", "MINIATURE_TENT",
         // Combat events
         "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "REPTILE_TRINKET", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
         "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA", "GAMBLING_CHIP", "HELICAL_DART", "NINJA_SCROLL",
@@ -1590,7 +1811,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Skills added to the Deck are upgraded (#495)
         "TOXIC_EGG",
         // At the merchant (#503)
-        "CHEMICAL_X"
+        "CHEMICAL_X",
+        // A Power added to the card rewards every other fight (#471)
+        "LASTING_CANDY"
     };
     return ACTIVE_RELICS;
 }
@@ -2165,8 +2388,30 @@ void RunManager::advance_act() {
     current_node_index = -1;
     map_seed = next_random();
     regenerate_map();
+    mark_spoils_map_sites();
     // The Ancient has a stream of its own: the run's generator only moved for the seed of the new map.
     meet_ancient(draw_ancient(current_act, reward_seed() ^ ANCIENT_SEED_SALT));
+}
+
+void RunManager::mark_spoils_map_sites() {
+    // Any room but the boss can be marked. A map not found in its act is marked again in the next one.
+    FixedVector<uint8_t, MAX_MAP_NODES> sites;
+    for (size_t i = 0; i < map.nodes.size(); ++i) {
+        if (map.nodes[i].type != RoomType::BOSS) sites.push_back(static_cast<uint8_t>(i));
+    }
+    if (sites.empty()) return;
+    RewardRng rng(map_seed ^ SPOILS_MAP_SEED_SALT);
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (master_deck[i].id != CardId::SPOILS_MAP) continue;
+        master_deck[i].bonus = static_cast<uint8_t>(sites[rng.below(static_cast<uint32_t>(sites.size()))] + 1);
+    }
+}
+
+int RunManager::spoils_map_node() const {
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (master_deck[i].id == CardId::SPOILS_MAP && master_deck[i].bonus > 0) return master_deck[i].bonus - 1;
+    }
+    return -1;
 }
 
 AncientId RunManager::draw_ancient(uint8_t act, uint32_t seed) {

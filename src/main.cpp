@@ -66,7 +66,8 @@ int main()
 
     while(true)
     {
-        bool quick = next == gba::SceneId::DECK || next == gba::SceneId::DECK_CHOICE || context->combat_resume;
+        bool quick = next == gba::SceneId::DECK || next == gba::SceneId::DECK_CHOICE || next == gba::SceneId::PAUSE ||
+                     context->combat_resume;
         int fade_frames = quick ? QUICK_FADE_FRAMES : FADE_IN_FRAMES;
         context->transition = gba::Transition::FADE;
         bn::unique_ptr<gba::Scene> scene = gba::create_scene(next, *context);

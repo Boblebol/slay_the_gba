@@ -42,6 +42,8 @@ bn::unique_ptr<Scene> create_scene(SceneId id, GameContext& context)
         return make_statistics_scene(context);
     case SceneId::OPTIONS:
         return make_options_scene(context);
+    case SceneId::PAUSE:
+        return make_pause_scene(context);
     case SceneId::VICTORY:
         return make_end_scene(context, true);
     case SceneId::GAME_OVER:
