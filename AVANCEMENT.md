@@ -4,11 +4,11 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 93,7 %** — 1163 faits, 15 partiels, 71 à faire (35 hors périmètre).
+**Avancement global : 93,8 %** — 1164 faits, 15 partiels, 70 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
-Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Beckon, Burn, Cleave, Dazed, Debris, Frantic Escape, Fuel, Giant Rock, Infection, Luminesce, Metallicize, Minion Dive Bomb, Minion Sacrifice, Minion Strike, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Void, Wither, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
+Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Beckon, Burn, Cleave, Dazed, Debris, Frantic Escape, Fuel, Giant Rock, Infection, Luminesce, Metallicize, Minion Dive Bomb, Minion Sacrifice, Minion Strike, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Toxic, Void, Wither, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
 
 ## Synthèse
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 119 | 0 | 1 | 99,2 % |
 | [Reliques et potions](#reliques) | 318 | 0 | 3 | 99,1 % |
-| [Bestiaire](#bestiaire) | 101 | 0 | 3 | 97,1 % |
+| [Bestiaire](#bestiaire) | 102 | 0 | 2 | 98,1 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 18 | 6 | 7 | 67,7 % |
-| **Total** | **1163** | **15** | **71** | **93,7 %** |
+| **Total** | **1164** | **15** | **70** | **93,8 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 97,1 %
+## Bestiaire — 98,1 %
 
-### Monstres — 95,8 %
+### Monstres — 97,2 %
 
-69 faits, 0 partiel, 3 à faire.
+70 faits, 0 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1267,7 +1267,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Ovicoptère | Monstre · Acte 2 | Oui |  |
 | Pareffroi | Monstre · Acte 2 | Oui |  |
 | Progéniteur de poux | Monstre · Acte 2 | Oui |  |
-| Sarcopte | Monstre · Acte 2 | Non |  |
+| Sarcopte | Monstre · Acte 2 | Oui |  |
 | Scarabée dormeur | Monstre · Acte 2 | Oui |  |
 | Sphéropode (Nectar) | Monstre · Acte 2 | Oui |  |
 | Sphéropode (Pierre) | Monstre · Acte 2 | Oui |  |
