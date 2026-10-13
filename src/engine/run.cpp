@@ -27,7 +27,6 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
     "MASSIVE_SCROLL", "SCROLL_BOXES", "SEA_GLASS",
-    "TOY_BOX",
 };
 
 bool ancient_relic_pending(std::string_view relic_id) {
