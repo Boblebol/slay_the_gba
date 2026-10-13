@@ -321,7 +321,7 @@ struct IntentDebuff {
     int16_t amount = 0;
 };
 
-constexpr size_t MAX_INTENT_DEBUFFS = 2;
+constexpr size_t MAX_INTENT_DEBUFFS = 3; // the Queen's You Are Mine gives three
 
 struct EnemyIntent {
     EnemyIntentType type = EnemyIntentType::ATTACK;
@@ -455,7 +455,9 @@ enum class EnemyType : uint8_t {
     WATERFALL_GIANT,      // Act 1 (B) boss
     AEONGLASS,            // Act 3 boss
     KIN_FOLLOWER,         // Act 1 (A) boss, with the Kin Priest
-    KIN_PRIEST            // Act 1 (A) boss
+    KIN_PRIEST,           // Act 1 (A) boss
+    QUEEN,                // Act 3 boss, with the Torch Head Amalgam
+    TORCH_HEAD_AMALGAM    // Act 3 boss, with the Queen
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
@@ -543,6 +545,16 @@ constexpr int16_t KIN_POWER_DANCE = 2;
 constexpr int16_t KIN_POWER_DANCE_ASC = 3;
 constexpr int16_t KIN_RITUAL = 2;
 constexpr int16_t KIN_RITUAL_ASC = 3;
+
+// The Queen fights beside the Torch Head Amalgam. Puppet Strings puts QUEEN_CHAINS_OF_BINDING Chains of Binding on
+// the player, You Are Mine QUEEN_YOU_ARE_MINE Weak, Frail and Vulnerable. Then, while the Amalgam lives, Burn Bright
+// For Me every turn: QUEEN_BURN_BRIGHT_BLOCK Block and Strength; once it is dead, Off With Your Head, Execution and
+// Enrage (+QUEEN_ENRAGE_STRENGTH Strength) in a loop.
+constexpr int16_t QUEEN_CHAINS_OF_BINDING = 3;
+constexpr int16_t QUEEN_YOU_ARE_MINE = 99;
+constexpr int16_t QUEEN_BURN_BRIGHT_BLOCK = 20;
+constexpr int16_t QUEEN_BURN_BRIGHT_STRENGTH = 1; // guessed: the reference gives Strength without an amount
+constexpr int16_t QUEEN_ENRAGE_STRENGTH = 2;
 
 // Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
 // moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire.

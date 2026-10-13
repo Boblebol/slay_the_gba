@@ -241,6 +241,9 @@ MONSTERS: dict[str, str] = {
     "two_tailed_rat": "two_tailed_rat",
     "kin_follower": "kin_follower",
     "kin_priest": "kin_priest",
+    # The Queen's boss fight holds two monsters: monster-sized art, so that both fit the arena side by side.
+    "queen": "queen",
+    "torch_head_amalgam": "torch_head_amalgam",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.

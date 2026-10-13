@@ -110,8 +110,10 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "AEONGLASS", false, true },
     { "KIN_FOLLOWER", true, true },
     { "KIN_PRIEST", false, true },
+    { "QUEEN", false, true },
+    { "TORCH_HEAD_AMALGAM", false, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::KIN_PRIEST) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::TORCH_HEAD_AMALGAM) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -2027,6 +2029,68 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.debuffs[0] = { StatusType::STRENGTH, -2 };
             current_intent.debuffs[1] = { StatusType::DEXTERITY, -2 };
             current_intent.description = "Siphon d'âme (+2 Force, -2 For/Dex)";
+        }
+    } else if (type == EnemyType::QUEEN) {
+        // Puppet Strings, You Are Mine. Then, while the Torch Head Amalgam lives (phase 1), Burn Bright For Me every
+        // turn; once no other enemy is left (phase 2, for good), Off With Your Head, Execution, Enrage in a loop.
+        if (phase == 0 && phase_turn > 2 && context.allies > 0 && enter_phase(1)) phase_turn = 1;
+        if (phase < 2 && phase_turn > (phase == 0 ? 2 : 0) && context.allies == 0 && enter_phase(2)) phase_turn = 1;
+        if (phase == 0 && phase_turn == 1) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.power = PowerId::CHAINS_OF_BINDING;
+            current_intent.power_amount = QUEEN_CHAINS_OF_BINDING;
+            current_intent.power_on_player = true;
+            current_intent.description = "Marionnette (Entraves 3)";
+        } else if (phase == 0) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::WEAK, QUEEN_YOU_ARE_MINE };
+            current_intent.debuffs[1] = { StatusType::FRAIL, QUEEN_YOU_ARE_MINE };
+            current_intent.debuffs[2] = { StatusType::VULNERABLE, QUEEN_YOU_ARE_MINE };
+            current_intent.description = "Tu es à moi ! (Faible, Fragile, Vulnérable)";
+        } else if (phase == 1) {
+            current_intent.type = EnemyIntentType::DEFEND;
+            current_intent.block = sheet_move("BURN_BRIGHT_FOR_ME").block;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = QUEEN_BURN_BRIGHT_STRENGTH;
+            current_intent.description = "De mille feux (20 blk, +1 Force)";
+        } else {
+            const int step = (phase_turn - 1) % 3;
+            if (step == 0) {
+                current_intent.type = EnemyIntentType::ATTACK;
+                current_intent.base_damage = move_damage("OFF_WITH_YOUR_HEAD");
+                current_intent.hits = sheet_move("OFF_WITH_YOUR_HEAD").hits;
+                current_intent.description = "À la guillotine (3 dmg x5)";
+            } else if (step == 1) {
+                current_intent.type = EnemyIntentType::ATTACK;
+                current_intent.base_damage = move_damage("EXECUTION");
+                current_intent.description = "Exécution (15 dmg)";
+            } else {
+                current_intent.type = EnemyIntentType::BUFF;
+                current_intent.status_type = StatusType::STRENGTH;
+                current_intent.status_amount = QUEEN_ENRAGE_STRENGTH;
+                current_intent.description = "Enrage (+2 Force)";
+            }
+        }
+    } else if (type == EnemyType::TORCH_HEAD_AMALGAM) {
+        // Strong Tackle, Tackle 18, then Beam 8x3, Tackle 14, Tackle 14 in a loop.
+        const int step = phase_turn <= 2 ? phase_turn - 1 : 2 + (phase_turn - 3) % 3;
+        current_intent.type = EnemyIntentType::ATTACK;
+        if (step == 0) {
+            current_intent.base_damage = move_damage("STRONG_TACKLE");
+            current_intent.description = "Charge puissante (26 dmg)";
+        } else if (step == 1) {
+            current_intent.base_damage = move_damage("TACKLE_2");
+            current_intent.description = "Tackle (18 dmg)";
+        } else if (step == 2) {
+            current_intent.base_damage = move_damage("BEAM");
+            current_intent.hits = sheet_move("BEAM").hits;
+            current_intent.description = "Rayon (8 dmg x3)";
+        } else if (step == 3) {
+            current_intent.base_damage = move_damage("TACKLE_3");
+            current_intent.description = "Tackle (14 dmg)";
+        } else {
+            current_intent.base_damage = move_damage("TACKLE_4");
+            current_intent.description = "Tackle (14 dmg)";
         }
     } else if (type == EnemyType::WATERFALL_GIANT) {
         // Pressurize (Steam Eruption), then Stomp, Ram, Siphon, Pressure Gun, Pressure Up in a loop, each with 3 Steam
