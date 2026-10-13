@@ -24,6 +24,8 @@ namespace
 
 constexpr int CARD_Y = 0;
 constexpr int CARD_X[] = { -72, 0, 72 };
+// Four cards (Lasting Candy adds a Power to the reward): closer together, the focused one drawn on top.
+constexpr int CARD_X_FOUR[] = { -87, -29, 29, 87 };
 // Loot step, before the cards: one row per relic or potion, then what the row under the cursor does.
 constexpr int LOOT_ROW_Y = -22;
 constexpr int LOOT_ROW_STEP = 12;
@@ -245,7 +247,7 @@ private:
     GameContext& _ctx;
     bn::regular_bg_ptr _bg;
     bn::sprite_ptr _gold_icon;
-    bn::vector<bn::sprite_ptr, 3> _cards;
+    bn::vector<bn::sprite_ptr, 4> _cards;
     Label _title;
     Label _gold;
     Label _hint;
@@ -307,7 +309,8 @@ private:
 
         for(int index = 0; index < int(run.current_card_rewards.size()); ++index)
         {
-            bn::sprite_ptr sprite = big_card_item(run.current_card_rewards[index].id).create_sprite(CARD_X[index], -130);
+            int x = run.current_card_rewards.size() > 3 ? CARD_X_FOUR[index] : CARD_X[index];
+            bn::sprite_ptr sprite = big_card_item(run.current_card_rewards[index].id).create_sprite(x, -130);
             sprite.set_z_order(Z_CARD);
             _cards.push_back(bn::move(sprite));
         }

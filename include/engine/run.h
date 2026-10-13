@@ -133,7 +133,8 @@ public:
     RunPhase phase = RunPhase::MAP_NAVIGATION;
 
     CombatEngine combat;
-    FixedVector<DeckCard, 3> current_card_rewards;
+    // Three cards, and a fourth one when a relic adds a card to the reward (Lasting Candy).
+    FixedVector<DeckCard, 4> current_card_rewards;
     // Lava Lamp: the card rewards of the fight just won are upgraded (it lost no HP). Set when the fight ends.
     bool card_rewards_upgraded = false;
     int16_t gold_reward = 0;
@@ -349,6 +350,8 @@ private:
     // A hero drawn at random among the ones the run is not played with (Kaleidoscope).
     CharacterId random_other_hero();
     void next_card_reward_or_finish();
+    // Lasting Candy: adds to the card reward a Power of the hero's pool it does not offer yet.
+    void add_power_card_reward();
     // What a relic does when obtained.
     void on_relic_obtained(std::string_view relic_id);
     // Hooks of the relics that act outside the fights (see RunHook). A relic is added to the hook of its
