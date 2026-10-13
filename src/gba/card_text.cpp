@@ -3053,6 +3053,16 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Cavalc";
     case engine::PowerId::RINGING:
         return "Résonn";
+    case engine::PowerId::MIND_ROT:
+        return "Pourri";
+    case engine::PowerId::WASTE_AWAY:
+        return "Dépéri";
+    case engine::PowerId::DISINTEGRATION:
+        return "Désint";
+    case engine::PowerId::PAINFUL_STABS:
+        return "Poignd";
+    case engine::PowerId::NEMESIS:
+        return "Némési";
     default:
         return "";
     }
@@ -3088,6 +3098,16 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Cavalcade : sous X PV, étourdi, -Force.";
     case engine::PowerId::RINGING:
         return "Résonnant : 1 seule carte ce tour.";
+    case engine::PowerId::MIND_ROT:
+        return "Esprit pourri : piochez X cartes de moins.";
+    case engine::PowerId::WASTE_AWAY:
+        return "Dépérissement : X ● de moins par tour.";
+    case engine::PowerId::DISINTEGRATION:
+        return "Désintégration : X dégâts en fin de tour.";
+    case engine::PowerId::PAINFUL_STABS:
+        return "Coups de poignard : Plaie par coup reçu.";
+    case engine::PowerId::NEMESIS:
+        return "Némésis : Intangible un tour sur deux.";
     default:
         return "";
     }

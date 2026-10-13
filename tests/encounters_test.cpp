@@ -111,6 +111,8 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::LIVING_FOG: return "LIVING_FOG";
         case EnemyType::TWO_TAILED_RAT: return "TWO_TAILED_RAT";
         case EnemyType::LAGAVULIN_MATRIARCH: return "LAGAVULIN_MATRIARCH";
+        case EnemyType::KNOWLEDGE_DEMON: return "KNOWLEDGE_DEMON";
+        case EnemyType::TEST_SUBJECT: return "TEST_SUBJECT";
         case EnemyType::VANTOM: return "VANTOM";
         case EnemyType::SOUL_FYSH: return "SOUL_FYSH";
     }
@@ -238,14 +240,18 @@ void test_reference_encounters() {
                                         "FossilStalkerNormal", "SeapunkNormal", "LivingFogNormal",
                                         "TwoTailedRatsNormal" }));
     // Act 1 (A) draws its boss between the Ceremonial Beast and the Vantom, Act 1 (B) between the Lagavulin
-    // Matriarch and the Soul Fysh; Act 2 has the Insatiable; Act 3 keeps the Ceremonial Beast.
+    // Matriarch and the Soul Fysh, Act 2 between the Insatiable and the Knowledge Demon; Act 3 has the Test Subject.
     for (ActZone zone : ZONES) {
-        std::set<std::string_view> bosses{ "CeremonialBeastBoss" };
+        std::set<std::string_view> bosses{ "TestSubjectBoss" };
         if (zone == ActZone::ACT1A) bosses = { "CeremonialBeastBoss", "VantomBoss" };
-        if (zone == ActZone::ACT2) bosses = { "TheInsatiableBoss" };
+        if (zone == ActZone::ACT2) bosses = { "TheInsatiableBoss", "KnowledgeDemonBoss" };
         if (zone == ActZone::ACT1B) bosses = { "LagavulinMatriarchBoss", "SoulFyshBoss" };
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) == bosses);
     }
+    assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::BOSS)) ==
+           (std::set<std::string_view>{ "TheInsatiableBoss", "KnowledgeDemonBoss" }));
+    const Encounter& demon = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::BOSS), "KnowledgeDemonBoss");
+    assert(demon.count == 1 && demon.monsters[0] == EnemyType::KNOWLEDGE_DEMON);
     const Encounter& vantom = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::BOSS), "VantomBoss");
     assert(vantom.count == 1 && vantom.monsters[0] == EnemyType::VANTOM);
     const Encounter& matriarch = find_encounter(encounter_table(ActZone::ACT1B, EncounterTier::BOSS),
@@ -256,6 +262,8 @@ void test_reference_encounters() {
     const Encounter& insatiable = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::BOSS),
                                                  "TheInsatiableBoss");
     assert(insatiable.count == 1 && insatiable.monsters[0] == EnemyType::THE_INSATIABLE);
+    const Encounter& subject = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::BOSS), "TestSubjectBoss");
+    assert(subject.count == 1 && subject.monsters[0] == EnemyType::TEST_SUBJECT);
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
            (std::set<std::string_view>{ "BygoneEffigyElite", "ByrdonisElite", "PhrogParasiteElite",
                                         "LegacyGremlinNob" }));

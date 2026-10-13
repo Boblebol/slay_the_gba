@@ -2387,6 +2387,320 @@ void test_lagavulin_matriarch_whole_fight() {
     std::cout << "[PASS] Lagavulin Matriarch: a whole fight to the boss's death, asleep then awake" << std::endl;
 }
 
+void test_knowledge_demon() {
+    // Curse of Knowledge, Slap 17, Knowledge Overwhelming 8x3, Ponder 11 (+2 Strength, heals 30), and again 2 stronger.
+    check_monster(EnemyType::KNOWLEDGE_DEMON, "Démon de la Connaissance", 379, {
+        { DEBUFF, 0, 0, 0 },
+        { ATTACK, 17, 0, 0 },
+        { ATTACK, 8, 0, 0, 0, 3 },
+        { ATTACK_BUFF, 11, 0, 2 },
+        { DEBUFF, 0, 0, 2 },
+        { ATTACK, 19, 0, 2 },
+        { ATTACK, 10, 0, 2, 0, 3 },
+        { ATTACK_BUFF, 13, 0, 4 },
+    });
+    std::cout << "[PASS] Knowledge Demon: 379 HP, Curse of Knowledge, Slap 17, Knowledge Overwhelming 8x3, "
+                 "Ponder 11 +2 Strength" << std::endl;
+}
+
+void test_knowledge_demon_curses() {
+    // Each Curse of Knowledge puts its own curse on the player: Mind Rot (1 card fewer), then Waste Away (1 energy
+    // less), then Disintegration (6 damage at the end of each turn). Then no more curses.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::KNOWLEDGE_DEMON);
+    Enemy& demon = combat.enemies[0];
+    const int8_t energy = combat.player.energy;
+    const size_t hand = combat.hand.size();
+    assert(demon.current_intent.power == PowerId::MIND_ROT && demon.current_intent.power_on_player);
+    combat.end_player_turn();
+    assert(combat.power_amount(PowerId::MIND_ROT) == KNOWLEDGE_DEMON_MIND_ROT);
+    assert(combat.hand.size() == hand - 1 && combat.player.energy == energy);
+    for (int turn = 2; turn <= 4; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+    }
+    assert(demon.current_intent.type == DEBUFF && demon.current_intent.power == PowerId::WASTE_AWAY);
+    combat.end_player_turn();
+    assert(combat.power_amount(PowerId::WASTE_AWAY) == KNOWLEDGE_DEMON_WASTE_AWAY);
+    assert(combat.player.energy == energy - 1 && combat.hand.size() == hand - 1);
+    for (int turn = 6; turn <= 8; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+    }
+    assert(demon.current_intent.type == DEBUFF && demon.current_intent.power == PowerId::DISINTEGRATION);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.power_amount(PowerId::DISINTEGRATION) == KNOWLEDGE_DEMON_DISINTEGRATION);
+    assert(combat.player.hp == combat.player.max_hp);
+    // Slap 21 (4 Strength), and the Disintegration first.
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == KNOWLEDGE_DEMON_DISINTEGRATION + 21);
+    // Three curses given: the fourth cycle starts with Slap.
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(demon.phase == 1 && demon.current_intent.type == ATTACK && demon.current_intent.power == PowerId::NONE);
+
+    // Artifact cancels a curse.
+    CombatEngine guarded = make_combat(CharacterId::IRONCLAD, EnemyType::KNOWLEDGE_DEMON);
+    guarded.player.add_status(StatusType::ARTIFACT, 1);
+    guarded.end_player_turn();
+    assert(!guarded.has_power(PowerId::MIND_ROT) && guarded.player.get_status(StatusType::ARTIFACT) == 0);
+
+    // Ponder heals it by 30, never above its Max HP.
+    CombatEngine hurt = make_combat(CharacterId::IRONCLAD, EnemyType::KNOWLEDGE_DEMON);
+    Enemy& pondering = hurt.enemies[0];
+    for (int turn = 1; turn <= 3; ++turn) {
+        hurt.player.hp = hurt.player.max_hp;
+        hurt.end_player_turn();
+    }
+    assert(pondering.current_intent.type == ATTACK_BUFF && pondering.current_intent.heal == KNOWLEDGE_DEMON_PONDER_HEAL);
+    hurt.damage_enemy(pondering, 50);
+    hurt.player.hp = hurt.player.max_hp;
+    hurt.end_player_turn();
+    assert(pondering.hp == 379 - 50 + 30 && pondering.get_status(StatusType::STRENGTH) == 2);
+    std::cout << "[PASS] Knowledge Demon: Mind Rot, Waste Away, Disintegration, then no more curses; Ponder heals 30"
+              << std::endl;
+}
+
+void test_knowledge_demon_ascension() {
+    // 399 HP, Slap 18, Knowledge Overwhelming 9x3 and Ponder 13 with +3 Strength at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::KNOWLEDGE_DEMON);
+    Enemy& demon = combat.enemies[0];
+    assert(demon.ascension_hp() == 399 && demon.hp_spread() == 0);
+    demon.ascend(true, true);
+    combat.plan_enemies();
+    assert(demon.hp == 399 && demon.max_hp == 399);
+    assert(demon.current_intent.type == DEBUFF);
+    combat.end_player_turn();
+    assert(demon.current_intent.type == ATTACK && demon.intent_damage(combat.player) == 18);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(demon.current_intent.type == ATTACK && demon.intent_damage(combat.player) == 9 && demon.current_intent.hits == 3);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(demon.current_intent.type == ATTACK_BUFF && demon.intent_damage(combat.player) == 13);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(demon.get_status(StatusType::STRENGTH) == KNOWLEDGE_DEMON_PONDER_STRENGTH_ASC);
+    std::cout << "[PASS] Knowledge Demon: Ascension gives 399 HP, Slap 18, Knowledge Overwhelming 9x3, Ponder 13 +3 "
+                 "Strength" << std::endl;
+}
+
+void test_knowledge_demon_whole_fight() {
+    // The whole fight, until the boss dies: the player deals 30 damage a turn. Two phases: three cycles opened by
+    // Curse of Knowledge (turns 1 to 12), then Slap, Knowledge Overwhelming and Ponder in a loop from turn 13.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::KNOWLEDGE_DEMON);
+    Enemy& demon = combat.enemies[0];
+    int turn = 1;
+    int phase_two_on = 0;
+    while (combat.state == CombatState::PLAYER_TURN && demon.is_alive()) {
+        if (phase_two_on == 0 && demon.phase == 1) phase_two_on = turn;
+        const EnemyIntent& intent = demon.current_intent;
+        if (demon.phase == 0) {
+            const EnemyIntentType expected[4] = { DEBUFF, ATTACK, ATTACK, ATTACK_BUFF };
+            assert(intent.type == expected[(turn - 1) % 4]);
+            if ((turn - 1) % 4 == 0) assert(intent.power_on_player && intent.power != PowerId::NONE);
+        } else {
+            const EnemyIntentType expected[3] = { ATTACK, ATTACK, ATTACK_BUFF };
+            assert(intent.type == expected[(turn - phase_two_on) % 3] && intent.power == PowerId::NONE);
+        }
+        combat.damage_enemy(demon, 30);
+        if (!demon.is_alive()) break;
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        ++turn;
+    }
+    assert(!demon.is_alive() && combat.player.is_alive());
+    assert(phase_two_on == 13);
+    assert(turn == 17); // 379 HP, 30 a turn, healed 30 by each of the 4 Ponders played before
+    assert(combat.has_power(PowerId::MIND_ROT) && combat.has_power(PowerId::WASTE_AWAY) &&
+           combat.has_power(PowerId::DISINTEGRATION));
+    std::cout << "[PASS] Knowledge Demon: a whole fight to the boss's death, three curses then the loop" << std::endl;
+}
+
+int cards_anywhere(const CombatEngine& combat, CardId id) {
+    return count_cards(combat.draw_pile, id) + count_cards(combat.hand, id) + count_cards(combat.discard_pile, id);
+}
+
+void test_test_subject() {
+    // First life: Bite 20, Skull Bash 14 + Vulnerable 1, in a loop. The Bite after a Skull Bash hits a Vulnerable
+    // player: 30.
+    check_monster(EnemyType::TEST_SUBJECT, "Cobaye", TEST_SUBJECT_HP[0], {
+        { ATTACK, 20, 0, 0 },
+        { ATTACK_DEBUFF, 14, 0, 0 },
+        { ATTACK, 30, 0, 0 },
+        { ATTACK_DEBUFF, 14, 0, 0 },
+        { ATTACK, 30, 0, 0 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TEST_SUBJECT);
+    combat.end_player_turn();
+    assert(combat.enemies[0].current_intent.type == ATTACK_DEBUFF && combat.enemies[0].current_intent.debuffs_player());
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::VULNERABLE) == 1);
+    std::cout << "[PASS] Test Subject: 100 HP, Bite 20, Skull Bash 14 + Vulnerable" << std::endl;
+}
+
+void test_test_subject_respawn() {
+    // Killed in its first life, it respawns: 150 HP, its statuses gone, and Respawn gives it Painful Stabs.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TEST_SUBJECT);
+    Enemy& boss = combat.enemies[0];
+    boss.add_status(StatusType::VULNERABLE, 2);
+    combat.damage_enemy(boss, 500);
+    assert(boss.is_alive() && combat.has_alive_enemies() && combat.state == CombatState::PLAYER_TURN);
+    assert(boss.phase == 1 && boss.hp == TEST_SUBJECT_HP[1] && boss.max_hp == TEST_SUBJECT_HP[1]);
+    assert(boss.statuses.empty() && boss.block == 0);
+    assert(boss.current_intent.type == BUFF && boss.current_intent.power == PowerId::PAINFUL_STABS);
+    combat.end_player_turn();
+    assert(combat.player.hp == combat.player.max_hp);
+    assert(combat.enemy_power_amount(0, PowerId::PAINFUL_STABS) == 1);
+
+    // Multi-Claw every turn. Painful Stabs: a Wound into the discard pile for each hit that costs the player HP.
+    for (int turn = 0; turn < 3; ++turn) {
+        assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 10);
+        combat.player.hp = combat.player.max_hp;
+        const int wounds = cards_anywhere(combat, CardId::WOUND);
+        combat.end_player_turn();
+        assert(combat.player.max_hp - combat.player.hp == 10);
+        assert(cards_anywhere(combat, CardId::WOUND) == wounds + 1);
+    }
+    // A hit the Block takes in full gives no Wound.
+    combat.player.block = 20;
+    combat.player.hp = combat.player.max_hp;
+    const int wounds = cards_anywhere(combat, CardId::WOUND);
+    combat.end_player_turn();
+    assert(combat.player.hp == combat.player.max_hp && cards_anywhere(combat, CardId::WOUND) == wounds);
+
+    // Killed again: 200 HP, and Respawn gives it Nemesis, Intangible one turn out of two.
+    combat.damage_enemy(boss, 500);
+    assert(boss.is_alive() && boss.phase == 2 && boss.hp == TEST_SUBJECT_HP[2]);
+    assert(boss.current_intent.type == BUFF && boss.current_intent.power == PowerId::NEMESIS);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.hp == combat.player.max_hp);
+    assert(combat.enemy_power_amount(0, PowerId::NEMESIS) == 1 && combat.enemy_power_amount(0, PowerId::PAINFUL_STABS) == 1);
+    assert(boss.get_status(StatusType::INTANGIBLE) == 1);
+    combat.damage_enemy(boss, 30);
+    assert(boss.hp == TEST_SUBJECT_HP[2] - 1);
+
+    // Lacerate 10x3: three Wounds. Its Intangible wears off.
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 10 && boss.current_intent.hits == 3);
+    combat.player.hp = combat.player.max_hp;
+    const int before = cards_anywhere(combat, CardId::WOUND);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 30 && cards_anywhere(combat, CardId::WOUND) == before + 3);
+    assert(boss.get_status(StatusType::INTANGIBLE) == 0);
+    combat.damage_enemy(boss, 30);
+    assert(boss.hp == TEST_SUBJECT_HP[2] - 31);
+
+    // Big Pounce 45, and Intangible again.
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 45);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 45 && boss.get_status(StatusType::INTANGIBLE) == 1);
+
+    // Burning Growl: +2 Strength, 3 Burns into the discard pile.
+    assert(boss.current_intent.type == STATUS && boss.current_intent.status_card == CardId::BURN);
+    const int burns = cards_anywhere(combat, CardId::BURN);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(boss.get_status(StatusType::STRENGTH) == 2 && cards_anywhere(combat, CardId::BURN) == burns + 3);
+    assert(boss.get_status(StatusType::INTANGIBLE) == 0);
+    // Then Lacerate again, 2 stronger.
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 12 && boss.current_intent.hits == 3);
+
+    // No life left: this time it dies.
+    combat.damage_enemy(boss, 500);
+    assert(!boss.is_alive() && boss.phase == 2 && !combat.has_alive_enemies());
+    std::cout << "[PASS] Test Subject: respawns twice, Painful Stabs then Nemesis, then dies" << std::endl;
+}
+
+void test_test_subject_thorns_respawn() {
+    // Killed by Thorns during its own turn: it respawns, and Respawn is its next move.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TEST_SUBJECT);
+    Enemy& boss = combat.enemies[0];
+    boss.hp = 2;
+    combat.player.add_status(StatusType::THORNS, 5);
+    combat.end_player_turn();
+    assert(combat.state == CombatState::PLAYER_TURN);
+    assert(boss.phase == 1 && boss.hp == TEST_SUBJECT_HP[1]);
+    assert(boss.current_intent.type == BUFF && boss.current_intent.power == PowerId::PAINFUL_STABS);
+    std::cout << "[PASS] Test Subject: killed by Thorns on its turn, it announces Respawn" << std::endl;
+}
+
+void test_test_subject_ascension() {
+    // Ascension: 110, 165 then 220 HP; Bite 22, Skull Bash 16, Multi-Claw 11, Lacerate 11x3, Big Pounce 45, and
+    // Burning Growl +3 Strength with 5 Burns.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TEST_SUBJECT);
+    Enemy& boss = combat.enemies[0];
+    assert(boss.ascension_hp() == TEST_SUBJECT_HP_ASC[0] && boss.hp_spread() == 0);
+    boss.ascend(true, true);
+    combat.plan_enemies();
+    assert(boss.hp == 110 && boss.max_hp == 110);
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 22);
+    combat.end_player_turn();
+    assert(boss.current_intent.type == ATTACK_DEBUFF && boss.intent_damage(combat.player) == 16);
+    combat.damage_enemy(boss, 500);
+    assert(boss.phase == 1 && boss.hp == 165 && boss.max_hp == 165);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Respawn
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 11);
+    combat.damage_enemy(boss, 500);
+    assert(boss.phase == 2 && boss.hp == 220 && boss.max_hp == 220);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Respawn
+    combat.player.clear_status(StatusType::VULNERABLE);
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 11 && boss.current_intent.hits == 3);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 45);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(boss.current_intent.type == STATUS && boss.current_intent.status_cards == 5);
+    const int burns = cards_anywhere(combat, CardId::BURN);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(boss.get_status(StatusType::STRENGTH) == 3 && cards_anywhere(combat, CardId::BURN) == burns + 5);
+    std::cout << "[PASS] Test Subject: Ascension gives 110/165/220 HP, Bite 22, Skull Bash 16, Multi-Claw 11, "
+                 "Lacerate 11x3, Growl +3 Strength and 5 Burns" << std::endl;
+}
+
+void test_test_subject_whole_fight() {
+    // The whole fight, until the boss dies: the player deals 50 damage a turn. Three lives: Bite and Skull Bash
+    // (dead on turn 2), Respawn then Multi-Claw (dead on turn 5), Respawn then Lacerate, Big Pounce, Burning Growl,
+    // Intangible one turn out of two (dead on turn 13).
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TEST_SUBJECT);
+    Enemy& boss = combat.enemies[0];
+    int turn = 1;
+    int phase_started[3] = { 1, 0, 0 };
+    const EnemyIntentType third_life[3] = { ATTACK, ATTACK, STATUS };
+    while (combat.state == CombatState::PLAYER_TURN) {
+        const int since = turn - phase_started[boss.phase];
+        if (boss.phase == 0) {
+            assert(boss.current_intent.type == (since % 2 == 0 ? ATTACK : ATTACK_DEBUFF));
+        } else if (since > 0) {
+            assert(boss.current_intent.type == (boss.phase == 1 ? ATTACK : third_life[(since - 1) % 3]));
+        }
+        const uint8_t phase = boss.phase;
+        combat.damage_enemy(boss, 50);
+        if (!boss.is_alive()) break;
+        if (boss.phase != phase) {
+            // Respawned: full HP of its next life, Respawn announced.
+            phase_started[boss.phase] = turn;
+            assert(boss.hp == TEST_SUBJECT_HP[boss.phase] && boss.current_intent.type == BUFF);
+        }
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN && combat.player.is_alive());
+        ++turn;
+    }
+    assert(!boss.is_alive() && !combat.has_alive_enemies());
+    assert(phase_started[1] == 2 && phase_started[2] == 5 && turn == 13);
+    assert(cards_anywhere(combat, CardId::WOUND) > 0 && cards_anywhere(combat, CardId::BURN) > 0);
+    std::cout << "[PASS] Test Subject: a whole fight to the boss's death, through its three lives" << std::endl;
+}
+
 int vantom_wounds(const CombatEngine& combat) {
     return count_cards(combat.draw_pile, CardId::WOUND) + count_cards(combat.hand, CardId::WOUND) +
            count_cards(combat.discard_pile, CardId::WOUND);
@@ -5257,6 +5571,15 @@ int main() {
     test_lagavulin_matriarch_woken();
     test_lagavulin_matriarch_ascension();
     test_lagavulin_matriarch_whole_fight();
+    test_knowledge_demon();
+    test_knowledge_demon_curses();
+    test_knowledge_demon_ascension();
+    test_knowledge_demon_whole_fight();
+    test_test_subject();
+    test_test_subject_respawn();
+    test_test_subject_thorns_respawn();
+    test_test_subject_ascension();
+    test_test_subject_whole_fight();
     test_vantom();
     test_vantom_ascension();
     test_vantom_whole_fight();

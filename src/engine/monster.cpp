@@ -747,7 +747,8 @@ constexpr MonsterData ALL_MONSTERS[] = {
     { "SPINY_TOAD", "Crapineux", 116, 119, 121, 124, "normal", std::span<const MonsterMoveData>(MOVES_SPINY_TOAD) },
     { "STABBOT", "Poignard-bot", 18, 23, 19, 24, "summon", std::span<const MonsterMoveData>(MOVES_STABBOT) },
     { "TERROR_EEL", "Murène de l'effroi", 140, 140, 150, 150, "elite", std::span<const MonsterMoveData>(MOVES_TERROR_EEL) },
-    { "TEST_SUBJECT", "Cobaye", 0, 0, 0, 0, "boss", std::span<const MonsterMoveData>(MOVES_TEST_SUBJECT) },
+    // No HP in the reference: those of its first life, guessed (TEST_SUBJECT_HP in include/engine/entity.h).
+    { "TEST_SUBJECT", "Cobaye", 100, 100, 110, 110, "boss", std::span<const MonsterMoveData>(MOVES_TEST_SUBJECT) },
     { "THE_ADVERSARY_MK_ONE", "L'Adversaire Mk 1", 100, 100, 100, 100, "normal", std::span<const MonsterMoveData>(MOVES_THE_ADVERSARY_MK_ONE) },
     { "THE_ADVERSARY_MK_THREE", "L'Adversaire Mk 3", 300, 300, 300, 300, "normal", std::span<const MonsterMoveData>(MOVES_THE_ADVERSARY_MK_THREE) },
     { "THE_ADVERSARY_MK_TWO", "L'Adversaire Mk 2", 200, 200, 200, 200, "normal", std::span<const MonsterMoveData>(MOVES_THE_ADVERSARY_MK_TWO) },
