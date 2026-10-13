@@ -116,6 +116,8 @@ constexpr Encounter ACT1B_ELITE[] = {
 constexpr Encounter ACT2_ELITE[] = {
     { "EntomancerElite"sv, 1, { EnemyType::ENTOMANCER } },
     { "InfestedPrismsElite"sv, 1, { EnemyType::INFESTED_PRISM } },
+    { "DecimillipedeElite"sv, 3, { EnemyType::DECIMILLIPEDE_SEGMENT_BACK, EnemyType::DECIMILLIPEDE_SEGMENT_FRONT,
+                                   EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE } },
 };
 constexpr Encounter ACT3_ELITE[] = {
     { "SoulNexusElite"sv, 1, { EnemyType::SOUL_NEXUS } },

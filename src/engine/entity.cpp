@@ -116,8 +116,11 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "ROCKET", false, true },
     { "PHANTASMAL_GARDENER", true, true },
     { "EXOSKELETON", true, true },
+    { "DECIMILLIPEDE_SEGMENT_BACK", true, true },
+    { "DECIMILLIPEDE_SEGMENT_FRONT", true, true },
+    { "DECIMILLIPEDE_SEGMENT_MIDDLE", true, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::EXOSKELETON) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -344,6 +347,26 @@ bool Enemy::about_to_blow(int16_t steam) {
     explosion = steam;
     phase_turn = 0;
     plan_turn(0); // About to Blow
+    return true;
+}
+
+bool Enemy::decimillipede_segment() const {
+    return type == EnemyType::DECIMILLIPEDE_SEGMENT_BACK || type == EnemyType::DECIMILLIPEDE_SEGMENT_FRONT ||
+           type == EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE;
+}
+
+bool Enemy::sever() {
+    if (!decimillipede_segment() || is_alive() || escaped) return false;
+    hp = 1;
+    hp_loss_budget = 0; // nothing hurts it until it reattaches
+    block = 0;
+    statuses.clear();
+    fresh_debuffs = 0;
+    temp_strength_loss = 0;
+    damage_down_turns = 0;
+    phase = 1;
+    phase_turn = 0;
+    plan_turn(0); // Dead
     return true;
 }
 
@@ -1559,6 +1582,40 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 2;
             current_intent.description = "Enrager (+2 Force)";
+        }
+    } else if (decimillipede_segment()) {
+        // Writhe 5x2, Constrict (8 dmg, Weak 1) and Bulk (6 dmg, +2 Strength) in a loop. Severed (triggered, see
+        // sever): Dead (a lost turn), Reattach (it heals), then a draw among the three, never the same twice.
+        enum Move : uint8_t { WRITHE, CONSTRICT, BULK, DEAD, REATTACH };
+        static constexpr MoveOption OPTIONS[] = { { WRITHE }, { CONSTRICT }, { BULK } };
+        uint8_t move = 0;
+        if (phase == 0) move = use_move(static_cast<uint8_t>((phase_turn - 1) % 3));
+        else if (phase_turn == 1) move = use_move(DEAD);
+        else if (phase_turn == 2) move = use_move(REATTACH);
+        else move = draw_move(OPTIONS);
+        if (move == WRITHE) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("WRITHE");
+            current_intent.hits = sheet_move("WRITHE").hits;
+            current_intent.description = "Torsion (5 dmg x2)";
+        } else if (move == CONSTRICT) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("CONSTRICT");
+            current_intent.debuffs[0] = { StatusType::WEAK, 1 };
+            current_intent.description = "Constriction (8 dmg, Faible)";
+        } else if (move == BULK) {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = move_damage("BULK");
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.description = "Croissance (6 dmg, +2 Force)";
+        } else if (move == DEAD) {
+            current_intent.type = EnemyIntentType::STUN;
+            current_intent.description = "Mort";
+        } else {
+            current_intent.type = EnemyIntentType::HEAL;
+            current_intent.heal = static_cast<int16_t>(max_hp * DECIMILLIPEDE_REATTACH_PERCENT / 100 - hp);
+            current_intent.description = "Reconnexion";
         }
     } else if (type == EnemyType::TERROR_EEL) {
         // Crash, Thrash (+6 Vigor), and again. Once at half its HP or less (triggered), it is stunned, then
