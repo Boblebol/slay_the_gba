@@ -4830,7 +4830,7 @@ void test_driftwood() {
         run.proceed_after_combat();
         assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
         assert(run.can_reroll_card_rewards());
-        FixedVector<DeckCard, 3> before = run.current_card_rewards;
+        auto before = run.current_card_rewards;
         assert(run.reroll_card_rewards());
         assert(run.current_card_rewards.size() == before.size());
         for (size_t i = 0; i < before.size(); ++i) changed = changed || run.current_card_rewards[i].id != before[i].id;
@@ -4849,7 +4849,7 @@ void test_driftwood() {
     plain.combat.state = CombatState::VICTORY;
     plain.proceed_after_combat();
     assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
-    FixedVector<DeckCard, 3> offered = plain.current_card_rewards;
+    auto offered = plain.current_card_rewards;
     assert(!plain.can_reroll_card_rewards() && !plain.reroll_card_rewards());
     for (size_t i = 0; i < offered.size(); ++i) assert(plain.current_card_rewards[i].id == offered[i].id);
     std::cout << "[PASS] Driftwood: each card reward can be rerolled once" << std::endl;

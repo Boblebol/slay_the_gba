@@ -45,13 +45,6 @@ public:
         const engine::RunManager& run = context.run;
         play_music(Music::MAP);
 
-        for(int index = 0; index < int(run.current_card_rewards.size()); ++index)
-        {
-            int x = run.current_card_rewards.size() > 3 ? CARD_X_FOUR[index] : CARD_X[index];
-            bn::sprite_ptr sprite = big_card_item(run.current_card_rewards[index].id).create_sprite(x, -130);
-            sprite.set_z_order(Z_CARD);
-            _cards.push_back(bn::move(sprite));
-        }
         _create_cards();
 
         _title.set(0, -72, "VICTOIRE !", Align::CENTER, TextColor::GOLD);
@@ -316,7 +309,8 @@ private:
 
         for(int index = 0; index < int(run.current_card_rewards.size()); ++index)
         {
-            bn::sprite_ptr sprite = big_card_item(run.current_card_rewards[index].id).create_sprite(CARD_X[index], -130);
+            int x = run.current_card_rewards.size() > 3 ? CARD_X_FOUR[index] : CARD_X[index];
+            bn::sprite_ptr sprite = big_card_item(run.current_card_rewards[index].id).create_sprite(x, -130);
             sprite.set_z_order(Z_CARD);
             _cards.push_back(bn::move(sprite));
         }
