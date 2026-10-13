@@ -70,10 +70,11 @@ enum class CampfireAction : uint8_t {
     LIFT, // Girya
     COOK, // Meat Cleaver
     CLONE, // a card of the deck is enchanted with Clone
-    LEAVE  // Miniature Tent: the rest site is left once the player has done what they wanted
+    LEAVE, // Miniature Tent: the rest site is left once the player has done what they wanted
+    HATCH  // the deck holds a Byrdonis Egg
 };
 
-constexpr size_t MAX_CAMPFIRE_ACTIONS = 7;
+constexpr size_t MAX_CAMPFIRE_ACTIONS = 8;
 
 // A number a relic keeps from room to room ("every 3 combats", "3 times max"), saved with the run.
 struct RelicCounter {
@@ -194,6 +195,9 @@ public:
     // rest site. False when the card cannot be cloned or the deck is full.
     bool clone_at_campfire(int deck_index);
     [[nodiscard]] bool can_clone(int deck_index) const;
+    // Byrdonis Egg: the first egg of the deck leaves it and hatches into the Byrdpip relic (kept once only). Uses up
+    // the rest site. False without an egg.
+    bool hatch_at_campfire();
 
     // Shop actions
     void open_shop();

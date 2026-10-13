@@ -667,6 +667,8 @@ enum class CardId : uint16_t {
     DOWSING,
     // Quest card: the next act marks a room holding 600 Gold
     SPOILS_MAP,
+    // Quest card: hatches into the Byrdpip at a Rest Site
+    BYRDONIS_EGG,
     COUNT
 };
 
