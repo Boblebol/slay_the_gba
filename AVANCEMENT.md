@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 92,0 %** — 1141 faits, 15 partiels, 93 à faire (35 hors périmètre).
+**Avancement global : 92,1 %** — 1143 faits, 15 partiels, 91 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 305 | 0 | 16 | 95,0 % |
-| [Bestiaire](#bestiaire) | 96 | 0 | 8 | 92,3 % |
+| [Bestiaire](#bestiaire) | 98 | 0 | 6 | 94,2 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
-| **Total** | **1141** | **15** | **93** | **92,0 %** |
+| **Total** | **1143** | **15** | **91** | **92,1 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 92,3 %
+## Bestiaire — 94,2 %
 
-### Monstres — 94,4 %
+### Monstres — 95,8 %
 
-68 faits, 0 partiel, 4 à faire.
+69 faits, 0 partiel, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1261,7 +1261,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Chasseur-tueur | Monstre · Acte 2 | Oui |  |
 | Crapineux | Monstre · Acte 2 | Oui |  |
 | Croquebot | Monstre · Acte 2 | Oui |  |
-| Exosquelette | Monstre · Acte 2 | Non |  |
+| Exosquelette | Monstre · Acte 2 | Oui |  |
 | L'Obscura | Monstre · Acte 2 | Oui |  |
 | Mante chapardeuse | Faible · Acte 2 | Non |  |
 | Ovicoptère | Monstre · Acte 2 | Oui |  |
@@ -1293,9 +1293,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sculpteur dévoué | Faible · Acte 3 | Oui |  |
 | Sonobot | Invocation · Acte 3 | Oui |  |
 
-### Élites — 76,5 %
+### Élites — 82,4 %
 
-13 faits, 0 partiel, 4 à faire.
+14 faits, 0 partiel, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1304,7 +1304,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Oizodon | Élite · Acte 1 (A) | Oui |  |
 | Parasite Krapo | Élite · Acte 1 (A) | Oui |  |
 | Colonie de rôdeurs | Élite · Acte 1 (B) | Oui |  |
-| Jardinier spectral | Élite · Acte 1 (B) | Non |  |
+| Jardinier spectral | Élite · Acte 1 (B) | Oui |  |
 | Murène de l'effroi | Élite · Acte 1 (B) | Oui |  |
 | Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
 | Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
