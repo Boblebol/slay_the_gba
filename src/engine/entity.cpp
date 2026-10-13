@@ -1833,7 +1833,12 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::BUFF;
             current_intent.power = phase == 1 ? PowerId::PAINFUL_STABS : PowerId::NEMESIS;
             current_intent.power_amount = 1;
-            current_intent.description = phase == 1 ? "Réanimation (Coups de poignard)" : "Réanimation (Némésis)";
+            // Two assignments, not a ternary: a string_view built from a char pointer calls strlen, which the GBA lacks.
+            if (phase == 1) {
+                current_intent.description = "Réanimation (Coups de poignard)";
+            } else {
+                current_intent.description = "Réanimation (Némésis)";
+            }
         } else if (move == SUBJECT_BITE) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = move_damage("BITE");
