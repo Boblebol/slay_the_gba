@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 92,4 %** — 1146 faits, 15 partiels, 88 à faire (35 hors périmètre).
+**Avancement global : 92,4 %** — 1147 faits, 15 partiels, 87 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 117 | 0 | 3 | 97,5 % |
-| [Reliques et potions](#reliques) | 307 | 0 | 14 | 95,6 % |
+| [Reliques et potions](#reliques) | 308 | 0 | 13 | 96,0 % |
 | [Bestiaire](#bestiaire) | 98 | 0 | 6 | 94,2 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
-| **Total** | **1146** | **15** | **88** | **92,4 %** |
+| **Total** | **1147** | **15** | **87** | **92,4 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 95,6 %
+## Reliques et potions — 96,0 %
 
 ### Reliques partagées — 97,4 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 91,2 %
+### Reliques des Anciens — 92,2 %
 
-93 faits, 0 partiel, 9 à faire.
+94 faits, 0 partiel, 8 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1041,7 +1041,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Anneau à signet | Ancienne | Oui |  |
 | Arbalète | Ancienne | Oui |  |
 | Astrolabe | Ancienne | Oui |  |
-| Baguette de rhabdomancie | Ancienne | Non |  |
+| Baguette de rhabdomancie | Ancienne | Oui |  |
 | Bois bénis | Ancienne | Oui |  |
 | Bois flotté | Ancienne | Non |  |
 | Bottes ailées | Ancienne | Non |  |
