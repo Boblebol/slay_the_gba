@@ -100,6 +100,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "LORDS_PARASOL", "Chez le Marchand, vous obtenez TOUT ce qu'il propose." },
     { "LUNAR_PASTRY", "À la fin de votre tour, gagnez 1 ★." },
     { "MEAT_ON_THE_BONE", "Si vous avez 50% ou moins de vos PV Max à la fin d'un combat, récupérez 12 PV." },
+    { "MINIATURE_TENT", "Vous pouvez effectuer autant d'actions différentes que vous souhaitez aux Sites de repos." },
     { "MEMBERSHIP_CARD", "50% de remise sur tous les produits !" },
     { "MERCURY_HOURGLASS", "Au début de votre tour, infligez 3 dégâts à TOUS les ennemis." },
     { "MR_STRUGGLES", "Au début de votre tour, infligez des dégâts égaux au numéro du tour à TOUS les ennemis." },
