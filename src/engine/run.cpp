@@ -40,6 +40,8 @@ bool ancient_relic_pending(std::string_view relic_id) {
 constexpr uint32_t ANCIENT_SEED_SALT = 0xA5C1E7D3u;
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+// Sword of Stone: Elites to defeat before it becomes the Sword of Jade.
+constexpr uint8_t SWORD_OF_STONE_ELITES = 5;
 // Toy Box: its counter keeps the Wax Relics left (low bits) and the fights won since the last one melted (high bits).
 constexpr uint8_t TOY_BOX_WAX_RELICS = 5;
 constexpr uint8_t TOY_BOX_COMBATS = 3;
@@ -1338,6 +1340,15 @@ void RunManager::on_combat_won(RoomType room) {
     // Fishing Rod: every 3 normal fights won, one random card of the deck is upgraded.
     if (room == RoomType::MONSTER && has_relic("FISHING_ROD") && tick_relic_counter("FISHING_ROD", FISHING_ROD_COMBATS)) {
         upgrade_random_cards(1);
+    }
+    // Sword of Stone: the fifth Elite killed turns it into the Sword of Jade, in its place among the relics.
+    if (room == RoomType::ELITE && has_relic("SWORD_OF_STONE")) {
+        set_relic_counter("SWORD_OF_STONE", static_cast<uint8_t>(relic_counter("SWORD_OF_STONE") + 1));
+        if (relic_counter("SWORD_OF_STONE") >= SWORD_OF_STONE_ELITES) {
+            for (std::string_view& relic : relics) {
+                if (relic == "SWORD_OF_STONE") relic = "SWORD_OF_JADE";
+            }
+        }
     }
     // War Hammer: killing an Elite upgrades 4 random cards of the deck.
     if (room == RoomType::ELITE && has_relic("WAR_HAMMER")) upgrade_random_cards(4);
