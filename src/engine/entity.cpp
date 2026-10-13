@@ -114,8 +114,10 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "TORCH_HEAD_AMALGAM", false, true },
     { "CRUSHER", false, true },
     { "ROCKET", false, true },
+    { "PHANTASMAL_GARDENER", true, true },
+    { "EXOSKELETON", true, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::ROCKET) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::EXOSKELETON) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -1502,6 +1504,61 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::ATTACK;
             current_intent.base_damage = move_damage("WHIRL");
             current_intent.description = "Tourbillon (7 dmg)";
+        }
+    } else if (type == EnemyType::PHANTASMAL_GARDENER) {
+        // Flail, Enlarge (+2 Strength, +3 at Ascension), Bite and Lash in a loop, started by its place among the
+        // gardeners: first at Flail, second at Bite, third at Lash, fourth at Enlarge. `phase` holds the offset.
+        enum Move : uint8_t { FLAIL, ENLARGE, BITE, LASH };
+        if (turn_number == 1) {
+            static constexpr uint8_t START[] = { FLAIL, BITE, LASH, ENLARGE };
+            phase = START[context.slot < 4 ? context.slot : 3];
+        }
+        const uint8_t move = static_cast<uint8_t>((phase + phase_turn - 1) % 4);
+        use_move(move);
+        if (move == FLAIL) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("FLAIL");
+            current_intent.hits = sheet_move("FLAIL").hits;
+            current_intent.description = "Furie (1 dmg x3)";
+        } else if (move == ENLARGE) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 3 : 2;
+            current_intent.description = "Croissance (+2 Force)";
+        } else if (move == BITE) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("BITE");
+            current_intent.description = "Morsure (5 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("LASH");
+            current_intent.description = "Fouet (7 dmg)";
+        }
+    } else if (type == EnemyType::EXOSKELETON) {
+        // Started by its place among the exoskeletons: first Skitter, second Mandibles then Enrage, third Enrage,
+        // fourth a draw. Then a draw between Skitter (1x3, 1x4 at Ascension) and Mandibles 8, never the same twice.
+        enum Move : uint8_t { SKITTER, MANDIBLES, ENRAGE };
+        static constexpr MoveOption OPTIONS[] = { { SKITTER }, { MANDIBLES } };
+        const uint8_t slot = context.slot < 4 ? context.slot : 3;
+        if (turn_number == 1) phase = slot;
+        if (phase_turn == 1 && phase == 0) use_move(SKITTER);
+        else if (phase_turn == 1 && phase == 1) use_move(MANDIBLES);
+        else if ((phase_turn == 1 && phase == 2) || (phase_turn == 2 && phase == 1)) use_move(ENRAGE);
+        else draw_move(OPTIONS);
+        if (last_move == SKITTER) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("SKITTER");
+            current_intent.hits = ascended_damage ? 4 : sheet_move("SKITTER").hits;
+            current_intent.description = "Détalage (1 dmg x3)";
+        } else if (last_move == MANDIBLES) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("MANDIBLES");
+            current_intent.description = "Mandibules (8 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.description = "Enrager (+2 Force)";
         }
     } else if (type == EnemyType::TERROR_EEL) {
         // Crash, Thrash (+6 Vigor), and again. Once at half its HP or less (triggered), it is stunned, then
