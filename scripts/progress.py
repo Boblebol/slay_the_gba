@@ -180,6 +180,22 @@ def implemented_events() -> set[str]:
     return detect(r'enc\.id = "(\w+)"', ENGINE / "event_manager.cpp")
 
 
+def implemented_ancients() -> set[str]:
+    """Ancients with their slots in ancient.cpp and a portrait: a bitmap in graphics/ancients/ and a case in
+    ancient_portrait() (Neow is the default case)."""
+    declared = dict(re.findall(r'\{ AncientId::(\w+), "(\w+)"', re.sub(r"//.*", "", (ENGINE / "ancient.cpp").read_text())))
+    if not declared:
+        raise SystemExit("progress: no Ancient found in src/engine/ancient.cpp; update the detection in scripts/progress.py")
+    assets = re.sub(r"//.*", "", (ROOT / "src" / "gba" / "assets.cpp").read_text())
+    done = set()
+    for ancient_id, slug in declared.items():
+        has_bitmap = (ROOT / "graphics" / "ancients" / f"ancient_{slug}.bmp").exists()
+        has_case = ancient_id == "NEOW" or f"case engine::AncientId::{ancient_id}:" in assets
+        if has_bitmap and has_case:
+            done.add(ancient_id)
+    return done
+
+
 # ---------------------------------------------------------------------------------------------
 # Reference data and manual statuses
 # ---------------------------------------------------------------------------------------------
@@ -350,7 +366,7 @@ def compute() -> Progress:
                 {"id": a["id"], "name": a["name"],
                  "detail": "Tous actes" if a.get("anyAct") else ", ".join(f"Acte {x}" for x in a.get("acts", []))}
                 for a in load("ancient")["ancients"]
-            ], set()),
+            ], implemented_ancients()),
         ],
     }
     catalogue.check_overrides()
