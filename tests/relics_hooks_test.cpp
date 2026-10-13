@@ -4615,6 +4615,47 @@ void test_fishing_rod() {
     std::cout << "[PASS] Fishing Rod upgrades a card every 3 normal fights" << std::endl;
 }
 
+// Wins the fight of a normal combat room entered at once.
+void win_combat(RunManager& run) {
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.combat.state = CombatState::VICTORY;
+    run.proceed_after_combat();
+    run.skip_card_rewards();
+}
+
+void test_toy_box() {
+    // Obtained: 5 relics right after the box; every 3 fights won, the left-most of them melts away.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 768);
+    const size_t owned = run.relics.size();
+    run.add_relic("TOY_BOX");
+    assert(run.has_relic("TOY_BOX"));
+    assert(run.relics.size() == owned + 1 + 5);
+    FixedVector<std::string_view, 5> wax;
+    for (size_t i = owned + 1; i < run.relics.size(); ++i) wax.push_back(run.relics[i]);
+    for (size_t melted = 0; melted < 5; ++melted) {
+        win_combat(run);
+        win_combat(run);
+        assert(run.has_relic(wax[melted]));
+        win_combat(run);
+        assert(!run.has_relic(wax[melted]));
+        for (size_t later = melted + 1; later < wax.size(); ++later) assert(run.has_relic(wax[later]));
+        assert(run.relics.size() == owned + 1 + 5 - (melted + 1));
+    }
+    // Every Wax Relic gone: the other relics stay.
+    for (int fight = 0; fight < 3; ++fight) win_combat(run);
+    assert(run.relics.size() == owned + 1 && run.has_relic("TOY_BOX") && run.has_relic("BURNING_BLOOD"));
+
+    // Without the relic, no relic is gained or lost.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 768);
+    plain.add_relic("ANCHOR");
+    const size_t plain_owned = plain.relics.size();
+    for (int fight = 0; fight < 3; ++fight) win_combat(plain);
+    assert(!plain.has_relic("TOY_BOX") && plain.relics.size() == plain_owned);
+    std::cout << "[PASS] Toy Box: 5 Wax Relics, the left-most melts every 3 fights" << std::endl;
+}
+
 void test_fur_coat() {
     // Obtained at the start of the act: 8 of its normal combats are marked, and their enemies have 1 HP.
     RunManager run;
@@ -5038,6 +5079,7 @@ int main() {
     test_bing_bong();
     test_paper_phrog();
     test_silver_crucible();
+    test_toy_box();
     test_fur_coat();
     test_winged_boots();
     test_driftwood();

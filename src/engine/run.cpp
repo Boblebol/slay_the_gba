@@ -27,7 +27,6 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
     "MASSIVE_SCROLL", "SCROLL_BOXES", "SEA_GLASS",
-    "TOY_BOX",
 };
 
 bool ancient_relic_pending(std::string_view relic_id) {
@@ -41,6 +40,11 @@ bool ancient_relic_pending(std::string_view relic_id) {
 constexpr uint32_t ANCIENT_SEED_SALT = 0xA5C1E7D3u;
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+// Toy Box: its counter keeps the Wax Relics left (low bits) and the fights won since the last one melted (high bits).
+constexpr uint8_t TOY_BOX_WAX_RELICS = 5;
+constexpr uint8_t TOY_BOX_COMBATS = 3;
+constexpr uint8_t TOY_BOX_WAX_MASK = 0x07;
+constexpr uint8_t TOY_BOX_COMBAT_SHIFT = 3;
 // Fur Coat: combats marked on the map, drawn from a stream of their own seeded by the map.
 constexpr uint8_t FUR_COAT_COMBATS = 8;
 constexpr uint32_t FUR_COAT_SEED_SALT = 0xF0C0A7u;
@@ -900,6 +904,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
     }
     if (relic_id == "SMALL_CAPSULE" && has_relic("SMALL_CAPSULE")) gain_random_relics(1);
+    // Toy Box: 5 random relics, the Wax Relics, right after the box; they melt away one by one (on_combat_won).
+    if (relic_id == "TOY_BOX" && has_relic("TOY_BOX")) {
+        int wax = gain_random_relics(TOY_BOX_WAX_RELICS);
+        set_relic_counter("TOY_BOX", static_cast<uint8_t>(wax));
+    }
     // Fur Coat: marks combats of the rooms still ahead in this act (see fur_coat_room).
     if (relic_id == "FUR_COAT" && has_relic("FUR_COAT")) {
         const uint8_t from_floor = current_node_index >= 0 ? static_cast<uint8_t>(map.nodes[current_node_index].floor + 1) : 0;
@@ -1309,6 +1318,22 @@ void RunManager::on_combat_won(RoomType room) {
         if (relic_counter("WONGOS_MYSTERY_TICKET") == WONGOS_MYSTERY_TICKET_COMBATS) {
             gain_random_relics(WONGOS_MYSTERY_TICKET_RELICS);
         }
+    }
+    // Toy Box: every 3 fights won, the left-most Wax Relic (the first one after the box) melts away.
+    if (has_relic("TOY_BOX") && (relic_counter("TOY_BOX") & TOY_BOX_WAX_MASK) > 0) {
+        uint8_t wax = relic_counter("TOY_BOX") & TOY_BOX_WAX_MASK;
+        uint8_t combats = static_cast<uint8_t>((relic_counter("TOY_BOX") >> TOY_BOX_COMBAT_SHIFT) + 1);
+        if (combats >= TOY_BOX_COMBATS) {
+            combats = 0;
+            --wax;
+            for (size_t i = 0; i + 1 < relics.size(); ++i) {
+                if (relics[i] == "TOY_BOX") {
+                    relics.erase(i + 1);
+                    break;
+                }
+            }
+        }
+        set_relic_counter("TOY_BOX", static_cast<uint8_t>(combats << TOY_BOX_COMBAT_SHIFT | wax));
     }
     // Fishing Rod: every 3 normal fights won, one random card of the deck is upgraded.
     if (room == RoomType::MONSTER && has_relic("FISHING_ROD") && tick_relic_counter("FISHING_ROD", FISHING_ROD_COMBATS)) {
