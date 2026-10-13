@@ -29,7 +29,9 @@ public:
         _bg(bn::regular_bg_items::bg_map.create_bg(BG_ORIGIN_X, 176 + (context.frame % 512))),
         _picker(CardPickerLayout{ 50, -74, -22, -30, -50, 142 })
     {
-        _show(View::DECK);
+        // Opened on "Reliques" from the pause menu.
+        _show(context.deck_relics && ! context.run.relics.empty() ? View::RELICS : View::DECK);
+        context.deck_relics = false;
     }
 
     [[nodiscard]] bn::optional<SceneId> update() final
@@ -112,7 +114,11 @@ private:
             return ! _ctx.run.relics.empty();
         }
 
-        if(_ctx.deck_return != SceneId::COMBAT)
+        // Opened from a fight, directly or through the pause menu.
+        bool in_combat = _ctx.deck_return == SceneId::COMBAT ||
+                         (_ctx.deck_return == SceneId::PAUSE && _ctx.pause_return == SceneId::COMBAT);
+
+        if(! in_combat)
         {
             return false;
         }
