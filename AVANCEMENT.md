@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 92,4 %** — 1147 faits, 15 partiels, 87 à faire (35 hors périmètre).
+**Avancement global : 92,5 %** — 1148 faits, 15 partiels, 86 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 117 | 0 | 3 | 97,5 % |
-| [Reliques et potions](#reliques) | 308 | 0 | 13 | 96,0 % |
+| [Reliques et potions](#reliques) | 309 | 0 | 12 | 96,3 % |
 | [Bestiaire](#bestiaire) | 98 | 0 | 6 | 94,2 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
-| **Total** | **1147** | **15** | **87** | **92,4 %** |
+| **Total** | **1148** | **15** | **86** | **92,5 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 96,0 %
+## Reliques et potions — 96,3 %
 
 ### Reliques partagées — 97,4 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 92,2 %
+### Reliques des Anciens — 93,1 %
 
-94 faits, 0 partiel, 8 à faire.
+95 faits, 0 partiel, 7 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1043,7 +1043,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Astrolabe | Ancienne | Oui |  |
 | Baguette de rhabdomancie | Ancienne | Oui |  |
 | Bois bénis | Ancienne | Oui |  |
-| Bois flotté | Ancienne | Non |  |
+| Bois flotté | Ancienne | Oui |  |
 | Bottes ailées | Ancienne | Non |  |
 | Boucle d'oreille susurrante | Ancienne | Oui |  |
 | Boussole dorée | Ancienne | Oui |  |
