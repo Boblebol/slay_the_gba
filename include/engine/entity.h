@@ -452,7 +452,8 @@ enum class EnemyType : uint8_t {
     TEST_SUBJECT,         // Act 3 boss
     KNOWLEDGE_DEMON,      // Act 2 boss
     SOUL_FYSH,            // Act 1 (B) boss
-    WATERFALL_GIANT       // Act 1 (B) boss
+    WATERFALL_GIANT,      // Act 1 (B) boss
+    AEONGLASS             // Act 3 boss
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
@@ -528,6 +529,11 @@ constexpr int16_t WATERFALL_GIANT_STEAM = 3;
 constexpr int16_t WATERFALL_GIANT_SIPHON_HEAL = 15;        // guessed
 constexpr int16_t WATERFALL_GIANT_PRESSURE_GUN = 20;       // guessed
 constexpr int16_t WATERFALL_GIANT_PRESSURE_GUN_ASC = 22;   // guessed
+
+// Increasing Intensity, the Aeonglass's third move: the Strength it gives itself (Ascension: the second value). The
+// monster database names the buff without its amount: guessed, in line with the other bosses' +2 / +3 Strength.
+constexpr int16_t AEONGLASS_STRENGTH = 2;     // guessed
+constexpr int16_t AEONGLASS_STRENGTH_ASC = 3; // guessed
 
 // Sheet of this monster in the monster database (src/engine/monster.cpp), where its name, HP and the numbers of its
 // moves come from. nullptr for the monsters that keep hand-written values: the four from the first Slay the Spire.

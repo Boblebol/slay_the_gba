@@ -116,6 +116,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::WATERFALL_GIANT: return "WATERFALL_GIANT";
         case EnemyType::VANTOM: return "VANTOM";
         case EnemyType::SOUL_FYSH: return "SOUL_FYSH";
+        case EnemyType::AEONGLASS: return "AEONGLASS";
     }
     return {};
 }
@@ -241,10 +242,10 @@ void test_reference_encounters() {
                                         "FossilStalkerNormal", "SeapunkNormal", "LivingFogNormal",
                                         "TwoTailedRatsNormal" }));
     // Act 1 (A) draws its boss between the Ceremonial Beast and the Vantom, Act 1 (B) between the Lagavulin
-    // Matriarch, the Soul Fysh and the Waterfall Giant, Act 2 between the Insatiable and the Knowledge Demon; Act 3
-    // has the Test Subject.
+    // Matriarch, the Soul Fysh and the Waterfall Giant, Act 2 between the Insatiable and the Knowledge Demon, Act 3
+    // between the Test Subject and the Aeonglass.
     for (ActZone zone : ZONES) {
-        std::set<std::string_view> bosses{ "TestSubjectBoss" };
+        std::set<std::string_view> bosses{ "TestSubjectBoss", "AeonglassBoss" };
         if (zone == ActZone::ACT1A) bosses = { "CeremonialBeastBoss", "VantomBoss" };
         if (zone == ActZone::ACT2) bosses = { "TheInsatiableBoss", "KnowledgeDemonBoss" };
         if (zone == ActZone::ACT1B) bosses = { "LagavulinMatriarchBoss", "SoulFyshBoss", "WaterfallGiantBoss" };
@@ -268,6 +269,8 @@ void test_reference_encounters() {
     assert(insatiable.count == 1 && insatiable.monsters[0] == EnemyType::THE_INSATIABLE);
     const Encounter& subject = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::BOSS), "TestSubjectBoss");
     assert(subject.count == 1 && subject.monsters[0] == EnemyType::TEST_SUBJECT);
+    const Encounter& aeonglass = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::BOSS), "AeonglassBoss");
+    assert(aeonglass.count == 1 && aeonglass.monsters[0] == EnemyType::AEONGLASS);
     assert(ids_of(encounter_table(ActZone::ACT1A, EncounterTier::ELITE)) ==
            (std::set<std::string_view>{ "BygoneEffigyElite", "ByrdonisElite", "PhrogParasiteElite",
                                         "LegacyGremlinNob" }));
