@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 93,5 %** — 1160 faits, 15 partiels, 74 à faire (35 hors périmètre).
+**Avancement global : 93,7 %** — 1163 faits, 15 partiels, 71 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 119 | 0 | 1 | 99,2 % |
 | [Reliques et potions](#reliques) | 318 | 0 | 3 | 99,1 % |
-| [Bestiaire](#bestiaire) | 98 | 0 | 6 | 94,2 % |
+| [Bestiaire](#bestiaire) | 101 | 0 | 3 | 97,1 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 18 | 6 | 7 | 67,7 % |
-| **Total** | **1160** | **15** | **74** | **93,5 %** |
+| **Total** | **1163** | **15** | **71** | **93,7 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,7 +1212,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 94,2 %
+## Bestiaire — 97,1 %
 
 ### Monstres — 95,8 %
 
@@ -1293,9 +1293,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sculpteur dévoué | Faible · Acte 3 | Oui |  |
 | Sonobot | Invocation · Acte 3 | Oui |  |
 
-### Élites — 82,4 %
+### Élites — 100,0 %
 
-14 faits, 0 partiel, 3 à faire.
+17 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1306,9 +1306,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Colonie de rôdeurs | Élite · Acte 1 (B) | Oui |  |
 | Jardinier spectral | Élite · Acte 1 (B) | Oui |  |
 | Murène de l'effroi | Élite · Acte 1 (B) | Oui |  |
-| Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
-| Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
-| Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
+| Dix-Mille-Pattes | Élite · Acte 2 | Oui |  |
+| Dix-Mille-Pattes | Élite · Acte 2 | Oui |  |
+| Dix-Mille-Pattes | Élite · Acte 2 | Oui |  |
 | Entomancien | Élite · Acte 2 | Oui |  |
 | Prisme infesté | Élite · Acte 2 | Oui |  |
 | Amalg'âmes | Élite · Acte 3 | Oui |  |
