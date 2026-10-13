@@ -5578,6 +5578,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::BURN:
         case CardId::DAZED:
         case CardId::INFECTION:
+        case CardId::BECKON:
         case CardId::SOOT:
         case CardId::VOID_CARD:
         case CardId::WOUND:
@@ -6478,6 +6479,7 @@ void CombatEngine::trigger_end_of_turn_in_hand(const DeckCard& card) {
         case CardId::DECAY: damage_player(2); break;
         case CardId::REGRET: lose_hp(static_cast<int16_t>(hand.size())); break;
         case CardId::BAD_LUCK: lose_hp(13); break;
+        case CardId::BECKON: lose_hp(CardDef::get_value(card.id, card.upgraded)); break;
         case CardId::DEBT: lose_gold(10); break;
         default: break;
     }

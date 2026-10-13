@@ -120,8 +120,9 @@ constexpr Encounter ACT3_ELITE[] = {
     { "KnightsElite"sv, 3, { EnemyType::FLAIL_KNIGHT, EnemyType::MAGI_KNIGHT, EnemyType::SPECTRAL_KNIGHT } },
 };
 
-constexpr Encounter LAGAVULIN_MATRIARCH_BOSS[] = {
+constexpr Encounter ACT1B_BOSS[] = {
     { "LagavulinMatriarchBoss"sv, 1, { EnemyType::LAGAVULIN_MATRIARCH } },
+    { "SoulFyshBoss"sv, 1, { EnemyType::SOUL_FYSH } },
 };
 constexpr Encounter TEST_SUBJECT_BOSS[] = {
     { "TestSubjectBoss"sv, 1, { EnemyType::TEST_SUBJECT } },
@@ -138,7 +139,7 @@ constexpr Encounter ACT2_BOSS[] = {
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, ACT1A_BOSS },
-    { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, LAGAVULIN_MATRIARCH_BOSS },
+    { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, ACT1B_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, ACT2_BOSS },
     { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, TEST_SUBJECT_BOSS },
 };

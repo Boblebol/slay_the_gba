@@ -250,6 +250,7 @@ BOSSES: dict[str, str] = {
     "knowledge_demon": "knowledge_demon",
     "test_subject": "test_subject",
     "vantom": "vantom",
+    "soul_fysh": "soul_fysh",
 }
 
 
@@ -860,6 +861,7 @@ CARDS: list[CardArt] = [
     CardArt("spinner", "defect", "spinner", "power", (1, 1)),
     CardArt("infection", "status", "wound", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
     CardArt("frantic_escape", "status", "debris", "status", (1, 1)),  # no portrait of its own in the reference
+    CardArt("beckon", "status", "void", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",

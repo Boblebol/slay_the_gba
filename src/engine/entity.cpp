@@ -105,8 +105,9 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "VANTOM", false, true },
     { "TEST_SUBJECT", false, true },
     { "KNOWLEDGE_DEMON", false, true },
+    { "SOUL_FYSH", false, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::KNOWLEDGE_DEMON) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::SOUL_FYSH) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -1820,6 +1821,37 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.base_damage = move_damage("LASH");
             current_intent.hits = sheet_move("LASH").hits;
             current_intent.description = "Fouet (3x2 dmg)";
+        }
+    } else if (type == EnemyType::SOUL_FYSH) {
+        // Beckon, De-Gas, Gaze, Fade and Scream, in a loop.
+        const int step = (turn_number - 1) % 5;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_card = CardId::BECKON;
+            current_intent.status_cards = SOUL_FYSH_BECKONS;
+            current_intent.status_pile = Pile::DRAW;
+            current_intent.description = "Appel (2 Appel)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("DE_GAS");
+            current_intent.description = "Dégazage (16 dmg)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("GAZE");
+            current_intent.status_card = CardId::BECKON;
+            current_intent.status_cards = SOUL_FYSH_GAZE_BECKONS;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Fixation (7 dmg, 1 Appel)";
+        } else if (step == 3) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::INTANGIBLE;
+            current_intent.status_amount = SOUL_FYSH_INTANGIBLE;
+            current_intent.description = "Camouflage (Intangible 2)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("SCREAM");
+            current_intent.debuffs[0] = { StatusType::VULNERABLE, SOUL_FYSH_SCREAM_VULNERABLE };
+            current_intent.description = "Hurlement (13 dmg, Vuln 3)";
         }
     } else if (type == EnemyType::KNOWLEDGE_DEMON) {
         // Curse of Knowledge, Slap, Knowledge Overwhelming, Ponder, three times: each Curse of Knowledge puts its own

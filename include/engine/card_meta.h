@@ -550,6 +550,7 @@ inline constexpr CardMeta CARD_META[] = {
     { CardRarity::RARE, CardPool::DEFECT }, // SPINNER
     { CardRarity::NONE, CardPool::NONE }, // INFECTION
     { CardRarity::NONE, CardPool::NONE }, // FRANTIC_ESCAPE
+    { CardRarity::NONE, CardPool::NONE }, // BECKON
 };
 
 } // namespace engine

@@ -450,7 +450,8 @@ enum class EnemyType : uint8_t {
     LAGAVULIN_MATRIARCH,  // Act 1 (B) boss
     VANTOM,               // Act 1 (A) boss
     TEST_SUBJECT,         // Act 3 boss
-    KNOWLEDGE_DEMON       // Act 2 boss
+    KNOWLEDGE_DEMON,      // Act 2 boss
+    SOUL_FYSH             // Act 1 (B) boss
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
@@ -481,6 +482,14 @@ constexpr uint8_t INSATIABLE_FRANTIC_ESCAPES = 6;
 // first HP it loses wakes it sooner. Awake, it loses its Plating.
 constexpr int16_t LAGAVULIN_PLATING = 12;
 constexpr uint8_t LAGAVULIN_SLEEP_TURNS = 3;
+
+// The Soul Fysh's Beckon cards (CardId::BECKON). The reference gives neither how many its moves add nor what the
+// card does: these values are guessed. Beckon shuffles SOUL_FYSH_BECKONS into the draw pile, Gaze adds
+// SOUL_FYSH_GAZE_BECKONS to the discard pile after its attack. Its Fade gives it SOUL_FYSH_INTANGIBLE (reference).
+constexpr uint8_t SOUL_FYSH_BECKONS = 2;      // guessed
+constexpr uint8_t SOUL_FYSH_GAZE_BECKONS = 1; // guessed
+constexpr int16_t SOUL_FYSH_INTANGIBLE = 2;
+constexpr int16_t SOUL_FYSH_SCREAM_VULNERABLE = 3;
 
 // The Knowledge Demon plays Curse of Knowledge this many times, one curse power on the player each time
 // (KNOWLEDGE_DEMON_CURSES, in that order), then only Slap, Knowledge Overwhelming and Ponder. Ponder heals it.
