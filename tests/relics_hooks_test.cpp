@@ -4631,6 +4631,8 @@ void test_dowsing_rod() {
     assert(!plain.has_relic("DOWSING_ROD") && plain.master_deck.size() == deck);
     for (const DeckCard& card : plain.master_deck) assert(card.id != CardId::DOWSING);
     std::cout << "[PASS] Dowsing Rod: adds 1 Dowsing to the deck when obtained" << std::endl;
+}
+
 void test_touch_of_orobas() {
     // Obtained: the starter relic (Burning Blood for the Ironclad) becomes its Ancient version.
     RunManager run;
