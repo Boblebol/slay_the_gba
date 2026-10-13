@@ -117,6 +117,10 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     current_act = 1;
     current_floor = 1;
     current_node_index = -1;
+    play_frames = 0;
+    combats_won = 0;
+    elites_won = 0;
+    bosses_won = 0;
     current_encounter = {};
     cook_pending = false;
     current_ancient = AncientId::COUNT;
@@ -1396,6 +1400,10 @@ static constexpr uint8_t FISHING_ROD_COMBATS = 3;
 
 void RunManager::on_combat_won(RoomType room) {
     count_hook(RunHook::COMBAT_WON);
+    // Statistics of the end screen (#11, #12).
+    if (combats_won < UINT8_MAX) ++combats_won;
+    if (room == RoomType::ELITE && elites_won < UINT8_MAX) ++elites_won;
+    if (room == RoomType::BOSS && bosses_won < UINT8_MAX) ++bosses_won;
     // Wongo's Mystery Ticket (event): each fight won counts; the fifth one pays 3 random relics, once.
     if (has_relic("WONGOS_MYSTERY_TICKET") && relic_counter("WONGOS_MYSTERY_TICKET") < WONGOS_MYSTERY_TICKET_COMBATS) {
         set_relic_counter("WONGOS_MYSTERY_TICKET", static_cast<uint8_t>(relic_counter("WONGOS_MYSTERY_TICKET") + 1));

@@ -53,6 +53,26 @@ bn::unique_ptr<Scene> create_scene(SceneId id, GameContext& context)
     }
 }
 
+bool scene_counts_play_time(SceneId id)
+{
+    switch(id)
+    {
+    case SceneId::MAP:
+    case SceneId::DECK:
+    case SceneId::DECK_CHOICE:
+    case SceneId::COMBAT:
+    case SceneId::REWARDS:
+    case SceneId::EVENT:
+    case SceneId::CAMPFIRE:
+    case SceneId::SHOP:
+    case SceneId::ANCIENT:
+    case SceneId::PAUSE:
+        return true;
+    default:
+        return false;
+    }
+}
+
 SceneId scene_after_deck_choice(GameContext& context, SceneId back)
 {
     if(! context.run.has_deck_choice())
