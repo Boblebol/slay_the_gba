@@ -111,6 +111,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::LIVING_FOG: return "LIVING_FOG";
         case EnemyType::TWO_TAILED_RAT: return "TWO_TAILED_RAT";
         case EnemyType::LAGAVULIN_MATRIARCH: return "LAGAVULIN_MATRIARCH";
+        case EnemyType::VANTOM: return "VANTOM";
         case EnemyType::SOUL_FYSH: return "SOUL_FYSH";
     }
     return {};
@@ -236,14 +237,17 @@ void test_reference_encounters() {
                                         "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
                                         "FossilStalkerNormal", "SeapunkNormal", "LivingFogNormal",
                                         "TwoTailedRatsNormal" }));
-    // Act 1 (B) draws one of its own bosses, the Lagavulin Matriarch or the Soul Fysh; Act 2 has the Insatiable;
-    // the other acts keep the Ceremonial Beast.
+    // Act 1 (A) draws its boss between the Ceremonial Beast and the Vantom, Act 1 (B) between the Lagavulin
+    // Matriarch and the Soul Fysh; Act 2 has the Insatiable; Act 3 keeps the Ceremonial Beast.
     for (ActZone zone : ZONES) {
         std::set<std::string_view> bosses{ "CeremonialBeastBoss" };
+        if (zone == ActZone::ACT1A) bosses = { "CeremonialBeastBoss", "VantomBoss" };
         if (zone == ActZone::ACT2) bosses = { "TheInsatiableBoss" };
         if (zone == ActZone::ACT1B) bosses = { "LagavulinMatriarchBoss", "SoulFyshBoss" };
         assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) == bosses);
     }
+    const Encounter& vantom = find_encounter(encounter_table(ActZone::ACT1A, EncounterTier::BOSS), "VantomBoss");
+    assert(vantom.count == 1 && vantom.monsters[0] == EnemyType::VANTOM);
     const Encounter& matriarch = find_encounter(encounter_table(ActZone::ACT1B, EncounterTier::BOSS),
                                                 "LagavulinMatriarchBoss");
     assert(matriarch.count == 1 && matriarch.monsters[0] == EnemyType::LAGAVULIN_MATRIARCH);
@@ -462,7 +466,8 @@ void test_same_seed_same_fights() {
         }
     }
     assert(raiders > 0 && shamblers > 0);
-    assert(fights[fights.size() - 1] == "CeremonialBeastBoss CEREMONIAL_BEAST");
+    assert(fights[fights.size() - 1] == "CeremonialBeastBoss CEREMONIAL_BEAST" ||
+           fights[fights.size() - 1] == "VantomBoss VANTOM");
     std::cout << "[PASS] Encounter tables: the same seed gives the same fights" << std::endl;
 }
 

@@ -448,6 +448,7 @@ enum class EnemyType : uint8_t {
     LIVING_FOG,           // Act 1 (B)
     TWO_TAILED_RAT,       // Act 1 (B)
     LAGAVULIN_MATRIARCH,  // Act 1 (B) boss
+    VANTOM,               // Act 1 (A) boss
     SOUL_FYSH             // Act 1 (B) boss
 };
 

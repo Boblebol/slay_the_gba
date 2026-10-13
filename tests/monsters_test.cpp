@@ -2387,6 +2387,91 @@ void test_lagavulin_matriarch_whole_fight() {
     std::cout << "[PASS] Lagavulin Matriarch: a whole fight to the boss's death, asleep then awake" << std::endl;
 }
 
+int vantom_wounds(const CombatEngine& combat) {
+    return count_cards(combat.draw_pile, CardId::WOUND) + count_cards(combat.hand, CardId::WOUND) +
+           count_cards(combat.discard_pile, CardId::WOUND);
+}
+
+void test_vantom() {
+    // Ink Blot 7, Inky Lance 6x2, Dismember 26 (3 Wounds), Prepare (+2 Strength), and again 2 stronger.
+    check_monster(EnemyType::VANTOM, "Vantôme", 173, {
+        { ATTACK, 7, 0, 0 },
+        { ATTACK, 6, 0, 0, 0, 2 },
+        { ATTACK_DEBUFF, 26, 0, 0 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK, 9, 0, 2 },
+        { ATTACK, 8, 0, 2, 0, 2 },
+        { ATTACK_DEBUFF, 28, 0, 2 },
+        { BUFF, 0, 0, 4 },
+    });
+
+    // Dismember puts 3 Wounds in the player's discard pile, after the hit.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::VANTOM);
+    Enemy& boss = combat.enemies[0];
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(vantom_wounds(combat) == 0);
+    assert(boss.current_intent.type == ATTACK_DEBUFF && boss.current_intent.status_card == CardId::WOUND &&
+           boss.current_intent.status_cards == 3);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 26);
+    assert(vantom_wounds(combat) == 3);
+    std::cout << "[PASS] Vantom: 173 HP, Ink Blot 7, Inky Lance 6x2, Dismember 26 + 3 Wounds, Prepare +2 Strength"
+              << std::endl;
+}
+
+void test_vantom_ascension() {
+    // 183 HP, Ink Blot 8, Inky Lance 7x2 and Dismember 30 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::VANTOM);
+    Enemy& boss = combat.enemies[0];
+    assert(boss.ascension_hp() == 183 && boss.hp_spread() == 0);
+    boss.ascend(true, true);
+    combat.plan_enemies();
+    assert(boss.hp == 183 && boss.max_hp == 183);
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 8);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 7 && boss.current_intent.hits == 2);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(boss.current_intent.type == ATTACK_DEBUFF && boss.intent_damage(combat.player) == 30);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 30 && vantom_wounds(combat) == 3);
+    assert(boss.current_intent.type == BUFF);
+    std::cout << "[PASS] Vantom: Ascension gives 183 HP, Ink Blot 8, Inky Lance 7x2, Dismember 30" << std::endl;
+}
+
+void test_vantom_whole_fight() {
+    // The whole fight, until the boss dies, at 20 damage a turn: a single phase, its four moves in a loop, the
+    // Strength of each Prepare carried into the next cycle.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::VANTOM);
+    Enemy& boss = combat.enemies[0];
+    int turn = 1;
+    while (combat.state == CombatState::PLAYER_TURN && boss.is_alive()) {
+        const int step = (turn - 1) % 4;
+        const int strength = 2 * ((turn - 1) / 4);
+        const EnemyIntentType expected[4] = { ATTACK, ATTACK, ATTACK_DEBUFF, BUFF };
+        const int damage[4] = { 7, 6, 26, 0 };
+        assert(boss.phase == 0);
+        assert(boss.current_intent.type == expected[step]);
+        assert(boss.get_status(StatusType::STRENGTH) == strength);
+        assert(boss.intent_damage(combat.player) == (step == 3 ? 0 : damage[step] + strength));
+        combat.damage_enemy(boss, 20);
+        if (!boss.is_alive()) break;
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        ++turn;
+    }
+    assert(!boss.is_alive() && combat.player.is_alive());
+    assert(turn == 9);                  // 173 HP, 20 a turn
+    assert(vantom_wounds(combat) == 6); // two Dismembers
+    std::cout << "[PASS] Vantom: a whole fight to the boss's death, two full cycles" << std::endl;
+}
+
 // Beckons in every pile of the player.
 int beckons(const CombatEngine& combat) {
     int count = count_in(combat.draw_pile, CardId::BECKON) + count_in(combat.discard_pile, CardId::BECKON);
@@ -5172,6 +5257,9 @@ int main() {
     test_lagavulin_matriarch_woken();
     test_lagavulin_matriarch_ascension();
     test_lagavulin_matriarch_whole_fight();
+    test_vantom();
+    test_vantom_ascension();
+    test_vantom_whole_fight();
     test_soul_fysh();
     test_beckon();
     test_soul_fysh_ascension();
