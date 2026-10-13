@@ -453,6 +453,7 @@ enum class EnemyType : uint8_t {
     KNOWLEDGE_DEMON,      // Act 2 boss
     SOUL_FYSH,            // Act 1 (B) boss
     WATERFALL_GIANT,      // Act 1 (B) boss
+    AEONGLASS,            // Act 3 boss
     KIN_FOLLOWER,         // Act 1 (A) boss, with the Kin Priest
     KIN_PRIEST            // Act 1 (A) boss
 };
@@ -530,6 +531,11 @@ constexpr int16_t WATERFALL_GIANT_STEAM = 3;
 constexpr int16_t WATERFALL_GIANT_SIPHON_HEAL = 15;        // guessed
 constexpr int16_t WATERFALL_GIANT_PRESSURE_GUN = 20;       // guessed
 constexpr int16_t WATERFALL_GIANT_PRESSURE_GUN_ASC = 22;   // guessed
+
+// Increasing Intensity, the Aeonglass's third move: the Strength it gives itself (Ascension: the second value). The
+// monster database names the buff without its amount: guessed, in line with the other bosses' +2 / +3 Strength.
+constexpr int16_t AEONGLASS_STRENGTH = 2;     // guessed
+constexpr int16_t AEONGLASS_STRENGTH_ASC = 3; // guessed
 
 // Strength the Kin Follower's Power Dance and the Kin Priest's Ritual give them (the second value at Ascension 9),
 // from the monster database.

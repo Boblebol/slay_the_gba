@@ -125,8 +125,9 @@ constexpr Encounter ACT1B_BOSS[] = {
     { "SoulFyshBoss"sv, 1, { EnemyType::SOUL_FYSH } },
     { "WaterfallGiantBoss"sv, 1, { EnemyType::WATERFALL_GIANT } },
 };
-constexpr Encounter TEST_SUBJECT_BOSS[] = {
+constexpr Encounter ACT3_BOSS[] = {
     { "TestSubjectBoss"sv, 1, { EnemyType::TEST_SUBJECT } },
+    { "AeonglassBoss"sv, 1, { EnemyType::AEONGLASS } },
 };
 constexpr Encounter ACT1A_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
@@ -143,7 +144,7 @@ constexpr std::span<const Encounter> TABLES[4][4] = {
     { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, ACT1A_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, ACT1B_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, ACT2_BOSS },
-    { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, TEST_SUBJECT_BOSS },
+    { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, ACT3_BOSS },
 };
 
 } // namespace

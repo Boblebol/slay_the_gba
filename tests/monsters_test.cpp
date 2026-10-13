@@ -3177,6 +3177,97 @@ void test_soul_fysh_whole_fight() {
     std::cout << "[PASS] Soul Fysh: a whole fight to the boss's death, through its Fade" << std::endl;
 }
 
+int aeonglass_withers(const CombatEngine& combat) {
+    return count_cards(combat.draw_pile, CardId::WITHER) + count_cards(combat.hand, CardId::WITHER) +
+           count_cards(combat.discard_pile, CardId::WITHER);
+}
+
+void test_aeonglass() {
+    // Ebb 22 + 33 Block, Eye Lasers 11x2, Increasing Intensity (+2 Strength, 1 Wither), and again 2 stronger.
+    check_monster(EnemyType::AEONGLASS, "Clepséon", 512, {
+        { ATTACK_DEFEND, 22, 33, 0 },
+        { ATTACK, 11, 0, 0, 0, 2 },
+        { STATUS, 0, 0, 2 },
+        { ATTACK_DEFEND, 24, 33, 2 },
+        { ATTACK, 13, 0, 2, 0, 2 },
+        { STATUS, 0, 0, 4 },
+    });
+
+    // Increasing Intensity puts 1 Wither, an unplayable Status, in the player's discard pile.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::AEONGLASS);
+    Enemy& boss = combat.enemies[0];
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(aeonglass_withers(combat) == 0);
+    assert(boss.current_intent.type == STATUS && boss.current_intent.status_card == CardId::WITHER &&
+           boss.current_intent.status_cards == 1 && boss.current_intent.status_pile == Pile::DISCARD);
+    combat.end_player_turn();
+    assert(combat.player.hp == combat.player.max_hp);
+    assert(aeonglass_withers(combat) == 1 && boss.get_status(StatusType::STRENGTH) == AEONGLASS_STRENGTH);
+    assert(CardDef::get(CardId::WITHER).type == CardType::STATUS &&
+           CardDef::has_keyword(CardId::WITHER, false, KEYWORD_UNPLAYABLE));
+    std::cout << "[PASS] Aeonglass: 512 HP, Ebb 22 + 33 Block, Eye Lasers 11x2, Increasing Intensity +2 Strength + "
+                 "1 Wither"
+              << std::endl;
+}
+
+void test_aeonglass_ascension() {
+    // 535 HP, Ebb 26, Eye Lasers 12x2 and Increasing Intensity +3 Strength with 2 Withers at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::AEONGLASS);
+    Enemy& boss = combat.enemies[0];
+    assert(boss.ascension_hp() == 535 && boss.hp_spread() == 0);
+    boss.ascend(true, true);
+    combat.plan_enemies();
+    assert(boss.hp == 535 && boss.max_hp == 535);
+    assert(boss.current_intent.type == ATTACK_DEFEND && boss.intent_damage(combat.player) == 26 &&
+           boss.current_intent.block == 33);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 26 && boss.block == 33);
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 12 && boss.current_intent.hits == 2);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 24);
+    assert(boss.current_intent.type == STATUS && boss.current_intent.status_cards == 2);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(aeonglass_withers(combat) == 2 && boss.get_status(StatusType::STRENGTH) == AEONGLASS_STRENGTH_ASC);
+    std::cout << "[PASS] Aeonglass: Ascension gives 535 HP, Ebb 26, Eye Lasers 12x2, +3 Strength and 2 Withers"
+              << std::endl;
+}
+
+void test_aeonglass_whole_fight() {
+    // The whole fight, until the boss dies, at 60 damage a turn: a single phase, its three moves in a loop, the
+    // Strength of each Increasing Intensity carried into the next cycle, Ebb's Block soaking up part of the blows.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::AEONGLASS);
+    Enemy& boss = combat.enemies[0];
+    int turn = 1;
+    while (combat.state == CombatState::PLAYER_TURN && boss.is_alive()) {
+        const int step = (turn - 1) % 3;
+        const int strength = AEONGLASS_STRENGTH * ((turn - 1) / 3);
+        const EnemyIntentType expected[3] = { ATTACK_DEFEND, ATTACK, STATUS };
+        const int damage[3] = { 22, 11, 0 };
+        assert(boss.phase == 0);
+        assert(boss.current_intent.type == expected[step]);
+        assert(boss.get_status(StatusType::STRENGTH) == strength);
+        assert(boss.intent_damage(combat.player) == (step == 2 ? 0 : damage[step] + strength));
+        // Ebb's 33 Block lasts until the boss's next turn: it is up during the Eye Lasers turn.
+        assert(boss.block == (step == 1 ? 33 : 0));
+        combat.damage_enemy(boss, 60);
+        if (!boss.is_alive()) break;
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        ++turn;
+    }
+    assert(!boss.is_alive() && combat.player.is_alive());
+    assert(turn == 11);                     // 512 HP, 60 a turn, 33 of them blocked on the turns after Ebb
+    assert(aeonglass_withers(combat) == 3); // three Increasing Intensities
+    std::cout << "[PASS] Aeonglass: a whole fight to the boss's death, three full cycles" << std::endl;
+}
+
 void test_ceremonial_beast() {
     // Phase 0: Stamp (Plow 150 on itself), then Plow (18 damage, +2 Strength) every turn.
     check_monster(EnemyType::CEREMONIAL_BEAST, "Cerf Auguste", 252, {
@@ -5861,6 +5952,9 @@ int main() {
     test_beckon();
     test_soul_fysh_ascension();
     test_soul_fysh_whole_fight();
+    test_aeonglass();
+    test_aeonglass_ascension();
+    test_aeonglass_whole_fight();
     test_ceremonial_beast();
     test_plow();
     test_ceremonial_beast_ascension();

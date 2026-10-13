@@ -107,6 +107,7 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "KNOWLEDGE_DEMON", false, true },
     { "SOUL_FYSH", false, true },
     { "WATERFALL_GIANT", false, true },
+    { "AEONGLASS", false, true },
     { "KIN_FOLLOWER", true, true },
     { "KIN_PRIEST", false, true },
 };
@@ -1963,6 +1964,35 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_cards = ascended_damage ? 5 : 3;
             current_intent.status_pile = Pile::DISCARD;
             current_intent.description = "Grognement ardent (+2 Force, 3 Brûlure)";
+        }
+    } else if (type == EnemyType::AEONGLASS) {
+        // Ebb (attack and Block), Eye Lasers, Increasing Intensity (Strength, Withers into the discard pile), in a loop.
+        const int step = (turn_number - 1) % 3;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = move_damage("EBB");
+            current_intent.block = sheet_move("EBB").block;
+            current_intent.description = "Régression (22 dmg, 33 Armure)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("EYE_LASERS");
+            current_intent.hits = sheet_move("EYE_LASERS").hits;
+            current_intent.description = "Rayons oculaires (11 dmg x2)";
+        } else {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_card = CardId::WITHER;
+            current_intent.status_pile = Pile::DISCARD;
+            // Two assignments, not a ternary: a string_view built from a char pointer calls strlen, which the GBA lacks.
+            if (ascended_damage) {
+                current_intent.status_amount = AEONGLASS_STRENGTH_ASC;
+                current_intent.status_cards = 2;
+                current_intent.description = "Intensité croissante (+3 Force, 2 Érosion)";
+            } else {
+                current_intent.status_amount = AEONGLASS_STRENGTH;
+                current_intent.status_cards = 1;
+                current_intent.description = "Intensité croissante (+2 Force, 1 Érosion)";
+            }
         }
     } else if (type == EnemyType::LAGAVULIN_MATRIARCH) {
         // Asleep (a lost turn) behind its Plating, for 3 turns or until it loses HP. Awake, it drops the Plating and
