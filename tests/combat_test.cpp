@@ -883,7 +883,7 @@ void test_necrobinder_existing_mechanics() {
     assert(!bury.play_card(0));
     bury.player.energy = 4;
     assert(bury.play_card(0));
-    assert(bury.enemies[0].hp == 150 - 52);
+    assert(bury.enemies[0].hp == 252 - 52);
 
     // Misery: damage, then the target's debuffs are copied to every other enemy.
     CombatEngine misery = make_pack(CharacterId::NECROBINDER);
@@ -3971,20 +3971,28 @@ void test_ascension() {
     RunManager normal;
     normal.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(normal, RoomType::ELITE);
-    assert(normal.combat.enemies[0].max_hp == 82 && normal.combat.enemies[0].damage_percent == 100);
+    // The elite depends on the act zone the seed draws; its A0 HP is the one A3 keeps.
+    const Enemy& elite = normal.combat.enemies[0];
+    assert(elite.max_hp > 0 && elite.damage_percent == 100);
 
     // A3: elites hit 20 % harder but keep their HP until A8.
     RunManager a3;
     a3.start_run(CharacterId::IRONCLAD, 3, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(a3, RoomType::ELITE);
-    assert(a3.combat.enemies[0].max_hp == 82 && a3.combat.enemies[0].damage_percent == 120);
+    assert(a3.combat.enemies[0].type == elite.type && a3.combat.enemies[0].max_hp == elite.max_hp);
+    // An elite with its own Ascension values hits harder through them instead of the percentage.
+    const Enemy& a3_elite = a3.combat.enemies[0];
+    assert(a3_elite.ascension_hp() > 0 ? a3_elite.ascended_damage && a3_elite.damage_percent == 100
+                                       : a3_elite.damage_percent == 120);
 
     // A10: every room is tougher; the intent shown is the damage really dealt (Chomp 11 x 1.2 = 13).
     RunManager a10;
     a10.start_run(CharacterId::IRONCLAD, 10, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(a10, RoomType::MONSTER);
     const Enemy& cultist = a10.combat.enemies[0];
-    assert(cultist.max_hp == 50 * 115 / 100 && cultist.hp == cultist.max_hp && cultist.damage_percent == 120);
+    // The first fight depends on the seed (Corpse Slugs here, which have their own Ascension values).
+    assert(cultist.type == EnemyType::CORPSE_SLUG && cultist.hp == cultist.max_hp);
+    assert(cultist.ascended_damage && cultist.max_hp >= 27 && cultist.max_hp <= 29);
 
     CombatEngine fight = make_combat(CharacterId::IRONCLAD);
     fight.enemies[0].damage_percent = 120;
@@ -3995,7 +4003,13 @@ void test_ascension() {
     RunManager boss_a9;
     boss_a9.start_run(CharacterId::IRONCLAD, 9, PaletteVariant::CLASSIC, 777);
     enter_room_of_type(boss_a9, RoomType::BOSS);
-    assert(boss_a9.combat.enemies[0].max_hp == 150 * 115 / 100);
+    // Each boss takes the Ascension HP of its sheet: the Lagavulin Matriarch, the Soul Fysh, the Waterfall Giant, the
+    // Ceremonial Beast.
+    const Enemy& boss = boss_a9.combat.enemies[0];
+    if (boss.type == EnemyType::LAGAVULIN_MATRIARCH) assert(boss.max_hp == 233);
+    else if (boss.type == EnemyType::SOUL_FYSH) assert(boss.max_hp == 221);
+    else if (boss.type == EnemyType::WATERFALL_GIANT) assert(boss.max_hp == 250);
+    else assert(boss.max_hp == 262);
 
     // After an act boss: full heal, only 75 % of the missing HP from A5.
     RunManager rested;
@@ -4015,6 +4029,190 @@ void test_ascension() {
     tired.proceed_after_combat();
     assert(tired.hp == 36 + (80 - 36) * 3 / 4); // Burning Blood heals 6 first
     std::cout << "[PASS] Ascension: elite/monster/boss damage (A2-A4) and HP (A7-A9) bonuses, intent damage, post-boss heal (A5)" << std::endl;
+}
+
+// A copy of `id` holding an enchantment (mechanic #107).
+DeckCard enchanted(CardId id, Enchantment enchantment, uint8_t amount = 0) {
+    DeckCard card(id);
+    card.enchantment = enchantment;
+    card.enchant_amount = amount;
+    return card;
+}
+
+// A fight whose draw pile holds the starter deck and `card` on top of nothing in particular, opened afresh so the
+// effects of the start of the combat (Innate, Imbued) apply to it.
+CombatEngine open_with(CharacterId hero, DeckCard card) {
+    CombatEngine combat = make_combat(hero);
+    while (!combat.hand.empty()) {
+        combat.draw_pile.push_back(combat.hand.back());
+        combat.hand.pop_back();
+    }
+    // At the bottom of the draw pile (its front): drawn last.
+    FixedVector<DeckCard, 50> pile;
+    pile.push_back(card);
+    for (const DeckCard& other : combat.draw_pile) pile.push_back(other);
+    combat.draw_pile = pile;
+    combat.reset_combat_state();
+    combat.player.block = 0;
+    combat.begin_first_turn();
+    return combat;
+}
+
+int count_enchanted(const FixedVector<DeckCard, 10>& pile, Enchantment enchantment) {
+    int count = 0;
+    for (const DeckCard& card : pile) count += card.enchantment == enchantment;
+    return count;
+}
+
+void test_enchantment_damage() {
+    // Sharp (Tranchant): every hit of the card deals N more damage.
+    CombatEngine sharp = make_combat(CharacterId::IRONCLAD);
+    sharp.enemies[0].hp = 200;
+    play(sharp, enchanted(CardId::STRIKE, Enchantment::SHARP, 3));
+    assert(sharp.enemies[0].hp == 200 - 9);
+    play(sharp, enchanted(CardId::TWIN_STRIKE, Enchantment::SHARP, 3));
+    assert(sharp.enemies[0].hp == 200 - 9 - 2 * 8);
+    // The enchantment belongs to the copy: a plain Strike deals its 6.
+    play(sharp, CardId::STRIKE);
+    assert(sharp.enemies[0].hp == 200 - 9 - 16 - 6);
+
+    // Instinct: the damage of the card is doubled, Strength included.
+    CombatEngine instinct = make_combat(CharacterId::IRONCLAD);
+    instinct.enemies[0].hp = 200;
+    instinct.player.add_status(StatusType::STRENGTH, 1);
+    play(instinct, enchanted(CardId::STRIKE, Enchantment::INSTINCT));
+    assert(instinct.enemies[0].hp == 200 - 14);
+
+    // Tezcatara's Ember: costs 0, deals N more damage, and is Eternal.
+    CombatEngine ember = make_combat(CharacterId::IRONCLAD);
+    ember.enemies[0].hp = 200;
+    const DeckCard bash = enchanted(CardId::BASH, Enchantment::TEZCATARAS_EMBER, 4);
+    assert(ember.effective_cost(bash) == 0 && CardDef::get_cost(bash) == 0 && CardDef::is_eternal(bash));
+    assert(!CardDef::is_eternal(DeckCard(CardId::BASH)));
+    play(ember, bash);
+    assert(ember.enemies[0].hp == 200 - 12 && ember.player.energy == ember.player.max_energy);
+
+    // Momentum (Élan): each play adds N to the damage of that copy, for the rest of the combat only.
+    CombatEngine momentum = make_combat(CharacterId::IRONCLAD);
+    momentum.enemies[0].hp = 200;
+    play(momentum, enchanted(CardId::STRIKE, Enchantment::MOMENTUM, 5));
+    assert(momentum.enemies[0].hp == 200 - 6);
+    DeckCard grown = momentum.discard_pile.back();
+    assert(grown.enchant_combat == 5 && grown.enchant_amount == 5);
+    play(momentum, grown);
+    assert(momentum.enemies[0].hp == 200 - 6 - 11);
+    assert(momentum.discard_pile.back().enchant_combat == 10);
+
+    // Inky (Encrée): the card applies Weak to the enemies it hits, on any card.
+    CombatEngine inky = make_combat(CharacterId::IRONCLAD);
+    play(inky, enchanted(CardId::STRIKE, Enchantment::INKY));
+    assert(inky.enemies[0].get_status(StatusType::WEAK) == INKY_WEAK);
+    CombatEngine plain = make_combat(CharacterId::IRONCLAD);
+    play(plain, CardId::STRIKE);
+    assert(plain.enemies[0].get_status(StatusType::WEAK) == 0);
+    std::cout << "[PASS] Enchantments on damage: Sharp, Instinct, Tezcatara's Ember, Momentum, Inky" << std::endl;
+}
+
+void test_enchantment_block() {
+    // Adroit: the card also gains N Block, Dexterity applied.
+    CombatEngine adroit = make_combat(CharacterId::IRONCLAD);
+    play(adroit, enchanted(CardId::STRIKE, Enchantment::ADROIT, 4));
+    assert(adroit.player.block == 4 && adroit.enemies[0].hp == 42 - 6);
+
+    // Nimble (Agilité): the Block the card gives is raised by N.
+    CombatEngine nimble = make_combat(CharacterId::IRONCLAD);
+    play(nimble, enchanted(CardId::DEFEND, Enchantment::NIMBLE, 2));
+    assert(nimble.player.block == 5 + 2);
+    // A card that gives no Block gains none.
+    play(nimble, enchanted(CardId::STRIKE, Enchantment::NIMBLE, 2));
+    assert(nimble.player.block == 7);
+
+    // Goopy (Viscosité): the card exhausts, and each play adds 1 to its Block for good.
+    CombatEngine goopy = make_combat(CharacterId::IRONCLAD);
+    DeckCard defend = enchanted(CardId::DEFEND, Enchantment::GOOPY);
+    defend.deck_index = 4;
+    assert(CardDef::has_keyword(defend, KEYWORD_EXHAUST));
+    play(goopy, defend);
+    assert(goopy.player.block == 5 && goopy.exhaust_pile.back().enchant_amount == 1);
+    assert(goopy.permanent_gains.size() == 1 && goopy.permanent_gains[0].deck_index == 4 && goopy.permanent_gains[0].enchantment);
+    play(goopy, goopy.exhaust_pile.back());
+    assert(goopy.player.block == 5 + 6);
+    std::cout << "[PASS] Enchantments on Block: Adroit, Nimble, Goopy" << std::endl;
+}
+
+void test_enchantment_plays() {
+    // Swift (Célérité): the first play of the combat draws N cards, the next ones draw none.
+    CombatEngine swift = make_combat(CharacterId::IRONCLAD);
+    play(swift, enchanted(CardId::STRIKE, Enchantment::SWIFT, 2));
+    assert(swift.hand.size() == 2 && swift.discard_pile.back().enchant_combat == 1);
+    play(swift, swift.discard_pile.back());
+    assert(swift.hand.empty());
+
+    // Glam (Glamour): Echo 1 once per combat, the first time the card is played.
+    CombatEngine glam = make_combat(CharacterId::IRONCLAD);
+    glam.enemies[0].hp = 200;
+    play(glam, enchanted(CardId::STRIKE, Enchantment::GLAM));
+    assert(glam.enemies[0].hp == 200 - 12);
+    play(glam, glam.discard_pile.back());
+    assert(glam.enemies[0].hp == 200 - 18);
+
+    // Royally Approved (Sceau royal): Innate and Retain. Drawn in the opening hand from the bottom of the pile,
+    // and kept at the end of the turn.
+    DeckCard royal = enchanted(CardId::STRIKE, Enchantment::ROYALLY_APPROVED);
+    assert(CardDef::has_keyword(royal, KEYWORD_INNATE) && CardDef::has_keyword(royal, KEYWORD_RETAIN));
+    CombatEngine stamp = open_with(CharacterId::IRONCLAD, royal);
+    assert(count_enchanted(stamp.hand, Enchantment::ROYALLY_APPROVED) == 1);
+    make_enemy_idle(stamp.enemies[0]);
+    stamp.end_player_turn();
+    assert(count_enchanted(stamp.hand, Enchantment::ROYALLY_APPROVED) == 1);
+
+    // Imbued (Imprégnation): played for free at the start of the combat, without taking a place in the hand.
+    CombatEngine imbued = open_with(CharacterId::IRONCLAD, enchanted(CardId::DEFEND, Enchantment::IMBUED));
+    assert(imbued.player.block == 5 && imbued.hand.size() == 5 && imbued.player.energy == imbued.player.max_energy);
+    assert(imbued.discard_pile.size() == 1 && imbued.discard_pile[0].enchantment == Enchantment::IMBUED);
+    // An Imbued Attack hits an enemy.
+    CombatEngine strike = open_with(CharacterId::IRONCLAD, enchanted(CardId::STRIKE, Enchantment::IMBUED));
+    assert(strike.enemies[0].hp == strike.enemies[0].max_hp - 6);
+    std::cout << "[PASS] Enchantments on plays: Swift, Glam, Royally Approved, Imbued" << std::endl;
+}
+
+void test_enchantments_in_the_deck() {
+    // A card holds one enchantment, never on a Curse or a Status, and the damage ones only on an Attack.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.master_deck.clear();
+    run.master_deck.push_back(CardId::STRIKE);
+    run.master_deck.push_back(CardId::DEFEND);
+    run.master_deck.push_back(CardId::REGRET);
+    assert(!run.enchant_card_in_deck(1, Enchantment::SHARP, 3));
+    assert(!run.enchant_card_in_deck(2, Enchantment::CLONE));
+    assert(run.enchant_card_in_deck(0, Enchantment::SHARP, 3));
+    assert(!run.enchant_card_in_deck(0, Enchantment::INSTINCT));
+    assert(run.master_deck[0].enchantment == Enchantment::SHARP && run.master_deck[0].enchant_amount == 3);
+
+    // Clone (Clonage): the rest site offers to duplicate the card, enchantment included, which uses it up.
+    assert(run.campfire_actions().size() == 2);
+    assert(run.enchant_card_in_deck(1, Enchantment::CLONE));
+    auto actions = run.campfire_actions();
+    assert(actions.size() == 3 && actions[2] == CampfireAction::CLONE);
+    assert(!run.can_clone(0) && run.can_clone(1));
+    run.phase = RunPhase::CAMPFIRE;
+    assert(!run.clone_at_campfire(0));
+    assert(run.clone_at_campfire(1));
+    assert(run.master_deck.size() == 4 && run.master_deck[3].id == CardId::DEFEND);
+    assert(run.master_deck[3].enchantment == Enchantment::CLONE && run.phase == RunPhase::MAP_NAVIGATION);
+
+    // The enchantment follows the card into the fight; what Goopy adds stays on the card of the deck.
+    run.master_deck[1].enchantment = Enchantment::GOOPY;
+    enter_room_of_type(run, RoomType::MONSTER);
+    bool found = false;
+    for (const DeckCard& card : run.combat.draw_pile) found |= card.enchantment == Enchantment::SHARP;
+    for (const DeckCard& card : run.combat.hand) found |= card.enchantment == Enchantment::SHARP;
+    assert(found);
+    run.combat.permanent_gains.push_back(PermanentGain{ 1, 1, true });
+    run.proceed_after_combat();
+    assert(run.master_deck[1].enchant_amount == 1 && run.master_deck[1].bonus == 0);
+    std::cout << "[PASS] Enchantments in the deck: one per card, Clone at the rest site, Goopy kept by the deck" << std::endl;
 }
 
 } // namespace
@@ -4069,6 +4267,10 @@ int main() {
     test_hand_choices();
     test_pile_choices();
     test_ascension();
+    test_enchantment_damage();
+    test_enchantment_block();
+    test_enchantment_plays();
+    test_enchantments_in_the_deck();
     std::cout << "=== All Combat Rules Passed! ===" << std::endl;
     return 0;
 }

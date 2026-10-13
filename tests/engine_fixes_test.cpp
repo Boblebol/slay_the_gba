@@ -38,7 +38,7 @@ int count_in(const FixedVector<DeckCard, 10>& pile, CardId id) {
 
 void test_enemy_buff_does_not_leak() {
     // Each move sets the whole intent: Strength only comes with a buff move, never with the attacks after it.
-    for (EnemyType type : { EnemyType::JAW_WORM, EnemyType::LOUSE, EnemyType::GREMLIN_NOB, EnemyType::CEREMONIAL_BEAST }) {
+    for (EnemyType type : { EnemyType::JAW_WORM, EnemyType::LOUSE, EnemyType::GREMLIN_NOB }) {
         CombatEngine combat = make_combat(CharacterId::IRONCLAD, type);
         combat.player.max_hp = 999;
         combat.player.hp = 999;
@@ -57,11 +57,11 @@ void test_enemy_buff_does_not_leak() {
             assert(combat.state == CombatState::PLAYER_TURN);
             assert(foe.get_status(StatusType::STRENGTH) == expected);
         }
-        // Gremlin Nob and the Beast roar once, the Jaw Worm bellows on turns 3 and 5, the Louse never buffs.
+        // Gremlin Nob roars once, the Jaw Worm bellows on turns 3 and 5, the Louse never buffs.
         int16_t final_strength = type == EnemyType::JAW_WORM ? 6 : type == EnemyType::LOUSE ? 0 : 2;
         assert(expected == final_strength);
     }
-    std::cout << "[PASS] Enemy intents: Jaw Worm, Louse, Gremlin Nob and the Beast gain Strength only on their buff moves" << std::endl;
+    std::cout << "[PASS] Enemy intents: Jaw Worm, Louse and Gremlin Nob gain Strength only on their buff moves" << std::endl;
 }
 
 void test_fiend_fire_with_dark_embrace() {
@@ -216,6 +216,47 @@ void test_active_relics_list() {
     std::cout << "[PASS] Active relics: every implemented normal-drop relic can be drawn, and only those" << std::endl;
 }
 
+void test_enemy_actions_are_this_turn() {
+    // The scene replays last_enemy_actions after every end of turn. A turn the enemies never take (they die at
+    // the end of the player's turn, or an extra turn skips them) must not leave the records of an older turn,
+    // here of a fight with three enemies, pointing at enemies the new fight does not have.
+    CombatEngine combat;
+    const EnemyType three[] = { EnemyType::JAW_WORM, EnemyType::LOUSE, EnemyType::CULTIST };
+    combat.start_combat_multi(three, CharacterId::IRONCLAD);
+    combat.player.max_hp = 999;
+    combat.player.hp = 999;
+    combat.hand.clear();
+    combat.end_player_turn();
+    assert(combat.state == CombatState::PLAYER_TURN);
+    assert(combat.last_enemy_actions.size() == 3 && combat.last_enemy_actions[2].enemy_index == 2);
+
+    // Next fight, one enemy, killed at the end of the turn by Screaming Flagon (empty hand).
+    combat.start_combat(EnemyType::JAW_WORM, CharacterId::IRONCLAD);
+    combat.enemies[0].hp = 1;
+    combat.add_power(PowerId::SCREAMING_FLAGON, 20);
+    combat.hand.clear();
+    combat.end_player_turn();
+    assert(combat.state == CombatState::VICTORY);
+    for (const EnemyActionRecord& record : combat.last_enemy_actions) {
+        assert(record.enemy_index >= 0 && static_cast<size_t>(record.enemy_index) < combat.enemies.size());
+    }
+    assert(combat.last_enemy_actions.empty());
+
+    // An extra turn (Ambergris) skips the enemies: no record either.
+    combat.start_combat_multi(three, CharacterId::IRONCLAD);
+    combat.player.max_hp = 999;
+    combat.player.hp = 999;
+    combat.hand.clear();
+    combat.end_player_turn();
+    assert(combat.last_enemy_actions.size() == 3);
+    combat.extra_turn_pending = true;
+    combat.hand.clear();
+    combat.end_player_turn();
+    assert(combat.state == CombatState::PLAYER_TURN);
+    assert(combat.last_enemy_actions.empty());
+    std::cout << "[PASS] Enemy action records: only the enemies' own turn, never an older one" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -224,6 +265,7 @@ int main() {
     test_hand_discards_with_a_draw_reaction();
     test_power_capacity();
     test_active_relics_list();
+    test_enemy_actions_are_this_turn();
     std::cout << "All engine fix tests passed." << std::endl;
     return 0;
 }

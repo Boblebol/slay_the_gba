@@ -6,8 +6,10 @@
 #include "engine/card.h"
 #include "engine/map.h"
 #include "engine/combat.h"
+#include "engine/rewards.h"
 #include "engine/shop.h"
 #include "engine/event_manager.h"
+#include "engine/ancient.h"
 
 namespace engine {
 
@@ -29,7 +31,9 @@ enum class DeckChoiceKind : uint8_t {
     NONE,
     UPGRADE,
     REMOVE,
-    TRANSFORM
+    TRANSFORM,
+    ENCHANT,
+    DUPLICATE // the chosen card gets one more copy in the deck
 };
 
 struct DeckChoice {
@@ -38,6 +42,8 @@ struct DeckChoice {
     bool optional = false;  // "up to N": the choice can be left before the last card
     bool upgrade_result = false; // TRANSFORM only: the new card comes upgraded
     CardId transform_into = CardId::NONE; // TRANSFORM only: fixed result card (NONE = random from the reward pool)
+    Enchantment enchantment = Enchantment::NONE; // ENCHANT only: the enchantment put on each chosen card
+    uint8_t enchant_amount = 0;                  // ENCHANT only: its amount
 };
 
 // Moments of a run, outside the fights, a relic can act on. Each one is a private `on_...` method of RunManager.
@@ -58,8 +64,11 @@ enum class CampfireAction : uint8_t {
     SMITH,
     DIG,  // Shovel
     LIFT, // Girya
-    COOK  // Meat Cleaver
+    COOK, // Meat Cleaver
+    CLONE // a card of the deck is enchanted with Clone
 };
+
+constexpr size_t MAX_CAMPFIRE_ACTIONS = 6;
 
 // A number a relic keeps from room to room ("every 3 combats", "3 times max"), saved with the run.
 struct RelicCounter {
@@ -72,6 +81,16 @@ constexpr size_t MAX_RELIC_COUNTERS = 8;
 // Slots of the potion belt: at the start of a run, and the most relics can bring it to.
 constexpr uint8_t BASE_POTION_SLOTS = 3;
 constexpr uint8_t MAX_POTION_SLOTS = 8;
+
+// A relic an Ancient offers: where it sits in the slots of get_ancient(RunManager::current_ancient).
+struct AncientOffer {
+    uint8_t slot = 0;
+    uint8_t option = 0;
+};
+
+// Every Ancient offers 3 relics at most (2 blessings and 1 curse for Neow, 1 per slot or 3 from one slot for the
+// others).
+constexpr size_t MAX_ANCIENT_OFFERS = 3;
 
 struct AscensionModifier {
     uint8_t level;
@@ -92,6 +111,7 @@ public:
     FixedVector<DeckCard, 50> master_deck;
     FixedVector<std::string_view, 25> relics;
     FixedVector<std::string_view, MAX_POTION_SLOTS> potions;
+    bool belt_buckle_active = false; // the 2 Dexterity of Belt Buckle are on the player
     uint8_t potion_slots = BASE_POTION_SLOTS; // size of the belt: `potions` never holds more
     // Cards of the deck the player still has to choose. The room is left once it is resolved.
     DeckChoice deck_choice;
@@ -107,7 +127,13 @@ public:
 
     CombatEngine combat;
     FixedVector<DeckCard, 3> current_card_rewards;
+    // Lava Lamp: the card rewards of the fight just won are upgraded (it lost no HP). Set when the fight ends.
+    bool card_rewards_upgraded = false;
     int16_t gold_reward = 0;
+    uint8_t extra_card_rewards = 0; // card rewards still to offer after this one (The Hunt)
+    uint8_t extra_rare_card_rewards = 0; // Rare card rewards still to offer after this one (White Star)
+    uint8_t extra_relic_rewards = 0; // relics still to offer once the one shown is taken (Black Star)
+    uint8_t extra_other_hero_card_rewards = 0; // card rewards of another hero still to offer after this one (Kaleidoscope)
     // Potion and relic offered on the reward screen, empty when the fight gave none or once taken.
     std::string_view potion_reward;
     std::string_view relic_reward;
@@ -124,6 +150,10 @@ public:
     PaletteVariant palette = PaletteVariant::CLASSIC;
 
     EventEncounter current_event;
+    // The Ancient met at the start of the act (phase ANCIENT_BLESSING), AncientId::COUNT when there is none, and
+    // the relics it offers. The player takes one of them.
+    AncientId current_ancient = AncientId::COUNT;
+    FixedVector<AncientOffer, MAX_ANCIENT_OFFERS> ancient_offers;
     std::string_view current_encounter; // id of the encounter of the last fight entered (see encounter.h)
 
     void start_run(CharacterId char_id, uint8_t ascension = 0, PaletteVariant pal = PaletteVariant::CLASSIC, uint32_t seed = 42);
@@ -134,7 +164,7 @@ public:
 
     // Campfire actions
     // Rest, Smith, then the actions the relics of the run give, in the order of the menu.
-    [[nodiscard]] FixedVector<CampfireAction, 5> campfire_actions() const;
+    [[nodiscard]] FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> campfire_actions() const;
     void rest_at_campfire();
     bool can_rest() const;
     bool smith_at_campfire(int card_index);
@@ -142,6 +172,15 @@ public:
     // Meat Cleaver: asks for 2 cards of the deck to remove, then gives +5 Max HP and uses up the rest site. With fewer
     // than 2 removable cards it removes what it can and still gives the Max HP. False without the relic.
     bool cook_at_campfire();
+    // Girya: gains 1 Strength for every combat of the run, at most 3 times. Uses up the rest site. False without the
+    // relic or once the 3 lifts are done.
+    bool lift_at_campfire();
+    // Shovel: digs for a random relic at the campfire (false when there is none to find).
+    bool dig_at_campfire();
+    // Clone: adds to the deck a copy of the card at `deck_index`, which must be enchanted with Clone. Uses up the
+    // rest site. False when the card cannot be cloned or the deck is full.
+    bool clone_at_campfire(int deck_index);
+    [[nodiscard]] bool can_clone(int deck_index) const;
 
     // Shop actions
     void open_shop();
@@ -183,6 +222,9 @@ public:
     int upgrade_random_cards(int count, CardType type);
     // Adds a card (a curse like any other) to the deck. False when the deck is full.
     bool add_card_to_deck(DeckCard card);
+    // Enchants the card at `deck_index` (mechanic #107). A card holds one enchantment: false when it already has
+    // one, or when the enchantment does not fit it (see can_enchant).
+    bool enchant_card_in_deck(int deck_index, Enchantment enchantment, uint8_t amount = 0);
     // Replaces the card by another one of the hero's reward pool, drawn at random and never the same card.
     bool transform_card_in_deck(int deck_index, bool upgraded = false, CardId into = CardId::NONE);
     // Obtains up to `count` relics drawn like the ones of a chest. Returns how many were obtained.
@@ -202,7 +244,8 @@ public:
 
     // Asks the player for `count` cards of the deck to upgrade, remove or transform. Nothing is asked when no
     // card of the deck fits.
-    void request_deck_choice(DeckChoiceKind kind, int count, bool optional = false, bool upgrade_result = false, CardId transform_into = CardId::NONE);
+    void request_deck_choice(DeckChoiceKind kind, int count, bool optional = false, bool upgrade_result = false, CardId transform_into = CardId::NONE,
+                              Enchantment enchantment = Enchantment::NONE, uint8_t enchant_amount = 0);
     [[nodiscard]] bool has_deck_choice() const { return deck_choice.kind != DeckChoiceKind::NONE; }
     // True when the card at `deck_index` can be picked for the choice in progress.
     [[nodiscard]] bool deck_choice_allows(int deck_index) const;
@@ -224,9 +267,28 @@ public:
     // Relics that act during the fight become powers of the combat. Called before the first turn.
     void register_relic_powers();
     void apply_combat_start_relics();
+    // Keeps the Dexterity of Belt Buckle in line with the potion belt during a fight.
+    void refresh_belt_buckle();
     void proceed_after_combat();
+    // Opens the next act on its own map, then meets its Ancient (phase ANCIENT_BLESSING).
     void advance_act();
     bool is_run_completed() const;
+
+    // Ancients
+    // The Ancient met at the start of `act`, drawn with `seed` among the ones of that act. Darv can come at
+    // every act.
+    [[nodiscard]] static AncientId draw_ancient(uint8_t act, uint32_t seed);
+    // Meets `id`: the phase becomes ANCIENT_BLESSING and each slot of the Ancient offers as many relics as it
+    // says, drawn among its options the run does not own and the engine can resolve. Nothing is offered once the
+    // relic list is full.
+    void meet_ancient(AncientId id);
+    // The relic at `index` of ancient_offers.
+    [[nodiscard]] const AncientRelic& ancient_offer(int index) const;
+    // Takes the relic at `index` of the offer and leaves the Ancient. Its effect can open a card reward
+    // (REWARD_SCREEN) or ask for cards of the deck; otherwise the run is back on the map. False for a wrong index.
+    bool choose_ancient_relic(int index);
+    // Leaves an Ancient that has nothing to offer. False while it offers a relic: one has to be taken.
+    bool leave_ancient();
 
     // Ascension rules
     static std::span<const AscensionModifier> get_ascension_modifiers();
@@ -243,11 +305,18 @@ private:
     uint32_t rng_state_ = 12345;
     uint32_t next_random();
     // Monsters of a fighting room, drawn from the encounter table of the act and the floor.
-    FixedVector<EnemyType, 3> draw_encounter(RoomType room);
+    FixedVector<EnemyType, MAX_ENEMIES> draw_encounter(RoomType room);
     // Seed of the reward stream of the current room (see RewardRng).
     uint32_t reward_seed() const;
     // Leaves the reward screen: the gold is paid, and a boss opens the next act.
     void finish_rewards();
+    // `rarity` restricts the offer to one rarity; NONE draws from every card of the pool. `hero` is whose pool the
+    // cards come from (COUNT: the run's own hero).
+    void draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity = CardRarity::NONE, bool elite = false,
+                           CharacterId hero = CharacterId::COUNT);
+    // A hero drawn at random among the ones the run is not played with (Kaleidoscope).
+    CharacterId random_other_hero();
+    void next_card_reward_or_finish();
     // What a relic does when obtained.
     void on_relic_obtained(std::string_view relic_id);
     // Hooks of the relics that act outside the fights (see RunHook). A relic is added to the hook of its

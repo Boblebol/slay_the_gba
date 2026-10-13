@@ -90,7 +90,7 @@ int main() {
     bool entered_route = nav.select_current_route();
     assert(entered_route);
     assert(run.phase == RunPhase::IN_COMBAT);
-    assert(run.combat.enemy.type == EnemyType::CULTIST);
+    assert(run.combat.enemy.is_alive()); // the floor 1 fight depends on the seed: weak monsters of Act 1
     std::cout << "[E2E Step 8] Map Navigation verified: Floor scrolled, Deck viewed, and Floor 1 entered.\n";
 
     // 9. Combat: Pokémon-style Battle UI (4-way menu, CARDS submenu, animations)
@@ -156,7 +156,7 @@ int main() {
     run.gold = 350;
     run.open_shop();
     assert(run.phase == RunPhase::SHOP);
-    assert(run.current_shop.cards.size() == 3);
+    assert(run.current_shop.cards.size() == 7);
     assert(run.current_shop.relics.size() == 3);
     std::cout << "[E2E Step 12] Entered Merchant Shop with " << run.gold << " Gold.\n";
 
@@ -191,6 +191,23 @@ int main() {
     assert(!profile.active_run.has_active_run); // Autosave cleared after victory
     assert(profile.count_discovered_cards() > 0);
     assert(profile.count_discovered_relics() > 0);
+    // Ascension unlock rules (#272): the choice screen offers 0..unlocked, a win at the top level unlocks the next.
+    {
+        auto& save = SaveManager::instance();
+        const CharacterId hero = CharacterId::IRONCLAD;
+        assert(save.unlocked_ascension(hero) == 1);
+        save.record_victory(hero, 1);
+        assert(save.unlocked_ascension(hero) == 2);
+        save.record_victory(hero, 0); // a win below the unlocked level does not lower it
+        assert(save.unlocked_ascension(hero) == 2);
+        for (uint8_t level = 2; level < 12; ++level) save.record_victory(hero, level);
+        assert(save.unlocked_ascension(hero) == 10); // capped at Ascension 10
+        assert(RunManager::get_ascension_modifiers().size() == 11); // one description per selectable level
+        save.get_active_profile().max_ascension[static_cast<uint8_t>(hero)] = 1;
+        RunManager run_a3;
+        run_a3.start_run(hero, 3, PaletteVariant::CLASSIC, 5);
+        assert(run_a3.ascension_level == 3);
+    }
     std::cout << "[E2E Step 16] Victory recorded! Ascension 1 unlocked for Ironclad. Autosave cleared.\n";
     std::cout << "[E2E Step 17] Compendium: " << profile.count_discovered_cards() 
               << " cards and " << profile.count_discovered_relics() << " relics registered in Codex.\n";

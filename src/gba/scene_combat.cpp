@@ -6,7 +6,9 @@
 #include "bn_blending.h"
 #include "bn_keypad.h"
 #include "bn_regular_bg_ptr.h"
+#include "bn_optional.h"
 #include "bn_sprite_palette_ptr.h"
+#include "bn_sprite_tiles_ptr.h"
 #include "bn_sprites_mosaic.h"
 #include "bn_sstream.h"
 #include "bn_string.h"
@@ -14,7 +16,10 @@
 #include "bn_sprite_items_fx_burst.h"
 #include "bn_sprite_items_fx_slash.h"
 
+#include "engine/compendium.h"
+#include "engine/options.h"
 #include "engine/potion.h"
+#include "engine/save_system.h"
 
 #include "gba/assets.h"
 #include "gba/audio.h"
@@ -62,6 +67,7 @@ constexpr int ENEMY_TURN_LEAD = 14;
 constexpr int ENEMY_STEP = 30;
 constexpr int ENEMY_STEP_IMPACT = 9;
 constexpr int DEATH_FRAMES = 32;
+constexpr int ARRIVE_FRAMES = 24; // a summoned enemy drops into its place
 // Whispering Earring: frames Vakuu waits before each card he plays, and before he ends the turn.
 constexpr int VAKUU_DELAY = 24;
 
@@ -70,6 +76,14 @@ struct Point
     int x;
     int y;
 };
+
+// Four to six enemies: the leftmost and rightmost places, and the heights of the front and back rows.
+constexpr int CROWD_LEFT = -26;
+constexpr int CROWD_RIGHT = 108;
+constexpr int CROWD_FRONT_Y = -12;
+constexpr int CROWD_BACK_Y = -30;
+// The back row's statuses are written one line above the front row's.
+constexpr int CROWD_STATUS_STEP = 10;
 
 Point enemy_slot(int index, int count, bool boss)
 {
@@ -88,8 +102,45 @@ Point enemy_slot(int index, int count, bool boss)
         return index == 0 ? Point{ 22, -20 } : Point{ 86, -22 };
     }
 
-    constexpr Point three[] = { { 4, -18 }, { 54, -24 }, { 104, -18 } };
-    return three[bn::clamp(index, 0, 2)];
+    if(count == 3)
+    {
+        constexpr Point three[] = { { 4, -18 }, { 54, -24 }, { 104, -18 } };
+        return three[bn::clamp(index, 0, 2)];
+    }
+
+    // Four to six: spread evenly from CROWD_LEFT to CROWD_RIGHT, every other one a row further back (higher up),
+    // so that two neighbours never draw their intent at the same height.
+    index = bn::clamp(index, 0, count - 1);
+    int x = CROWD_LEFT + (CROWD_RIGHT - CROWD_LEFT) * index / (count - 1);
+    return { x, index % 2 ? CROWD_BACK_Y : CROWD_FRONT_Y };
+}
+
+// Width of an enemy's HP bar, by the number of enemies in the row.
+bn::fixed enemy_bar_scale(int count)
+{
+    if(count > 3)
+    {
+        return bn::fixed(0.4);
+    }
+
+    return count == 3 ? bn::fixed(0.75) : bn::fixed(1);
+}
+
+// Room for the statuses of an enemy: with four enemies or more, the front and back rows write them on two lines,
+// so a line may use the width up to the next enemy of its own row.
+int enemy_status_width(int count)
+{
+    if(count > 3)
+    {
+        return 2 * (CROWD_RIGHT - CROWD_LEFT) / (count - 1) - 4;
+    }
+
+    return STATUS_WIDTH;
+}
+
+int enemy_status_y(int index, int count)
+{
+    return count > 3 && index % 2 ? STATUS_Y - CROWD_STATUS_STEP : STATUS_Y;
 }
 
 // Centre of a status line, moved towards the middle of the screen when the line is too long to fit around
@@ -109,6 +160,34 @@ int status_line_x(int wanted_x, const bn::string_view& text)
 
 // Offsets of the four 64x64 quarters of a 128x128 boss sprite.
 constexpr Point boss_parts[] = { { -32, -32 }, { 32, -32 }, { -32, 32 }, { 32, 32 } };
+
+// Shortcut of the button pressed this frame, following the control preset chosen in the options.
+[[nodiscard]] engine::Shortcut pressed_shortcut()
+{
+    engine::ControlPreset preset = engine::control_preset(engine::SaveManager::instance().settings());
+
+    if(bn::keypad::select_pressed())
+    {
+        return engine::shortcut_for(preset, engine::Button::SELECT);
+    }
+
+    if(bn::keypad::l_pressed())
+    {
+        return engine::shortcut_for(preset, engine::Button::L);
+    }
+
+    if(bn::keypad::start_pressed())
+    {
+        return engine::shortcut_for(preset, engine::Button::START);
+    }
+
+    if(bn::keypad::r_pressed())
+    {
+        return engine::shortcut_for(preset, engine::Button::R);
+    }
+
+    return engine::Shortcut::NONE;
+}
 
 class CombatScene final : public Scene
 {
@@ -157,6 +236,7 @@ private:
         int hurt = 0;
         int lunge = 0;
         int death = 0;
+        int arrive = 0;
         bool boss;
         bool gone = false;
         bool intent_visible = true;
@@ -181,7 +261,7 @@ private:
     bn::sprite_ptr _target_cursor;
     bn::color _dim_colors[16];
     bn::sprite_palette_ptr _dim_palette;
-    bn::vector<EnemyView, 3> _enemies;
+    bn::vector<EnemyView, engine::MAX_ENEMIES> _enemies;
     bn::vector<HandCardView, 10> _hand;
     bn::optional<bn::sprite_ptr> _flying_card;
     // Choice the engine is asking: marked cards (indices in the hand or in the pile the choice is about), and,
@@ -245,8 +325,8 @@ private:
     // Snapshot taken before an engine action, diffed afterwards to drive the animations.
     int _snap_player_hp = 0;
     int _snap_player_block = 0;
-    int _snap_hp[3] = {};
-    int _snap_block[3] = {};
+    int _snap_hp[engine::MAX_ENEMIES] = {};
+    int _snap_block[engine::MAX_ENEMIES] = {};
 
     // Cached HUD values so labels regenerate only on change.
     int _shown_energy = -1;
@@ -260,6 +340,9 @@ private:
     TextLine _player_status_text;
 
     void _build_enemies();
+    void _create_enemy_parts(EnemyView& view, const EnemyArt& art);
+    void _summon_enemies(int summoner, unsigned summoned);
+    void _layout_enemies();
     void _build_hand(bool deal);
     void _layout_hand();
     void _refresh_card_text();
@@ -346,6 +429,7 @@ CombatScene::CombatScene(GameContext& context) :
     _player_bar.snap();
 
     _build_enemies();
+    engine::discover_enemies(engine::SaveManager::instance().get_active_profile(), _combat);
 
     if(_ctx.combat_resume)
     {
@@ -426,27 +510,11 @@ void CombatScene::_build_enemies()
         Point slot = enemy_slot(index, count, art.boss);
         int bar_x = slot.x;
         EnemyView& view = _enemies.emplace_back(slot.x, slot.y, bar_x, art.boss);
-
-        if(art.boss)
-        {
-            for(int part = 0; part < 4; ++part)
-            {
-                bn::sprite_ptr sprite = art.item->create_sprite(slot.x + boss_parts[part].x,
-                                                                slot.y + boss_parts[part].y, part);
-                sprite.set_z_order(Z_ACTOR);
-                view.parts.push_back(bn::move(sprite));
-            }
-        }
-        else
-        {
-            bn::sprite_ptr sprite = art.item->create_sprite(slot.x, slot.y);
-            sprite.set_z_order(Z_ACTOR);
-            view.parts.push_back(bn::move(sprite));
-        }
+        _create_enemy_parts(view, art);
 
         if(count >= 3)
         {
-            view.bar.set_horizontal_scale(bn::fixed(0.75));
+            view.bar.set_horizontal_scale(enemy_bar_scale(count));
         }
 
         view.bar.set(enemy.hp, enemy.max_hp);
@@ -473,6 +541,115 @@ void CombatScene::_build_enemies()
     }
 
     _target = _combat.get_first_alive_enemy_index();
+}
+
+void CombatScene::_create_enemy_parts(EnemyView& view, const EnemyArt& art)
+{
+    view.parts.clear();
+    view.boss = art.boss;
+
+    // A summon can bring a sixth or seventh different monster into a fight: when no OBJ palette is left for its
+    // colours, it borrows the hero's (wrong colours) instead of stopping the game.
+    bn::optional<bn::sprite_palette_ptr> palette = art.item->palette_item().create_palette_optional();
+
+    if(! palette)
+    {
+        palette = _player.palette();
+    }
+
+    int parts = art.boss ? 4 : 1;
+
+    for(int part = 0; part < parts; ++part)
+    {
+        int x = art.boss ? view.x + boss_parts[part].x : view.x;
+        int y = art.boss ? view.y + boss_parts[part].y : view.y;
+        bn::sprite_ptr sprite = bn::sprite_ptr::create(x, y, art.item->shape_size(),
+                                                       art.item->tiles_item().create_tiles(part), *palette);
+        sprite.set_z_order(Z_ACTOR);
+        view.parts.push_back(bn::move(sprite));
+    }
+}
+
+void CombatScene::_summon_enemies(int summoner, unsigned summoned)
+{
+    int count = int(_combat.enemies.size());
+
+    for(int index = 0; index < count; ++index)
+    {
+        if(! (summoned & (1u << index)))
+        {
+            continue;
+        }
+
+        const engine::Enemy& enemy = _combat.enemies[index];
+        EnemyArt art = enemy_art(enemy.type);
+
+        // A new place at the end of the row, or the place of a dead enemy taken again.
+        while(_enemies.size() <= index)
+        {
+            Point slot = enemy_slot(_enemies.size(), count, art.boss);
+            EnemyView& added = _enemies.emplace_back(slot.x, slot.y, slot.x, art.boss);
+            added.gone = true;
+            added.bar.set_visible(false);
+            added.intent_icon.set_visible(false);
+        }
+
+        EnemyView& view = _enemies[index];
+        _create_enemy_parts(view, art);
+        view.gone = false;
+        view.death = 0;
+        view.hurt = 0;
+        view.lunge = 0;
+        view.arrive = ARRIVE_FRAMES;
+        view.shown_icon = -1;
+        // Its move shows with the others' once the enemy turn is over.
+        view.intent_visible = false;
+        view.intent_icon.set_visible(false);
+        view.bar.set(enemy.hp, enemy.max_hp);
+        view.bar.snap();
+        view.bar.set_visible(true);
+        _snap_hp[index] = enemy.hp;
+        _snap_block[index] = enemy.block;
+    }
+
+    _layout_enemies();
+    engine::discover_enemies(engine::SaveManager::instance().get_active_profile(), _combat);
+
+    for(int index = 0; index < _enemies.size(); ++index)
+    {
+        if(summoned & (1u << index))
+        {
+            _fx.spawn(bn::sprite_items::fx_burst, _enemies[index].x, _body_y(_enemies[index]), FX_BUFF, 4, 4);
+        }
+
+        _refresh_enemy_hud(index);
+    }
+
+    if(summoner >= 0 && summoner < _enemies.size())
+    {
+        EnemyView& caller = _enemies[summoner];
+        _popups.spawn(caller.x, _body_y(caller) - 6, "Invocation !", TextColor::GOLD);
+    }
+}
+
+void CombatScene::_layout_enemies()
+{
+    // The row spreads out again when it grows: every enemy moves to its place for the new count.
+    int count = _enemies.size();
+
+    for(int index = 0; index < count; ++index)
+    {
+        EnemyView& view = _enemies[index];
+        Point slot = enemy_slot(index, count, view.boss);
+        view.x = slot.x;
+        view.y = slot.y;
+        view.bar.set_position(slot.x, BAR_Y);
+        view.bar.set_horizontal_scale(enemy_bar_scale(count));
+        // The labels under it are written again at the new place.
+        view.status_text = "-";
+        view.shown_block = -1;
+        view.block_icon.reset();
+    }
 }
 
 void CombatScene::_build_hand(bool deal)
@@ -609,7 +786,8 @@ void CombatScene::_refresh_card_text()
             _selected_shown = -2;
             TextLine text;
             card_name(_flying, text);
-            _line1.set(-112, LINE1_Y, text, Align::LEFT, _flying.upgraded ? TextColor::GREEN : TextColor::GOLD);
+            _line1.set(-112, LINE1_Y, text, Align::LEFT,
+                       is_enchanted(_flying) ? TextColor::PURPLE : _flying.upgraded ? TextColor::GREEN : TextColor::GOLD);
             _line1_right.clear();
             card_description(_flying, text);
             _line2.set(-112, LINE2_Y, text, Align::LEFT, TextColor::WHITE);
@@ -667,14 +845,16 @@ void CombatScene::_refresh_card_text()
     const engine::DeckCard& card = _hand[_selected].card;
     TextLine text;
     card_name(card, text);
-    _line1.set(-112, LINE1_Y, text, Align::LEFT, card.upgraded ? TextColor::GREEN : TextColor::GOLD);
+    _line1.set(-112, LINE1_Y, text, Align::LEFT,
+               is_enchanted(card) ? TextColor::PURPLE : card.upgraded ? TextColor::GREEN : TextColor::GOLD);
 
     if(_phase == Phase::CHOICE && _pile_view && _combat.choice_pending())
     {
         // Which pile is shown, and where the cursor is in it.
         TextLine place;
         bn::ostringstream place_stream(place);
-        place_stream << (_combat.pending_choices[0].source == engine::Pile::DRAW ? "Pioche " : "Défausse ")
+        engine::Pile source = _combat.pending_choices[0].source;
+        place_stream << (source == engine::Pile::DRAW ? "Pioche " : source == engine::Pile::OFFERS ? "Choix " : "Défausse ")
                      << (_pile_offset + _selected + 1) << "/" << _choice_order.size();
         _line1_right.set(112, LINE1_Y, place, Align::RIGHT, TextColor::GRAY);
     }
@@ -963,6 +1143,14 @@ void CombatScene::_refresh_enemy_hud(int index)
     case engine::EnemyIntentType::DEFEND:
         icon = Icon::DEFEND;
         break;
+    case engine::EnemyIntentType::SUMMON:
+        icon = Icon::UNKNOWN;
+
+        if(intent.summons > 0)
+        {
+            stream << "+" << int(intent.summons);
+        }
+        break;
     default:
         icon = Icon::BUFF;
         break;
@@ -985,13 +1173,16 @@ void CombatScene::_refresh_enemy_hud(int index)
     view.intent_label.set_visible(view.intent_visible);
 
     TextLine status;
-    status_line(enemy, status, STATUS_WIDTH);
-    append_enemy_powers(_combat, index, status, STATUS_WIDTH);
+    int count = _enemies.size();
+    int status_width = enemy_status_width(count);
+    status_line(enemy, status, status_width);
+    append_enemy_powers(_combat, index, status, status_width);
 
     if(status != view.status_text)
     {
         view.status_text = status;
-        view.status_label.set(status_line_x(view.x, status), STATUS_Y, status, Align::CENTER, TextColor::PURPLE);
+        view.status_label.set(status_line_x(view.x, status), enemy_status_y(index, count), status, Align::CENTER,
+                              TextColor::PURPLE);
     }
 
     int block = enemy.block;
@@ -1002,16 +1193,20 @@ void CombatScene::_refresh_enemy_hud(int index)
 
         if(block > 0)
         {
+            // Left of the HP bar; in a row of four or more there is no room there, so left of the intent.
+            int block_x = count > 3 ? _intent_x(view) - 16 : view.x - 30;
+            int block_y = count > 3 ? _enemy_top(view) : BAR_Y;
+
             if(! view.block_icon)
             {
-                view.block_icon = create_icon(Icon::DEFEND, view.x - 30, BAR_Y);
+                view.block_icon = create_icon(Icon::DEFEND, block_x, block_y);
                 view.block_icon->set_z_order(Z_FX);
             }
 
             bn::string<8> text;
             bn::ostringstream block_stream(text);
             block_stream << block;
-            view.block_label.set(view.x - 30, BAR_Y, text);
+            view.block_label.set(block_x, block_y, text);
         }
         else
         {
@@ -1130,6 +1325,12 @@ void CombatScene::_resolve_diffs(bool attack_card)
             view.death = DEATH_FRAMES;
             killed = true;
 
+            if(enemy.escaped)
+            {
+                // A Minion whose leader just fell.
+                _popups.spawn(view.x, _body_y(view) - 6, "Fuite !", TextColor::GRAY);
+            }
+
             for(bn::sprite_ptr& part : view.parts)
             {
                 part.set_blending_enabled(true);
@@ -1242,7 +1443,9 @@ void CombatScene::_update_player_input()
         }
     }
 
-    if(bn::keypad::select_pressed())
+    engine::Shortcut shortcut = pressed_shortcut();
+
+    if(shortcut == engine::Shortcut::DECK)
     {
         play_sfx(Sfx::UI_OPEN);
         _ctx.deck_return = SceneId::COMBAT;
@@ -1251,7 +1454,7 @@ void CombatScene::_update_player_input()
         return;
     }
 
-    if(bn::keypad::l_pressed())
+    if(shortcut == engine::Shortcut::POTIONS)
     {
         if(_ctx.run.potions.empty())
         {
@@ -1266,7 +1469,7 @@ void CombatScene::_update_player_input()
         return;
     }
 
-    if(bn::keypad::start_pressed() || bn::keypad::r_pressed())
+    if(shortcut == engine::Shortcut::END_TURN)
     {
         play_sfx(Sfx::DISCARD);
         _start_enemy_turn();
@@ -1819,6 +2022,12 @@ void CombatScene::_refresh_choice_banner()
     case engine::ChoiceKind::MAKE_RETAIN:
         stream << "Retenue";
         break;
+    case engine::ChoiceKind::MAKE_SLY:
+        stream << "Ruse ce tour";
+        break;
+    case engine::ChoiceKind::MAKE_FREE:
+        stream << "Coûte 0";
+        break;
     case engine::ChoiceKind::COPY_ATTACK_OR_POWER:
     case engine::ChoiceKind::COPY_COLORLESS:
         stream << "Copie";
@@ -2212,6 +2421,14 @@ void CombatScene::_update_enemy_turn()
     if(step < records)
     {
         const engine::EnemyActionRecord& record = _combat.last_enemy_actions[step];
+
+        // A record for an enemy the scene does not show has nothing to animate.
+        if(record.enemy_index < 0 || record.enemy_index >= _enemies.size() ||
+           record.enemy_index >= int(_combat.enemies.size()))
+        {
+            return;
+        }
+
         EnemyView& view = _enemies[record.enemy_index];
 
         if(local == 0)
@@ -2285,6 +2502,17 @@ void CombatScene::_update_enemy_turn()
                 stream << '+' << record.healed << " PV";
                 _popups.spawn(view.x, _body_y(view) - 6, text, TextColor::GREEN, attacked ? 8 : 0);
                 play_sfx(Sfx::HEAL);
+            }
+
+            if(record.summoned != 0)
+            {
+                _summon_enemies(record.enemy_index, record.summoned);
+                play_sfx(Sfx::BUFF);
+            }
+            else if(record.intent_type == engine::EnemyIntentType::SUMMON)
+            {
+                _fx.spawn(bn::sprite_items::fx_burst, view.x, _body_y(view), FX_BUFF, 4, 4);
+                play_sfx(Sfx::BUFF);
             }
 
             if(record.intent_type == engine::EnemyIntentType::STUN)
@@ -2494,12 +2722,7 @@ bn::optional<SceneId> CombatScene::_update_end_banner()
 
     if(run.phase == engine::RunPhase::ANCIENT_BLESSING)
     {
-        run.phase = engine::RunPhase::MAP_NAVIGATION;
-        _ctx.nav.reset_to_player_floor();
-        _ctx.map_toast.clear();
-        bn::ostringstream stream(_ctx.map_toast);
-        stream << "ACTE " << int(run.current_act) << " : l'ascension continue !";
-        return SceneId::MAP;
+        return SceneId::ANCIENT;
     }
 
     return SceneId::REWARDS;
@@ -2537,6 +2760,21 @@ void CombatScene::_update_enemies()
             x -= reach * 26;
             y -= hop(t, 6);
             --view.lunge;
+        }
+
+        if(view.arrive > 0)
+        {
+            // Drops from above into its place, glowing white until it lands.
+            bn::fixed t = bn::fixed(ARRIVE_FRAMES - view.arrive) / ARRIVE_FRAMES;
+            y -= (1 - ease_out(t)) * 48;
+            bn::sprite_palette_ptr palette = view.parts[0].palette();
+            palette.set_fade(bn::color(31, 31, 31), (1 - t) * bn::fixed(0.75));
+            --view.arrive;
+
+            if(view.arrive == 0)
+            {
+                palette.set_fade(bn::color(), 0);
+            }
         }
 
         if(view.death > 0)

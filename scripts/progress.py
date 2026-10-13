@@ -170,7 +170,7 @@ def implemented_potions() -> set[str]:
 
 def implemented_monsters() -> set[str]:
     header = re.sub(r"//.*", "", (ROOT / "include" / "engine" / "entity.h").read_text())
-    body = re.search(r"enum class EnemyType[^{]*\{(.*?)\}", header, re.S)
+    body = re.search(r"enum class EnemyType[^{;]*\{(.*?)\}", header, re.S)
     if not body:
         raise SystemExit("progress: enum EnemyType not found in include/engine/entity.h")
     return set(re.findall(r"\w+", body.group(1)))
@@ -178,6 +178,22 @@ def implemented_monsters() -> set[str]:
 
 def implemented_events() -> set[str]:
     return detect(r'enc\.id = "(\w+)"', ENGINE / "event_manager.cpp")
+
+
+def implemented_ancients() -> set[str]:
+    """Ancients with their slots in ancient.cpp and a portrait: a bitmap in graphics/ancients/ and a case in
+    ancient_portrait() (Neow is the default case)."""
+    declared = dict(re.findall(r'\{ AncientId::(\w+), "(\w+)"', re.sub(r"//.*", "", (ENGINE / "ancient.cpp").read_text())))
+    if not declared:
+        raise SystemExit("progress: no Ancient found in src/engine/ancient.cpp; update the detection in scripts/progress.py")
+    assets = re.sub(r"//.*", "", (ROOT / "src" / "gba" / "assets.cpp").read_text())
+    done = set()
+    for ancient_id, slug in declared.items():
+        has_bitmap = (ROOT / "graphics" / "ancients" / f"ancient_{slug}.bmp").exists()
+        has_case = ancient_id == "NEOW" or f"case engine::AncientId::{ancient_id}:" in assets
+        if has_bitmap and has_case:
+            done.add(ancient_id)
+    return done
 
 
 # ---------------------------------------------------------------------------------------------
@@ -350,7 +366,7 @@ def compute() -> Progress:
                 {"id": a["id"], "name": a["name"],
                  "detail": "Tous actes" if a.get("anyAct") else ", ".join(f"Acte {x}" for x in a.get("acts", []))}
                 for a in load("ancient")["ancients"]
-            ], set()),
+            ], implemented_ancients()),
         ],
     }
     catalogue.check_overrides()

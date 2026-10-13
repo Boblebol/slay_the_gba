@@ -614,6 +614,14 @@ bn::string_view base_name(engine::CardId id)
         return "Néant";
     case engine::CardId::WOUND:
         return "Plaie";
+    case engine::CardId::INFECTION:
+        return "Infection";
+    case engine::CardId::WITHER:
+        return "Érosion";
+    case engine::CardId::FRANTIC_ESCAPE:
+        return "Fuite éperdue";
+    case engine::CardId::BECKON:
+        return "Appel";
     case engine::CardId::FUEL:
         return "Combustible";
     case engine::CardId::BOOST_AWAY:
@@ -808,6 +816,122 @@ bn::string_view base_name(engine::CardId id)
         return "Lame infernale";
     case engine::CardId::STOKE:
         return "Attiser les flammes";
+    case engine::CardId::INJURY:
+        return "Blessure";
+    case engine::CardId::GREED:
+        return "Cupidité";
+    case engine::CardId::CLUMSY:
+        return "Maladresse";
+    case engine::CardId::ASCENDERS_BANE:
+        return "Fléau de l'ascendant";
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return "Malédiction de la cloche";
+    case engine::CardId::POOR_SLEEP:
+        return "Insomnie";
+    case engine::CardId::WRITHE:
+        return "Souffrance";
+    case engine::CardId::NORMALITY:
+        return "Normalité";
+    case engine::CardId::DOUBT:
+        return "Doute";
+    case engine::CardId::SHAME:
+        return "Honte";
+    case engine::CardId::DECAY:
+        return "Déclin";
+    case engine::CardId::REGRET:
+        return "Regrets";
+    case engine::CardId::BAD_LUCK:
+        return "Malchance";
+    case engine::CardId::DEBT:
+        return "Dette";
+    case engine::CardId::SPORE_MIND:
+        return "Conscience sporique";
+    case engine::CardId::GUILTY:
+        return "Culpabilité";
+    case engine::CardId::TACTICIAN:
+        return "Tactique";
+    case engine::CardId::ABRASIVE:
+        return "Abrasif";
+    case engine::CardId::MASTER_PLANNER:
+        return "Grands desseins";
+    case engine::CardId::HAND_TRICK:
+        return "Trucage";
+    case engine::CardId::UNTOUCHABLE:
+        return "Intouchable";
+    case engine::CardId::RICOCHET:
+        return "Ricochet";
+    case engine::CardId::REFLEX:
+        return "Réflexes";
+    case engine::CardId::FLICK_FLACK:
+        return "Tic tac";
+    case engine::CardId::SHADOWMELD:
+        return "Camouflage";
+    case engine::CardId::UNMOVABLE:
+        return "Inflexible";
+    case engine::CardId::COLOSSUS:
+        return "Colosse";
+    case engine::CardId::CRUELTY:
+        return "Cruauté";
+    case engine::CardId::TRACKING:
+        return "Pistage";
+    case engine::CardId::LETHALITY:
+        return "Létalité";
+    case engine::CardId::SHADOW_STEP:
+        return "Pas de l'ombre";
+    case engine::CardId::DEBILITATE:
+        return "Amoindrissement";
+    case engine::CardId::HAND_OF_GREED:
+        return "Main de la cupidité";
+    case engine::CardId::THE_HUNT:
+        return "La traque";
+    case engine::CardId::ROYALTIES:
+        return "Royalties";
+    case engine::CardId::FORBIDDEN_GRIMOIRE:
+        return "Grimoire interdit";
+    case engine::CardId::ALCHEMIZE:
+        return "Alchimie";
+    case engine::CardId::THE_GAMBIT:
+        return "La grande manœuvre";
+    case engine::CardId::SEEKER_STRIKE:
+        return "Frappe chercheuse";
+    case engine::CardId::PRIMAL_FORCE:
+        return "Force primitive";
+    case engine::CardId::SEANCE:
+        return "Séance";
+    case engine::CardId::ENTROPY:
+        return "Entropie";
+    case engine::CardId::QUASAR:
+        return "Quasar";
+    case engine::CardId::SPLASH:
+        return "Clapotis";
+    case engine::CardId::MAD_SCIENCE:
+        return "Science sans conscience";
+    case engine::CardId::DISCOVERY:
+        return "Découverte";
+    case engine::CardId::ABUNDANCE:
+        return "Abondance";
+    case engine::CardId::MINION_STRIKE:
+        return "Frappe de sbire";
+    case engine::CardId::MINION_DIVE_BOMB:
+        return "Sbire en piqué";
+    case engine::CardId::MINION_SACRIFICE:
+        return "Sbire sacrificiel";
+    case engine::CardId::BEGONE:
+        return "Hors de ma vue !";
+    case engine::CardId::CHARGE:
+        return "Chargez !!";
+    case engine::CardId::GUARDS:
+        return "Gardes !!!";
+    case engine::CardId::HIDDEN_GEM:
+        return "Joyau caché";
+    case engine::CardId::TRANSFIGURE:
+        return "Transfiguration";
+    case engine::CardId::GLASSWORK:
+        return "Verrerie";
+    case engine::CardId::REFRACT:
+        return "Réfraction";
+    case engine::CardId::SPINNER:
+        return "Toupie";
     case engine::CardId::BYRD_SWOOP:
         return "Piqué d'oizo";
     case engine::CardId::ULTIMATE_STRIKE:
@@ -992,9 +1116,10 @@ void card_name(const engine::DeckCard& card, bn::istring& out)
     out.clear();
     out.append(base_name(card.id));
 
-    if(card.enchantment == engine::Enchantment::INKY)
+    // The mark of an enchanted card: the deck register says which enchantment it is.
+    if(card.enchantment != engine::Enchantment::NONE)
     {
-        out.append(" encré");
+        out.append(" ☆");
     }
 
     // A Status card has no upgraded version, whatever upgraded the hand it was in.
@@ -1530,9 +1655,183 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::STOKE:
         stream << "Épuise la Main. +1 carte" << (card.upgraded ? " amél." : "") << " par carte.";
         break;
+    case engine::CardId::INJURY:
+        stream << "Injouable.";
+        break;
+    case engine::CardId::GREED:
+        stream << "Injouable. Éternel.";
+        break;
+    case engine::CardId::CLUMSY:
+        stream << "Injouable. Éthéré.";
+        break;
+    case engine::CardId::ASCENDERS_BANE:
+        stream << "Injouable. Éthéré. Éternel.";
+        break;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        stream << "Injouable. Éternel.";
+        break;
+    case engine::CardId::POOR_SLEEP:
+        stream << "Injouable. Retenue.";
+        break;
+    case engine::CardId::WRITHE:
+        stream << "Injouable. Inné.";
+        break;
+    case engine::CardId::NORMALITY:
+        stream << "Injouable. 3 cartes max par tour.";
+        break;
+    case engine::CardId::DOUBT:
+        stream << "Injouable. Fin de tour : Affaibli 1.";
+        break;
+    case engine::CardId::SHAME:
+        stream << "Injouable. Fin de tour : Fragilisé 1.";
+        break;
+    case engine::CardId::DECAY:
+        stream << "Injouable. Fin de tour : 2 dégâts.";
+        break;
+    case engine::CardId::REGRET:
+        stream << "Injouable. Fin de tour : -1 PV par carte.";
+        break;
+    case engine::CardId::BAD_LUCK:
+        stream << "Injouable. Fin de tour : -13 PV. Éternel.";
+        break;
+    case engine::CardId::DEBT:
+        stream << "Injouable. Fin de tour : -10 or.";
+        break;
+    case engine::CardId::SPORE_MIND:
+        stream << "Épuisement.";
+        break;
+    case engine::CardId::GUILTY:
+        stream << "Injouable. Retirée après 5 combats.";
+        break;
+    case engine::CardId::TACTICIAN:
+        stream << "Ruse. Énergie +" << value << ".";
+        break;
+    case engine::CardId::ABRASIVE:
+        stream << "Ruse. Dextérité +1. Épines " << value << ".";
+        break;
+    case engine::CardId::MASTER_PLANNER:
+        stream << "Vos Compétences jouées ont Ruse.";
+        break;
+    case engine::CardId::HAND_TRICK:
+        stream << "Armure " << value << ". Ruse à 1 Compétence ce tour.";
+        break;
+    case engine::CardId::UNTOUCHABLE:
+        stream << "Ruse. Gagne " << value << " d'Armure.";
+        break;
+    case engine::CardId::RICOCHET:
+        stream << "Ruse. " << value << " dégâts au hasard " << secondary << " fois.";
+        break;
+    case engine::CardId::REFLEX:
+        stream << "Ruse. Pioche " << value << ".";
+        break;
+    case engine::CardId::FLICK_FLACK:
+        stream << "Ruse. Inflige " << value << " dégâts à TOUS.";
+        break;
+    case engine::CardId::SHADOWMELD:
+        stream << "Armure gagnée x2 ce tour.";
+        break;
+    case engine::CardId::UNMOVABLE:
+        stream << "1re Armure de carte x2 par tour.";
+        break;
+    case engine::CardId::COLOSSUS:
+        stream << "Armure " << value << ". -50% dégâts des Vulnérables.";
+        break;
+    case engine::CardId::CRUELTY:
+        stream << "Vulnérables subissent +" << value << "% dégâts.";
+        break;
+    case engine::CardId::TRACKING:
+        stream << "Affaiblis subissent +" << value << "% dégâts.";
+        break;
+    case engine::CardId::LETHALITY:
+        stream << "Éthéré. 1re Attaque +" << value << "% dégâts.";
+        break;
+    case engine::CardId::SHADOW_STEP:
+        stream << "Défausse la main. Attaques x2 ensuite.";
+        break;
+    case engine::CardId::DEBILITATE:
+        stream << "Inflige " << value << ". Vuln. et Aff. x2, " << secondary << " tours.";
+        break;
+    case engine::CardId::HAND_OF_GREED:
+        stream << "Inflige " << value << ". Coup de grâce : +" << value << " Or.";
+        break;
+    case engine::CardId::THE_HUNT:
+        stream << "Inflige " << value << ". Coup de grâce : +1 carte.";
+        break;
+    case engine::CardId::ROYALTIES:
+        stream << "Fin de combat : +" << value << " Or.";
+        break;
+    case engine::CardId::FORBIDDEN_GRIMOIRE:
+        stream << "Éternel. Fin de combat : retire 1 carte.";
+        break;
+    case engine::CardId::ALCHEMIZE:
+        stream << "Obtenez une potion au hasard. Épuisement.";
+        break;
+    case engine::CardId::THE_GAMBIT:
+        stream << "Armure " << value << ". Dégât subi : mort.";
+        break;
+    case engine::CardId::SPLASH:
+        stream << "1 Attaque" << (card.upgraded ? "+ parmi " : " parmi ") << secondary << " d'un autre héros, à 0.";
+        break;
+    case engine::CardId::SEEKER_STRIKE:
+        stream << value << " dégâts. Pioche : 1 parmi " << secondary << " en main.";
+        break;
+    case engine::CardId::PRIMAL_FORCE:
+        stream << "Attaques de la main en Rocher gigantesque.";
+        break;
+    case engine::CardId::SEANCE:
+        stream << "Éthéré. Pioche : 1 carte en Âme.";
+        break;
+    case engine::CardId::ENTROPY:
+        stream << "Début de tour : transforme 1 carte.";
+        break;
     case engine::CardId::BYRD_SWOOP:
     case engine::CardId::ULTIMATE_STRIKE:
         stream << "Inflige " << value << " dégâts.";
+        break;
+    case engine::CardId::QUASAR:
+        stream << "1 Incolore" << (card.upgraded ? " améliorée" : "") << " parmi " << value << " en main.";
+        break;
+    case engine::CardId::DISCOVERY:
+        stream << "1 parmi " << secondary << ", coût 0. " << (card.upgraded ? "" : "Épuis.");
+        break;
+    case engine::CardId::ABUNDANCE:
+        stream << "1 Pouvoir+ sur 3, gratuit. Épuisement.";
+        break;
+    case engine::CardId::MINION_STRIKE:
+        stream << "Inflige " << value << ". Pioche 1. Épuisement.";
+        break;
+    case engine::CardId::MINION_DIVE_BOMB:
+        stream << "Inflige " << value << " dégâts. Épuisement.";
+        break;
+    case engine::CardId::MINION_SACRIFICE:
+        stream << "Gagne " << value << " d'Armure. Épuisement.";
+        break;
+    case engine::CardId::BEGONE:
+        stream << "1 carte de la main : Frappe de sbire.";
+        break;
+    case engine::CardId::CHARGE:
+        stream << "2 cartes de la Pioche : Sbire en piqué.";
+        break;
+    case engine::CardId::GUARDS:
+        stream << "Main en Sbires sacrificiels. Épuisement.";
+        break;
+    case engine::CardId::HIDDEN_GEM:
+        stream << "1 carte de la Pioche gagne Écho " << value << ".";
+        break;
+    case engine::CardId::TRANSFIGURE:
+        stream << "1 carte de la main : Écho, coûte +1.";
+        break;
+    case engine::CardId::GLASSWORK:
+        stream << "Armure " << value << ". Canalise 1 Orbe vitreux.";
+        break;
+    case engine::CardId::REFRACT:
+        stream << "Inflige " << value << " x2. Canalise 2 Orbes vitreux.";
+        break;
+    case engine::CardId::SPINNER:
+        stream << "Début de tour : canalise 1 Orbe vitreux.";
+        break;
+    case engine::CardId::MAD_SCIENCE:
+        stream << (card.upgraded ? "Inné. " : "") << "Inflige " << value << " dégâts.";
         break;
     case engine::CardId::ULTIMATE_DEFEND:
         stream << "Gagne " << value << " d'Armure.";
@@ -2139,6 +2438,8 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SOOT:
     case engine::CardId::WOUND:
+    case engine::CardId::INFECTION:
+    case engine::CardId::WITHER:
         stream << "Injouable.";
         break;
     case engine::CardId::FOLLY:
@@ -2158,6 +2459,12 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::SLIMED:
         stream << "Pioche " << value << " carte. Épuisement.";
+        break;
+    case engine::CardId::FRANTIC_ESCAPE:
+        stream << "Sables mouvants +" << value << ". Coût +1 ensuite.";
+        break;
+    case engine::CardId::BECKON:
+        stream << "Injouable. Fin de tour en main : -" << value << " PV.";
         break;
     case engine::CardId::VOID_CARD:
         stream << "Injouable. Éthéré. Piochée : perd " << value << " ⚡.";
@@ -2485,7 +2792,109 @@ bn::string_view card_cost_label(const engine::DeckCard& card)
         return "-";
     }
 
-    return cost_digit(engine::CardDef::get_cost(card.id, card.upgraded));
+    return cost_digit(engine::CardDef::get_cost(card));
+}
+
+bn::string_view enchantment_name(engine::Enchantment enchantment)
+{
+    switch(enchantment)
+    {
+    case engine::Enchantment::INKY:
+        return "Encrée";
+    case engine::Enchantment::ADROIT:
+        return "Adroit";
+    case engine::Enchantment::NIMBLE:
+        return "Agilité";
+    case engine::Enchantment::TEZCATARAS_EMBER:
+        return "Braise de Tezcatara";
+    case engine::Enchantment::SWIFT:
+        return "Célérité";
+    case engine::Enchantment::CLONE:
+        return "Clonage";
+    case engine::Enchantment::MOMENTUM:
+        return "Élan";
+    case engine::Enchantment::GLAM:
+        return "Glamour";
+    case engine::Enchantment::IMBUED:
+        return "Imprégnation";
+    case engine::Enchantment::INSTINCT:
+        return "Instinct";
+    case engine::Enchantment::ROYALLY_APPROVED:
+        return "Sceau royal";
+    case engine::Enchantment::SHARP:
+        return "Tranchant";
+    case engine::Enchantment::GOOPY:
+        return "Viscosité";
+    default:
+        return "";
+    }
+}
+
+void enchantment_text(const engine::DeckCard& card, bn::istring& title, bn::istring& effect)
+{
+    title.clear();
+    effect.clear();
+
+    if(card.enchantment == engine::Enchantment::NONE)
+    {
+        return;
+    }
+
+    const int amount = card.enchant_amount;
+    bn::ostringstream title_stream(title);
+    title_stream << "☆ " << enchantment_name(card.enchantment);
+
+    if(amount > 0)
+    {
+        title_stream << ' ' << amount;
+    }
+
+    bn::ostringstream stream(effect);
+
+    switch(card.enchantment)
+    {
+    case engine::Enchantment::INKY:
+        stream << "Applique Affaibli " << int(engine::INKY_WEAK) << ".";
+        break;
+    case engine::Enchantment::ADROIT:
+        stream << "Gagne " << amount << " d'Armure.";
+        break;
+    case engine::Enchantment::NIMBLE:
+        stream << "Armure +" << amount << ".";
+        break;
+    case engine::Enchantment::TEZCATARAS_EMBER:
+        stream << "0 ●, +" << amount << " dégâts, Éternel.";
+        break;
+    case engine::Enchantment::SWIFT:
+        stream << "1re fois : pioche " << amount << ".";
+        break;
+    case engine::Enchantment::CLONE:
+        stream << "Copiable au feu de camp.";
+        break;
+    case engine::Enchantment::MOMENTUM:
+        stream << "+" << amount << " dégâts à chaque jeu.";
+        break;
+    case engine::Enchantment::GLAM:
+        stream << "Écho 1 (1 fois/combat).";
+        break;
+    case engine::Enchantment::IMBUED:
+        stream << "Jouée au début du combat.";
+        break;
+    case engine::Enchantment::INSTINCT:
+        stream << "Dégâts doublés.";
+        break;
+    case engine::Enchantment::ROYALLY_APPROVED:
+        stream << "Inné. Retenue.";
+        break;
+    case engine::Enchantment::SHARP:
+        stream << "+" << amount << " dégâts.";
+        break;
+    case engine::Enchantment::GOOPY:
+        stream << "Épuisement. +1 par jeu.";
+        break;
+    default:
+        break;
+    }
 }
 
 bn::string_view cost_label(int cost)
@@ -2627,6 +3036,40 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Décomp";
     case engine::PowerId::PERSONAL_HIVE:
         return "Ruche";
+    case engine::PowerId::BURROWED:
+        return "Enfoui";
+    case engine::PowerId::VITAL_SPARK:
+        return "Étincelle";
+    case engine::PowerId::HEX:
+        return "Sortil";
+    case engine::PowerId::SANDPIT:
+        return "Sables";
+    case engine::PowerId::SHRINK:
+        return "Rétréci";
+    case engine::PowerId::CONSTRICT:
+        return "Étreinte";
+    case engine::PowerId::SMOGGY:
+        return "Enfumé";
+    case engine::PowerId::SOAR:
+        return "Envol";
+    case engine::PowerId::PLOW:
+        return "Cavalc";
+    case engine::PowerId::RINGING:
+        return "Résonn";
+    case engine::PowerId::MIND_ROT:
+        return "Pourri";
+    case engine::PowerId::WASTE_AWAY:
+        return "Dépéri";
+    case engine::PowerId::DISINTEGRATION:
+        return "Désint";
+    case engine::PowerId::PAINFUL_STABS:
+        return "Poignd";
+    case engine::PowerId::NEMESIS:
+        return "Némési";
+    case engine::PowerId::STEAM_ERUPTION:
+        return "Vapeur";
+    case engine::PowerId::CHAINS_OF_BINDING:
+        return "Entrav";
     default:
         return "";
     }
@@ -2642,6 +3085,40 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Décomp. : chaque carte, -1 Force/Dex.";
     case engine::PowerId::PERSONAL_HIVE:
         return "Ruche : frappée, Hébété en Pioche.";
+    case engine::PowerId::BURROWED:
+        return "Enfoui : Armure brisée, tour perdu.";
+    case engine::PowerId::VITAL_SPARK:
+        return "Étincelle : frappée, +1 ● (X fois/tour).";
+    case engine::PowerId::HEX:
+        return "Sortilège : vos cartes sont Éthérées.";
+    case engine::PowerId::SANDPIT:
+        return "Sables : à 0, vous êtes dévoré.";
+    case engine::PowerId::SHRINK:
+        return "Rétréci : vos Attaques -30% de dégâts.";
+    case engine::PowerId::CONSTRICT:
+        return "Étreinte : dégâts en fin de tour tant que l'Étrangleur vit.";
+    case engine::PowerId::SMOGGY:
+        return "Enfumé : 1 seule Compétence par tour.";
+    case engine::PowerId::SOAR:
+        return "Envol : dégâts d'Attaque subis -50%.";
+    case engine::PowerId::PLOW:
+        return "Cavalcade : sous X PV, étourdi, -Force.";
+    case engine::PowerId::RINGING:
+        return "Résonnant : 1 seule carte ce tour.";
+    case engine::PowerId::MIND_ROT:
+        return "Esprit pourri : piochez X cartes de moins.";
+    case engine::PowerId::WASTE_AWAY:
+        return "Dépérissement : X ● de moins par tour.";
+    case engine::PowerId::DISINTEGRATION:
+        return "Désintégration : X dégâts en fin de tour.";
+    case engine::PowerId::PAINFUL_STABS:
+        return "Coups de poignard : Plaie par coup reçu.";
+    case engine::PowerId::NEMESIS:
+        return "Némésis : Intangible un tour sur deux.";
+    case engine::PowerId::STEAM_ERUPTION:
+        return "Éruption de vapeur : tué, explose X dégâts.";
+    case engine::PowerId::CHAINS_OF_BINDING:
+        return "Entraves : X cartes injouables par tour.";
     default:
         return "";
     }
@@ -2655,7 +3132,7 @@ void append_enemy_powers(const engine::CombatEngine& combat, int holder, bn::ist
     {
         bn::string_view label = enemy_power_label(power.id);
 
-        if(label.empty() || power.holder != holder)
+        if(label.empty() || power.holder != holder || power.amount <= 0)
         {
             continue;
         }

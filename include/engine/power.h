@@ -104,7 +104,11 @@ enum class PowerId : uint8_t {
     SPARKLING_ROUGE,   // start of turn 3: `amount` Strength and Dexterity
     HAPPY_FLOWER,      // every 3 turns: `amount` energy
     PENDULUM,          // every 3 turns: draw `amount` more
+    RING_OF_THE_DRAKE, // start of turns 1 to RING_OF_THE_DRAKE_TURNS: draw `amount` more
+    FAKE_HAPPY_FLOWER, // every 5 turns: `amount` energy
+    POLLINOUS_CORE,    // every 4 turns: draw `amount` more
     VERY_HOT_COCOA,    // turn 1: `amount` more energy
+    BOOKMARK,          // end of turn: a random Retained card in hand costs 1 less until played
     BREAD,             // turn 1: lose BREAD_ENERGY_LOST energy; later turns: `amount` energy
     FIDDLE,            // marker: no card is drawn after the opening draw of the turn (the bonus is a TURN_DRAW)
     MERCURY_HOURGLASS, // start of turn: `amount` damage to every enemy
@@ -120,8 +124,10 @@ enum class PowerId : uint8_t {
     GREMLIN_HORN,      // enemy killed: `amount` energy and 1 card
     RAZOR_TOOTH,       // an Attack or a Skill played is upgraded for the rest of the combat
     THE_ABACUS,        // draw pile shuffled: `amount` Block
+    BIIIG_HUG,         // draw pile shuffled: `amount` Soot added to the draw pile
     PERMAFROST,        // first Power played: `amount` Block
     GAME_PIECE,        // Power played: draw `amount`
+    REPTILE_TRINKET,   // potion used: `amount` Strength until the end of the turn
     CENTENNIAL_PUZZLE, // first HP loss: draw `amount`
     LIZARD_TAIL,       // HP reduced to 0: back to `amount` % of Max HP, once (counter = 1 when spent)
     UNCEASING_TOP,     // hand empty during the turn: draw 1
@@ -148,8 +154,15 @@ enum class PowerId : uint8_t {
     BURNING_STICKS,    // first Skill exhausted: a copy of it comes to the hand
     SHURIKEN,          // every SHURIKEN_ATTACKS Attacks played in a turn: `amount` Strength
     ORNAMENTAL_FAN,    // every ORNAMENTAL_FAN_ATTACKS Attacks played in a turn: `amount` Block
+    PEN_NIB,           // every PEN_NIB_ATTACKS Attacks played: that Attack deals double damage (counter = Attacks counted)
+    STRIKE_DUMMY,      // cards containing "Strike" deal `amount` more damage per hit
+    FAKE_STRIKE_DUMMY, // event copy of STRIKE_DUMMY: cards containing "Strike" deal `amount` more damage per hit
+    MINIATURE_CANNON,  // upgraded Attacks deal `amount` more damage per hit
+    MYSTIC_LIGHTER,    // Enchanted Attacks deal `amount` more damage per hit
+    THE_BOOT,          // an Attack hit dealing 1 to THE_BOOT_THRESHOLD damage (before Block) deals THE_BOOT_MINIMUM instead
     SELF_FORMING_CLAY, // HP lost: `amount` Block at the start of the next turn
     CHARONS_ASHES,     // card exhausted: `amount` damage to every enemy
+    FORGOTTEN_SOUL,    // event relic: card exhausted: `amount` damage to a random enemy
     RED_SKULL,         // HP at RED_SKULL_HP_PERCENT % of Max HP or less: `amount` more Strength (counter = Strength given now)
     DEMON_TONGUE,      // first HP loss of each turn: heal as much (counter = turn of the last heal)
     BRIMSTONE,         // start of turn: `amount` Strength, and 1 Strength per stack to every enemy
@@ -162,6 +175,7 @@ enum class PowerId : uint8_t {
     SEAL_OF_GOLD,      // start of turn: spend 3 gold (CombatEngine::gold) to gain `amount` energy
     SAI,               // start of turn: `amount` Block
     PAELS_LEGION,      // Block from a card is doubled, then the relic sleeps `amount` turns (counter = turn starts left asleep + 1)
+    RINGING_TRIANGLE,  // turn 1: the hand is kept at the end of the turn (read by the turn start)
     // Damage sent back and statuses lost each turn (appended)
     FLAME_BARRIER,     // until the next turn: each enemy attack deals `amount` damage back to the attacker
     REFLECT,           // until the next turn: the attack damage the player's Block absorbs goes back to the attacker
@@ -202,22 +216,99 @@ enum class PowerId : uint8_t {
     CREATIVE_AI,       // start of turn: `amount` random Powers to the hand
     TOOLS_OF_THE_TRADE, // once the hand is drawn: draw `amount` cards, then discard `amount` cards
     // Relics of the Ancients (appended)
-    WHISPERING_EARRING  // Vakuu plays the first turn of the combat (CombatEngine::vakuu_turn_active)
+    WHISPERING_EARRING, // Vakuu plays the first turn of the combat (CombatEngine::vakuu_turn_active)
+    VELVET_CHOKER,      // no more than `amount` cards played each turn (CombatEngine::play_blocker)
+    PAELS_EYE,          // first turn ended with no card played: exhaust the hand, take an extra turn (removed once used)
+    MUSIC_BOX,          // the first Attack played each turn: an Ethereal copy goes to the hand (read by run_card)
+    BRILLIANT_SCARF,    // the 5th card played each turn costs nothing (CombatEngine::costs_nothing)
+    // Sly (appended)
+    MASTER_PLANNER,     // the Skills played gain Sly (read by place_played_card)
+    // Percentage modifiers (appended)
+    CRUELTY,            // Vulnerable enemies take `amount` % more damage from attacks (read by hit)
+    UNMOVABLE,          // the first Block a card gives each turn is doubled (read by gain_block)
+    TRACKING,           // Weak enemies take `amount` % more damage from attacks (read by hit)
+    LETHALITY,          // the first Attack each turn deals `amount` % more damage (read by hit)
+    PAPER_PHROG,        // Vulnerable enemies take `amount` % more damage from attacks, on top of Cruelty (read by hit)
+    // Effects that outlast the combat (appended)
+    ROYALTIES,          // `amount` gold at the end of the combat (read by RunManager::proceed_after_combat)
+    FORBIDDEN_GRIMOIRE, // one card of the deck can be removed at the end of the combat
+    // Potions (appended)
+    STABLE_SERUM,       // the hand is kept at the end of the next `amount` turns (read by end_player_turn)
+    // Relics (appended)
+    BEATING_REMNANT,    // the player loses no more than `amount` HP each turn (CombatEntity::hp_loss_budget)
+    VAMBRACE,           // the first Block a card gives each combat is doubled (counter = 1 once used)
+    CHEMICAL_X,         // the X cards played get `amount` more X (CombatEngine::play_card, autoplay)
+    UNSETTLING_LAMP,    // the first card of the fight that debuffs an enemy has its debuffs doubled (counter = 1 once used)
+    MR_STRUGGLES,       // start of turn: damage equal to the turn number to every enemy (event relic)
+    HISTORY_COURSE,     // start of turn: play a copy of the last Attack played (`amount` = 0, or card id * 2 + upgraded + 1)
+    INFUSED_CORE,       // Lightning orbs deal `amount` more damage, when passive or evoked (Infused Core)
+    DAUGHTER_OF_THE_WIND, // Attack played: `amount` Block (event relic)
+    LOST_WISP,          // Power played: `amount` damage to every enemy (event relic)
+    HAND_DRILL,         // an enemy's Block broken by the player's damage: `amount` Vulnerable on that enemy
+    UNDYING_SIGIL,      // enemy with Doom at least its HP: its attacks deal 50% less damage (read by execute_enemy_turn)
+    THROWING_AXE,       // the first card played in the combat is played once more (removed once used)
+    IRON_CLUB,          // every IRON_CLUB_CARDS cards played: draw `amount` (counter = cards counted)
+    CROSSBOW,           // start of turn: add a random Attack to the hand, free this turn
+    SPIKED_GAUNTLETS,   // Power cards cost `amount` more energy (CombatEngine::effective_cost)
+    TOASTY_MITTENS,     // start of turn: `amount` Strength, and 1 card of the new hand is exhausted
+    PAELS_FLESH,        // start of the 3rd turn and each one after: `amount` extra energy (Ancient relic)
+    // Transformation (appended)
+    ENTROPY,            // at the start of each turn `amount` cards of the hand are transformed (read by start_player_turn)
+    // Regent minions (appended)
+    VITRUVIAN_MINION,   // the Minion cards deal double damage and give double Block (read by hit and gain_block)
+    // Glass orb (appended)
+    SPINNER,            // start of turn: channel `amount` Glass orbs (read by start_player_turn)
+    // Held by an enemy (appended)
+    BURROWED,           // its Block is up: the Block broken or its next turn played, the power is spent (amount 0)
+    VITAL_SPARK,       // it takes unblocked attack damage: 1 energy for the player, up to `amount` times a turn (counter = times)
+    HEX,               // while its holder lives, every card left in the hand at the end of the turn is exhausted (Ethereal)
+    SANDPIT,           // its holder's turn: -1, and the player is devoured at 0; Frantic Escape adds 1 (the Insatiable)
+    RUINED_HELMET,     // the first Strength gained each combat is doubled (counter = 1 once used)
+    // On the player, given by an enemy move (appended)
+    SHRINK,            // the player's attacks deal 30% less damage (read by hit); -1 at the end of each player turn
+    CONSTRICT,         // at the end of the player's turn, `amount` damage while a Slithering Strangler lives
+    SMOGGY,            // only one Skill can be played each turn (CombatEngine::play_blocker)
+    // Held by an enemy (appended)
+    SOAR,              // it takes 50% less attack damage (read by hit) until it lands: spent when its next turn starts
+    PLOW,              // its holder's HP fall below `amount`: it loses all Strength, is stunned and changes phase (spent)
+    // On the player, given by an enemy move (appended)
+    RINGING,           // only one card can be played this turn (read by play_blocker; the Ceremonial Beast)
+    // Held by an enemy (appended): the Test Subject gains them when it respawns
+    PAINFUL_STABS,     // each hit of its attacks that costs the player HP adds `amount` Wounds to their discard pile
+    NEMESIS,           // at the end of each of its turns started without Intangible, it gains 1 Intangible
+    // On the player, given by the Knowledge Demon's Curse of Knowledge (appended)
+    MIND_ROT,          // start of turn: draw `amount` fewer cards
+    WASTE_AWAY,        // start of turn: `amount` less energy
+    DISINTEGRATION,    // end of the player's turn: `amount` damage
+    // Held by an enemy (appended): the Waterfall Giant
+    STEAM_ERUPTION,    // killed, its holder deals `amount` damage at the end of the player's next turn (Enemy::about_to_blow)
+    // On the player, given by the Queen's Puppet Strings (appended)
+    CHAINS_OF_BINDING  // start of turn: the first `amount` cards of the hand are Bound (unplayable this turn); -1 a turn
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
 constexpr bool is_player_debuff_power(PowerId id) {
-    return id == PowerId::TANGLED || id == PowerId::TENDER;
+    return id == PowerId::TANGLED || id == PowerId::TENDER || id == PowerId::SHRINK ||
+           id == PowerId::CONSTRICT || id == PowerId::SMOGGY || id == PowerId::RINGING ||
+           id == PowerId::MIND_ROT || id == PowerId::WASTE_AWAY || id == PowerId::DISINTEGRATION ||
+           id == PowerId::CHAINS_OF_BINDING;
 }
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
+// Shrink (the Shrinker Beetle): the player's attacks deal SHRINK_PERCENT % of their damage for SHRINK_TURNS turns.
+constexpr int16_t SHRINK_TURNS = 3;
+constexpr int32_t SHRINK_PERCENT = 70;
 constexpr uint8_t PANACHE_CARDS = 5;
+constexpr uint8_t IRON_CLUB_CARDS = 4;
 constexpr uint8_t AUTOMATION_CARDS = 10;
 constexpr uint8_t ROLLING_BOULDER_GROWTH = 5;
 constexpr uint8_t ORBIT_ENERGY = 4;
 constexpr uint8_t DANSE_MACABRE_COST = 2;
+constexpr uint8_t BEATING_REMNANT_HP_LOSS = 20;
+constexpr uint8_t CHEMICAL_X_INCREASE = 2;
 constexpr uint8_t BREAD_ENERGY_LOST = 2;
 constexpr uint8_t POCKETWATCH_CARDS = 3;
+constexpr uint8_t RING_OF_THE_DRAKE_TURNS = 3;
 constexpr uint8_t PARRYING_SHIELD_BLOCK = 10;
 constexpr uint8_t STONE_CALENDAR_TURN = 7;
 constexpr uint8_t METRONOME_ORBS = 7;
@@ -228,11 +319,16 @@ constexpr uint8_t TUNING_FORK_SKILLS = 10;
 constexpr uint8_t KUNAI_ATTACKS = 3;
 constexpr uint8_t KUSARIGAMA_ATTACKS = 3;
 constexpr uint8_t NUNCHAKU_ATTACKS = 10;
+constexpr uint8_t PEN_NIB_ATTACKS = 10;
+constexpr uint8_t THE_BOOT_THRESHOLD = 4;
+constexpr uint8_t THE_BOOT_MINIMUM = 5;
 constexpr uint8_t SHURIKEN_ATTACKS = 3;
 constexpr uint8_t ORNAMENTAL_FAN_ATTACKS = 3;
 constexpr uint8_t RED_SKULL_HP_PERCENT = 50;
 constexpr uint8_t GALACTIC_DUST_STARS = 10;
 constexpr uint8_t IVORY_TILE_COST = 3;
+constexpr uint8_t VELVET_CHOKER_CARDS = 6;
+constexpr uint8_t BRILLIANT_SCARF_CARD = 5; // the Nth card played each turn is free
 
 struct ActivePower {
     PowerId id = PowerId::NONE;
@@ -261,6 +357,7 @@ enum class CombatEvent : uint8_t {
     HP_LOST,                // by the player; `amount`
     ATTACK_HIT,             // one attack hit on an enemy; `enemy`
     UNBLOCKED_DAMAGE_DEALT, // that hit went through the enemy's Block; `enemy`, `amount`
+    BLOCK_BROKEN,           // the player's damage took an enemy's Block to 0; `enemy`
     DEBUFF_APPLIED,         // to an enemy; `enemy`, `status`, `amount`
     ENEMY_KILLED,           // whatever killed it; `enemy`
     OSTY_ATTACKED,          // once per attack of Osty, however many enemies it hits

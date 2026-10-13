@@ -1,5 +1,6 @@
 #include "gba/widgets.h"
 
+#include "bn_optional.h"
 #include "bn_sprite_items_ui_hp_bar.h"
 #include "bn_sprite_items_ui_icons.h"
 #include "bn_sstream.h"
@@ -198,10 +199,18 @@ void FxPool::spawn(const bn::sprite_item& item, int x, int y, int first_frame, i
         _effects.erase(_effects.begin());
     }
 
-    bn::sprite_ptr sprite = item.create_sprite(x, y, first_frame);
-    sprite.set_z_order(Z_FX);
-    sprite.set_horizontal_flip(flip);
-    _effects.push_back(Fx{ bn::move(sprite), &item, first_frame, frames, ticks, 0 });
+    // An effect is decoration: when every sprite palette is taken (three monsters and all the text colours),
+    // it is skipped instead of stopping the game on Butano's "no more available colors" error.
+    bn::optional<bn::sprite_ptr> sprite = item.create_sprite_optional(x, y, first_frame);
+
+    if(! sprite)
+    {
+        return;
+    }
+
+    sprite->set_z_order(Z_FX);
+    sprite->set_horizontal_flip(flip);
+    _effects.push_back(Fx{ bn::move(*sprite), &item, first_frame, frames, ticks, 0 });
 }
 
 void FxPool::update()

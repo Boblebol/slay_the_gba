@@ -81,8 +81,16 @@ jobs:
             echo "Generated files already up to date."
           else
             git commit -m "build(site): refresh website${VERSION:+ for v$VERSION}"
-            git pull --rebase origin main
-            git push origin HEAD:main
+            # A run queued behind another one starts from an older main than the previous run's site commit, so
+            # both touched the same generated files (the ROMs are binary and cannot be merged). This run was
+            # triggered by a newer push, so on a conflict its own generated files win ("theirs" in a rebase).
+            # A PR merged between the rebase and the push makes the push fail ("cannot lock ref"): rebase again.
+            for attempt in 1 2 3 4 5; do
+              git pull --rebase -X theirs origin main
+              if git push origin HEAD:main; then break; fi
+              if [ "$attempt" = 5 ]; then exit 1; fi
+              sleep $((attempt * 5))
+            done
           fi
 
       - name: Publish the GitHub release
@@ -97,12 +105,14 @@ jobs:
             echo
             echo "## Changements"
             if [ -n "$LAST" ]; then
-              git log --no-merges --pretty='- %s' "$LAST"..HEAD -- . ':!site' ':!AVANCEMENT.md' ':!VERSION'
+              git log --no-merges --pretty='- %s' "$LAST".."$GITHUB_SHA" -- . ':!site' ':!AVANCEMENT.md' ':!VERSION'
             else
               echo "- Première version publiée."
             fi
           } > release_notes.md
           prerelease=""
           if [ "${VERSION%%.*}" = "0" ]; then prerelease="--prerelease"; fi
+          # Tag the commit the ROMs were built from, not the rebased HEAD: PRs merged meanwhile are not in these
+          # ROMs, and tagging past them would make the next run believe they were already released.
           gh release create "v$VERSION" slay_*.gba --title "Slay the GBA v$VERSION" --notes-file release_notes.md \
-            --target "$(git rev-parse HEAD)" $prerelease
+            --target "$GITHUB_SHA" $prerelease

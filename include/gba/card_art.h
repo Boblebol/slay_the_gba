@@ -169,6 +169,48 @@
 #include "bn_sprite_items_card_dual_wield_silent.h"
 #include "bn_sprite_items_card_nightmare.h"
 #include "bn_sprite_items_card_tools_of_the_trade.h"
+#include "bn_sprite_items_card_injury.h"
+#include "bn_sprite_items_card_greed.h"
+#include "bn_sprite_items_card_clumsy.h"
+#include "bn_sprite_items_card_ascenders_bane.h"
+#include "bn_sprite_items_card_curse_of_the_bell.h"
+#include "bn_sprite_items_card_poor_sleep.h"
+#include "bn_sprite_items_card_writhe.h"
+#include "bn_sprite_items_card_normality.h"
+#include "bn_sprite_items_card_doubt.h"
+#include "bn_sprite_items_card_shame.h"
+#include "bn_sprite_items_card_decay.h"
+#include "bn_sprite_items_card_regret.h"
+#include "bn_sprite_items_card_bad_luck.h"
+#include "bn_sprite_items_card_debt.h"
+#include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_guilty.h"
+#include "bn_sprite_items_card_tactician.h"
+#include "bn_sprite_items_card_abrasive.h"
+#include "bn_sprite_items_card_master_planner.h"
+#include "bn_sprite_items_card_hand_trick.h"
+#include "bn_sprite_items_card_untouchable.h"
+#include "bn_sprite_items_card_ricochet.h"
+#include "bn_sprite_items_card_reflex.h"
+#include "bn_sprite_items_card_flick_flack.h"
+#include "bn_sprite_items_card_shadowmeld.h"
+#include "bn_sprite_items_card_tracking.h"
+#include "bn_sprite_items_card_shadow_step.h"
+#include "bn_sprite_items_card_hand_of_greed.h"
+#include "bn_sprite_items_card_the_hunt.h"
+#include "bn_sprite_items_card_alchemize.h"
+#include "bn_sprite_items_card_the_gambit.h"
+#include "bn_sprite_items_card_seeker_strike.h"
+#include "bn_sprite_items_card_entropy.h"
+#include "bn_sprite_items_card_splash.h"
+#include "bn_sprite_items_card_mad_science_silent.h"
+#include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
+#include "bn_sprite_items_card_hidden_gem.h"
+#include "bn_sprite_items_card_infection.h"
+#include "bn_sprite_items_card_frantic_escape.h"
+#include "bn_sprite_items_card_beckon.h"
+#include "bn_sprite_items_card_wither.h"
 
 namespace gba::card_art
 {
@@ -492,6 +534,90 @@ namespace gba::card_art
         return &bn::sprite_items::card_nightmare;
     case engine::CardId::TOOLS_OF_THE_TRADE:
         return &bn::sprite_items::card_tools_of_the_trade;
+    case engine::CardId::INJURY:
+        return &bn::sprite_items::card_injury;
+    case engine::CardId::GREED:
+        return &bn::sprite_items::card_greed;
+    case engine::CardId::CLUMSY:
+        return &bn::sprite_items::card_clumsy;
+    case engine::CardId::ASCENDERS_BANE:
+        return &bn::sprite_items::card_ascenders_bane;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return &bn::sprite_items::card_curse_of_the_bell;
+    case engine::CardId::POOR_SLEEP:
+        return &bn::sprite_items::card_poor_sleep;
+    case engine::CardId::WRITHE:
+        return &bn::sprite_items::card_writhe;
+    case engine::CardId::NORMALITY:
+        return &bn::sprite_items::card_normality;
+    case engine::CardId::DOUBT:
+        return &bn::sprite_items::card_doubt;
+    case engine::CardId::SHAME:
+        return &bn::sprite_items::card_shame;
+    case engine::CardId::DECAY:
+        return &bn::sprite_items::card_decay;
+    case engine::CardId::REGRET:
+        return &bn::sprite_items::card_regret;
+    case engine::CardId::BAD_LUCK:
+        return &bn::sprite_items::card_bad_luck;
+    case engine::CardId::DEBT:
+        return &bn::sprite_items::card_debt;
+    case engine::CardId::SPORE_MIND:
+        return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::GUILTY:
+        return &bn::sprite_items::card_guilty;
+    case engine::CardId::TACTICIAN:
+        return &bn::sprite_items::card_tactician;
+    case engine::CardId::ABRASIVE:
+        return &bn::sprite_items::card_abrasive;
+    case engine::CardId::MASTER_PLANNER:
+        return &bn::sprite_items::card_master_planner;
+    case engine::CardId::HAND_TRICK:
+        return &bn::sprite_items::card_hand_trick;
+    case engine::CardId::UNTOUCHABLE:
+        return &bn::sprite_items::card_untouchable;
+    case engine::CardId::RICOCHET:
+        return &bn::sprite_items::card_ricochet;
+    case engine::CardId::REFLEX:
+        return &bn::sprite_items::card_reflex;
+    case engine::CardId::FLICK_FLACK:
+        return &bn::sprite_items::card_flick_flack;
+    case engine::CardId::SHADOWMELD:
+        return &bn::sprite_items::card_shadowmeld;
+    case engine::CardId::TRACKING:
+        return &bn::sprite_items::card_tracking;
+    case engine::CardId::SHADOW_STEP:
+        return &bn::sprite_items::card_shadow_step;
+    case engine::CardId::HAND_OF_GREED:
+        return &bn::sprite_items::card_hand_of_greed;
+    case engine::CardId::THE_HUNT:
+        return &bn::sprite_items::card_the_hunt;
+    case engine::CardId::ALCHEMIZE:
+        return &bn::sprite_items::card_alchemize;
+    case engine::CardId::THE_GAMBIT:
+        return &bn::sprite_items::card_the_gambit;
+    case engine::CardId::SEEKER_STRIKE:
+        return &bn::sprite_items::card_seeker_strike;
+    case engine::CardId::ENTROPY:
+        return &bn::sprite_items::card_entropy;
+    case engine::CardId::SPLASH:
+        return &bn::sprite_items::card_splash;
+    case engine::CardId::MAD_SCIENCE:
+        return &bn::sprite_items::card_mad_science_silent;
+    case engine::CardId::DISCOVERY:
+        return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
+    case engine::CardId::HIDDEN_GEM:
+        return &bn::sprite_items::card_hidden_gem;
+    case engine::CardId::INFECTION:
+        return &bn::sprite_items::card_infection;
+    case engine::CardId::FRANTIC_ESCAPE:
+        return &bn::sprite_items::card_frantic_escape;
+    case engine::CardId::BECKON:
+        return &bn::sprite_items::card_beckon;
+    case engine::CardId::WITHER:
+        return &bn::sprite_items::card_wither;
     default:
         return nullptr;
     }
@@ -523,7 +649,10 @@ constexpr uint16_t SHEET_SLOT[] = {
     103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122,
     123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
     143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 0, 0, 0, 0, 0, 0, 0,
-    156, 157, 0, 0,
+    156, 157, 0, 0, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173,
+    174, 175, 176, 177, 178, 179, 180, 181, 182, 0, 0, 0, 183, 0, 184, 0, 185, 186, 0, 0,
+    187, 188, 189, 0, 0, 190, 191, 192, 0, 193, 194, 0, 0, 0, 0, 0, 0, 195, 0, 0,
+    0, 0, 196, 197, 198, 199,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -699,6 +828,39 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_dual_wield_defect.h"
 #include "bn_sprite_items_card_white_noise.h"
 #include "bn_sprite_items_card_creative_ai.h"
+#include "bn_sprite_items_card_injury.h"
+#include "bn_sprite_items_card_greed.h"
+#include "bn_sprite_items_card_clumsy.h"
+#include "bn_sprite_items_card_ascenders_bane.h"
+#include "bn_sprite_items_card_curse_of_the_bell.h"
+#include "bn_sprite_items_card_poor_sleep.h"
+#include "bn_sprite_items_card_writhe.h"
+#include "bn_sprite_items_card_normality.h"
+#include "bn_sprite_items_card_doubt.h"
+#include "bn_sprite_items_card_shame.h"
+#include "bn_sprite_items_card_decay.h"
+#include "bn_sprite_items_card_regret.h"
+#include "bn_sprite_items_card_bad_luck.h"
+#include "bn_sprite_items_card_debt.h"
+#include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_guilty.h"
+#include "bn_sprite_items_card_hand_of_greed.h"
+#include "bn_sprite_items_card_alchemize.h"
+#include "bn_sprite_items_card_the_gambit.h"
+#include "bn_sprite_items_card_seeker_strike.h"
+#include "bn_sprite_items_card_entropy.h"
+#include "bn_sprite_items_card_splash.h"
+#include "bn_sprite_items_card_mad_science_defect.h"
+#include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
+#include "bn_sprite_items_card_hidden_gem.h"
+#include "bn_sprite_items_card_glasswork.h"
+#include "bn_sprite_items_card_refract.h"
+#include "bn_sprite_items_card_spinner.h"
+#include "bn_sprite_items_card_infection.h"
+#include "bn_sprite_items_card_frantic_escape.h"
+#include "bn_sprite_items_card_beckon.h"
+#include "bn_sprite_items_card_wither.h"
 
 namespace gba::card_art
 {
@@ -1040,6 +1202,72 @@ namespace gba::card_art
         return &bn::sprite_items::card_white_noise;
     case engine::CardId::CREATIVE_AI:
         return &bn::sprite_items::card_creative_ai;
+    case engine::CardId::INJURY:
+        return &bn::sprite_items::card_injury;
+    case engine::CardId::GREED:
+        return &bn::sprite_items::card_greed;
+    case engine::CardId::CLUMSY:
+        return &bn::sprite_items::card_clumsy;
+    case engine::CardId::ASCENDERS_BANE:
+        return &bn::sprite_items::card_ascenders_bane;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return &bn::sprite_items::card_curse_of_the_bell;
+    case engine::CardId::POOR_SLEEP:
+        return &bn::sprite_items::card_poor_sleep;
+    case engine::CardId::WRITHE:
+        return &bn::sprite_items::card_writhe;
+    case engine::CardId::NORMALITY:
+        return &bn::sprite_items::card_normality;
+    case engine::CardId::DOUBT:
+        return &bn::sprite_items::card_doubt;
+    case engine::CardId::SHAME:
+        return &bn::sprite_items::card_shame;
+    case engine::CardId::DECAY:
+        return &bn::sprite_items::card_decay;
+    case engine::CardId::REGRET:
+        return &bn::sprite_items::card_regret;
+    case engine::CardId::BAD_LUCK:
+        return &bn::sprite_items::card_bad_luck;
+    case engine::CardId::DEBT:
+        return &bn::sprite_items::card_debt;
+    case engine::CardId::SPORE_MIND:
+        return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::GUILTY:
+        return &bn::sprite_items::card_guilty;
+    case engine::CardId::HAND_OF_GREED:
+        return &bn::sprite_items::card_hand_of_greed;
+    case engine::CardId::ALCHEMIZE:
+        return &bn::sprite_items::card_alchemize;
+    case engine::CardId::THE_GAMBIT:
+        return &bn::sprite_items::card_the_gambit;
+    case engine::CardId::SEEKER_STRIKE:
+        return &bn::sprite_items::card_seeker_strike;
+    case engine::CardId::ENTROPY:
+        return &bn::sprite_items::card_entropy;
+    case engine::CardId::SPLASH:
+        return &bn::sprite_items::card_splash;
+    case engine::CardId::MAD_SCIENCE:
+        return &bn::sprite_items::card_mad_science_defect;
+    case engine::CardId::DISCOVERY:
+        return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
+    case engine::CardId::HIDDEN_GEM:
+        return &bn::sprite_items::card_hidden_gem;
+    case engine::CardId::GLASSWORK:
+        return &bn::sprite_items::card_glasswork;
+    case engine::CardId::REFRACT:
+        return &bn::sprite_items::card_refract;
+    case engine::CardId::SPINNER:
+        return &bn::sprite_items::card_spinner;
+    case engine::CardId::INFECTION:
+        return &bn::sprite_items::card_infection;
+    case engine::CardId::FRANTIC_ESCAPE:
+        return &bn::sprite_items::card_frantic_escape;
+    case engine::CardId::BECKON:
+        return &bn::sprite_items::card_beckon;
+    case engine::CardId::WITHER:
+        return &bn::sprite_items::card_wither;
     default:
         return nullptr;
     }
@@ -1071,7 +1299,10 @@ constexpr uint16_t SHEET_SLOT[] = {
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
     132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
     152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 0, 0, 0, 0, 0, 165, 166,
-    0, 0, 0, 0,
+    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 0, 0, 0,
+    184, 185, 186, 0, 0, 187, 188, 189, 0, 190, 191, 0, 0, 0, 0, 0, 0, 192, 0, 193,
+    194, 195, 196, 197, 198, 199,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1245,6 +1476,44 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_bundle_of_joy.h"
 #include "bn_sprite_items_card_spectrum_shift.h"
 #include "bn_sprite_items_card_decisions_decisions.h"
+#include "bn_sprite_items_card_injury.h"
+#include "bn_sprite_items_card_greed.h"
+#include "bn_sprite_items_card_clumsy.h"
+#include "bn_sprite_items_card_ascenders_bane.h"
+#include "bn_sprite_items_card_curse_of_the_bell.h"
+#include "bn_sprite_items_card_poor_sleep.h"
+#include "bn_sprite_items_card_writhe.h"
+#include "bn_sprite_items_card_normality.h"
+#include "bn_sprite_items_card_doubt.h"
+#include "bn_sprite_items_card_shame.h"
+#include "bn_sprite_items_card_decay.h"
+#include "bn_sprite_items_card_regret.h"
+#include "bn_sprite_items_card_bad_luck.h"
+#include "bn_sprite_items_card_debt.h"
+#include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_guilty.h"
+#include "bn_sprite_items_card_hand_of_greed.h"
+#include "bn_sprite_items_card_royalties.h"
+#include "bn_sprite_items_card_alchemize.h"
+#include "bn_sprite_items_card_the_gambit.h"
+#include "bn_sprite_items_card_seeker_strike.h"
+#include "bn_sprite_items_card_entropy.h"
+#include "bn_sprite_items_card_splash.h"
+#include "bn_sprite_items_card_mad_science_regent.h"
+#include "bn_sprite_items_card_quasar.h"
+#include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
+#include "bn_sprite_items_card_minion_strike.h"
+#include "bn_sprite_items_card_minion_dive_bomb.h"
+#include "bn_sprite_items_card_minion_sacrifice.h"
+#include "bn_sprite_items_card_begone.h"
+#include "bn_sprite_items_card_charge.h"
+#include "bn_sprite_items_card_guards.h"
+#include "bn_sprite_items_card_hidden_gem.h"
+#include "bn_sprite_items_card_infection.h"
+#include "bn_sprite_items_card_frantic_escape.h"
+#include "bn_sprite_items_card_beckon.h"
+#include "bn_sprite_items_card_wither.h"
 
 namespace gba::card_art
 {
@@ -1582,6 +1851,82 @@ namespace gba::card_art
         return &bn::sprite_items::card_spectrum_shift;
     case engine::CardId::DECISIONS_DECISIONS:
         return &bn::sprite_items::card_decisions_decisions;
+    case engine::CardId::INJURY:
+        return &bn::sprite_items::card_injury;
+    case engine::CardId::GREED:
+        return &bn::sprite_items::card_greed;
+    case engine::CardId::CLUMSY:
+        return &bn::sprite_items::card_clumsy;
+    case engine::CardId::ASCENDERS_BANE:
+        return &bn::sprite_items::card_ascenders_bane;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return &bn::sprite_items::card_curse_of_the_bell;
+    case engine::CardId::POOR_SLEEP:
+        return &bn::sprite_items::card_poor_sleep;
+    case engine::CardId::WRITHE:
+        return &bn::sprite_items::card_writhe;
+    case engine::CardId::NORMALITY:
+        return &bn::sprite_items::card_normality;
+    case engine::CardId::DOUBT:
+        return &bn::sprite_items::card_doubt;
+    case engine::CardId::SHAME:
+        return &bn::sprite_items::card_shame;
+    case engine::CardId::DECAY:
+        return &bn::sprite_items::card_decay;
+    case engine::CardId::REGRET:
+        return &bn::sprite_items::card_regret;
+    case engine::CardId::BAD_LUCK:
+        return &bn::sprite_items::card_bad_luck;
+    case engine::CardId::DEBT:
+        return &bn::sprite_items::card_debt;
+    case engine::CardId::SPORE_MIND:
+        return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::GUILTY:
+        return &bn::sprite_items::card_guilty;
+    case engine::CardId::HAND_OF_GREED:
+        return &bn::sprite_items::card_hand_of_greed;
+    case engine::CardId::ROYALTIES:
+        return &bn::sprite_items::card_royalties;
+    case engine::CardId::ALCHEMIZE:
+        return &bn::sprite_items::card_alchemize;
+    case engine::CardId::THE_GAMBIT:
+        return &bn::sprite_items::card_the_gambit;
+    case engine::CardId::SEEKER_STRIKE:
+        return &bn::sprite_items::card_seeker_strike;
+    case engine::CardId::ENTROPY:
+        return &bn::sprite_items::card_entropy;
+    case engine::CardId::SPLASH:
+        return &bn::sprite_items::card_splash;
+    case engine::CardId::MAD_SCIENCE:
+        return &bn::sprite_items::card_mad_science_regent;
+    case engine::CardId::QUASAR:
+        return &bn::sprite_items::card_quasar;
+    case engine::CardId::DISCOVERY:
+        return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
+    case engine::CardId::MINION_STRIKE:
+        return &bn::sprite_items::card_minion_strike;
+    case engine::CardId::MINION_DIVE_BOMB:
+        return &bn::sprite_items::card_minion_dive_bomb;
+    case engine::CardId::MINION_SACRIFICE:
+        return &bn::sprite_items::card_minion_sacrifice;
+    case engine::CardId::BEGONE:
+        return &bn::sprite_items::card_begone;
+    case engine::CardId::CHARGE:
+        return &bn::sprite_items::card_charge;
+    case engine::CardId::GUARDS:
+        return &bn::sprite_items::card_guards;
+    case engine::CardId::HIDDEN_GEM:
+        return &bn::sprite_items::card_hidden_gem;
+    case engine::CardId::INFECTION:
+        return &bn::sprite_items::card_infection;
+    case engine::CardId::FRANTIC_ESCAPE:
+        return &bn::sprite_items::card_frantic_escape;
+    case engine::CardId::BECKON:
+        return &bn::sprite_items::card_beckon;
+    case engine::CardId::WITHER:
+        return &bn::sprite_items::card_wither;
     default:
         return nullptr;
     }
@@ -1613,7 +1958,10 @@ constexpr uint16_t SHEET_SLOT[] = {
     108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
     128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147,
     148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 0, 161, 162, 163, 164, 0, 0,
-    0, 0, 0, 0,
+    0, 0, 0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 0, 182, 0,
+    183, 184, 185, 0, 0, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 0, 0,
+    0, 0, 199, 200, 201, 202,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -1789,6 +2137,41 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_enlightenment_necrobinder.h"
 #include "bn_sprite_items_card_dual_wield_necrobinder.h"
 #include "bn_sprite_items_card_call_of_the_void.h"
+#include "bn_sprite_items_card_injury.h"
+#include "bn_sprite_items_card_greed.h"
+#include "bn_sprite_items_card_clumsy.h"
+#include "bn_sprite_items_card_ascenders_bane.h"
+#include "bn_sprite_items_card_curse_of_the_bell.h"
+#include "bn_sprite_items_card_poor_sleep.h"
+#include "bn_sprite_items_card_writhe.h"
+#include "bn_sprite_items_card_normality.h"
+#include "bn_sprite_items_card_doubt.h"
+#include "bn_sprite_items_card_shame.h"
+#include "bn_sprite_items_card_decay.h"
+#include "bn_sprite_items_card_regret.h"
+#include "bn_sprite_items_card_bad_luck.h"
+#include "bn_sprite_items_card_debt.h"
+#include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_guilty.h"
+#include "bn_sprite_items_card_lethality.h"
+#include "bn_sprite_items_card_debilitate.h"
+#include "bn_sprite_items_card_hand_of_greed.h"
+#include "bn_sprite_items_card_forbidden_grimoire.h"
+#include "bn_sprite_items_card_alchemize.h"
+#include "bn_sprite_items_card_the_gambit.h"
+#include "bn_sprite_items_card_seeker_strike.h"
+#include "bn_sprite_items_card_seance.h"
+#include "bn_sprite_items_card_entropy.h"
+#include "bn_sprite_items_card_splash.h"
+#include "bn_sprite_items_card_mad_science_necrobinder.h"
+#include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
+#include "bn_sprite_items_card_hidden_gem.h"
+#include "bn_sprite_items_card_transfigure.h"
+#include "bn_sprite_items_card_infection.h"
+#include "bn_sprite_items_card_frantic_escape.h"
+#include "bn_sprite_items_card_beckon.h"
+#include "bn_sprite_items_card_wither.h"
 
 namespace gba::card_art
 {
@@ -2130,6 +2513,76 @@ namespace gba::card_art
         return &bn::sprite_items::card_dual_wield_necrobinder;
     case engine::CardId::CALL_OF_THE_VOID:
         return &bn::sprite_items::card_call_of_the_void;
+    case engine::CardId::INJURY:
+        return &bn::sprite_items::card_injury;
+    case engine::CardId::GREED:
+        return &bn::sprite_items::card_greed;
+    case engine::CardId::CLUMSY:
+        return &bn::sprite_items::card_clumsy;
+    case engine::CardId::ASCENDERS_BANE:
+        return &bn::sprite_items::card_ascenders_bane;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return &bn::sprite_items::card_curse_of_the_bell;
+    case engine::CardId::POOR_SLEEP:
+        return &bn::sprite_items::card_poor_sleep;
+    case engine::CardId::WRITHE:
+        return &bn::sprite_items::card_writhe;
+    case engine::CardId::NORMALITY:
+        return &bn::sprite_items::card_normality;
+    case engine::CardId::DOUBT:
+        return &bn::sprite_items::card_doubt;
+    case engine::CardId::SHAME:
+        return &bn::sprite_items::card_shame;
+    case engine::CardId::DECAY:
+        return &bn::sprite_items::card_decay;
+    case engine::CardId::REGRET:
+        return &bn::sprite_items::card_regret;
+    case engine::CardId::BAD_LUCK:
+        return &bn::sprite_items::card_bad_luck;
+    case engine::CardId::DEBT:
+        return &bn::sprite_items::card_debt;
+    case engine::CardId::SPORE_MIND:
+        return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::GUILTY:
+        return &bn::sprite_items::card_guilty;
+    case engine::CardId::LETHALITY:
+        return &bn::sprite_items::card_lethality;
+    case engine::CardId::DEBILITATE:
+        return &bn::sprite_items::card_debilitate;
+    case engine::CardId::HAND_OF_GREED:
+        return &bn::sprite_items::card_hand_of_greed;
+    case engine::CardId::FORBIDDEN_GRIMOIRE:
+        return &bn::sprite_items::card_forbidden_grimoire;
+    case engine::CardId::ALCHEMIZE:
+        return &bn::sprite_items::card_alchemize;
+    case engine::CardId::THE_GAMBIT:
+        return &bn::sprite_items::card_the_gambit;
+    case engine::CardId::SEEKER_STRIKE:
+        return &bn::sprite_items::card_seeker_strike;
+    case engine::CardId::SEANCE:
+        return &bn::sprite_items::card_seance;
+    case engine::CardId::ENTROPY:
+        return &bn::sprite_items::card_entropy;
+    case engine::CardId::SPLASH:
+        return &bn::sprite_items::card_splash;
+    case engine::CardId::MAD_SCIENCE:
+        return &bn::sprite_items::card_mad_science_necrobinder;
+    case engine::CardId::DISCOVERY:
+        return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
+    case engine::CardId::HIDDEN_GEM:
+        return &bn::sprite_items::card_hidden_gem;
+    case engine::CardId::TRANSFIGURE:
+        return &bn::sprite_items::card_transfigure;
+    case engine::CardId::INFECTION:
+        return &bn::sprite_items::card_infection;
+    case engine::CardId::FRANTIC_ESCAPE:
+        return &bn::sprite_items::card_frantic_escape;
+    case engine::CardId::BECKON:
+        return &bn::sprite_items::card_beckon;
+    case engine::CardId::WITHER:
+        return &bn::sprite_items::card_wither;
     default:
         return nullptr;
     }
@@ -2161,7 +2614,10 @@ constexpr uint16_t SHEET_SLOT[] = {
     113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132,
     133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
     153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0,
+    0, 0, 0, 0, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 0, 184, 185, 0, 0, 186,
+    187, 188, 189, 0, 190, 191, 192, 193, 0, 194, 195, 0, 0, 0, 0, 0, 0, 196, 197, 0,
+    0, 0, 198, 199, 200, 201,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.
@@ -2337,6 +2793,40 @@ static_assert(std::size(SHEET_SLOT) == static_cast<size_t>(engine::CardId::COUNT
 #include "bn_sprite_items_card_dual_wield_ironclad.h"
 #include "bn_sprite_items_card_infernal_blade.h"
 #include "bn_sprite_items_card_stoke.h"
+#include "bn_sprite_items_card_injury.h"
+#include "bn_sprite_items_card_greed.h"
+#include "bn_sprite_items_card_clumsy.h"
+#include "bn_sprite_items_card_ascenders_bane.h"
+#include "bn_sprite_items_card_curse_of_the_bell.h"
+#include "bn_sprite_items_card_poor_sleep.h"
+#include "bn_sprite_items_card_writhe.h"
+#include "bn_sprite_items_card_normality.h"
+#include "bn_sprite_items_card_doubt.h"
+#include "bn_sprite_items_card_shame.h"
+#include "bn_sprite_items_card_decay.h"
+#include "bn_sprite_items_card_regret.h"
+#include "bn_sprite_items_card_bad_luck.h"
+#include "bn_sprite_items_card_debt.h"
+#include "bn_sprite_items_card_spore_mind.h"
+#include "bn_sprite_items_card_guilty.h"
+#include "bn_sprite_items_card_unmovable.h"
+#include "bn_sprite_items_card_colossus.h"
+#include "bn_sprite_items_card_cruelty.h"
+#include "bn_sprite_items_card_hand_of_greed.h"
+#include "bn_sprite_items_card_alchemize.h"
+#include "bn_sprite_items_card_the_gambit.h"
+#include "bn_sprite_items_card_seeker_strike.h"
+#include "bn_sprite_items_card_primal_force.h"
+#include "bn_sprite_items_card_entropy.h"
+#include "bn_sprite_items_card_splash.h"
+#include "bn_sprite_items_card_mad_science_ironclad.h"
+#include "bn_sprite_items_card_discovery.h"
+#include "bn_sprite_items_card_abundance.h"
+#include "bn_sprite_items_card_hidden_gem.h"
+#include "bn_sprite_items_card_infection.h"
+#include "bn_sprite_items_card_frantic_escape.h"
+#include "bn_sprite_items_card_beckon.h"
+#include "bn_sprite_items_card_wither.h"
 
 namespace gba::card_art
 {
@@ -2678,6 +3168,74 @@ namespace gba::card_art
         return &bn::sprite_items::card_infernal_blade;
     case engine::CardId::STOKE:
         return &bn::sprite_items::card_stoke;
+    case engine::CardId::INJURY:
+        return &bn::sprite_items::card_injury;
+    case engine::CardId::GREED:
+        return &bn::sprite_items::card_greed;
+    case engine::CardId::CLUMSY:
+        return &bn::sprite_items::card_clumsy;
+    case engine::CardId::ASCENDERS_BANE:
+        return &bn::sprite_items::card_ascenders_bane;
+    case engine::CardId::CURSE_OF_THE_BELL:
+        return &bn::sprite_items::card_curse_of_the_bell;
+    case engine::CardId::POOR_SLEEP:
+        return &bn::sprite_items::card_poor_sleep;
+    case engine::CardId::WRITHE:
+        return &bn::sprite_items::card_writhe;
+    case engine::CardId::NORMALITY:
+        return &bn::sprite_items::card_normality;
+    case engine::CardId::DOUBT:
+        return &bn::sprite_items::card_doubt;
+    case engine::CardId::SHAME:
+        return &bn::sprite_items::card_shame;
+    case engine::CardId::DECAY:
+        return &bn::sprite_items::card_decay;
+    case engine::CardId::REGRET:
+        return &bn::sprite_items::card_regret;
+    case engine::CardId::BAD_LUCK:
+        return &bn::sprite_items::card_bad_luck;
+    case engine::CardId::DEBT:
+        return &bn::sprite_items::card_debt;
+    case engine::CardId::SPORE_MIND:
+        return &bn::sprite_items::card_spore_mind;
+    case engine::CardId::GUILTY:
+        return &bn::sprite_items::card_guilty;
+    case engine::CardId::UNMOVABLE:
+        return &bn::sprite_items::card_unmovable;
+    case engine::CardId::COLOSSUS:
+        return &bn::sprite_items::card_colossus;
+    case engine::CardId::CRUELTY:
+        return &bn::sprite_items::card_cruelty;
+    case engine::CardId::HAND_OF_GREED:
+        return &bn::sprite_items::card_hand_of_greed;
+    case engine::CardId::ALCHEMIZE:
+        return &bn::sprite_items::card_alchemize;
+    case engine::CardId::THE_GAMBIT:
+        return &bn::sprite_items::card_the_gambit;
+    case engine::CardId::SEEKER_STRIKE:
+        return &bn::sprite_items::card_seeker_strike;
+    case engine::CardId::PRIMAL_FORCE:
+        return &bn::sprite_items::card_primal_force;
+    case engine::CardId::ENTROPY:
+        return &bn::sprite_items::card_entropy;
+    case engine::CardId::SPLASH:
+        return &bn::sprite_items::card_splash;
+    case engine::CardId::MAD_SCIENCE:
+        return &bn::sprite_items::card_mad_science_ironclad;
+    case engine::CardId::DISCOVERY:
+        return &bn::sprite_items::card_discovery;
+    case engine::CardId::ABUNDANCE:
+        return &bn::sprite_items::card_abundance;
+    case engine::CardId::HIDDEN_GEM:
+        return &bn::sprite_items::card_hidden_gem;
+    case engine::CardId::INFECTION:
+        return &bn::sprite_items::card_infection;
+    case engine::CardId::FRANTIC_ESCAPE:
+        return &bn::sprite_items::card_frantic_escape;
+    case engine::CardId::BECKON:
+        return &bn::sprite_items::card_beckon;
+    case engine::CardId::WITHER:
+        return &bn::sprite_items::card_wither;
     default:
         return nullptr;
     }
@@ -2709,7 +3267,10 @@ constexpr uint16_t SHEET_SLOT[] = {
     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
     132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
     152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 165, 166,
+    0, 0, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 183, 184, 185, 0, 0, 0, 0, 186, 0, 0, 0,
+    187, 188, 189, 190, 0, 191, 192, 193, 0, 194, 195, 0, 0, 0, 0, 0, 0, 196, 0, 0,
+    0, 0, 197, 198, 199, 200,
 };
 
 // CARDS in build_gba_art.py mirrors engine::CardId: a card added on one side only stops the build here.

@@ -7,6 +7,7 @@
 #include "bn_sprite_item.h"
 #include "bn_string_view.h"
 
+#include "engine/ancient.h"
 #include "engine/card.h"
 #include "engine/character.h"
 #include "engine/entity.h"
@@ -45,6 +46,9 @@ struct EnemyArt
 [[nodiscard]] EnemyArt enemy_art(engine::EnemyType type);
 
 [[nodiscard]] const bn::regular_bg_item& event_bg(std::string_view event_id);
+
+// 64x64 portrait of an Ancient (graphics/ancients).
+[[nodiscard]] const bn::sprite_item& ancient_portrait(engine::AncientId id);
 
 // Top-left aligned position for a 256xN regular BG showing its first 240x160 pixels.
 constexpr int BG_ORIGIN_X = 8;

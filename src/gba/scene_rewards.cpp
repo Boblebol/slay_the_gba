@@ -228,18 +228,20 @@ private:
     int _loot_cursor = 0;
     int _belt_cursor = 0;
 
-    // Leaving the screen after a boss opens the next act, announced on its map.
+    // Leaving the screen after a boss opens the next act: its Ancient comes first.
     [[nodiscard]] SceneId _leave()
     {
         engine::RunManager& run = _ctx.run;
 
         if(run.phase == engine::RunPhase::ANCIENT_BLESSING)
         {
-            run.phase = engine::RunPhase::MAP_NAVIGATION;
-            _ctx.nav.reset_to_player_floor();
-            _ctx.map_toast.clear();
-            bn::ostringstream stream(_ctx.map_toast);
-            stream << "ACTE " << int(run.current_act) << " : l'ascension continue !";
+            return SceneId::ANCIENT;
+        }
+
+        // The Hunt: more cards are offered.
+        if(run.phase == engine::RunPhase::REWARD_SCREEN)
+        {
+            return SceneId::REWARDS;
         }
 
         return SceneId::MAP;
@@ -338,7 +340,12 @@ private:
 
     void _loot_taken()
     {
-        _loot.erase(_loot.begin() + _loot_cursor);
+        // Black Star: once a relic is taken, the next one takes its place.
+        if(_loot[_loot_cursor] != Loot::RELIC || _ctx.run.relic_reward.empty())
+        {
+            _loot.erase(_loot.begin() + _loot_cursor);
+        }
+
         _loot_cursor = 0;
 
         if(_loot.empty())
@@ -446,7 +453,7 @@ private:
         }
 
         stream << ")";
-        _name.set(0, 46, header, Align::CENTER, TextColor::GOLD);
+        _name.set(0, 46, header, Align::CENTER, is_enchanted(card) ? TextColor::PURPLE : TextColor::GOLD);
 
         card_description(card, text);
         bn::vector<TextLine, 2> lines;

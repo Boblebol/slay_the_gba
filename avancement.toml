@@ -37,7 +37,7 @@ items = [
   { name = "Pioche supplémentaire (Salto arrière)", status = "oui" },
   { name = "Défausse au choix (Survivant, Acrobaties)", status = "oui" },
   { name = "Surins : attaques à 0 énergie créées en combat", status = "oui" },
-  { name = "Ruse : carte jouée gratuitement quand elle est défaussée", status = "non", issue = 73 },
+  { name = "Ruse : carte jouée gratuitement quand elle est défaussée", status = "oui", issue = 73 },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
 ]
 
@@ -51,7 +51,7 @@ items = [
   { name = "Orbe glaciaire : 2 d'Armure en fin de tour, 5 à l'Activation", status = "oui" },
   { name = "Orbe ténébreux : se charge de 6 par tour, libère sa charge", status = "oui" },
   { name = "Orbe plasmique : 1 énergie par tour, 2 à l'Activation", status = "oui" },
-  { name = "Orbe vitreux", status = "non", issue = 99 },
+  { name = "Orbe vitreux", status = "oui", issue = 99 },
   { name = "Focalisation : renforce tous les Orbes", status = "oui" },
   { name = "Emplacements d'Orbe variables (Condensateur)", status = "oui" },
   { name = "Compteur d'Orbes affiché en combat", status = "oui" },
@@ -65,7 +65,7 @@ items = [
   { name = "Étoiles : seconde ressource gagnée par les cartes", status = "oui" },
   { name = "Cartes à coût en Étoiles", status = "oui" },
   { name = "Forger la Lame souveraine", status = "oui", issue = 102 },
-  { name = "Sbires (Frappe de sbire, Sbire en piqué)", status = "non", issue = 103 },
+  { name = "Sbires (Frappe de sbire, Sbire en piqué)", status = "oui", issue = 103 },
   { name = "Compteur d'Étoiles affiché en combat", status = "oui" },
   { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
 ]
@@ -96,22 +96,25 @@ items = [
   { name = "Armure remise à zéro au début du tour", status = "oui" },
   { name = "Jusqu'à 3 ennemis par combat, avec ciblage", status = "oui" },
   { name = "Intentions ennemies affichées", status = "oui" },
+  { name = "Invocations ennemies en cours de combat, Sbires qui fuient sans leur chef", status = "oui", issue = 221 },
   { name = "Calcul des dégâts (Force, Affaibli, Vulnérable)", status = "oui" },
+  { name = "Modificateurs en pourcentage : dégâts (+25 %, +50 %, double), Armure doublée, Vulnérable et Affaibli renforcés", status = "oui", issue = 89 },
+  { name = "Effets qui dépassent le combat : or, potion, récompense de carte, retrait de carte du deck", status = "oui", issue = 94 },
   { name = "Attaques de zone et attaques en plusieurs coups", status = "oui" },
   { name = "Cartes qui font piocher", status = "oui" },
   { name = "Amélioration de cartes pendant le combat", status = "oui" },
   { name = "Cartes Pouvoir : restent en jeu jusqu'à la fin du combat", status = "oui" },
   { name = "Choix de cartes en main (défausser, épuiser, améliorer, remettre sur la Pioche)", status = "oui" },
   { name = "Choix de cartes dans la Pioche ou la Défausse", status = "oui" },
-  { name = "Choix d'une carte parmi 3 propositions (Découverte, etc.)", status = "non", issue = 72 },
+  { name = "Choix d'une carte parmi 3 propositions (Découverte, etc.)", status = "oui", issue = 72 },
   { name = "Cartes à coût X", status = "oui" },
-  { name = "Écho : rejouer une carte", status = "partiel", issue = 86 },
+  { name = "Écho : rejouer une carte", status = "oui", issue = 86 },
   { name = "Cartes jouées automatiquement (Pioche, pile d'épuisement, fin de tour)", status = "oui" },
   { name = "Coûts modifiés pendant le tour ou le combat", status = "oui" },
   { name = "Cartes évolutives : bonus et coût propres à chaque exemplaire", status = "oui" },
   { name = "Cartes Statut ajoutées à la main, la Pioche ou la Défausse", status = "oui" },
   { name = "Coup de grâce : effet quand la carte tue un ennemi", status = "oui" },
-  { name = "Transformer une carte", status = "non", issue = 79 },
+  { name = "Transformer une carte", status = "oui", issue = 79 },
 ]
 
 [[category]]
@@ -133,7 +136,9 @@ items = [
   { name = "Vigueur", status = "oui", issue = 93 },
   { name = "Fatalité", status = "oui" },
   { name = "Désorienté", status = "oui", issue = 93 },
-  { name = "Sables mouvants (L'Insatiable)", status = "non", issue = 245 },
+  { name = "Sables mouvants (L'Insatiable)", status = "oui", issue = 245 },
+  { name = "Cavalcade (Cerf Auguste)", status = "oui", issue = 230 },
+  { name = "Résonnant (Cerf Auguste)", status = "oui", issue = 230 },
 ]
 
 [[category]]
@@ -144,28 +149,28 @@ items = [
   { name = "Éthéré", status = "oui" },
   { name = "Inné", status = "oui" },
   { name = "Retenue", status = "oui" },
-  { name = "Ruse", status = "non", issue = 73 },
+  { name = "Ruse", status = "oui", issue = 73 },
   { name = "Injouable", status = "oui" },
-  { name = "Éternel", status = "non", issue = 95 },
+  { name = "Éternel", status = "oui", issue = 95 },
 ]
 
 [[category]]
 section = "regles"
 title = "Enchantements"
 items = [
-  { name = "Adroit", status = "non", issue = 107 },
-  { name = "Agilité", status = "non", issue = 107 },
-  { name = "Braise de Tezcatara", status = "non", issue = 107 },
-  { name = "Célérité", status = "non", issue = 107 },
-  { name = "Clonage", status = "non", issue = 107 },
-  { name = "Élan", status = "non", issue = 107 },
-  { name = "Encrée", status = "non", issue = 107 },
-  { name = "Glamour", status = "non", issue = 107 },
-  { name = "Imprégnation", status = "non", issue = 107 },
-  { name = "Instinct", status = "non", issue = 107 },
-  { name = "Sceau royal", status = "non", issue = 107 },
-  { name = "Tranchant", status = "non", issue = 107 },
-  { name = "Viscosité", status = "non", issue = 107 },
+  { name = "Adroit", status = "oui", issue = 107 },
+  { name = "Agilité", status = "oui", issue = 107 },
+  { name = "Braise de Tezcatara", status = "oui", issue = 107 },
+  { name = "Célérité", status = "oui", issue = 107 },
+  { name = "Clonage", status = "oui", issue = 107 },
+  { name = "Élan", status = "oui", issue = 107 },
+  { name = "Encrée", status = "oui", issue = 107 },
+  { name = "Glamour", status = "oui", issue = 107 },
+  { name = "Imprégnation", status = "oui", issue = 107 },
+  { name = "Instinct", status = "oui", issue = 107 },
+  { name = "Sceau royal", status = "oui", issue = 107 },
+  { name = "Tranchant", status = "oui", issue = 107 },
+  { name = "Viscosité", status = "oui", issue = 107 },
 ]
 
 # ---------------------------------------------------------------------------------------------------------
@@ -182,7 +187,7 @@ items = [
   { name = "Rencontres propres à chaque acte (81 rencontres du jeu d'origine)", status = "partiel", issue = 225, note = "Tables par acte et par salle (faible, normale, élite, boss), acte 1 en variante A ou B : 5 rencontres d'origine jouables, les anciens groupes ailleurs." },
   { name = "Un boss différent par acte", status = "non", issue = 36 },
   { name = "Neow en début de partie", status = "non", issue = 6 },
-  { name = "Bénédiction d'un Ancien entre les actes", status = "non", issue = 261, note = "La phase existe dans le moteur mais elle est sautée." },
+  { name = "Bénédiction d'un Ancien entre les actes", status = "oui", issue = 261, note = "Au début des actes 2 et 3, un Ancien de l'acte (Darv à tout acte) propose 3 reliques, une à prendre. Les reliques dont l'effet manque ne sont pas proposées." },
 ]
 
 [[category]]
@@ -194,8 +199,8 @@ items = [
   { name = "Coffre : or et relique jamais en double", status = "oui" },
   { name = "Potion en récompense de combat", status = "oui", note = "40 % des combats, tirée par rareté parmi les potions que le moteur résout. Ceinture pleine : en jeter une ou la laisser." },
   { name = "Relique après un élite", status = "oui", note = "Tirée par rareté, jamais en double, jamais celle d'un autre héros." },
-  { name = "Relique de boss", status = "partiel", issue = 184, note = "Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. Les reliques d'Ancien du jeu d'origine restent à faire." },
-  { name = "Cartes rares et peu communes selon la salle", status = "non", issue = 67 },
+  { name = "Relique de boss", status = "oui", issue = 184, note = "Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2." },
+  { name = "Cartes rares et peu communes selon la salle", status = "oui", note = "Chaque carte tire sa rareté : 60 / 37 / 3 % après un combat, 50 / 40 / 10 % après un élite, que des Rares après un boss. Pool bâti depuis les cartes du héros." },
 ]
 
 [[category]]
@@ -215,8 +220,8 @@ items = [
   { name = "Retrait d'une carte, à coût croissant", status = "oui" },
   { name = "Achat de reliques", status = "oui", note = "Rayon des reliques, touches L et R : deux reliques tirées par rareté et une relique du marchand." },
   { name = "Achat de potions", status = "oui", note = "Rayon des potions, touches L et R. Ceinture pleine : la potion achetée en remplace une." },
-  { name = "Inventaire tiré au hasard à chaque visite", status = "partiel", issue = 270, note = "Reliques et potions tirées au hasard ; trois cartes fixes par héros." },
-  { name = "Prix selon la rareté, carte en solde", status = "partiel", issue = 270, note = "Reliques et potions au prix de leur rareté, à 5 % près ; cartes à prix fixe, sans solde." },
+  { name = "Inventaire tiré au hasard à chaque visite", status = "oui", note = "Cinq cartes du héros et deux cartes incolores tirées par rareté, trois reliques et trois potions, depuis la graine de la partie. L écran montre les trois premières cartes." },
+  { name = "Prix selon la rareté, carte en solde", status = "oui", note = "Cartes, reliques et potions au prix de leur rareté, à 5 % près ; une carte du héros à moitié prix." },
 ]
 
 [[category]]
@@ -236,8 +241,8 @@ items = [
   { name = "A5 : soin réduit après un boss", status = "oui", issue = 29 },
   { name = "A6 : départ avec 10 % de PV en moins", status = "oui", issue = 29 },
   { name = "A7 à A9 : PV accrus des monstres, élites et boss", status = "oui", issue = 29 },
-  { name = "A10 : malédiction Fléau de l'ascendant dans le deck de départ", status = "non", issue = 40 },
-  { name = "Choix du niveau d'Ascension sur GBA", status = "non", issue = 272, note = "Toutes les parties démarrent en Ascension 0." },
+  { name = "A10 : malédiction Fléau de l'ascendant dans le deck de départ", status = "oui", issue = 40 },
+  { name = "Choix du niveau d'Ascension sur GBA", status = "oui", issue = 272, note = "Après la teinte : choix du niveau 0 à celui débloqué par le héros ; le niveau est rappelé sur la carte." },
 ]
 
 [[category]]
@@ -247,7 +252,7 @@ items = [
   { name = "Sauvegarde automatique de la partie sur la cartouche (SRAM)", status = "oui", issue = 13 },
   { name = "Reprise avec « Continuer » à l'écran titre", status = "oui", issue = 13 },
   { name = "Volumes de la musique et des effets conservés", status = "oui", issue = 13 },
-  { name = "Statistiques et Compendium (cartes, reliques, monstres rencontrés)", status = "non", issue = 273, note = "Écrans prévus dans le moteur, sans interface sur GBA." },
+  { name = "Statistiques et Compendium (cartes, reliques, monstres rencontrés)", status = "oui", issue = 273 },
 ]
 
 # ---------------------------------------------------------------------------------------------------------
@@ -272,13 +277,13 @@ items = [
   { name = "Indicateurs de vie, d'armure et de progression", status = "partiel", issue = 20 },
   { name = "Transitions entre les scènes", status = "partiel", issue = 18 },
   { name = "Système de dialogue et d'évènements textuels", status = "partiel", issue = 19 },
-  { name = "Options (volume, commandes)", status = "non", issue = 21 },
+  { name = "Options (volume, commandes)", status = "oui" },
   { name = "Menu pause en combat et sur la carte", status = "non", issue = 10 },
   { name = "Menu principal interactif", status = "non", issue = 9 },
   { name = "Écran titre animé (nuages, tour, brume)", status = "non", issue = 7 },
   { name = "Écran titre propre à chaque édition", status = "non", issue = 3 },
   { name = "Crédits et cinématique d'introduction", status = "non", issue = 1 },
-  { name = "Crédits de fin", status = "non", issue = 22 },
+  { name = "Crédits de fin", status = "oui", issue = 22 },
 ]
 
 [[category]]
@@ -312,7 +317,6 @@ items = [
 [overrides.potions]
 
 [overrides.monsters]
-CEREMONIAL_BEAST = { status = "partiel", issue = 36, note = "150 PV et trois attaques simplifiées, contre 252 PV et six attaques dans le jeu d'origine." }
 
 [overrides.events]
 ABYSSAL_BATHS = { status = "partiel", note = "Récit raccourci et choix réinventés pour la GBA." }

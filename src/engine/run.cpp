@@ -1,7 +1,10 @@
 #include "engine/run.h"
 #include "engine/relic.h"
 #include "engine/encounter.h"
+#include "engine/card_meta.h"
 #include "engine/rewards.h"
+#include "engine/potion.h"
+#include "engine/ancient.h"
 #include <algorithm>
 
 namespace engine {
@@ -20,9 +23,38 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
     { "MEAT_CLEAVER", CampfireAction::COOK }
 };
 
+// Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
+// list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
+constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
+    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "DOWSING_ROD", "SEA_GLASS", "DRIFTWOOD",
+    "ARCHAIC_TOOTH", "PAELS_WING", "TOY_BOX", "FUR_COAT",
+};
+
+bool ancient_relic_pending(std::string_view relic_id) {
+    for (std::string_view pending : ANCIENT_RELICS_PENDING) {
+        if (pending == relic_id) return true;
+    }
+    return false;
+}
+
+// Mixed into the seed of the act's first room so the Ancient has a stream of its own (see RunManager::meet_ancient).
+constexpr uint32_t ANCIENT_SEED_SALT = 0xA5C1E7D3u;
+
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+// Nutritious Soup: the extra damage Tezcatara's Ember gives each enchanted Strike.
+constexpr uint8_t NUTRITIOUS_SOUP_EMBER_DAMAGE = 3;
+constexpr int THE_COURIER_DISCOUNT = 20;
 constexpr int COOK_REMOVALS = 2; // cards removed by Cook (Meat Cleaver)
 constexpr int COOK_MAX_HP = 5;   // Max HP given by Cook
+constexpr int LAVA_ROCK_RELICS = 2; // relics the Act 1 Boss gives to Lava Rock when defeated
+constexpr uint8_t GIRYA_LIFTS = 3;  // most Strength Girya gives, one lift each
+constexpr int16_t MAW_BANK_GOLD = 12; // Gold Maw Bank gives on each floor climbed, until the merchant gets some
+constexpr uint8_t WONGOS_MYSTERY_TICKET_COMBATS = 5; // fights won before the Ticket pays out
+constexpr int WONGOS_MYSTERY_TICKET_RELICS = 3;      // random relics the Ticket pays out, once
+// Silver Crucible keeps its state in its relic counter: the card rewards upgraded so far (low bits, up to 3),
+// and the flag of the first Treasure Chest opened.
+constexpr uint8_t SILVER_CRUCIBLE_REWARDS = 3;
+constexpr uint8_t SILVER_CRUCIBLE_CHEST_OPENED = 4;
 
 constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 0, "Normal", "Difficulté standard de l'Ascension." },
@@ -37,6 +69,22 @@ constexpr AscensionModifier ASCENSION_MODIFIERS[] = {
     { 9, "Boss Colossaux", "Les Boss ont plus de PV." },
     { 10, "Fléau de l'Ascension", "Vous commencez la tentative avec une malédiction inépuisable dans votre deck." }
 };
+
+// Hand-written search: string_view::find calls memchr and substr can throw, neither links in the GBA build.
+bool contains(std::string_view text, std::string_view word) {
+    for (size_t start = 0; start + word.size() <= text.size(); ++start) {
+        size_t i = 0;
+        while (i < word.size() && text[start + i] == word[i]) ++i;
+        if (i == word.size()) return true;
+    }
+    return false;
+}
+
+// Strikes and Defends, by their English name (Perfected Strike, Ultimate Defend...).
+bool is_strike_or_defend(CardId id) {
+    const std::string_view name = CardDef::get(id).name;
+    return contains(name, "Strike") || contains(name, "Defend");
+}
 
 } // namespace
 
@@ -56,6 +104,8 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     current_node_index = -1;
     current_encounter = {};
     cook_pending = false;
+    current_ancient = AncientId::COUNT;
+    ancient_offers.clear();
     rng_state_ = seed ? seed : 12345;
 
     const auto& cdef = get_character(character);
@@ -89,6 +139,8 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
             master_deck.push_back(cid);
         }
     }
+    // Ascension 10: an unremovable curse that is unplayable and Ethereal joins the starting deck.
+    if (ascension_level >= 10) master_deck.push_back(DeckCard(CardId::ASCENDERS_BANE, false));
 
     // Starting relic
     relics.clear();
@@ -112,18 +164,29 @@ FixedVector<int, 3> RunManager::get_available_rooms() const {
     return map.get_next_nodes(current_node_index);
 }
 
-FixedVector<EnemyType, 3> RunManager::draw_encounter(RoomType room) {
+FixedVector<EnemyType, MAX_ENEMIES> RunManager::draw_encounter(RoomType room) {
     std::span<const Encounter> table = encounter_table(act_zone(current_act, map_seed),
                                                        encounter_tier(room, current_floor));
     // A list of one draws nothing, as the rooms with a single choice did before the tables.
     // The high bits: the low ones of two draws in a row are too alike, and would tie the monsters drawn
     // from a pool to the encounter picked.
-    const Encounter& encounter = table.size() == 1 ? table[0] : table[(next_random() >> 16) % table.size()];
+    // Never the encounter of the previous fight: it is left out of the draw when this list holds it.
+    size_t previous = table.size();
+    for (size_t i = 0; i < table.size(); ++i) {
+        if (table[i].id == current_encounter) previous = i;
+    }
+    size_t index = 0;
+    if (table.size() > 1) {
+        const bool skips = previous < table.size();
+        index = (next_random() >> 16) % (skips ? table.size() - 1 : table.size());
+        if (skips && index >= previous) ++index;
+    }
+    const Encounter& encounter = table[index];
     current_encounter = encounter.id;
 
-    FixedVector<EnemyType, 3> monsters;
+    FixedVector<EnemyType, MAX_ENEMIES> monsters;
     if (encounter.random_pool.empty()) {
-        for (uint8_t i = 0; i < encounter.count && i < 3; ++i) {
+        for (uint8_t i = 0; i < encounter.count && i < MAX_ENEMIES; ++i) {
             monsters.push_back(encounter.monsters[i]);
         }
         return monsters;
@@ -147,13 +210,15 @@ void RunManager::enter_room(int node_index) {
     const auto& node = map.nodes[node_index];
     current_floor = node.floor + 1;
     on_room_entered(node.type);
+    // Maw Bank: each floor climbed gives Gold, until the run spends some at the merchant (counter set to 1).
+    if (has_relic("MAW_BANK") && relic_counter("MAW_BANK") == 0) gain_gold(MAW_BANK_GOLD);
 
     switch (node.type) {
         case RoomType::MONSTER:
         case RoomType::ELITE:
         case RoomType::BOSS: {
             phase = RunPhase::IN_COMBAT;
-            FixedVector<EnemyType, 3> etypes = draw_encounter(node.type);
+            FixedVector<EnemyType, MAX_ENEMIES> etypes = draw_encounter(node.type);
 
             // Start combat with current HP and master deck
             combat.start_combat_multi(etypes, character);
@@ -161,18 +226,10 @@ void RunManager::enter_room(int node_index) {
             combat.player.max_hp = max_hp;
 
             // Ascension: tougher and harder-hitting enemies depending on the room.
-            int16_t hp_percent = get_enemy_hp_multiplier(node.type);
-            int16_t damage_percent = get_enemy_damage_multiplier(node.type);
-            for (Enemy& foe : combat.enemies) {
-                if (foe.ascension_hp() > 0) {
-                    // A monster with its own Ascension values takes them instead of the percentages.
-                    foe.ascend(hp_percent > 100, damage_percent > 100);
-                    continue;
-                }
-                foe.max_hp = static_cast<int16_t>(foe.max_hp * hp_percent / 100);
-                foe.hp = foe.max_hp;
-                foe.damage_percent = damage_percent;
-            }
+            // The enemies summoned during the fight get the same.
+            combat.enemy_hp_percent = get_enemy_hp_multiplier(node.type);
+            combat.enemy_damage_percent = get_enemy_damage_multiplier(node.type);
+            for (Enemy& foe : combat.enemies) foe.apply_ascension(combat.enemy_hp_percent, combat.enemy_damage_percent);
             combat.plan_enemies(); // the moves follow the Ascension values just given
 
             // Replace combat piles with current master deck
@@ -183,6 +240,8 @@ void RunManager::enter_room(int node_index) {
             for (size_t i = 0; i < master_deck.size(); ++i) {
                 DeckCard card = master_deck[i];
                 card.deck_index = static_cast<uint8_t>(i);
+                // Ghost Seed: the Strikes and Defends of the fight are Ethereal.
+                if (has_relic("GHOST_SEED") && is_strike_or_defend(card.id)) card.added_keywords |= KEYWORD_ETHEREAL;
                 combat.draw_pile.push_back(card);
             }
             combat.shuffle_draw_pile();
@@ -197,7 +256,13 @@ void RunManager::enter_room(int node_index) {
             break;
         case RoomType::TREASURE: {
             gain_gold(50);
-            last_treasure_relic = draw_treasure_relic();
+            last_treasure_relic = {};
+            // Silver Crucible: the first Treasure Chest opened is empty.
+            if (has_relic("SILVER_CRUCIBLE") && (relic_counter("SILVER_CRUCIBLE") & SILVER_CRUCIBLE_CHEST_OPENED) == 0) {
+                set_relic_counter("SILVER_CRUCIBLE", static_cast<uint8_t>(relic_counter("SILVER_CRUCIBLE") | SILVER_CRUCIBLE_CHEST_OPENED));
+            } else {
+                last_treasure_relic = draw_treasure_relic();
+            }
             if (!last_treasure_relic.empty()) {
                 add_relic(last_treasure_relic);
             }
@@ -216,23 +281,61 @@ void RunManager::enter_room(int node_index) {
     }
 }
 
-FixedVector<CampfireAction, 5> RunManager::campfire_actions() const {
-    FixedVector<CampfireAction, 5> actions;
+FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> RunManager::campfire_actions() const {
+    FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> actions;
     actions.push_back(CampfireAction::REST);
     actions.push_back(CampfireAction::SMITH);
     for (const CampfireRelic& entry : CAMPFIRE_RELICS) {
         if (has_relic(entry.relic_id)) actions.push_back(entry.action);
     }
+    // Clone: offered while a card of the deck is enchanted with it.
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (master_deck[i].enchantment == Enchantment::CLONE) {
+            actions.push_back(CampfireAction::CLONE);
+            break;
+        }
+    }
     return actions;
+}
+
+bool RunManager::can_clone(int deck_index) const {
+    return deck_index >= 0 && static_cast<size_t>(deck_index) < master_deck.size() &&
+           master_deck[deck_index].enchantment == Enchantment::CLONE && master_deck.size() < master_deck.capacity();
+}
+
+bool RunManager::clone_at_campfire(int deck_index) {
+    if (!can_clone(deck_index)) return false;
+    // The copy is the same card, enchantment included.
+    if (!add_card_to_deck(master_deck[deck_index])) return false;
+    phase = RunPhase::MAP_NAVIGATION;
+    return true;
+}
+
+bool RunManager::enchant_card_in_deck(int deck_index, Enchantment enchantment, uint8_t amount) {
+    if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
+    DeckCard& card = master_deck[deck_index];
+    if (!can_enchant(card, enchantment)) return false;
+    card.enchantment = enchantment;
+    card.enchant_amount = amount;
+    return true;
 }
 
 void RunManager::rest_at_campfire() {
     if (can_rest()) {
         int16_t heal_amount = max_hp * 3 / 10;
+        // Regal Pillow: each Rest heals 15 more HP.
+        if (has_relic("REGAL_PILLOW")) heal_amount += 15;
         hp = std::min<int16_t>(max_hp, hp + heal_amount);
     }
     on_rested();
     phase = RunPhase::MAP_NAVIGATION;
+    // Dream Catcher: after a Rest, one set of cards is offered for the deck (the player may skip it).
+    if (has_relic("DREAM_CATCHER")) {
+        card_rewards_upgraded = false; // the Lava Lamp upgrade belongs to the fight's rewards only
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng);
+        phase = RunPhase::REWARD_SCREEN;
+    }
 }
 
 bool RunManager::can_rest() const {
@@ -256,10 +359,24 @@ bool RunManager::cook_at_campfire() {
     return true;
 }
 
+bool RunManager::lift_at_campfire() {
+    if (!has_relic("GIRYA") || relic_counter("GIRYA") >= GIRYA_LIFTS) return false;
+    set_relic_counter("GIRYA", static_cast<uint8_t>(relic_counter("GIRYA") + 1));
+    phase = RunPhase::MAP_NAVIGATION;
+    return true;
+}
+
 void RunManager::finish_cook() {
     if (!cook_pending || has_deck_choice()) return;
     cook_pending = false;
     gain_max_hp(COOK_MAX_HP);
+}
+
+bool RunManager::dig_at_campfire() {
+    if (!has_relic("SHOVEL")) return false;
+    if (gain_random_relics(1) == 0) return false;
+    phase = RunPhase::MAP_NAVIGATION;
+    return true;
 }
 
 bool RunManager::can_smith() const {
@@ -301,28 +418,84 @@ void RunManager::open_shop() {
     on_shop_opened();
 }
 
+// Maw Bank: the first Gold spent at the merchant ends its effect for the rest of the run.
+static void stop_maw_bank_if_spent(RunManager& run, int16_t gold_before) {
+    if (run.gold < gold_before && run.has_relic("MAW_BANK")) run.set_relic_counter("MAW_BANK", 1);
+}
+
 bool RunManager::buy_shop_card(int index) {
-    return current_shop.buy_card(*this, index);
+    const int16_t gold_before = gold;
+    if (!current_shop.buy_card(*this, index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
+    // The Courier: the card bought is back on the shelf at once.
+    if (has_relic("THE_COURIER")) current_shop.cards[index].purchased = false;
+    return true;
 }
 
 bool RunManager::buy_shop_relic(int index) {
-    return current_shop.buy_relic(*this, index);
+    const int16_t gold_before = gold;
+    if (!current_shop.buy_relic(*this, index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
+    // The Courier: the relic bought is replaced by another one, priced after the discounts in force.
+    if (has_relic("THE_COURIER")) {
+        RewardRng rng(next_random());
+        FixedVector<std::string_view, 3> stocked;
+        for (const ShopRelic& item : current_shop.relics) {
+            if (&item != &current_shop.relics[index]) stocked.push_back(item.relic_id);
+        }
+        std::string_view id = draw_relic(rng, character, RelicSource::SHOP, std::span<const std::string_view>(relics.begin(), relics.size()),
+                                         std::span<const std::string_view>(stocked.begin(), stocked.size()));
+        if (!id.empty()) {
+            int cost = vary_price(rng, relic_base_price(find_relic(id)->rarity));
+            cost = (cost * (100 - THE_COURIER_DISCOUNT) + 50) / 100;
+            if (has_relic("MEMBERSHIP_CARD")) cost = (cost * (100 - MEMBERSHIP_CARD_DISCOUNT) + 50) / 100;
+            current_shop.relics[index] = ShopRelic{ id, static_cast<int16_t>(cost), false };
+        }
+    }
+    return true;
 }
 
 bool RunManager::buy_shop_potion(int index, int replace_index) {
-    return current_shop.buy_potion(*this, index, replace_index);
+    const int16_t gold_before = gold;
+    if (!current_shop.buy_potion(*this, index, replace_index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
+    // The Courier: the potion bought is replaced by another one, priced after the discounts in force.
+    if (has_relic("THE_COURIER")) {
+        RewardRng rng(next_random());
+        FixedVector<std::string_view, 3> stocked;
+        for (const ShopPotion& item : current_shop.potions) {
+            if (&item != &current_shop.potions[index]) stocked.push_back(item.potion_id);
+        }
+        std::string_view id = draw_potion(rng, character, std::span<const std::string_view>(stocked.begin(), stocked.size()));
+        if (!id.empty()) {
+            int cost = vary_price(rng, potion_base_price(find_potion(id)->rarity));
+            cost = (cost * (100 - THE_COURIER_DISCOUNT) + 50) / 100;
+            if (has_relic("MEMBERSHIP_CARD")) cost = (cost * (100 - MEMBERSHIP_CARD_DISCOUNT) + 50) / 100;
+            current_shop.potions[index] = ShopPotion{ id, static_cast<int16_t>(cost), false };
+        }
+    }
+    return true;
 }
 
 bool RunManager::use_potion(int index, int target_index) {
     if (phase != RunPhase::IN_COMBAT) return false;
     if (index < 0 || static_cast<size_t>(index) >= potions.size()) return false;
+    if (potions[index] == "FAIRY_IN_A_BOTTLE") return false; // automatic: triggers by itself when HP reaches 0
     if (!combat.use_potion(potions[index], target_index)) return false;
     potions.erase(index);
+    refresh_belt_buckle();
+    if (combat.fill_potion_belt) {
+        combat.fill_potion_belt = false;
+        gain_random_potions(MAX_POTION_SLOTS); // stops once the belt is full
+    }
     return true;
 }
 
 bool RunManager::remove_card_at_shop(int deck_index) {
-    return current_shop.remove_card(*this, deck_index);
+    const int16_t gold_before = gold;
+    if (!current_shop.remove_card(*this, deck_index)) return false;
+    stop_maw_bank_if_spent(*this, gold_before);
+    return true;
 }
 
 void RunManager::leave_shop() {
@@ -342,153 +515,149 @@ bool RunManager::choose_event_choice(int choice_index, char* out_msg, size_t max
     return false;
 }
 
-std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
-    // Left out on purpose: Cleave (replaced by Thunderclap, whose art and name it borrowed) and Break (Ancient
-    // rarity: given by an Ancient, never by a combat).
-    static constexpr CardId IRONCLAD_POOL[] = { CardId::IRON_WAVE, CardId::ANGER, CardId::TWIN_STRIKE,
-                                                CardId::POMMEL_STRIKE, CardId::SHRUG_IT_OFF, CardId::TAUNT,
-                                                CardId::BODY_SLAM, CardId::THUNDERCLAP, CardId::DISMANTLE,
-                                                CardId::INFLAME, CardId::PERFECTED_STRIKE, CardId::BLUDGEON,
-                                                CardId::BULLY, CardId::SWORD_BOOMERANG, CardId::CONFLAGRATION,
-                                                CardId::EXPECT_A_FIGHT, CardId::PILLAGE, CardId::UPPERCUT,
-                                                CardId::FIGHT_ME, CardId::ASHEN_STRIKE, CardId::TREMBLE,
-                                                CardId::EVIL_EYE, CardId::MOLTEN_FIST, CardId::CINDER,
-                                                CardId::SECOND_WIND, CardId::TRUE_GRIT, CardId::DOMINATE,
-                                                CardId::FIEND_FIRE, CardId::THRASH, CardId::IMPERVIOUS,
-                                                CardId::PACTS_END, CardId::NOT_YET, CardId::BLOOD_WALL,
-                                                CardId::BLOODLETTING, CardId::BREAKTHROUGH, CardId::FORGOTTEN_RITUAL,
-                                                CardId::HEMOKINESIS, CardId::MANGLE, CardId::OFFERING,
-                                                CardId::SETUP_STRIKE, CardId::SPITE, CardId::WHIRLWIND, CardId::FEED,
-                                                CardId::BATTLE_TRANCE, CardId::FEEL_NO_PAIN, CardId::DARK_EMBRACE,
-                                                CardId::DRUM_OF_BATTLE, CardId::BARRICADE, CardId::INFERNO,
-                                                CardId::CRIMSON_MANTLE, CardId::RUPTURE, CardId::AGGRESSION,
-                                                CardId::PYRE, CardId::DEMON_FORM, CardId::JUGGERNAUT, CardId::RAGE,
-                                                CardId::VICIOUS, CardId::HOWL_FROM_BEYOND, CardId::HELLRAISER,
-                                                CardId::STAMPEDE, CardId::CASCADE, CardId::ONE_TWO_PUNCH,
-                                                CardId::TEAR_ASUNDER, CardId::HAVOC, CardId::UNRELENTING,
-                                                CardId::MIDNIGHT, CardId::STOMP, CardId::RAMPAGE, CardId::ARMAMENTS,
-                                                CardId::BRAND, CardId::BURNING_PACT,
-                                                CardId::JUGGLING,
-                                                CardId::HEADBUTT,
-                                                CardId::STONE_ARMOR, CardId::FLAME_BARRIER };
-    static constexpr CardId SILENT_POOL[] = { CardId::POISON_STAB, CardId::DEADLY_POISON, CardId::SURVIVOR,
-                                              CardId::SLICE, CardId::BACKFLIP, CardId::SUCKER_PUNCH,
-                                              CardId::DAGGER_SPRAY, CardId::DEFLECT, CardId::LEG_SWEEP, CardId::HAZE,
-                                              CardId::PRECISE_CUT, CardId::BOUNCING_FLASK, CardId::FLECHETTES,
-                                              CardId::FOOTWORK, CardId::ESCAPE_PLAN, CardId::DASH,
-                                              CardId::BUBBLE_BUBBLE, CardId::OUTBREAK, CardId::ADRENALINE,
-                                              CardId::CALCULATED_GAMBLE, CardId::MIRAGE, CardId::ANTICIPATE,
-                                              CardId::ASSASSINATE, CardId::BACKSTAB, CardId::BLUR,
-                                              CardId::DODGE_AND_ROLL, CardId::FINISHER, CardId::MALAISE,
-                                              CardId::MEMENTO_MORI, CardId::MURDER, CardId::PIERCING_WAIL,
-                                              CardId::PREDATOR, CardId::SIDESTEP, CardId::SKEWER, CardId::EXPERTISE,
-                                              CardId::SNAKEBITE, CardId::ECHOING_SLASH, CardId::GRAND_FINALE,
-                                              CardId::ACCELERANT, CardId::SPEEDSTER, CardId::ENVENOM,
-                                              CardId::SERPENT_FORM, CardId::AFTERIMAGE, CardId::WELL_LAID_PLANS,
-                                              CardId::STRANGLE, CardId::CORROSIVE_WAVE, CardId::NOXIOUS_FUMES,
-                                              CardId::BURST, CardId::BULLET_TIME, CardId::PINPOINT, CardId::POUNCE,
-                                              CardId::BLADE_DANCE, CardId::CLOAK_AND_DAGGER, CardId::LEADING_STRIKE,
-                                              CardId::BLADE_OF_INK, CardId::INFINITE_BLADES, CardId::STORM_OF_STEEL,
-                                              CardId::FAN_OF_KNIVES, CardId::PHANTOM_BLADES, CardId::ACCURACY,
-                                              CardId::UP_MY_SLEEVE, CardId::KNIFE_TRAP, CardId::ACROBATICS,
-                                              CardId::DAGGER_THROW, CardId::PREPARED, CardId::HIDDEN_DAGGERS,
-                                              CardId::EXPOSE };
-    static constexpr CardId DEFECT_POOL[] = { CardId::ZAP, CardId::DUALCAST, CardId::BEAM_CELL,
-                                              CardId::BALL_LIGHTNING, CardId::COLD_SNAP, CardId::LEAP,
-                                              CardId::COOLHEADED, CardId::SWEEPING_BEAM, CardId::SHADOW_SHIELD,
-                                              CardId::GLACIER, CardId::METEOR_STRIKE, CardId::ICE_LANCE,
-                                              CardId::SKIM, CardId::ALL_FOR_ONE, CardId::NULL_CARD,
-                                              CardId::GO_FOR_THE_EYES, CardId::SCRAPE, CardId::RAINBOW,
-                                              CardId::CHILL, CardId::FUSION, CardId::REBOOT, CardId::SUPERCRITICAL,
-                                              CardId::DOUBLE_ENERGY, CardId::BOOT_SEQUENCE, CardId::CHARGE_BATTERY,
-                                              CardId::FTL, CardId::HELIX_DRILL, CardId::LIGHTNING_ROD,
-                                              CardId::TEMPEST, CardId::SUNDER, CardId::MACHINE_LEARNING,
-                                              CardId::STORM, CardId::FERAL, CardId::SUBROUTINE, CardId::SHATTER,
-                                              CardId::VOLTAIC, CardId::BARRAGE, CardId::TESLA_COIL, CardId::CHAOS,
-                                              CardId::COMPILE_DRIVER, CardId::DARKNESS, CardId::MULTI_CAST,
-                                              CardId::LOOP, CardId::CONSUMING_SHADOW, CardId::HAILSTORM,
-                                              CardId::THUNDER, CardId::COOLANT, CardId::HOTFIX, CardId::DEFRAGMENT,
-                                              CardId::FOCUSED_STRIKE, CardId::HYPERBEAM, CardId::CAPACITOR,
-                                              CardId::BULK_UP, CardId::SYNCHRONIZE, CardId::ECHO_FORM,
-                                              CardId::SIGNAL_BOOST, CardId::UPROAR, CardId::ADAPTIVE_STRIKE,
-                                              CardId::SYNTHESIS, CardId::GENETIC_ALGORITHM, CardId::MOMENTUM_STRIKE,
-                                              CardId::CLAW, CardId::MODDED, CardId::BOOST_AWAY, CardId::FLAK_CANNON,
-                                              CardId::SMOKESTACK, CardId::COMPACT, CardId::GUNK_UP,
-                                              CardId::ITERATION, CardId::FIGHT_THROUGH, CardId::OVERCLOCK,
-                                              CardId::ROCKET_PUNCH, CardId::TRASH_TO_TREASURE, CardId::TURBO,
-                                              CardId::SCAVENGE,
-                                              CardId::HOLOGRAM,
-                                              CardId::BUFFER };
-    static constexpr CardId REGENT_POOL[] = { CardId::FALLING_STAR, CardId::VENERATE, CardId::SOLAR_STRIKE,
-                                              CardId::GATHER_LIGHT, CardId::CELESTIAL_MIGHT, CardId::CRUSH_UNDER,
-                                              CardId::GLITTERSTREAM, CardId::HEAVENLY_DRILL, CardId::HEGEMONY,
-                                              CardId::KNOW_THY_PLACE, CardId::LUNAR_BLAST, CardId::PROPHESIZE,
-                                              CardId::SUPERMASSIVE, CardId::CONVERGENCE, CardId::ALIGNMENT,
-                                              CardId::ASTRAL_PULSE, CardId::CLOAK_OF_STARS, CardId::COMET,
-                                              CardId::CRESCENT_SPEAR, CardId::DEVASTATE, CardId::DYING_STAR,
-                                              CardId::GAMMA_BLAST, CardId::GLOW, CardId::GUIDING_STAR,
-                                              CardId::HIDDEN_CACHE, CardId::PARTICLE_WALL, CardId::RADIATE,
-                                              CardId::RESONANCE, CardId::ROYAL_GAMBLE, CardId::SEVEN_STARS,
-                                              CardId::SHINING_STRIKE, CardId::STARDUST, CardId::KNOCKOUT_BLOW,
-                                              CardId::CHILD_OF_THE_STARS, CardId::GENESIS, CardId::BLACK_HOLE,
-                                              CardId::MAKE_IT_SO, CardId::PALE_BLUE_DOT, CardId::ARSENAL,
-                                              CardId::MONOLOGUE, CardId::ORBIT, CardId::PILLAR_OF_CREATION,
-                                              CardId::MONARCHS_GAZE, CardId::BOMBARDMENT, CardId::I_AM_INVINCIBLE,
-                                              CardId::VOID_FORM, CardId::KINGLY_KICK, CardId::KINGLY_PUNCH,
-                                              CardId::COLLISION_COURSE, CardId::CRASH_LANDING, CardId::PHOTON_CUT,
-                                              CardId::GLIMMER, CardId::TYRANNY,
-                                              CardId::COSMIC_INDIFFERENCE,
-                                              CardId::FOREGONE_CONCLUSION,
-                                              CardId::NEUTRON_AEGIS, CardId::REFLECT, CardId::PATTER,
-                                              CardId::TERRAFORMING,
-                                              CardId::REFINE_BLADE, CardId::SPOILS_OF_BATTLE,
-                                              CardId::WROUGHT_IN_WAR, CardId::BULWARK, CardId::CONQUEROR,
-                                              CardId::FURNACE, CardId::PARRY, CardId::SUMMON_FORTH,
-                                              CardId::BEAT_INTO_SHAPE, CardId::BIG_BANG, CardId::SEEKING_EDGE,
-                                              CardId::SWORD_SAGE, CardId::THE_SMITH,
-                                              CardId::MANIFEST_AUTHORITY };
-    static constexpr CardId NECROBINDER_POOL[] = { CardId::UNLEASH, CardId::BODYGUARD, CardId::PULL_AGGRO,
-                                                   CardId::DRAIN_POWER, CardId::BURY, CardId::MISERY,
-                                                   CardId::UNDEATH, CardId::SHARED_FATE, CardId::WISP,
-                                                   CardId::PUTREFY, CardId::REANIMATE, CardId::AFTERLIFE,
-                                                   CardId::DEATH_MARCH, CardId::DEFILE, CardId::DEFY, CardId::DELAY,
-                                                   CardId::ENFEEBLING_TOUCH, CardId::FEAR, CardId::INVOKE,
-                                                   CardId::PARSE, CardId::PULL_FROM_BELOW, CardId::REAP, CardId::SOW,
-                                                   CardId::ERADICATE, CardId::FRIENDSHIP, CardId::DANSE_MACABRE,
-                                                   CardId::DEMESNE, CardId::SPIRIT_OF_ASH, CardId::PAGESTORM,
-                                                   CardId::SLEIGHT_OF_FLESH, CardId::NEGATIVE_PULSE,
-                                                   CardId::END_OF_DAYS, CardId::BLIGHT_STRIKE, CardId::NO_ESCAPE,
-                                                   CardId::SCOURGE, CardId::DEATHBRINGER, CardId::DEATHS_DOOR,
-                                                   CardId::COUNTDOWN, CardId::REAPER_FORM, CardId::NEUROSURGE,
-                                                   CardId::TIMES_UP, CardId::OBLIVION, CardId::SHROUD,
-                                                   CardId::EIDOLON, CardId::BANSHEES_CRY, CardId::VEILPIERCER,
-                                                   CardId::BORROWED_TIME, CardId::THE_SCYTHE, CardId::MELANCHOLY,
-                                                   CardId::HANG, CardId::SCULPTING_STRIKE,
-                                                   CardId::GRAVEBLAST,
-                                                   CardId::DREDGE,
-                                                   CardId::CLEANSE,
-                                                   CardId::POKE, CardId::SNAP, CardId::RATTLE, CardId::BONE_SHARDS,
-                                                   CardId::SQUEEZE, CardId::FLATTEN, CardId::HIGH_FIVE, CardId::FETCH,
-                                                   CardId::CALCIFY, CardId::RIGHT_HAND_HAND, CardId::NECRO_MASTERY,
-                                                   CardId::SACRIFICE, CardId::SPUR, CardId::SIC_EM,
-                                                   CardId::SENTRY_MODE,
-                                                   CardId::REAVE, CardId::GRAVE_WARDEN, CardId::CAPTURE_SPIRIT,
-                                                   CardId::SEVERANCE, CardId::DIRGE, CardId::HAUNT,
-                                                   CardId::DEVOUR_LIFE, CardId::SOUL_STORM,
-                                                   CardId::GLIMPSE_BEYOND };
+namespace {
 
+// The cards of a hero the engine can draw at random: Basic (the starters), Common, Uncommon and Rare. Ancient, Event,
+// Curse and Quest cards, and the cards that are not in the reference (Cleave), are left out. A combat reward never
+// shows a Basic card: it rolls a Common, Uncommon or Rare one.
+constexpr bool rewardable(const CardMeta& meta, CardPool pool) {
+    return meta.pool == pool && (meta.rarity == CardRarity::BASIC || meta.rarity == CardRarity::COMMON || meta.rarity == CardRarity::UNCOMMON ||
+                                 meta.rarity == CardRarity::RARE);
+}
+
+constexpr size_t reward_pool_size(CardPool pool) {
+    size_t count = 0;
+    for (const CardMeta& meta : CARD_META) count += rewardable(meta, pool);
+    return count;
+}
+
+// The pool of a hero, built at compile time from the table of the reference: a card the engine knows is offered
+// without any list to keep in step.
+template <CardPool POOL>
+struct RewardPool {
+    static constexpr size_t SIZE = reward_pool_size(POOL);
+    CardId ids[SIZE];
+    constexpr RewardPool() : ids() {
+        size_t next = 0;
+        for (size_t i = 0; i < sizeof(CARD_META) / sizeof(CARD_META[0]); ++i) {
+            if (rewardable(CARD_META[i], POOL)) ids[next++] = static_cast<CardId>(i);
+        }
+    }
+};
+
+template <CardPool POOL>
+std::span<const CardId> reward_pool() {
+    static constexpr RewardPool<POOL> pool;
+    return std::span<const CardId>(pool.ids, RewardPool<POOL>::SIZE);
+}
+
+} // namespace
+
+std::span<const CardId> RunManager::card_reward_pool(CharacterId char_id) {
     switch (char_id) {
-        case CharacterId::SILENT: return SILENT_POOL;
-        case CharacterId::DEFECT: return DEFECT_POOL;
-        case CharacterId::REGENT: return REGENT_POOL;
-        case CharacterId::NECROBINDER: return NECROBINDER_POOL;
-        default: return IRONCLAD_POOL;
+        case CharacterId::SILENT: return reward_pool<CardPool::SILENT>();
+        case CharacterId::DEFECT: return reward_pool<CardPool::DEFECT>();
+        case CharacterId::REGENT: return reward_pool<CardPool::REGENT>();
+        case CharacterId::NECROBINDER: return reward_pool<CardPool::NECROBINDER>();
+        default: return reward_pool<CardPool::IRONCLAD>();
     }
 }
 
 uint32_t RunManager::reward_seed() const {
     return map_seed ^ (current_act * 0x9E3779B1u) ^ (current_floor * 0x85EBCA6Bu) ^
            (static_cast<uint32_t>(current_node_index + 1) * 0xC2B2AE35u);
+}
+
+CharacterId RunManager::random_other_hero() {
+    auto pick = static_cast<uint8_t>(next_random() % (static_cast<uint8_t>(CharacterId::COUNT) - 1));
+    if (pick >= static_cast<uint8_t>(character)) ++pick;
+    return static_cast<CharacterId>(pick);
+}
+
+void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity, bool elite, CharacterId hero) {
+    // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked. Without one, each card
+    // rolls its own rarity (more Rare ones after an elite); a boss gives Rare cards only.
+    if (boss && rarity == CardRarity::NONE) rarity = CardRarity::RARE;
+    current_card_rewards.clear();
+    // Silver Crucible: the first card rewards seen are Upgraded.
+    bool upgraded = card_rewards_upgraded;
+    if (has_relic("SILVER_CRUCIBLE") && (relic_counter("SILVER_CRUCIBLE") % SILVER_CRUCIBLE_CHEST_OPENED) < SILVER_CRUCIBLE_REWARDS) {
+        upgraded = true;
+        set_relic_counter("SILVER_CRUCIBLE", static_cast<uint8_t>(relic_counter("SILVER_CRUCIBLE") + 1));
+    }
+    FixedVector<CardId, 512> candidates;
+    auto keep = [rarity](CardId id) {
+        CardRarity of = card_meta(id).rarity;
+        return rarity == CardRarity::NONE ? of != CardRarity::BASIC : of == rarity;
+    };
+    const CharacterId from = hero == CharacterId::COUNT ? character : hero;
+    for (CardId id : card_reward_pool(from)) {
+        if (keep(id)) candidates.push_back(id);
+    }
+    // Prismatic Gem: the other heroes' pools are added too (the pools do not overlap).
+    if (has_relic("PRISMATIC_GEM")) {
+        for (uint8_t other = 0; other < static_cast<uint8_t>(CharacterId::COUNT); ++other) {
+            if (static_cast<CharacterId>(other) == from) continue;
+            for (CardId id : card_reward_pool(static_cast<CharacterId>(other))) {
+                if (keep(id)) candidates.push_back(id);
+            }
+        }
+    }
+    // Dingy Rug: the Colorless cards are offered too.
+    if (has_relic("DINGY_RUG")) {
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (card_meta(static_cast<CardId>(id)).pool == CardPool::COLORLESS && keep(static_cast<CardId>(id))) candidates.push_back(static_cast<CardId>(id));
+        }
+    }
+    const uint8_t common_chance = elite ? ELITE_CARD_COMMON_CHANCE : CARD_COMMON_CHANCE;
+    const uint8_t uncommon_chance = elite ? ELITE_CARD_UNCOMMON_CHANCE : CARD_UNCOMMON_CHANCE;
+    while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
+        // The rarity of this card; when none of the pool has it left, any card will do.
+        CardRarity wanted = CardRarity::NONE;
+        if (rarity == CardRarity::NONE) {
+            uint32_t roll = (boss ? rng.next() : next_random()) % 100;
+            wanted = roll < common_chance ? CardRarity::COMMON
+                     : (roll < static_cast<uint32_t>(common_chance + uncommon_chance) ? CardRarity::UNCOMMON : CardRarity::RARE);
+            bool any = false;
+            for (CardId id : candidates) any = any || card_meta(id).rarity == wanted;
+            if (!any) wanted = CardRarity::NONE;
+        }
+        size_t matching = 0;
+        for (CardId id : candidates) matching += wanted == CardRarity::NONE || card_meta(id).rarity == wanted;
+        size_t pick = (boss ? rng.next() : next_random()) % matching;
+        for (size_t i = 0; i < candidates.size(); ++i) {
+            if (wanted != CardRarity::NONE && card_meta(candidates[i]).rarity != wanted) continue;
+            if (pick-- > 0) continue;
+            current_card_rewards.push_back(DeckCard(candidates[i], upgraded));
+            candidates.erase(i);
+            break;
+        }
+    }
+    // Wing Charm: one random card of each card reward is enchanted with Swift 1.
+    if (has_relic("WING_CHARM") && !current_card_rewards.empty()) {
+        FixedVector<uint8_t, 8> eligible;
+        for (size_t i = 0; i < current_card_rewards.size(); ++i) {
+            if (can_enchant(current_card_rewards[i], Enchantment::SWIFT)) eligible.push_back(static_cast<uint8_t>(i));
+        }
+        if (!eligible.empty()) {
+            DeckCard& pick = current_card_rewards[eligible[next_random() % eligible.size()]];
+            pick.enchantment = Enchantment::SWIFT;
+            pick.enchant_amount = 1;
+        }
+    }
+    // Glitter: every card of the reward is enchanted with Glam.
+    if (has_relic("GLITTER")) {
+        for (DeckCard& offered : current_card_rewards) {
+            if (can_enchant(offered, Enchantment::GLAM)) offered.enchantment = Enchantment::GLAM;
+        }
+    }
+    // Silken Tress (Ancient): every card of the first card reward after the pickup is Enchanted with Glam.
+    if (has_relic("SILKEN_TRESS") && relic_counter("SILKEN_TRESS") == 1) {
+        for (DeckCard& card : current_card_rewards) {
+            if (can_enchant(card, Enchantment::GLAM)) card.enchantment = Enchantment::GLAM;
+        }
+        set_relic_counter("SILKEN_TRESS", 2);
+    }
 }
 
 void RunManager::generate_rewards() {
@@ -498,24 +667,20 @@ void RunManager::generate_rewards() {
     RewardRng rng(reward_seed());
     bool boss = room == RoomType::BOSS;
 
-    // Offer distinct cards drawn at random from the hero's pool.
-    current_card_rewards.clear();
-    FixedVector<CardId, 128> candidates;
-    for (CardId id : card_reward_pool(character)) {
-        candidates.push_back(id);
-    }
-    while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
-        size_t pick = (boss ? rng.next() : next_random()) % candidates.size();
-        current_card_rewards.push_back(DeckCard(candidates[pick], false));
-        candidates.erase(pick);
-    }
+    draw_card_rewards(boss, rng, CardRarity::NONE, room == RoomType::ELITE);
+    // Prayer Wheel: a normal enemy gives one more set of cards, after the first one (as The Hunt does).
+    if (room == RoomType::MONSTER && has_relic("PRAYER_WHEEL")) extra_card_rewards = static_cast<uint8_t>(std::min(255, extra_card_rewards + 1));
 
     // A boss gives 95 to 105 gold.
     gold_reward = boss ? static_cast<int16_t>(95 + rng.below(11)) : 15 + static_cast<int16_t>(next_random() % 15);
+    // Amethyst Aubergine: the enemies drop 15 more Gold.
+    if (has_relic("AMETHYST_AUBERGINE")) gold_reward = static_cast<int16_t>(gold_reward + 15);
 
-    // A potion the hero can use, in 40 % of the fights.
+    // A potion the hero can use, in 40 % of the fights; White Beast Statue makes it certain.
     potion_reward = {};
-    if (rng.below(100) < POTION_REWARD_CHANCE) {
+    bool potion_roll = rng.below(100) < POTION_REWARD_CHANCE;
+    // Sozu: no potion can be obtained any more.
+    if (!has_relic("SOZU") && (potion_roll || has_relic("WHITE_BEAST_STATUE"))) {
         potion_reward = draw_potion(rng, character);
     }
 
@@ -525,12 +690,16 @@ void RunManager::generate_rewards() {
         relic_reward = draw_relic(rng, character, boss ? RelicSource::BOSS : RelicSource::ELITE,
                                   std::span<const std::string_view>(relics.begin(), relics.size()));
     }
+    // Black Star: an Elite gives one more relic, offered once the first one is taken.
+    extra_relic_rewards = room == RoomType::ELITE && !relic_reward.empty() && has_relic("BLACK_STAR") ? 1 : 0;
+    // White Star: an Elite gives one more set of Rare cards, offered once the first set is taken or skipped.
+    extra_rare_card_rewards = room == RoomType::ELITE && has_relic("WHITE_STAR") ? 1 : 0;
     on_rewards_generated(room);
     phase = RunPhase::REWARD_SCREEN;
 }
 
 bool RunManager::take_potion_reward(int replace_index) {
-    if (phase != RunPhase::REWARD_SCREEN || potion_reward.empty()) return false;
+    if (phase != RunPhase::REWARD_SCREEN || potion_reward.empty() || has_relic("SOZU")) return false;
     if (!potion_belt_full()) {
         potions.push_back(potion_reward);
     } else if (replace_index >= 0 && static_cast<size_t>(replace_index) < potions.size()) {
@@ -547,14 +716,23 @@ bool RunManager::take_relic_reward() {
     if (has_relic(relic_reward) || relics.size() >= relics.capacity()) return false;
     add_relic(relic_reward);
     relic_reward = {};
+    if (extra_relic_rewards > 0 && relics.size() < relics.capacity()) {
+        --extra_relic_rewards;
+        RewardRng rng(next_random());
+        relic_reward = draw_relic(rng, character, RelicSource::ELITE, std::span<const std::string_view>(relics.begin(), relics.size()));
+    }
     return true;
 }
 
 void RunManager::finish_rewards() {
-    gain_gold(gold_reward);
+    // Bowler Hat: 25 % more gold from the rewards of the fight.
+    const int bonus = has_relic("BOWLER_HAT") ? gold_reward / 4 : 0;
+    gain_gold(static_cast<int16_t>(gold_reward + bonus));
     gold_reward = 0;
     potion_reward = {};
     relic_reward = {};
+    extra_rare_card_rewards = 0;
+    extra_relic_rewards = 0;
     // The boss of act 1 or 2: its rewards are taken, the next act opens.
     if (current_node_index >= 0 && map.nodes[current_node_index].type == RoomType::BOSS && current_act < 3) {
         advance_act();
@@ -567,10 +745,35 @@ void RunManager::pick_card_reward(int reward_index) {
     if (reward_index >= 0 && static_cast<size_t>(reward_index) < current_card_rewards.size()) {
         add_card_to_deck(current_card_rewards[reward_index]);
     }
-    finish_rewards();
+    next_card_reward_or_finish();
 }
 
 void RunManager::skip_card_rewards() {
+    next_card_reward_or_finish();
+}
+
+void RunManager::next_card_reward_or_finish() {
+    // White Star: one more set of Rare cards after an Elite.
+    if (extra_rare_card_rewards > 0) {
+        --extra_rare_card_rewards;
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng, CardRarity::RARE);
+        return;
+    }
+    // Kaleidoscope: one more set of cards from another hero.
+    if (extra_other_hero_card_rewards > 0) {
+        --extra_other_hero_card_rewards;
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng, CardRarity::NONE, false, random_other_hero());
+        return;
+    }
+    // The Hunt: one more set of cards is offered before the rewards are over.
+    if (extra_card_rewards > 0) {
+        --extra_card_rewards;
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng);
+        return;
+    }
     finish_rewards();
 }
 
@@ -600,9 +803,61 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
             if (relics[i] == starter) relics[i] = ancient;
         }
     }
+    if (relic_id == "SMALL_CAPSULE" && has_relic("SMALL_CAPSULE")) gain_random_relics(1);
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     if (relic_id == "LOOMING_FRUIT" && has_relic("LOOMING_FRUIT")) gain_max_hp(31);
+    if (relic_id == "NUTRITIOUS_OYSTER" && has_relic("NUTRITIOUS_OYSTER")) gain_max_hp(11);
+    // Shared shop relic: 7 more maximum HP, then every point of HP is restored.
+    if (relic_id == "LEES_WAFFLE" && has_relic("LEES_WAFFLE")) {
+        gain_max_hp(7);
+        hp = max_hp;
+    }
+    if (relic_id == "MANGO" && has_relic("MANGO")) gain_max_hp(14);
+    // Big Mushroom (Event): 20 more maximum HP when obtained.
+    if (relic_id == "BIG_MUSHROOM" && has_relic("BIG_MUSHROOM")) gain_max_hp(20);
+    // Event relic (Fake Lee's Waffle): heals 10% of the max HP on pickup.
+    if (relic_id == "FAKE_LEES_WAFFLE" && has_relic("FAKE_LEES_WAFFLE")) heal(max_hp * 10 / 100);
+    if (relic_id == "PEAR" && has_relic("PEAR")) gain_max_hp(10);
+    if (relic_id == "FAKE_MANGO" && has_relic("FAKE_MANGO")) gain_max_hp(3);
+    if (relic_id == "LARGE_CAPSULE" && has_relic("LARGE_CAPSULE")) {
+        gain_random_relics(2);
+        add_card_to_deck(DeckCard{ CardId::STRIKE, false });
+        add_card_to_deck(DeckCard{ CardId::DEFEND, false });
+    }
+    // Relic of the Ancients (Tezcatara): every Strike of the deck is enchanted with Tezcatara's Ember, once, on pickup.
+    if (relic_id == "NUTRITIOUS_SOUP" && has_relic("NUTRITIOUS_SOUP")) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            if (contains(CardDef::get(master_deck[i].id).name, "Strike")) {
+                enchant_card_in_deck(static_cast<int>(i), Enchantment::TEZCATARAS_EMBER, NUTRITIOUS_SOUP_EMBER_DAMAGE);
+            }
+        }
+    }
     if (relic_id == "YUMMY_COOKIE" && has_relic("YUMMY_COOKIE")) upgrade_random_cards(4);
+    if (relic_id == "SAND_CASTLE" && has_relic("SAND_CASTLE")) upgrade_random_cards(6);
+    if (relic_id == "POTION_BELT" && has_relic("POTION_BELT")) add_potion_slots(2);
+    if (relic_id == "WHETSTONE" && has_relic("WHETSTONE")) upgrade_random_cards(2, CardType::ATTACK);
+    // War Paint: upgrades 2 random Skills when obtained.
+    if (relic_id == "WAR_PAINT" && has_relic("WAR_PAINT")) upgrade_random_cards(2, CardType::SKILL);
+    // Fragrant Mushroom (Event): loses 15 HP, never below 1, then upgrades 2 random cards.
+    if (relic_id == "FRAGRANT_MUSHROOM" && has_relic("FRAGRANT_MUSHROOM")) {
+        hp = std::max<int16_t>(1, hp - 15);
+        upgrade_random_cards(2);
+    }
+    // Relic of the Ancients (Pael): one random card of the deck gets the Clone enchantment.
+    if (relic_id == "PAELS_GROWTH" && has_relic("PAELS_GROWTH")) {
+        FixedVector<int, 128> candidates;
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            if (can_enchant(master_deck[i], Enchantment::CLONE)) candidates.push_back(static_cast<int>(i));
+        }
+        if (!candidates.empty()) enchant_card_in_deck(candidates[next_random() % candidates.size()], Enchantment::CLONE);
+    }
+    // Silken Tress (Ancient): all the gold is lost, and the first card reward to come is Enchanted with Glam.
+    if (relic_id == "SILKEN_TRESS" && has_relic("SILKEN_TRESS")) {
+        gold = 0;
+        set_relic_counter("SILKEN_TRESS", 1);
+    }
+    // Bone Tea (event): the next combat is counted on pickup, and its starting hand is upgraded at its start.
+    if (relic_id == "BONE_TEA" && has_relic("BONE_TEA")) set_relic_counter("BONE_TEA", 1);
     // The Act 2 map is already drawn when the Ancient offers it: draw it again as a single path.
     if (relic_id == "GOLDEN_COMPASS" && has_relic("GOLDEN_COMPASS") && current_act == 2 && current_node_index < 0) {
         regenerate_map();
@@ -611,12 +866,112 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
     if (relic_id == "SIGNET_RING" && has_relic("SIGNET_RING")) gain_gold(888);
     // Relic of the Ancients: the gold comes once, when the pearl is obtained.
     if (relic_id == "GOLDEN_PEARL" && has_relic("GOLDEN_PEARL")) gain_gold(150);
+    // Rare relic: the gold comes once, when the coin is obtained.
+    if (relic_id == "OLD_COIN" && has_relic("OLD_COIN")) gain_gold(300);
+    // Relic of the Ancients: a Greed curse joins the deck and the gold comes once, when the pearl is obtained.
+    if (relic_id == "CURSED_PEARL" && has_relic("CURSED_PEARL")) {
+        add_card_to_deck(DeckCard{ CardId::GREED, false });
+        gain_gold(333);
+    }
+    // Relic of the Ancients (Neow): an Ambergris potion joins the belt when there is room, and a Guilty curse joins the deck.
+    if (relic_id == "NEOWS_SACRIFICE" && has_relic("NEOWS_SACRIFICE")) {
+        if (!potion_belt_full()) potions.push_back("AMBERGRIS");
+        add_card_to_deck(DeckCard{ CardId::GUILTY, false });
+    }
+    // Relic of the Ancients (Pael): every Defend of the deck is enchanted with Goopy.
+    if (relic_id == "PAELS_CLAW" && has_relic("PAELS_CLAW")) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            if (master_deck[i].id == CardId::DEFEND) enchant_card_in_deck(static_cast<int>(i), Enchantment::GOOPY);
+        }
+    }
+    // Relic of the Ancients: one Ancient card of the hero, drawn at random with the run's generator.
+    if (relic_id == "DUSTY_TOME" && has_relic("DUSTY_TOME")) {
+        const auto hero_pool = static_cast<CardPool>(static_cast<uint8_t>(character) + 1);
+        const auto is_ancient = [&](uint16_t id) {
+            const CardMeta& meta = card_meta(static_cast<CardId>(id));
+            return meta.rarity == CardRarity::ANCIENT && meta.pool == hero_pool;
+        };
+        uint16_t count = 0;
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (is_ancient(id)) ++count;
+        }
+        if (count > 0) {
+            uint16_t pick = next_random() % count;
+            for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+                if (!is_ancient(id)) continue;
+                if (pick-- == 0) {
+                    add_card_to_deck(DeckCard{ static_cast<CardId>(id), false });
+                    break;
+                }
+            }
+        }
+    }
+    // Glass Eye (Ancient): 2 random Common, 2 Uncommon and 1 Rare cards of the hero's pool, all distinct.
+    if (relic_id == "GLASS_EYE" && has_relic("GLASS_EYE")) {
+        struct EyeDraw {
+            CardRarity rarity;
+            int count;
+        };
+        for (EyeDraw draw : { EyeDraw{ CardRarity::COMMON, 2 }, EyeDraw{ CardRarity::UNCOMMON, 2 }, EyeDraw{ CardRarity::RARE, 1 } }) {
+            FixedVector<CardId, 128> candidates;
+            for (CardId id : card_reward_pool(character)) {
+                if (card_meta(id).rarity == draw.rarity) candidates.push_back(id);
+            }
+            for (int n = 0; n < draw.count && !candidates.empty(); ++n) {
+                size_t pick = next_random() % candidates.size();
+                add_card_to_deck(DeckCard{ candidates[pick], false });
+                candidates.erase(pick);
+            }
+        }
+    }
     if (relic_id == "SERE_TALON" && has_relic("SERE_TALON")) {
         lose_max_hp(9);
         for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::WISH, false });
     }
     if (relic_id == "BLOOD_SOAKED_ROSE" && has_relic("BLOOD_SOAKED_ROSE")) add_card_to_deck(DeckCard{ CardId::ENTHRALLED, false });
     if (relic_id == "JEWELRY_BOX" && has_relic("JEWELRY_BOX")) add_card_to_deck(DeckCard{ CardId::APOTHEOSIS, false });
+    // Lead Paperweight: choose 1 Colorless card out of 2. The offer is the card reward screen with two cards.
+    if (relic_id == "LEAD_PAPERWEIGHT" && has_relic("LEAD_PAPERWEIGHT")) {
+        FixedVector<CardId, 64> colorless;
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (card_meta(static_cast<CardId>(id)).pool == CardPool::COLORLESS) colorless.push_back(static_cast<CardId>(id));
+        }
+        current_card_rewards.clear();
+        for (int n = 0; n < 2 && !colorless.empty(); ++n) {
+            size_t pick = next_random() % colorless.size();
+            current_card_rewards.push_back(DeckCard(colorless[pick], false));
+            colorless.erase(pick);
+        }
+        phase = RunPhase::REWARD_SCREEN;
+    }
+    // Planetary (shop relic): 5 card rewards on pickup. The first set is offered now, the 4 others follow it.
+    if (relic_id == "ORRERY" && has_relic("ORRERY")) {
+        extra_card_rewards = static_cast<uint8_t>(extra_card_rewards + 4);
+        RewardRng rng(next_random());
+        draw_card_rewards(false, rng);
+        phase = RunPhase::REWARD_SCREEN;
+    }
+    // Kaleidoscope (Ancient): 2 card rewards, each drawn from the pool of another hero. The first set is offered now.
+    if (relic_id == "KALEIDOSCOPE" && has_relic("KALEIDOSCOPE")) {
+        extra_other_hero_card_rewards = static_cast<uint8_t>(extra_other_hero_card_rewards + 1);
+        RewardRng kaleidoscope_rng(next_random());
+        draw_card_rewards(false, kaleidoscope_rng, CardRarity::NONE, false, random_other_hero());
+        phase = RunPhase::REWARD_SCREEN;
+    }
+    // Hefty Tablet (Ancient): an Injury joins the deck, then 1 Rare card is chosen out of 3 on the card reward screen.
+    if (relic_id == "HEFTY_TABLET" && has_relic("HEFTY_TABLET")) {
+        add_card_to_deck(DeckCard{ CardId::INJURY, false });
+        RewardRng tablet_rng(next_random());
+        draw_card_rewards(false, tablet_rng, CardRarity::RARE);
+        phase = RunPhase::REWARD_SCREEN;
+    }
+    // Lost Coffer (Ancient): one card reward is offered and one random potion joins the belt.
+    if (relic_id == "LOST_COFFER" && has_relic("LOST_COFFER")) {
+        RewardRng coffer_rng(next_random());
+        draw_card_rewards(false, coffer_rng);
+        gain_random_potions(1);
+        phase = RunPhase::REWARD_SCREEN;
+    }
     if (relic_id == "DISTINGUISHED_CAPE" && has_relic("DISTINGUISHED_CAPE")) {
         // Two random curses (repetition allowed) drawn from the whole curse pool, then three Apparitions.
         const auto is_curse = [](uint16_t id) { return card_meta(static_cast<CardId>(id)).pool == CardPool::CURSE; };
@@ -636,20 +991,153 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
         for (int i = 0; i < 3; ++i) add_card_to_deck(DeckCard{ CardId::APPARITION, false });
     }
+    if (relic_id == "ARCANE_SCROLL" && has_relic("ARCANE_SCROLL")) {
+        // One random Rare card of the hero's pool, drawn the way a card reward is.
+        FixedVector<CardId, 128> rares;
+        for (CardId id : card_reward_pool(character)) {
+            if (card_meta(id).rarity == CardRarity::RARE) rares.push_back(id);
+        }
+        if (!rares.empty()) add_card_to_deck(DeckCard{ rares[next_random() % rares.size()], false });
+    }
+    if (relic_id == "NEOWS_BONES" && has_relic("NEOWS_BONES")) {
+        // Two random Neow relics among the ones Neow offers: a relic already owned (this one included) is never drawn.
+        const Ancient& neow = get_ancient(AncientId::NEOW);
+        for (int i = 0; i < 2 && relics.size() < relics.capacity(); ++i) {
+            uint32_t count = 0;
+            for (const AncientSlot& slot : neow.slots) {
+                for (const AncientRelic& option : slot.options) {
+                    if (!has_relic(option.id)) ++count;
+                }
+            }
+            if (count == 0) break;
+            uint32_t pick = next_random() % count;
+            std::string_view chosen;
+            for (const AncientSlot& slot : neow.slots) {
+                for (const AncientRelic& option : slot.options) {
+                    if (has_relic(option.id)) continue;
+                    if (pick-- == 0) chosen = option.id;
+                }
+            }
+            add_relic(chosen);
+        }
+        // Then one random curse, drawn from the whole curse pool like Distinguished Cape.
+        const auto is_curse = [](uint16_t id) { return card_meta(static_cast<CardId>(id)).pool == CardPool::CURSE; };
+        uint16_t curse_count = 0;
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (is_curse(id)) ++curse_count;
+        }
+        if (curse_count > 0) {
+            uint16_t pick = next_random() % curse_count;
+            for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+                if (!is_curse(id)) continue;
+                if (pick-- == 0) {
+                    add_card_to_deck(DeckCard{ static_cast<CardId>(id), false });
+                    break;
+                }
+            }
+        }
+    }
+    if (relic_id == "PAELS_HORN" && has_relic("PAELS_HORN")) {
+        for (int i = 0; i < 2; ++i) add_card_to_deck(DeckCard{ CardId::RELAX, false });
+    }
+    // Calling Bell (Ancient): the unique Curse of the Bell joins the deck, then 3 random relics.
+    if (relic_id == "CAULDRON" && has_relic("CAULDRON")) gain_random_potions(5);
+    // Alchemical Coffer (Ancient): 4 new potion slots, filled with random potions.
+    if (relic_id == "ALCHEMICAL_COFFER" && has_relic("ALCHEMICAL_COFFER")) {
+        add_potion_slots(4);
+        gain_random_potions(4);
+    }
+    if (relic_id == "PHIAL_HOLSTER" && has_relic("PHIAL_HOLSTER")) {
+        add_potion_slots(1);
+        gain_random_potions(2);
+    }
+    if (relic_id == "CALLING_BELL" && has_relic("CALLING_BELL")) {
+        add_card_to_deck(DeckCard{ CardId::CURSE_OF_THE_BELL, false });
+        gain_random_relics(3);
+    }
     if (relic_id == "TANXS_WHISTLE" && has_relic("TANXS_WHISTLE")) add_card_to_deck(DeckCard{ CardId::WHISTLE, false });
     if (relic_id == "STORYBOOK" && has_relic("STORYBOOK")) add_card_to_deck(DeckCard{ CardId::BRIGHTEST_FLAME, false });
+    if (relic_id == "NEOWS_TORMENT" && has_relic("NEOWS_TORMENT")) add_card_to_deck(DeckCard{ CardId::NEOWS_FURY, false });
     if (relic_id == "PAELS_TOOTH" && has_relic("PAELS_TOOTH")) {
         request_deck_choice(DeckChoiceKind::REMOVE, 5);
         paels_tooth_picks = deck_choice.remaining;
     }
+    if (relic_id == "TRI_BOOMERANG" && has_relic("TRI_BOOMERANG")) request_deck_choice(DeckChoiceKind::ENCHANT, 3, false, false, CardId::NONE, Enchantment::INSTINCT);
+    // Kifuda (shop): up to 3 cards chosen in the deck are enchanted with Adroit 3.
+    if (relic_id == "KIFUDA" && has_relic("KIFUDA")) request_deck_choice(DeckChoiceKind::ENCHANT, 3, true, false, CardId::NONE, Enchantment::ADROIT, 3);
+    // Gnarled Hammer (shop): up to 3 Attacks chosen in the deck are enchanted with Sharp 3.
+    if (relic_id == "GNARLED_HAMMER" && has_relic("GNARLED_HAMMER"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 3, true, false, CardId::NONE, Enchantment::SHARP, 3);
+    // Punch Dagger (shop): one Attack chosen in the deck is enchanted with Momentum 5.
+    if (relic_id == "PUNCH_DAGGER" && has_relic("PUNCH_DAGGER"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 1, false, false, CardId::NONE, Enchantment::MOMENTUM, 5);
+    // Royal Stamp (shop): one Attack or Skill chosen in the deck is enchanted with Royally Approved.
+    if (relic_id == "ROYAL_STAMP" && has_relic("ROYAL_STAMP"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 1, false, false, CardId::NONE, Enchantment::ROYALLY_APPROVED);
     if (relic_id == "CLAWS" && has_relic("CLAWS")) request_deck_choice(DeckChoiceKind::TRANSFORM, 6, true, false, CardId::MAUL);
+    if (relic_id == "NEW_LEAF" && has_relic("NEW_LEAF")) request_deck_choice(DeckChoiceKind::TRANSFORM, 1);
+    if (relic_id == "POMANDER" && has_relic("POMANDER")) request_deck_choice(DeckChoiceKind::UPGRADE, 1);
+    if (relic_id == "ASTROLABE" && has_relic("ASTROLABE")) request_deck_choice(DeckChoiceKind::TRANSFORM, 3, false, true);
+    if (relic_id == "PANDORAS_BOX" && has_relic("PANDORAS_BOX")) {
+        // Every Strike and Defend of the deck becomes a random card of the hero's pool, in place.
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            const CardId id = master_deck[i].id;
+            if (id == CardId::STRIKE || id == CardId::DEFEND) transform_card_in_deck(static_cast<int>(i));
+        }
+    }
+    // Leafy Poultice (Ancient): one random Strike and one random Defend of the deck are transformed, then 12 Max HP lost.
+    if (relic_id == "LEAFY_POULTICE" && has_relic("LEAFY_POULTICE")) {
+        for (CardId target : { CardId::STRIKE, CardId::DEFEND }) {
+            FixedVector<uint8_t, 50> candidates;
+            for (size_t i = 0; i < master_deck.size(); ++i) {
+                if (master_deck[i].id == target) candidates.push_back(static_cast<uint8_t>(i));
+            }
+            if (!candidates.empty()) transform_card_in_deck(candidates[next_random() % candidates.size()]);
+        }
+        lose_max_hp(12);
+    }
     if (relic_id == "PRESERVED_FOG" && has_relic("PRESERVED_FOG")) {
         // Hubris joins only after the removals, so the Eternal curse can never be picked.
         request_deck_choice(DeckChoiceKind::REMOVE, 3);
         preserved_fog_pending = true;
         finish_preserved_fog();
     }
+    if (relic_id == "PRECISE_SCISSORS" && has_relic("PRECISE_SCISSORS")) request_deck_choice(DeckChoiceKind::REMOVE, 1);
+    // Dolly's Mirror (shop): one card chosen in the deck gets an additional copy.
+    if (relic_id == "DOLLYS_MIRROR" && has_relic("DOLLYS_MIRROR")) request_deck_choice(DeckChoiceKind::DUPLICATE, 1);
+    if (relic_id == "NEOWS_TALISMAN" && has_relic("NEOWS_TALISMAN")) {
+        // One random Strike and one random Defend, not yet upgraded, are upgraded.
+        const CardId targets[] = { CardId::STRIKE, CardId::DEFEND };
+        for (CardId target : targets) {
+            FixedVector<uint8_t, 50> candidates;
+            for (size_t i = 0; i < master_deck.size(); ++i) {
+                if (!master_deck[i].upgraded && master_deck[i].id == target) candidates.push_back(static_cast<uint8_t>(i));
+            }
+            if (!candidates.empty()) master_deck[candidates[next_random() % candidates.size()]].upgraded = true;
+        }
+    }
+    // Grooos câlin (Ancient): 4 cards chosen out of the deck when obtained.
+    if (relic_id == "BIIIG_HUG" && has_relic("BIIIG_HUG")) request_deck_choice(DeckChoiceKind::REMOVE, 4);
+    // Bracelet brillant (Ancient): 4 cards chosen in the deck are enchanted with Swift 2.
+    if (relic_id == "BEAUTIFUL_BRACELET" && has_relic("BEAUTIFUL_BRACELET"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 4, false, false, CardId::NONE, Enchantment::SWIFT, 2);
+    // Crevaite électrique (Ancient): one Skill chosen in the deck is enchanted with Imbued when obtained.
+    if (relic_id == "ELECTRIC_SHRYMP" && has_relic("ELECTRIC_SHRYMP"))
+        request_deck_choice(DeckChoiceKind::ENCHANT, 1, false, false, CardId::NONE, Enchantment::IMBUED);
+    if (relic_id == "EMPTY_CAGE" && has_relic("EMPTY_CAGE")) request_deck_choice(DeckChoiceKind::REMOVE, 2);
+    // Precarious Shears (Ancient): 2 cards chosen out of the deck, then 16 HP lost, never below 1.
+    if (relic_id == "PRECARIOUS_SHEARS" && has_relic("PRECARIOUS_SHEARS")) {
+        request_deck_choice(DeckChoiceKind::REMOVE, 2);
+        hp = std::max<int16_t>(1, hp - 16);
+    }
     if (relic_id == "MEMBERSHIP_CARD" && phase == RunPhase::SHOP) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
+    if (relic_id == "THE_COURIER" && phase == RunPhase::SHOP) current_shop.apply_discount(THE_COURIER_DISCOUNT);
+    // Circlet (fallback relic): no effect in game, it is only a circlet.
+    if (has_relic("CIRCLET")) {}
+    // Wongo customer appreciation badge (event relic): no effect in game, "Does nothing."
+    if (has_relic("WONGO_CUSTOMER_APPRECIATION_BADGE")) {}
+    // Le tapis du Marchand ??? (event relic): no effect in game, a poor imitation.
+    if (has_relic("FAKE_MERCHANTS_RUG")) {}
 }
 
 void RunManager::count_hook(RunHook hook) {
@@ -657,17 +1145,39 @@ void RunManager::count_hook(RunHook hook) {
     if (runs < UINT16_MAX) ++runs;
 }
 
-void RunManager::on_room_entered(RoomType) {
+void RunManager::on_room_entered(RoomType room) {
     count_hook(RunHook::ROOM_ENTERED);
+    // Eternal Feather: entering a Rest Site heals 3 HP for every 5 cards of the deck.
+    if (room == RoomType::REST_SITE && has_relic("ETERNAL_FEATHER")) {
+        heal(static_cast<int16_t>(master_deck.size() / 5 * 3));
+    }
+    // Venerable Tea Set: each Rest Site entered adds one count, spent at the start of the next combat.
+    if (room == RoomType::REST_SITE && has_relic("VENERABLE_TEA_SET") && relic_counter("VENERABLE_TEA_SET") < UINT8_MAX) {
+        set_relic_counter("VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("VENERABLE_TEA_SET") + 1));
+    }
+    // Venerable Tea Set (event): each Rest Site entered adds one count, spent at the start of the next combat.
+    if (room == RoomType::REST_SITE && has_relic("FAKE_VENERABLE_TEA_SET") &&
+        relic_counter("FAKE_VENERABLE_TEA_SET") < UINT8_MAX) {
+        set_relic_counter("FAKE_VENERABLE_TEA_SET", static_cast<uint8_t>(relic_counter("FAKE_VENERABLE_TEA_SET") + 1));
+    }
+    // Planisphere: each ? room entered heals 5 HP.
+    if (room == RoomType::EVENT && has_relic("PLANISPHERE")) heal(5);
+    // Meal Ticket: entering a shop heals 15 HP.
+    if (room == RoomType::SHOP && has_relic("MEAL_TICKET")) heal(15);
 }
 
 void RunManager::on_rested() {
     count_hook(RunHook::RESTED);
+    // Stone Humidifier: each Rest at a Rest Site raises Max HP by 5.
+    if (has_relic("STONE_HUMIDIFIER")) gain_max_hp(5);
+    // Tiny Mailbox: each Rest procures 2 random potions (those that do not fit the full belt are lost).
+    if (has_relic("TINY_MAILBOX")) gain_random_potions(2);
 }
 
 void RunManager::on_shop_opened() {
     count_hook(RunHook::SHOP_OPENED);
     if (has_relic("MEMBERSHIP_CARD")) current_shop.apply_discount(MEMBERSHIP_CARD_DISCOUNT);
+    if (has_relic("THE_COURIER")) current_shop.apply_discount(THE_COURIER_DISCOUNT);
     if (has_relic("LORDS_PARASOL")) {
         // Everything on sale is obtained for free; a potion that does not fit the full belt is left behind.
         current_shop.apply_discount(100);
@@ -677,8 +1187,21 @@ void RunManager::on_shop_opened() {
     }
 }
 
+static constexpr uint8_t FISHING_ROD_COMBATS = 3;
+
 void RunManager::on_combat_won(RoomType room) {
     count_hook(RunHook::COMBAT_WON);
+    // Wongo's Mystery Ticket (event): each fight won counts; the fifth one pays 3 random relics, once.
+    if (has_relic("WONGOS_MYSTERY_TICKET") && relic_counter("WONGOS_MYSTERY_TICKET") < WONGOS_MYSTERY_TICKET_COMBATS) {
+        set_relic_counter("WONGOS_MYSTERY_TICKET", static_cast<uint8_t>(relic_counter("WONGOS_MYSTERY_TICKET") + 1));
+        if (relic_counter("WONGOS_MYSTERY_TICKET") == WONGOS_MYSTERY_TICKET_COMBATS) {
+            gain_random_relics(WONGOS_MYSTERY_TICKET_RELICS);
+        }
+    }
+    // Fishing Rod: every 3 normal fights won, one random card of the deck is upgraded.
+    if (room == RoomType::MONSTER && has_relic("FISHING_ROD") && tick_relic_counter("FISHING_ROD", FISHING_ROD_COMBATS)) {
+        upgrade_random_cards(1);
+    }
     // War Hammer: killing an Elite upgrades 4 random cards of the deck.
     if (room == RoomType::ELITE && has_relic("WAR_HAMMER")) upgrade_random_cards(4);
     // Paël's Tooth gives back one devoured card, upgraded, per fight (chosen at random).
@@ -688,14 +1211,46 @@ void RunManager::on_combat_won(RoomType room) {
         paels_tooth_cards.erase(pick);
         add_card_to_deck(DeckCard{ id, true });
     }
+    // Lava Rock: the Act 1 Boss gives 2 relics when it is defeated, drawn as a boss relic is.
+    if (room == RoomType::BOSS && current_act == 1 && has_relic("LAVA_ROCK")) {
+        RewardRng rng(reward_seed() ^ 0x4C41A0C4u); // own salt, apart from the boss rewards of the same room
+        for (int i = 0; i < LAVA_ROCK_RELICS && relics.size() < relics.capacity(); ++i) {
+            std::string_view id = draw_relic(rng, character, RelicSource::BOSS,
+                                             std::span<const std::string_view>(relics.begin(), relics.size()));
+            if (id.empty()) break;
+            add_relic(id);
+        }
+    }
 }
 
 void RunManager::on_rewards_generated(RoomType) {
     count_hook(RunHook::REWARDS_GENERATED);
 }
 
-void RunManager::on_card_added(DeckCard&) {
+// True when a card description mentions Block ("block" or "Block"), by a plain char loop (no string search on the GBA).
+static bool card_text_gives_block(std::string_view text) {
+    const std::string_view word = "lock";
+    for (size_t i = 1; i + word.size() <= text.size(); ++i) {
+        if (text[i - 1] != 'b' && text[i - 1] != 'B') continue;
+        bool same = true;
+        for (size_t j = 0; j < word.size(); ++j) same = same && text[i + j] == word[j];
+        if (same) return true;
+    }
+    return false;
+}
+
+void RunManager::on_card_added(DeckCard& card) {
     count_hook(RunHook::CARD_ADDED);
+    // Frozen Egg: a Power added to the Deck is upgraded.
+    if (has_relic("FROZEN_EGG") && CardDef::get(card.id).type == CardType::POWER) card.upgraded = true;
+    // Toxic Egg: a Skill added to the Deck is Upgraded.
+    if (has_relic("TOXIC_EGG") && CardDef::get(card.id).type == CardType::SKILL) card.upgraded = true;
+    // Fresnel Lens: a card that gives Block, added to the Deck, is enchanted with Nimble 2.
+    if (has_relic("FRESNEL_LENS") && CardDef::get(card.id).type != CardType::POWER && card_text_gives_block(CardDef::get(card.id).description) &&
+        can_enchant(card, Enchantment::NIMBLE)) {
+        card.enchantment = Enchantment::NIMBLE;
+        card.enchant_amount = 2;
+    }
 }
 
 void RunManager::on_gold_gained(int16_t) {
@@ -744,8 +1299,12 @@ void RunManager::heal(int16_t amount) {
 
 void RunManager::gain_gold(int16_t amount) {
     if (amount <= 0) return;
+    // Ectoplasm: no gold can be gained, from a fight, a treasure, an event or a relic.
+    if (has_relic("ECTOPLASM")) return;
     gold = static_cast<int16_t>(std::min<int>(9999, gold + amount));
     on_gold_gained(amount);
+    // Dragon Fruit: each gain of Gold raises the Max HP by 1.
+    if (has_relic("DRAGON_FRUIT")) gain_max_hp(1);
 }
 
 int RunManager::upgrade_random_cards(int count) {
@@ -772,10 +1331,31 @@ int RunManager::upgrade_random_cards(int count, bool any_type, CardType type) {
     return upgraded;
 }
 
+// Book of Five Rings: every 5th card added to the Deck heals 20 HP.
+static constexpr uint8_t BOOK_OF_FIVE_RINGS_CARDS = 5;
+static constexpr int16_t BOOK_OF_FIVE_RINGS_HEAL = 20;
+
 bool RunManager::add_card_to_deck(DeckCard card) {
     if (master_deck.size() >= master_deck.capacity()) return false;
+    // Molten Egg: an Attack added to the deck comes in upgraded.
+    if (has_relic("MOLTEN_EGG") && CardDef::get(card.id).type == CardType::ATTACK) card.upgraded = true;
     on_card_added(card);
-    return master_deck.push_back(card);
+    if (!master_deck.push_back(card)) return false;
+    // Lucky Fysh: each card that joins the deck gains gold, whatever the source (reward, shop, event).
+    if (has_relic("LUCKY_FYSH")) gain_gold(15);
+    // Darkstone Periapt: each Curse that joins the deck, whatever the source, raises the Max HP by 6.
+    if (has_relic("DARKSTONE_PERIAPT") && card_meta(card.id).pool == CardPool::CURSE) gain_max_hp(6);
+    if (has_relic("BOOK_OF_FIVE_RINGS") && tick_relic_counter("BOOK_OF_FIVE_RINGS", BOOK_OF_FIVE_RINGS_CARDS)) {
+        heal(BOOK_OF_FIVE_RINGS_HEAL);
+    }
+    // Bing Bong: each card that joins the deck comes with one additional copy (the copy itself does not duplicate).
+    static bool adding_bing_bong_copy = false;
+    if (has_relic("BING_BONG") && !adding_bing_bong_copy) {
+        adding_bing_bong_copy = true;
+        add_card_to_deck(card);
+        adding_bing_bong_copy = false;
+    }
+    return true;
 }
 
 bool RunManager::transform_card_in_deck(int deck_index, bool upgraded, CardId into) {
@@ -815,6 +1395,7 @@ int RunManager::gain_random_relics(int count) {
 }
 
 int RunManager::gain_random_potions(int count) {
+    if (has_relic("SOZU")) return 0;
     RewardRng rng(next_random());
     int gained = 0;
     while (gained < count && !potion_belt_full()) {
@@ -831,10 +1412,13 @@ void RunManager::add_potion_slots(int count) {
     potion_slots = static_cast<uint8_t>(std::min<int>(MAX_POTION_SLOTS, potion_slots + count));
 }
 
-void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool optional, bool upgrade_result, CardId transform_into) {
+void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool optional, bool upgrade_result, CardId transform_into,
+                                    Enchantment enchantment, uint8_t enchant_amount) {
     deck_choice = {};
     if (kind == DeckChoiceKind::NONE || count <= 0) return;
     deck_choice.kind = kind;
+    deck_choice.enchantment = enchantment;
+    deck_choice.enchant_amount = enchant_amount;
     int candidates = 0;
     for (size_t i = 0; i < master_deck.size(); ++i) {
         if (deck_choice_allows(static_cast<int>(i))) ++candidates;
@@ -861,6 +1445,13 @@ bool RunManager::deck_choice_allows(int deck_index) const {
         case DeckChoiceKind::UPGRADE: return !master_deck[deck_index].upgraded;
         case DeckChoiceKind::REMOVE:
         case DeckChoiceKind::TRANSFORM: return !CardDef::is_eternal(master_deck[deck_index]);
+        case DeckChoiceKind::ENCHANT:
+            // Imbued is only ever offered on a Skill (Electric Shrymp).
+            if (deck_choice.enchantment == Enchantment::IMBUED && CardDef::get(master_deck[deck_index].id).type != CardType::SKILL) return false;
+            // Royally Approved (Royal Stamp) is only ever offered on an Attack or a Skill.
+            if (deck_choice.enchantment == Enchantment::ROYALLY_APPROVED && CardDef::get(master_deck[deck_index].id).type == CardType::POWER) return false;
+            return can_enchant(master_deck[deck_index], deck_choice.enchantment);
+        case DeckChoiceKind::DUPLICATE: return master_deck.size() < master_deck.capacity();
         default: return false;
     }
 }
@@ -880,13 +1471,20 @@ bool RunManager::resolve_deck_choice(int deck_index) {
             break;
         }
         case DeckChoiceKind::TRANSFORM: done = transform_card_in_deck(deck_index, deck_choice.upgrade_result, deck_choice.transform_into); break;
+        case DeckChoiceKind::ENCHANT: done = enchant_card_in_deck(deck_index, deck_choice.enchantment, deck_choice.enchant_amount); break;
+        case DeckChoiceKind::DUPLICATE: {
+            const DeckCard copy = master_deck[deck_index];
+            done = add_card_to_deck(copy);
+            break;
+        }
         default: break;
     }
     if (!done) return false;
 
     // The cards left may not allow as many picks as asked (deck emptied, everything upgraded).
     DeckChoice next = deck_choice;
-    request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result, next.transform_into);
+    request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result, next.transform_into,
+                      next.enchantment, next.enchant_amount);
     finish_preserved_fog();
     finish_cook();
     return true;
@@ -912,25 +1510,68 @@ std::span<const std::string_view> RunManager::active_relics() {
         "VAJRA", "STRAWBERRY", "ANCHOR", "BLOOD_VIAL", "LANTERN", "RED_MASK", "ODDLY_SMOOTH_STONE", "FESTIVE_POPPER", "BAG_OF_MARBLES",
         "STONE_CRACKER", "PANTOGRAPH", "SLING_OF_COURAGE",
         // Start and end of turn
-        "CAPTAINS_WHEEL", "HORN_CLEAT", "CANDELABRA", "CHANDELIER", "SPARKLING_ROUGE", "HAPPY_FLOWER", "PENDULUM", "BREAD",
+        "CAPTAINS_WHEEL", "HORN_CLEAT", "CANDELABRA", "CHANDELIER", "SPARKLING_ROUGE", "HAPPY_FLOWER", "PENDULUM", "BREAD", "BOOKMARK",
         "MERCURY_HOURGLASS", "CLOAK_CLASP", "POCKETWATCH", "PARRYING_SHIELD", "STONE_CALENDAR", "ART_OF_WAR", "ORICHALCUM",
-        "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP", "MEMBERSHIP_CARD",
+        "SCREAMING_FLAGON", "ICE_CREAM", "STURDY_CLAMP", "MEMBERSHIP_CARD", "CAULDRON",
         // Combat events
-        "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
+        "GREMLIN_HORN", "RAZOR_TOOTH", "THE_ABACUS", "PERMAFROST", "GAME_PIECE", "REPTILE_TRINKET", "CENTENNIAL_PUZZLE", "LIZARD_TAIL",
         "BELLOWS", "UNCEASING_TOP", "TOUGH_BANDAGES", "TINGSHA", "GAMBLING_CHIP", "HELICAL_DART", "NINJA_SCROLL",
         // Defect and Necrobinder
         "DATA_DISK", "SYMBIOTIC_VIRUS", "GOLD_PLATED_CABLES", "METRONOME", "RUNIC_CAPACITOR", "POWER_CELL", "EMOTION_CHIP",
         "BOOK_REPAIR_KNIFE", "BONE_FLUTE",
         // On the combat hooks (#299)
         "BAG_OF_PREPARATION", "BURNING_STICKS", "INTIMIDATING_HELMET", "JOSS_PAPER", "KUNAI", "KUSARIGAMA", "LETTER_OPENER",
-        "MEAT_ON_THE_BONE", "MUMMIFIED_HAND", "NUNCHAKU", "ORNAMENTAL_FAN", "RAINBOW_RING", "RIPPLE_BASIN", "SHURIKEN",
-        "TUNING_FORK", "VEXING_PUZZLEBOX",
-        "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", // Ironclad
+        "MEAT_ON_THE_BONE", "MUMMIFIED_HAND", "NUNCHAKU", "ORNAMENTAL_FAN", "PEN_NIB", "RAINBOW_RING", "RIPPLE_BASIN", "SHURIKEN", "STRIKE_DUMMY", "MINIATURE_CANNON",
+        "KIFUDA", "GNARLED_HAMMER", "PUNCH_DAGGER", "ROYAL_STAMP", "WING_CHARM", // Shop: enchant cards
+        "MYSTIC_LIGHTER", // Shop: Enchanted Attacks (#107)
+        "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
+        "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", "PAPER_PHROG", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL",   // Regent
-        "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK",                                        // Necrobinder
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", "VENERABLE_TEA_SET", "PLANISPHERE", "MEAL_TICKET", "SHOVEL", // Shared, out of combat
+        "WHITE_STAR",                         // Shared, rare: an Elite gives one more set of Rare cards
+        "VAMBRACE",                           // Shared, uncommon: the first Block of a card each combat is doubled
+        "BEATING_REMNANT", "UNSETTLING_LAMP", // Shared, rare: caps the HP lost each turn, doubles the first debuff of the fight
+        "GHOST_SEED",                        // Shared, the Strikes and Defends of the fight
+        "PAPER_KRANE",                        // Silent, rare: Weak enemies deal 40% less damage to the player
+        "RUINED_HELMET",                      // Ironclad, rare: the first Strength gained each combat is doubled
+        "LEES_WAFFLE", "MANGO", "OLD_COIN", "PEAR", "LUCKY_FYSH",                 // Shared, out of combat
+        "BOOK_OF_FIVE_RINGS",                 // Shared, out of combat: heals each 5th card added to the Deck
+        "GALACTIC_DUST", "LUNAR_PASTRY", "MINI_REGENT", "REGALITE", "FENCING_MANUAL", "ORANGE_DOUGH", "VITRUVIAN_MINION",   // Regent
+        "BIG_HAT", "IVORY_TILE", "FUNERARY_MASK", "UNDYING_SIGIL",                       // Necrobinder
         // Statuses given at the start of the combat (#91, #93)
-        "BRONZE_SCALES", "GORGET", "AKABEKO"
+        "BRONZE_SCALES", "GORGET", "AKABEKO",
+        // At the merchant (#487)
+        "THE_COURIER", "ORRERY",
+        // A copy of a card of the deck on pickup (#459)
+        "DOLLYS_MIRROR",
+        // Max HP with each gain of Gold (#474)
+        "DRAGON_FRUIT",
+        // Retained hand on the first turn (#509)
+        "RINGING_TRIANGLE",
+        // Upgrades on pickup (#465, #464)
+        "WHETSTONE", "WAR_PAINT",
+        // Potion slots on pickup (#462)
+        "POTION_BELT",
+        // Colorless cards in the card rewards (#486)
+        "DINGY_RUG",
+        // Out of combat, at the end of a fight without HP lost (#476)
+        "LAVA_LAMP",
+        // Extra card reward after a normal fight (#479)
+        "PRAYER_WHEEL",
+        // Upgrades the Attacks added to the deck (#493)
+        "MOLTEN_EGG",
+        // Upgrades a Power added to the Deck (#494)
+        "FROZEN_EGG",
+        // A Colorless card offered at the start of the combat (#496)
+        "TOOLBOX",
+        // Out of combat, at the rest sites (#475)
+        "GIRYA",
+        // Potion at the start of each combat (#497)
+        "PETRIFIED_TOAD",
+        // Skills added to the Deck are upgraded (#495)
+        "TOXIC_EGG",
+        // At the merchant (#503)
+        "CHEMICAL_X"
     };
     return ACTIVE_RELICS;
 }
@@ -958,6 +1599,7 @@ std::string_view RunManager::draw_treasure_relic() {
 }
 
 static constexpr uint8_t PUMPKIN_CANDLE_COMBATS = 5;
+static constexpr uint8_t EMBER_TEA_COMBATS = 5;
 
 void RunManager::register_relic_powers() {
     // Blessed Antler: one more energy each turn, paid for with three Dazed shuffled into the draw pile.
@@ -966,11 +1608,33 @@ void RunManager::register_relic_powers() {
         for (int copy = 0; copy < 3; ++copy) combat.create_card(CardId::DAZED, Pile::DRAW);
     }
     if (has_relic("BLOOD_SOAKED_ROSE")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Ectoplasm: one more energy each turn.
+    if (has_relic("ECTOPLASM")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Sozu (ancient): one more energy each turn.
+    if (has_relic("SOZU")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Philosopher's Stone (ancient): one more energy each turn.
+    if (has_relic("PHILOSOPHERS_STONE")) combat.add_power(PowerId::TURN_ENERGY, 1);
+    // Spiked Gauntlets (ancient): one more energy each turn, but Power cards cost 1 more.
+    if (has_relic("SPIKED_GAUNTLETS")) {
+        combat.add_power(PowerId::TURN_ENERGY, 1);
+        combat.add_power(PowerId::SPIKED_GAUNTLETS, 1);
+    }
+    if (has_relic("PRISMATIC_GEM")) combat.add_power(PowerId::TURN_ENERGY, 1);
     // Whispering Earring: one more energy each turn, and Vakuu plays the first turn of the combat.
     if (has_relic("WHISPERING_EARRING")) {
         combat.add_power(PowerId::TURN_ENERGY, 1);
         combat.add_power(PowerId::WHISPERING_EARRING, 1);
     }
+    // Velvet Choker: one more energy each turn, and no more than VELVET_CHOKER_CARDS cards played each turn.
+    if (has_relic("VELVET_CHOKER")) {
+        combat.add_power(PowerId::TURN_ENERGY, 1);
+        combat.add_power(PowerId::VELVET_CHOKER, VELVET_CHOKER_CARDS);
+    }
+    // Pael's Eye: the first turn ended without playing a card is followed by an extra turn.
+    if (has_relic("BRILLIANT_SCARF")) combat.add_power(PowerId::BRILLIANT_SCARF, 1);
+    if (has_relic("PAELS_EYE")) combat.add_power(PowerId::PAELS_EYE, 1);
+    // Music Box: the first Attack played each turn leaves an Ethereal copy in the hand.
+    if (has_relic("MUSIC_BOX")) combat.add_power(PowerId::MUSIC_BOX, 1);
     // Start of turn
     if (has_relic("CAPTAINS_WHEEL")) combat.add_power(PowerId::CAPTAINS_WHEEL, 18);
     if (has_relic("HORN_CLEAT")) combat.add_power(PowerId::HORN_CLEAT, 14);
@@ -978,8 +1642,15 @@ void RunManager::register_relic_powers() {
     if (has_relic("CHANDELIER")) combat.add_power(PowerId::CHANDELIER, 3);
     if (has_relic("SPARKLING_ROUGE")) combat.add_power(PowerId::SPARKLING_ROUGE, 1);
     if (has_relic("HAPPY_FLOWER")) combat.add_power(PowerId::HAPPY_FLOWER, 1);
+    if (has_relic("FAKE_HAPPY_FLOWER")) combat.add_power(PowerId::FAKE_HAPPY_FLOWER, 1);
     if (has_relic("PENDULUM")) combat.add_power(PowerId::PENDULUM, 1);
+    // Ring of the Drake (event): 2 more cards drawn at the start of each of the first 3 turns.
+    if (has_relic("RING_OF_THE_DRAKE")) combat.add_power(PowerId::RING_OF_THE_DRAKE, 2);
+    if (has_relic("POLLINOUS_CORE")) combat.add_power(PowerId::POLLINOUS_CORE, 2);
     if (has_relic("BREAD")) combat.add_power(PowerId::BREAD, 1);
+    if (has_relic("BOOKMARK")) combat.add_power(PowerId::BOOKMARK, 1);
+    if (has_relic("UNDYING_SIGIL")) combat.add_power(PowerId::UNDYING_SIGIL, 1);
+    if (has_relic("TOASTY_MITTENS")) combat.add_power(PowerId::TOASTY_MITTENS, 1);
     if (has_relic("VERY_HOT_COCOA")) combat.add_power(PowerId::VERY_HOT_COCOA, 4);
     // Paël's Blood: one more card in every opening draw, the first one included.
     // Fiddle: two more cards in every opening draw, then no draw until the next turn.
@@ -987,22 +1658,38 @@ void RunManager::register_relic_powers() {
         combat.add_power(PowerId::TURN_DRAW, 2);
         combat.add_power(PowerId::FIDDLE, 1);
     }
+    // Big Mushroom (Event): 2 cards fewer in the opening draw of the combat. A turn-only power, so the first hand only.
+    if (has_relic("BIG_MUSHROOM")) combat.add_power(PowerId::TURN_DRAW, -2, true);
     if (has_relic("PAELS_BLOOD")) combat.add_power(PowerId::TURN_DRAW, 1);
     if (has_relic("MERCURY_HOURGLASS")) combat.add_power(PowerId::MERCURY_HOURGLASS, 3);
+    // Monsieur Carnage (event): at the start of each turn, the turn number in damage to every enemy.
+    if (has_relic("MR_STRUGGLES")) combat.add_power(PowerId::MR_STRUGGLES, 1);
     // End of turn
     if (has_relic("CLOAK_CLASP")) combat.add_power(PowerId::CLOAK_CLASP, 1);
     if (has_relic("POCKETWATCH")) combat.add_power(PowerId::POCKETWATCH, 3);
     if (has_relic("PARRYING_SHIELD")) combat.add_power(PowerId::PARRYING_SHIELD, 6);
     if (has_relic("STONE_CALENDAR")) combat.add_power(PowerId::STONE_CALENDAR, 52);
+    if (has_relic("IRON_CLUB")) combat.add_power(PowerId::IRON_CLUB, 1);
+    if (has_relic("PAELS_FLESH")) combat.add_power(PowerId::PAELS_FLESH, 1);
     if (has_relic("PAELS_TEARS")) combat.add_power(PowerId::PAELS_TEARS, 2);
     if (has_relic("ART_OF_WAR")) combat.add_power(PowerId::ART_OF_WAR, 1);
     if (has_relic("ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 6);
+    // Event relic Orichalque ???: the Orichalcum effect, for 3 Block instead of 6.
+    if (has_relic("FAKE_ORICHALCUM")) combat.add_power(PowerId::ORICHALCUM, 3);
     if (has_relic("SCREAMING_FLAGON")) combat.add_power(PowerId::SCREAMING_FLAGON, 20);
+    // Runic Pyramid: the hand is not discarded at the end of the turn (KEEP_HAND, the Well-Laid Plans rule).
+    if (has_relic("RUNIC_PYRAMID")) combat.add_power(PowerId::KEEP_HAND);
     // Kept from one turn to the next
     // Ancient relic: the combat borrows the gold it spends, paid back when the fight ends.
     if (has_relic("SEAL_OF_GOLD")) {
         combat.gold = gold;
         combat.add_power(PowerId::SEAL_OF_GOLD, 1);
+    }
+    // Tea of Discourtesy (event): at the start of the next combat only, two Dazed shuffled into the draw pile. The
+    // counter marks the tea as drunk.
+    if (has_relic("TEA_OF_DISCOURTESY") && relic_counter("TEA_OF_DISCOURTESY") == 0 &&
+        set_relic_counter("TEA_OF_DISCOURTESY", 1)) {
+        for (int copy = 0; copy < 2; ++copy) combat.create_card(CardId::DAZED, Pile::DRAW);
     }
     // Pumpkin Candle: one more energy each turn, for the first 5 combats; the counter holds the combats lit so far.
     if (has_relic("PUMPKIN_CANDLE") && relic_counter("PUMPKIN_CANDLE") < PUMPKIN_CANDLE_COMBATS) {
@@ -1016,13 +1703,25 @@ void RunManager::register_relic_powers() {
     if (has_relic("GREMLIN_HORN")) combat.add_power(PowerId::GREMLIN_HORN, 1);
     if (has_relic("RAZOR_TOOTH")) combat.add_power(PowerId::RAZOR_TOOTH);
     if (has_relic("THE_ABACUS")) combat.add_power(PowerId::THE_ABACUS, 6);
+    // Grooos câlin (Ancient): a Soot joins the draw pile each time it is shuffled.
+    if (has_relic("BIIIG_HUG")) combat.add_power(PowerId::BIIIG_HUG, 1);
     if (has_relic("PERMAFROST")) combat.add_power(PowerId::PERMAFROST, 7);
     if (has_relic("GAME_PIECE")) combat.add_power(PowerId::GAME_PIECE, 1);
+    // Lost Wisp (event relic): each Power played deals 8 damage to every enemy.
+    if (has_relic("LOST_WISP")) combat.add_power(PowerId::LOST_WISP, 8);
+    if (has_relic("REPTILE_TRINKET")) combat.add_power(PowerId::REPTILE_TRINKET, 3);
     if (has_relic("CENTENNIAL_PUZZLE")) combat.add_power(PowerId::CENTENNIAL_PUZZLE, 3);
+    for (size_t i = 0; i < potions.size(); ++i) {
+        if (potions[i] == "FAIRY_IN_A_BOTTLE") combat.fairy_bottles = static_cast<uint8_t>(combat.fairy_bottles + 1);
+    }
     if (has_relic("LIZARD_TAIL")) combat.add_power(PowerId::LIZARD_TAIL, 50);
+    if (has_relic("CROSSBOW")) combat.add_power(PowerId::CROSSBOW, 1);
+    if (has_relic("HISTORY_COURSE")) combat.add_power(PowerId::HISTORY_COURSE, 0);
     if (has_relic("UNCEASING_TOP")) combat.add_power(PowerId::UNCEASING_TOP);
     if (has_relic("TOUGH_BANDAGES")) combat.add_power(PowerId::TOUGH_BANDAGES, 3);
     if (has_relic("TINGSHA")) combat.add_power(PowerId::TINGSHA, 3);
+    // Hand Drill (event relic): breaking an enemy's Block applies 2 Vulnerable to it.
+    if (has_relic("HAND_DRILL")) combat.add_power(PowerId::HAND_DRILL, 2);
     // Hero relics
     if (has_relic("BOUND_PHYLACTERY")) combat.add_power(PowerId::TURN_SUMMON, 1);
     // Phylactery Unbound: Osty is there from the start of the combat, and grows faster.
@@ -1046,6 +1745,22 @@ void RunManager::register_relic_powers() {
     if (has_relic("KUSARIGAMA")) combat.add_power(PowerId::KUSARIGAMA, 6);
     if (has_relic("MUMMIFIED_HAND")) combat.add_power(PowerId::MUMMIFIED_HAND);
     if (has_relic("NUNCHAKU")) combat.add_power(PowerId::NUNCHAKU, 1);
+    if (has_relic("PEN_NIB")) combat.add_power(PowerId::PEN_NIB);
+    if (has_relic("VITRUVIAN_MINION")) combat.add_power(PowerId::VITRUVIAN_MINION);
+    // Paper Phrog (Ironclad, uncommon): Vulnerable enemies take 75% more damage rather than 50%.
+    if (has_relic("PAPER_PHROG")) combat.add_power(PowerId::PAPER_PHROG, 25);
+    if (has_relic("STRIKE_DUMMY")) combat.add_power(PowerId::STRIKE_DUMMY, 3);
+    // Event copy of Strike Dummy: 1 more damage per Strike.
+    if (has_relic("FAKE_STRIKE_DUMMY")) combat.add_power(PowerId::FAKE_STRIKE_DUMMY, 1);
+    if (has_relic("MINIATURE_CANNON")) combat.add_power(PowerId::MINIATURE_CANNON, 3);
+    // Mystic Lighter: Enchanted Attacks deal more damage.
+    if (has_relic("MYSTIC_LIGHTER")) combat.add_power(PowerId::MYSTIC_LIGHTER, MYSTIC_LIGHTER_DAMAGE);
+    // The Boot (event relic): an Attack hit of 4 damage or less deals 5 instead.
+    if (has_relic("THE_BOOT")) combat.add_power(PowerId::THE_BOOT);
+    // Tungsten Rod: whenever the player would lose HP, 1 less.
+    if (has_relic("TUNGSTEN_ROD")) combat.player.hp_loss_reduction = 1;
+    // Paper Krane: enemies with Weak deal 40% less damage to the player rather than 25%.
+    if (has_relic("PAPER_KRANE")) combat.player.paper_krane = true;
     if (has_relic("RAINBOW_RING")) combat.add_power(PowerId::RAINBOW_RING, 1);
     if (has_relic("RIPPLE_BASIN")) combat.add_power(PowerId::RIPPLE_BASIN, 4);
     if (has_relic("BURNING_STICKS")) combat.add_power(PowerId::BURNING_STICKS);
@@ -1056,8 +1771,22 @@ void RunManager::register_relic_powers() {
     // More hero relics
     if (has_relic("SELF_FORMING_CLAY")) combat.add_power(PowerId::SELF_FORMING_CLAY, 3);
     if (has_relic("CHARONS_ASHES")) combat.add_power(PowerId::CHARONS_ASHES, 3);
+    if (has_relic("FORGOTTEN_SOUL")) combat.add_power(PowerId::FORGOTTEN_SOUL, 1);
     if (has_relic("RED_SKULL")) combat.add_power(PowerId::RED_SKULL, 3);
     if (has_relic("DEMON_TONGUE")) combat.add_power(PowerId::DEMON_TONGUE);
+    if (has_relic("BEATING_REMNANT")) combat.add_power(PowerId::BEATING_REMNANT, BEATING_REMNANT_HP_LOSS);
+    // Vambrace: the first Block a card gives each combat is doubled.
+    if (has_relic("VAMBRACE")) combat.add_power(PowerId::VAMBRACE, 1);
+    if (has_relic("RUINED_HELMET")) combat.add_power(PowerId::RUINED_HELMET, 1);
+    if (has_relic("CHEMICAL_X")) combat.add_power(PowerId::CHEMICAL_X, CHEMICAL_X_INCREASE);
+    // Unsettling Lamp: the first card of the fight that debuffs an enemy has its debuffs doubled.
+    if (has_relic("UNSETTLING_LAMP")) combat.add_power(PowerId::UNSETTLING_LAMP, 1);
+    // Infused Core: Lightning orbs deal 1 more damage.
+    if (has_relic("INFUSED_CORE")) combat.add_power(PowerId::INFUSED_CORE, 1);
+    // Daughter of the Wind (event relic): every Attack played gives 1 Block.
+    if (has_relic("DAUGHTER_OF_THE_WIND")) combat.add_power(PowerId::DAUGHTER_OF_THE_WIND, 1);
+    // Throwing Axe (ancient): the first card played each combat is played once more.
+    if (has_relic("THROWING_AXE")) combat.add_power(PowerId::THROWING_AXE, 1);
     if (has_relic("BRIMSTONE")) combat.add_power(PowerId::BRIMSTONE, 2);
     if (has_relic("SNECKO_SKULL")) combat.add_power(PowerId::SNECKO_SKULL, 1);
     if (has_relic("MINI_REGENT")) combat.add_power(PowerId::MINI_REGENT, 1);
@@ -1066,6 +1795,7 @@ void RunManager::register_relic_powers() {
     if (has_relic("REGALITE")) combat.add_power(PowerId::REGALITE, 4);
     if (has_relic("IVORY_TILE")) combat.add_power(PowerId::IVORY_TILE, 1);
     if (has_relic("PAELS_LEGION")) combat.add_power(PowerId::PAELS_LEGION, 2);
+    if (has_relic("RINGING_TRIANGLE")) combat.add_power(PowerId::RINGING_TRIANGLE, 1);
     // Confused from the start: the opening hand already gets random costs.
     if (has_relic("FAKE_SNECKO_EYE")) combat.player.add_status(StatusType::CONFUSED, 1);
     if (has_relic("SNECKO_EYE")) {
@@ -1077,15 +1807,28 @@ void RunManager::register_relic_powers() {
 void RunManager::apply_combat_start_relics() {
     // Delicate Frond: fill every empty potion slot with a random potion.
     if (has_relic("DELICATE_FROND")) gain_random_potions(MAX_POTION_SLOTS);
+    // Petrified Toad: procure a Potion-Shaped Rock at the start of each combat (lost if the belt is full).
+    if (has_relic("PETRIFIED_TOAD") && !has_relic("SOZU") && !potion_belt_full()) potions.push_back("POTION_SHAPED_ROCK");
     // Vajra: start each combat with 1 Strength.
     if (has_relic("VAJRA")) {
         combat.player.add_status(StatusType::STRENGTH, 1);
+    }
+    // Girya: the Strength lifted at the rest sites, one point per lift.
+    if (has_relic("GIRYA") && relic_counter("GIRYA") > 0) {
+        combat.player.add_status(StatusType::STRENGTH, relic_counter("GIRYA"));
+    }
+    // Ember Tea (event): 2 Strength at the start of each of the next 5 combats; the counter holds the combats so far.
+    if (has_relic("EMBER_TEA") && relic_counter("EMBER_TEA") < EMBER_TEA_COMBATS) {
+        combat.player.add_status(StatusType::STRENGTH, 2);
+        set_relic_counter("EMBER_TEA", static_cast<uint8_t>(relic_counter("EMBER_TEA") + 1));
     }
     // Statuses to start the combat with. Given once the first turn has started, so that Plating does not lose a
     // point before it has given any Block.
     if (has_relic("BRONZE_SCALES")) combat.player.add_status(StatusType::THORNS, 3);
     if (has_relic("GORGET")) combat.player.add_status(StatusType::PLATED_ARMOR, 4);
     if (has_relic("AKABEKO")) combat.player.add_status(StatusType::VIGOR, 8);
+    // Sword of Jade (event): start each combat with 3 Strength.
+    if (has_relic("SWORD_OF_JADE")) combat.player.add_status(StatusType::STRENGTH, 3);
     // Ring of the Snake (Silent): draw 2 additional cards on the first turn.
     if (has_relic("RING_OF_THE_SNAKE")) {
         combat.draw_cards(2);
@@ -1094,9 +1837,20 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("BAG_OF_PREPARATION")) {
         combat.draw_cards(2);
     }
+    // Booming Conch (Ancient): in an Elite room, 2 additional cards on the first turn and 1 more energy.
+    if (has_relic("BOOMING_CONCH") &&
+        (current_node_index >= 0 ? map.nodes[current_node_index].type : RoomType::MONSTER) == RoomType::ELITE) {
+        combat.draw_cards(2);
+        combat.player.energy = static_cast<int8_t>(combat.player.energy + 1);
+    }
     // Bellows: the first hand of the combat is upgraded, the cards of Ring of the Snake included.
     if (has_relic("BELLOWS")) {
         for (DeckCard& card : combat.hand) card.upgraded = true;
+    }
+    // Bone Tea (event): the first hand of the next combat is upgraded, once.
+    if (has_relic("BONE_TEA") && relic_counter("BONE_TEA") > 0) {
+        for (DeckCard& card : combat.hand) card.upgraded = true;
+        set_relic_counter("BONE_TEA", 0);
     }
     // Gambling Chip: any number of cards of the first hand are discarded, and as many are drawn.
     if (has_relic("GAMBLING_CHIP")) {
@@ -1106,6 +1860,10 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("NINJA_SCROLL")) {
         combat.add_shivs(3);
     }
+    // Orange Dough (Regent): 2 random Colorless cards added to the hand at the start of each combat.
+    if (has_relic("ORANGE_DOUGH")) {
+        for (int copy = 0; copy < 2; ++copy) combat.create_random_card(CardFilter(CardPool::COLORLESS), Pile::HAND);
+    }
     // Vexing Puzzlebox: a random card of the hero's pool, free this turn unless a full hand sends it to the
     // discard pile.
     if (has_relic("VEXING_PUZZLEBOX")) {
@@ -1113,6 +1871,14 @@ void RunManager::apply_combat_start_relics() {
         DeckCard gift(pool[next_random() % pool.size()]);
         gift.free_this_turn = combat.hand.size() < combat.hand.capacity();
         combat.create_card(gift, Pile::HAND);
+    }
+    // Toolbox: 3 random Colorless cards are offered, the one picked goes to the hand.
+    if (has_relic("TOOLBOX")) {
+        combat.offer_random_cards(CardFilter(CardPool::COLORLESS), 3);
+    }
+    // Choices Paradox (ancient): 1 of 5 random cards of the hero's pool goes to the hand, with Retain.
+    if (has_relic("CHOICES_PARADOX")) {
+        combat.offer_random_cards(CardFilter(), 5, false, false, true);
     }
     // Jeweled Mask (ancient): a random Power of the draw pile goes to the hand and costs 0 for the combat.
     if (has_relic("JEWELED_MASK") && combat.hand.size() < combat.hand.capacity()) {
@@ -1139,6 +1905,10 @@ void RunManager::apply_combat_start_relics() {
             combat.create_card(ethereal[next_random() % ethereal.size()], Pile::HAND);
         }
     }
+    // Radiant Pearl (Orobas): 1 Luminesce in hand.
+    if (has_relic("RADIANT_PEARL")) {
+        combat.create_card(DeckCard(CardId::LUMINESCE), Pile::HAND);
+    }
     // Fencing Manual (Regent): Forge 10.
     if (has_relic("FENCING_MANUAL")) {
         combat.forge(10);
@@ -1146,6 +1916,10 @@ void RunManager::apply_combat_start_relics() {
     // Divine Right (Regent): 3 Stars.
     if (has_relic("DIVINE_RIGHT")) {
         combat.gain_stars(3);
+    }
+    // Divine Destiny (event): 7 Stars.
+    if (has_relic("DIVINE_DESTINY")) {
+        combat.gain_stars(7);
     }
     // Data Disk: 1 Focus. Runic Capacitor: 3 more orb slots. Symbiotic Virus: 1 Dark orb.
     if (has_relic("DATA_DISK")) {
@@ -1175,9 +1949,22 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("CRACKED_CORE")) {
         combat.channel_orb(OrbType::LIGHTNING);
     }
+    // Infused Core (Defect): channel 3 Lightning.
+    if (has_relic("INFUSED_CORE")) {
+        for (int orb = 0; orb < 3; ++orb) combat.channel_orb(OrbType::LIGHTNING);
+    }
     // Anchor: start each combat with 10 Block, added after the turn reset and unaffected by Dexterity.
     if (has_relic("ANCHOR")) {
         combat.player.block += 10;
+    }
+    // Event relic (Fake Anchor): start each combat with 4 Block, same timing as Anchor.
+    if (has_relic("FAKE_ANCHOR")) {
+        combat.player.block += 4;
+    }
+    // Diamond Diadem (Ancient): start each combat with 20 Block, which is not removed at the start of the 2nd turn.
+    if (has_relic("DIAMOND_DIADEM")) {
+        combat.player.block += 20;
+        combat.keep_block_turns = static_cast<uint8_t>(combat.keep_block_turns + 1);
     }
     // Oddly Smooth Stone: start each combat with 1 Dexterity.
     if (has_relic("ODDLY_SMOOTH_STONE")) {
@@ -1187,10 +1974,26 @@ void RunManager::apply_combat_start_relics() {
     if (has_relic("LANTERN")) {
         combat.player.energy = static_cast<int8_t>(combat.player.energy + 1);
     }
+    // Venerable Tea Set: 2 additional energy on the first turn for each Rest Site entered since the last combat.
+    if (has_relic("VENERABLE_TEA_SET") && relic_counter("VENERABLE_TEA_SET") > 0) {
+        combat.player.energy = static_cast<int8_t>(combat.player.energy + 2 * relic_counter("VENERABLE_TEA_SET"));
+        set_relic_counter("VENERABLE_TEA_SET", 0);
+    }
+    // Venerable Tea Set (event): 1 additional energy on the first turn for each Rest Site entered since the last combat.
+    if (has_relic("FAKE_VENERABLE_TEA_SET") && relic_counter("FAKE_VENERABLE_TEA_SET") > 0) {
+        combat.player.energy = static_cast<int8_t>(combat.player.energy + relic_counter("FAKE_VENERABLE_TEA_SET"));
+        set_relic_counter("FAKE_VENERABLE_TEA_SET", 0);
+    }
     // Blood Vial: heal 2 HP.
     if (has_relic("BLOOD_VIAL")) {
         combat.player.heal(2);
     }
+    // Fake Blood Vial (event relic): heal 1 HP.
+    if (has_relic("FAKE_BLOOD_VIAL")) {
+        combat.player.heal(1);
+    }
+    // Poison royal (event relic): lose 4 HP at the start of each combat.
+    if (has_relic("ROYAL_POISON")) combat.lose_hp(4);
     // Sling of Courage and Pantograph only act in Elite and Boss rooms.
     RoomType room = current_node_index >= 0 ? map.nodes[current_node_index].type : RoomType::MONSTER;
     if (has_relic("SLING_OF_COURAGE") && room == RoomType::ELITE) {
@@ -1217,14 +2020,38 @@ void RunManager::apply_combat_start_relics() {
         if (has_relic("BAG_OF_MARBLES")) foe.add_status(StatusType::VULNERABLE, 1);
         if (has_relic("TWISTED_FUNNEL")) combat.afflict(foe, StatusType::POISON, 4);
         if (has_relic("FESTIVE_POPPER")) foe.take_damage(9);
+        // Philosopher's Stone (ancient): every enemy starts the combat with 1 Strength.
+        if (has_relic("PHILOSOPHERS_STONE")) foe.add_status(StatusType::STRENGTH, 1);
     }
     combat.enemy = combat.enemies[0];
     if (!combat.has_alive_enemies()) {
         combat.state = CombatState::VICTORY;
     }
+    belt_buckle_active = false;
+    refresh_belt_buckle();
+}
+
+void RunManager::refresh_belt_buckle() {
+    // Belt Buckle: 2 additional Dexterity while the potion belt is empty.
+    if (!has_relic("BELT_BUCKLE")) return;
+    bool should_be_active = potions.empty();
+    if (should_be_active == belt_buckle_active) return;
+    combat.player.add_status(StatusType::DEXTERITY, should_be_active ? 2 : -2);
+    belt_buckle_active = should_be_active;
 }
 
 void RunManager::proceed_after_combat() {
+    // Each Fairy in a Bottle that revived its owner is discarded.
+    for (int spent = combat.fairy_used; spent > 0; --spent) {
+        for (size_t i = 0; i < potions.size(); ++i) {
+            if (potions[i] == "FAIRY_IN_A_BOTTLE") {
+                potions.erase(i);
+                break;
+            }
+        }
+    }
+    combat.fairy_used = 0;
+    refresh_belt_buckle();
     // Lizard Tail only works once: it leaves the run when it saved its owner.
     if (combat.power_counter(PowerId::LIZARD_TAIL) > 0) {
         for (size_t i = 0; i < relics.size(); ++i) {
@@ -1238,11 +2065,32 @@ void RunManager::proceed_after_combat() {
     for (const PermanentGain& gain : combat.permanent_gains) {
         if (gain.deck_index < master_deck.size()) {
             DeckCard& card = master_deck[gain.deck_index];
-            card.bonus = static_cast<uint8_t>(std::min(255, card.bonus + gain.amount));
+            if (gain.enchantment) {
+                card.enchant_amount = static_cast<uint8_t>(std::min(255, card.enchant_amount + gain.amount));
+            } else {
+                card.bonus = static_cast<uint8_t>(std::min(255, card.bonus + gain.amount));
+            }
         }
     }
     combat.permanent_gains.clear();
+    // Guilty counts the fights it has sat through in `bonus`, and leaves the deck after the fifth.
+    for (size_t i = master_deck.size(); i > 0; --i) {
+        if (master_deck[i - 1].id != CardId::GUILTY) continue;
+        if (++master_deck[i - 1].bonus >= 5) master_deck.erase(i - 1);
+    }
     if (has_relic("SEAL_OF_GOLD")) gold = combat.gold;
+    // What the cards of the fight leave to the run: gold (Hand of Greed, Royalties), potions (Alchemize), an extra
+    // card reward (The Hunt), a card to remove from the deck (Forbidden Grimoire).
+    const bool won = combat.state == CombatState::VICTORY;
+    if (won) {
+        gain_gold(static_cast<int16_t>(combat.gold_gained + combat.power_amount(PowerId::ROYALTIES)));
+        gain_random_potions(combat.potions_gained);
+        extra_card_rewards = combat.extra_card_rewards;
+        if (combat.has_power(PowerId::FORBIDDEN_GRIMOIRE)) request_deck_choice(DeckChoiceKind::REMOVE, 1, true);
+    }
+    combat.gold_gained = 0;
+    combat.potions_gained = 0;
+    combat.extra_card_rewards = 0;
     // Gold taken by the cards left in hand at the end of a turn (curses).
     gold = static_cast<decltype(gold)>(std::max(0, static_cast<int>(gold) - combat.gold_lost));
     combat.gold_lost = 0;
@@ -1258,6 +2106,10 @@ void RunManager::proceed_after_combat() {
     if (has_relic("MEAT_ON_THE_BONE") && hp * 2 <= max_hp) {
         hp = std::min<int16_t>(max_hp, hp + 12);
     }
+    // Chosen Cheese: 1 Max HP at the end of each fight.
+    if (has_relic("CHOSEN_CHEESE")) gain_max_hp(1);
+    // Black Blood (event relic): 12 HP after every fight.
+    if (has_relic("BLACK_BLOOD")) hp = std::min<int16_t>(max_hp, hp + 12);
 
     // Every enemy ran away: the fight is over, but there is nothing to take.
     if (combat.every_enemy_escaped()) {
@@ -1265,6 +2117,8 @@ void RunManager::proceed_after_combat() {
         return;
     }
 
+    // Lava Lamp: a fight won without losing HP upgrades all the card rewards it gives.
+    card_rewards_upgraded = won && has_relic("LAVA_LAMP") && combat.counters.combat_hp_losses == 0;
     on_combat_won(map.nodes[current_node_index].type);
 
     if (map.nodes[current_node_index].type == RoomType::BOSS) {
@@ -1292,7 +2146,88 @@ void RunManager::advance_act() {
     current_node_index = -1;
     map_seed = next_random();
     regenerate_map();
-    phase = RunPhase::ANCIENT_BLESSING; // Transition with Ancient encounter!
+    // The Ancient has a stream of its own: the run's generator only moved for the seed of the new map.
+    meet_ancient(draw_ancient(current_act, reward_seed() ^ ANCIENT_SEED_SALT));
+}
+
+AncientId RunManager::draw_ancient(uint8_t act, uint32_t seed) {
+    if (act < 1 || act > 3) return AncientId::COUNT;
+    const uint8_t bit = static_cast<uint8_t>(1u << (act - 1));
+    uint32_t count = 0;
+    for (const Ancient& ancient : get_all_ancients()) {
+        if (ancient.act_mask & bit) ++count;
+    }
+    if (count == 0) return AncientId::COUNT;
+    RewardRng rng(seed);
+    uint32_t pick = rng.below(count);
+    for (const Ancient& ancient : get_all_ancients()) {
+        if (!(ancient.act_mask & bit)) continue;
+        if (pick-- == 0) return ancient.id;
+    }
+    return AncientId::COUNT;
+}
+
+void RunManager::meet_ancient(AncientId id) {
+    current_ancient = id;
+    ancient_offers.clear();
+    phase = RunPhase::ANCIENT_BLESSING;
+    if (id >= AncientId::COUNT || relics.size() >= relics.capacity()) return;
+
+    const Ancient& ancient = get_ancient(id);
+    RewardRng rng(reward_seed() ^ ANCIENT_SEED_SALT ^ (static_cast<uint32_t>(id) + 1) * 0x27D4EB2Fu);
+    const auto offered = [&](size_t slot, size_t option) {
+        for (size_t i = 0; i < ancient_offers.size(); ++i) {
+            if (ancient_offers[i].slot == slot && ancient_offers[i].option == option) return true;
+        }
+        return false;
+    };
+    const auto available = [&](size_t slot, size_t option) {
+        std::string_view relic_id = ancient.slots[slot].options[option].id;
+        return !offered(slot, option) && !has_relic(relic_id) && !ancient_relic_pending(relic_id);
+    };
+    for (size_t slot = 0; slot < ancient.slots.size(); ++slot) {
+        const AncientSlot& group = ancient.slots[slot];
+        for (uint8_t n = 0; n < group.picks_allowed && ancient_offers.size() < ancient_offers.capacity(); ++n) {
+            uint32_t count = 0;
+            for (size_t option = 0; option < group.options.size(); ++option) {
+                if (available(slot, option)) ++count;
+            }
+            if (count == 0) break;
+            uint32_t pick = rng.below(count);
+            for (size_t option = 0; option < group.options.size(); ++option) {
+                if (!available(slot, option)) continue;
+                if (pick-- == 0) {
+                    ancient_offers.push_back(AncientOffer{ static_cast<uint8_t>(slot), static_cast<uint8_t>(option) });
+                    break;
+                }
+            }
+        }
+    }
+}
+
+const AncientRelic& RunManager::ancient_offer(int index) const {
+    const AncientOffer& offer = ancient_offers[static_cast<size_t>(index)];
+    return get_ancient(current_ancient).slots[offer.slot].options[offer.option];
+}
+
+bool RunManager::choose_ancient_relic(int index) {
+    if (phase != RunPhase::ANCIENT_BLESSING || index < 0 || static_cast<size_t>(index) >= ancient_offers.size()) {
+        return false;
+    }
+    std::string_view relic_id = ancient_offer(index).id;
+    current_ancient = AncientId::COUNT;
+    ancient_offers.clear();
+    // Back on the map, unless the relic offers cards right away (it sets REWARD_SCREEN when obtained).
+    phase = RunPhase::MAP_NAVIGATION;
+    add_relic(relic_id);
+    return true;
+}
+
+bool RunManager::leave_ancient() {
+    if (phase != RunPhase::ANCIENT_BLESSING || !ancient_offers.empty()) return false;
+    current_ancient = AncientId::COUNT;
+    phase = RunPhase::MAP_NAVIGATION;
+    return true;
 }
 
 bool RunManager::is_run_completed() const {

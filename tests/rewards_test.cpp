@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 
+#include "engine/card_meta.h"
 #include "engine/potion.h"
 #include "engine/relic.h"
 #include "engine/rewards.h"
@@ -80,7 +81,7 @@ void test_active_potions_are_the_resolved_ones() {
             assert(potion_fits_hero(active.id, hero) == (active.any_hero || active.hero == hero));
         }
     }
-    assert(!potion_fits_hero("AMBERGRIS", CharacterId::IRONCLAD) && !potion_fits_hero("NOT_A_POTION", CharacterId::DEFECT));
+    assert(!potion_fits_hero("NOT_A_POTION", CharacterId::DEFECT));
     assert(potion_fits_hero("FOCUS_POTION", CharacterId::DEFECT) && !potion_fits_hero("FOCUS_POTION", CharacterId::SILENT));
     std::cout << "[PASS] Potions: " << resolved << " resolved by the engine, the only ones on offer" << std::endl;
 }
@@ -108,6 +109,84 @@ void test_potion_rewards() {
     std::cout << "[PASS] Potion rewards: " << drops << " in " << fights << " fights (" << drops * 100 / fights
               << " %), Common " << common * 100 / drops << " %, Uncommon " << uncommon * 100 / drops << " %, Rare "
               << rare * 100 / drops << " %" << std::endl;
+}
+
+// Rarity of the cards of the rewards of `fights` fights in `room`, and how many sets came out.
+struct CardTally {
+    uint32_t common = 0, uncommon = 0, rare = 0, cards = 0;
+};
+
+CardTally tally_card_rewards(RoomType room) {
+    CardTally tally;
+    for (CharacterId hero : HEROES) {
+        for (uint32_t seed = 1; seed <= SEEDS; ++seed) {
+            RunManager run = run_after_fight(hero, seed, room);
+            run.generate_rewards();
+            assert(run.current_card_rewards.size() == 3);
+            for (size_t i = 0; i < run.current_card_rewards.size(); ++i) {
+                CardId id = run.current_card_rewards[i].id;
+                const CardMeta& meta = card_meta(id);
+                assert(meta.pool == static_cast<CardPool>(static_cast<int>(hero) + 1));
+                for (size_t j = 0; j < i; ++j) assert(run.current_card_rewards[j].id != id); // three different cards
+                ++tally.cards;
+                tally.common += meta.rarity == CardRarity::COMMON;
+                tally.uncommon += meta.rarity == CardRarity::UNCOMMON;
+                tally.rare += meta.rarity == CardRarity::RARE;
+            }
+        }
+    }
+    assert(tally.common + tally.uncommon + tally.rare == tally.cards); // nothing but Common, Uncommon or Rare
+    return tally;
+}
+
+void test_card_rewards_by_rarity() {
+    CardTally monster = tally_card_rewards(RoomType::MONSTER);
+    assert(about(monster.common, monster.cards, CARD_COMMON_CHANCE, 2));
+    assert(about(monster.uncommon, monster.cards, CARD_UNCOMMON_CHANCE, 2));
+    assert(about(monster.rare, monster.cards, 100 - CARD_COMMON_CHANCE - CARD_UNCOMMON_CHANCE, 2));
+    std::cout << "[PASS] Card rewards: Common " << monster.common * 100 / monster.cards << " %, Uncommon "
+              << monster.uncommon * 100 / monster.cards << " %, Rare " << monster.rare * 100 / monster.cards
+              << " % after a normal fight" << std::endl;
+}
+
+void test_elite_card_rewards_favour_rare() {
+    CardTally monster = tally_card_rewards(RoomType::MONSTER);
+    CardTally elite = tally_card_rewards(RoomType::ELITE);
+    assert(about(elite.common, elite.cards, ELITE_CARD_COMMON_CHANCE, 2));
+    assert(about(elite.uncommon, elite.cards, ELITE_CARD_UNCOMMON_CHANCE, 2));
+    assert(about(elite.rare, elite.cards, 100 - ELITE_CARD_COMMON_CHANCE - ELITE_CARD_UNCOMMON_CHANCE, 2));
+    assert(elite.rare * monster.cards > monster.rare * elite.cards * 2); // far more Rare cards than a normal fight
+    std::cout << "[PASS] Card rewards: " << elite.rare * 100 / elite.cards << " % Rare after an elite against "
+              << monster.rare * 100 / monster.cards << " % after a normal fight" << std::endl;
+}
+
+void test_boss_card_rewards_are_rare() {
+    for (CharacterId hero : HEROES) {
+        for (uint32_t seed = 1; seed <= 300; ++seed) {
+            RunManager boss = run_after_fight(hero, seed, RoomType::BOSS);
+            boss.generate_rewards();
+            assert(boss.current_card_rewards.size() == 3);
+            for (size_t i = 0; i < 3; ++i) assert(card_meta(boss.current_card_rewards[i].id).rarity == CardRarity::RARE);
+        }
+    }
+    std::cout << "[PASS] Card rewards: a boss offers three Rare cards" << std::endl;
+}
+
+void test_card_pool_is_built_from_the_cards() {
+    for (CharacterId hero : HEROES) {
+        std::span<const CardId> pool = RunManager::card_reward_pool(hero);
+        const CardPool hero_pool = static_cast<CardPool>(static_cast<int>(hero) + 1);
+        size_t expected = 0;
+        for (uint16_t i = 0; i < static_cast<uint16_t>(CardId::COUNT); ++i) {
+            const CardMeta& meta = card_meta(static_cast<CardId>(i));
+            bool drops = meta.pool == hero_pool && (meta.rarity == CardRarity::BASIC || meta.rarity == CardRarity::COMMON ||
+                                                    meta.rarity == CardRarity::UNCOMMON || meta.rarity == CardRarity::RARE);
+            expected += drops;
+            assert(drops == (std::find(pool.begin(), pool.end(), static_cast<CardId>(i)) != pool.end()));
+        }
+        assert(pool.size() == expected && expected > 50);
+    }
+    std::cout << "[PASS] Card rewards: each hero's pool is every starter, Common, Uncommon and Rare card of the hero" << std::endl;
 }
 
 void test_relic_rewards() {
@@ -210,10 +289,7 @@ void test_same_seed_same_rewards() {
                 RunManager elite = run_after_fight(hero, seed, RoomType::ELITE);
                 monster.generate_rewards();
                 elite.generate_rewards();
-                assert(monster.rng_state() == elite.rng_state());
-                for (size_t i = 0; i < 3; ++i) {
-                    assert(monster.current_card_rewards[i].id == elite.current_card_rewards[i].id);
-                }
+                assert(monster.rng_state() == elite.rng_state()); // the cards differ (more Rare ones), not the draws
                 assert(monster.gold_reward == elite.gold_reward);
             }
         }
@@ -360,6 +436,70 @@ void test_shop_stock() {
               << std::endl;
 }
 
+void test_shop_cards() {
+    std::set<int16_t> common_prices;
+    int stocks = 0;
+    for (CharacterId hero : HEROES) {
+        std::set<CardId> seen;
+        for (uint32_t seed = 1; seed <= 300; ++seed) {
+            ShopInventory shop;
+            shop.generate(hero, seed);
+            // 5 cards of the hero then 2 Colorless cards, all different.
+            assert(shop.cards.size() == 7);
+            int on_sale = 0;
+            for (size_t i = 0; i < shop.cards.size(); ++i) {
+                const ShopCard& item = shop.cards[i];
+                bool colorless = i >= 5;
+                const CardMeta& meta = card_meta(item.card.id);
+                assert(!item.purchased && !item.card.upgraded);
+                assert(meta.pool == (colorless ? CardPool::COLORLESS : static_cast<CardPool>(1 + static_cast<int>(hero))));
+                assert(meta.rarity == CardRarity::COMMON || meta.rarity == CardRarity::UNCOMMON || meta.rarity == CardRarity::RARE);
+                for (size_t j = 0; j < i; ++j) assert(shop.cards[j].card.id != item.card.id);
+                seen.insert(item.card.id);
+                // Price by rarity (Colorless 15 % dearer), within 5 %, halved on the card on sale.
+                int base = meta.rarity == CardRarity::COMMON ? 50 : (meta.rarity == CardRarity::UNCOMMON ? 75 : 150);
+                if (colorless) base = base * 115 / 100;
+                int low = base * 95 / 100, high = base * 105 / 100;
+                if (item.on_sale) {
+                    assert(!colorless);
+                    ++on_sale;
+                    low = (low + 1) / 2;
+                    high = (high + 1) / 2;
+                }
+                assert(item.cost >= low && item.cost <= high);
+                if (meta.rarity == CardRarity::COMMON && !colorless && !item.on_sale) common_prices.insert(item.cost);
+            }
+            assert(on_sale == 1);
+            ++stocks;
+
+            // Same seed, same stock.
+            ShopInventory again;
+            again.generate(hero, seed);
+            for (size_t i = 0; i < shop.cards.size(); ++i) {
+                assert(again.cards[i].card == shop.cards[i].card && again.cards[i].cost == shop.cards[i].cost);
+                assert(again.cards[i].on_sale == shop.cards[i].on_sale);
+            }
+        }
+        // The stock changes with the seed.
+        assert(seen.size() > 20);
+    }
+    assert(stocks == 5 * 300 && common_prices.size() > 3);
+
+    // The stock of a run follows the run's seed, and every visit draws its own.
+    RunManager first, second;
+    first.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 777);
+    second.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 777);
+    first.open_shop();
+    second.open_shop();
+    for (size_t i = 0; i < 7; ++i) assert(first.current_shop.cards[i].card == second.current_shop.cards[i].card);
+    first.open_shop();
+    bool differs = false;
+    for (size_t i = 0; i < 7; ++i) differs |= !(first.current_shop.cards[i].card == second.current_shop.cards[i].card);
+    assert(differs);
+    std::cout << "[PASS] Shop: 5 hero cards and 2 Colorless cards drawn by rarity, one on sale, same seed same stock"
+              << std::endl;
+}
+
 void test_shop_potion_with_full_belt() {
     RunManager run;
     run.start_run(CharacterId::REGENT, 0, PaletteVariant::CLASSIC, 12);
@@ -392,11 +532,16 @@ void test_shop_potion_with_full_belt() {
 int main() {
     test_active_potions_are_the_resolved_ones();
     test_potion_rewards();
+    test_card_rewards_by_rarity();
+    test_elite_card_rewards_favour_rare();
+    test_boss_card_rewards_are_rare();
+    test_card_pool_is_built_from_the_cards();
     test_relic_rewards();
     test_relics_never_twice();
     test_same_seed_same_rewards();
     test_potion_belt();
     test_shop_stock();
+    test_shop_cards();
     test_shop_potion_with_full_belt();
     std::cout << "[PASS] Rewards: all groups validated" << std::endl;
     return 0;

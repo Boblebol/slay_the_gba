@@ -1,5 +1,6 @@
 #include "engine/save_system.h"
 #include "engine/card_db.h"
+#include "engine/options.h"
 #include "engine/relic.h"
 #include "engine/monster.h"
 #include "engine/potion.h"
@@ -239,15 +240,29 @@ void SaveManager::autosave_run(const RunManager& run) {
     r.phase = static_cast<uint8_t>(run.phase);
     r.card_removals_count = run.card_removals_count;
 
+    // Ancient met at the start of the act, with its offer
+    const bool ancient = run.phase == RunPhase::ANCIENT_BLESSING && run.current_ancient < AncientId::COUNT;
+    r.ancient = ancient ? static_cast<uint8_t>(static_cast<uint8_t>(run.current_ancient) + 1) : 0;
+    r.ancient_offer_count = ancient ? static_cast<uint8_t>(run.ancient_offers.size()) : 0;
+    for (size_t i = 0; i < MAX_ANCIENT_OFFERS; ++i) {
+        const bool used = i < r.ancient_offer_count;
+        r.ancient_offers[i] = used ? static_cast<uint8_t>(run.ancient_offers[i].slot * SAVE_ANCIENT_SLOT_STRIDE +
+                                                          run.ancient_offers[i].option)
+                                   : 0;
+    }
+
     // Deck
     r.deck_count = static_cast<uint8_t>(run.master_deck.size());
     for (size_t i = 0; i < run.master_deck.size() && i < 50; ++i) {
-        r.deck[i].card_id = static_cast<uint16_t>(run.master_deck[i].id);
-        r.deck[i].upgraded = run.master_deck[i].upgraded ? 1 : 0;
-        r.deck[i].bonus = run.master_deck[i].bonus;
+        const DeckCard& card = run.master_deck[i];
+        const uint16_t amount = std::min<uint8_t>(card.enchant_amount, SAVE_ENCHANT_AMOUNT_MAX);
+        r.deck[i].card_id = static_cast<uint16_t>(static_cast<uint16_t>(card.id) | (amount << SAVE_CARD_ID_BITS));
+        r.deck[i].upgraded = static_cast<uint8_t>((card.upgraded ? SAVE_UPGRADED_BIT : 0) |
+                                                  (static_cast<uint8_t>(card.enchantment) << SAVE_ENCHANTMENT_SHIFT));
+        r.deck[i].bonus = card.bonus;
 
         // Auto-discover in compendium
-        p.discover_card(r.deck[i].card_id);
+        p.discover_card(static_cast<uint16_t>(card.id));
     }
 
     // Relics
@@ -302,15 +317,21 @@ bool SaveManager::restore_run(RunManager& run) {
     run.map.generate(r.act, r.map_seed, run.ascension_level);
     run.set_rng_state(r.rng_state);
     run.current_node_index = r.current_node_index;
-    // Runs are only saved between rooms: the interrupted room state is not stored.
+    // Runs are saved between rooms, or before the relic of an Ancient is taken (restored below): the state of an
+    // interrupted room is not stored.
     run.phase = RunPhase::MAP_NAVIGATION;
     run.card_removals_count = r.card_removals_count;
 
     // Restore Deck
     run.master_deck.clear();
     for (uint8_t i = 0; i < r.deck_count && i < 50; ++i) {
-        DeckCard card(static_cast<CardId>(r.deck[i].card_id), r.deck[i].upgraded != 0);
+        DeckCard card(static_cast<CardId>(r.deck[i].card_id & SAVE_CARD_ID_MASK), (r.deck[i].upgraded & SAVE_UPGRADED_BIT) != 0);
         card.bonus = r.deck[i].bonus;
+        const uint8_t enchantment = (r.deck[i].upgraded >> SAVE_ENCHANTMENT_SHIFT) & SAVE_ENCHANTMENT_MASK;
+        if (enchantment < static_cast<uint8_t>(Enchantment::COUNT)) {
+            card.enchantment = static_cast<Enchantment>(enchantment);
+            card.enchant_amount = static_cast<uint8_t>(r.deck[i].card_id >> SAVE_CARD_ID_BITS);
+        }
         run.master_deck.push_back(card);
     }
 
@@ -338,6 +359,23 @@ bool SaveManager::restore_run(RunManager& run) {
 
     run.regenerate_map(); // relics are back: the Golden Compass changes the Act 2 map
 
+    // Saved before the relic of the Ancient was taken: the same Ancient offers the same relics again.
+    if (r.phase == static_cast<uint8_t>(RunPhase::ANCIENT_BLESSING) && r.ancient > 0 &&
+        r.ancient <= static_cast<uint8_t>(AncientId::COUNT)) {
+        const AncientId id = static_cast<AncientId>(r.ancient - 1);
+        const Ancient& ancient = get_ancient(id);
+        run.current_ancient = id;
+        run.ancient_offers.clear();
+        for (uint8_t i = 0; i < r.ancient_offer_count && i < MAX_ANCIENT_OFFERS; ++i) {
+            const uint8_t slot = r.ancient_offers[i] / SAVE_ANCIENT_SLOT_STRIDE;
+            const uint8_t option = r.ancient_offers[i] % SAVE_ANCIENT_SLOT_STRIDE;
+            if (slot < ancient.slots.size() && option < ancient.slots[slot].options.size()) {
+                run.ancient_offers.push_back(AncientOffer{ slot, option });
+            }
+        }
+        run.phase = RunPhase::ANCIENT_BLESSING;
+    }
+
     return true;
 }
 
@@ -360,6 +398,13 @@ void SaveManager::record_victory(CharacterId char_id, uint8_t ascension) {
 
     p.active_run.has_active_run = false;
     commit_to_storage();
+}
+
+uint8_t SaveManager::unlocked_ascension(CharacterId char_id) {
+    uint8_t cid = static_cast<uint8_t>(char_id);
+    if (cid >= 5) return 0;
+    uint8_t level = get_active_profile().max_ascension[cid];
+    return level > 10 ? 10 : level;
 }
 
 void SaveManager::record_defeat() {
@@ -471,6 +516,7 @@ bool SaveManager::load_from_storage() {
     storage_->read(&data_, sizeof(SaveData), best_offset + sizeof(SaveHeader));
     sequence_ = best.sequence;
     if (data_.active_slot >= PROFILE_COUNT) data_.active_slot = 0;
+    sanitize_settings(data_.settings);
     return true;
 }
 

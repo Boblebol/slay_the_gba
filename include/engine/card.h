@@ -586,25 +586,124 @@ enum class CardId : uint16_t {
     TOOLS_OF_THE_TRADE,
     INFERNAL_BLADE,
     STOKE,
+    // Curses on existing mechanics (Unplayable, Eternal, end-of-turn effects in hand)
+    INJURY,
+    GREED,
+    CLUMSY,
+    ASCENDERS_BANE,
+    CURSE_OF_THE_BELL,
+    POOR_SLEEP,
+    WRITHE,
+    NORMALITY,
+    DOUBT,
+    SHAME,
+    DECAY,
+    REGRET,
+    BAD_LUCK,
+    DEBT,
+    SPORE_MIND,
+    GUILTY,
+    // Sly (Silent): played for free when discarded from the hand during the turn
+    TACTICIAN,
+    ABRASIVE,
+    MASTER_PLANNER,
+    HAND_TRICK,
+    UNTOUCHABLE,
+    RICOCHET,
+    REFLEX,
+    FLICK_FLACK,
+    SHADOWMELD,
+    UNMOVABLE,
+    COLOSSUS,
+    CRUELTY,
+    TRACKING,
+    LETHALITY,
+    SHADOW_STEP,
+    DEBILITATE,
+    HAND_OF_GREED,
+    THE_HUNT,
+    ROYALTIES,
+    FORBIDDEN_GRIMOIRE,
+    ALCHEMIZE,
+    THE_GAMBIT,
+    // Choose 1 card among N offered (mechanic #72)
+    SEEKER_STRIKE,
+    // Transform a card (mechanic #79)
+    PRIMAL_FORCE,
+    SEANCE,
+    ENTROPY,
+    SPLASH,
+    // Event card: a single attack (Mad Science)
+    MAD_SCIENCE,
+    // Regent: choose 1 of 3 random Colorless cards (Quasar)
+    QUASAR,
+    // Choose 1 of 3 random cards, free this turn (mechanic #72)
+    DISCOVERY,
+    // Event card: choose 1 of 3 upgraded Powers (Abundance)
+    ABUNDANCE,
+    // Regent minions (mechanic #103): tokens, and the cards that transform into them
+    MINION_STRIKE,
+    MINION_DIVE_BOMB,
+    MINION_SACRIFICE,
+    BEGONE,
+    CHARGE,
+    GUARDS,
+    // Echo N on a copy of a card (mechanic #86)
+    HIDDEN_GEM,
+    TRANSFIGURE,
+    // Glass orb (mechanic #99)
+    GLASSWORK,
+    REFRACT,
+    SPINNER,
+    // Status card given by the Phrog Parasite
+    INFECTION,
+    // Status card given by the Insatiable
+    FRANTIC_ESCAPE,
+    // Status card given by the Soul Fysh (its effect is guessed, see SOUL_FYSH_BECKONS)
+    BECKON,
+    // Status card given by the Aeonglass
+    WITHER,
     COUNT
 };
 
 // Where a card created during a fight goes.
+// The cards whose French name contains "Sbire" (Vitruvian Minion).
+constexpr bool is_minion_card(CardId id) {
+    return id == CardId::MINION_STRIKE || id == CardId::MINION_DIVE_BOMB || id == CardId::MINION_SACRIFICE;
+}
+
 enum class Pile : uint8_t {
     HAND,
     DRAW, // at a random place
-    DISCARD
+    DISCARD,
+    OFFERS // cards offered by a choice (CombatEngine::offers), only picked from: "Choose 1 of 3 cards"
 };
 
 constexpr uint8_t NOT_IN_DECK = 0xFF;
 
-// What an enchantment adds to one copy of a card.
+// What an enchantment adds to one copy of a card (mechanic #107). A copy of the deck holds at most one, with its
+// amount (DeckCard::enchant_amount); it is kept by the save and follows the copy into every fight.
 enum class Enchantment : uint8_t {
     NONE,
-    INKY // applies INKY_WEAK Weak to the enemies the card hits
+    INKY,             // Encrée: applies INKY_WEAK Weak to the enemies the card hits
+    ADROIT,           // Adroit: the card also gains `amount` Block
+    NIMBLE,           // Agilité: the Block the card gives is raised by `amount`
+    TEZCATARAS_EMBER, // Braise de Tezcatara: costs 0, deals `amount` more damage, and is Eternal
+    SWIFT,            // Célérité: the first time the card is played in a combat, draw `amount` cards
+    CLONE,            // Clonage: the card can be duplicated at a rest site
+    MOMENTUM,         // Élan: once played, the card deals `amount` more damage for the rest of the combat
+    GLAM,             // Glamour: Echo 1, once per combat
+    IMBUED,           // Imprégnation: the card is played automatically at the start of each combat
+    INSTINCT,         // Instinct: the damage of the card is doubled
+    ROYALLY_APPROVED, // Sceau royal: Innate and Retain
+    SHARP,            // Tranchant: the card deals `amount` more damage
+    GOOPY,            // Viscosité: Exhaust; once played, the Block it gives is raised by 1 for good (`amount`)
+    COUNT
 };
 
 constexpr uint8_t INKY_WEAK = 1;
+// Mystic Lighter: Enchanted Attacks deal this much more damage per hit.
+constexpr uint8_t MYSTIC_LIGHTER_DAMAGE = 9;
 
 struct DeckCard {
     CardId id = CardId::NONE;
@@ -612,10 +711,19 @@ struct DeckCard {
     uint8_t bonus = 0; // added to this copy's base value: gained during the combat (Thrash, Rampage) or kept by the deck
     uint8_t added_keywords = 0; // CardKeyword bits (the low eight) given to this copy during the combat, on top of its CardDef
     int8_t cost_delta = 0;      // energy cost change of this copy for the combat (Momentum Strike, Modded)
+    uint8_t bookmark_discount = 0; // energy off this copy until it is played (Bookmark)
     bool free_this_turn = false; // this copy costs 0 until the end of the turn (Bullet Time)
     bool cost_one_this_turn = false; // this copy costs at most 1 until the end of the turn (Enlightenment)
+    int8_t random_cost_this_turn = -1; // this copy costs this many (0 to 3) until the end of the turn, -1 for none (Snecko Oil)
+    uint8_t echo = 0;           // Echo N: the card is replayed N more times each time it is played (Hidden Gem, Transfigure)
+    bool sly_combat = false;    // this copy has Sly for the rest of the combat (Master Planner)
+    bool sly_this_turn = false; // this copy has Sly until the end of the turn (Hand Trick)
+    bool bound_this_turn = false; // this copy cannot be played from the hand this turn (Chains of Binding)
     uint8_t deck_index = NOT_IN_DECK; // position of the card in the run's deck, for the gains that outlive the combat
     Enchantment enchantment = Enchantment::NONE;
+    uint8_t enchant_amount = 0; // the enchantment's amount: Sharp 3, Swift 2, the Block Goopy has added...
+    // What the enchantment did during this combat: the damage Momentum has added, or 1 once Swift or Glam is used.
+    uint8_t enchant_combat = 0;
 
     constexpr DeckCard() = default;
     constexpr DeckCard(CardId i, bool up = false) : id(i), upgraded(up) {}
@@ -635,10 +743,25 @@ enum CardKeyword : uint16_t {
     KEYWORD_PLAY_FIRST = 64,  // while in hand, it must be played before any other card
     KEYWORD_LIMIT_PLAYS = 128, // while in hand, no more than MAX_PLAYS_WHEN_LIMITED cards can be played each turn
     KEYWORD_UNPLAYABLE = 256, // cannot be played from the hand; played by another card, it does nothing
-    KEYWORD_ETERNAL = 512     // can never be removed from the deck nor transformed (shop, events, relics)
+    KEYWORD_ETERNAL = 512,    // can never be removed from the deck nor transformed (shop, events, relics)
+    KEYWORD_SLY = 1024        // discarded from the hand during the turn: played for free (Silent)
 };
 
 constexpr uint8_t MAX_PLAYS_WHEN_LIMITED = 3;
+
+// Whether a card can receive an enchantment: never a Status, a Curse or a Quest card, never a card that already
+// holds one, and only an Attack for the enchantments that change damage.
+bool can_enchant(const DeckCard& card, Enchantment enchantment);
+
+// Keywords an enchantment gives to the copy that holds it.
+constexpr uint16_t enchantment_keywords(Enchantment enchantment) {
+    switch (enchantment) {
+        case Enchantment::TEZCATARAS_EMBER: return KEYWORD_ETERNAL;
+        case Enchantment::ROYALLY_APPROVED: return KEYWORD_INNATE | KEYWORD_RETAIN;
+        case Enchantment::GOOPY: return KEYWORD_EXHAUST;
+        default: return 0;
+    }
+}
 
 // What a card needs, besides its cost, to be played.
 enum class PlayCondition : uint8_t {
@@ -713,12 +836,20 @@ struct CardDef {
         const auto& c = get(id);
         return ((upgraded ? c.upgraded_keywords : c.keywords) & keyword) != 0;
     }
-    // Keyword of one copy: from its definition or given to that copy during the combat.
+    // Keyword of one copy: from its definition, from its enchantment, or given to that copy during the combat.
     static bool has_keyword(const DeckCard& card, CardKeyword keyword) {
-        return (card.added_keywords & keyword) != 0 || has_keyword(card.id, card.upgraded, keyword);
+        return (card.added_keywords & keyword) != 0 || (enchantment_keywords(card.enchantment) & keyword) != 0 ||
+               has_keyword(card.id, card.upgraded, keyword);
     }
+    // Energy cost printed on one copy: Tezcatara's Ember makes it 0, an X card stays X.
+    static uint8_t get_cost(const DeckCard& card) {
+        const uint8_t printed = get_cost(card.id, card.upgraded);
+        return card.enchantment == Enchantment::TEZCATARAS_EMBER && printed != COST_X ? 0 : printed;
+    }
+    // Sly: from its definition, or given to that copy during the combat.
+    static bool is_sly(const DeckCard& card) { return card.sly_combat || card.sly_this_turn || has_keyword(card, KEYWORD_SLY); }
     // An Eternal card stays in the deck: it is never removed nor transformed.
-    static bool is_eternal(const DeckCard& card) { return has_keyword(card.id, card.upgraded, KEYWORD_ETERNAL); }
+    static bool is_eternal(const DeckCard& card) { return has_keyword(card, KEYWORD_ETERNAL); }
     static bool is_x_cost(CardId id, bool upgraded) {
         return get_cost(id, upgraded) == COST_X;
     }

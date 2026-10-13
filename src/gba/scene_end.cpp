@@ -85,13 +85,13 @@ public:
             _hero.set_y(18 + wave(_timer, 120, 1));
         }
 
-        _press.set(0, 66, "START : nouvelle partie", Align::CENTER, TextColor::WHITE);
+        _press.set(0, 66, _victory ? "START : crédits" : "START : nouvelle partie", Align::CENTER, TextColor::WHITE);
         _press.set_visible(_timer > 40 && (_timer / 24) % 2 == 0);
 
         if(_timer > 40 && bn::keypad::start_pressed())
         {
             play_sfx(Sfx::UI_CONFIRM);
-            return SceneId::TITLE;
+            return _victory ? SceneId::CREDITS : SceneId::TITLE;
         }
 
         return bn::nullopt;

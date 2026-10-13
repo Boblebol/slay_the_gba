@@ -26,6 +26,7 @@ CARD_SOURCE = ROOT / "src" / "engine" / "card.cpp"
 
 CARD_TEXT_MAX_WIDTH = 224  # pixels of the single line of text under the card art
 CARD_NAME_MAX_WIDTH = 115  # beyond it the name runs under the START reminder
+CARD_TEXT_MAX_BYTES = 64  # the screens write the text into a TextLine, bn::string<64>: one more byte stops the game
 ASCII_FIRST = 32
 ASCII_LAST = 126
 
@@ -272,10 +273,11 @@ def parse_stream_statement(statement: str) -> Statement:
     return Statement(tuple(pieces))
 
 
-def split_cases(body: str) -> list[tuple[list[str], list[str] | ParseError]]:
+def split_cases(body: str, check_breaks: bool = True) -> list[tuple[list[str], list[str] | ParseError]]:
     """Group a switch body into (case labels, statements); the statements may be a ParseError instead.
 
-    Labels that follow each other share the statements after the last one. `default:` is dropped.
+    Labels that follow each other share the statements after the last one. `default:` is dropped. With
+    `check_breaks`, statements that run on into the next label without a `break` are an error.
     """
     groups: list[tuple[list[str], list[str] | ParseError]] = []
     labels: list[str] = []
@@ -297,6 +299,9 @@ def split_cases(body: str) -> list[tuple[list[str], list[str] | ParseError]]:
         label = CASE_LABEL.match(body, i)
         default = DEFAULT_LABEL.match(body, i)
         if label is not None or default is not None:
+            if check_breaks and statements and problem is None and not in_default:
+                # The statements run on into this label: the card would print the next card's text too.
+                problem = ParseError("no break before the next case: the text runs on into another card's")
             if statements or problem is not None or in_default:
                 close()
             if label is not None:
@@ -353,7 +358,7 @@ def load_names(source: Path) -> dict[str, str | ParseError]:
     switch_at = body.index("switch")
     cases = function_body(body[switch_at:], "{")
     result: dict[str, str | ParseError] = {}
-    for labels, statements in split_cases(cases.replace("return", "stream <<")):
+    for labels, statements in split_cases(cases.replace("return", "stream <<"), check_breaks=False):
         name: str | ParseError
         if isinstance(statements, ParseError) or len(statements) != 1:
             name = statements if isinstance(statements, ParseError) else ParseError("not a single return")
@@ -448,6 +453,8 @@ def test_card_text_fits_the_combat_line(card_id: str, upgraded: bool) -> None:
         pytest.fail(f"unreadable card text, {error}")
     known = KNOWN_TOO_WIDE.get((card_id, upgraded))
     name = label(card_id, upgraded)
+    size = len(text.encode("utf-8"))
+    assert size <= CARD_TEXT_MAX_BYTES, f"{name} is {size} bytes, over the {CARD_TEXT_MAX_BYTES} of a TextLine: {text!r}"
     if known is None:
         assert width <= CARD_TEXT_MAX_WIDTH, f"{name} is {width}px, over {CARD_TEXT_MAX_WIDTH}px: {text!r}"
     else:

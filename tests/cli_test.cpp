@@ -61,6 +61,12 @@ void test_cartridge_save() {
     constexpr CardId FAR_CARD = static_cast<CardId>(300);
     saved.master_deck.push_back(DeckCard(FAR_CARD, true));
     saved.master_deck.push_back(DeckCard(static_cast<CardId>(511), false));
+    // The enchantment of a card and its amount are saved with it (mechanic #107).
+    DeckCard goopy_strike(CardId::STRIKE, true);
+    goopy_strike.enchantment = Enchantment::GOOPY;
+    goopy_strike.enchant_amount = 7;
+    goopy_strike.bonus = 2;
+    saved.master_deck.push_back(goopy_strike);
     store.settings().music_volume = 3;
     store.autosave_run(saved);
 
@@ -79,8 +85,13 @@ void test_cartridge_save() {
     assert(loaded.hp == 40 && loaded.gold == 321);
     assert(loaded.master_deck.size() == saved.master_deck.size());
     size_t deck_size = loaded.master_deck.size();
+    const DeckCard& enchanted = loaded.master_deck[deck_size - 1];
+    assert(enchanted.id == CardId::STRIKE && enchanted.upgraded && enchanted.bonus == 2);
+    assert(enchanted.enchantment == Enchantment::GOOPY && enchanted.enchant_amount == 7);
+    --deck_size;
     assert(loaded.master_deck[deck_size - 3] == DeckCard(CardId::POISON_STAB, true));
     assert(loaded.master_deck[deck_size - 3].bonus == 12 && loaded.master_deck[deck_size - 2].bonus == 0);
+    assert(loaded.master_deck[deck_size - 3].enchantment == Enchantment::NONE);
     assert(loaded.master_deck[deck_size - 2].id == FAR_CARD && loaded.master_deck[deck_size - 2].upgraded);
     assert(static_cast<uint16_t>(loaded.master_deck[deck_size - 1].id) == 511 && !loaded.master_deck[deck_size - 1].upgraded);
     assert(sizeof(CardId) == 2 && sizeof(DeckCardSave) == 4);
@@ -319,12 +330,12 @@ int main() {
     assert(aeonglass->min_hp == 512);
     std::cout << "[PASS] Monsters database: 112 monsters registered (validated: " << aeonglass->name << " HP: " << aeonglass->min_hp << ")" << std::endl;
 
-    // Test Complete Potions Database (63 potions)
+    // Test Complete Potions Database (64 potions)
     auto all_potions = get_all_potions();
-    assert(all_potions.size() == 63);
+    assert(all_potions.size() == 64);
     const auto* ambergris = find_potion("AMBERGRIS");
     assert(ambergris != nullptr && ambergris->name == "Ambre gris");
-    std::cout << "[PASS] Potions database: 63 potions registered (validated: " << ambergris->name << ")" << std::endl;
+    std::cout << "[PASS] Potions database: 64 potions registered (validated: " << ambergris->name << ")" << std::endl;
 
     // Test Complete Events Database (57 events)
     auto all_events = get_all_events();
@@ -517,7 +528,7 @@ int main() {
     potion_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
     potion_run.potions.push_back("FIRE_POTION");
     potion_run.potions.push_back("BLOCK_POTION");
-    potion_run.potions.push_back("AMBERGRIS");
+    potion_run.potions.push_back("NOT_A_POTION");
     assert(!potion_run.use_potion(0)); // not in combat yet
     potion_run.enter_room(potion_run.get_available_rooms()[0]);
     CombatEngine& potion_combat = potion_run.combat;
@@ -528,7 +539,7 @@ int main() {
     assert(potion_run.potions.size() == 2 && potion_run.potions[0] == "BLOCK_POTION");
     assert(potion_run.use_potion(0));
     assert(potion_combat.player.block == 12);
-    assert(!potion_run.use_potion(0)); // no engine effect yet: kept in the belt
+    assert(!potion_run.use_potion(0)); // unknown potion: kept in the belt
     assert(potion_run.potions.size() == 1);
     assert(!potion_run.use_potion(5));
 
@@ -716,7 +727,7 @@ int main() {
     restored_run.gold = 300;
     restored_run.open_shop();
     assert(restored_run.phase == RunPhase::SHOP);
-    assert(restored_run.current_shop.cards.size() == 3);
+    assert(restored_run.current_shop.cards.size() == 7);
     assert(restored_run.current_shop.relics.size() == 3);
     prev_gold = restored_run.gold;
     size_t prev_deck_sz = restored_run.master_deck.size();
@@ -920,18 +931,18 @@ int main() {
     // Act 1 boss: opens with a buff, then attacks; each enemy action is recorded for replay.
     CombatEngine boss_combat;
     boss_combat.start_combat(EnemyType::CEREMONIAL_BEAST, CharacterId::IRONCLAD);
-    assert(boss_combat.enemies[0].max_hp == 150);
+    assert(boss_combat.enemies[0].max_hp == 252);
     assert(boss_combat.enemies[0].current_intent.type == EnemyIntentType::BUFF);
     boss_combat.end_player_turn();
     assert(boss_combat.last_enemy_actions.size() == 1);
     assert(boss_combat.last_enemy_actions[0].intent_type == EnemyIntentType::BUFF);
     assert(boss_combat.last_enemy_actions[0].damage_to_player == 0);
-    assert(boss_combat.enemies[0].get_status(StatusType::STRENGTH) == 2);
+    assert(boss_combat.enemy_power_amount(0, PowerId::PLOW) == CEREMONIAL_BEAST_PLOW);
     int boss_hp_before = boss_combat.player.hp;
     boss_combat.end_player_turn();
     const auto& trample = boss_combat.last_enemy_actions[0];
-    assert(trample.intent_type == EnemyIntentType::ATTACK);
-    assert(trample.damage_to_player + trample.damage_blocked == 14);
+    assert(trample.intent_type == EnemyIntentType::ATTACK_BUFF);
+    assert(trample.damage_to_player + trample.damage_blocked == 18);
     assert(trample.player_hp_after == boss_combat.player.hp);
     assert(boss_combat.player.hp == boss_hp_before - trample.damage_to_player);
     std::cout << "[PASS] Ceremonial Beast boss & per-enemy action records verified" << std::endl;

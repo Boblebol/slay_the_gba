@@ -50,6 +50,7 @@ constexpr PotionData ALL_POTIONS[] = {
     { "POTION_OF_BINDING", "Potion paralysante", "Uncommon", "AllEnemies", "Appliquez Affaibli (1) et Vulnérable (1) à TOUS les ennemis." },
     { "POTION_OF_CAPACITY", "Potion de stockage", "Uncommon", "AnyPlayer", "Gagnez 2 Emplacements d'Orbe." },
     { "POTION_OF_DOOM", "Potion macabre", "Common", "AnyEnemy", "Appliquez 33 de Fatalité." },
+    { "POTION_SHAPED_ROCK", "Pierre en forme de potion", "Event", "AnyEnemy", "Infligez 15 dégâts." },
     { "POWDERED_DEMISE", "Poudre funeste", "Uncommon", "AnyEnemy", "L'ennemi perd 9 PV à la fin de chacun de ses tours." },
     { "POWER_POTION", "Potion de pouvoir", "Common", "AnyPlayer", "Choisissez 1 Pouvoir parmi 3 aléatoires à ajouter à votre Main. Il coûte 0 ce tour." },
     { "RADIANT_TINCTURE", "Lampée de radiance", "Uncommon", "AnyPlayer", "Gagnez 1. Gagnez  au début de vos 3 prochains tours." },

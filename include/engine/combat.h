@@ -35,6 +35,7 @@ struct EnemyActionRecord {
     uint8_t hits = 1;     // hits of its attack
     int16_t healed = 0;   // HP the enemy gave itself back
     bool escaped = false; // it left the fight with this move
+    uint8_t summoned = 0; // enemies the move brought into the fight, one bit each (index in CombatEngine::enemies)
 };
 
 // Which cards an effect may draw at random. A field left at its default does not filter.
@@ -66,7 +67,7 @@ struct CombatCounters {
     uint8_t cards_discarded = 0; // discarded by effects, not by the end of the turn
     uint8_t energy_spent = 0;
     uint8_t hits_dealt = 0;      // attack hits on enemies
-    uint8_t hits_on_enemy[3] = {}; // the same, for each enemy of CombatEngine::enemies
+    uint8_t hits_on_enemy[MAX_ENEMIES] = {}; // the same, for each enemy of CombatEngine::enemies
     uint8_t stars_gained = 0;
     uint8_t stars_spent = 0;
     uint8_t osty_attacks = 0;    // attacks of Osty, one for an attack on every enemy
@@ -147,7 +148,11 @@ enum class ChoiceKind : uint8_t {
     COPY_ATTACK_OR_POWER, // to the hand, only an Attack or a Power can be picked (Dual Wield)
     COPY_COLORLESS,       // to the hand, only a Colorless card can be picked (Heirloom Hammer)
     COPY_NEXT_TURN,       // to the hand at the start of the next turn (Nightmare)
-    PLAY_REPEATED         // the picked hand card is played `amount` times, then goes where it goes (Decisions, Decisions)
+    PLAY_REPEATED,        // the picked hand card is played `amount` times, then goes where it goes (Decisions, Decisions)
+    MAKE_SLY,             // the picked hand card gains Sly until the end of the turn (Hand Trick)
+    MAKE_FREE,            // the picked hand card costs 0 for the rest of the combat (Touch of Insanity)
+    ADD_ECHO,             // the picked hand card gains Echo 1 and costs 1 more (Transfigure)
+    TRANSFORM             // the picked card becomes `CardChoice::into` (a random card of the hero's pool when NONE) for the combat
 };
 
 // What follows once the cards are picked: the part of a card's text that comes after its choice.
@@ -159,6 +164,10 @@ enum class ChoiceThen : uint8_t {
 };
 
 constexpr uint8_t WHOLE_PILE = 0xFF;
+// Cards a choice about Pile::OFFERS offers at most (Choices Paradox offers 5).
+constexpr uint8_t MAX_OFFERS = 5;
+// Where an offered card comes from when it was made for the offer, not taken from the draw pile.
+constexpr uint8_t NOT_IN_PILE = 0xFF;
 
 // The Soul (Necrobinder) is a card, not a gauge: a token that costs 0, "Draw 2 cards. Exhaust." (3 cards once
 // upgraded), which other cards add to the piles. This is its id.
@@ -172,7 +181,8 @@ struct CardChoice {
     bool optional = false; // fewer cards, or none, can be picked ("any number of cards")
     ChoiceThen then = ChoiceThen::NONE;
     uint8_t amount = 0;
-    bool upgraded = false;
+    bool upgraded = false;    // TRANSFORM into a given card: the new card comes upgraded
+    CardId into = CardId::NONE; // TRANSFORM: the card it becomes, NONE for a random one
     Pile source = Pile::HAND; // where the cards are picked
     // Cards of the source the choice is about, from its first one. Set by ask_choice for the discard pile:
     // the card that asks goes there once played, and cannot pick itself.
@@ -180,6 +190,14 @@ struct CardChoice {
     // Only cards of this type can be picked, when `any_type` is false (Secret Technique, Secret Weapon).
     bool any_type = true;
     CardType type = CardType::ATTACK;
+    // Pile::OFFERS: the `amount` cards offered are dealt when the choice comes first, from the draw pile when
+    // `offer_from_draw`, otherwise made at random from `offer_filter` (upgraded when `upgraded`, costing 0 this
+    // turn when `offer_free`). The picked cards go to the hand, the others stay where they were or vanish.
+    bool offer_from_draw = true;
+    bool offer_free = false;
+    bool offer_retain = false;   // the cards made for the offer have Retain
+    CardFilter offer_filter;
+    bool free_this_turn = false; // TO_HAND: the cards picked cost 0 this turn (Liquid Memories)
 };
 
 // Where a card goes once it has been played.
@@ -195,15 +213,24 @@ enum class AfterPlay : uint8_t {
 struct PermanentGain {
     uint8_t deck_index = NOT_IN_DECK;
     uint8_t amount = 0;
+    bool enchantment = false; // added to the card's enchantment amount (Goopy) instead of its bonus
 };
 
 class CombatEngine {
 public:
     Player player;
     Enemy enemy; // Primary enemy (kept in sync with enemies[0])
-    FixedVector<Enemy, 3> enemies; // Multi-enemy field (Yu-Gi-Oh / Slay style: 1 to 3 enemies)
+    FixedVector<Enemy, MAX_ENEMIES> enemies; // Multi-enemy field: 1 to MAX_ENEMIES enemies
     int selected_target_index = 0;
+    // Ascension of the room (set by the run), given to the enemies summoned during the fight: 100 = none.
+    int16_t enemy_hp_percent = 100;
+    int16_t enemy_damage_percent = 100;
     int16_t gold_lost = 0; // gold taken during the combat (curses in hand at the end of a turn), paid by the run after it
+    int16_t gold_gained = 0; // gold earned during the combat (Hand of Greed), paid by the run after it
+    uint8_t extra_card_rewards = 0; // extra card rewards earned during the combat (The Hunt)
+    uint8_t potions_gained = 0;     // random potions earned during the combat (Alchemize)
+    bool fill_potion_belt = false;  // the run fills its empty potion slots with random potions (Entropic Brew)
+    bool gambit_active = false;     // taking unblocked attack damage ends the combat in defeat (The Gambit)
     int16_t gold = 0; // the run's gold, lent to the combat for the relics that spend it (Seal of Gold)
     CharacterId current_character = CharacterId::IRONCLAD;
     
@@ -219,6 +246,23 @@ public:
     bool retain_hand = false;      // the whole hand stays at the end of this turn
     bool no_draw_this_turn = false; // "you cannot draw any more cards this turn"
     uint8_t no_card_block_turns = 0; // player turns left (this one included) where cards give no Block (Panic Button)
+    bool double_block_turn = false;   // the Block gained this turn is doubled (Shadowmeld)
+    bool unmovable_used = false;      // Unmovable already doubled a Block this turn
+    bool attack_double_next = false;  // Attacks deal double damage on the next turn (Shadow Step)
+    uint8_t fairy_bottles = 0;        // Fairy in a Bottle potions ready to revive the player (automatic, set by the run)
+    uint8_t fairy_used = 0;           // Fairy in a Bottle potions spent during this combat
+    bool triple_next_attack = false;  // the next Attack played deals triple damage (Gigantification Potion)
+    bool attack_double_now = false;   // Attacks deal double damage this turn
+    bool pen_nib_now = false;         // the Attack being played deals double damage (Pen Nib)
+    bool minion_played_now = false;   // the card being played is a Minion card (Vitruvian Minion)
+    bool strike_played_now = false;   // the card being played contains "Strike" (Strike Dummy)
+    bool upgraded_attack_now = false; // the card being played is an upgraded Attack (Miniature Cannon)
+    // What the enchantment of the card being resolved adds (mechanic #107): damage per hit (Sharp, Tezcatara's
+    // Ember, Momentum, Mystic Lighter), doubled damage (Instinct), Block (Nimble, Goopy), Weak on each enemy hit (Inky).
+    int16_t enchant_damage_now = 0;
+    bool enchant_double_now = false;
+    int16_t enchant_block_now = 0;
+    bool inky_now = false;
     bool rebound_pending = false;    // the next card played this turn goes on top of the draw pile (Rebound)
     uint8_t fatal_kills = 0;       // enemies killed by the hits of the card being played (minions do not count)
     // Active powers, in the order they were gained: every relic a run can hold plus a combat's worth of
@@ -227,7 +271,13 @@ public:
     FixedVector<DeckCard, 24> powers_in_play; // Power cards played this combat: they stay in play
     FixedVector<PermanentGain, 16> permanent_gains; // bonuses to write back to the deck after the combat
     FixedVector<CardChoice, 4> pending_choices;      // asked in order, the first one first
+    // Cards offered by the first choice when it is about Pile::OFFERS, and the place of each one in the draw
+    // pile (NOT_IN_PILE for a card made for the offer). Empty when no offer is being asked.
+    FixedVector<DeckCard, MAX_OFFERS> offers;
+    FixedVector<uint8_t, MAX_OFFERS> offer_origins;
     bool resolving_card = false;     // a card's effect is being resolved (Paël's Legion doubles its Block)
+    bool lamp_doubling = false;      // the card being resolved is the one Unsettling Lamp doubles
+    bool extra_turn_pending = false;  // a potion (Ambergris) grants an extra turn: the next end of turn skips the enemies
     bool end_turn_requested = false; // a card ended the turn (Void Form): the caller ends it once the card is resolved
     int8_t temp_strength = 0;      // Strength and Dexterity gained until the end of the turn
     int8_t temp_dexterity = 0;
@@ -237,7 +287,7 @@ public:
     // the first turn starts with PowerId::WHISPERING_EARRING registered, cleared when the turn ends.
     bool vakuu_turn_active = false;
 
-    FixedVector<EnemyActionRecord, 3> last_enemy_actions;
+    FixedVector<EnemyActionRecord, MAX_ENEMIES> last_enemy_actions;
 
     CombatState state = CombatState::PLAYER_TURN;
     int turn_number = 1;
@@ -248,13 +298,17 @@ public:
 
     void init_starter_deck(CharacterId character = CharacterId::IRONCLAD);
     void start_combat(EnemyType enemy_type, CharacterId character = CharacterId::IRONCLAD);
-    void start_combat_multi(FixedVector<EnemyType, 3> enemy_types, CharacterId character = CharacterId::IRONCLAD);
+    void start_combat_multi(std::span<const EnemyType> enemy_types, CharacterId character = CharacterId::IRONCLAD);
     // Opens the fight once the draw pile is ready: clears the combat state, then starts the first turn.
     void open_first_turn();
     // The two halves of open_first_turn, for whoever registers powers (relics) between them.
     // Plans the next move of every living enemy, with what each one sees of the fight. On the first turn the
     // patterns start again.
     void plan_enemies();
+    // Brings an enemy into the fight, at the end of CombatEngine::enemies or in the place of a dead one; a
+    // Minion of `leader` when one is given. It acts from the next enemy turn on, and its move is planned with the
+    // others'. Its index, or -1 when the MAX_ENEMIES places are taken.
+    int summon_enemy(EnemyType type, int leader = -1);
     // Gives a power to the enemy at `enemy_index`: it holds it until it dies or leaves the fight.
     void add_enemy_power(int enemy_index, PowerId id, int16_t amount = 1);
     // Amount of a power that enemy holds, 0 when it does not.
@@ -264,7 +318,8 @@ public:
     // True when every enemy of the fight ran away: nothing was killed, so nothing is won.
     [[nodiscard]] bool every_enemy_escaped() const;
     void reset_combat_state();
-    // Puts the Innate cards on top of the draw pile and starts the first turn.
+    // Puts the Innate cards on top of the draw pile and starts the first turn. Once the hand is drawn, the
+    // Imbued cards of the draw pile are played for free.
     void begin_first_turn();
     void start_player_turn();
     // Draws one card, reshuffling the discard pile when needed. False when nothing was drawn (full hand, empty piles).
@@ -361,8 +416,15 @@ public:
     // Effect of a card still in hand at the end of the player's turn (Burn, curses): damage, HP loss, gold loss
     // or a status. Cards without such an effect do nothing.
     void trigger_end_of_turn_in_hand(const DeckCard& card);
+    // Sly cards discarded from the hand during the turn wait here until the action that discarded them is over.
+    FixedVector<DeckCard, 12> sly_pending;
+    void play_sly_pending();
+    // The card becomes `into` for the rest of the combat (a random card of the hero's pool when NONE).
+    void transform_card(DeckCard& card, CardId into, bool upgraded);
     // Strength or Dexterity until the end of the turn.
     void gain_temporary(StatusType type, int8_t amount);
+    // Strength gained by the player; returns the amount applied (Ruined Helmet doubles the first gain of the combat).
+    int16_t gain_strength(int16_t amount);
     // The enemy loses Strength until the end of its turn.
     void sap_strength(Enemy& target, int16_t amount);
     // Schedules an effect: see DelayedEffect.
@@ -374,6 +436,12 @@ public:
     void ask_choice(const CardChoice& choice);
     // Same, for cards picked in the draw or the discard pile.
     void ask_pile_choice(Pile source, ChoiceKind kind, uint8_t count = 1);
+    // "Choose 1 of `count` cards in your Draw Pile to add into your Hand" (Seeker Strike): `count` different
+    // cards of the draw pile, at random, are offered; the picked one goes to the hand, the others stay.
+    void offer_from_draw(uint8_t count);
+    // "Choose 1 of `count` random cards to add to your Hand" (Discovery): `count` different random cards of
+    // `filter` are made and offered; the picked one goes to the hand, the others vanish.
+    void offer_random_cards(const CardFilter& filter, uint8_t count, bool upgraded = false, bool free_this_turn = false, bool retain = false);
     // Cards of a pile, as the choices index them.
     size_t pile_size(Pile pile) const;
     const DeckCard& pile_card(Pile pile, size_t index) const;
@@ -452,6 +520,8 @@ private:
     void recall_to_hand(CardId id);
     // One play of a card and the extra plays it is entitled to: event, effect, tallies. The card is not moved.
     void run_card(DeckCard& card, int target_index, bool random_target, int x_value, uint8_t energy_paid, AfterPlay& after_play);
+    // Sets the enchant_..._now modifiers for the card about to be resolved.
+    void set_enchant_modifiers(const DeckCard& card);
     // The card's own effect.
     void resolve_effect(DeckCard& played_card, int target_idx, int x_value, AfterPlay& after_play);
     void place_played_card(const DeckCard& card, AfterPlay after_play);
@@ -469,6 +539,9 @@ private:
     size_t choice_pool(const CardChoice& choice) const;
     // Answers, without asking, the choices that leave nothing to decide.
     void settle_choices();
+    // Fills `offers` for a choice about Pile::OFFERS.
+    void deal_offers(const CardChoice& choice);
+    void clear_offers();
     void change_cost_of_copies(CardId id, int delta);
     uint8_t autoplay_depth_ = 0;
     uint8_t vakuu_plays_ = 0;     // cards Vakuu has played this turn

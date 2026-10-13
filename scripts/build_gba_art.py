@@ -163,6 +163,8 @@ MONSTERS: dict[str, str] = {
     "brute_ruby_raider": "brute_ruby_raider",
     "assassin_ruby_raider": "assassin_ruby_raider",
     "axe_ruby_raider": "axe_ruby_raider",
+    "tracker_ruby_raider": "tracker_ruby_raider",
+    "mecha_knight": "mecha_knight",
     "calcified_cultist": "calcified_cultist",
     "damp_cultist": "damp_cultist",
     "sewer_clam": "sewer_clam",
@@ -171,12 +173,96 @@ MONSTERS: dict[str, str] = {
     "fat_gremlin": "fat_gremlin",
     "vine_shambler": "vine_shambler",
     "eye_with_teeth": "eye_with_teeth",
+    "stabbot": "stabbot",
+    "spectral_knight": "spectral_knight",
+    "spiny_toad": "spiny_toad",
+    "noisebot": "noisebot",
+    "zapbot": "zapbot",
+    "cubex_construct": "cubex_construct",
+    "punch_construct": "punch_construct",
+    "globe_head": "globe_head",
+    "bowlbug_nectar": "bowlbug_nectar",
+    "axebot": "axebot",
+    "bygone_effigy": "bygone_effigy",
+    "turret_operator": "turret_operator",
+    "bowlbug_rock": "bowlbug_rock",
+    "skulking_colony": "skulking_colony",
+    "magi_knight": "magi_knight",
+    "inklet": "inklet",
+    "nibbit": "nibbit",
+    "flyconid": "flyconid",
+    "infested_prism": "infested_prism",
+    "corpse_slug": "corpse_slug",
+    "gas_bomb": "gas_bomb",
+    "gremlin_merc": "gremlin_merc",
+    "sneaky_gremlin": "sneaky_gremlin",
+    "haunted_ship": "haunted_ship",
+    "sludge_spinner": "sludge_spinner",
+    "toadpole": "toadpole",
+    "hunter_killer": "hunter_killer",
+    "mawler": "mawler",
+    "fossil_stalker": "fossil_stalker",
+    "seapunk": "seapunk",
+    "osty": "osty",
+    "chomper": "chomper",
+    "slumbering_beetle": "slumbering_beetle",
+    "parafright": "parafright",
+    "tunneler": "tunneler",
+    "slimed_berserker": "slimed_berserker",
+    "frog_knight": "frog_knight",
+    "louse_progenitor": "louse_progenitor",
+    "guardbot": "guardbot",
+    "devoted_sculptor": "devoted_sculptor",
+    "the_lost": "the_lost",
+    "bowlbug_silk": "bowlbug_silk",
+    "bowlbug_egg": "bowlbug_egg",
+    "terror_eel": "terror_eel",
+    "entomancer": "entomancer",
+    "flail_knight": "flail_knight",
+    "soul_nexus": "soul_nexus",
+    "byrdonis": "byrdonis",
+    "tough_egg": "tough_egg",
+    "ovicopter": "ovicopter",
+    "fabricator": "fabricator",
+    "phrog_parasite": "phrog_parasite",
+    "wriggler": "wriggler",
+    "the_obscura": "the_obscura",
+    "shrinker_beetle": "shrinker_beetle",
+    "owl_magistrate": "owl_magistrate",
+    "scroll_of_biting": "scroll_of_biting",
+    "fogmog": "fogmog",
+    "snapping_jaxfruit": "snapping_jaxfruit",
+    "twig_slime_m": "twig_slime_m",
+    "twig_slime_s": "twig_slime_s",
+    "leaf_slime_m": "leaf_slime_m",
+    "leaf_slime_s": "leaf_slime_s",
+    "slithering_strangler": "slithering_strangler",
+    "living_fog": "living_fog",
+    "two_tailed_rat": "two_tailed_rat",
+    "kin_follower": "kin_follower",
+    "kin_priest": "kin_priest",
+    # The Queen's boss fight holds two monsters: monster-sized art, so that both fit the arena side by side.
+    "queen": "queen",
+    "torch_head_amalgam": "torch_head_amalgam",
+    "crusher": "crusher",
+    "rocket": "rocket",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
 TRANSLUCENT_MONSTERS = {"eye_with_teeth"}
+# Monsters that share one picture in the dump: each keeps its part of it, as fractions (left, right) of the
+# drawn width. The Crusher and the Rocket are the two halves of the Kaiser Crab.
+MONSTER_CROPS: dict[str, tuple[float, float]] = {"crusher": (0.0, 0.55), "rocket": (0.45, 1.0)}
 BOSSES: dict[str, str] = {
     "ceremonial_beast": "ceremonial_beast",
+    "the_insatiable": "the_insatiable",
+    "lagavulin_matriarch": "lagavulin_matriarch",
+    "knowledge_demon": "knowledge_demon",
+    "test_subject": "test_subject",
+    "vantom": "vantom",
+    "soul_fysh": "soul_fysh",
+    "waterfall_giant": "waterfall_giant",
+    "aeonglass": "aeonglass",
 }
 
 
@@ -195,6 +281,10 @@ def build_monsters() -> None:
         source = Image.open(BIBLE / "monsters" / f"{src}.webp")
         if name in TRANSLUCENT_MONSTERS:
             source = solid_art(source)
+        if name in MONSTER_CROPS:
+            left, top, right, bottom = source.getbbox()
+            start, end = MONSTER_CROPS[name]
+            source = source.crop((left + round((right - left) * start), top, left + round((right - left) * end), bottom))
         art = fit_art(source, (62, 62))
         canvas = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
         canvas.paste(art, (1, 1), art)
@@ -727,6 +817,68 @@ CARDS: list[CardArt] = [
     CardArt("tools_of_the_trade", "silent", "tools_of_the_trade", "power", (1, 0)),
     CardArt("infernal_blade", "ironclad", "infernal_blade", "skill", (1, 0)),
     CardArt("stoke", "ironclad", "stoke", "skill", (1, 1)),
+    CardArt("injury", "curse", "injury", "status", (NO_COST, NO_COST)),
+    CardArt("greed", "curse", "greed", "status", (NO_COST, NO_COST)),
+    CardArt("clumsy", "curse", "clumsy", "status", (NO_COST, NO_COST)),
+    CardArt("ascenders_bane", "curse", "ascenders_bane", "status", (NO_COST, NO_COST)),
+    CardArt("curse_of_the_bell", "curse", "curse_of_the_bell", "status", (NO_COST, NO_COST)),
+    CardArt("poor_sleep", "curse", "poor_sleep", "status", (NO_COST, NO_COST)),
+    CardArt("writhe", "curse", "writhe", "status", (NO_COST, NO_COST)),
+    CardArt("normality", "curse", "normality", "status", (NO_COST, NO_COST)),
+    CardArt("doubt", "curse", "doubt", "status", (NO_COST, NO_COST)),
+    CardArt("shame", "curse", "shame", "status", (NO_COST, NO_COST)),
+    CardArt("decay", "curse", "decay", "status", (NO_COST, NO_COST)),
+    CardArt("regret", "curse", "regret", "status", (NO_COST, NO_COST)),
+    CardArt("bad_luck", "curse", "bad_luck", "status", (NO_COST, NO_COST)),
+    CardArt("debt", "curse", "debt", "status", (NO_COST, NO_COST)),
+    CardArt("spore_mind", "curse", "spore_mind", "status", (1, 1)),
+    CardArt("guilty", "curse", "guilty", "status", (NO_COST, NO_COST)),
+    CardArt("tactician", "silent", "tactician", "skill", (3, 3)),
+    CardArt("abrasive", "silent", "abrasive", "power", (3, 3)),
+    CardArt("master_planner", "silent", "master_planner", "power", (2, 1)),
+    CardArt("hand_trick", "silent", "hand_trick", "skill", (1, 1)),
+    CardArt("untouchable", "silent", "untouchable", "skill", (2, 2)),
+    CardArt("ricochet", "silent", "ricochet", "attack", (2, 2)),
+    CardArt("reflex", "silent", "reflex", "skill", (3, 3)),
+    CardArt("flick_flack", "silent", "flick_flack", "attack", (1, 1)),
+    CardArt("shadowmeld", "silent", "shadowmeld", "skill", (1, 0)),
+    CardArt("unmovable", "ironclad", "unmovable", "power", (2, 1)),
+    CardArt("colossus", "ironclad", "colossus", "skill", (1, 1)),
+    CardArt("cruelty", "ironclad", "cruelty", "power", (1, 1)),
+    CardArt("tracking", "silent", "tracking", "power", (2, 1)),
+    CardArt("lethality", "necrobinder", "lethality", "power", (1, 1)),
+    CardArt("shadow_step", "silent", "shadow_step", "skill", (1, 0)),
+    CardArt("debilitate", "necrobinder", "debilitate", "attack", (1, 1)),
+    CardArt("hand_of_greed", "colorless", "hand_of_greed", "attack", (2, 2)),
+    CardArt("the_hunt", "silent", "the_hunt", "attack", (1, 1)),
+    CardArt("royalties", "regent", "royalties", "power", (1, 1)),
+    CardArt("forbidden_grimoire", "necrobinder", "forbidden_grimoire", "power", (2, 2)),
+    CardArt("alchemize", "colorless", "alchemize", "skill", (1, 1)),
+    CardArt("the_gambit", "colorless", "the_gambit", "skill", (0, 0)),
+    CardArt("seeker_strike", "colorless", "seeker_strike", "attack", (1, 1)),
+    CardArt("primal_force", "ironclad", "primal_force", "skill", (0, 0)),
+    CardArt("seance", "necrobinder", "seance", "skill", (1, 0)),
+    CardArt("entropy", "colorless", "entropy", "power", (1, 1)),
+    CardArt("splash", "colorless", "splash", "skill", (1, 1)),
+    CardArt("mad_science", "hero", "mad_science_attack", "attack", (1, 1), folder="event"),
+    CardArt("quasar", "regent", "quasar", "skill", (0, 0), stars=(2, 2)),
+    CardArt("discovery", "colorless", "discovery", "skill", (1, 1)),
+    CardArt("abundance", "ancient", "abundance", "skill", (1, 0), folder="event"),
+    CardArt("minion_strike", "regent", "minion_strike", "attack", (0, 0), folder="token"),
+    CardArt("minion_dive_bomb", "regent", "minion_dive_bomb", "attack", (0, 0), folder="token"),
+    CardArt("minion_sacrifice", "regent", "minion_sacrifice", "skill", (0, 0), folder="token"),
+    CardArt("begone", "regent", "begone", "skill", (1, 1)),
+    CardArt("charge", "regent", "charge", "skill", (1, 1)),
+    CardArt("guards", "regent", "guards", "skill", (2, 2)),
+    CardArt("hidden_gem", "colorless", "hidden_gem", "skill", (1, 1)),
+    CardArt("transfigure", "necrobinder", "transfigure", "skill", (1, 1)),
+    CardArt("glasswork", "defect", "glasswork", "skill", (1, 1)),
+    CardArt("refract", "defect", "refract", "attack", (3, 3)),
+    CardArt("spinner", "defect", "spinner", "power", (1, 1)),
+    CardArt("infection", "status", "wound", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
+    CardArt("frantic_escape", "status", "debris", "status", (1, 1)),  # no portrait of its own in the reference
+    CardArt("beckon", "status", "void", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
+    CardArt("wither", "status", "soot", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
@@ -1363,6 +1515,12 @@ ICON_STATUS = [
 ]
 
 
+# Both hit effects share one palette: Butano then gives them a single OBJ palette slot, which matters in a
+# fight where three different monsters already take three of the sixteen.
+FX_PALETTE = [(248, 248, 160), (248, 160, 64), (248, 248, 248), (120, 168, 248), (248, 96, 64), (248, 200, 64),
+              (184, 120, 40)]
+
+
 def build_ui() -> None:
     icons = [ICON_ATTACK, ICON_DEFEND, ICON_BUFF, ICON_DEBUFF, ICON_UNKNOWN, ICON_TARGET, ICON_HEART, ICON_GOLD,
              ICON_STUN, ICON_HEAL, ICON_ESCAPE, ICON_STATUS]
@@ -1414,9 +1572,8 @@ def build_ui() -> None:
                 y = 32 + int(math.sin(ang) * r) + random.randint(-6, 6)
                 d.point((x, y), fill=(248, 248, 248, 255))
         frames_img.append(img)
-    pal = [(248, 200, 64), (248, 248, 248), (184, 120, 40)]
-    frames = [rgba_to_sprite(img, palette=pal)[0] for img in frames_img]
-    save_sprite("fx_slash", frames, [TRANSPARENT] + pal, 64)
+    frames = [rgba_to_sprite(img, palette=FX_PALETTE)[0] for img in frames_img]
+    save_sprite("fx_slash", frames, [TRANSPARENT] + FX_PALETTE, 64)
 
     # Hit spark / block ring / buff sparkle: 32x32, 4 frames each, one item.
     frames_img = []
@@ -1445,9 +1602,8 @@ def build_ui() -> None:
                     d.line((x, y - 3, x, y + 3), fill=(248, 96, 64, 255))
                     d.line((x - 3, y, x + 3, y), fill=(248, 200, 64, 255))
             frames_img.append(img)
-    pal = [(248, 248, 160), (248, 160, 64), (248, 248, 248), (120, 168, 248), (248, 96, 64), (248, 200, 64)]
-    frames = [rgba_to_sprite(img, palette=pal)[0] for img in frames_img]
-    save_sprite("fx_burst", frames, [TRANSPARENT] + pal, 32)
+    frames = [rgba_to_sprite(img, palette=FX_PALETTE)[0] for img in frames_img]
+    save_sprite("fx_burst", frames, [TRANSPARENT] + FX_PALETTE, 32)
 
 
 # ---------------------------------------------------------------------------------------------
