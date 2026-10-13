@@ -25,6 +25,7 @@ constexpr Encounter ACT1A_WEAK[] = {
     { "FuzzyWurmCrawlerWeak"sv, 1, { EnemyType::FUZZY_WURM_CRAWLER } },
     { "NibbitsWeak"sv, 1, { EnemyType::NIBBIT } },
     { "ShrinkerBeetleWeak"sv, 1, { EnemyType::SHRINKER_BEETLE } },
+    { "SlimesWeak"sv, 4, { EnemyType::LEAF_SLIME_M, EnemyType::LEAF_SLIME_S, EnemyType::TWIG_SLIME_M, EnemyType::TWIG_SLIME_S } },
 };
 constexpr Encounter ACT1A_NORMAL[] = {
     { "RubyRaidersNormal"sv, 3, {}, RUBY_RAIDERS },
@@ -35,6 +36,12 @@ constexpr Encounter ACT1A_NORMAL[] = {
     { "FlyconidNormal"sv, 1, { EnemyType::FLYCONID } },
     { "MawlerNormal"sv, 1, { EnemyType::MAWLER } },
     { "OvergrowthCrawlers"sv, 2, { EnemyType::FUZZY_WURM_CRAWLER, EnemyType::SHRINKER_BEETLE } },
+    { "FogmogNormal"sv, 1, { EnemyType::FOGMOG } },
+    { "SnappingJaxfruitNormal"sv, 2, { EnemyType::FLYCONID, EnemyType::SNAPPING_JAXFRUIT } },
+    { "SlimesNormal"sv, 2, { EnemyType::LEAF_SLIME_M, EnemyType::TWIG_SLIME_M } },
+    { "SlitheringStranglerNormal"sv, 6,
+      { EnemyType::LEAF_SLIME_M, EnemyType::LEAF_SLIME_S, EnemyType::SLITHERING_STRANGLER, EnemyType::SNAPPING_JAXFRUIT,
+        EnemyType::TWIG_SLIME_M, EnemyType::TWIG_SLIME_S } },
 };
 
 // Act 1 (B): the Underdocks.
@@ -53,6 +60,8 @@ constexpr Encounter ACT1B_NORMAL[] = {
     { "HauntedShipNormal"sv, 1, { EnemyType::HAUNTED_SHIP } },
     { "FossilStalkerNormal"sv, 1, { EnemyType::FOSSIL_STALKER } },
     { "SeapunkNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::SEAPUNK } },
+    { "LivingFogNormal"sv, 1, { EnemyType::LIVING_FOG } },
+    { "TwoTailedRatsNormal"sv, 3, { EnemyType::TWO_TAILED_RAT, EnemyType::TWO_TAILED_RAT, EnemyType::TWO_TAILED_RAT } },
 };
 
 // Act 2: the Hive.
