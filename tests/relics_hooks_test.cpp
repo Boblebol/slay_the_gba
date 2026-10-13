@@ -4634,6 +4634,48 @@ void test_touch_of_orobas() {
     std::cout << "[PASS] Touch of Orobas: starter relic replaced by its Ancient version" << std::endl;
 }
 
+void test_archaic_tooth() {
+    // Obtained: Bash, the Ironclad's starter card, becomes Break; its upgrade stays.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    size_t size = run.master_deck.size();
+    int bash = -1;
+    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+        if (run.master_deck[i].id == CardId::BASH) bash = static_cast<int>(i);
+    }
+    assert(bash >= 0);
+    run.master_deck[bash].upgraded = true;
+    run.add_relic("ARCHAIC_TOOTH");
+    assert(run.has_relic("ARCHAIC_TOOTH"));
+    assert(run.master_deck.size() == size);
+    assert(run.master_deck[bash].id == CardId::BREAK && run.master_deck[bash].upgraded);
+    for (const DeckCard& card : run.master_deck) assert(card.id != CardId::BASH);
+
+    // The Silent's Neutralize becomes Suppress.
+    RunManager silent;
+    silent.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 779);
+    silent.add_relic("ARCHAIC_TOOTH");
+    bool suppress = false;
+    for (const DeckCard& card : silent.master_deck) {
+        assert(card.id != CardId::NEUTRALIZE);
+        suppress = suppress || card.id == CardId::SUPPRESS;
+    }
+    assert(suppress);
+
+    // Without the relic, Bash stays.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 779);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("ARCHAIC_TOOTH"));
+    bool has_bash = false;
+    for (const DeckCard& card : plain.master_deck) {
+        assert(card.id != CardId::BREAK);
+        has_bash = has_bash || card.id == CardId::BASH;
+    }
+    assert(has_bash);
+    std::cout << "[PASS] Archaic Tooth: a starter card Transformed into its Ancient version" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -4664,6 +4706,7 @@ int main() {
     test_paels_legion();
     test_golden_pearl();
     test_touch_of_orobas();
+    test_archaic_tooth();
     test_venerable_tea_set();
     test_fake_venerable_tea_set();
     test_divine_destiny();
