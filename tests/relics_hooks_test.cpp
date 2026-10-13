@@ -4615,6 +4615,45 @@ void test_fishing_rod() {
     std::cout << "[PASS] Fishing Rod upgrades a card every 3 normal fights" << std::endl;
 }
 
+void test_driftwood() {
+    // Each card reward can be drawn again once: new cards, then no second reroll; the next reward has its own.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 745);
+    run.add_relic("DRIFTWOOD");
+    run.add_relic("SILVER_CRUCIBLE");
+    assert(run.has_relic("DRIFTWOOD"));
+    bool changed = false;
+    for (int reward = 0; reward < 4; ++reward) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        assert(run.phase == RunPhase::REWARD_SCREEN && !run.current_card_rewards.empty());
+        assert(run.can_reroll_card_rewards());
+        FixedVector<DeckCard, 3> before = run.current_card_rewards;
+        assert(run.reroll_card_rewards());
+        assert(run.current_card_rewards.size() == before.size());
+        for (size_t i = 0; i < before.size(); ++i) changed = changed || run.current_card_rewards[i].id != before[i].id;
+        // Silver Crucible still counts the reward once: the first 3 are upgraded, rerolled or not.
+        for (const DeckCard& card : run.current_card_rewards) assert(card.upgraded == (reward < 3));
+        assert(!run.can_reroll_card_rewards() && !run.reroll_card_rewards());
+        assert(run.phase == RunPhase::REWARD_SCREEN);
+        run.skip_card_rewards();
+    }
+    assert(changed);
+
+    // Without the relic, the reward cannot be drawn again.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 745);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    assert(plain.phase == RunPhase::REWARD_SCREEN && !plain.current_card_rewards.empty());
+    FixedVector<DeckCard, 3> offered = plain.current_card_rewards;
+    assert(!plain.can_reroll_card_rewards() && !plain.reroll_card_rewards());
+    for (size_t i = 0; i < offered.size(); ++i) assert(plain.current_card_rewards[i].id == offered[i].id);
+    std::cout << "[PASS] Driftwood: each card reward can be rerolled once" << std::endl;
+}
+
 void test_dowsing_rod() {
     // Obtained: one Dowsing joins the deck.
     RunManager run;
@@ -4867,6 +4906,7 @@ int main() {
     test_bing_bong();
     test_paper_phrog();
     test_silver_crucible();
+    test_driftwood();
     test_dowsing_rod();
     test_silken_tress();
     test_forgotten_soul();

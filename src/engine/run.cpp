@@ -26,7 +26,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
-    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "SEA_GLASS", "DRIFTWOOD",
+    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "SEA_GLASS",
     "PAELS_WING", "TOY_BOX", "FUR_COAT",
 };
 
@@ -577,6 +577,8 @@ CharacterId RunManager::random_other_hero() {
 void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity, bool elite, CharacterId hero) {
     // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked. Without one, each card
     // rolls its own rarity (more Rare ones after an elite); a boss gives Rare cards only.
+    last_card_reward_draw = CardRewardDraw{ boss, rarity, elite, hero, relic_counter("SILVER_CRUCIBLE"),
+                                            relic_counter("SILKEN_TRESS"), false };
     if (boss && rarity == CardRarity::NONE) rarity = CardRarity::RARE;
     current_card_rewards.clear();
     // Silver Crucible: the first card rewards seen are Upgraded.
@@ -750,6 +752,22 @@ void RunManager::pick_card_reward(int reward_index) {
 
 void RunManager::skip_card_rewards() {
     next_card_reward_or_finish();
+}
+
+bool RunManager::can_reroll_card_rewards() const {
+    return has_relic("DRIFTWOOD") && !current_card_rewards.empty() && !last_card_reward_draw.rerolled;
+}
+
+bool RunManager::reroll_card_rewards() {
+    if (!can_reroll_card_rewards()) return false;
+    // The relics that change the reward see it as the same one: their counters are put back as they were.
+    const CardRewardDraw draw = last_card_reward_draw;
+    if (has_relic("SILVER_CRUCIBLE")) set_relic_counter("SILVER_CRUCIBLE", draw.silver_crucible);
+    if (has_relic("SILKEN_TRESS")) set_relic_counter("SILKEN_TRESS", draw.silken_tress);
+    RewardRng rng(next_random());
+    draw_card_rewards(draw.boss, rng, draw.rarity, draw.elite, draw.hero);
+    last_card_reward_draw.rerolled = true;
+    return true;
 }
 
 void RunManager::next_card_reward_or_finish() {
