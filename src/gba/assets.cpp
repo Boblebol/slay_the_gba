@@ -17,6 +17,7 @@
 #include "bn_sprite_items_boss_lagavulin_matriarch.h"
 #include "bn_sprite_items_boss_knowledge_demon.h"
 #include "bn_sprite_items_boss_test_subject.h"
+#include "bn_sprite_items_boss_aeonglass.h"
 #include "bn_sprite_items_boss_vantom.h"
 #include "bn_sprite_items_mon_queen.h"
 #include "bn_sprite_items_mon_torch_head_amalgam.h"
@@ -300,6 +301,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::boss_knowledge_demon, true };
     case engine::EnemyType::TEST_SUBJECT:
         return { &bn::sprite_items::boss_test_subject, true };
+    case engine::EnemyType::AEONGLASS:
+        return { &bn::sprite_items::boss_aeonglass, true };
     case engine::EnemyType::VANTOM:
         return { &bn::sprite_items::boss_vantom, true };
     case engine::EnemyType::SOUL_FYSH:

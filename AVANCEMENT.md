@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 90,7 %** — 1125 faits, 15 partiels, 109 à faire (35 hors périmètre).
+**Avancement global : 90,8 %** — 1126 faits, 15 partiels, 108 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 305 | 0 | 16 | 95,0 % |
-| [Bestiaire](#bestiaire) | 88 | 0 | 16 | 84,6 % |
+| [Bestiaire](#bestiaire) | 89 | 0 | 15 | 85,6 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
-| **Total** | **1125** | **15** | **109** | **90,7 %** |
+| **Total** | **1126** | **15** | **108** | **90,8 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,7 +1212,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 84,6 %
+## Bestiaire — 85,6 %
 
 ### Monstres — 94,4 %
 
@@ -1317,9 +1317,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Chevalier spectral | Élite · Acte 3 | Oui |  |
 | Méca-Chevalier | Élite · Acte 3 | Oui |  |
 
-### Boss — 46,7 %
+### Boss — 53,3 %
 
-7 faits, 0 partiel, 8 à faire.
+8 faits, 0 partiel, 7 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1327,7 +1327,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Disciple de la Tribu | Boss · Acte 1 (A) | Non |  |
 | Prêtre de la Tribu | Boss · Acte 1 (A) | Non |  |
 | Vantôme | Boss · Acte 1 (A) | Oui |  |
-| Géant de la Cascade | Boss · Acte 1 (B) | Non |  |
+| Géant de la Cascade | Boss · Acte 1 (B) | Oui |  |
 | Matriarche Lagavulin | Boss · Acte 1 (B) | Oui |  |
 | Poissâme | Boss · Acte 1 (B) | Oui |  |
 | Anéantisseur | Boss · Acte 2 | Non |  |

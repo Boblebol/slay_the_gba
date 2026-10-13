@@ -661,6 +661,8 @@ enum class CardId : uint16_t {
     FRANTIC_ESCAPE,
     // Status card given by the Soul Fysh (its effect is guessed, see SOUL_FYSH_BECKONS)
     BECKON,
+    // Status card given by the Aeonglass
+    WITHER,
     COUNT
 };
 

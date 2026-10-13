@@ -116,6 +116,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::WATERFALL_GIANT: return "WATERFALL_GIANT";
         case EnemyType::VANTOM: return "VANTOM";
         case EnemyType::SOUL_FYSH: return "SOUL_FYSH";
+        case EnemyType::AEONGLASS: return "AEONGLASS";
         case EnemyType::QUEEN: return "QUEEN";
         case EnemyType::TORCH_HEAD_AMALGAM: return "TORCH_HEAD_AMALGAM";
     }
@@ -244,9 +245,9 @@ void test_reference_encounters() {
                                         "TwoTailedRatsNormal" }));
     // Act 1 (A) draws its boss between the Ceremonial Beast and the Vantom, Act 1 (B) between the Lagavulin
     // Matriarch, the Soul Fysh and the Waterfall Giant, Act 2 between the Insatiable and the Knowledge Demon, Act 3
-    // between the Test Subject and the Queen.
+    // between the Test Subject, the Aeonglass and the Queen.
     for (ActZone zone : ZONES) {
-        std::set<std::string_view> bosses{ "TestSubjectBoss", "QueenBoss" };
+        std::set<std::string_view> bosses{ "TestSubjectBoss", "AeonglassBoss", "QueenBoss" };
         if (zone == ActZone::ACT1A) bosses = { "CeremonialBeastBoss", "VantomBoss" };
         if (zone == ActZone::ACT2) bosses = { "TheInsatiableBoss", "KnowledgeDemonBoss" };
         if (zone == ActZone::ACT1B) bosses = { "LagavulinMatriarchBoss", "SoulFyshBoss", "WaterfallGiantBoss" };
@@ -270,6 +271,8 @@ void test_reference_encounters() {
     assert(insatiable.count == 1 && insatiable.monsters[0] == EnemyType::THE_INSATIABLE);
     const Encounter& subject = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::BOSS), "TestSubjectBoss");
     assert(subject.count == 1 && subject.monsters[0] == EnemyType::TEST_SUBJECT);
+    const Encounter& aeonglass = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::BOSS), "AeonglassBoss");
+    assert(aeonglass.count == 1 && aeonglass.monsters[0] == EnemyType::AEONGLASS);
     const Encounter& queen = find_encounter(encounter_table(ActZone::ACT3, EncounterTier::BOSS), "QueenBoss");
     assert(queen.count == 2 && queen.monsters[0] == EnemyType::QUEEN &&
            queen.monsters[1] == EnemyType::TORCH_HEAD_AMALGAM);

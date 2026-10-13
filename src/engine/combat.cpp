@@ -5595,6 +5595,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::DAZED:
         case CardId::INFECTION:
         case CardId::BECKON:
+        case CardId::WITHER:
         case CardId::SOOT:
         case CardId::VOID_CARD:
         case CardId::WOUND:

@@ -453,6 +453,7 @@ enum class EnemyType : uint8_t {
     KNOWLEDGE_DEMON,      // Act 2 boss
     SOUL_FYSH,            // Act 1 (B) boss
     WATERFALL_GIANT,      // Act 1 (B) boss
+    AEONGLASS,            // Act 3 boss
     QUEEN,                // Act 3 boss, with the Torch Head Amalgam
     TORCH_HEAD_AMALGAM    // Act 3 boss, with the Queen
 };
@@ -530,6 +531,11 @@ constexpr int16_t WATERFALL_GIANT_STEAM = 3;
 constexpr int16_t WATERFALL_GIANT_SIPHON_HEAL = 15;        // guessed
 constexpr int16_t WATERFALL_GIANT_PRESSURE_GUN = 20;       // guessed
 constexpr int16_t WATERFALL_GIANT_PRESSURE_GUN_ASC = 22;   // guessed
+
+// Increasing Intensity, the Aeonglass's third move: the Strength it gives itself (Ascension: the second value). The
+// monster database names the buff without its amount: guessed, in line with the other bosses' +2 / +3 Strength.
+constexpr int16_t AEONGLASS_STRENGTH = 2;     // guessed
+constexpr int16_t AEONGLASS_STRENGTH_ASC = 3; // guessed
 
 // The Queen fights beside the Torch Head Amalgam. Puppet Strings puts QUEEN_CHAINS_OF_BINDING Chains of Binding on
 // the player, You Are Mine QUEEN_YOU_ARE_MINE Weak, Frail and Vulnerable. Then, while the Amalgam lives, Burn Bright
