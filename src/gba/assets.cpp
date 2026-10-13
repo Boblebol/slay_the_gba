@@ -90,6 +90,8 @@
 #include "bn_sprite_items_mon_leaf_slime_s.h"
 #include "bn_sprite_items_mon_slithering_strangler.h"
 #include "bn_sprite_items_mon_living_fog.h"
+#include "bn_sprite_items_mon_phantasmal_gardener.h"
+#include "bn_sprite_items_mon_exoskeleton.h"
 #include "bn_sprite_items_mon_two_tailed_rat.h"
 #include "bn_sprite_items_mon_crusher.h"
 #include "bn_sprite_items_mon_rocket.h"
@@ -326,6 +328,10 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_queen, false };
     case engine::EnemyType::TORCH_HEAD_AMALGAM:
         return { &bn::sprite_items::mon_torch_head_amalgam, false };
+    case engine::EnemyType::PHANTASMAL_GARDENER:
+        return { &bn::sprite_items::mon_phantasmal_gardener, false };
+    case engine::EnemyType::EXOSKELETON:
+        return { &bn::sprite_items::mon_exoskeleton, false };
     case engine::EnemyType::FUZZY_WURM_CRAWLER:
         return { &bn::sprite_items::mon_fuzzy_wurm_crawler, false };
     case engine::EnemyType::CROSSBOW_RUBY_RAIDER:

@@ -61,7 +61,7 @@ def engine_card_costs() -> dict[str, dict[str, object]]:
             "costs": (NO_COST if "UNPLAYABLE" in extra[0] else value(cost),
                       NO_COST if "UNPLAYABLE" in extra[1] else value(upgraded_cost)),
             "stars": (value(extra[2]), value(extra[3])),
-            "kind": "status" if kind in ("STATUS", "CURSE") else kind.lower(),
+            "kind": "status" if kind in ("STATUS", "CURSE", "QUEST") else kind.lower(),
         }
     return cards
 
