@@ -111,6 +111,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::LIVING_FOG: return "LIVING_FOG";
         case EnemyType::TWO_TAILED_RAT: return "TWO_TAILED_RAT";
         case EnemyType::LAGAVULIN_MATRIARCH: return "LAGAVULIN_MATRIARCH";
+        case EnemyType::SOUL_FYSH: return "SOUL_FYSH";
     }
     return {};
 }
@@ -235,17 +236,19 @@ void test_reference_encounters() {
                                         "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
                                         "FossilStalkerNormal", "SeapunkNormal", "LivingFogNormal",
                                         "TwoTailedRatsNormal" }));
-    // Act 1 (B) and Act 2 have their own boss, the Lagavulin Matriarch and the Insatiable; the other acts keep
-    // the Ceremonial Beast.
+    // Act 1 (B) draws one of its own bosses, the Lagavulin Matriarch or the Soul Fysh; Act 2 has the Insatiable;
+    // the other acts keep the Ceremonial Beast.
     for (ActZone zone : ZONES) {
-        const std::string_view boss = zone == ActZone::ACT2    ? "TheInsatiableBoss"
-                                      : zone == ActZone::ACT1B ? "LagavulinMatriarchBoss"
-                                                               : "CeremonialBeastBoss";
-        assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) == std::set<std::string_view>{ boss });
+        std::set<std::string_view> bosses{ "CeremonialBeastBoss" };
+        if (zone == ActZone::ACT2) bosses = { "TheInsatiableBoss" };
+        if (zone == ActZone::ACT1B) bosses = { "LagavulinMatriarchBoss", "SoulFyshBoss" };
+        assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) == bosses);
     }
     const Encounter& matriarch = find_encounter(encounter_table(ActZone::ACT1B, EncounterTier::BOSS),
                                                 "LagavulinMatriarchBoss");
     assert(matriarch.count == 1 && matriarch.monsters[0] == EnemyType::LAGAVULIN_MATRIARCH);
+    const Encounter& fysh = find_encounter(encounter_table(ActZone::ACT1B, EncounterTier::BOSS), "SoulFyshBoss");
+    assert(fysh.count == 1 && fysh.monsters[0] == EnemyType::SOUL_FYSH);
     const Encounter& insatiable = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::BOSS),
                                                  "TheInsatiableBoss");
     assert(insatiable.count == 1 && insatiable.monsters[0] == EnemyType::THE_INSATIABLE);
