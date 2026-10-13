@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 91,2 %** — 1131 faits, 15 partiels, 103 à faire (35 hors périmètre).
+**Avancement global : 91,3 %** — 1133 faits, 15 partiels, 101 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -21,12 +21,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
 | [Reliques et potions](#reliques) | 305 | 0 | 16 | 95,0 % |
-| [Bestiaire](#bestiaire) | 94 | 0 | 10 | 90,4 % |
+| [Bestiaire](#bestiaire) | 96 | 0 | 8 | 92,3 % |
 | [Évènements et Anciens](#rencontres) | 0 | 3 | 62 | 2,3 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
-| **Total** | **1131** | **15** | **103** | **91,2 %** |
+| **Total** | **1133** | **15** | **101** | **91,3 %** |
 
 <a id="ironclad"></a>
 
@@ -1212,7 +1212,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 90,4 %
+## Bestiaire — 92,3 %
 
 ### Monstres — 94,4 %
 
@@ -1317,9 +1317,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Chevalier spectral | Élite · Acte 3 | Oui |  |
 | Méca-Chevalier | Élite · Acte 3 | Oui |  |
 
-### Boss — 86,7 %
+### Boss — 100,0 %
 
-13 faits, 0 partiel, 2 à faire.
+15 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1330,10 +1330,10 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Géant de la Cascade | Boss · Acte 1 (B) | Oui |  |
 | Matriarche Lagavulin | Boss · Acte 1 (B) | Oui |  |
 | Poissâme | Boss · Acte 1 (B) | Oui |  |
-| Anéantisseur | Boss · Acte 2 | Non |  |
+| Anéantisseur | Boss · Acte 2 | Oui |  |
 | Démon de la Connaissance | Boss · Acte 2 | Oui |  |
 | L'Insatiable | Boss · Acte 2 | Oui |  |
-| Roquette | Boss · Acte 2 | Non |  |
+| Roquette | Boss · Acte 2 | Oui |  |
 | Amalgame Torchetête | Boss · Acte 3 | Oui |  |
 | Clepséon | Boss · Acte 3 | Oui |  |
 | Cobaye | Boss · Acte 3 | Oui |  |
