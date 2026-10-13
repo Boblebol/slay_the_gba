@@ -197,6 +197,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "SPARKLING_ROUGE", "Au début de votre 3ème tour, gagnez 1 de Force et 1 de Dextérité." },
     { "STONE_CALENDAR", "À la fin du tour 7, infligez 52 dégâts à TOUS les ennemis." },
     { "STONE_CRACKER", "Au début de chaque combat, Améliorez 2 cartes aléatoires de votre Pioche pour le restant du combat." },
+    { "SEA_GLASS", "Consultez une sélection de 15 cartes d'un autre personnage. Ajoutez-en autant que vous souhaitez à votre Deck." },
     { "TOY_BOX", "Lorsque vous obtenez cette relique, obtenez 5 Reliques de cire. Tous les 3 combats, la Relique de cire la plus à gauche fondra." },
     { "FUR_COAT", "Lorsque vous obtenez cette relique, marquez 8 combats aléatoires sur le Plan. Les ennemis dans ces salles ont 1 PV." },
     { "WINGED_BOOTS", "Vous pouvez ignorer les trajets indiqués sur la carte lorsque vous choisissez la prochaine salle 3 fois." },

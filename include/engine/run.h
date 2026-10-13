@@ -33,7 +33,8 @@ enum class DeckChoiceKind : uint8_t {
     REMOVE,
     TRANSFORM,
     ENCHANT,
-    DUPLICATE // the chosen card gets one more copy in the deck
+    DUPLICATE, // the chosen card gets one more copy in the deck
+    ADD        // the chosen card of RunManager::deck_choice_offers joins the deck (Sea Glass)
 };
 
 struct DeckChoice {
@@ -45,6 +46,9 @@ struct DeckChoice {
     Enchantment enchantment = Enchantment::NONE; // ENCHANT only: the enchantment put on each chosen card
     uint8_t enchant_amount = 0;                  // ENCHANT only: its amount
 };
+
+// Sea Glass: cards of another hero offered on pickup.
+constexpr size_t SEA_GLASS_CARDS = 15;
 
 // Moments of a run, outside the fights, a relic can act on. Each one is a private `on_...` method of RunManager.
 enum class RunHook : uint8_t {
@@ -116,6 +120,8 @@ public:
     uint8_t potion_slots = BASE_POTION_SLOTS; // size of the belt: `potions` never holds more
     // Cards of the deck the player still has to choose. The room is left once it is resolved.
     DeckChoice deck_choice;
+    // ADD only: the cards offered, that the indices of the choice refer to instead of the deck.
+    FixedVector<DeckCard, SEA_GLASS_CARDS> deck_choice_offers;
     FixedVector<RelicCounter, MAX_RELIC_COUNTERS> relic_counters;
     // How many times each hook ran since the start of the run: read by the tests and the debug tools.
     uint16_t hook_runs[static_cast<size_t>(RunHook::COUNT)] = {};
@@ -259,7 +265,7 @@ public:
     void request_deck_choice(DeckChoiceKind kind, int count, bool optional = false, bool upgrade_result = false, CardId transform_into = CardId::NONE,
                               Enchantment enchantment = Enchantment::NONE, uint8_t enchant_amount = 0);
     [[nodiscard]] bool has_deck_choice() const { return deck_choice.kind != DeckChoiceKind::NONE; }
-    // True when the card at `deck_index` can be picked for the choice in progress.
+    // True when the card at `deck_index` (of deck_choice_offers for ADD) can be picked for the choice in progress.
     [[nodiscard]] bool deck_choice_allows(int deck_index) const;
     // Applies the choice in progress to the card. The choice ends with its last card, or when no card fits.
     bool resolve_deck_choice(int deck_index);

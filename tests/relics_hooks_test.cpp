@@ -4984,6 +4984,40 @@ void test_miniature_tent() {
     std::cout << "[PASS] Miniature Tent: every campfire action once per rest site" << std::endl;
 }
 
+void test_sea_glass() {
+    // Obtained: 15 distinct cards of one other hero are offered, any number of them join the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 743);
+    const size_t deck = run.master_deck.size();
+    run.add_relic("SEA_GLASS");
+    assert(run.has_relic("SEA_GLASS"));
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ADD && run.deck_choice.optional);
+    assert(run.deck_choice_offers.size() == SEA_GLASS_CARDS && run.deck_choice.remaining == SEA_GLASS_CARDS);
+    CardPool hero = card_meta(run.deck_choice_offers[0].id).pool;
+    assert(hero != CardPool::IRONCLAD);
+    for (size_t i = 0; i < run.deck_choice_offers.size(); ++i) {
+        assert(card_meta(run.deck_choice_offers[i].id).pool == hero);
+        assert(card_meta(run.deck_choice_offers[i].id).rarity != CardRarity::BASIC);
+        for (size_t j = 0; j < i; ++j) assert(run.deck_choice_offers[i].id != run.deck_choice_offers[j].id);
+    }
+    CardId first = run.deck_choice_offers[0].id;
+    CardId third = run.deck_choice_offers[2].id;
+    assert(run.resolve_deck_choice(0));
+    assert(run.master_deck.size() == deck + 1 && run.master_deck.back().id == first);
+    assert(run.deck_choice_offers.size() == SEA_GLASS_CARDS - 1 && run.deck_choice.remaining == SEA_GLASS_CARDS - 1);
+    assert(run.resolve_deck_choice(1));
+    assert(run.master_deck.size() == deck + 2 && run.master_deck.back().id == third);
+    assert(!run.resolve_deck_choice(40));
+    assert(run.skip_deck_choice() && !run.has_deck_choice() && run.master_deck.size() == deck + 2);
+
+    // Without the relic, nothing is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 743);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("SEA_GLASS") && !plain.has_deck_choice() && plain.deck_choice_offers.empty());
+    std::cout << "[PASS] Sea Glass: 15 cards of another hero, any number added to the deck" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -5174,5 +5208,6 @@ int main() {
     test_dollys_mirror();
     test_sword_of_stone();
     test_miniature_tent();
+    test_sea_glass();
     return 0;
 }
