@@ -196,6 +196,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "SPARKLING_ROUGE", "Au début de votre 3ème tour, gagnez 1 de Force et 1 de Dextérité." },
     { "STONE_CALENDAR", "À la fin du tour 7, infligez 52 dégâts à TOUS les ennemis." },
     { "STONE_CRACKER", "Au début de chaque combat, Améliorez 2 cartes aléatoires de votre Pioche pour le restant du combat." },
+    { "FUR_COAT", "Lorsque vous obtenez cette relique, marquez 8 combats aléatoires sur le Plan. Les ennemis dans ces salles ont 1 PV." },
     { "WINGED_BOOTS", "Vous pouvez ignorer les trajets indiqués sur la carte lorsque vous choisissez la prochaine salle 3 fois." },
     { "PAELS_WING", "Vous pouvez offrir des récompenses de carte en sacrifice à Paël. Tous les 2 sacrifices, vous obtenez une Relique." },
     { "DRIFTWOOD", "Vous disposez d'une relance gratuite pour chaque récompense de carte." },

@@ -27,7 +27,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
     "MASSIVE_SCROLL", "SCROLL_BOXES", "SEA_GLASS",
-    "TOY_BOX", "FUR_COAT",
+    "TOY_BOX",
 };
 
 bool ancient_relic_pending(std::string_view relic_id) {
@@ -41,6 +41,9 @@ bool ancient_relic_pending(std::string_view relic_id) {
 constexpr uint32_t ANCIENT_SEED_SALT = 0xA5C1E7D3u;
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+// Fur Coat: combats marked on the map, drawn from a stream of their own seeded by the map.
+constexpr uint8_t FUR_COAT_COMBATS = 8;
+constexpr uint32_t FUR_COAT_SEED_SALT = 0xF0C0A7u;
 // Winged Boots: rooms off the paths of the map the relic allows.
 constexpr uint8_t WINGED_BOOTS_FLIGHTS = 3;
 // Paël's Wing: card rewards sacrificed for each relic.
@@ -161,6 +164,26 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     phase = RunPhase::MAP_NAVIGATION;
 }
 
+bool RunManager::fur_coat_room(int node_index) const {
+    // The counter keeps the act of the pickup (high bits) and the first floor still ahead then (low bits): with the
+    // map seed, they draw the same rooms again, after a reload too.
+    if (!has_relic("FUR_COAT") || node_index < 0 || static_cast<size_t>(node_index) >= map.nodes.size()) return false;
+    const uint8_t counter = relic_counter("FUR_COAT");
+    if (counter == 0 || counter >> 4 != current_act) return false;
+    const uint8_t from_floor = counter & 0x0F;
+    FixedVector<int, 64> combats;
+    for (size_t i = 0; i < map.nodes.size() && combats.size() < combats.capacity(); ++i) {
+        if (map.nodes[i].type == RoomType::MONSTER && map.nodes[i].floor >= from_floor) combats.push_back(static_cast<int>(i));
+    }
+    RewardRng rng(map_seed ^ FUR_COAT_SEED_SALT);
+    for (uint8_t marked = 0; marked < FUR_COAT_COMBATS && !combats.empty(); ++marked) {
+        size_t pick = rng.below(static_cast<uint32_t>(combats.size()));
+        if (combats[pick] == node_index) return true;
+        combats.erase(pick);
+    }
+    return false;
+}
+
 FixedVector<int, 3> RunManager::get_available_rooms() const {
     if (current_node_index < 0) {
         return map.get_starting_nodes();
@@ -252,6 +275,9 @@ void RunManager::enter_room(int node_index) {
             combat.enemy_hp_percent = get_enemy_hp_multiplier(node.type);
             combat.enemy_damage_percent = get_enemy_damage_multiplier(node.type);
             for (Enemy& foe : combat.enemies) foe.apply_ascension(combat.enemy_hp_percent, combat.enemy_damage_percent);
+            if (fur_coat_room(node_index)) {
+                for (Enemy& foe : combat.enemies) foe.hp = 1;
+            }
             combat.plan_enemies(); // the moves follow the Ascension values just given
 
             // Replace combat piles with current master deck
@@ -874,6 +900,11 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
     }
     if (relic_id == "SMALL_CAPSULE" && has_relic("SMALL_CAPSULE")) gain_random_relics(1);
+    // Fur Coat: marks combats of the rooms still ahead in this act (see fur_coat_room).
+    if (relic_id == "FUR_COAT" && has_relic("FUR_COAT")) {
+        const uint8_t from_floor = current_node_index >= 0 ? static_cast<uint8_t>(map.nodes[current_node_index].floor + 1) : 0;
+        set_relic_counter("FUR_COAT", static_cast<uint8_t>(current_act << 4 | (from_floor & 0x0F)));
+    }
     // Winged Boots: 3 rooms off the paths of the map.
     if (relic_id == "WINGED_BOOTS" && has_relic("WINGED_BOOTS")) set_relic_counter("WINGED_BOOTS", WINGED_BOOTS_FLIGHTS);
     if (relic_id == "DOWSING_ROD" && has_relic("DOWSING_ROD")) add_card_to_deck(DeckCard{ CardId::DOWSING, false });
