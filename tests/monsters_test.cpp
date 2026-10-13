@@ -2701,6 +2701,159 @@ void test_test_subject_whole_fight() {
     std::cout << "[PASS] Test Subject: a whole fight to the boss's death, through its three lives" << std::endl;
 }
 
+void test_queen() {
+    // Alone (as once the Torch Head Amalgam is dead): Puppet Strings, You Are Mine (Vulnerable 99: every hit after it
+    // deals 50% more), then Off With Your Head 3x5, Execution 15, Enrage +2 Strength, in a loop.
+    check_monster(EnemyType::QUEEN, "Reine", 400, {
+        { DEBUFF, 0, 0, 0 },
+        { DEBUFF, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 5 },
+        { ATTACK, 22, 0, 0 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK, 7, 0, 2, 0, 5 },
+        { ATTACK, 25, 0, 2 },
+        { BUFF, 0, 0, 4 },
+    });
+    std::cout << "[PASS] Queen: 400 HP, Puppet Strings, You Are Mine, then Off With Your Head 3x5, Execution 15, "
+                 "Enrage +2 Strength, loop" << std::endl;
+}
+
+void test_torch_head_amalgam() {
+    // Strong Tackle 26, Tackle 18, then Beam 8x3, Tackle 14, Tackle 14 in a loop.
+    check_monster(EnemyType::TORCH_HEAD_AMALGAM, "Amalgame Torchetête", 199, {
+        { ATTACK, 26, 0, 0 },
+        { ATTACK, 18, 0, 0 },
+        { ATTACK, 8, 0, 0, 0, 3 },
+        { ATTACK, 14, 0, 0 },
+        { ATTACK, 14, 0, 0 },
+        { ATTACK, 8, 0, 0, 0, 3 },
+        { ATTACK, 14, 0, 0 },
+        { ATTACK, 14, 0, 0 },
+    });
+    std::cout << "[PASS] Torch Head Amalgam: 199 HP, Strong Tackle 26, Tackle 18, then Beam 8x3, Tackle 14, "
+                 "Tackle 14, loop" << std::endl;
+}
+
+void test_queen_debuffs() {
+    // Puppet Strings: 3 Chains of Binding. The first 3 cards of each new hand are Bound (cannot be played this turn),
+    // one fewer after each turn. You Are Mine: 99 Weak, Frail and Vulnerable.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::QUEEN);
+    Enemy& queen = combat.enemies[0];
+    assert(queen.current_intent.power == PowerId::CHAINS_OF_BINDING && queen.current_intent.power_on_player);
+    for (size_t i = 0; i < combat.hand.size(); ++i) assert(!combat.hand[i].bound_this_turn);
+    combat.end_player_turn();
+    assert(combat.power_amount(PowerId::CHAINS_OF_BINDING) == QUEEN_CHAINS_OF_BINDING);
+    for (int i = 0; i < 3; ++i) {
+        assert(combat.hand[i].bound_this_turn && combat.play_blocker(i) == PlayBlocker::NOT_PLAYABLE);
+        assert(!combat.play_card(i, 0));
+    }
+    assert(!combat.hand[3].bound_this_turn && combat.can_play_card(3));
+    assert(queen.current_intent.type == DEBUFF && queen.current_intent.debuffs[2].type == StatusType::VULNERABLE);
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::WEAK) >= 98 && combat.player.get_status(StatusType::FRAIL) >= 98 &&
+           combat.player.get_status(StatusType::VULNERABLE) >= 98);
+    assert(combat.power_amount(PowerId::CHAINS_OF_BINDING) == 2);
+    assert(combat.hand[0].bound_this_turn && combat.hand[1].bound_this_turn && !combat.hand[2].bound_this_turn);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.hand[0].bound_this_turn && !combat.hand[1].bound_this_turn);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    for (size_t i = 0; i < combat.hand.size(); ++i) assert(!combat.hand[i].bound_this_turn && combat.can_play_card(static_cast<int>(i)));
+
+    // Artifact cancels Chains of Binding.
+    CombatEngine guarded = make_combat(CharacterId::IRONCLAD, EnemyType::QUEEN);
+    guarded.player.add_status(StatusType::ARTIFACT, 1);
+    guarded.end_player_turn();
+    assert(!guarded.has_power(PowerId::CHAINS_OF_BINDING) && guarded.player.get_status(StatusType::ARTIFACT) == 0);
+    for (size_t i = 0; i < guarded.hand.size(); ++i) assert(!guarded.hand[i].bound_this_turn);
+    std::cout << "[PASS] Queen: Chains of Binding binds the first cards of the hand, You Are Mine 99 Weak, Frail, "
+                 "Vulnerable" << std::endl;
+}
+
+void test_queen_ascension() {
+    // Ascension: 419 and 211 HP; Off With Your Head 4x5, Execution 18; Strong Tackle 32, Tackle 22, Beam 8x3,
+    // Tackle 16.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::QUEEN);
+    Enemy& queen = combat.enemies[0];
+    assert(queen.ascension_hp() == 419 && queen.hp_spread() == 0);
+    queen.ascend(true, true);
+    combat.plan_enemies();
+    assert(queen.hp == 419 && queen.max_hp == 419);
+    combat.end_player_turn();
+    combat.end_player_turn();
+    combat.player.clear_status(StatusType::VULNERABLE);
+    assert(queen.current_intent.type == ATTACK && queen.intent_damage(combat.player) == 4 && queen.current_intent.hits == 5);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    combat.player.clear_status(StatusType::VULNERABLE);
+    assert(queen.current_intent.type == ATTACK && queen.intent_damage(combat.player) == 18);
+
+    CombatEngine torch = make_combat(CharacterId::IRONCLAD, EnemyType::TORCH_HEAD_AMALGAM);
+    Enemy& amalgam = torch.enemies[0];
+    assert(amalgam.ascension_hp() == 211 && amalgam.hp_spread() == 0);
+    amalgam.ascend(true, true);
+    torch.plan_enemies();
+    assert(amalgam.hp == 211 && amalgam.max_hp == 211);
+    const int damage[] = { 32, 22, 8, 16, 16, 8 };
+    for (int expected : damage) {
+        assert(amalgam.intent_damage(torch.player) == expected);
+        torch.player.hp = torch.player.max_hp;
+        torch.end_player_turn();
+    }
+    std::cout << "[PASS] Queen and Torch Head Amalgam: Ascension gives 419 and 211 HP, Off With Your Head 4x5, "
+                 "Execution 18, Strong Tackle 32, Tackle 22, Tackle 16" << std::endl;
+}
+
+void test_queen_whole_fight() {
+    // The QueenBoss fight, until both are dead: while the Amalgam lives the Queen plays Burn Bright For Me (20 Block,
+    // +1 Strength) every turn; once it is dead she plays Off With Your Head, Execution and Enrage.
+    CombatEngine combat;
+    const EnemyType pack[] = { EnemyType::QUEEN, EnemyType::TORCH_HEAD_AMALGAM };
+    combat.start_combat_multi(pack, CharacterId::IRONCLAD);
+    Enemy& queen = combat.enemies[0];
+    Enemy& amalgam = combat.enemies[1];
+    assert(queen.hp == 400 && amalgam.hp == 199 && queen.phase == 0);
+    auto play_turn = [&combat]() {
+        combat.player.hp = combat.player.max_hp;
+        const int16_t before = combat.player.hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        return before - combat.player.hp;
+    };
+    // Turn 1: Puppet Strings, Strong Tackle 26. Turn 2: You Are Mine, then Tackle 18 on a Vulnerable player: 27.
+    assert(queen.current_intent.type == DEBUFF && amalgam.intent_damage(combat.player) == 26);
+    assert(play_turn() == 26 && combat.power_amount(PowerId::CHAINS_OF_BINDING) == 3);
+    assert(queen.current_intent.type == DEBUFF && amalgam.intent_damage(combat.player) == 18);
+    assert(play_turn() == 27 && combat.player.get_status(StatusType::VULNERABLE) > 0);
+    combat.player.clear_status(StatusType::VULNERABLE);
+    combat.player.clear_status(StatusType::WEAK);
+    combat.player.clear_status(StatusType::FRAIL);
+    // Phase 1, the Amalgam alive: Burn Bright For Me every turn, beside Beam 8x3 and Tackle 14.
+    assert(queen.phase == 1 && queen.current_intent.type == DEFEND && queen.current_intent.block == QUEEN_BURN_BRIGHT_BLOCK);
+    assert(play_turn() == 24 && queen.block == 20 && queen.get_status(StatusType::STRENGTH) == 1);
+    assert(queen.phase == 1 && queen.current_intent.type == DEFEND);
+    assert(play_turn() == 14 && queen.block == 20 && queen.get_status(StatusType::STRENGTH) == 2);
+    // The Amalgam dies: the Queen still plays the move she announced, then enters her last phase.
+    combat.damage_enemy(amalgam, 999);
+    assert(!amalgam.is_alive() && combat.has_alive_enemies() && queen.current_intent.type == DEFEND);
+    assert(play_turn() == 0 && queen.get_status(StatusType::STRENGTH) == 3);
+    assert(queen.phase == 2);
+    // Phase 2: Off With Your Head (3+3)x5, Execution 15+3, Enrage +2, Off With Your Head (3+5)x5.
+    assert(queen.current_intent.type == ATTACK && queen.current_intent.hits == 5 && queen.intent_damage(combat.player) == 6);
+    assert(play_turn() == 30);
+    assert(queen.current_intent.type == ATTACK && queen.intent_damage(combat.player) == 18);
+    assert(play_turn() == 18);
+    assert(queen.current_intent.type == BUFF);
+    assert(play_turn() == 0 && queen.get_status(StatusType::STRENGTH) == 5);
+    assert(queen.phase == 2 && queen.current_intent.type == ATTACK && queen.intent_damage(combat.player) == 8);
+    // The Queen dies: the fight is won.
+    combat.damage_enemy(queen, 999);
+    assert(!queen.is_alive() && !combat.has_alive_enemies());
+    std::cout << "[PASS] Queen and Torch Head Amalgam: a whole fight, Burn Bright while the Amalgam lives, then "
+                 "Off With Your Head, Execution, Enrage" << std::endl;
+}
+
 void test_waterfall_giant() {
     // Pressurize, then Stomp 15 (Weak), Ram 10, Siphon (heal), Pressure Gun 20, Pressure Up 13, and again.
     check_monster(EnemyType::WATERFALL_GIANT, "Géant de la Cascade", 240, {
@@ -5708,6 +5861,11 @@ int main() {
     test_test_subject_thorns_respawn();
     test_test_subject_ascension();
     test_test_subject_whole_fight();
+    test_queen();
+    test_torch_head_amalgam();
+    test_queen_debuffs();
+    test_queen_ascension();
+    test_queen_whole_fight();
     test_waterfall_giant();
     test_steam_eruption();
     test_waterfall_giant_ascension();

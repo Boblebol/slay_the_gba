@@ -127,6 +127,7 @@ constexpr Encounter ACT1B_BOSS[] = {
 };
 constexpr Encounter TEST_SUBJECT_BOSS[] = {
     { "TestSubjectBoss"sv, 1, { EnemyType::TEST_SUBJECT } },
+    { "QueenBoss"sv, 2, { EnemyType::QUEEN, EnemyType::TORCH_HEAD_AMALGAM } },
 };
 constexpr Encounter ACT1A_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },

@@ -18,6 +18,8 @@
 #include "bn_sprite_items_boss_knowledge_demon.h"
 #include "bn_sprite_items_boss_test_subject.h"
 #include "bn_sprite_items_boss_vantom.h"
+#include "bn_sprite_items_mon_queen.h"
+#include "bn_sprite_items_mon_torch_head_amalgam.h"
 #include "bn_sprite_items_boss_soul_fysh.h"
 #include "bn_sprite_items_boss_waterfall_giant.h"
 #include "bn_sprite_items_mon_assassin_ruby_raider.h"
@@ -304,6 +306,11 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::boss_soul_fysh, true };
     case engine::EnemyType::WATERFALL_GIANT:
         return { &bn::sprite_items::boss_waterfall_giant, true };
+    // The Queen and the Torch Head Amalgam share their boss fight: monster-sized, side by side.
+    case engine::EnemyType::QUEEN:
+        return { &bn::sprite_items::mon_queen, false };
+    case engine::EnemyType::TORCH_HEAD_AMALGAM:
+        return { &bn::sprite_items::mon_torch_head_amalgam, false };
     case engine::EnemyType::FUZZY_WURM_CRAWLER:
         return { &bn::sprite_items::mon_fuzzy_wurm_crawler, false };
     case engine::EnemyType::CROSSBOW_RUBY_RAIDER:
