@@ -131,6 +131,7 @@ constexpr Encounter TEST_SUBJECT_BOSS[] = {
 constexpr Encounter ACT1A_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
     { "VantomBoss"sv, 1, { EnemyType::VANTOM } },
+    { "TheKinBoss"sv, 3, { EnemyType::KIN_FOLLOWER, EnemyType::KIN_FOLLOWER, EnemyType::KIN_PRIEST } },
 };
 constexpr Encounter ACT2_BOSS[] = {
     { "TheInsatiableBoss"sv, 1, { EnemyType::THE_INSATIABLE } },
