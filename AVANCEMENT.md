@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 92,6 %** — 1149 faits, 15 partiels, 85 à faire (35 hors périmètre).
+**Avancement global : 92,7 %** — 1150 faits, 15 partiels, 84 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 117 | 0 | 3 | 97,5 % |
-| [Reliques et potions](#reliques) | 309 | 0 | 12 | 96,3 % |
+| [Reliques et potions](#reliques) | 310 | 0 | 11 | 96,6 % |
 | [Bestiaire](#bestiaire) | 98 | 0 | 6 | 94,2 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 18 | 6 | 7 | 67,7 % |
-| **Total** | **1149** | **15** | **85** | **92,6 %** |
+| **Total** | **1150** | **15** | **84** | **92,7 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 96,3 %
+## Reliques et potions — 96,6 %
 
 ### Reliques partagées — 97,4 %
 
@@ -1031,13 +1031,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 93,1 %
+### Reliques des Anciens — 94,1 %
 
-95 faits, 0 partiel, 7 à faire.
+96 faits, 0 partiel, 6 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Aile de Paël | Ancienne | Non |  |
+| Aile de Paël | Ancienne | Oui |  |
 | Anneau à signet | Ancienne | Oui |  |
 | Arbalète | Ancienne | Oui |  |
 | Astrolabe | Ancienne | Oui |  |
