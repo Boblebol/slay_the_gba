@@ -246,6 +246,8 @@ MONSTERS: dict[str, str] = {
     "torch_head_amalgam": "torch_head_amalgam",
     "crusher": "crusher",
     "rocket": "rocket",
+    "phantasmal_gardener": "phantasmal_gardener",
+    "exoskeleton": "exoskeleton",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
