@@ -27,7 +27,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
     "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "DOWSING_ROD", "SEA_GLASS", "DRIFTWOOD",
-    "TOUCH_OF_OROBAS", "ARCHAIC_TOOTH", "PAELS_WING", "TOY_BOX", "FUR_COAT",
+    "TOUCH_OF_OROBAS", "ARCHAIC_TOOTH", "PAELS_WING", "FUR_COAT",
 };
 
 bool ancient_relic_pending(std::string_view relic_id) {
@@ -41,6 +41,11 @@ bool ancient_relic_pending(std::string_view relic_id) {
 constexpr uint32_t ANCIENT_SEED_SALT = 0xA5C1E7D3u;
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+// Toy Box: its counter keeps the Wax Relics left (low bits) and the fights won since the last one melted (high bits).
+constexpr uint8_t TOY_BOX_WAX_RELICS = 5;
+constexpr uint8_t TOY_BOX_COMBATS = 3;
+constexpr uint8_t TOY_BOX_WAX_MASK = 0x07;
+constexpr uint8_t TOY_BOX_COMBAT_SHIFT = 3;
 // Nutritious Soup: the extra damage Tezcatara's Ember gives each enchanted Strike.
 constexpr uint8_t NUTRITIOUS_SOUP_EMBER_DAMAGE = 3;
 constexpr int THE_COURIER_DISCOUNT = 20;
@@ -786,6 +791,11 @@ void RunManager::add_relic(std::string_view relic_id) {
 void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
     if (relic_id == "SMALL_CAPSULE" && has_relic("SMALL_CAPSULE")) gain_random_relics(1);
+    // Toy Box: 5 random relics, the Wax Relics, right after the box; they melt away one by one (on_combat_won).
+    if (relic_id == "TOY_BOX" && has_relic("TOY_BOX")) {
+        int wax = gain_random_relics(TOY_BOX_WAX_RELICS);
+        set_relic_counter("TOY_BOX", static_cast<uint8_t>(wax));
+    }
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     if (relic_id == "LOOMING_FRUIT" && has_relic("LOOMING_FRUIT")) gain_max_hp(31);
     if (relic_id == "NUTRITIOUS_OYSTER" && has_relic("NUTRITIOUS_OYSTER")) gain_max_hp(11);
@@ -1179,6 +1189,22 @@ void RunManager::on_combat_won(RoomType room) {
         if (relic_counter("WONGOS_MYSTERY_TICKET") == WONGOS_MYSTERY_TICKET_COMBATS) {
             gain_random_relics(WONGOS_MYSTERY_TICKET_RELICS);
         }
+    }
+    // Toy Box: every 3 fights won, the left-most Wax Relic (the first one after the box) melts away.
+    if (has_relic("TOY_BOX") && (relic_counter("TOY_BOX") & TOY_BOX_WAX_MASK) > 0) {
+        uint8_t wax = relic_counter("TOY_BOX") & TOY_BOX_WAX_MASK;
+        uint8_t combats = static_cast<uint8_t>((relic_counter("TOY_BOX") >> TOY_BOX_COMBAT_SHIFT) + 1);
+        if (combats >= TOY_BOX_COMBATS) {
+            combats = 0;
+            --wax;
+            for (size_t i = 0; i + 1 < relics.size(); ++i) {
+                if (relics[i] == "TOY_BOX") {
+                    relics.erase(i + 1);
+                    break;
+                }
+            }
+        }
+        set_relic_counter("TOY_BOX", static_cast<uint8_t>(combats << TOY_BOX_COMBAT_SHIFT | wax));
     }
     // Fishing Rod: every 3 normal fights won, one random card of the deck is upgraded.
     if (room == RoomType::MONSTER && has_relic("FISHING_ROD") && tick_relic_counter("FISHING_ROD", FISHING_ROD_COMBATS)) {
