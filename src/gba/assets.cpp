@@ -19,6 +19,8 @@
 #include "bn_sprite_items_boss_test_subject.h"
 #include "bn_sprite_items_boss_aeonglass.h"
 #include "bn_sprite_items_boss_vantom.h"
+#include "bn_sprite_items_mon_queen.h"
+#include "bn_sprite_items_mon_torch_head_amalgam.h"
 #include "bn_sprite_items_boss_soul_fysh.h"
 #include "bn_sprite_items_boss_waterfall_giant.h"
 #include "bn_sprite_items_mon_assassin_ruby_raider.h"
@@ -79,6 +81,8 @@
 #include "bn_sprite_items_mon_fabricator.h"
 #include "bn_sprite_items_mon_shrinker_beetle.h"
 #include "bn_sprite_items_mon_fogmog.h"
+#include "bn_sprite_items_mon_kin_follower.h"
+#include "bn_sprite_items_mon_kin_priest.h"
 #include "bn_sprite_items_mon_snapping_jaxfruit.h"
 #include "bn_sprite_items_mon_twig_slime_m.h"
 #include "bn_sprite_items_mon_twig_slime_s.h"
@@ -313,6 +317,15 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::boss_soul_fysh, true };
     case engine::EnemyType::WATERFALL_GIANT:
         return { &bn::sprite_items::boss_waterfall_giant, true };
+    case engine::EnemyType::KIN_FOLLOWER:
+        return { &bn::sprite_items::mon_kin_follower, false };
+    case engine::EnemyType::KIN_PRIEST:
+        return { &bn::sprite_items::mon_kin_priest, false };
+    // The Queen and the Torch Head Amalgam share their boss fight: monster-sized, side by side.
+    case engine::EnemyType::QUEEN:
+        return { &bn::sprite_items::mon_queen, false };
+    case engine::EnemyType::TORCH_HEAD_AMALGAM:
+        return { &bn::sprite_items::mon_torch_head_amalgam, false };
     case engine::EnemyType::FUZZY_WURM_CRAWLER:
         return { &bn::sprite_items::mon_fuzzy_wurm_crawler, false };
     case engine::EnemyType::CROSSBOW_RUBY_RAIDER:

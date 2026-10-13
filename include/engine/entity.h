@@ -321,7 +321,7 @@ struct IntentDebuff {
     int16_t amount = 0;
 };
 
-constexpr size_t MAX_INTENT_DEBUFFS = 2;
+constexpr size_t MAX_INTENT_DEBUFFS = 3; // the Queen's You Are Mine gives three
 
 struct EnemyIntent {
     EnemyIntentType type = EnemyIntentType::ATTACK;
@@ -454,6 +454,10 @@ enum class EnemyType : uint8_t {
     SOUL_FYSH,            // Act 1 (B) boss
     WATERFALL_GIANT,      // Act 1 (B) boss
     AEONGLASS,            // Act 3 boss
+    KIN_FOLLOWER,         // Act 1 (A) boss, with the Kin Priest
+    KIN_PRIEST,           // Act 1 (A) boss
+    QUEEN,                // Act 3 boss, with the Torch Head Amalgam
+    TORCH_HEAD_AMALGAM,   // Act 3 boss, with the Queen
     CRUSHER,              // Act 2 boss, with the Rocket
     ROCKET                // Act 2 boss, with the Crusher
 };
@@ -536,6 +540,23 @@ constexpr int16_t WATERFALL_GIANT_PRESSURE_GUN_ASC = 22;   // guessed
 // monster database names the buff without its amount: guessed, in line with the other bosses' +2 / +3 Strength.
 constexpr int16_t AEONGLASS_STRENGTH = 2;     // guessed
 constexpr int16_t AEONGLASS_STRENGTH_ASC = 3; // guessed
+
+// Strength the Kin Follower's Power Dance and the Kin Priest's Ritual give them (the second value at Ascension 9),
+// from the monster database.
+constexpr int16_t KIN_POWER_DANCE = 2;
+constexpr int16_t KIN_POWER_DANCE_ASC = 3;
+constexpr int16_t KIN_RITUAL = 2;
+constexpr int16_t KIN_RITUAL_ASC = 3;
+
+// The Queen fights beside the Torch Head Amalgam. Puppet Strings puts QUEEN_CHAINS_OF_BINDING Chains of Binding on
+// the player, You Are Mine QUEEN_YOU_ARE_MINE Weak, Frail and Vulnerable. Then, while the Amalgam lives, Burn Bright
+// For Me every turn: QUEEN_BURN_BRIGHT_BLOCK Block and Strength; once it is dead, Off With Your Head, Execution and
+// Enrage (+QUEEN_ENRAGE_STRENGTH Strength) in a loop.
+constexpr int16_t QUEEN_CHAINS_OF_BINDING = 3;
+constexpr int16_t QUEEN_YOU_ARE_MINE = 99;
+constexpr int16_t QUEEN_BURN_BRIGHT_BLOCK = 20;
+constexpr int16_t QUEEN_BURN_BRIGHT_STRENGTH = 1; // guessed: the reference gives Strength without an amount
+constexpr int16_t QUEEN_ENRAGE_STRENGTH = 2;
 
 // Strength the Crusher's Adapt and the Rocket's Charge Up give them (the second value at Ascension 9), from the
 // monster database.

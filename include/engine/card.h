@@ -718,6 +718,7 @@ struct DeckCard {
     uint8_t echo = 0;           // Echo N: the card is replayed N more times each time it is played (Hidden Gem, Transfigure)
     bool sly_combat = false;    // this copy has Sly for the rest of the combat (Master Planner)
     bool sly_this_turn = false; // this copy has Sly until the end of the turn (Hand Trick)
+    bool bound_this_turn = false; // this copy cannot be played from the hand this turn (Chains of Binding)
     uint8_t deck_index = NOT_IN_DECK; // position of the card in the run's deck, for the gains that outlive the combat
     Enchantment enchantment = Enchantment::NONE;
     uint8_t enchant_amount = 0; // the enchantment's amount: Sharp 3, Swift 2, the Block Goopy has added...

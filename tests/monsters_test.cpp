@@ -2701,6 +2701,297 @@ void test_test_subject_whole_fight() {
     std::cout << "[PASS] Test Subject: a whole fight to the boss's death, through its three lives" << std::endl;
 }
 
+void test_kin_follower() {
+    // Quick Slash 5, Boomerang 2x2, Power Dance (+2 Strength), and again 2 stronger.
+    check_monster(EnemyType::KIN_FOLLOWER, "Disciple de la Tribu", 58, {
+        { ATTACK, 5, 0, 0 },
+        { ATTACK, 2, 0, 0, 0, 2 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK, 7, 0, 2 },
+        { ATTACK, 4, 0, 2, 0, 2 },
+        { BUFF, 0, 0, 4 },
+    });
+    std::cout << "[PASS] Kin Follower: 58 HP, Quick Slash 5, Boomerang 2x2, Power Dance +2 Strength" << std::endl;
+}
+
+void test_kin_priest() {
+    // Orb of Frailty 8, Orb of Weakness 8, Beam 3x3, Ritual (+2 Strength), and again 2 stronger.
+    check_monster(EnemyType::KIN_PRIEST, "Prêtre de la Tribu", 190, {
+        { ATTACK_DEBUFF, 8, 0, 0 },
+        { ATTACK_DEBUFF, 8, 0, 0 },
+        { ATTACK, 3, 0, 0, 0, 3 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK_DEBUFF, 10, 0, 2 },
+        { ATTACK_DEBUFF, 10, 0, 2 },
+        { ATTACK, 5, 0, 2, 0, 3 },
+        { BUFF, 0, 0, 4 },
+    });
+
+    // The Orb of Frailty makes the player Frail 1, the Orb of Weakness Weak 1, after the hit.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::KIN_PRIEST);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 8);
+    assert(combat.player.get_status(StatusType::FRAIL) == 1 && combat.player.get_status(StatusType::WEAK) == 0);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 8);
+    assert(combat.player.get_status(StatusType::WEAK) == 1);
+    std::cout << "[PASS] Kin Priest: 190 HP, Orbs 8 (Frail 1, then Weak 1), Beam 3x3, Ritual +2 Strength" << std::endl;
+}
+
+void test_kin_ascension() {
+    // The Kin Follower: 62-63 HP and Power Dance +3 Strength at Ascension.
+    CombatEngine follower_fight = make_combat(CharacterId::IRONCLAD, EnemyType::KIN_FOLLOWER);
+    Enemy& follower = follower_fight.enemies[0];
+    assert(follower.ascension_hp() == 62 && follower.hp_spread() == 1);
+    follower.ascend(true, true);
+    follower_fight.plan_enemies();
+    assert(follower.max_hp == 62 + follower.hp_bonus && follower.hp == follower.max_hp);
+    assert(follower.intent_damage(follower_fight.player) == 5);
+    follower_fight.end_player_turn();
+    follower_fight.end_player_turn();
+    assert(follower.current_intent.type == BUFF && follower.current_intent.status_amount == KIN_POWER_DANCE_ASC);
+    follower_fight.end_player_turn();
+    assert(follower.get_status(StatusType::STRENGTH) == 3);
+
+    // The Kin Priest: 199 HP, Orbs 9 and Ritual +3 Strength at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::KIN_PRIEST);
+    Enemy& priest = combat.enemies[0];
+    assert(priest.ascension_hp() == 199 && priest.hp_spread() == 0);
+    priest.ascend(true, true);
+    combat.plan_enemies();
+    assert(priest.hp == 199 && priest.max_hp == 199);
+    assert(priest.current_intent.type == ATTACK_DEBUFF && priest.intent_damage(combat.player) == 9);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 9);
+    combat.player.hp = combat.player.max_hp;
+    assert(priest.current_intent.type == ATTACK_DEBUFF && priest.intent_damage(combat.player) == 9);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(priest.current_intent.type == ATTACK && priest.intent_damage(combat.player) == 3 &&
+           priest.current_intent.hits == 3);
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(priest.current_intent.type == BUFF && priest.current_intent.status_amount == KIN_RITUAL_ASC);
+    combat.end_player_turn();
+    assert(priest.get_status(StatusType::STRENGTH) == 3);
+    std::cout << "[PASS] Kin: Ascension gives 62-63 and 199 HP, Orbs 9, +3 Strength" << std::endl;
+}
+
+void test_kin_whole_fight() {
+    // The whole Kin fight, until the Priest dies, at 30 damage a turn on the first enemy still standing: the two
+    // Followers fall first, then the Priest is alone. Each monster keeps its own loop whoever falls.
+    const EnemyType pack[] = { EnemyType::KIN_FOLLOWER, EnemyType::KIN_FOLLOWER, EnemyType::KIN_PRIEST };
+    CombatEngine combat;
+    combat.start_combat_multi(pack, CharacterId::IRONCLAD);
+    assert(combat.enemies.size() == 3);
+    Enemy& priest = combat.enemies[2];
+    assert(priest.type == EnemyType::KIN_PRIEST && priest.max_hp == 190);
+    for (size_t i = 0; i < 2; ++i) {
+        assert(combat.enemies[i].type == EnemyType::KIN_FOLLOWER);
+        assert(combat.enemies[i].max_hp >= 58 && combat.enemies[i].max_hp <= 59);
+    }
+    const EnemyIntentType follower_moves[3] = { ATTACK, ATTACK, BUFF };
+    const int follower_damage[3] = { 5, 2, 0 };
+    const EnemyIntentType priest_moves[4] = { ATTACK_DEBUFF, ATTACK_DEBUFF, ATTACK, BUFF };
+    const int priest_damage[4] = { 8, 8, 3, 0 };
+    int turn = 1;
+    int alive_seen[3] = {};
+    while (combat.state == CombatState::PLAYER_TURN) {
+        int alive = 0;
+        for (size_t i = 0; i < 2; ++i) {
+            const Enemy& follower = combat.enemies[i];
+            if (!follower.is_alive()) continue;
+            ++alive;
+            const int step = (turn - 1) % 3;
+            const int strength = 2 * ((turn - 1) / 3);
+            assert(follower.current_intent.type == follower_moves[step]);
+            assert(follower.get_status(StatusType::STRENGTH) == strength);
+            assert(follower.intent_damage(combat.player) == (step == 2 ? 0 : follower_damage[step] + strength));
+        }
+        assert(priest.is_alive());
+        const int step = (turn - 1) % 4;
+        const int strength = 2 * ((turn - 1) / 4);
+        assert(priest.current_intent.type == priest_moves[step]);
+        assert(priest.get_status(StatusType::STRENGTH) == strength);
+        assert(priest.intent_damage(combat.player) == (step == 3 ? 0 : priest_damage[step] + strength));
+        ++alive_seen[alive];
+
+        for (Enemy& enemy : combat.enemies) {
+            if (!enemy.is_alive()) continue;
+            combat.damage_enemy(enemy, 30);
+            break;
+        }
+        if (!priest.is_alive()) {
+            combat.end_player_turn(); // the fight ends once every enemy is dead
+            break;
+        }
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        ++turn;
+    }
+    // Each Follower takes two turns of 30, the Priest seven: 4 turns with Followers alive, then the Priest alone.
+    assert(combat.state == CombatState::VICTORY && combat.player.is_alive());
+    for (const Enemy& enemy : combat.enemies) assert(!enemy.is_alive());
+    assert(alive_seen[2] == 2 && alive_seen[1] == 2 && alive_seen[0] == 7);
+    assert(turn == 11);
+    std::cout << "[PASS] Kin: a whole fight, the two Followers then the Priest, to the boss's death" << std::endl;
+}
+
+void test_queen() {
+    // Alone (as once the Torch Head Amalgam is dead): Puppet Strings, You Are Mine (Vulnerable 99: every hit after it
+    // deals 50% more), then Off With Your Head 3x5, Execution 15, Enrage +2 Strength, in a loop.
+    check_monster(EnemyType::QUEEN, "Reine", 400, {
+        { DEBUFF, 0, 0, 0 },
+        { DEBUFF, 0, 0, 0 },
+        { ATTACK, 4, 0, 0, 0, 5 },
+        { ATTACK, 22, 0, 0 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK, 7, 0, 2, 0, 5 },
+        { ATTACK, 25, 0, 2 },
+        { BUFF, 0, 0, 4 },
+    });
+    std::cout << "[PASS] Queen: 400 HP, Puppet Strings, You Are Mine, then Off With Your Head 3x5, Execution 15, "
+                 "Enrage +2 Strength, loop" << std::endl;
+}
+
+void test_torch_head_amalgam() {
+    // Strong Tackle 26, Tackle 18, then Beam 8x3, Tackle 14, Tackle 14 in a loop.
+    check_monster(EnemyType::TORCH_HEAD_AMALGAM, "Amalgame Torchetête", 199, {
+        { ATTACK, 26, 0, 0 },
+        { ATTACK, 18, 0, 0 },
+        { ATTACK, 8, 0, 0, 0, 3 },
+        { ATTACK, 14, 0, 0 },
+        { ATTACK, 14, 0, 0 },
+        { ATTACK, 8, 0, 0, 0, 3 },
+        { ATTACK, 14, 0, 0 },
+        { ATTACK, 14, 0, 0 },
+    });
+    std::cout << "[PASS] Torch Head Amalgam: 199 HP, Strong Tackle 26, Tackle 18, then Beam 8x3, Tackle 14, "
+                 "Tackle 14, loop" << std::endl;
+}
+
+void test_queen_debuffs() {
+    // Puppet Strings: 3 Chains of Binding. The first 3 cards of each new hand are Bound (cannot be played this turn),
+    // one fewer after each turn. You Are Mine: 99 Weak, Frail and Vulnerable.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::QUEEN);
+    Enemy& queen = combat.enemies[0];
+    assert(queen.current_intent.power == PowerId::CHAINS_OF_BINDING && queen.current_intent.power_on_player);
+    for (size_t i = 0; i < combat.hand.size(); ++i) assert(!combat.hand[i].bound_this_turn);
+    combat.end_player_turn();
+    assert(combat.power_amount(PowerId::CHAINS_OF_BINDING) == QUEEN_CHAINS_OF_BINDING);
+    for (int i = 0; i < 3; ++i) {
+        assert(combat.hand[i].bound_this_turn && combat.play_blocker(i) == PlayBlocker::NOT_PLAYABLE);
+        assert(!combat.play_card(i, 0));
+    }
+    assert(!combat.hand[3].bound_this_turn && combat.can_play_card(3));
+    assert(queen.current_intent.type == DEBUFF && queen.current_intent.debuffs[2].type == StatusType::VULNERABLE);
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::WEAK) >= 98 && combat.player.get_status(StatusType::FRAIL) >= 98 &&
+           combat.player.get_status(StatusType::VULNERABLE) >= 98);
+    assert(combat.power_amount(PowerId::CHAINS_OF_BINDING) == 2);
+    assert(combat.hand[0].bound_this_turn && combat.hand[1].bound_this_turn && !combat.hand[2].bound_this_turn);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.hand[0].bound_this_turn && !combat.hand[1].bound_this_turn);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    for (size_t i = 0; i < combat.hand.size(); ++i) assert(!combat.hand[i].bound_this_turn && combat.can_play_card(static_cast<int>(i)));
+
+    // Artifact cancels Chains of Binding.
+    CombatEngine guarded = make_combat(CharacterId::IRONCLAD, EnemyType::QUEEN);
+    guarded.player.add_status(StatusType::ARTIFACT, 1);
+    guarded.end_player_turn();
+    assert(!guarded.has_power(PowerId::CHAINS_OF_BINDING) && guarded.player.get_status(StatusType::ARTIFACT) == 0);
+    for (size_t i = 0; i < guarded.hand.size(); ++i) assert(!guarded.hand[i].bound_this_turn);
+    std::cout << "[PASS] Queen: Chains of Binding binds the first cards of the hand, You Are Mine 99 Weak, Frail, "
+                 "Vulnerable" << std::endl;
+}
+
+void test_queen_ascension() {
+    // Ascension: 419 and 211 HP; Off With Your Head 4x5, Execution 18; Strong Tackle 32, Tackle 22, Beam 8x3,
+    // Tackle 16.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::QUEEN);
+    Enemy& queen = combat.enemies[0];
+    assert(queen.ascension_hp() == 419 && queen.hp_spread() == 0);
+    queen.ascend(true, true);
+    combat.plan_enemies();
+    assert(queen.hp == 419 && queen.max_hp == 419);
+    combat.end_player_turn();
+    combat.end_player_turn();
+    combat.player.clear_status(StatusType::VULNERABLE);
+    assert(queen.current_intent.type == ATTACK && queen.intent_damage(combat.player) == 4 && queen.current_intent.hits == 5);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    combat.player.clear_status(StatusType::VULNERABLE);
+    assert(queen.current_intent.type == ATTACK && queen.intent_damage(combat.player) == 18);
+
+    CombatEngine torch = make_combat(CharacterId::IRONCLAD, EnemyType::TORCH_HEAD_AMALGAM);
+    Enemy& amalgam = torch.enemies[0];
+    assert(amalgam.ascension_hp() == 211 && amalgam.hp_spread() == 0);
+    amalgam.ascend(true, true);
+    torch.plan_enemies();
+    assert(amalgam.hp == 211 && amalgam.max_hp == 211);
+    const int damage[] = { 32, 22, 8, 16, 16, 8 };
+    for (int expected : damage) {
+        assert(amalgam.intent_damage(torch.player) == expected);
+        torch.player.hp = torch.player.max_hp;
+        torch.end_player_turn();
+    }
+    std::cout << "[PASS] Queen and Torch Head Amalgam: Ascension gives 419 and 211 HP, Off With Your Head 4x5, "
+                 "Execution 18, Strong Tackle 32, Tackle 22, Tackle 16" << std::endl;
+}
+
+void test_queen_whole_fight() {
+    // The QueenBoss fight, until both are dead: while the Amalgam lives the Queen plays Burn Bright For Me (20 Block,
+    // +1 Strength) every turn; once it is dead she plays Off With Your Head, Execution and Enrage.
+    CombatEngine combat;
+    const EnemyType pack[] = { EnemyType::QUEEN, EnemyType::TORCH_HEAD_AMALGAM };
+    combat.start_combat_multi(pack, CharacterId::IRONCLAD);
+    Enemy& queen = combat.enemies[0];
+    Enemy& amalgam = combat.enemies[1];
+    assert(queen.hp == 400 && amalgam.hp == 199 && queen.phase == 0);
+    auto play_turn = [&combat]() {
+        combat.player.hp = combat.player.max_hp;
+        const int16_t before = combat.player.hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        return before - combat.player.hp;
+    };
+    // Turn 1: Puppet Strings, Strong Tackle 26. Turn 2: You Are Mine, then Tackle 18 on a Vulnerable player: 27.
+    assert(queen.current_intent.type == DEBUFF && amalgam.intent_damage(combat.player) == 26);
+    assert(play_turn() == 26 && combat.power_amount(PowerId::CHAINS_OF_BINDING) == 3);
+    assert(queen.current_intent.type == DEBUFF && amalgam.intent_damage(combat.player) == 18);
+    assert(play_turn() == 27 && combat.player.get_status(StatusType::VULNERABLE) > 0);
+    combat.player.clear_status(StatusType::VULNERABLE);
+    combat.player.clear_status(StatusType::WEAK);
+    combat.player.clear_status(StatusType::FRAIL);
+    // Phase 1, the Amalgam alive: Burn Bright For Me every turn, beside Beam 8x3 and Tackle 14.
+    assert(queen.phase == 1 && queen.current_intent.type == DEFEND && queen.current_intent.block == QUEEN_BURN_BRIGHT_BLOCK);
+    assert(play_turn() == 24 && queen.block == 20 && queen.get_status(StatusType::STRENGTH) == 1);
+    assert(queen.phase == 1 && queen.current_intent.type == DEFEND);
+    assert(play_turn() == 14 && queen.block == 20 && queen.get_status(StatusType::STRENGTH) == 2);
+    // The Amalgam dies: the Queen still plays the move she announced, then enters her last phase.
+    combat.damage_enemy(amalgam, 999);
+    assert(!amalgam.is_alive() && combat.has_alive_enemies() && queen.current_intent.type == DEFEND);
+    assert(play_turn() == 0 && queen.get_status(StatusType::STRENGTH) == 3);
+    assert(queen.phase == 2);
+    // Phase 2: Off With Your Head (3+3)x5, Execution 15+3, Enrage +2, Off With Your Head (3+5)x5.
+    assert(queen.current_intent.type == ATTACK && queen.current_intent.hits == 5 && queen.intent_damage(combat.player) == 6);
+    assert(play_turn() == 30);
+    assert(queen.current_intent.type == ATTACK && queen.intent_damage(combat.player) == 18);
+    assert(play_turn() == 18);
+    assert(queen.current_intent.type == BUFF);
+    assert(play_turn() == 0 && queen.get_status(StatusType::STRENGTH) == 5);
+    assert(queen.phase == 2 && queen.current_intent.type == ATTACK && queen.intent_damage(combat.player) == 8);
+    // The Queen dies: the fight is won.
+    combat.damage_enemy(queen, 999);
+    assert(!queen.is_alive() && !combat.has_alive_enemies());
+    std::cout << "[PASS] Queen and Torch Head Amalgam: a whole fight, Burn Bright while the Amalgam lives, then "
+                 "Off With Your Head, Execution, Enrage" << std::endl;
+}
+
 void test_waterfall_giant() {
     // Pressurize, then Stomp 15 (Weak), Ram 10, Siphon (heal), Pressure Gun 20, Pressure Up 13, and again.
     check_monster(EnemyType::WATERFALL_GIANT, "Géant de la Cascade", 240, {
@@ -5919,10 +6210,19 @@ int main() {
     test_test_subject_thorns_respawn();
     test_test_subject_ascension();
     test_test_subject_whole_fight();
+    test_queen();
+    test_torch_head_amalgam();
+    test_queen_debuffs();
+    test_queen_ascension();
+    test_queen_whole_fight();
     test_waterfall_giant();
     test_steam_eruption();
     test_waterfall_giant_ascension();
     test_waterfall_giant_whole_fight();
+    test_kin_follower();
+    test_kin_priest();
+    test_kin_ascension();
+    test_kin_whole_fight();
     test_vantom();
     test_vantom_ascension();
     test_vantom_whole_fight();

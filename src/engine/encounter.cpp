@@ -128,10 +128,12 @@ constexpr Encounter ACT1B_BOSS[] = {
 constexpr Encounter ACT3_BOSS[] = {
     { "TestSubjectBoss"sv, 1, { EnemyType::TEST_SUBJECT } },
     { "AeonglassBoss"sv, 1, { EnemyType::AEONGLASS } },
+    { "QueenBoss"sv, 2, { EnemyType::QUEEN, EnemyType::TORCH_HEAD_AMALGAM } },
 };
 constexpr Encounter ACT1A_BOSS[] = {
     { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
     { "VantomBoss"sv, 1, { EnemyType::VANTOM } },
+    { "TheKinBoss"sv, 3, { EnemyType::KIN_FOLLOWER, EnemyType::KIN_FOLLOWER, EnemyType::KIN_PRIEST } },
 };
 constexpr Encounter ACT2_BOSS[] = {
     { "TheInsatiableBoss"sv, 1, { EnemyType::THE_INSATIABLE } },

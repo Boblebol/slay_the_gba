@@ -108,6 +108,10 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "SOUL_FYSH", false, true },
     { "WATERFALL_GIANT", false, true },
     { "AEONGLASS", false, true },
+    { "KIN_FOLLOWER", true, true },
+    { "KIN_PRIEST", false, true },
+    { "QUEEN", false, true },
+    { "TORCH_HEAD_AMALGAM", false, true },
     { "CRUSHER", false, true },
     { "ROCKET", false, true },
 };
@@ -2092,6 +2096,68 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.debuffs[1] = { StatusType::DEXTERITY, -2 };
             current_intent.description = "Siphon d'âme (+2 Force, -2 For/Dex)";
         }
+    } else if (type == EnemyType::QUEEN) {
+        // Puppet Strings, You Are Mine. Then, while the Torch Head Amalgam lives (phase 1), Burn Bright For Me every
+        // turn; once no other enemy is left (phase 2, for good), Off With Your Head, Execution, Enrage in a loop.
+        if (phase == 0 && phase_turn > 2 && context.allies > 0 && enter_phase(1)) phase_turn = 1;
+        if (phase < 2 && phase_turn > (phase == 0 ? 2 : 0) && context.allies == 0 && enter_phase(2)) phase_turn = 1;
+        if (phase == 0 && phase_turn == 1) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.power = PowerId::CHAINS_OF_BINDING;
+            current_intent.power_amount = QUEEN_CHAINS_OF_BINDING;
+            current_intent.power_on_player = true;
+            current_intent.description = "Marionnette (Entraves 3)";
+        } else if (phase == 0) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::WEAK, QUEEN_YOU_ARE_MINE };
+            current_intent.debuffs[1] = { StatusType::FRAIL, QUEEN_YOU_ARE_MINE };
+            current_intent.debuffs[2] = { StatusType::VULNERABLE, QUEEN_YOU_ARE_MINE };
+            current_intent.description = "Tu es à moi ! (Faible, Fragile, Vulnérable)";
+        } else if (phase == 1) {
+            current_intent.type = EnemyIntentType::DEFEND;
+            current_intent.block = sheet_move("BURN_BRIGHT_FOR_ME").block;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = QUEEN_BURN_BRIGHT_STRENGTH;
+            current_intent.description = "De mille feux (20 blk, +1 Force)";
+        } else {
+            const int step = (phase_turn - 1) % 3;
+            if (step == 0) {
+                current_intent.type = EnemyIntentType::ATTACK;
+                current_intent.base_damage = move_damage("OFF_WITH_YOUR_HEAD");
+                current_intent.hits = sheet_move("OFF_WITH_YOUR_HEAD").hits;
+                current_intent.description = "À la guillotine (3 dmg x5)";
+            } else if (step == 1) {
+                current_intent.type = EnemyIntentType::ATTACK;
+                current_intent.base_damage = move_damage("EXECUTION");
+                current_intent.description = "Exécution (15 dmg)";
+            } else {
+                current_intent.type = EnemyIntentType::BUFF;
+                current_intent.status_type = StatusType::STRENGTH;
+                current_intent.status_amount = QUEEN_ENRAGE_STRENGTH;
+                current_intent.description = "Enrage (+2 Force)";
+            }
+        }
+    } else if (type == EnemyType::TORCH_HEAD_AMALGAM) {
+        // Strong Tackle, Tackle 18, then Beam 8x3, Tackle 14, Tackle 14 in a loop.
+        const int step = phase_turn <= 2 ? phase_turn - 1 : 2 + (phase_turn - 3) % 3;
+        current_intent.type = EnemyIntentType::ATTACK;
+        if (step == 0) {
+            current_intent.base_damage = move_damage("STRONG_TACKLE");
+            current_intent.description = "Charge puissante (26 dmg)";
+        } else if (step == 1) {
+            current_intent.base_damage = move_damage("TACKLE_2");
+            current_intent.description = "Tackle (18 dmg)";
+        } else if (step == 2) {
+            current_intent.base_damage = move_damage("BEAM");
+            current_intent.hits = sheet_move("BEAM").hits;
+            current_intent.description = "Rayon (8 dmg x3)";
+        } else if (step == 3) {
+            current_intent.base_damage = move_damage("TACKLE_3");
+            current_intent.description = "Tackle (14 dmg)";
+        } else {
+            current_intent.base_damage = move_damage("TACKLE_4");
+            current_intent.description = "Tackle (14 dmg)";
+        }
     } else if (type == EnemyType::WATERFALL_GIANT) {
         // Pressurize (Steam Eruption), then Stomp, Ram, Siphon, Pressure Gun, Pressure Up in a loop, each with 3 Steam
         // Eruption. Killed (triggered, see about_to_blow): About to Blow (a lost turn), then its Explosion.
@@ -2135,6 +2201,56 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
                 current_intent.type = EnemyIntentType::ATTACK_BUFF;
                 current_intent.base_damage = move_damage("PRESSURE_UP");
                 current_intent.description = "Montée en pression (13 dmg)";
+            }
+        }
+    } else if (type == EnemyType::KIN_FOLLOWER) {
+        // Quick Slash 5, Boomerang 2x2, Power Dance (+2 Strength, 3 at Ascension), in a loop.
+        const int step = (turn_number - 1) % 3;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("QUICK_SLASH");
+            current_intent.description = "Coup vif (5 dmg)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("BOOMERANG");
+            current_intent.hits = sheet_move("BOOMERANG").hits;
+            current_intent.description = "Boomerang (2 dmg x2)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? KIN_POWER_DANCE_ASC : KIN_POWER_DANCE;
+            if (ascended_damage) {
+                current_intent.description = "Transe Martiale (+3 Force)";
+            } else {
+                current_intent.description = "Transe Martiale (+2 Force)";
+            }
+        }
+    } else if (type == EnemyType::KIN_PRIEST) {
+        // Orb of Frailty 8 (Frail 1), Orb of Weakness 8 (Weak 1), Beam 3x3, Ritual (+2 Strength), in a loop.
+        const int step = (turn_number - 1) % 4;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("ORB_OF_FRAILTY");
+            current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
+            current_intent.description = "Orbe de fragilité (8 dmg, Fragilisé)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("ORB_OF_WEAKNESS");
+            current_intent.debuffs[0] = { StatusType::WEAK, 1 };
+            current_intent.description = "Orbe de faiblesse (8 dmg, Affaibli)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("BEAM");
+            current_intent.hits = sheet_move("BEAM").hits;
+            current_intent.description = "Rayon animique (3 dmg x3)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? KIN_RITUAL_ASC : KIN_RITUAL;
+            if (ascended_damage) {
+                current_intent.description = "Sombre rituel (+3 Force)";
+            } else {
+                current_intent.description = "Sombre rituel (+2 Force)";
             }
         }
     } else if (type == EnemyType::VANTOM) {

@@ -399,6 +399,10 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             // Worn down at the end of each of the player's turns.
             if (event == CombatEvent::TURN_END && power.amount > 0) power.amount = static_cast<int16_t>(power.amount - 1);
             break;
+        case PowerId::CHAINS_OF_BINDING:
+            // The Queen's Puppet Strings: one card fewer Bound after each of the player's turns.
+            if (event == CombatEvent::TURN_END && power.amount > 0) power.amount = static_cast<int16_t>(power.amount - 1);
+            break;
         case PowerId::CONSTRICT:
             // While a Strangler is alive, the player takes `amount` damage at the end of each of their turns.
             if (event == CombatEvent::TURN_END) {
@@ -2082,6 +2086,12 @@ void CombatEngine::start_player_turn() {
     opening_draw_ = true;
     draw_cards(5 + extra_draw);
     opening_draw_ = false;
+    // Chains of Binding: the first cards of the new hand are Bound, they cannot be played this turn.
+    for (DeckCard& card : hand) card.bound_this_turn = false;
+    for (DeckCard& card : discard_pile) card.bound_this_turn = false;
+    for (DeckCard& card : draw_pile) card.bound_this_turn = false;
+    const int16_t chains = power_amount(PowerId::CHAINS_OF_BINDING);
+    for (size_t i = 0; chains > 0 && i < hand.size() && i < static_cast<size_t>(chains); ++i) hand[i].bound_this_turn = true;
     // Fiddle: the opening draw is the last one of the turn.
     if (has_power(PowerId::FIDDLE)) no_draw_this_turn = true;
     // Foregone Conclusion: cards of the draw pile, picked once the hand is drawn.
@@ -2156,7 +2166,7 @@ PlayBlocker CombatEngine::play_blocker(int index) const {
     if (choice_pending()) return PlayBlocker::CHOICE;
 
     const DeckCard& card = hand[index];
-    if (CardDef::has_keyword(card, KEYWORD_UNPLAYABLE)) return PlayBlocker::NOT_PLAYABLE;
+    if (CardDef::has_keyword(card, KEYWORD_UNPLAYABLE) || card.bound_this_turn) return PlayBlocker::NOT_PLAYABLE;
     // Restrictions set by the cards held in hand.
     bool plays_first = CardDef::has_keyword(card, KEYWORD_PLAY_FIRST);
     for (const DeckCard& held : hand) {
@@ -6524,6 +6534,7 @@ void CombatEngine::end_player_turn() {
         card.free_this_turn = false;
         card.cost_one_this_turn = false;
         card.random_cost_this_turn = -1;
+        card.bound_this_turn = false;
     }
     // "Until the end of the turn" Sly goes in every pile (a card discarded this turn keeps its mark otherwise).
     for (DeckCard& card : hand) card.sly_this_turn = false;

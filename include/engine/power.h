@@ -281,14 +281,17 @@ enum class PowerId : uint8_t {
     WASTE_AWAY,        // start of turn: `amount` less energy
     DISINTEGRATION,    // end of the player's turn: `amount` damage
     // Held by an enemy (appended): the Waterfall Giant
-    STEAM_ERUPTION     // killed, its holder deals `amount` damage at the end of the player's next turn (Enemy::about_to_blow)
+    STEAM_ERUPTION,    // killed, its holder deals `amount` damage at the end of the player's next turn (Enemy::about_to_blow)
+    // On the player, given by the Queen's Puppet Strings (appended)
+    CHAINS_OF_BINDING  // start of turn: the first `amount` cards of the hand are Bound (unplayable this turn); -1 a turn
 };
 
 // Whether the power is a harm an enemy move puts on the player: Artifact cancels it.
 constexpr bool is_player_debuff_power(PowerId id) {
     return id == PowerId::TANGLED || id == PowerId::TENDER || id == PowerId::SHRINK ||
            id == PowerId::CONSTRICT || id == PowerId::SMOGGY || id == PowerId::RINGING ||
-           id == PowerId::MIND_ROT || id == PowerId::WASTE_AWAY || id == PowerId::DISINTEGRATION;
+           id == PowerId::MIND_ROT || id == PowerId::WASTE_AWAY || id == PowerId::DISINTEGRATION ||
+           id == PowerId::CHAINS_OF_BINDING;
 }
 
 constexpr uint8_t PALE_BLUE_DOT_CARDS = 5;
