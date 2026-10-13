@@ -355,16 +355,6 @@ private:
         else
         {
             _reroll_hint.set(116, -56, text, Align::RIGHT, TextColor::GRAY);
-    // Driftwood: the free reroll of the reward, while it has not been used.
-    void _refresh_hint()
-    {
-        if(_ctx.run.can_reroll_card_rewards())
-        {
-            _reroll_hint.set(116, -56, "SELECT Relancer", Align::RIGHT, TextColor::GRAY);
-        }
-        else
-        {
-            _reroll_hint.clear();
         }
     }
 

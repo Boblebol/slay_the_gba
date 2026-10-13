@@ -198,7 +198,6 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "STONE_CRACKER", "Au début de chaque combat, Améliorez 2 cartes aléatoires de votre Pioche pour le restant du combat." },
     { "PAELS_WING", "Vous pouvez offrir des récompenses de carte en sacrifice à Paël. Tous les 2 sacrifices, vous obtenez une Relique." },
     { "DRIFTWOOD", "Vous disposez d'une relance gratuite pour chaque récompense de carte." },
-    { "DRIFTWOOD", "Vous disposez d'une relance gratuite pour chaque récompense de carte." },
     { "DOWSING_ROD", "Lorsque vous obtenez cette relique, ajoutez 1 Rhabdomancie à votre Deck." },
     { "GOLDEN_COMPASS", "Lorsque vous obtenez cette relique, remplacez la carte de l'Acte 2 par un chemin unique." },
     { "ARCHAIC_TOOTH", "Lorsque vous obtenez cette relique, Transformez une carte de base en sa version d'Ancien." },
