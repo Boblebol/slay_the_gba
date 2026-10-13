@@ -447,7 +447,8 @@ enum class EnemyType : uint8_t {
     SLITHERING_STRANGLER, // Act 1 (A)
     LIVING_FOG,           // Act 1 (B)
     TWO_TAILED_RAT,       // Act 1 (B)
-    LAGAVULIN_MATRIARCH   // Act 1 (B) boss
+    LAGAVULIN_MATRIARCH,  // Act 1 (B) boss
+    VANTOM                // Act 1 (A) boss
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).

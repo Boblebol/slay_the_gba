@@ -102,8 +102,9 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "LIVING_FOG", false, true },
     { "TWO_TAILED_RAT", true, true },
     { "LAGAVULIN_MATRIARCH", false, true },
+    { "VANTOM", false, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::LAGAVULIN_MATRIARCH) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::VANTOM) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -1831,6 +1832,31 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.debuffs[0] = { StatusType::STRENGTH, -2 };
             current_intent.debuffs[1] = { StatusType::DEXTERITY, -2 };
             current_intent.description = "Siphon d'âme (+2 Force, -2 For/Dex)";
+        }
+    } else if (type == EnemyType::VANTOM) {
+        // Ink Blot, Inky Lance, Dismember (3 Wounds), Prepare (+2 Strength), in a loop.
+        const int step = (turn_number - 1) % 4;
+        if (step == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("INK_BLOT");
+            current_intent.description = "Tache d'encre (7 dmg)";
+        } else if (step == 1) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("INKY_LANCE");
+            current_intent.hits = sheet_move("INKY_LANCE").hits;
+            current_intent.description = "Javelot d'encre (6 dmg x2)";
+        } else if (step == 2) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("DISMEMBER");
+            current_intent.status_card = CardId::WOUND;
+            current_intent.status_cards = 3;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Démembrement (26 dmg, 3 Plaie)";
+        } else {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 2;
+            current_intent.description = "Préparation (+2 Force)";
         }
     } else if (type == EnemyType::SLUMBERING_BEETLE) {
         // Snores (loses its turn) while it sleeps; the first hit that costs it HP wakes it for good, and it
