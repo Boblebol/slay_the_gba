@@ -26,7 +26,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
-    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "DOWSING_ROD", "SEA_GLASS", "DRIFTWOOD",
+    "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "SEA_GLASS", "DRIFTWOOD",
     "PAELS_WING", "TOY_BOX", "FUR_COAT",
 };
 
@@ -823,6 +823,7 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
     }
     if (relic_id == "SMALL_CAPSULE" && has_relic("SMALL_CAPSULE")) gain_random_relics(1);
+    if (relic_id == "DOWSING_ROD" && has_relic("DOWSING_ROD")) add_card_to_deck(DeckCard{ CardId::DOWSING, false });
     if (relic_id == "STRAWBERRY" && has_relic("STRAWBERRY")) gain_max_hp(7);
     if (relic_id == "LOOMING_FRUIT" && has_relic("LOOMING_FRUIT")) gain_max_hp(31);
     if (relic_id == "NUTRITIOUS_OYSTER" && has_relic("NUTRITIOUS_OYSTER")) gain_max_hp(11);

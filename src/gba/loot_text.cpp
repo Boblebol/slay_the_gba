@@ -196,6 +196,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "SPARKLING_ROUGE", "Au début de votre 3ème tour, gagnez 1 de Force et 1 de Dextérité." },
     { "STONE_CALENDAR", "À la fin du tour 7, infligez 52 dégâts à TOUS les ennemis." },
     { "STONE_CRACKER", "Au début de chaque combat, Améliorez 2 cartes aléatoires de votre Pioche pour le restant du combat." },
+    { "DOWSING_ROD", "Lorsque vous obtenez cette relique, ajoutez 1 Rhabdomancie à votre Deck." },
     { "GOLDEN_COMPASS", "Lorsque vous obtenez cette relique, remplacez la carte de l'Acte 2 par un chemin unique." },
     { "ARCHAIC_TOOTH", "Lorsque vous obtenez cette relique, Transformez une carte de base en sa version d'Ancien." },
     { "TOUCH_OF_OROBAS", "Lorsque vous obtenez cette relique, remplacez votre Relique de départ par une version Améliorée." },

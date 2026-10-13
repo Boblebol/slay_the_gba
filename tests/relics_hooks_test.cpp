@@ -4615,6 +4615,24 @@ void test_fishing_rod() {
     std::cout << "[PASS] Fishing Rod upgrades a card every 3 normal fights" << std::endl;
 }
 
+void test_dowsing_rod() {
+    // Obtained: one Dowsing joins the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 720);
+    const size_t deck = run.master_deck.size();
+    run.add_relic("DOWSING_ROD");
+    assert(run.has_relic("DOWSING_ROD"));
+    assert(run.master_deck.size() == deck + 1 && run.master_deck.back().id == CardId::DOWSING && !run.master_deck.back().upgraded);
+
+    // Without the relic, no Dowsing.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 720);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("DOWSING_ROD") && plain.master_deck.size() == deck);
+    for (const DeckCard& card : plain.master_deck) assert(card.id != CardId::DOWSING);
+    std::cout << "[PASS] Dowsing Rod: adds 1 Dowsing to the deck when obtained" << std::endl;
+}
+
 void test_touch_of_orobas() {
     // Obtained: the starter relic (Burning Blood for the Ironclad) becomes its Ancient version.
     RunManager run;
@@ -4849,6 +4867,7 @@ int main() {
     test_bing_bong();
     test_paper_phrog();
     test_silver_crucible();
+    test_dowsing_rod();
     test_silken_tress();
     test_forgotten_soul();
     test_fishing_rod();
