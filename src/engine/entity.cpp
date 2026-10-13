@@ -92,6 +92,15 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "SHRINKER_BEETLE", true, true },
     { "OWL_MAGISTRATE", false, true },
     { "SCROLL_OF_BITING", true, true },
+    { "FOGMOG", false, true },
+    { "SNAPPING_JAXFRUIT", true, true },
+    { "TWIG_SLIME_M", true, true },
+    { "TWIG_SLIME_S", true, true },
+    { "LEAF_SLIME_M", true, true },
+    { "LEAF_SLIME_S", true, true },
+    { "SLITHERING_STRANGLER", true, true },
+    { "LIVING_FOG", false, true },
+    { "TWO_TAILED_RAT", true, true },
     { "LAGAVULIN_MATRIARCH", false, true },
 };
 static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::LAGAVULIN_MATRIARCH) + 1,
@@ -1103,6 +1112,173 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = 2;
             current_intent.description = "Plus de dents (+2 Force)";
+        }
+    } else if (type == EnemyType::FOGMOG) {
+        // Illusion Spores (an Eye With Teeth joins the fight), Swipe (+1 Strength), then a draw between Swipe (+1
+        // Strength) and Headbutt, neither twice in a row.
+        enum Move : uint8_t { ILLUSION, SWIPE, SWIPE_RANDOM, HEADBUTT };
+        if (turn_number <= 1) {
+            use_move(ILLUSION);
+        } else if (turn_number == 2) {
+            use_move(SWIPE);
+        } else {
+            static constexpr MoveOption OPTIONS[] = { { SWIPE_RANDOM, 4 }, { HEADBUTT, 6 } };
+            draw_move(OPTIONS);
+        }
+        if (last_move == ILLUSION) {
+            current_intent.type = EnemyIntentType::SUMMON;
+            current_intent.summon_type = EnemyType::EYE_WITH_TEETH;
+            current_intent.summons = 1;
+            current_intent.summon_minions = true;
+            current_intent.description = "Spores illusoires";
+        } else if (last_move == HEADBUTT) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("HEADBUTT");
+            current_intent.description = "Headbutt (14 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = move_damage("SWIPE");
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = 1;
+            current_intent.description = "Mandale (8 dmg, +1 Force)";
+        }
+    } else if (type == EnemyType::SNAPPING_JAXFRUIT) {
+        // Energy Orb every turn: 3 damage and +2 Strength.
+        current_intent.type = EnemyIntentType::ATTACK_BUFF;
+        current_intent.base_damage = move_damage("ENERGY_ORB");
+        current_intent.status_type = StatusType::STRENGTH;
+        current_intent.status_amount = 2;
+        current_intent.description = "Orbe d'énergie (3 dmg, +2 Force)";
+    } else if (type == EnemyType::TWIG_SLIME_S) {
+        // Tackle every turn.
+        current_intent.type = EnemyIntentType::ATTACK;
+        current_intent.base_damage = move_damage("TACKLE");
+        current_intent.description = "Charge (4 dmg)";
+    } else if (type == EnemyType::TWIG_SLIME_M) {
+        // Sticky Shot (1 Slimed), then a draw between Pokey Pounce (as often as drawn) and Sticky Shot (never twice).
+        enum Move : uint8_t { STICKY_SHOT, POKEY_POUNCE };
+        if (turn_number <= 1) {
+            use_move(STICKY_SHOT);
+        } else {
+            static constexpr MoveOption OPTIONS[] = { { POKEY_POUNCE, 1, true }, { STICKY_SHOT } };
+            draw_move(OPTIONS);
+        }
+        if (last_move == STICKY_SHOT) {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_card = CardId::SLIMED;
+            current_intent.status_cards = 1;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Tir collant (1 Englué)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("POKEY_POUNCE");
+            current_intent.description = "Petit saut (11 dmg)";
+        }
+    } else if (type == EnemyType::LEAF_SLIME_S) {
+        // A draw between Tackle and Goop (1 Slimed), never the same twice in a row.
+        enum Move : uint8_t { TACKLE, GOOP };
+        static constexpr MoveOption OPTIONS[] = { { TACKLE }, { GOOP } };
+        draw_move(OPTIONS);
+        if (last_move == GOOP) {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_card = CardId::SLIMED;
+            current_intent.status_cards = 1;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Gelée (1 Englué)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("TACKLE");
+            current_intent.description = "Charge (3 dmg)";
+        }
+    } else if (type == EnemyType::LEAF_SLIME_M) {
+        // Sticky Shot (2 Slimed), Clump Shot 8, and again.
+        if (turn_number % 2 == 1) {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_card = CardId::SLIMED;
+            current_intent.status_cards = 2;
+            current_intent.status_pile = Pile::DISCARD;
+            current_intent.description = "Tir adhésif (2 Englué)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("CLUMP_SHOT");
+            current_intent.description = "Tir groupé (8 dmg)";
+        }
+    } else if (type == EnemyType::SLITHERING_STRANGLER) {
+        // Constrict (the player takes 3 damage at the end of each of their turns while it lives), then a draw
+        // between Thwack (7 dmg, 5 Block) and Lash 12, as often as drawn.
+        enum Move : uint8_t { CONSTRICT, THWACK, LASH };
+        if (turn_number <= 1) {
+            use_move(CONSTRICT);
+        } else {
+            static constexpr MoveOption OPTIONS[] = { { THWACK, 1, true }, { LASH, 1, true } };
+            draw_move(OPTIONS);
+        }
+        if (last_move == CONSTRICT) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.power = PowerId::CONSTRICT;
+            current_intent.power_amount = 3;
+            current_intent.power_on_player = true;
+            current_intent.description = "Étranglement (Étreinte 3)";
+        } else if (last_move == THWACK) {
+            current_intent.type = EnemyIntentType::ATTACK_DEFEND;
+            current_intent.base_damage = move_damage("THWACK");
+            current_intent.block = sheet_move("THWACK").block;
+            current_intent.description = "Frappe (7 dmg, 5 blk)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("LASH");
+            current_intent.description = "Fouet (12 dmg)";
+        }
+    } else if (type == EnemyType::LIVING_FOG) {
+        // Advanced Gas (Smoggy: one Skill a turn), then Bloat (a Gas Bomb joins the fight) and Super Gas Blast in turn.
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("ADVANCED_GAS");
+            current_intent.power = PowerId::SMOGGY;
+            current_intent.power_amount = 1;
+            current_intent.power_on_player = true;
+            current_intent.description = "Gaz nocif (8 dmg, Enfumé)";
+        } else if (turn_number % 2 == 0) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("BLOAT");
+            current_intent.summon_type = EnemyType::GAS_BOMB;
+            current_intent.summons = 1;
+            current_intent.summon_minions = true;
+            current_intent.description = "Boursouflure (5 dmg, invoque)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("SUPER_GAS_BLAST");
+            current_intent.description = "Super rafale gazeuse (8 dmg)";
+        }
+    } else if (type == EnemyType::TWO_TAILED_RAT) {
+        // A draw among Scratch 8, Disease Bite 6, Screech (1 Frail) and Call for Backup (a Two-Tailed Rat joins the
+        // fight, once), never the same twice in a row.
+        enum Move : uint8_t { SCRATCH, DISEASE_BITE, SCREECH, CALL_FOR_BACKUP };
+        static constexpr MoveOption ANY[] = { { SCRATCH }, { DISEASE_BITE }, { SCREECH }, { CALL_FOR_BACKUP } };
+        static constexpr MoveOption NO_CALL[] = { { SCRATCH }, { DISEASE_BITE }, { SCREECH } };
+        if (phase == 0) {
+            if (draw_move(ANY) == CALL_FOR_BACKUP) enter_phase(1);
+        } else {
+            draw_move(NO_CALL);
+        }
+        if (last_move == SCRATCH) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("SCRATCH");
+            current_intent.description = "Griffure (8 dmg)";
+        } else if (last_move == DISEASE_BITE) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("DISEASE_BITE");
+            current_intent.description = "Morsure infectée (6 dmg)";
+        } else if (last_move == SCREECH) {
+            current_intent.type = EnemyIntentType::DEBUFF;
+            current_intent.debuffs[0] = { StatusType::FRAIL, 1 };
+            current_intent.description = "Cri (Fragilisé 1)";
+        } else {
+            current_intent.type = EnemyIntentType::SUMMON;
+            current_intent.summon_type = EnemyType::TWO_TAILED_RAT;
+            current_intent.summons = 1;
+            current_intent.summon_minions = false;
+            current_intent.description = "Appel à l'aide";
         }
     } else if (type == EnemyType::SHRINKER_BEETLE) {
         // Shrinker (the player is Shrunk for 3 turns) on the first turn, then Chomp 7 and Stomp 13 in turn.
