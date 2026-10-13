@@ -16,6 +16,7 @@
 #include "bn_sprite_items_boss_the_insatiable.h"
 #include "bn_sprite_items_boss_lagavulin_matriarch.h"
 #include "bn_sprite_items_boss_test_subject.h"
+#include "bn_sprite_items_boss_vantom.h"
 #include "bn_sprite_items_mon_assassin_ruby_raider.h"
 #include "bn_sprite_items_mon_axe_ruby_raider.h"
 #include "bn_sprite_items_mon_brute_ruby_raider.h"
@@ -73,6 +74,15 @@
 #include "bn_sprite_items_mon_ovicopter.h"
 #include "bn_sprite_items_mon_fabricator.h"
 #include "bn_sprite_items_mon_shrinker_beetle.h"
+#include "bn_sprite_items_mon_fogmog.h"
+#include "bn_sprite_items_mon_snapping_jaxfruit.h"
+#include "bn_sprite_items_mon_twig_slime_m.h"
+#include "bn_sprite_items_mon_twig_slime_s.h"
+#include "bn_sprite_items_mon_leaf_slime_m.h"
+#include "bn_sprite_items_mon_leaf_slime_s.h"
+#include "bn_sprite_items_mon_slithering_strangler.h"
+#include "bn_sprite_items_mon_living_fog.h"
+#include "bn_sprite_items_mon_two_tailed_rat.h"
 #include "bn_sprite_items_mon_owl_magistrate.h"
 #include "bn_sprite_items_mon_scroll_of_biting.h"
 #include "bn_sprite_items_mon_phrog_parasite.h"
@@ -283,6 +293,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::boss_lagavulin_matriarch, true };
     case engine::EnemyType::TEST_SUBJECT:
         return { &bn::sprite_items::boss_test_subject, true };
+    case engine::EnemyType::VANTOM:
+        return { &bn::sprite_items::boss_vantom, true };
     case engine::EnemyType::FUZZY_WURM_CRAWLER:
         return { &bn::sprite_items::mon_fuzzy_wurm_crawler, false };
     case engine::EnemyType::CROSSBOW_RUBY_RAIDER:
@@ -409,6 +421,24 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_fabricator, false };
     case engine::EnemyType::SHRINKER_BEETLE:
         return { &bn::sprite_items::mon_shrinker_beetle, false };
+    case engine::EnemyType::FOGMOG:
+        return { &bn::sprite_items::mon_fogmog, false };
+    case engine::EnemyType::SNAPPING_JAXFRUIT:
+        return { &bn::sprite_items::mon_snapping_jaxfruit, false };
+    case engine::EnemyType::TWIG_SLIME_M:
+        return { &bn::sprite_items::mon_twig_slime_m, false };
+    case engine::EnemyType::TWIG_SLIME_S:
+        return { &bn::sprite_items::mon_twig_slime_s, false };
+    case engine::EnemyType::LEAF_SLIME_M:
+        return { &bn::sprite_items::mon_leaf_slime_m, false };
+    case engine::EnemyType::LEAF_SLIME_S:
+        return { &bn::sprite_items::mon_leaf_slime_s, false };
+    case engine::EnemyType::SLITHERING_STRANGLER:
+        return { &bn::sprite_items::mon_slithering_strangler, false };
+    case engine::EnemyType::LIVING_FOG:
+        return { &bn::sprite_items::mon_living_fog, false };
+    case engine::EnemyType::TWO_TAILED_RAT:
+        return { &bn::sprite_items::mon_two_tailed_rat, false };
     case engine::EnemyType::OWL_MAGISTRATE:
         return { &bn::sprite_items::mon_owl_magistrate, false };
     case engine::EnemyType::SCROLL_OF_BITING:

@@ -1227,7 +1227,8 @@ void test_vine_shambler_ascension() {
     std::cout << "[PASS] Vine Shambler: Ascension gives 64 HP, Swipe 7x2, Grasping Vines 9, Chomp 18" << std::endl;
 }
 
-int count_in(const FixedVector<DeckCard, 50>& pile, CardId id) {
+template <typename Pile>
+int count_in(const Pile& pile, CardId id) {
     int count = 0;
     for (const DeckCard& card : pile) count += card.id == id;
     return count;
@@ -2560,6 +2561,91 @@ void test_test_subject_whole_fight() {
     std::cout << "[PASS] Test Subject: a whole fight to the boss's death, through its three lives" << std::endl;
 }
 
+int vantom_wounds(const CombatEngine& combat) {
+    return count_cards(combat.draw_pile, CardId::WOUND) + count_cards(combat.hand, CardId::WOUND) +
+           count_cards(combat.discard_pile, CardId::WOUND);
+}
+
+void test_vantom() {
+    // Ink Blot 7, Inky Lance 6x2, Dismember 26 (3 Wounds), Prepare (+2 Strength), and again 2 stronger.
+    check_monster(EnemyType::VANTOM, "Vantôme", 173, {
+        { ATTACK, 7, 0, 0 },
+        { ATTACK, 6, 0, 0, 0, 2 },
+        { ATTACK_DEBUFF, 26, 0, 0 },
+        { BUFF, 0, 0, 2 },
+        { ATTACK, 9, 0, 2 },
+        { ATTACK, 8, 0, 2, 0, 2 },
+        { ATTACK_DEBUFF, 28, 0, 2 },
+        { BUFF, 0, 0, 4 },
+    });
+
+    // Dismember puts 3 Wounds in the player's discard pile, after the hit.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::VANTOM);
+    Enemy& boss = combat.enemies[0];
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    combat.player.hp = combat.player.max_hp;
+    assert(vantom_wounds(combat) == 0);
+    assert(boss.current_intent.type == ATTACK_DEBUFF && boss.current_intent.status_card == CardId::WOUND &&
+           boss.current_intent.status_cards == 3);
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 26);
+    assert(vantom_wounds(combat) == 3);
+    std::cout << "[PASS] Vantom: 173 HP, Ink Blot 7, Inky Lance 6x2, Dismember 26 + 3 Wounds, Prepare +2 Strength"
+              << std::endl;
+}
+
+void test_vantom_ascension() {
+    // 183 HP, Ink Blot 8, Inky Lance 7x2 and Dismember 30 at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::VANTOM);
+    Enemy& boss = combat.enemies[0];
+    assert(boss.ascension_hp() == 183 && boss.hp_spread() == 0);
+    boss.ascend(true, true);
+    combat.plan_enemies();
+    assert(boss.hp == 183 && boss.max_hp == 183);
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 8);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 7 && boss.current_intent.hits == 2);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(boss.current_intent.type == ATTACK_DEBUFF && boss.intent_damage(combat.player) == 30);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 30 && vantom_wounds(combat) == 3);
+    assert(boss.current_intent.type == BUFF);
+    std::cout << "[PASS] Vantom: Ascension gives 183 HP, Ink Blot 8, Inky Lance 7x2, Dismember 30" << std::endl;
+}
+
+void test_vantom_whole_fight() {
+    // The whole fight, until the boss dies, at 20 damage a turn: a single phase, its four moves in a loop, the
+    // Strength of each Prepare carried into the next cycle.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::VANTOM);
+    Enemy& boss = combat.enemies[0];
+    int turn = 1;
+    while (combat.state == CombatState::PLAYER_TURN && boss.is_alive()) {
+        const int step = (turn - 1) % 4;
+        const int strength = 2 * ((turn - 1) / 4);
+        const EnemyIntentType expected[4] = { ATTACK, ATTACK, ATTACK_DEBUFF, BUFF };
+        const int damage[4] = { 7, 6, 26, 0 };
+        assert(boss.phase == 0);
+        assert(boss.current_intent.type == expected[step]);
+        assert(boss.get_status(StatusType::STRENGTH) == strength);
+        assert(boss.intent_damage(combat.player) == (step == 3 ? 0 : damage[step] + strength));
+        combat.damage_enemy(boss, 20);
+        if (!boss.is_alive()) break;
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        ++turn;
+    }
+    assert(!boss.is_alive() && combat.player.is_alive());
+    assert(turn == 9);                  // 173 HP, 20 a turn
+    assert(vantom_wounds(combat) == 6); // two Dismembers
+    std::cout << "[PASS] Vantom: a whole fight to the boss's death, two full cycles" << std::endl;
+}
+
 void test_ceremonial_beast() {
     // Phase 0: Stamp (Plow 150 on itself), then Plow (18 damage, +2 Strength) every turn.
     check_monster(EnemyType::CEREMONIAL_BEAST, "Cerf Auguste", 252, {
@@ -3246,6 +3332,403 @@ void test_scroll_of_biting_ascension() {
     assert(scroll.current_intent.type == ATTACK && scroll.current_intent.hits == 2);
     assert(scroll.intent_damage(combat.player) == 6 + 2);
     std::cout << "[PASS] Scroll of Biting: Ascension gives 33 HP and more, Chomp 16, Chew 6x2" << std::endl;
+}
+
+// Slimed cards anywhere in the player's piles.
+int slimed_total(const CombatEngine& combat) {
+    return count_in(combat.draw_pile, CardId::SLIMED) + count_in(combat.hand, CardId::SLIMED) +
+           count_in(combat.discard_pile, CardId::SLIMED);
+}
+
+void test_fogmog() {
+    // Illusion Spores (an Eye With Teeth joins as its Minion), Swipe 8 (+1 Strength), then Swipe or Headbutt 14.
+    check_monster(EnemyType::FOGMOG, "Fongibrume", 74, {
+        { SUMMON, 0, 0, 0 },
+        { ATTACK_BUFF, 8, 0, 1 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::FOGMOG);
+    Enemy& fog = combat.enemies[0];
+    assert(fog.current_intent.summon_type == EnemyType::EYE_WITH_TEETH && fog.current_intent.summons == 1);
+    combat.player.max_hp = combat.player.hp = 500;
+    combat.end_player_turn();
+    assert(combat.count_alive_enemies() == 2 && combat.enemies[1].type == EnemyType::EYE_WITH_TEETH);
+    assert(combat.enemies[1].minion && combat.enemies[1].leader == 0);
+
+    bool swipe = false, headbutt = false;
+    for (uint32_t i = 0; i < 40; ++i) {
+        CombatEngine run = make_combat(CharacterId::IRONCLAD, EnemyType::FOGMOG);
+        Enemy& boss = run.enemies[0];
+        boss.reset_pattern(i * 7919 + 1);
+        boss.plan_turn(1);
+        run.player.max_hp = 30000;
+        run.player.hp = run.player.max_hp;
+        run.end_player_turn();
+        run.end_player_turn();
+        int strength = 1;
+        bool last_headbutt = false, last_swipe = false;
+        for (int turn = 3; turn <= 12; ++turn) {
+            const EnemyIntent& intent = boss.current_intent;
+            const bool is_headbutt = intent.type == ATTACK;
+            assert(is_headbutt || intent.type == ATTACK_BUFF);
+            assert(boss.intent_damage(run.player) == (is_headbutt ? 14 : 8) + strength);
+            assert(!(is_headbutt && last_headbutt) && !(!is_headbutt && last_swipe));
+            swipe = swipe || !is_headbutt;
+            headbutt = headbutt || is_headbutt;
+            if (!is_headbutt) ++strength;
+            last_headbutt = is_headbutt;
+            last_swipe = !is_headbutt;
+            run.end_player_turn();
+            assert(boss.get_status(StatusType::STRENGTH) == strength);
+        }
+    }
+    assert(swipe && headbutt);
+
+    // Ascension: 78 HP, Swipe 9 and Headbutt 16.
+    CombatEngine asc = make_combat(CharacterId::IRONCLAD, EnemyType::FOGMOG);
+    Enemy& ascended = asc.enemies[0];
+    assert(ascended.ascension_hp() == 78);
+    ascended.ascend(true, true);
+    asc.plan_enemies();
+    assert(ascended.hp == 78 && ascended.max_hp == 78 && ascended.move_damage("HEADBUTT") == 16);
+    asc.player.hp = asc.player.max_hp = 500;
+    asc.end_player_turn();
+    assert(ascended.current_intent.type == ATTACK_BUFF && ascended.intent_damage(asc.player) == 9);
+    std::cout << "[PASS] Fogmog: 74 HP (78), Illusion Spores brings an Eye With Teeth, Swipe 8 (+1 Strength), Headbutt 14 (16)"
+              << std::endl;
+}
+
+void test_snapping_jaxfruit() {
+    // Energy Orb every turn: 3 damage and +2 Strength.
+    const int hp = make_combat(CharacterId::IRONCLAD, EnemyType::SNAPPING_JAXFRUIT).enemies[0].hp;
+    assert(hp >= 31 && hp <= 33);
+    check_monster(EnemyType::SNAPPING_JAXFRUIT, "Jaxier à clapet", hp, {
+        { ATTACK_BUFF, 3, 0, 2 },
+        { ATTACK_BUFF, 5, 0, 4 },
+        { ATTACK_BUFF, 7, 0, 6 },
+    });
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SNAPPING_JAXFRUIT);
+        Enemy& fruit = combat.enemies[0];
+        fruit.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        const int16_t base = fruit.hp;
+        assert(base >= 31 && base <= 33 && fruit.hp_spread() == 2 && fruit.ascension_hp() == 34);
+        fruit.ascend(true, true);
+        combat.plan_enemies();
+        assert(fruit.hp == base + 3 && fruit.hp >= 34 && fruit.hp <= 36);
+        assert(fruit.current_intent.type == ATTACK_BUFF && fruit.intent_damage(combat.player) == 4);
+    }
+    std::cout << "[PASS] Snapping Jaxfruit: 31 to 33 HP (34 to 36), Energy Orb 3 (4) and +2 Strength" << std::endl;
+}
+
+void test_twig_slime_s() {
+    const int hp = make_combat(CharacterId::IRONCLAD, EnemyType::TWIG_SLIME_S).enemies[0].hp;
+    assert(hp >= 7 && hp <= 11);
+    check_monster(EnemyType::TWIG_SLIME_S, "Limon brindille (S)", hp, {
+        { ATTACK, 4, 0, 0 },
+        { ATTACK, 4, 0, 0 },
+        { ATTACK, 4, 0, 0 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TWIG_SLIME_S);
+    Enemy& slime = combat.enemies[0];
+    slime.roll_hp(5);
+    assert(slime.hp_spread() == 4 && slime.ascension_hp() == 8);
+    slime.ascend(true, true);
+    combat.plan_enemies();
+    assert(slime.hp >= 8 && slime.hp <= 12 && slime.intent_damage(combat.player) == 5);
+    std::cout << "[PASS] Twig Slime (S): 7 to 11 HP (8 to 12), Tackle 4 (5)" << std::endl;
+}
+
+void test_twig_slime_m() {
+    // Sticky Shot (1 Slimed), then Pokey Pounce 11 (as often as drawn) or Sticky Shot (never twice).
+    const int hp = make_combat(CharacterId::IRONCLAD, EnemyType::TWIG_SLIME_M).enemies[0].hp;
+    assert(hp >= 26 && hp <= 28);
+    check_monster(EnemyType::TWIG_SLIME_M, "Limon brindille (M)", hp, {
+        { STATUS, 0, 0, 0 },
+    });
+    bool pounce_twice = false, sticky_again = false;
+    for (uint32_t i = 0; i < 40; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TWIG_SLIME_M);
+        Enemy& slime = combat.enemies[0];
+        slime.reset_pattern(i * 7919 + 1);
+        slime.plan_turn(1);
+        combat.player.max_hp = 30000;
+        combat.player.hp = combat.player.max_hp;
+        assert(slime.current_intent.type == STATUS && slime.current_intent.status_card == CardId::SLIMED);
+        assert(slime.current_intent.status_cards == 1);
+        int slimed = 0;
+        bool last_pounce = false;
+        for (int turn = 1; turn <= 12; ++turn) {
+            const EnemyIntent intent = slime.current_intent;
+            if (turn == 2) assert(intent.type == ATTACK);
+            if (intent.type == STATUS) {
+                assert(turn == 1 || last_pounce);
+                if (turn > 1) sticky_again = true;
+                ++slimed;
+                last_pounce = false;
+            } else {
+                assert(intent.type == ATTACK && slime.intent_damage(combat.player) == 11);
+                pounce_twice = pounce_twice || last_pounce;
+                last_pounce = true;
+            }
+            combat.end_player_turn();
+            assert(slimed_total(combat) == slimed);
+        }
+    }
+    assert(pounce_twice && sticky_again);
+
+    CombatEngine asc = make_combat(CharacterId::IRONCLAD, EnemyType::TWIG_SLIME_M);
+    asc.enemies[0].ascend(true, true);
+    asc.plan_enemies();
+    assert(asc.enemies[0].ascension_hp() == 27 && asc.enemies[0].hp >= 27 && asc.enemies[0].hp <= 29);
+    asc.player.hp = asc.player.max_hp = 500;
+    asc.end_player_turn();
+    assert(asc.enemies[0].intent_damage(asc.player) == 12);
+    std::cout << "[PASS] Twig Slime (M): 26 to 28 HP (27 to 29), Sticky Shot (1 Slimed), Pokey Pounce 11 (12)"
+              << std::endl;
+}
+
+void test_leaf_slime_s() {
+    // A draw between Tackle 3 and Goop (1 Slimed), never the same twice in a row.
+    bool tackle = false, goop = false;
+    for (uint32_t i = 0; i < 40; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LEAF_SLIME_S);
+        Enemy& slime = combat.enemies[0];
+        assert(slime.name == "Limon feuillu (S)" && slime.hp >= 11 && slime.hp <= 15 && slime.hp_spread() == 4);
+        slime.reset_pattern(i * 7919 + 1);
+        slime.plan_turn(1);
+        combat.player.max_hp = 30000;
+        combat.player.hp = combat.player.max_hp;
+        int slimed = 0;
+        bool last_goop = false;
+        for (int turn = 1; turn <= 10; ++turn) {
+            const bool is_goop = slime.current_intent.type == STATUS;
+            if (is_goop) {
+                assert(slime.current_intent.status_card == CardId::SLIMED && slime.current_intent.status_cards == 1);
+                ++slimed;
+            } else {
+                assert(slime.current_intent.type == ATTACK && slime.intent_damage(combat.player) == 3);
+            }
+            if (turn > 1) assert(is_goop != last_goop);
+            tackle = tackle || !is_goop;
+            goop = goop || is_goop;
+            last_goop = is_goop;
+            combat.end_player_turn();
+            assert(slimed_total(combat) == slimed);
+        }
+    }
+    assert(tackle && goop);
+    CombatEngine asc = make_combat(CharacterId::IRONCLAD, EnemyType::LEAF_SLIME_S);
+    asc.enemies[0].ascend(true, true);
+    asc.plan_enemies();
+    assert(asc.enemies[0].ascension_hp() == 12 && asc.enemies[0].hp >= 12 && asc.enemies[0].hp <= 16);
+    assert(asc.enemies[0].move_damage("TACKLE") == 4);
+    std::cout << "[PASS] Leaf Slime (S): 11 to 15 HP (12 to 16), Tackle 3 (4) or Goop (1 Slimed), never twice" << std::endl;
+}
+
+void test_leaf_slime_m() {
+    // Sticky Shot (2 Slimed), Clump Shot 8, and again.
+    const int hp = make_combat(CharacterId::IRONCLAD, EnemyType::LEAF_SLIME_M).enemies[0].hp;
+    assert(hp >= 32 && hp <= 35);
+    check_monster(EnemyType::LEAF_SLIME_M, "Limon feuillu (M)", hp, {
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 8, 0, 0 },
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 8, 0, 0 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LEAF_SLIME_M);
+    combat.player.max_hp = combat.player.hp = 500;
+    assert(combat.enemies[0].current_intent.status_card == CardId::SLIMED && combat.enemies[0].current_intent.status_cards == 2);
+    combat.end_player_turn();
+    assert(slimed_total(combat) == 2);
+    combat.end_player_turn();
+    combat.end_player_turn();
+    assert(slimed_total(combat) == 4);
+
+    CombatEngine asc = make_combat(CharacterId::IRONCLAD, EnemyType::LEAF_SLIME_M);
+    asc.enemies[0].ascend(true, true);
+    asc.plan_enemies();
+    assert(asc.enemies[0].ascension_hp() == 33 && asc.enemies[0].hp >= 33 && asc.enemies[0].hp <= 36);
+    asc.player.hp = asc.player.max_hp = 500;
+    asc.end_player_turn();
+    assert(asc.enemies[0].intent_damage(asc.player) == 9);
+    std::cout << "[PASS] Leaf Slime (M): 32 to 35 HP (33 to 36), Sticky Shot (2 Slimed), Clump Shot 8 (9)" << std::endl;
+}
+
+void test_slithering_strangler() {
+    // Constrict (3 damage at the end of each of the player's turns while it lives), then Thwack 7 + 5 Block or Lash 12.
+    const int hp = make_combat(CharacterId::IRONCLAD, EnemyType::SLITHERING_STRANGLER).enemies[0].hp;
+    assert(hp >= 53 && hp <= 55);
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::SLITHERING_STRANGLER);
+    Enemy& strangler = combat.enemies[0];
+    assert(strangler.name == "Étrangleur" && strangler.hp_spread() == 2);
+    combat.player.max_hp = combat.player.hp = 500;
+    assert(strangler.current_intent.type == DEBUFF && strangler.current_intent.power == PowerId::CONSTRICT);
+    assert(strangler.current_intent.power_on_player && strangler.intent_damage(combat.player) == 0);
+    combat.end_player_turn();
+    assert(combat.player.hp == 500 && combat.power_amount(PowerId::CONSTRICT) == 3);
+
+    bool thwack = false, lash = false, thwack_twice = false;
+    bool last_thwack = false;
+    for (int turn = 2; turn <= 40; ++turn) {
+        const EnemyIntent intent = strangler.current_intent;
+        const bool is_thwack = intent.type == ATTACK_DEFEND;
+        const int damage = is_thwack ? 7 : 12;
+        assert(is_thwack || intent.type == ATTACK);
+        assert(strangler.intent_damage(combat.player) == damage);
+        thwack = thwack || is_thwack;
+        lash = lash || !is_thwack;
+        thwack_twice = thwack_twice || (is_thwack && last_thwack);
+        last_thwack = is_thwack;
+        combat.player.hp = 500;
+        combat.end_player_turn();
+        // The Constrict of the end of the player's turn, then the strangler's move.
+        assert(500 - combat.player.hp == 3 + damage);
+        assert(strangler.block == (is_thwack ? 5 : 0));
+        assert(strangler.statuses.empty());
+    }
+    assert(thwack && lash && thwack_twice);
+
+    // Without the Strangler, Constrict does nothing; Artifact keeps the player from being constricted.
+    CombatEngine free_player = make_combat(CharacterId::IRONCLAD, EnemyType::SLITHERING_STRANGLER);
+    free_player.end_player_turn();
+    free_player.enemies[0].hp = 0;
+    free_player.player.hp = 500;
+    free_player.player.max_hp = 500;
+    free_player.end_player_turn();
+    assert(free_player.player.hp == 500);
+    CombatEngine guarded = make_combat(CharacterId::IRONCLAD, EnemyType::SLITHERING_STRANGLER);
+    guarded.player.add_status(StatusType::ARTIFACT, 1);
+    guarded.end_player_turn();
+    assert(!guarded.has_power(PowerId::CONSTRICT) && guarded.player.get_status(StatusType::ARTIFACT) == 0);
+
+    // Ascension: 54 to 56 HP, Thwack 8, Lash 13.
+    CombatEngine asc = make_combat(CharacterId::IRONCLAD, EnemyType::SLITHERING_STRANGLER);
+    Enemy& ascended = asc.enemies[0];
+    assert(ascended.ascension_hp() == 54);
+    ascended.ascend(true, true);
+    asc.plan_enemies();
+    assert(ascended.hp >= 54 && ascended.hp <= 56);
+    assert(ascended.move_damage("THWACK") == 8 && ascended.move_damage("LASH") == 13);
+    std::cout << "[PASS] Slithering Strangler: 53 to 55 HP (54 to 56), Constrict 3, Thwack 7 + 5 Block (8), Lash 12 (13)"
+              << std::endl;
+}
+
+void test_living_fog() {
+    // Advanced Gas 8 (Smoggy), then Bloat 5 (a Gas Bomb joins) and Super Gas Blast 8, Bloat and Super Gas Blast...
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LIVING_FOG);
+    Enemy& fog = combat.enemies[0];
+    assert(fog.name == "Brouillard vivant" && fog.hp == 80 && fog.max_hp == 80 && fog.hp_spread() == 0);
+    combat.player.max_hp = combat.player.hp = 500;
+    assert(fog.current_intent.type == ATTACK_DEBUFF && fog.intent_damage(combat.player) == 8);
+    assert(fog.current_intent.power == PowerId::SMOGGY && fog.current_intent.power_on_player);
+    combat.end_player_turn();
+    assert(combat.player.hp == 492 && combat.has_power(PowerId::SMOGGY) && combat.count_alive_enemies() == 1);
+    for (int cycle = 0; cycle < 2; ++cycle) {
+        const int bombs = combat.count_alive_enemies() - 1;
+        assert(fog.current_intent.type == ATTACK && fog.intent_damage(combat.player) == 5);
+        assert(fog.current_intent.summon_type == EnemyType::GAS_BOMB && fog.current_intent.summons == 1);
+        combat.player.hp = 500;
+        combat.end_player_turn();
+        // The new bomb has not acted yet; the earlier ones explode (8 each).
+        assert(500 - combat.player.hp == 5 + 8 * bombs);
+        assert(combat.count_alive_enemies() == bombs + 2);
+        assert(combat.enemies[combat.enemies.size() - 1].type == EnemyType::GAS_BOMB);
+        assert(combat.enemies[combat.enemies.size() - 1].minion);
+        assert(fog.current_intent.type == ATTACK && fog.intent_damage(combat.player) == 8 &&
+               fog.current_intent.summons == 0);
+        combat.player.hp = 500;
+        combat.end_player_turn();
+        assert(500 - combat.player.hp == 8 + 8 * (bombs + 1));
+        assert(fog.block == 0 && fog.statuses.empty() && fog.hp == 80);
+    }
+
+    // Smoggy: only one Skill each turn. Attacks are not limited.
+    CombatEngine smog = make_combat(CharacterId::IRONCLAD, EnemyType::LIVING_FOG);
+    smog.end_player_turn();
+    smog.hand.clear();
+    smog.hand.push_back(CardId::DEFEND);
+    smog.hand.push_back(CardId::DEFEND);
+    smog.hand.push_back(CardId::STRIKE);
+    smog.hand.push_back(CardId::STRIKE);
+    smog.player.energy = 10;
+    assert(smog.can_play_card(0) && smog.can_play_card(1));
+    assert(smog.play_card(0, 0));
+    assert(smog.play_blocker(0) == PlayBlocker::PLAY_LIMIT && !smog.play_card(0, 0));
+    assert(smog.can_play_card(1) && smog.play_card(1, 0) && smog.can_play_card(1) && smog.play_card(1, 0));
+    smog.end_player_turn();
+    smog.hand.clear();
+    smog.hand.push_back(CardId::DEFEND);
+    smog.player.energy = 10;
+    assert(smog.can_play_card(0));
+    CombatEngine guarded = make_combat(CharacterId::IRONCLAD, EnemyType::LIVING_FOG);
+    guarded.player.add_status(StatusType::ARTIFACT, 1);
+    guarded.end_player_turn();
+    assert(!guarded.has_power(PowerId::SMOGGY));
+
+    // Ascension: 82 HP, Advanced Gas 9, Bloat 6, Super Gas Blast 9.
+    CombatEngine asc = make_combat(CharacterId::IRONCLAD, EnemyType::LIVING_FOG);
+    Enemy& ascended = asc.enemies[0];
+    ascended.ascend(true, true);
+    asc.plan_enemies();
+    assert(ascended.hp == 82 && ascended.max_hp == 82 && ascended.intent_damage(asc.player) == 9);
+    assert(ascended.move_damage("BLOAT") == 6 && ascended.move_damage("SUPER_GAS_BLAST") == 9);
+    std::cout << "[PASS] Living Fog: 80 HP (82), Advanced Gas 8 (Smoggy), Bloat 5 (Gas Bomb), Super Gas Blast 8"
+              << std::endl;
+}
+
+void test_two_tailed_rat() {
+    // A draw among Scratch 8, Disease Bite 6, Screech (1 Frail) and Call for Backup (a rat joins, once per rat),
+    // never the same move twice in a row.
+    bool scratch = false, bite = false, screech = false, call = false;
+    for (uint32_t i = 0; i < 60; ++i) {
+        CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::TWO_TAILED_RAT);
+        Enemy& rat = combat.enemies[0];
+        assert(rat.name == "Rat bicaudé" && rat.hp >= 17 && rat.hp <= 21 && rat.hp_spread() == 4);
+        rat.reset_pattern(i * 7919 + 1);
+        rat.plan_turn(1);
+        combat.player.max_hp = 30000;
+        combat.player.hp = combat.player.max_hp;
+        int calls = 0;
+        std::string_view last;
+        for (int turn = 1; turn <= 12; ++turn) {
+            const EnemyIntent intent = rat.current_intent;
+            assert(intent.description != last);
+            last = intent.description;
+            const size_t before = combat.enemies.size();
+            combat.player.hp = combat.player.max_hp;
+            if (intent.type == SUMMON) {
+                ++calls;
+                call = true;
+                assert(intent.summon_type == EnemyType::TWO_TAILED_RAT && intent.summons == 1 && !intent.summon_minions);
+                assert(rat.intent_damage(combat.player) == 0);
+            } else if (intent.type == DEBUFF) {
+                screech = true;
+                assert(intent.debuffs[0].type == StatusType::FRAIL && intent.debuffs[0].amount == 1);
+            } else {
+                assert(intent.type == ATTACK);
+                const int damage = rat.intent_damage(combat.player);
+                assert(damage == 8 || damage == 6);
+                (damage == 8 ? scratch : bite) = true;
+            }
+            combat.end_player_turn();
+            if (intent.type == SUMMON) assert(combat.enemies.size() == before + 1 && !combat.enemies[before].minion);
+            if (intent.type == DEBUFF) assert(combat.player.get_status(StatusType::FRAIL) > 0);
+            assert(rat.statuses.empty() && rat.block == 0);
+        }
+        assert(calls <= 1);
+    }
+    assert(scratch && bite && screech && call);
+
+    CombatEngine asc = make_combat(CharacterId::IRONCLAD, EnemyType::TWO_TAILED_RAT);
+    Enemy& ascended = asc.enemies[0];
+    assert(ascended.ascension_hp() == 18);
+    ascended.ascend(true, true);
+    asc.plan_enemies();
+    assert(ascended.hp >= 18 && ascended.hp <= 22);
+    assert(ascended.move_damage("SCRATCH") == 9 && ascended.move_damage("DISEASE_BITE") == 7);
+    std::cout << "[PASS] Two-Tailed Rat: 17 to 21 HP (18 to 22), Scratch 8 (9), Disease Bite 6 (7), Screech (Frail), Call for "
+                 "Backup once"
+              << std::endl;
 }
 
 void test_inklet() {
@@ -4803,6 +5286,15 @@ int main() {
     test_owl_magistrate_ascension();
     test_scroll_of_biting();
     test_scroll_of_biting_ascension();
+    test_fogmog();
+    test_snapping_jaxfruit();
+    test_twig_slime_s();
+    test_twig_slime_m();
+    test_leaf_slime_s();
+    test_leaf_slime_m();
+    test_slithering_strangler();
+    test_living_fog();
+    test_two_tailed_rat();
     test_phrog_parasite();
     test_wriggler();
     test_wriggler_ascension();
@@ -4819,6 +5311,9 @@ int main() {
     test_test_subject_thorns_respawn();
     test_test_subject_ascension();
     test_test_subject_whole_fight();
+    test_vantom();
+    test_vantom_ascension();
+    test_vantom_whole_fight();
     test_ceremonial_beast();
     test_plow();
     test_ceremonial_beast_ascension();

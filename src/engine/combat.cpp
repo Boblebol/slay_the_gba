@@ -393,6 +393,17 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
             // Worn down at the end of each of the player's turns.
             if (event == CombatEvent::TURN_END && power.amount > 0) power.amount = static_cast<int16_t>(power.amount - 1);
             break;
+        case PowerId::CONSTRICT:
+            // While a Strangler is alive, the player takes `amount` damage at the end of each of their turns.
+            if (event == CombatEvent::TURN_END) {
+                for (const Enemy& other : enemies) {
+                    if (other.type == EnemyType::SLITHERING_STRANGLER && other.is_alive()) {
+                        damage_player(power.amount);
+                        break;
+                    }
+                }
+            }
+            break;
         case PowerId::BURROWED:
             // Spent when its Block is broken (the holder loses its turn) or when its holder acts again.
             if (event == CombatEvent::BLOCK_BROKEN && info.enemy == power.holder && power.amount > 0) {
@@ -2142,6 +2153,10 @@ PlayBlocker CombatEngine::play_blocker(int index) const {
     if (has_power(PowerId::RINGING) && counters.cards_played() >= 1) return PlayBlocker::PLAY_LIMIT;
     // Velvet Choker: the card limit of the turn.
     if (has_power(PowerId::VELVET_CHOKER) && counters.cards_played() >= power_amount(PowerId::VELVET_CHOKER)) {
+        return PlayBlocker::PLAY_LIMIT;
+    }
+    // Smoggy: a single Skill each turn.
+    if (has_power(PowerId::SMOGGY) && CardDef::get(card.id).type == CardType::SKILL && counters.skills_played >= 1) {
         return PlayBlocker::PLAY_LIMIT;
     }
     if (!play_condition_met(CardDef::get(card.id).condition)) return PlayBlocker::CONDITION;

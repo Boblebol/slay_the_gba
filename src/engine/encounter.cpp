@@ -25,6 +25,7 @@ constexpr Encounter ACT1A_WEAK[] = {
     { "FuzzyWurmCrawlerWeak"sv, 1, { EnemyType::FUZZY_WURM_CRAWLER } },
     { "NibbitsWeak"sv, 1, { EnemyType::NIBBIT } },
     { "ShrinkerBeetleWeak"sv, 1, { EnemyType::SHRINKER_BEETLE } },
+    { "SlimesWeak"sv, 4, { EnemyType::LEAF_SLIME_M, EnemyType::LEAF_SLIME_S, EnemyType::TWIG_SLIME_M, EnemyType::TWIG_SLIME_S } },
 };
 constexpr Encounter ACT1A_NORMAL[] = {
     { "RubyRaidersNormal"sv, 3, {}, RUBY_RAIDERS },
@@ -35,6 +36,12 @@ constexpr Encounter ACT1A_NORMAL[] = {
     { "FlyconidNormal"sv, 1, { EnemyType::FLYCONID } },
     { "MawlerNormal"sv, 1, { EnemyType::MAWLER } },
     { "OvergrowthCrawlers"sv, 2, { EnemyType::FUZZY_WURM_CRAWLER, EnemyType::SHRINKER_BEETLE } },
+    { "FogmogNormal"sv, 1, { EnemyType::FOGMOG } },
+    { "SnappingJaxfruitNormal"sv, 2, { EnemyType::FLYCONID, EnemyType::SNAPPING_JAXFRUIT } },
+    { "SlimesNormal"sv, 2, { EnemyType::LEAF_SLIME_M, EnemyType::TWIG_SLIME_M } },
+    { "SlitheringStranglerNormal"sv, 6,
+      { EnemyType::LEAF_SLIME_M, EnemyType::LEAF_SLIME_S, EnemyType::SLITHERING_STRANGLER, EnemyType::SNAPPING_JAXFRUIT,
+        EnemyType::TWIG_SLIME_M, EnemyType::TWIG_SLIME_S } },
 };
 
 // Act 1 (B): the Underdocks.
@@ -53,6 +60,8 @@ constexpr Encounter ACT1B_NORMAL[] = {
     { "HauntedShipNormal"sv, 1, { EnemyType::HAUNTED_SHIP } },
     { "FossilStalkerNormal"sv, 1, { EnemyType::FOSSIL_STALKER } },
     { "SeapunkNormal"sv, 2, { EnemyType::CALCIFIED_CULTIST, EnemyType::SEAPUNK } },
+    { "LivingFogNormal"sv, 1, { EnemyType::LIVING_FOG } },
+    { "TwoTailedRatsNormal"sv, 3, { EnemyType::TWO_TAILED_RAT, EnemyType::TWO_TAILED_RAT, EnemyType::TWO_TAILED_RAT } },
 };
 
 // Act 2: the Hive.
@@ -111,14 +120,15 @@ constexpr Encounter ACT3_ELITE[] = {
     { "KnightsElite"sv, 3, { EnemyType::FLAIL_KNIGHT, EnemyType::MAGI_KNIGHT, EnemyType::SPECTRAL_KNIGHT } },
 };
 
-constexpr Encounter CEREMONIAL_BEAST_BOSS[] = {
-    { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
-};
 constexpr Encounter LAGAVULIN_MATRIARCH_BOSS[] = {
     { "LagavulinMatriarchBoss"sv, 1, { EnemyType::LAGAVULIN_MATRIARCH } },
 };
 constexpr Encounter TEST_SUBJECT_BOSS[] = {
     { "TestSubjectBoss"sv, 1, { EnemyType::TEST_SUBJECT } },
+};
+constexpr Encounter ACT1A_BOSS[] = {
+    { "CeremonialBeastBoss"sv, 1, { EnemyType::CEREMONIAL_BEAST } },
+    { "VantomBoss"sv, 1, { EnemyType::VANTOM } },
 };
 constexpr Encounter THE_INSATIABLE_BOSS[] = {
     { "TheInsatiableBoss"sv, 1, { EnemyType::THE_INSATIABLE } },
@@ -126,7 +136,7 @@ constexpr Encounter THE_INSATIABLE_BOSS[] = {
 
 // [zone][tier], in the order of ActZone and EncounterTier.
 constexpr std::span<const Encounter> TABLES[4][4] = {
-    { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, CEREMONIAL_BEAST_BOSS },
+    { ACT1A_WEAK, ACT1A_NORMAL, ACT1A_ELITE, ACT1A_BOSS },
     { ACT1B_WEAK, ACT1B_NORMAL, ACT1B_ELITE, LAGAVULIN_MATRIARCH_BOSS },
     { ACT2_WEAK, ACT2_NORMAL, ACT2_ELITE, THE_INSATIABLE_BOSS },
     { ACT3_WEAK, ACT3_NORMAL, ACT3_ELITE, TEST_SUBJECT_BOSS },

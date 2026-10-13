@@ -3038,6 +3038,10 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Sables";
     case engine::PowerId::SHRINK:
         return "Rétréci";
+    case engine::PowerId::CONSTRICT:
+        return "Étreinte";
+    case engine::PowerId::SMOGGY:
+        return "Enfumé";
     case engine::PowerId::SOAR:
         return "Envol";
     case engine::PowerId::PLOW:
@@ -3073,6 +3077,10 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Sables : à 0, vous êtes dévoré.";
     case engine::PowerId::SHRINK:
         return "Rétréci : vos Attaques -30% de dégâts.";
+    case engine::PowerId::CONSTRICT:
+        return "Étreinte : dégâts en fin de tour tant que l'Étrangleur vit.";
+    case engine::PowerId::SMOGGY:
+        return "Enfumé : 1 seule Compétence par tour.";
     case engine::PowerId::SOAR:
         return "Envol : dégâts d'Attaque subis -50%.";
     case engine::PowerId::PLOW:
