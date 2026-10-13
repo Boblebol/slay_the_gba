@@ -457,7 +457,9 @@ enum class EnemyType : uint8_t {
     KIN_FOLLOWER,         // Act 1 (A) boss, with the Kin Priest
     KIN_PRIEST,           // Act 1 (A) boss
     QUEEN,                // Act 3 boss, with the Torch Head Amalgam
-    TORCH_HEAD_AMALGAM    // Act 3 boss, with the Queen
+    TORCH_HEAD_AMALGAM,   // Act 3 boss, with the Queen
+    PHANTASMAL_GARDENER,  // Act 1 (B) elite
+    EXOSKELETON           // Act 2
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
