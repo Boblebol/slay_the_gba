@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 92,1 %** — 1143 faits, 15 partiels, 91 à faire (35 hors périmètre).
+**Avancement global : 92,2 %** — 1144 faits, 15 partiels, 90 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 116 | 0 | 4 | 96,7 % |
-| [Reliques et potions](#reliques) | 305 | 0 | 16 | 95,0 % |
+| [Reliques et potions](#reliques) | 306 | 0 | 15 | 95,3 % |
 | [Bestiaire](#bestiaire) | 98 | 0 | 6 | 94,2 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
-| **Total** | **1143** | **15** | **91** | **92,1 %** |
+| **Total** | **1144** | **15** | **90** | **92,2 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 95,0 %
+## Reliques et potions — 95,3 %
 
 ### Reliques partagées — 97,4 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Non |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 89,2 %
+### Reliques des Anciens — 90,2 %
 
-91 faits, 0 partiel, 11 à faire.
+92 faits, 0 partiel, 10 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1127,7 +1127,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sozu | Ancienne | Oui |  |
 | Tablette lourde | Ancienne | Oui |  |
 | Talisman de Neow | Ancienne | Oui |  |
-| Toucher d'Orobas | Ancienne | Non |  |
+| Toucher d'Orobas | Ancienne | Oui |  |
 | Tourment de Neow | Ancienne | Oui |  |
 | Tresse soyeuse | Ancienne | Oui |  |
 | Tri-boomerang | Ancienne | Oui |  |
