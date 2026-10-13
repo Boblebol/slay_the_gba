@@ -129,6 +129,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::DECIMILLIPEDE_SEGMENT_FRONT: return "DECIMILLIPEDE_SEGMENT_FRONT";
         case EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE: return "DECIMILLIPEDE_SEGMENT_MIDDLE";
         case EnemyType::MYTE: return "MYTE";
+        case EnemyType::THIEVING_HOPPER: return "THIEVING_HOPPER";
     }
     return {};
 }
@@ -304,7 +305,8 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
     // Acts 2 and 3: the reference encounters the engine can play, with the groups the game had before in Act 3.
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::WEAK)) ==
-           (std::set<std::string_view>{ "TunnelerWeak", "BowlbugsWeak", "ExoskeletonsWeak" }));
+           (std::set<std::string_view>{ "TunnelerWeak", "BowlbugsWeak", "ExoskeletonsWeak",
+                                        "ThievingHopperWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "DevotedSculptorWeak", "TurretOperatorWeak", "ScrollsOfBitingWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==

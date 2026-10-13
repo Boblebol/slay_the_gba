@@ -69,6 +69,7 @@ constexpr Encounter ACT2_WEAK[] = {
     { "TunnelerWeak"sv, 1, { EnemyType::TUNNELER } },
     { "BowlbugsWeak"sv, 1, { EnemyType::BOWLBUG_ROCK } },
     { "ExoskeletonsWeak"sv, 3, { EnemyType::EXOSKELETON, EnemyType::EXOSKELETON, EnemyType::EXOSKELETON } },
+    { "ThievingHopperWeak"sv, 1, { EnemyType::THIEVING_HOPPER } },
 };
 constexpr Encounter ACT2_NORMAL[] = {
     { "HunterKillerNormal"sv, 1, { EnemyType::HUNTER_KILLER } },

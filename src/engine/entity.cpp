@@ -120,8 +120,9 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "DECIMILLIPEDE_SEGMENT_FRONT", true, true },
     { "DECIMILLIPEDE_SEGMENT_MIDDLE", true, true },
     { "MYTE", true, true },
+    { "THIEVING_HOPPER", false, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::MYTE) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::THIEVING_HOPPER) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -159,6 +160,7 @@ void Enemy::init(EnemyType enemy_type) {
     damage_percent = 100;
     damage_down_turns = 0;
     stolen = {};
+    stolen_card = DeckCard{};
     ascended_damage = false;
     escaped = false;
     last_heal = 0;
@@ -1641,6 +1643,30 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_type = StatusType::STRENGTH;
             current_intent.status_amount = ascended_damage ? 3 : 2;
             current_intent.description = "Succion (4 dmg, +2 Force)";
+        }
+    } else if (type == EnemyType::THIEVING_HOPPER) {
+        // Thievery (17, steals a card), Flutter (Flutter 5), Hat Trick 21, Nab 14, then it runs away.
+        if (turn_number == 1) {
+            current_intent.type = EnemyIntentType::ATTACK_DEBUFF;
+            current_intent.base_damage = move_damage("THIEVERY");
+            current_intent.steals_card = true;
+            current_intent.description = "Vol (17 dmg, vole une carte)";
+        } else if (turn_number == 2) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.power = PowerId::FLUTTER;
+            current_intent.power_amount = THIEVING_HOPPER_FLUTTER;
+            current_intent.description = "Battement d'ailes (Battement 5)";
+        } else if (turn_number == 3) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("HAT_TRICK");
+            current_intent.description = "Tour de chapeau (21 dmg)";
+        } else if (turn_number == 4) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("NAB");
+            current_intent.description = "Prendre (14 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ESCAPE;
+            current_intent.description = "Fuite";
         }
     } else if (type == EnemyType::TERROR_EEL) {
         // Crash, Thrash (+6 Vigor), and again. Once at half its HP or less (triggered), it is stunned, then

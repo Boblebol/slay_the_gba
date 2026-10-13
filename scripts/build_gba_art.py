@@ -252,6 +252,7 @@ MONSTERS: dict[str, str] = {
     "decimillipede_front": "decimillipede_segment_front",
     "decimillipede_middle": "decimillipede_segment_middle",
     "myte": "myte",
+    "thieving_hopper": "thieving_hopper",
 }
 # Art drawn half transparent in the dump: the body would fall under the sprite's opacity threshold and only
 # a few bright pixels would be left. Its faint parts are made solid first, on a dark body.
