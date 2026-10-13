@@ -204,6 +204,10 @@ public:
     // Driftwood: the card reward on screen can be drawn again, once per reward.
     [[nodiscard]] bool can_reroll_card_rewards() const;
     bool reroll_card_rewards();
+    // Paël's Wing: the card reward on screen is given up to Paël, and every second one gives a random relic. True
+    // when this one gave it.
+    [[nodiscard]] bool can_sacrifice_card_rewards() const;
+    bool sacrifice_card_rewards();
     // Takes the potion of the reward screen. With a full belt, `replace_index` is the potion thrown away to make
     // room; without it the potion stays on offer.
     bool take_potion_reward(int replace_index = -1);

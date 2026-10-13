@@ -97,6 +97,11 @@ public:
         ++_timer;
         int count = _cards.size();
 
+        if(_sacrificed)
+        {
+            return _update_sacrifice();
+        }
+
         if(_chosen < 0 && _timer > 20 && count > 0)
         {
             if(bn::keypad::left_pressed())
@@ -127,6 +132,32 @@ public:
                 _selected = 0;
                 _refresh_hint();
                 _refresh_text();
+                return bn::nullopt;
+            }
+            else if(bn::keypad::b_pressed() && _ctx.run.can_sacrifice_card_rewards())
+            {
+                // Paël's Wing: the cards go up in smoke; every second sacrifice gives a relic.
+                engine::RunManager& run = _ctx.run;
+                size_t owned = run.relics.size();
+                bool relic = run.sacrifice_card_rewards();
+                play_sfx(relic ? Sfx::BUFF : Sfx::UI_CONFIRM);
+
+                if(relic && run.relics.size() > owned)
+                {
+                    TextLine text;
+                    bn::ostringstream stream(text);
+                    stream << "+ " << relic_name(run.relics[owned]);
+                    _popups.spawn(0, 20, text, TextColor::GOLD);
+                }
+                else
+                {
+                    _popups.spawn(0, 20, "Sacrifié à Paël", TextColor::PURPLE);
+                }
+
+                _sacrificed = true;
+                _exit_timer = 0;
+                _hint.clear();
+                _reroll_hint.clear();
                 return bn::nullopt;
             }
             else if(bn::keypad::start_pressed())
@@ -226,6 +257,7 @@ private:
     int _timer = 0;
     int _selected = 1;
     int _chosen = -1;
+    bool _sacrificed = false;
     int _exit_timer = 0;
     Step _step = Step::CARDS;
     bn::vector<Loot, 2> _loot;
@@ -281,16 +313,48 @@ private:
         }
     }
 
+    // Paël's Wing: the sacrificed cards rise and fade out, then the rewards go on.
+    [[nodiscard]] bn::optional<SceneId> _update_sacrifice()
+    {
+        ++_exit_timer;
+        _popups.update();
+
+        for(bn::sprite_ptr& card : _cards)
+        {
+            card.set_y(card.y() - 3);
+        }
+
+        if(_exit_timer > 40)
+        {
+            return _leave();
+        }
+
+        return bn::nullopt;
+    }
+
     // Driftwood: the free reroll of the reward, while it has not been used.
     void _refresh_hint()
     {
+        TextLine text;
+        bn::ostringstream stream(text);
+
+        if(_ctx.run.can_sacrifice_card_rewards())
+        {
+            stream << "B Sacrifier";
+        }
+
         if(_ctx.run.can_reroll_card_rewards())
         {
-            _reroll_hint.set(116, -56, "SELECT Relancer", Align::RIGHT, TextColor::GRAY);
+            stream << (text.empty() ? "" : "  ") << "SELECT Relancer";
+        }
+
+        if(text.empty())
+        {
+            _reroll_hint.clear();
         }
         else
         {
-            _reroll_hint.clear();
+            _reroll_hint.set(116, -56, text, Align::RIGHT, TextColor::GRAY);
         }
     }
 
