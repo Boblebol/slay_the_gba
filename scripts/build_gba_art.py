@@ -879,6 +879,7 @@ CARDS: list[CardArt] = [
     CardArt("frantic_escape", "status", "debris", "status", (1, 1)),  # no portrait of its own in the reference
     CardArt("beckon", "status", "void", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
     CardArt("wither", "status", "soot", "status", (NO_COST, NO_COST)),  # no portrait of its own in the reference
+    CardArt("dowsing", "status", "dowsing", "status", (NO_COST, NO_COST), folder="quest"),
 ]
 
 FRAME_COLOR = {"ironclad": "red", "silent": "green", "defect": "blue", "regent": "orange", "necrobinder": "pink",
