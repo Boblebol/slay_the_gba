@@ -574,6 +574,21 @@ CharacterId RunManager::random_other_hero() {
     return static_cast<CharacterId>(pick);
 }
 
+// Cards of a card reward; Lasting Candy adds one more (current_card_rewards holds it).
+static constexpr size_t CARD_REWARD_SIZE = 3;
+
+void RunManager::add_power_card_reward() {
+    FixedVector<CardId, 128> powers;
+    for (CardId id : card_reward_pool(character)) {
+        if (CardDef::get(id).type != CardType::POWER || card_meta(id).rarity == CardRarity::BASIC) continue;
+        bool offered = false;
+        for (const DeckCard& card : current_card_rewards) offered = offered || card.id == id;
+        if (!offered) powers.push_back(id);
+    }
+    if (powers.empty() || current_card_rewards.size() >= current_card_rewards.capacity()) return;
+    current_card_rewards.push_back(DeckCard(powers[next_random() % powers.size()], card_rewards_upgraded));
+}
+
 void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity, bool elite, CharacterId hero) {
     // Offer distinct cards drawn at random from the hero's pool, of `rarity` when one is asked. Without one, each card
     // rolls its own rarity (more Rare ones after an elite); a boss gives Rare cards only.
@@ -611,7 +626,7 @@ void RunManager::draw_card_rewards(bool boss, RewardRng& rng, CardRarity rarity,
     }
     const uint8_t common_chance = elite ? ELITE_CARD_COMMON_CHANCE : CARD_COMMON_CHANCE;
     const uint8_t uncommon_chance = elite ? ELITE_CARD_UNCOMMON_CHANCE : CARD_UNCOMMON_CHANCE;
-    while (current_card_rewards.size() < current_card_rewards.capacity() && !candidates.empty()) {
+    while (current_card_rewards.size() < CARD_REWARD_SIZE && !candidates.empty()) {
         // The rarity of this card; when none of the pool has it left, any card will do.
         CardRarity wanted = CardRarity::NONE;
         if (rarity == CardRarity::NONE) {
@@ -668,6 +683,8 @@ void RunManager::generate_rewards() {
     bool boss = room == RoomType::BOSS;
 
     draw_card_rewards(boss, rng, CardRarity::NONE, room == RoomType::ELITE);
+    // Lasting Candy: every other fight, the card reward offers one more card, a Power.
+    if (has_relic("LASTING_CANDY") && tick_relic_counter("LASTING_CANDY", 2)) add_power_card_reward();
     // Prayer Wheel: a normal enemy gives one more set of cards, after the first one (as The Hunt does).
     if (room == RoomType::MONSTER && has_relic("PRAYER_WHEEL")) extra_card_rewards = static_cast<uint8_t>(std::min(255, extra_card_rewards + 1));
 
@@ -1590,7 +1607,9 @@ std::span<const std::string_view> RunManager::active_relics() {
         // Skills added to the Deck are upgraded (#495)
         "TOXIC_EGG",
         // At the merchant (#503)
-        "CHEMICAL_X"
+        "CHEMICAL_X",
+        // A Power added to the card rewards every other fight (#471)
+        "LASTING_CANDY"
     };
     return ACTIVE_RELICS;
 }

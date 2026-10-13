@@ -3470,6 +3470,49 @@ void test_prayer_wheel() {
     std::cout << "[PASS] Prayer Wheel: a normal fight gives an extra card reward" << std::endl;
 }
 
+void test_lasting_candy() {
+    // Every other fight, the card reward offers a fourth card: a Power of the hero, not offered already.
+    RunManager run = make_relic_run(CharacterId::IRONCLAD, { "LASTING_CANDY" });
+    run.proceed_after_combat();
+    assert(run.phase == RunPhase::REWARD_SCREEN && run.current_card_rewards.size() == 3);
+    run.skip_card_rewards();
+    for (int fight = 2; fight <= 4; ++fight) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        assert(run.phase == RunPhase::REWARD_SCREEN);
+        if (fight % 2 == 0) {
+            assert(run.current_card_rewards.size() == 4);
+            const DeckCard& extra = run.current_card_rewards[3];
+            assert(CardDef::get(extra.id).type == CardType::POWER && in_pool(CharacterId::IRONCLAD, extra.id));
+            for (int i = 0; i < 3; ++i) assert(run.current_card_rewards[i].id != extra.id);
+            // The fourth card can be taken like the others.
+            if (fight == 4) {
+                size_t deck = run.master_deck.size();
+                run.pick_card_reward(3);
+                assert(run.master_deck.size() == deck + 1 && run.master_deck.back().id == extra.id);
+                break;
+            }
+        } else {
+            assert(run.current_card_rewards.size() == 3);
+        }
+        run.skip_card_rewards();
+    }
+
+    // Without the relic: three cards after every fight.
+    RunManager plain = make_relic_run(CharacterId::IRONCLAD, {});
+    for (int fight = 1; fight <= 2; ++fight) {
+        if (fight > 1) {
+            enter_room_of_type(plain, RoomType::MONSTER);
+            plain.combat.state = CombatState::VICTORY;
+        }
+        plain.proceed_after_combat();
+        assert(plain.current_card_rewards.size() == 3);
+        plain.skip_card_rewards();
+    }
+    std::cout << "[PASS] Lasting Candy: every other card reward offers one more card, a Power" << std::endl;
+}
+
 void test_frozen_egg() {
     // With the relic: a Power added to the Deck is upgraded, another card is not.
     RunManager with = make_relic_run(CharacterId::IRONCLAD, { "FROZEN_EGG" });
@@ -4822,6 +4865,7 @@ int main() {
     test_lucky_fysh();
     test_book_of_five_rings();
     test_prayer_wheel();
+    test_lasting_candy();
     test_molten_egg();
     test_frozen_egg();
     test_girya();
