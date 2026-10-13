@@ -27,7 +27,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
     "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "DOWSING_ROD", "SEA_GLASS", "DRIFTWOOD",
-    "ARCHAIC_TOOTH", "PAELS_WING", "TOY_BOX", "FUR_COAT",
+    "PAELS_WING", "TOY_BOX", "FUR_COAT",
 };
 
 bool ancient_relic_pending(std::string_view relic_id) {
@@ -793,6 +793,18 @@ static std::string_view ancient_starter_relic(std::string_view starter) {
     return {};
 }
 
+// Ancient version of a starter card, given by Archaic Tooth (NONE when `starter` has none).
+static CardId ancient_starter_card(CardId starter) {
+    switch (starter) {
+        case CardId::BASH: return CardId::BREAK;
+        case CardId::NEUTRALIZE: return CardId::SUPPRESS;
+        case CardId::DUALCAST: return CardId::QUADCAST;
+        case CardId::FALLING_STAR: return CardId::METEOR_SHOWER;
+        case CardId::UNLEASH: return CardId::PROTECTOR;
+        default: return CardId::NONE;
+    }
+}
+
 void RunManager::on_relic_obtained(std::string_view relic_id) {
     // The relic is already stored: `has_relic` is true for it here.
     // Touch of Orobas: the starter relic is replaced by its Ancient version, when the run still has it.
@@ -801,6 +813,13 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         std::string_view ancient = ancient_starter_relic(starter);
         for (size_t i = 0; i < relics.size() && !ancient.empty(); ++i) {
             if (relics[i] == starter) relics[i] = ancient;
+        }
+    }
+    // Archaic Tooth: the first starter card of the deck with an Ancient version is Transformed into it, upgrade kept.
+    if (relic_id == "ARCHAIC_TOOTH" && has_relic("ARCHAIC_TOOTH")) {
+        for (size_t i = 0; i < master_deck.size(); ++i) {
+            CardId ancient = ancient_starter_card(master_deck[i].id);
+            if (ancient != CardId::NONE && transform_card_in_deck(static_cast<int>(i), master_deck[i].upgraded, ancient)) break;
         }
     }
     if (relic_id == "SMALL_CAPSULE" && has_relic("SMALL_CAPSULE")) gain_random_relics(1);
