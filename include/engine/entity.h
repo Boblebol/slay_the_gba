@@ -438,7 +438,8 @@ enum class EnemyType : uint8_t {
     SHRINKER_BEETLE, // Act 1 (A)
     OWL_MAGISTRATE,  // Act 3
     SCROLL_OF_BITING, // Act 3
-    LAGAVULIN_MATRIARCH // Act 1 (B) boss
+    LAGAVULIN_MATRIARCH, // Act 1 (B) boss
+    VANTOM // Act 1 (A) boss
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
