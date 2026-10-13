@@ -26,6 +26,7 @@ struct Turn {
     int strength;     // Strength the enemy holds after its turn
     int ritual = 0;   // Ritual the enemy holds after its turn
     int hits = 1;     // times the attack hits, `damage` each
+    int plating = 0;  // Plating the enemy holds after its turn
 };
 
 // Lets the enemy play `turns` one after the other against a player who never plays a card.
@@ -36,7 +37,8 @@ void check_monster(EnemyType type, std::string_view name, int hp, std::initializ
     assert(enemy.type == type);
     assert(enemy.name == name);
     assert(enemy.hp == hp && enemy.max_hp == hp);
-    assert(enemy.block == 0 && enemy.statuses.empty());
+    // Nothing but the Plating some monsters start the fight with.
+    assert(enemy.block == 0 && enemy.statuses.size() == static_cast<size_t>(enemy.get_status(StatusType::PLATED_ARMOR) > 0));
 
     int turn_number = 1;
     for (const Turn& turn : turns) {
@@ -51,8 +53,10 @@ void check_monster(EnemyType type, std::string_view name, int hp, std::initializ
         assert(enemy.block == turn.block);
         assert(enemy.get_status(StatusType::STRENGTH) == turn.strength);
         assert(enemy.get_status(StatusType::RITUAL) == turn.ritual);
+        assert(enemy.get_status(StatusType::PLATED_ARMOR) == turn.plating);
         // Nothing else: no other status, and no move costs the monster HP.
-        assert(enemy.statuses.size() == static_cast<size_t>((turn.strength != 0) + (turn.ritual != 0)));
+        assert(enemy.statuses.size() ==
+               static_cast<size_t>((turn.strength != 0) + (turn.ritual != 0) + (turn.plating != 0)));
         assert(enemy.hp == hp);
         ++turn_number;
     }
@@ -2259,6 +2263,120 @@ void test_the_insatiable_whole_fight() {
     assert(turn == 9); // 321 HP, 40 a turn
     assert(combat.enemy_power_amount(0, PowerId::SANDPIT) == 0);
     std::cout << "[PASS] The Insatiable: a whole fight to the boss's death, escaping the Sandpit" << std::endl;
+}
+
+void test_lagavulin_matriarch() {
+    // Asleep 3 turns behind 12 Plating (-1 at each of its turns), then awake without it: Slash 19, Disembowel 9x2,
+    // Slash 12 with 12 Block, Soul Siphon (+2 Strength), and again 2 stronger.
+    check_monster(EnemyType::LAGAVULIN_MATRIARCH, "Matriarche Lagavulin", 222, {
+        { STUN, 0, 11, 0, 0, 1, 11 },
+        { STUN, 0, 10, 0, 0, 1, 10 },
+        { STUN, 0, 9, 0, 0, 1, 0 }, // wakes: the Plating is gone, its last Block stays until its next turn
+        { ATTACK, 19, 0, 0 },
+        { ATTACK, 9, 0, 0, 0, 2 },
+        { ATTACK_DEFEND, 12, 12, 0 },
+        { DEBUFF, 0, 0, 2 },
+        { ATTACK, 21, 0, 2 },
+        { ATTACK, 11, 0, 2, 0, 2 },
+        { ATTACK_DEFEND, 14, 12, 2 },
+        { DEBUFF, 0, 0, 4 },
+    });
+
+    // Soul Siphon takes 2 Strength and 2 Dexterity from the player.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LAGAVULIN_MATRIARCH);
+    Enemy& boss = combat.enemies[0];
+    for (int turn = 0; turn < 6; ++turn) {
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+    }
+    assert(boss.current_intent.type == DEBUFF && boss.current_intent.debuffs_player());
+    combat.end_player_turn();
+    assert(combat.player.get_status(StatusType::STRENGTH) == -2 && combat.player.get_status(StatusType::DEXTERITY) == -2);
+    assert(boss.get_status(StatusType::STRENGTH) == 2);
+    std::cout << "[PASS] Lagavulin Matriarch: 222 HP, Asleep 3 turns with 12 Plating, Slash 19, Disembowel 9x2, "
+                 "Slash 12 + 12 Block, Soul Siphon" << std::endl;
+}
+
+void test_lagavulin_matriarch_woken() {
+    // Hurt while it sleeps: the Sleep already announced is lost, then it wakes, drops its Plating and Slashes.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LAGAVULIN_MATRIARCH);
+    Enemy& boss = combat.enemies[0];
+    combat.end_player_turn(); // Sleep, untouched: 11 Block from its Plating
+    assert(boss.phase == 0 && boss.current_intent.type == STUN && boss.block == 11);
+    combat.damage_enemy(boss, 11); // all taken by the Block: still asleep
+    combat.end_player_turn();
+    assert(boss.phase == 0 && boss.current_intent.type == STUN);
+    combat.damage_enemy(boss, 15); // 10 Block, 5 HP
+    assert(boss.hp == 217);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // the Sleep announced
+    assert(combat.player.hp == combat.player.max_hp);
+    assert(boss.phase == 1 && boss.get_status(StatusType::PLATED_ARMOR) == 0);
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 19);
+    combat.end_player_turn();
+    assert(boss.block == 0 && combat.player.max_hp - combat.player.hp == 19);
+    std::cout << "[PASS] Lagavulin Matriarch: woken by HP loss, it drops its Plating and Slashes" << std::endl;
+}
+
+void test_lagavulin_matriarch_ascension() {
+    // 233 HP, Slash 21, Disembowel 10x2 and Slash 14 with 14 Block at Ascension.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LAGAVULIN_MATRIARCH);
+    Enemy& boss = combat.enemies[0];
+    assert(boss.ascension_hp() == 233 && boss.hp_spread() == 0);
+    boss.ascend(true, true);
+    combat.plan_enemies();
+    assert(boss.hp == 233 && boss.max_hp == 233);
+    assert(boss.get_status(StatusType::PLATED_ARMOR) == LAGAVULIN_PLATING);
+    for (int turn = 0; turn < LAGAVULIN_SLEEP_TURNS; ++turn) {
+        assert(boss.current_intent.type == STUN);
+        combat.end_player_turn();
+    }
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 21);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(boss.current_intent.type == ATTACK && boss.intent_damage(combat.player) == 10 && boss.current_intent.hits == 2);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(boss.current_intent.type == ATTACK_DEFEND && boss.intent_damage(combat.player) == 14 &&
+           boss.current_intent.block == 14);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(boss.block == 14);
+    std::cout << "[PASS] Lagavulin Matriarch: Ascension gives 233 HP, Slash 21, Disembowel 10x2, Slash 14 + 14 Block"
+              << std::endl;
+}
+
+void test_lagavulin_matriarch_whole_fight() {
+    // The whole fight, until the boss dies: the player deals 30 damage a turn from turn 2. Two phases: asleep
+    // (turn 1 untouched, turn 2 hurt through its Plating Block, the Sleep announced still lost), then awake from
+    // turn 3 to the end, its four moves in a loop.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::LAGAVULIN_MATRIARCH);
+    Enemy& boss = combat.enemies[0];
+    int turn = 1;
+    int woken_on = 0;
+    while (combat.state == CombatState::PLAYER_TURN && boss.is_alive()) {
+        if (woken_on == 0 && boss.phase == 1) {
+            woken_on = turn;
+            assert(boss.get_status(StatusType::PLATED_ARMOR) == 0);
+        }
+        if (boss.phase == 0) {
+            assert(boss.current_intent.type == STUN && boss.get_status(StatusType::PLATED_ARMOR) > 0);
+        } else {
+            const int step = (turn - woken_on) % 4;
+            const EnemyIntentType expected[4] = { ATTACK, ATTACK, ATTACK_DEFEND, DEBUFF };
+            assert(boss.current_intent.type == expected[step]);
+            if (step == 1) assert(boss.current_intent.hits == 2);
+        }
+        if (turn > 1) combat.damage_enemy(boss, 30);
+        if (!boss.is_alive()) break;
+        combat.player.hp = combat.player.max_hp;
+        combat.end_player_turn();
+        assert(combat.state == CombatState::PLAYER_TURN);
+        ++turn;
+    }
+    assert(!boss.is_alive() && combat.player.is_alive());
+    assert(woken_on == 3);
+    std::cout << "[PASS] Lagavulin Matriarch: a whole fight to the boss's death, asleep then awake" << std::endl;
 }
 
 void test_ceremonial_beast() {
@@ -4511,6 +4629,10 @@ int main() {
     test_the_insatiable_ascension();
     test_sandpit();
     test_the_insatiable_whole_fight();
+    test_lagavulin_matriarch();
+    test_lagavulin_matriarch_woken();
+    test_lagavulin_matriarch_ascension();
+    test_lagavulin_matriarch_whole_fight();
     test_ceremonial_beast();
     test_plow();
     test_ceremonial_beast_ascension();

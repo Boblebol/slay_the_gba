@@ -101,6 +101,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::SHRINKER_BEETLE: return "SHRINKER_BEETLE";
         case EnemyType::OWL_MAGISTRATE: return "OWL_MAGISTRATE";
         case EnemyType::SCROLL_OF_BITING: return "SCROLL_OF_BITING";
+        case EnemyType::LAGAVULIN_MATRIARCH: return "LAGAVULIN_MATRIARCH";
     }
     return {};
 }
@@ -223,11 +224,17 @@ void test_reference_encounters() {
            (std::set<std::string_view>{ "CultistsNormal", "SewerClamNormal", "CorpseSlugsNormal",
                                         "PunchConstructNormal", "GremlinMercNormal", "HauntedShipNormal",
                                         "FossilStalkerNormal", "SeapunkNormal" }));
-    // Act 2 has its own boss, the Insatiable; the other acts keep the Ceremonial Beast.
+    // Act 1 (B) and Act 2 have their own boss, the Lagavulin Matriarch and the Insatiable; the other acts keep
+    // the Ceremonial Beast.
     for (ActZone zone : ZONES) {
-        assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) ==
-               std::set<std::string_view>{ zone == ActZone::ACT2 ? "TheInsatiableBoss" : "CeremonialBeastBoss" });
+        const std::string_view boss = zone == ActZone::ACT2    ? "TheInsatiableBoss"
+                                      : zone == ActZone::ACT1B ? "LagavulinMatriarchBoss"
+                                                               : "CeremonialBeastBoss";
+        assert(ids_of(encounter_table(zone, EncounterTier::BOSS)) == std::set<std::string_view>{ boss });
     }
+    const Encounter& matriarch = find_encounter(encounter_table(ActZone::ACT1B, EncounterTier::BOSS),
+                                                "LagavulinMatriarchBoss");
+    assert(matriarch.count == 1 && matriarch.monsters[0] == EnemyType::LAGAVULIN_MATRIARCH);
     const Encounter& insatiable = find_encounter(encounter_table(ActZone::ACT2, EncounterTier::BOSS),
                                                  "TheInsatiableBoss");
     assert(insatiable.count == 1 && insatiable.monsters[0] == EnemyType::THE_INSATIABLE);
