@@ -119,8 +119,9 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "DECIMILLIPEDE_SEGMENT_BACK", true, true },
     { "DECIMILLIPEDE_SEGMENT_FRONT", true, true },
     { "DECIMILLIPEDE_SEGMENT_MIDDLE", true, true },
+    { "MYTE", true, true },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::MYTE) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -1616,6 +1617,30 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.type = EnemyIntentType::HEAL;
             current_intent.heal = static_cast<int16_t>(max_hp * DECIMILLIPEDE_REATTACH_PERCENT / 100 - hp);
             current_intent.description = "Reconnexion";
+        }
+    } else if (type == EnemyType::MYTE) {
+        // Toxic (2 Toxic in the player's hand), Bite 13, Suck 4 (+2 Strength), in a loop started by its place: the
+        // first myte opens with Toxic, the second with Suck. `phase` holds the offset.
+        enum Move : uint8_t { TOXIC, BITE, SUCK };
+        if (turn_number == 1) phase = context.slot == 0 ? TOXIC : SUCK;
+        const uint8_t move = static_cast<uint8_t>((phase + phase_turn - 1) % 3);
+        use_move(move);
+        if (move == TOXIC) {
+            current_intent.type = EnemyIntentType::STATUS;
+            current_intent.status_card = CardId::TOXIC;
+            current_intent.status_cards = 2;
+            current_intent.status_pile = Pile::HAND;
+            current_intent.description = "Abondance toxique (2 Toxicité)";
+        } else if (move == BITE) {
+            current_intent.type = EnemyIntentType::ATTACK;
+            current_intent.base_damage = move_damage("BITE");
+            current_intent.description = "Morsure (13 dmg)";
+        } else {
+            current_intent.type = EnemyIntentType::ATTACK_BUFF;
+            current_intent.base_damage = move_damage("SUCK");
+            current_intent.status_type = StatusType::STRENGTH;
+            current_intent.status_amount = ascended_damage ? 3 : 2;
+            current_intent.description = "Succion (4 dmg, +2 Force)";
         }
     } else if (type == EnemyType::TERROR_EEL) {
         // Crash, Thrash (+6 Vigor), and again. Once at half its HP or less (triggered), it is stunned, then

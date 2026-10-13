@@ -464,7 +464,8 @@ enum class EnemyType : uint8_t {
     EXOSKELETON,          // Act 2
     DECIMILLIPEDE_SEGMENT_BACK,   // Act 2 elite, the three segments of the Decimillipede
     DECIMILLIPEDE_SEGMENT_FRONT,  // Act 2 elite
-    DECIMILLIPEDE_SEGMENT_MIDDLE  // Act 2 elite
+    DECIMILLIPEDE_SEGMENT_MIDDLE, // Act 2 elite
+    MYTE                          // Act 2
 };
 
 // Enemies a fight holds at most, summoned ones included (CombatEngine::enemies).
