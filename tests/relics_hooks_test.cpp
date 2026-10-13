@@ -4615,6 +4615,45 @@ void test_fishing_rod() {
     std::cout << "[PASS] Fishing Rod upgrades a card every 3 normal fights" << std::endl;
 }
 
+void test_sword_of_stone() {
+    // The fifth Elite defeated turns it into the Sword of Jade; normal fights do not count.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 528);
+    run.add_relic("SWORD_OF_STONE");
+    assert(run.has_relic("SWORD_OF_STONE"));
+    const size_t owned = run.relics.size();
+    enter_room_of_type(run, RoomType::MONSTER);
+    run.combat.state = CombatState::VICTORY;
+    run.proceed_after_combat();
+    run.skip_card_rewards();
+    for (int elite = 1; elite <= 5; ++elite) {
+        enter_room_of_type(run, RoomType::ELITE);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        assert(run.has_relic("SWORD_OF_STONE") == (elite < 5));
+        assert(run.has_relic("SWORD_OF_JADE") == (elite == 5));
+        assert(run.relics.size() >= owned);
+        run.relic_reward = {};
+        run.skip_card_rewards();
+    }
+    // The Sword of Jade then gives its 3 Strength at the start of each fight.
+    enter_room_of_type(run, RoomType::MONSTER);
+    assert(run.combat.player.get_status(StatusType::STRENGTH) == 3);
+
+    // Without the relic, Elites give no Sword of Jade.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 528);
+    for (int elite = 1; elite <= 5; ++elite) {
+        enter_room_of_type(plain, RoomType::ELITE);
+        plain.combat.state = CombatState::VICTORY;
+        plain.proceed_after_combat();
+        plain.relic_reward = {};
+        plain.skip_card_rewards();
+    }
+    assert(!plain.has_relic("SWORD_OF_STONE") && !plain.has_relic("SWORD_OF_JADE"));
+    std::cout << "[PASS] Sword of Stone: becomes the Sword of Jade after 5 Elites" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -4786,6 +4825,7 @@ int main() {
     test_bing_bong();
     test_paper_phrog();
     test_silver_crucible();
+    test_sword_of_stone();
     test_silken_tress();
     test_forgotten_soul();
     test_fishing_rod();

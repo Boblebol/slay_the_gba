@@ -277,6 +277,7 @@ constexpr RelicText RELIC_TEXTS[] = {
     { "CROSSBOW", "Au début de votre tour, ajoutez une Attaque aléatoire à votre Main. Elle coûte 0 ce tour." },
     { "HISTORY_COURSE", "Au début de votre tour, jouez une copie de la dernière Attaque que vous avez jouée." },
     { "UNCEASING_TOP", "Chaque fois que votre Main est vide pendant votre tour, piochez une carte." },
+    { "SWORD_OF_STONE", "Se transforme en une puissante Relique après avoir vaincu 5 Élites." },
     { "SWORD_OF_JADE", "Démarrez chaque combat avec 3 de Force." },
     { "VAJRA", "Démarrez chaque combat avec 1 de Force." },
     { "VERY_HOT_COCOA", "Démarrez chaque combat avec 4 ● supplémentaires." },
