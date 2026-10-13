@@ -209,6 +209,8 @@ public:
     // Stores the relic, then resolves what it does when obtained.
     void add_relic(std::string_view relic_id);
     bool has_relic(std::string_view relic_id) const;
+    // Fur Coat: one of the combats of the act it marked, where the enemies have 1 HP.
+    [[nodiscard]] bool fur_coat_room(int node_index) const;
 
     // Effects a relic has when obtained. Each one is also usable on its own.
     // Raises the maximum HP, and the current HP by as much.

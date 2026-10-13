@@ -4615,6 +4615,45 @@ void test_fishing_rod() {
     std::cout << "[PASS] Fishing Rod upgrades a card every 3 normal fights" << std::endl;
 }
 
+void test_fur_coat() {
+    // Obtained at the start of the act: 8 of its normal combats are marked, and their enemies have 1 HP.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 773);
+    run.add_relic("FUR_COAT");
+    assert(run.has_relic("FUR_COAT"));
+    int marked = -1;
+    int unmarked = -1;
+    int count = 0;
+    for (size_t i = 0; i < run.map.nodes.size(); ++i) {
+        if (!run.fur_coat_room(static_cast<int>(i))) {
+            if (run.map.nodes[i].type == RoomType::MONSTER) unmarked = static_cast<int>(i);
+            continue;
+        }
+        assert(run.map.nodes[i].type == RoomType::MONSTER);
+        marked = static_cast<int>(i);
+        ++count;
+    }
+    assert(count == 8 && marked >= 0 && unmarked >= 0);
+    run.enter_room(marked);
+    assert(run.phase == RunPhase::IN_COMBAT && !run.combat.enemies.empty());
+    for (const Enemy& foe : run.combat.enemies) assert(foe.hp == 1);
+    run.enter_room(unmarked);
+    for (const Enemy& foe : run.combat.enemies) assert(foe.hp > 1);
+
+    // The next act has no marks.
+    run.current_act = 2;
+    for (size_t i = 0; i < run.map.nodes.size(); ++i) assert(!run.fur_coat_room(static_cast<int>(i)));
+
+    // Without the relic, no room is marked.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 773);
+    assert(!plain.has_relic("FUR_COAT"));
+    for (size_t i = 0; i < plain.map.nodes.size(); ++i) assert(!plain.fur_coat_room(static_cast<int>(i)));
+    plain.enter_room(marked);
+    for (const Enemy& foe : plain.combat.enemies) assert(foe.hp > 1);
+    std::cout << "[PASS] Fur Coat: 8 combats of the act marked, their enemies at 1 HP" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -4786,6 +4825,7 @@ int main() {
     test_bing_bong();
     test_paper_phrog();
     test_silver_crucible();
+    test_fur_coat();
     test_silken_tress();
     test_forgotten_soul();
     test_fishing_rod();
