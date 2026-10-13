@@ -4654,6 +4654,39 @@ void test_driftwood() {
     std::cout << "[PASS] Driftwood: each card reward can be rerolled once" << std::endl;
 }
 
+void test_paels_wing() {
+    // A card reward can be given up to Paël instead of a card; every second one gives a random relic.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 753);
+    run.add_relic("PAELS_WING");
+    assert(run.has_relic("PAELS_WING"));
+    const size_t deck = run.master_deck.size();
+    size_t owned = run.relics.size();
+    for (int sacrifice = 1; sacrifice <= 4; ++sacrifice) {
+        enter_room_of_type(run, RoomType::MONSTER);
+        run.combat.state = CombatState::VICTORY;
+        run.proceed_after_combat();
+        run.potion_reward = {};
+        assert(run.phase == RunPhase::REWARD_SCREEN && run.can_sacrifice_card_rewards());
+        bool relic = run.sacrifice_card_rewards();
+        assert(relic == (sacrifice % 2 == 0));
+        if (relic) ++owned;
+        assert(run.relics.size() == owned && run.master_deck.size() == deck);
+        assert(run.phase != RunPhase::REWARD_SCREEN);
+    }
+
+    // Without the relic, the card reward cannot be sacrificed.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 753);
+    enter_room_of_type(plain, RoomType::MONSTER);
+    plain.combat.state = CombatState::VICTORY;
+    plain.proceed_after_combat();
+    const size_t plain_owned = plain.relics.size();
+    assert(!plain.can_sacrifice_card_rewards() && !plain.sacrifice_card_rewards());
+    assert(plain.phase == RunPhase::REWARD_SCREEN && plain.relics.size() == plain_owned);
+    std::cout << "[PASS] Paël's Wing: card rewards sacrificed, a relic every 2" << std::endl;
+}
+
 void test_dowsing_rod() {
     // Obtained: one Dowsing joins the deck.
     RunManager run;
@@ -4907,6 +4940,7 @@ int main() {
     test_paper_phrog();
     test_silver_crucible();
     test_driftwood();
+    test_paels_wing();
     test_dowsing_rod();
     test_silken_tress();
     test_forgotten_soul();

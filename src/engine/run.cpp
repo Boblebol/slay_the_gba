@@ -27,7 +27,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
     "MASSIVE_SCROLL", "SCROLL_BOXES", "WINGED_BOOTS", "SEA_GLASS",
-    "PAELS_WING", "TOY_BOX", "FUR_COAT",
+    "TOY_BOX", "FUR_COAT",
 };
 
 bool ancient_relic_pending(std::string_view relic_id) {
@@ -41,6 +41,8 @@ bool ancient_relic_pending(std::string_view relic_id) {
 constexpr uint32_t ANCIENT_SEED_SALT = 0xA5C1E7D3u;
 
 constexpr int MEMBERSHIP_CARD_DISCOUNT = 50;
+// Paël's Wing: card rewards sacrificed for each relic.
+constexpr uint8_t PAELS_WING_SACRIFICES = 2;
 // Nutritious Soup: the extra damage Tezcatara's Ember gives each enchanted Strike.
 constexpr uint8_t NUTRITIOUS_SOUP_EMBER_DAMAGE = 3;
 constexpr int THE_COURIER_DISCOUNT = 20;
@@ -752,6 +754,17 @@ void RunManager::pick_card_reward(int reward_index) {
 
 void RunManager::skip_card_rewards() {
     next_card_reward_or_finish();
+}
+
+bool RunManager::can_sacrifice_card_rewards() const {
+    return has_relic("PAELS_WING") && !current_card_rewards.empty();
+}
+
+bool RunManager::sacrifice_card_rewards() {
+    if (!can_sacrifice_card_rewards()) return false;
+    bool relic = tick_relic_counter("PAELS_WING", PAELS_WING_SACRIFICES) && gain_random_relics(1) > 0;
+    next_card_reward_or_finish();
+    return relic;
 }
 
 bool RunManager::can_reroll_card_rewards() const {
