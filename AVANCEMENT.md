@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 93,1 %** — 1155 faits, 15 partiels, 79 à faire (35 hors périmètre).
+**Avancement global : 93,2 %** — 1156 faits, 15 partiels, 78 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 117 | 0 | 3 | 97,5 % |
-| [Reliques et potions](#reliques) | 315 | 0 | 6 | 98,1 % |
+| [Reliques et potions](#reliques) | 316 | 0 | 5 | 98,4 % |
 | [Bestiaire](#bestiaire) | 98 | 0 | 6 | 94,2 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
 | [Interface, audio et cartouches](#interface) | 18 | 6 | 7 | 67,7 % |
-| **Total** | **1155** | **15** | **79** | **93,1 %** |
+| **Total** | **1156** | **15** | **78** | **93,2 %** |
 
 <a id="ironclad"></a>
 
@@ -859,7 +859,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 98,1 %
+## Reliques et potions — 98,4 %
 
 ### Reliques partagées — 98,3 %
 
@@ -1031,9 +1031,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Oui |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 97,1 %
+### Reliques des Anciens — 98,0 %
 
-99 faits, 0 partiel, 3 à faire.
+100 faits, 0 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1131,7 +1131,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tourment de Neow | Ancienne | Oui |  |
 | Tresse soyeuse | Ancienne | Oui |  |
 | Tri-boomerang | Ancienne | Oui |  |
-| Verre marin | Ancienne | Non |  |
+| Verre marin | Ancienne | Oui |  |
 | Violon | Ancienne | Oui |  |
 | Écharpe étincelante | Ancienne | Oui |  |
 | Étoile noire | Ancienne | Oui |  |
