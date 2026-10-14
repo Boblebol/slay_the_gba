@@ -476,6 +476,10 @@ void RunManager::finish_cook() {
     gain_max_hp(COOK_MAX_HP);
 }
 
+bool RunManager::question_room_may_fight() const {
+    return !has_relic("JUZU_BRACELET");
+}
+
 bool RunManager::dig_at_campfire() {
     if (!has_relic("SHOVEL")) return false;
     if (gain_random_relics(1) == 0) return false;
@@ -1775,7 +1779,7 @@ std::span<const std::string_view> RunManager::active_relics() {
         "TUNGSTEN_ROD", "TUNING_FORK", "VEXING_PUZZLEBOX",
         "BRIMSTONE", "CHARONS_ASHES", "DEMON_TONGUE", "RED_SKULL", "SELF_FORMING_CLAY", "PAPER_PHROG", // Ironclad
         "SNECKO_SKULL", "TWISTED_FUNNEL",                                                // Silent
-        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", "VENERABLE_TEA_SET", "PLANISPHERE", "MEAL_TICKET", "SHOVEL", // Shared, out of combat
+        "WHITE_BEAST_STATUE", "BELT_BUCKLE", "TINY_MAILBOX", "REGAL_PILLOW", "AMETHYST_AUBERGINE", "BOWLER_HAT", "ETERNAL_FEATHER", "VENERABLE_TEA_SET", "PLANISPHERE", "MEAL_TICKET", "SHOVEL", "JUZU_BRACELET", // Shared, out of combat
         "WHITE_STAR",                         // Shared, rare: an Elite gives one more set of Rare cards
         "VAMBRACE",                           // Shared, uncommon: the first Block of a card each combat is doubled
         "BEATING_REMNANT", "UNSETTLING_LAMP", // Shared, rare: caps the HP lost each turn, doubles the first debuff of the fight
