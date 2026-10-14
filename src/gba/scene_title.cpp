@@ -292,10 +292,10 @@ private:
         engine::PaletteVariant variant = _palettes[_selected].variant;
         _ctx.palette = variant;
         _ctx.run.start_run(current_hero(), uint8_t(ascension), variant, 12345u + unsigned(_ctx.frame) * 2654435761u);
-        _ctx.nav.reset_to_player_floor();
-        _ctx.map_toast.clear();
-        _ctx.map_toast.append(hero_zone_name());
-        return SceneId::MAP;
+        // Every run opens on Neow, whose relic is taken before the first map (the Ancient scene then opens the map
+        // on the hero's zone).
+        _ctx.run.meet_ancient(engine::AncientId::NEOW);
+        return SceneId::ANCIENT;
     }
 
     void _refresh_ascension()

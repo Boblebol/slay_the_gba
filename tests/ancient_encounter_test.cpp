@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "engine/ancient.h"
+#include "engine/character.h"
 #include "engine/run.h"
 #include "engine/save_system.h"
 
@@ -239,6 +240,42 @@ void test_saved_with_the_run() {
     std::cout << "[PASS] Ancient: the phase and the offer are kept in the save" << std::endl;
 }
 
+void test_neow_opens_the_run() {
+    // #6: a new run meets Neow before its first map. The hero keeps the starting relic, Neow offers 2 blessings
+    // and 1 curse, never an unresolved relic, and the run is saved in front of it.
+    MemoryStorage storage;
+    SaveManager& store = SaveManager::instance();
+    store.reset_to_defaults();
+    store.set_storage(&storage);
+    for (CharacterId hero : { CharacterId::IRONCLAD, CharacterId::SILENT, CharacterId::DEFECT }) {
+        for (uint32_t seed = 1; seed <= 100; ++seed) {
+            RunManager run;
+            run.start_run(hero, 0, PaletteVariant::CLASSIC, seed * 2654435761u);
+            run.meet_ancient(AncientId::NEOW);
+            assert(run.phase == RunPhase::ANCIENT_BLESSING && run.current_ancient == AncientId::NEOW);
+            assert(run.has_relic(get_character(hero).starting_relic_id));
+            assert(run.ancient_offers.size() == 3 && run.ancient_offers[0].slot == 0 &&
+                   run.ancient_offers[1].slot == 0 && run.ancient_offers[2].slot == 1);
+            for (size_t i = 0; i < run.ancient_offers.size(); ++i) {
+                assert(!pending(run.ancient_offer(static_cast<int>(i)).id));
+            }
+            if (seed == 1) {
+                store.autosave_run(run);
+                RunManager loaded;
+                assert(store.restore_run(loaded));
+                assert(loaded.phase == RunPhase::ANCIENT_BLESSING && loaded.current_ancient == AncientId::NEOW);
+            }
+            // The relic taken, the first map of act 1 starts from its bottom row.
+            const std::string_view chosen = run.ancient_offer(0).id;
+            assert(run.choose_ancient_relic(0) && run.has_relic(chosen));
+            assert(run.current_act == 1 && run.current_floor == 1 && run.current_node_index == -1);
+        }
+    }
+    store.set_storage(nullptr);
+    store.reset_to_defaults();
+    std::cout << "[PASS] Neow: a new run meets Neow before the first map" << std::endl;
+}
+
 } // namespace
 
 int main() {
@@ -246,5 +283,6 @@ int main() {
     test_offer_follows_the_slots();
     test_choosing_the_relic();
     test_saved_with_the_run();
+    test_neow_opens_the_run();
     return 0;
 }
