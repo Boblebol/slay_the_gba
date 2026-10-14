@@ -240,6 +240,8 @@ public:
     bool has_relic(std::string_view relic_id) const;
     // Fur Coat: one of the combats of the act it marked, where the enemies have 1 HP.
     [[nodiscard]] bool fur_coat_room(int node_index) const;
+    // Juzu Bracelet: whether a ? room may hold a regular enemy combat (false with the relic).
+    [[nodiscard]] bool question_room_may_fight() const;
 
     // Effects a relic has when obtained. Each one is also usable on its own.
     // Raises the maximum HP, and the current HP by as much.

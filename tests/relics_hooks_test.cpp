@@ -1528,6 +1528,22 @@ void test_shovel() {
     std::cout << "[PASS] Shovel: a random relic dug up at a Rest Site, nothing without it" << std::endl;
 }
 
+void test_juzu_bracelet() {
+    // With the relic: a ? room no longer holds a regular enemy combat.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    run.add_relic("JUZU_BRACELET");
+    assert(!run.question_room_may_fight());
+    enter_room_of_type(run, RoomType::EVENT);
+    assert(run.phase == RunPhase::EVENT);
+
+    // Without the relic: a ? room may hold one.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 777);
+    assert(plain.question_room_may_fight() && !plain.has_relic("JUZU_BRACELET"));
+    std::cout << "[PASS] Juzu Bracelet: ? rooms hold no regular combat, they may without it" << std::endl;
+}
+
 void test_tiny_mailbox() {
     // With the relic: each Rest procures 2 potions.
     RunManager run;
@@ -5230,6 +5246,7 @@ int main() {
     test_frozen_egg();
     test_girya();
     test_shovel();
+    test_juzu_bracelet();
     test_white_star();
     test_chemical_x();
     test_ring_of_the_drake();
