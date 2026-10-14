@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 94,0 %** — 1167 faits, 13 partiels, 69 à faire (35 hors périmètre).
+**Avancement global : 94,0 %** — 1168 faits, 13 partiels, 68 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -24,9 +24,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
-| [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
+| [Systèmes de jeu](#systemes) | 33 | 1 | 2 | 93,1 % |
 | [Interface, audio et cartouches](#interface) | 20 | 4 | 7 | 71,0 % |
-| **Total** | **1167** | **13** | **69** | **94,0 %** |
+| **Total** | **1168** | **13** | **68** | **94,0 %** |
 
 <a id="ironclad"></a>
 
@@ -1518,11 +1518,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 90,3 %
+## Systèmes de jeu — 93,1 %
 
-### La Tour — 64,3 %
+### La Tour — 78,6 %
 
-4 faits, 1 partiel, 2 à faire.
+5 faits, 1 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1531,7 +1531,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Salles : monstre, élite, boss, repos, trésor, boutique, évènement |  | Oui |  |
 | Rencontres propres à chaque acte (81 rencontres du jeu d'origine) |  | Partiel | Tables par acte et par salle (faible, normale, élite, boss), acte 1 en variante A ou B : 5 rencontres d'origine jouables, les anciens groupes ailleurs. [#225](https://github.com/Boblebol/slay_the_gba/issues/225) |
 | Un boss différent par acte |  | Non | [#36](https://github.com/Boblebol/slay_the_gba/issues/36) |
-| Neow en début de partie |  | Non | [#6](https://github.com/Boblebol/slay_the_gba/issues/6) |
+| Neow en début de partie |  | Oui | Chaque nouvelle partie s'ouvre sur Neow, qui salue le héros puis propose 2 bénédictions et 1 relique avec un prix, une à prendre avant la première carte. [#6](https://github.com/Boblebol/slay_the_gba/issues/6) |
 | Bénédiction d'un Ancien entre les actes |  | Oui | Au début des actes 2 et 3, un Ancien de l'acte (Darv à tout acte) propose 3 reliques, une à prendre. Les reliques dont l'effet manque ne sont pas proposées. [#261](https://github.com/Boblebol/slay_the_gba/issues/261) |
 
 ### Récompenses — 100,0 %
