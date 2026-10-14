@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 94,0 %** — 1168 faits, 13 partiels, 68 à faire (35 hors périmètre).
+**Avancement global : 94,1 %** — 1169 faits, 13 partiels, 67 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -20,13 +20,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 119 | 0 | 1 | 99,2 % |
-| [Reliques et potions](#reliques) | 318 | 0 | 3 | 99,1 % |
+| [Reliques et potions](#reliques) | 319 | 0 | 2 | 99,4 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 33 | 1 | 2 | 93,1 % |
 | [Interface, audio et cartouches](#interface) | 20 | 4 | 7 | 71,0 % |
-| **Total** | **1168** | **13** | **68** | **94,0 %** |
+| **Total** | **1169** | **13** | **67** | **94,1 %** |
 
 <a id="ironclad"></a>
 
@@ -859,17 +859,17 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 99,1 %
+## Reliques et potions — 99,4 %
 
-### Reliques partagées — 99,1 %
+### Reliques partagées — 100,0 %
 
-116 faits, 0 partiel, 1 à faire.
+117 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Ancre | Commune | Oui |  |
 | Aubergine d'améthyste | Commune | Oui |  |
-| Bracelet Juzu | Commune | Non |  |
+| Bracelet Juzu | Commune | Oui |  |
 | Ceinture à potions | Commune | Oui |  |
 | Fiole de sang | Commune | Oui |  |
 | Fleur joyeuse | Commune | Oui |  |
