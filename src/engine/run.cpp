@@ -24,10 +24,17 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 };
 
 // Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
-// list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
+// list once its effect is written.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
-    "MASSIVE_SCROLL", "SCROLL_BOXES",
+    "SCROLL_BOXES",
 };
+
+// Massive Scroll: the Multiplayer cards the engine plays (their "other players" part has no one to act on). A card
+// joins this list once it is written; until then fewer than 3 are offered.
+constexpr CardId MULTIPLAYER_CARDS[] = {
+    CardId::GLIMPSE_BEYOND,
+};
+constexpr size_t MASSIVE_SCROLL_OFFERS = 3;
 
 bool ancient_relic_pending(std::string_view relic_id) {
     for (std::string_view pending : ANCIENT_RELICS_PENDING) {
@@ -990,6 +997,18 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
             pool.erase(pick);
         }
         request_deck_choice(DeckChoiceKind::ADD, static_cast<int>(deck_choice_offers.size()), true);
+    }
+    // Massive Scroll (Ancient): 1 of 3 Multiplayer cards to add to the deck.
+    if (relic_id == "MASSIVE_SCROLL" && has_relic("MASSIVE_SCROLL")) {
+        deck_choice_offers.clear();
+        FixedVector<CardId, 64> pool;
+        for (CardId id : MULTIPLAYER_CARDS) pool.push_back(id);
+        while (deck_choice_offers.size() < MASSIVE_SCROLL_OFFERS && !pool.empty()) {
+            size_t pick = next_random() % pool.size();
+            deck_choice_offers.push_back(DeckCard(pool[pick]));
+            pool.erase(pick);
+        }
+        request_deck_choice(DeckChoiceKind::ADD, 1);
     }
     // Toy Box: 5 random relics, the Wax Relics, right after the box; they melt away one by one (on_combat_won).
     if (relic_id == "TOY_BOX" && has_relic("TOY_BOX")) {

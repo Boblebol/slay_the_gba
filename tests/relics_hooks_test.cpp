@@ -5095,6 +5095,32 @@ void test_sea_glass() {
     std::cout << "[PASS] Sea Glass: 15 cards of another hero, any number added to the deck" << std::endl;
 }
 
+void test_massive_scroll() {
+    // Obtained: Multiplayer cards are offered (up to 3, distinct), one of them joins the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 706);
+    const size_t deck = run.master_deck.size();
+    run.add_relic("MASSIVE_SCROLL");
+    assert(run.has_relic("MASSIVE_SCROLL"));
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::ADD && !run.deck_choice.optional);
+    assert(run.deck_choice.remaining == 1);
+    assert(!run.deck_choice_offers.empty() && run.deck_choice_offers.size() <= 3);
+    for (size_t i = 0; i < run.deck_choice_offers.size(); ++i) {
+        for (size_t j = 0; j < i; ++j) assert(run.deck_choice_offers[i].id != run.deck_choice_offers[j].id);
+    }
+    CardId first = run.deck_choice_offers[0].id;
+    assert(run.resolve_deck_choice(0));
+    assert(run.master_deck.size() == deck + 1 && run.master_deck.back().id == first);
+    assert(!run.has_deck_choice());
+
+    // Without the relic, nothing is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 706);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("MASSIVE_SCROLL") && !plain.has_deck_choice() && plain.deck_choice_offers.empty());
+    std::cout << "[PASS] Massive Scroll: 1 Multiplayer card of 3 added to the deck" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -5289,5 +5315,6 @@ int main() {
     test_sword_of_stone();
     test_miniature_tent();
     test_sea_glass();
+    test_massive_scroll();
     return 0;
 }
