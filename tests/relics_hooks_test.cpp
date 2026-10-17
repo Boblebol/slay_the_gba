@@ -3145,6 +3145,30 @@ void test_potion_belt() {
     std::cout << "[PASS] Potion Belt: 2 more potion slots when obtained" << std::endl;
 }
 
+void test_massive_scroll() {
+    // Massive Scroll: on pickup, 3 distinct cards are offered and one of them joins the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 706);
+    size_t deck = run.master_deck.size();
+    run.add_relic("MASSIVE_SCROLL");
+    assert(run.has_relic("MASSIVE_SCROLL"));
+    assert(run.phase == RunPhase::REWARD_SCREEN && run.current_card_rewards.size() == 3);
+    assert(run.current_card_rewards[0].id != run.current_card_rewards[1].id);
+    assert(run.current_card_rewards[0].id != run.current_card_rewards[2].id);
+    assert(run.current_card_rewards[1].id != run.current_card_rewards[2].id);
+    run.pick_card_reward(1);
+    assert(run.master_deck.size() == deck + 1);
+    assert(run.phase == RunPhase::MAP_NAVIGATION);
+
+    // Without the relic nothing is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 706);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("MASSIVE_SCROLL"));
+    assert(plain.phase != RunPhase::REWARD_SCREEN && plain.current_card_rewards.empty());
+    std::cout << "[PASS] Massive Scroll: offers 3 cards, one joins the deck" << std::endl;
+}
+
 void test_whetstone() {
     // Obtained: two random Attacks of the deck are upgraded, never more than the deck holds.
     auto upgraded_attacks = [](const RunManager& r) {
@@ -5234,6 +5258,7 @@ int main() {
     test_pear();
     test_potion_belt();
     test_whetstone();
+    test_massive_scroll();
     test_dragon_fruit();
     test_toxic_egg();
     test_amethyst_aubergine();

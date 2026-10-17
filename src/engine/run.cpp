@@ -24,9 +24,9 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 };
 
 // Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
-// list once its effect is written. Massive Scroll offers Multiplayer cards, which a single-player cartridge has not.
+// list once its effect is written.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
-    "MASSIVE_SCROLL", "SCROLL_BOXES",
+    "SCROLL_BOXES",
 };
 
 bool ancient_relic_pending(std::string_view relic_id) {
@@ -1141,6 +1141,21 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
         current_card_rewards.clear();
         for (int n = 0; n < 2 && !colorless.empty(); ++n) {
+            size_t pick = next_random() % colorless.size();
+            current_card_rewards.push_back(DeckCard(colorless[pick], false));
+            colorless.erase(pick);
+        }
+        phase = RunPhase::REWARD_SCREEN;
+    }
+    // Parchemin énorme (Ancient): choose 1 of 3 cards to add to the deck. A single-player cartridge has no Multiplayer
+    // cards, so the offer is drawn among the Colorless ones, on the card reward screen.
+    if (relic_id == "MASSIVE_SCROLL" && has_relic("MASSIVE_SCROLL")) {
+        FixedVector<CardId, 64> colorless;
+        for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+            if (card_meta(static_cast<CardId>(id)).pool == CardPool::COLORLESS) colorless.push_back(static_cast<CardId>(id));
+        }
+        current_card_rewards.clear();
+        for (int n = 0; n < 3 && !colorless.empty(); ++n) {
             size_t pick = next_random() % colorless.size();
             current_card_rewards.push_back(DeckCard(colorless[pick], false));
             colorless.erase(pick);
