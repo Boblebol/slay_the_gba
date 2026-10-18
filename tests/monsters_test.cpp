@@ -51,10 +51,12 @@ void check_monster(EnemyType type, std::string_view name, int hp, std::initializ
         assert(enemy.intent_damage(combat.player) == turn.damage);
 
         combat.player.hp = combat.player.max_hp; // long cycles must not kill the player
-        // The Beckons the player holds at the end of the turn cost HP too.
+        // The Beckons and the Toxics the player holds at the end of the turn cost HP too.
         int held_loss = 0;
         for (const DeckCard& card : combat.hand) {
-            if (card.id == CardId::BECKON) held_loss += CardDef::get_value(card.id, card.upgraded);
+            if (card.id == CardId::BECKON || card.id == CardId::TOXIC) {
+                held_loss += CardDef::get_value(card.id, card.upgraded);
+            }
         }
         combat.end_player_turn();
         assert(combat.state == CombatState::PLAYER_TURN);
@@ -5329,6 +5331,104 @@ void test_exoskeleton_ascension() {
     std::cout << "[PASS] Exoskeleton: Ascension gives 26 to 30 HP, Skitter 1x4 and Mandibles 9" << std::endl;
 }
 
+void test_decimillipede() {
+    // Each segment: Writhe 5x2, Constrict 8 (Weak 1 on the player), Bulk 6 (+2 Strength), in a loop.
+    const EnemyType segments[] = { EnemyType::DECIMILLIPEDE_SEGMENT_BACK, EnemyType::DECIMILLIPEDE_SEGMENT_FRONT,
+                                   EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE };
+    for (EnemyType segment : segments) {
+        check_monster(segment, "Dix-Mille-Pattes", 40, {
+            { ATTACK, 5, 0, 0, 0, 2 },
+            { ATTACK_DEBUFF, 8, 0, 0 },
+            { ATTACK_BUFF, 6, 0, 2 },
+            { ATTACK, 7, 0, 2, 0, 2 },
+            { ATTACK_DEBUFF, 10, 0, 2 },
+            { ATTACK_BUFF, 8, 0, 4 },
+        }, 6);
+    }
+    // Constrict leaves the player Weak.
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::DECIMILLIPEDE_SEGMENT_FRONT);
+    pass_turn(combat);
+    assert(combat.enemies[0].current_intent.debuffs[0].type == StatusType::WEAK);
+    pass_turn(combat);
+    assert(combat.player.get_status(StatusType::WEAK) == 1);
+    std::cout << "[PASS] Decimillipede: 40 HP, Writhe 5x2, Constrict 8 + Weak, Bulk 6 + 2 Strength, in a loop"
+              << std::endl;
+}
+
+void test_decimillipede_reattach() {
+    // A segment killed while another stands is Severed: 1 HP beyond harm, Dead (a lost turn), then Reattach gives it
+    // half its HP back and it draws its moves. The fight is won once no segment stands.
+    CombatEngine combat = make_pack({ EnemyType::DECIMILLIPEDE_SEGMENT_BACK, EnemyType::DECIMILLIPEDE_SEGMENT_FRONT,
+                                      EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE });
+    assert(combat.enemies.size() == 3);
+    for (const Enemy& segment : combat.enemies) {
+        assert(segment.current_intent.type == ATTACK && segment.current_intent.hits == 2);
+        assert(segment.intent_damage(combat.player) == 5);
+    }
+    pass_turn(combat);
+    pass_turn(combat);
+    pass_turn(combat); // Bulk: 2 Strength each
+    Enemy& back = combat.enemies[0];
+    assert(back.get_status(StatusType::STRENGTH) == 2);
+    combat.damage_enemy(back, 999);
+    assert(back.is_alive() && back.hp == 1 && back.severed() && back.statuses.empty());
+    assert(back.current_intent.type == STUN && combat.state == CombatState::PLAYER_TURN);
+    combat.damage_enemy(back, 50); // beyond harm
+    assert(back.hp == 1);
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn(); // Dead: only the two others attack, Writhe 7x2 each
+    assert(combat.player.max_hp - combat.player.hp == 28);
+    assert(back.hp == 1 && back.current_intent.type == EnemyIntentType::HEAL);
+    assert(back.current_intent.heal == back.max_hp / 2 - 1);
+    pass_turn(combat); // Reattach
+    assert(back.hp == back.max_hp / 2 && !back.severed());
+    const EnemyIntentType drawn = back.current_intent.type;
+    assert(drawn == ATTACK || drawn == ATTACK_DEBUFF || drawn == ATTACK_BUFF);
+    combat.damage_enemy(back, 3);
+    assert(back.hp == back.max_hp / 2 - 3);
+
+    // Its draws never repeat a move.
+    EnemyIntentType previous = drawn;
+    for (int turn = 0; turn < 6; ++turn) {
+        pass_turn(combat);
+        assert(back.current_intent.type != previous);
+        previous = back.current_intent.type;
+    }
+
+    // Killed again, it is Severed again. Two Severed, the last one standing takes them all down with it.
+    combat.damage_enemy(back, 999);
+    assert(back.severed());
+    combat.damage_enemy(combat.enemies[1], 999);
+    assert(combat.enemies[1].severed() && combat.has_alive_enemies());
+    combat.damage_enemy(combat.enemies[2], 999);
+    for (const Enemy& segment : combat.enemies) assert(!segment.is_alive());
+    assert(!combat.has_alive_enemies());
+    std::cout << "[PASS] Decimillipede: a segment killed while another stands is Severed, then Reattaches; the last "
+                 "one takes them all down"
+              << std::endl;
+}
+
+void test_decimillipede_ascension() {
+    // 46 to 52 HP, Writhe 6x2, Constrict 9 and Bulk 7 at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_pack({ EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE });
+        Enemy& segment = combat.enemies[0];
+        segment.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        const int16_t base = segment.hp;
+        assert(segment.ascension_hp() == 46 && segment.hp_spread() == 6);
+        assert(base >= 40 && base <= 46 && segment.max_hp == 40 + segment.hp_bonus);
+        segment.ascend(true, true);
+        combat.plan_enemies();
+        assert(segment.hp == base + 6 && segment.max_hp == base + 6 && segment.hp >= 46 && segment.hp <= 52);
+        assert(segment.current_intent.hits == 2 && segment.intent_damage(combat.player) == 6);
+        pass_turn(combat);
+        assert(segment.intent_damage(combat.player) == 9);
+        pass_turn(combat);
+        assert(segment.intent_damage(combat.player) == 7);
+    }
+    std::cout << "[PASS] Decimillipede: Ascension gives 46 to 52 HP, Writhe 6x2, Constrict 9 and Bulk 7" << std::endl;
+}
+
 void test_hunter_killer() {
     // Tenderizing Goop (Tender 1 on the player), Bite 17, Puncture 7x3, then a draw between Bite (never twice
     // in a row) and Puncture.
@@ -6173,6 +6273,206 @@ void test_frog_knight_ascension() {
     std::cout << "[PASS] Frog Knight: Ascension gives 199 HP, Tongue Lash 14, Strike 23, Beetle Charge 40" << std::endl;
 }
 
+int count_toxics(const CombatEngine& combat) {
+    return count_cards(combat.draw_pile, CardId::TOXIC) + count_cards(combat.hand, CardId::TOXIC) +
+           count_cards(combat.discard_pile, CardId::TOXIC) + count_cards(combat.exhaust_pile, CardId::TOXIC);
+}
+
+void test_myte() {
+    // Alone (first place): Toxic (2 Toxic in the hand), Bite 13, Suck 4 (+2 Strength), and again; Strength adds to
+    // every attack, and the Toxics held at the end of the turn cost 5 HP each (counted by check_monster).
+    check_monster(EnemyType::MYTE, "Sarcopte", 61, {
+        { STATUS, 0, 0, 0 },
+        { ATTACK, 13, 0, 0 },
+        { ATTACK_BUFF, 4, 0, 2 },
+        { STATUS, 0, 0, 2 },
+        { ATTACK, 15, 0, 2 },
+        { ATTACK_BUFF, 6, 0, 4 },
+    }, 6);
+
+    // Toxic Abundance puts 2 Toxics in the player's hand.
+    CombatEngine combat = make_pack({ EnemyType::MYTE });
+    Enemy& myte = combat.enemies[0];
+    assert(myte.current_intent.type == STATUS && myte.current_intent.status_card == CardId::TOXIC &&
+           myte.current_intent.status_cards == 2 && myte.current_intent.status_pile == Pile::HAND);
+    pass_turn(combat);
+    assert(count_cards(combat.hand, CardId::TOXIC) == 2 && count_toxics(combat) == 2);
+    // A Toxic costs 1, and played it is Exhausted.
+    assert(CardDef::get(CardId::TOXIC).type == CardType::STATUS && CardDef::get_cost(CardId::TOXIC, false) == 1);
+    assert(CardDef::has_keyword(CardId::TOXIC, false, KEYWORD_EXHAUST));
+    int toxic = -1;
+    for (size_t i = 0; i < combat.hand.size(); ++i) {
+        if (combat.hand[i].id == CardId::TOXIC) toxic = static_cast<int>(i);
+    }
+    const int energy = combat.player.energy;
+    assert(combat.play_card(toxic));
+    assert(combat.player.energy == energy - 1 && count_cards(combat.exhaust_pile, CardId::TOXIC) == 1);
+    // The one still held costs 5 HP at the end of the turn, on top of Bite.
+    combat.player.hp = combat.player.max_hp;
+    combat.end_player_turn();
+    assert(combat.player.max_hp - combat.player.hp == 5 + 13);
+
+    // Two mytes: the first opens with Toxic, the second with Suck, then each follows the loop.
+    CombatEngine pack = make_pack({ EnemyType::MYTE, EnemyType::MYTE });
+    assert(pack.enemies.size() == 2);
+    assert(pack.enemies[0].current_intent.type == STATUS);
+    assert(pack.enemies[1].current_intent.type == ATTACK_BUFF && pack.enemies[1].intent_damage(pack.player) == 4);
+    pass_turn(pack);
+    assert(pack.enemies[0].current_intent.type == ATTACK && pack.enemies[0].intent_damage(pack.player) == 13);
+    assert(pack.enemies[1].current_intent.type == STATUS && pack.enemies[1].get_status(StatusType::STRENGTH) == 2);
+    pass_turn(pack);
+    assert(pack.enemies[0].current_intent.type == ATTACK_BUFF);
+    assert(pack.enemies[1].current_intent.type == ATTACK && pack.enemies[1].intent_damage(pack.player) == 15);
+    std::cout << "[PASS] Myte: 61 HP, Toxic Abundance (2 Toxic in hand), Bite 13, Suck 4 + 2 Strength, by its place"
+              << std::endl;
+}
+
+void test_myte_ascension() {
+    // 64 HP and more, Bite 15, Suck 6 and 3 Strength at Ascension.
+    for (int i = 0; i < 20; ++i) {
+        CombatEngine combat = make_pack({ EnemyType::MYTE });
+        Enemy& myte = combat.enemies[0];
+        myte.roll_hp(static_cast<uint32_t>(i * 7919 + 1));
+        const int16_t base = myte.hp;
+        assert(myte.ascension_hp() == 64 && myte.hp_spread() == 6);
+        assert(base >= 61 && base <= 67 && myte.max_hp == 61 + myte.hp_bonus);
+        myte.ascend(true, true);
+        combat.plan_enemies();
+        assert(myte.hp == base + 3 && myte.max_hp == base + 3 && myte.hp >= 64);
+        assert(myte.current_intent.type == STATUS);
+        pass_turn(combat);
+        assert(myte.current_intent.type == ATTACK && myte.intent_damage(combat.player) == 15);
+        pass_turn(combat);
+        assert(myte.current_intent.type == ATTACK_BUFF && myte.intent_damage(combat.player) == 6);
+        pass_turn(combat);
+        assert(myte.get_status(StatusType::STRENGTH) == 3);
+    }
+    std::cout << "[PASS] Myte: Ascension gives 64 HP and more, Bite 15, Suck 6 and 3 Strength" << std::endl;
+}
+
+size_t cards_held(const CombatEngine& combat) {
+    return combat.draw_pile.size() + combat.hand.size() + combat.discard_pile.size() + combat.exhaust_pile.size();
+}
+
+void test_thieving_hopper() {
+    // Thievery 17 (steals a card), Flutter, Hat Trick 21, Nab 14, then it runs away.
+    check_monster(EnemyType::THIEVING_HOPPER, "Mante chapardeuse", 79, {
+        { ATTACK_DEBUFF, 17, 0, 0 },
+        { BUFF, 0, 0, 0 },
+        { ATTACK, 21, 0, 0 },
+        { ATTACK, 14, 0, 0 },
+    });
+
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::THIEVING_HOPPER);
+    Enemy& hopper = combat.enemies[0];
+    combat.player.max_hp = combat.player.hp = 500;
+    const size_t cards = cards_held(combat);
+    assert(hopper.current_intent.steals_card && hopper.stolen_card.id == CardId::NONE);
+    combat.end_player_turn(); // Thievery: one card of the player is gone
+    assert(hopper.stolen_card.id != CardId::NONE && cards_held(combat) == cards - 1);
+    const CardId taken = hopper.stolen_card.id;
+    // Flutter: attacks deal it half their damage, and each hit wears it down by 1.
+    assert(hopper.current_intent.type == BUFF && hopper.current_intent.power == PowerId::FLUTTER);
+    combat.end_player_turn();
+    assert(combat.enemy_power_amount(0, PowerId::FLUTTER) == THIEVING_HOPPER_FLUTTER);
+    auto dealt = [&](int16_t base) {
+        hopper.block = 0;
+        const int16_t before = hopper.hp;
+        combat.hit(hopper, base);
+        const int lost = before - hopper.hp;
+        hopper.hp = before;
+        return lost;
+    };
+    assert(dealt(10) == 5 && combat.enemy_power_amount(0, PowerId::FLUTTER) == 4);
+    for (int i = 0; i < 4; ++i) dealt(10);
+    assert(combat.enemy_power_amount(0, PowerId::FLUTTER) == 0 && dealt(10) == 10);
+    // Killed, it gives the card back to the discard pile.
+    hopper.hp = 1;
+    combat.hand.clear();
+    combat.hand.push_back(CardId::STRIKE);
+    combat.player.energy = combat.player.max_energy;
+    const size_t before_kill = cards_held(combat);
+    const int taken_before = count_cards(combat.discard_pile, taken);
+    assert(combat.play_card(0, 0));
+    assert(!hopper.is_alive() && !hopper.escaped && hopper.stolen_card.id == CardId::NONE);
+    assert(cards_held(combat) == before_kill + 1 && count_cards(combat.discard_pile, taken) >= taken_before + 1);
+
+    // Left alive, it runs away on its fifth turn with the card.
+    CombatEngine fled = make_combat(CharacterId::IRONCLAD, EnemyType::THIEVING_HOPPER);
+    fled.player.max_hp = fled.player.hp = 500;
+    for (int turn = 0; turn < 4; ++turn) pass_turn(fled);
+    assert(fled.enemies[0].current_intent.type == ESCAPE);
+    fled.player.hp = fled.player.max_hp;
+    fled.end_player_turn();
+    assert(fled.enemies[0].escaped && fled.enemies[0].stolen_card.id != CardId::NONE);
+    assert(fled.state == CombatState::VICTORY && fled.every_enemy_escaped() && cards_held(fled) == cards - 1);
+    std::cout << "[PASS] Thieving Hopper: 79 HP, Thievery 17 steals a card, Flutter 5, Hat Trick 21, Nab 14, Escape"
+              << std::endl;
+}
+
+void test_thieving_hopper_steals_from_the_deck() {
+    // The card it ran away with leaves the run's deck; killed, it takes nothing away.
+    auto fight = []() {
+        RunManager run;
+        run.start_run(CharacterId::SILENT, 0, PaletteVariant::CLASSIC, 777);
+        run.map.nodes[0].type = RoomType::MONSTER;
+        run.enter_room(0);
+        FixedVector<EnemyType, MAX_ENEMIES> pack;
+        pack.push_back(EnemyType::THIEVING_HOPPER);
+        run.combat.start_combat_multi(pack, run.character);
+        run.combat.draw_pile.clear();
+        run.combat.hand.clear();
+        run.combat.discard_pile.clear();
+        for (size_t i = 0; i < run.master_deck.size(); ++i) {
+            DeckCard card = run.master_deck[i];
+            card.deck_index = static_cast<uint8_t>(i);
+            run.combat.draw_pile.push_back(card);
+        }
+        run.combat.player.max_hp = run.combat.player.hp = 500;
+        return run;
+    };
+    RunManager fled = fight();
+    const size_t deck = fled.master_deck.size();
+    for (int turn = 0; turn < 5; ++turn) fled.combat.end_player_turn();
+    assert(fled.combat.every_enemy_escaped());
+    const DeckCard taken = fled.combat.enemies[0].stolen_card;
+    assert(taken.id != CardId::NONE && taken.deck_index < deck);
+    fled.proceed_after_combat();
+    assert(fled.master_deck.size() == deck - 1);
+
+    RunManager won = fight();
+    won.combat.end_player_turn(); // Thievery
+    assert(won.combat.enemies[0].stolen_card.id != CardId::NONE);
+    won.combat.enemies[0].hp = 1;
+    won.combat.hand.clear();
+    won.combat.hand.push_back(CardId::STRIKE);
+    won.combat.player.energy = won.combat.player.max_energy;
+    assert(won.combat.play_card(0, 0));
+    assert(won.combat.state == CombatState::VICTORY && !won.combat.every_enemy_escaped());
+    won.proceed_after_combat();
+    assert(won.master_deck.size() == deck);
+    std::cout << "[PASS] Thieving Hopper: the card it runs away with leaves the deck, killed it gives it back" << std::endl;
+}
+
+void test_thieving_hopper_ascension() {
+    // 84 HP, Thievery 19, Hat Trick 23, Nab 16 at Ascension.
+    CombatEngine combat = make_pack({ EnemyType::THIEVING_HOPPER });
+    Enemy& hopper = combat.enemies[0];
+    combat.player.max_hp = combat.player.hp = 500;
+    assert(hopper.ascension_hp() == 84 && hopper.hp_spread() == 0);
+    hopper.ascend(true, true);
+    combat.plan_enemies();
+    assert(hopper.hp == 84 && hopper.max_hp == 84);
+    assert(hopper.current_intent.type == ATTACK_DEBUFF && hopper.intent_damage(combat.player) == 19);
+    pass_turn(combat);
+    assert(hopper.current_intent.type == BUFF);
+    pass_turn(combat);
+    assert(hopper.current_intent.type == ATTACK && hopper.intent_damage(combat.player) == 23);
+    pass_turn(combat);
+    assert(hopper.current_intent.type == ATTACK && hopper.intent_damage(combat.player) == 16);
+    std::cout << "[PASS] Thieving Hopper: Ascension gives 84 HP, Thievery 19, Hat Trick 23 and Nab 16" << std::endl;
+}
+
 int main() {
     std::cout << "=== Monsters ===" << std::endl;
     test_fuzzy_wurm_crawler();
@@ -6367,6 +6667,9 @@ int main() {
     test_phantasmal_gardener_ascension();
     test_exoskeleton();
     test_exoskeleton_ascension();
+    test_decimillipede();
+    test_decimillipede_reattach();
+    test_decimillipede_ascension();
     test_hunter_killer();
     test_hunter_killer_ascension();
     test_mawler();
@@ -6390,6 +6693,11 @@ int main() {
     test_entomancer_ascension();
     test_flail_knight();
     test_flail_knight_ascension();
+    test_myte();
+    test_myte_ascension();
+    test_thieving_hopper();
+    test_thieving_hopper_steals_from_the_deck();
+    test_thieving_hopper_ascension();
     std::cout << "=== All Monsters Passed! ===" << std::endl;
     return 0;
 }

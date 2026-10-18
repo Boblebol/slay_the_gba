@@ -653,6 +653,9 @@ static constexpr CardDef CARDS[] = {
     { CardId::BECKON, "Beckon", 0, CardType::STATUS, TargetType::SELF, 6, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 6 HP.", "Beckon", 0, 6, 0, "Unplayable. At the end of your turn, if this is in your hand, lose 6 HP.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
     { CardId::WITHER, "Wither", 0, CardType::STATUS, TargetType::SELF, 0, 0, "Unplayable.", "Wither", 0, 0, 0, "Unplayable.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
     { CardId::DOWSING, "Dowsing", COST_X, CardType::QUEST, TargetType::SELF, 5, 0, "Unplayable. After entering 5 more ? rooms, transforms into an Abundance.", "Dowsing+", COST_X, 5, 0, "Unplayable. After entering 5 more ? rooms, transforms into an Abundance.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
+    { CardId::SPOILS_MAP, "Spoils Map", COST_X, CardType::QUEST, TargetType::SELF, 0, 0, "Unplayable. Marks a site of 600 extra Gold in the next Act.", "Spoils Map+", COST_X, 0, 0, "Unplayable. Marks a site of 600 extra Gold in the next Act.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
+    { CardId::BYRDONIS_EGG, "Byrdonis Egg", COST_X, CardType::QUEST, TargetType::SELF, 0, 0, "Unplayable. Can be hatched at a Rest Site.", "Byrdonis Egg+", COST_X, 0, 0, "Unplayable. Can be hatched at a Rest Site.", KEYWORD_UNPLAYABLE, KEYWORD_UNPLAYABLE },
+    { CardId::TOXIC, "Toxic", 1, CardType::STATUS, TargetType::SELF, 5, 0, "At the end of your turn, if this is in your Hand, take 5 damage. Exhaust.", "Toxic", 1, 5, 0, "At the end of your turn, if this is in your Hand, take 5 damage. Exhaust.", KEYWORD_EXHAUST, KEYWORD_EXHAUST },
 };
 
 bool can_enchant(const DeckCard& card, Enchantment enchantment) {

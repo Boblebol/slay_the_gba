@@ -308,6 +308,25 @@ void CombatEngine::settle_deaths() {
             enemies[i].about_to_blow(enemy_power_amount(static_cast<int>(i), PowerId::STEAM_ERUPTION));
         }
     }
+    // A Decimillipede segment killed while another one stands is Severed: it stays in the fight until it reattaches.
+    // Once none stands, the Severed ones die with the last.
+    bool segment_standing = false;
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        const Enemy& segment = enemies[i];
+        if ((alive_mask_ & (1u << i)) && segment.decimillipede_segment() && segment.is_alive() && !segment.severed()) {
+            segment_standing = true;
+        }
+    }
+    for (size_t i = 0; i < enemies.size(); ++i) {
+        Enemy& segment = enemies[i];
+        if (!(alive_mask_ & (1u << i)) || !segment.decimillipede_segment()) continue;
+        if (segment_standing) {
+            segment.sever();
+        } else if (segment.severed()) {
+            segment.hp_loss_budget = -1;
+            segment.hp = 0;
+        }
+    }
     for (size_t i = 0; i < enemies.size(); ++i) {
         uint8_t bit = static_cast<uint8_t>(1u << i);
         if ((alive_mask_ & bit) && !enemies[i].is_alive()) {
@@ -331,6 +350,10 @@ void CombatEngine::settle_deaths() {
             if (enemies[i].escaped) continue;
             // What it stole from the player comes back.
             enemies[i].return_stolen(player);
+            if (enemies[i].stolen_card.id != CardId::NONE) {
+                discard_pile.push_back(enemies[i].stolen_card);
+                enemies[i].stolen_card = DeckCard{};
+            }
             // Melancholy gets cheaper each time someone dies.
             change_cost_of_copies(CardId::MELANCHOLY, -1);
             EventInfo info;
@@ -394,6 +417,12 @@ void CombatEngine::react(ActivePower& power, CombatEvent event, const EventInfo&
         case PowerId::SOAR:
             // It lands when its next turn starts.
             if (event == CombatEvent::ENEMY_TURN_START && info.enemy == power.holder) power.amount = 0;
+            break;
+        case PowerId::FLUTTER:
+            // Worn down by each attack hit its holder takes.
+            if (event == CombatEvent::ATTACK_HIT && info.enemy == power.holder && power.amount > 0) {
+                power.amount = static_cast<int16_t>(power.amount - 1);
+            }
             break;
         case PowerId::SHRINK:
             // Worn down at the end of each of the player's turns.
@@ -1644,6 +1673,8 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (has_power(PowerId::SHRINK)) percent = percent * SHRINK_PERCENT / 100;
     // Soar: the enemy takes half the attack damage until it lands.
     if (enemy_power_amount(index_of(target), PowerId::SOAR) > 0) percent /= 2;
+    // Flutter: the same, while it lasts.
+    if (enemy_power_amount(index_of(target), PowerId::FLUTTER) > 0) percent /= 2;
     int16_t damage = attack_damage(base, player, target, percent);
     // The Boot: an Attack hit that would deal 1 to 4 damage (before Block) deals 5 instead.
     if (damage > 0 && damage <= THE_BOOT_THRESHOLD && has_power(PowerId::THE_BOOT)) damage = THE_BOOT_MINIMUM;
@@ -5597,6 +5628,9 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::BECKON:
         case CardId::WITHER:
         case CardId::DOWSING:
+        case CardId::SPOILS_MAP:
+        case CardId::BYRDONIS_EGG:
+        case CardId::TOXIC:
         case CardId::SOOT:
         case CardId::VOID_CARD:
         case CardId::WOUND:
@@ -6491,7 +6525,8 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
 
 void CombatEngine::trigger_end_of_turn_in_hand(const DeckCard& card) {
     switch (card.id) {
-        case CardId::BURN: damage_player(CardDef::get_value(card.id, card.upgraded)); break;
+        case CardId::BURN:
+        case CardId::TOXIC: damage_player(CardDef::get_value(card.id, card.upgraded)); break;
         case CardId::DOUBT: player.add_status(StatusType::WEAK, 1); break;
         case CardId::SHAME: player.add_status(StatusType::FRAIL, 1); break;
         case CardId::DECAY: damage_player(2); break;
@@ -6702,12 +6737,24 @@ void CombatEngine::execute_enemy_turn() {
                     record.power = played.power;
                 }
             }
+            // Thievery: the attack takes a card from the draw pile (the discard pile when it is empty).
+            if (played.steals_card && player.is_alive() && enemies[i].is_alive() &&
+                enemies[i].stolen_card.id == CardId::NONE) {
+                auto& pile = draw_pile.empty() ? discard_pile : draw_pile;
+                if (!pile.empty()) {
+                    const size_t taken = next_random() % pile.size();
+                    enemies[i].stolen_card = pile[taken];
+                    pile.erase(taken);
+                }
+            }
             // The Waterfall Giant's Explosion: it dies of its own blast.
             if (enemies[i].type == EnemyType::WATERFALL_GIANT && enemies[i].phase == 1 &&
                 played.type == EnemyIntentType::ATTACK) {
                 enemies[i].hp_loss_budget = -1;
                 enemies[i].hp = 0;
             }
+            // A Decimillipede segment's Reattach: it can be hurt again.
+            if (enemies[i].severed() && played.type == EnemyIntentType::HEAL) enemies[i].hp_loss_budget = -1;
             // Painful Stabs: a Wound into the discard pile for each hit that cost the player HP.
             if (player.is_alive() && enemies[i].is_alive()) {
                 const int16_t stabs = enemy_power_amount(static_cast<int>(i), PowerId::PAINFUL_STABS);

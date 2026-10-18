@@ -4,11 +4,11 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 92,4 %** — 1146 faits, 15 partiels, 88 à faire (35 hors périmètre).
+**Avancement global : 94,1 %** — 1169 faits, 13 partiels, 67 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
-Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Beckon, Burn, Cleave, Dazed, Debris, Frantic Escape, Fuel, Giant Rock, Infection, Luminesce, Metallicize, Minion Dive Bomb, Minion Sacrifice, Minion Strike, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Void, Wither, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
+Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Beckon, Burn, Cleave, Dazed, Debris, Frantic Escape, Fuel, Giant Rock, Infection, Luminesce, Metallicize, Minion Dive Bomb, Minion Sacrifice, Minion Strike, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Toxic, Void, Wither, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
 
 ## Synthèse
 
@@ -19,14 +19,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Défectueux](#defect) | 104 | 1 | 0 | 99,5 % |
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
-| [Cartes communes aux cinq éditions](#cartes) | 117 | 0 | 3 | 97,5 % |
-| [Reliques et potions](#reliques) | 307 | 0 | 14 | 95,6 % |
-| [Bestiaire](#bestiaire) | 98 | 0 | 6 | 94,2 % |
+| [Cartes communes aux cinq éditions](#cartes) | 119 | 0 | 1 | 99,2 % |
+| [Reliques et potions](#reliques) | 319 | 0 | 2 | 99,4 % |
+| [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
-| [Systèmes de jeu](#systemes) | 32 | 1 | 3 | 90,3 % |
-| [Interface, audio et cartouches](#interface) | 17 | 6 | 8 | 64,5 % |
-| **Total** | **1146** | **15** | **88** | **92,4 %** |
+| [Systèmes de jeu](#systemes) | 33 | 1 | 2 | 93,1 % |
+| [Interface, audio et cartouches](#interface) | 20 | 4 | 7 | 71,0 % |
+| **Total** | **1169** | **13** | **67** | **94,1 %** |
 
 <a id="ironclad"></a>
 
@@ -688,7 +688,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 97,5 %
+## Cartes communes aux cinq éditions — 99,2 %
 
 ### Cartes incolores — 100,0 %
 
@@ -822,16 +822,16 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Regrets | Malédiction · Malédiction | Oui |  |
 | Souffrance | Malédiction · Malédiction | Oui |  |
 
-### Quêtes — 25,0 %
+### Quêtes — 75,0 %
 
-1 fait, 0 partiel, 3 à faire.
+3 faits, 0 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Carte au trésor | Quête · Quête | Non |  |
+| Carte au trésor | Quête · Quête | Oui |  |
 | Clé de la lanterne | Quête · Quête | Non |  |
 | Rhabdomancie | Quête · Quête | Oui |  |
-| Œuf d'oizodon | Quête · Quête | Non |  |
+| Œuf d'oizodon | Quête · Quête | Oui |  |
 
 ### Cartes créées en combat et statuts — 100,0 %
 
@@ -859,17 +859,17 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 95,6 %
+## Reliques et potions — 99,4 %
 
-### Reliques partagées — 97,4 %
+### Reliques partagées — 100,0 %
 
-114 faits, 0 partiel, 3 à faire.
+117 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Ancre | Commune | Oui |  |
 | Aubergine d'améthyste | Commune | Oui |  |
-| Bracelet Juzu | Commune | Non |  |
+| Bracelet Juzu | Commune | Oui |  |
 | Ceinture à potions | Commune | Oui |  |
 | Fiole de sang | Commune | Oui |  |
 | Fleur joyeuse | Commune | Oui |  |
@@ -895,7 +895,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Akabeko | Peu commune | Oui |  |
 | Bassinet à remous | Peu commune | Oui |  |
 | Billet funéraire | Peu commune | Oui |  |
-| Bonbon durable | Peu commune | Non |  |
+| Bonbon durable | Peu commune | Oui |  |
 | Bouclier de parade | Peu commune | Oui |  |
 | Brassard | Peu commune | Oui |  |
 | Breloque reptile | Peu commune | Oui |  |
@@ -980,14 +980,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Poignard | Boutique | Oui |  |
 | Sceau royal | Boutique | Oui |  |
 | Tapis miteux | Boutique | Oui |  |
-| Tente miniature | Boutique | Non |  |
+| Tente miniature | Boutique | Oui |  |
 | Triangle résonnant | Boutique | Oui |  |
 | Lentille de Fresnel | Évènement | Oui |  |
 | Diadème | Secours | Oui |  |
 
-### Reliques d'évènement — 94,9 %
+### Reliques d'évènement — 100,0 %
 
-37 faits, 0 partiel, 2 à faire.
+39 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1015,7 +1015,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Manuel d'Histoire | Évènement | Oui |  |
 | Monsieur Carnage | Évènement | Oui |  |
 | Noyau pollinique | Évènement | Oui |  |
-| Oizillon | Évènement | Non |  |
+| Oizillon | Évènement | Oui |  |
 | Orichalque ??? | Évènement | Oui |  |
 | Perceuse | Évènement | Oui |  |
 | Pin’s Exclusif de Fidélité Wongo | Évènement | Oui |  |
@@ -1028,23 +1028,23 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tirelire-gueule | Évènement | Oui |  |
 | Âme oubliée | Évènement | Oui |  |
 | Épée de jade | Évènement | Oui |  |
-| Épée de pierre | Évènement | Non |  |
+| Épée de pierre | Évènement | Oui |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 91,2 %
+### Reliques des Anciens — 98,0 %
 
-93 faits, 0 partiel, 9 à faire.
+100 faits, 0 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
-| Aile de Paël | Ancienne | Non |  |
+| Aile de Paël | Ancienne | Oui |  |
 | Anneau à signet | Ancienne | Oui |  |
 | Arbalète | Ancienne | Oui |  |
 | Astrolabe | Ancienne | Oui |  |
-| Baguette de rhabdomancie | Ancienne | Non |  |
+| Baguette de rhabdomancie | Ancienne | Oui |  |
 | Bois bénis | Ancienne | Oui |  |
-| Bois flotté | Ancienne | Non |  |
-| Bottes ailées | Ancienne | Non |  |
+| Bois flotté | Ancienne | Oui |  |
+| Bottes ailées | Ancienne | Oui |  |
 | Boucle d'oreille susurrante | Ancienne | Oui |  |
 | Boussole dorée | Ancienne | Oui |  |
 | Boîte de Pandore | Ancienne | Oui |  |
@@ -1054,7 +1054,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Cage vide | Ancienne | Oui |  |
 | Caisse d'alchimie | Ancienne | Oui |  |
 | Caisse de parchemins | Ancienne | Non |  |
-| Caisse à jouets | Ancienne | Non |  |
+| Caisse à jouets | Ancienne | Oui |  |
 | Canne à pêche | Ancienne | Oui |  |
 | Cape distinguée | Ancienne | Oui |  |
 | Cataplasme | Ancienne | Oui |  |
@@ -1096,7 +1096,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Larmes de Paël | Ancienne | Oui |  |
 | Livre d'histoires | Ancienne | Oui |  |
 | Légion de Paël | Ancienne | Oui |  |
-| Manteau de fourrure | Ancienne | Non |  |
+| Manteau de fourrure | Ancienne | Oui |  |
 | Marteau de guerre | Ancienne | Oui |  |
 | Masque serti | Ancienne | Oui |  |
 | Mitaines réchauffantes | Ancienne | Oui |  |
@@ -1131,7 +1131,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tourment de Neow | Ancienne | Oui |  |
 | Tresse soyeuse | Ancienne | Oui |  |
 | Tri-boomerang | Ancienne | Oui |  |
-| Verre marin | Ancienne | Non |  |
+| Verre marin | Ancienne | Oui |  |
 | Violon | Ancienne | Oui |  |
 | Écharpe étincelante | Ancienne | Oui |  |
 | Étoile noire | Ancienne | Oui |  |
@@ -1212,11 +1212,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 94,2 %
+## Bestiaire — 99,0 %
 
-### Monstres — 95,8 %
+### Monstres — 98,6 %
 
-69 faits, 0 partiel, 3 à faire.
+71 faits, 0 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1263,11 +1263,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Croquebot | Monstre · Acte 2 | Oui |  |
 | Exosquelette | Monstre · Acte 2 | Oui |  |
 | L'Obscura | Monstre · Acte 2 | Oui |  |
-| Mante chapardeuse | Faible · Acte 2 | Non |  |
+| Mante chapardeuse | Faible · Acte 2 | Oui |  |
 | Ovicoptère | Monstre · Acte 2 | Oui |  |
 | Pareffroi | Monstre · Acte 2 | Oui |  |
 | Progéniteur de poux | Monstre · Acte 2 | Oui |  |
-| Sarcopte | Monstre · Acte 2 | Non |  |
+| Sarcopte | Monstre · Acte 2 | Oui |  |
 | Scarabée dormeur | Monstre · Acte 2 | Oui |  |
 | Sphéropode (Nectar) | Monstre · Acte 2 | Oui |  |
 | Sphéropode (Pierre) | Monstre · Acte 2 | Oui |  |
@@ -1293,9 +1293,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sculpteur dévoué | Faible · Acte 3 | Oui |  |
 | Sonobot | Invocation · Acte 3 | Oui |  |
 
-### Élites — 82,4 %
+### Élites — 100,0 %
 
-14 faits, 0 partiel, 3 à faire.
+17 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1306,9 +1306,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Colonie de rôdeurs | Élite · Acte 1 (B) | Oui |  |
 | Jardinier spectral | Élite · Acte 1 (B) | Oui |  |
 | Murène de l'effroi | Élite · Acte 1 (B) | Oui |  |
-| Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
-| Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
-| Dix-Mille-Pattes | Élite · Acte 2 | Non |  |
+| Dix-Mille-Pattes | Élite · Acte 2 | Oui |  |
+| Dix-Mille-Pattes | Élite · Acte 2 | Oui |  |
+| Dix-Mille-Pattes | Élite · Acte 2 | Oui |  |
 | Entomancien | Élite · Acte 2 | Oui |  |
 | Prisme infesté | Élite · Acte 2 | Oui |  |
 | Amalg'âmes | Élite · Acte 3 | Oui |  |
@@ -1518,11 +1518,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 90,3 %
+## Systèmes de jeu — 93,1 %
 
-### La Tour — 64,3 %
+### La Tour — 78,6 %
 
-4 faits, 1 partiel, 2 à faire.
+5 faits, 1 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1531,7 +1531,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Salles : monstre, élite, boss, repos, trésor, boutique, évènement |  | Oui |  |
 | Rencontres propres à chaque acte (81 rencontres du jeu d'origine) |  | Partiel | Tables par acte et par salle (faible, normale, élite, boss), acte 1 en variante A ou B : 5 rencontres d'origine jouables, les anciens groupes ailleurs. [#225](https://github.com/Boblebol/slay_the_gba/issues/225) |
 | Un boss différent par acte |  | Non | [#36](https://github.com/Boblebol/slay_the_gba/issues/36) |
-| Neow en début de partie |  | Non | [#6](https://github.com/Boblebol/slay_the_gba/issues/6) |
+| Neow en début de partie |  | Oui | Chaque nouvelle partie s'ouvre sur Neow, qui salue le héros puis propose 2 bénédictions et 1 relique avec un prix, une à prendre avant la première carte. [#6](https://github.com/Boblebol/slay_the_gba/issues/6) |
 | Bénédiction d'un Ancien entre les actes |  | Oui | Au début des actes 2 et 3, un Ancien de l'acte (Darv à tout acte) propose 3 reliques, une à prendre. Les reliques dont l'effet manque ne sont pas proposées. [#261](https://github.com/Boblebol/slay_the_gba/issues/261) |
 
 ### Récompenses — 100,0 %
@@ -1607,11 +1607,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 64,5 %
+## Interface, audio et cartouches — 71,0 %
 
-### Écrans — 64,3 %
+### Écrans — 73,8 %
 
-11 faits, 5 partiels, 5 à faire.
+14 faits, 3 partiels, 4 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1624,13 +1624,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Boutique |  | Oui |  |
 | Feu de camp |  | Oui |  |
 | Registre du deck |  | Oui |  |
-| Défaite (Game Over) |  | Partiel | [#11](https://github.com/Boblebol/slay_the_gba/issues/11) |
-| Victoire |  | Partiel | [#12](https://github.com/Boblebol/slay_the_gba/issues/12) |
+| Défaite (Game Over) |  | Oui | [#11](https://github.com/Boblebol/slay_the_gba/issues/11) |
+| Victoire |  | Oui | [#12](https://github.com/Boblebol/slay_the_gba/issues/12) |
 | Indicateurs de vie, d'armure et de progression |  | Partiel | [#20](https://github.com/Boblebol/slay_the_gba/issues/20) |
 | Transitions entre les scènes |  | Partiel | [#18](https://github.com/Boblebol/slay_the_gba/issues/18) |
 | Système de dialogue et d'évènements textuels |  | Partiel | [#19](https://github.com/Boblebol/slay_the_gba/issues/19) |
 | Options (volume, commandes) |  | Oui |  |
-| Menu pause en combat et sur la carte |  | Non | [#10](https://github.com/Boblebol/slay_the_gba/issues/10) |
+| Menu pause en combat et sur la carte |  | Oui | [#10](https://github.com/Boblebol/slay_the_gba/issues/10) |
 | Menu principal interactif |  | Non | [#9](https://github.com/Boblebol/slay_the_gba/issues/9) |
 | Écran titre animé (nuages, tour, brume) |  | Non | [#7](https://github.com/Boblebol/slay_the_gba/issues/7) |
 | Écran titre propre à chaque édition |  | Non | [#3](https://github.com/Boblebol/slay_the_gba/issues/3) |

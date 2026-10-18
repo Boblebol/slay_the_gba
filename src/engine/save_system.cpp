@@ -77,6 +77,16 @@ std::string_view find_static_potion_id(std::string_view id) {
     return potion ? potion->id : std::string_view();
 }
 
+// Little-endian 32-bit number kept in bytes, so it never changes the layout (or the padding) of a saved struct.
+uint32_t read_u32(const uint8_t (&bytes)[4]) {
+    return static_cast<uint32_t>(bytes[0]) | static_cast<uint32_t>(bytes[1]) << 8 |
+           static_cast<uint32_t>(bytes[2]) << 16 | static_cast<uint32_t>(bytes[3]) << 24;
+}
+
+void write_u32(uint8_t (&bytes)[4], uint32_t value) {
+    for (int i = 0; i < 4; ++i) bytes[i] = static_cast<uint8_t>(value >> (8 * i));
+}
+
 inline uint16_t count_bits(const uint8_t* bitset, size_t max_bytes) {
     uint16_t count = 0;
     for (size_t i = 0; i < max_bytes; ++i) {
@@ -211,6 +221,7 @@ void SaveManager::create_profile(uint8_t slot_index, std::string_view name) {
         data_.profiles[slot_index].max_ascension[c] = 0;
     }
     data_.profiles[slot_index].active_run.has_active_run = false;
+    write_u32(data_.profiles[slot_index].active_run.profile_xp, 0);
 }
 
 void SaveManager::delete_profile(uint8_t slot_index) {
@@ -239,6 +250,10 @@ void SaveManager::autosave_run(const RunManager& run) {
     r.current_node_index = static_cast<int8_t>(run.current_node_index);
     r.phase = static_cast<uint8_t>(run.phase);
     r.card_removals_count = run.card_removals_count;
+    write_u32(r.play_frames, run.play_frames);
+    r.combats_won = run.combats_won;
+    r.elites_won = run.elites_won;
+    r.bosses_won = run.bosses_won;
 
     // Ancient met at the start of the act, with its offer
     const bool ancient = run.phase == RunPhase::ANCIENT_BLESSING && run.current_ancient < AncientId::COUNT;
@@ -321,6 +336,10 @@ bool SaveManager::restore_run(RunManager& run) {
     // interrupted room is not stored.
     run.phase = RunPhase::MAP_NAVIGATION;
     run.card_removals_count = r.card_removals_count;
+    run.play_frames = read_u32(r.play_frames);
+    run.combats_won = r.combats_won;
+    run.elites_won = r.elites_won;
+    run.bosses_won = r.bosses_won;
 
     // Restore Deck
     run.master_deck.clear();
@@ -412,6 +431,15 @@ void SaveManager::record_defeat() {
     p.total_runs++;
     p.active_run.has_active_run = false;
     commit_to_storage();
+}
+
+uint32_t SaveManager::profile_xp() const {
+    return read_u32(data_.profiles[data_.active_slot].active_run.profile_xp);
+}
+
+void SaveManager::add_profile_xp(uint32_t amount) {
+    const uint32_t xp = profile_xp();
+    write_u32(get_active_profile().active_run.profile_xp, amount > UINT32_MAX - xp ? UINT32_MAX : xp + amount);
 }
 
 void SaveManager::discover_card_by_id(std::string_view card_id) {

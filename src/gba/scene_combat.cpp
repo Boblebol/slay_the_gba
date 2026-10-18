@@ -384,6 +384,7 @@ private:
     Shake _shake;
 
     Phase _phase = Phase::INTRO;
+    SceneId _overlay = SceneId::DECK; // deck viewer or pause menu, opened over the fight with a quick fade
     int _timer = 0;
     // Whispering Earring: frames since Vakuu's last card, and whether his turn has been announced.
     int _vakuu_timer = 0;
@@ -524,6 +525,14 @@ CombatScene::CombatScene(GameContext& context) :
         _ctx.combat_resume = false;
         _phase = Phase::PLAYER;
         _build_hand(false);
+
+        // "Finir le tour" picked in the pause menu.
+        if(_ctx.pause_end_turn)
+        {
+            _ctx.pause_end_turn = false;
+            play_sfx(Sfx::DISCARD);
+            _start_enemy_turn();
+        }
     }
     else
     {
@@ -925,7 +934,8 @@ void CombatScene::_refresh_card_text()
     {
         _line1.set(-112, LINE1_Y, "Main vide", Align::LEFT, TextColor::GRAY);
         _line1_right.clear();
-        _line2.set(-112, LINE2_Y, "START : finir le tour", Align::LEFT, TextColor::WHITE);
+        engine::ControlPreset preset = engine::control_preset(engine::SaveManager::instance().settings());
+        _line2.set(-112, LINE2_Y, engine::end_turn_reminder(preset), Align::LEFT, TextColor::WHITE);
         _selected_shown = -1;
         return;
     }
@@ -1115,9 +1125,10 @@ void CombatScene::_refresh_hud()
     bool interactive = _phase == Phase::PLAYER && ! _combat.vakuu_turn_active;
     // Key reminders on the right of line 1. With a potion in the belt, its key joins the START one when the card
     // name leaves room for both.
-    constexpr bn::string_view REMINDER = "START : fin du tour";
-    constexpr bn::string_view BELT_REMINDER = "L : potions   START : fin du tour";
-    constexpr bn::string_view BELT_ONLY = "L : potions";
+    engine::ControlPreset preset = engine::control_preset(engine::SaveManager::instance().settings());
+    const bn::string_view REMINDER = engine::end_turn_reminder(preset);
+    const bn::string_view BELT_REMINDER = engine::belt_reminder(preset);
+    const bn::string_view BELT_ONLY = engine::potions_reminder(preset);
     bool belt = ! _ctx.run.potions.empty();
 
     if(interactive && ! _any_playable())
@@ -1594,6 +1605,18 @@ void CombatScene::_update_player_input()
         _ctx.deck_return = SceneId::COMBAT;
         _ctx.combat_resume = true;
         _ctx.transition = Transition::QUICK;
+        _overlay = SceneId::DECK;
+        return;
+    }
+
+    if(shortcut == engine::Shortcut::PAUSE)
+    {
+        play_sfx(Sfx::UI_OPEN);
+        _ctx.pause_return = SceneId::COMBAT;
+        _ctx.pause_cursor = 0;
+        _ctx.combat_resume = true;
+        _ctx.transition = Transition::QUICK;
+        _overlay = SceneId::PAUSE;
         return;
     }
 
@@ -3052,7 +3075,7 @@ bn::optional<SceneId> CombatScene::update()
 
         if(_ctx.transition == Transition::QUICK)
         {
-            return SceneId::DECK;
+            return _overlay;
         }
         break;
     case Phase::TARGET:

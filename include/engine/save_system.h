@@ -68,8 +68,17 @@ struct InRunSaveData {
     uint8_t ancient = 0;
     uint8_t ancient_offer_count = 0;
     uint8_t ancient_offers[MAX_ANCIENT_OFFERS] = { 0 };
+    // Statistics of the end screen (#11, #12), taken from the reserved bytes (0 in the saves written before them):
+    // the play time in frames (little endian), then the fights, elites and bosses won.
+    uint8_t play_frames[4] = { 0 };
+    uint8_t combats_won = 0;
+    uint8_t elites_won = 0;
+    uint8_t bosses_won = 0;
+    // Experience of the profile (#11), little endian. It belongs to the profile, not to the run: it sits here
+    // because these are the only spare bytes of a profile. The autosave and the end of a run never clear it.
+    uint8_t profile_xp[4] = { 0 };
     // Room for what the run will have to remember next, so a new field does not move the ones after it.
-    uint8_t reserved[32 - 2 - MAX_ANCIENT_OFFERS] = { 0 };
+    uint8_t reserved[32 - 2 - MAX_ANCIENT_OFFERS - 11] = { 0 };
 };
 
 struct SaveProfile {
@@ -171,6 +180,10 @@ public:
     // Highest Ascension level the active profile may start with this hero (0..10).
     uint8_t unlocked_ascension(CharacterId char_id);
     void record_defeat();
+    // Experience the active profile has gathered over its runs (#11).
+    [[nodiscard]] uint32_t profile_xp() const;
+    // Adds to the experience of the active profile (stops at the largest count). Written with the next commit.
+    void add_profile_xp(uint32_t amount);
 
     // Compendium discovery helpers
     void discover_card_by_id(std::string_view card_id);

@@ -125,6 +125,11 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::ROCKET: return "ROCKET";
         case EnemyType::PHANTASMAL_GARDENER: return "PHANTASMAL_GARDENER";
         case EnemyType::EXOSKELETON: return "EXOSKELETON";
+        case EnemyType::DECIMILLIPEDE_SEGMENT_BACK: return "DECIMILLIPEDE_SEGMENT_BACK";
+        case EnemyType::DECIMILLIPEDE_SEGMENT_FRONT: return "DECIMILLIPEDE_SEGMENT_FRONT";
+        case EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE: return "DECIMILLIPEDE_SEGMENT_MIDDLE";
+        case EnemyType::MYTE: return "MYTE";
+        case EnemyType::THIEVING_HOPPER: return "THIEVING_HOPPER";
     }
     return {};
 }
@@ -293,19 +298,21 @@ void test_reference_encounters() {
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::ELITE)) ==
            (std::set<std::string_view>{ "SkulkingColonyElite", "TerrorEelElite", "PhantasmalGardenersElite" }));
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::ELITE)) ==
-           (std::set<std::string_view>{ "EntomancerElite", "InfestedPrismsElite" }));
+           (std::set<std::string_view>{ "EntomancerElite", "InfestedPrismsElite", "DecimillipedeElite" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::ELITE)) ==
            (std::set<std::string_view>{ "SoulNexusElite", "MechaKnightElite", "KnightsElite" }));
     assert(ids_of(encounter_table(ActZone::ACT1B, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "CorpseSlugsWeak", "SludgeSpinnerWeak", "ToadpolesWeak", "SeapunkWeak" }));
     // Acts 2 and 3: the reference encounters the engine can play, with the groups the game had before in Act 3.
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::WEAK)) ==
-           (std::set<std::string_view>{ "TunnelerWeak", "BowlbugsWeak", "ExoskeletonsWeak" }));
+           (std::set<std::string_view>{ "TunnelerWeak", "BowlbugsWeak", "ExoskeletonsWeak",
+                                        "ThievingHopperWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::WEAK)) ==
            (std::set<std::string_view>{ "DevotedSculptorWeak", "TurretOperatorWeak", "ScrollsOfBitingWeak" }));
     assert(ids_of(encounter_table(ActZone::ACT2, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "HunterKillerNormal", "SpinyToadNormal", "ChompersNormal", "TunnelerNormal",
-                                        "LouseProgenitorNormal", "TheObscuraNormal", "OvicopterNormal", "ExoskeletonsNormal" }));
+                                        "LouseProgenitorNormal", "TheObscuraNormal", "OvicopterNormal", "ExoskeletonsNormal",
+                                        "MytesNormal" }));
     assert(ids_of(encounter_table(ActZone::ACT3, EncounterTier::NORMAL)) ==
            (std::set<std::string_view>{ "SlimedBerserkerNormal", "FrogKnightNormal", "GlobeHeadNormal",
                                         "TheLostAndForgottenNormal", "AxebotsNormal", "FabricatorNormal",

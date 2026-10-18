@@ -620,6 +620,12 @@ bn::string_view base_name(engine::CardId id)
         return "Érosion";
     case engine::CardId::DOWSING:
         return "Rhabdomancie";
+    case engine::CardId::SPOILS_MAP:
+        return "Carte au trésor";
+    case engine::CardId::BYRDONIS_EGG:
+        return "Œuf d'oizodon";
+    case engine::CardId::TOXIC:
+        return "Toxicité";
     case engine::CardId::FRANTIC_ESCAPE:
         return "Fuite éperdue";
     case engine::CardId::BECKON:
@@ -2447,6 +2453,12 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
     case engine::CardId::DOWSING:
         stream << "Injouable. 5 salles ? : devient Abondance.";
         break;
+    case engine::CardId::SPOILS_MAP:
+        stream << "Injouable. 600 Or caché à l'Acte suivant.";
+        break;
+    case engine::CardId::BYRDONIS_EGG:
+        stream << "Injouable. Éclot à un Site de repos.";
+        break;
     case engine::CardId::FOLLY:
         stream << "Injouable. Inné. Éthéré. Éternel.";
         break;
@@ -2455,6 +2467,9 @@ void card_description(const engine::DeckCard& card, bn::istring& out)
         break;
     case engine::CardId::BURN:
         stream << "Injouable. Fin de tour en main : " << value << " dégâts.";
+        break;
+    case engine::CardId::TOXIC:
+        stream << "Fin de tour : " << value << " dégâts. Épuisement.";
         break;
     case engine::CardId::DAZED:
         stream << "Injouable. Éthéré.";
@@ -3057,6 +3072,8 @@ bn::string_view enemy_power_label(engine::PowerId id)
         return "Enfumé";
     case engine::PowerId::SOAR:
         return "Envol";
+    case engine::PowerId::FLUTTER:
+        return "Battmt";
     case engine::PowerId::PLOW:
         return "Cavalc";
     case engine::PowerId::RINGING:
@@ -3106,6 +3123,8 @@ bn::string_view enemy_power_description(engine::PowerId id)
         return "Enfumé : 1 seule Compétence par tour.";
     case engine::PowerId::SOAR:
         return "Envol : dégâts d'Attaque subis -50%.";
+    case engine::PowerId::FLUTTER:
+        return "Battement : Attaques subies -50%, -1/coup.";
     case engine::PowerId::PLOW:
         return "Cavalcade : sous X PV, étourdi, -Force.";
     case engine::PowerId::RINGING:

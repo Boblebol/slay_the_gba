@@ -33,7 +33,8 @@ enum class DeckChoiceKind : uint8_t {
     REMOVE,
     TRANSFORM,
     ENCHANT,
-    DUPLICATE // the chosen card gets one more copy in the deck
+    DUPLICATE, // the chosen card gets one more copy in the deck
+    ADD        // the chosen card of RunManager::deck_choice_offers joins the deck (Sea Glass)
 };
 
 struct DeckChoice {
@@ -45,6 +46,9 @@ struct DeckChoice {
     Enchantment enchantment = Enchantment::NONE; // ENCHANT only: the enchantment put on each chosen card
     uint8_t enchant_amount = 0;                  // ENCHANT only: its amount
 };
+
+// Sea Glass: cards of another hero offered on pickup.
+constexpr size_t SEA_GLASS_CARDS = 15;
 
 // Moments of a run, outside the fights, a relic can act on. Each one is a private `on_...` method of RunManager.
 enum class RunHook : uint8_t {
@@ -65,10 +69,12 @@ enum class CampfireAction : uint8_t {
     DIG,  // Shovel
     LIFT, // Girya
     COOK, // Meat Cleaver
-    CLONE // a card of the deck is enchanted with Clone
+    CLONE, // a card of the deck is enchanted with Clone
+    LEAVE, // Miniature Tent: the rest site is left once the player has done what they wanted
+    HATCH  // the deck holds a Byrdonis Egg
 };
 
-constexpr size_t MAX_CAMPFIRE_ACTIONS = 6;
+constexpr size_t MAX_CAMPFIRE_ACTIONS = 8;
 
 // A number a relic keeps from room to room ("every 3 combats", "3 times max"), saved with the run.
 struct RelicCounter {
@@ -92,6 +98,9 @@ struct AncientOffer {
 // others).
 constexpr size_t MAX_ANCIENT_OFFERS = 3;
 
+// Spoils Map: the extra Gold of the room it marks in the next act.
+constexpr int16_t SPOILS_MAP_GOLD = 600;
+
 struct AscensionModifier {
     uint8_t level;
     std::string_view title;
@@ -107,6 +116,11 @@ public:
     int16_t hp = 80;
     int16_t max_hp = 80;
     int16_t gold = 99;
+    // Run statistics shown on the end screen (#11, #12), saved with the run.
+    uint32_t play_frames = 0; // frames spent in the scenes of the run (60 per second on the GBA)
+    uint8_t combats_won = 0;  // every fight won, elites and bosses included
+    uint8_t elites_won = 0;
+    uint8_t bosses_won = 0;
 
     FixedVector<DeckCard, 50> master_deck;
     FixedVector<std::string_view, 25> relics;
@@ -115,6 +129,8 @@ public:
     uint8_t potion_slots = BASE_POTION_SLOTS; // size of the belt: `potions` never holds more
     // Cards of the deck the player still has to choose. The room is left once it is resolved.
     DeckChoice deck_choice;
+    // ADD only: the cards offered, that the indices of the choice refer to instead of the deck.
+    FixedVector<DeckCard, SEA_GLASS_CARDS> deck_choice_offers;
     FixedVector<RelicCounter, MAX_RELIC_COUNTERS> relic_counters;
     // How many times each hook ran since the start of the run: read by the tests and the debug tools.
     uint16_t hook_runs[static_cast<size_t>(RunHook::COUNT)] = {};
@@ -126,7 +142,8 @@ public:
     RunPhase phase = RunPhase::MAP_NAVIGATION;
 
     CombatEngine combat;
-    FixedVector<DeckCard, 3> current_card_rewards;
+    // Three cards, and a fourth one when a relic adds a card to the reward (Lasting Candy).
+    FixedVector<DeckCard, 4> current_card_rewards;
     // Lava Lamp: the card rewards of the fight just won are upgraded (it lost no HP). Set when the fight ends.
     bool card_rewards_upgraded = false;
     int16_t gold_reward = 0;
@@ -166,6 +183,8 @@ public:
     // Rest, Smith, then the actions the relics of the run give, in the order of the menu.
     [[nodiscard]] FixedVector<CampfireAction, MAX_CAMPFIRE_ACTIONS> campfire_actions() const;
     void rest_at_campfire();
+    // Miniature Tent: leaves the rest site, whose actions are otherwise offered until each one is done.
+    void leave_campfire();
     bool can_rest() const;
     bool smith_at_campfire(int card_index);
     bool can_smith() const;
@@ -181,6 +200,9 @@ public:
     // rest site. False when the card cannot be cloned or the deck is full.
     bool clone_at_campfire(int deck_index);
     [[nodiscard]] bool can_clone(int deck_index) const;
+    // Byrdonis Egg: the first egg of the deck leaves it and hatches into the Byrdpip relic (kept once only). Uses up
+    // the rest site. False without an egg.
+    bool hatch_at_campfire();
 
     // Shop actions
     void open_shop();
@@ -201,6 +223,13 @@ public:
     static std::span<const CardId> card_reward_pool(CharacterId char_id);
     void pick_card_reward(int reward_index);
     void skip_card_rewards();
+    // Driftwood: the card reward on screen can be drawn again, once per reward.
+    [[nodiscard]] bool can_reroll_card_rewards() const;
+    bool reroll_card_rewards();
+    // Paël's Wing: the card reward on screen is given up to Paël, and every second one gives a random relic. True
+    // when this one gave it.
+    [[nodiscard]] bool can_sacrifice_card_rewards() const;
+    bool sacrifice_card_rewards();
     // Takes the potion of the reward screen. With a full belt, `replace_index` is the potion thrown away to make
     // room; without it the potion stays on offer.
     bool take_potion_reward(int replace_index = -1);
@@ -209,6 +238,10 @@ public:
     // Stores the relic, then resolves what it does when obtained.
     void add_relic(std::string_view relic_id);
     bool has_relic(std::string_view relic_id) const;
+    // Fur Coat: one of the combats of the act it marked, where the enemies have 1 HP.
+    [[nodiscard]] bool fur_coat_room(int node_index) const;
+    // Juzu Bracelet: whether a ? room may hold a regular enemy combat (false with the relic).
+    [[nodiscard]] bool question_room_may_fight() const;
 
     // Effects a relic has when obtained. Each one is also usable on its own.
     // Raises the maximum HP, and the current HP by as much.
@@ -247,7 +280,7 @@ public:
     void request_deck_choice(DeckChoiceKind kind, int count, bool optional = false, bool upgrade_result = false, CardId transform_into = CardId::NONE,
                               Enchantment enchantment = Enchantment::NONE, uint8_t enchant_amount = 0);
     [[nodiscard]] bool has_deck_choice() const { return deck_choice.kind != DeckChoiceKind::NONE; }
-    // True when the card at `deck_index` can be picked for the choice in progress.
+    // True when the card at `deck_index` (of deck_choice_offers for ADD) can be picked for the choice in progress.
     [[nodiscard]] bool deck_choice_allows(int deck_index) const;
     // Applies the choice in progress to the card. The choice ends with its last card, or when no card fits.
     bool resolve_deck_choice(int deck_index);
@@ -272,7 +305,14 @@ public:
     void proceed_after_combat();
     // Opens the next act on its own map, then meets its Ancient (phase ANCIENT_BLESSING).
     void advance_act();
+    // Spoils Map: the room of the current act's map it marks (the card keeps it as node index + 1 in `bonus`), -1
+    // when the deck holds no marked Spoils Map.
+    [[nodiscard]] int spoils_map_node() const;
     bool is_run_completed() const;
+    // One more frame of play time (stops at the largest count instead of wrapping around).
+    void count_play_frame() {
+        if (play_frames != UINT32_MAX) ++play_frames;
+    }
 
     // Ancients
     // The Ancient met at the start of `act`, drawn with `seed` among the ones of that act. Darv can come at
@@ -302,11 +342,25 @@ public:
     void set_rng_state(uint32_t state) { rng_state_ = state ? state : 12345; }
 
 private:
+    // What follows a campfire action: the map, or with Miniature Tent the rest site again, without that action.
+    void end_campfire_action(CampfireAction action);
     uint32_t rng_state_ = 12345;
     uint32_t next_random();
     // Monsters of a fighting room, drawn from the encounter table of the act and the floor.
     FixedVector<EnemyType, MAX_ENEMIES> draw_encounter(RoomType room);
     // Seed of the reward stream of the current room (see RewardRng).
+    // What the card reward on screen was drawn with, so that Driftwood draws it again the same way.
+    struct CardRewardDraw {
+        bool boss = false;
+        CardRarity rarity = CardRarity::NONE;
+        bool elite = false;
+        CharacterId hero = CharacterId::COUNT;
+        uint8_t silver_crucible = 0; // relic counters before the draw, which the draw moves
+        uint8_t silken_tress = 0;
+        bool rerolled = false;
+    };
+    CardRewardDraw last_card_reward_draw;
+
     uint32_t reward_seed() const;
     // Leaves the reward screen: the gold is paid, and a boss opens the next act.
     void finish_rewards();
@@ -317,6 +371,8 @@ private:
     // A hero drawn at random among the ones the run is not played with (Kaleidoscope).
     CharacterId random_other_hero();
     void next_card_reward_or_finish();
+    // Lasting Candy: adds to the card reward a Power of the hero's pool it does not offer yet.
+    void add_power_card_reward();
     // What a relic does when obtained.
     void on_relic_obtained(std::string_view relic_id);
     // Hooks of the relics that act outside the fights (see RunHook). A relic is added to the hook of its
@@ -329,6 +385,8 @@ private:
     void on_card_added(DeckCard& card);
     void on_gold_gained(int16_t amount);
     void count_hook(RunHook hook);
+    // Spoils Map: each copy of the deck marks a room of the act's map just drawn (see spoils_map_node).
+    void mark_spoils_map_sites();
     int upgrade_random_cards(int count, bool any_type, CardType type);
 };
 

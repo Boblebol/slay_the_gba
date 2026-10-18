@@ -89,7 +89,8 @@ public:
                     // Meat Cleaver: the run asks for 2 cards to remove, then the map is back (see DeckChoiceScene).
                     play_sfx(Sfx::UI_OPEN);
                     _ctx.run.cook_at_campfire();
-                    return scene_after_deck_choice(_ctx, SceneId::MAP);
+                    return scene_after_deck_choice(_ctx, _ctx.run.phase == engine::RunPhase::CAMPFIRE ? SceneId::CAMPFIRE
+                                                                                                   : SceneId::MAP);
                 }
                 else if(action == engine::CampfireAction::LIFT)
                 {
@@ -124,11 +125,30 @@ public:
                         play_sfx(Sfx::ERROR);
                     }
                 }
+                else if(action == engine::CampfireAction::LEAVE)
+                {
+                    // Miniature Tent: the player is done with the rest site.
+                    play_sfx(Sfx::UI_CONFIRM);
+                    _ctx.run.leave_campfire();
+                    return SceneId::MAP;
+                }
                 else if(action == engine::CampfireAction::CLONE)
                 {
                     // Clone: a card enchanted with it is duplicated, then the rest site is used up.
                     play_sfx(Sfx::UI_OPEN);
                     _open_clone();
+                }
+                else if(action == engine::CampfireAction::HATCH)
+                {
+                    // Byrdonis Egg: the egg leaves the deck for the Byrdpip, then the rest site is used up.
+                    if(_ctx.run.hatch_at_campfire())
+                    {
+                        _popups.spawn(0, -20, "Oizillon obtenu !", TextColor::GREEN);
+                        play_sfx(Sfx::BUFF);
+                        _stage = Stage::DONE;
+                        _done_timer = 0;
+                        _clear_options();
+                    }
                 }
                 else if(action != engine::CampfireAction::SMITH)
                 {
@@ -213,6 +233,19 @@ public:
                 {
                     return SceneId::REWARDS;
                 }
+
+                // Miniature Tent: the actions not done yet are offered again.
+                if(_ctx.run.phase == engine::RunPhase::CAMPFIRE)
+                {
+                    _actions = _ctx.run.campfire_actions();
+                    _cursor = 0;
+                    _picker.clear();
+                    _stage = Stage::MENU;
+                    _refresh_hp();
+                    _refresh_options();
+                    break;
+                }
+
                 _ctx.run.phase = engine::RunPhase::MAP_NAVIGATION;
                 return SceneId::MAP;
             }
@@ -306,6 +339,12 @@ private:
                 break;
             case engine::CampfireAction::CLONE:
                 stream << "Cloner : dupliquer une carte";
+                break;
+            case engine::CampfireAction::LEAVE:
+                stream << "Partir";
+                break;
+            case engine::CampfireAction::HATCH:
+                stream << "Faire éclore : l'Œuf d'oizodon";
                 break;
             default:
                 stream << "Cuisiner : -2 cartes, +5 PV Max";

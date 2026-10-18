@@ -69,6 +69,7 @@ constexpr Encounter ACT2_WEAK[] = {
     { "TunnelerWeak"sv, 1, { EnemyType::TUNNELER } },
     { "BowlbugsWeak"sv, 1, { EnemyType::BOWLBUG_ROCK } },
     { "ExoskeletonsWeak"sv, 3, { EnemyType::EXOSKELETON, EnemyType::EXOSKELETON, EnemyType::EXOSKELETON } },
+    { "ThievingHopperWeak"sv, 1, { EnemyType::THIEVING_HOPPER } },
 };
 constexpr Encounter ACT2_NORMAL[] = {
     { "HunterKillerNormal"sv, 1, { EnemyType::HUNTER_KILLER } },
@@ -79,6 +80,7 @@ constexpr Encounter ACT2_NORMAL[] = {
     { "TheObscuraNormal"sv, 1, { EnemyType::THE_OBSCURA } },
     { "OvicopterNormal"sv, 1, { EnemyType::OVICOPTER } },
     { "ExoskeletonsNormal"sv, 4, { EnemyType::EXOSKELETON, EnemyType::EXOSKELETON, EnemyType::EXOSKELETON, EnemyType::EXOSKELETON } },
+    { "MytesNormal"sv, 2, { EnemyType::MYTE, EnemyType::MYTE } },
 };
 
 // Act 3: the Glory. The groups the game had before stay beside them: the Louse and the Jaw Worm are met there.
@@ -116,6 +118,8 @@ constexpr Encounter ACT1B_ELITE[] = {
 constexpr Encounter ACT2_ELITE[] = {
     { "EntomancerElite"sv, 1, { EnemyType::ENTOMANCER } },
     { "InfestedPrismsElite"sv, 1, { EnemyType::INFESTED_PRISM } },
+    { "DecimillipedeElite"sv, 3, { EnemyType::DECIMILLIPEDE_SEGMENT_BACK, EnemyType::DECIMILLIPEDE_SEGMENT_FRONT,
+                                   EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE } },
 };
 constexpr Encounter ACT3_ELITE[] = {
     { "SoulNexusElite"sv, 1, { EnemyType::SOUL_NEXUS } },

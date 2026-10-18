@@ -42,12 +42,34 @@ bn::unique_ptr<Scene> create_scene(SceneId id, GameContext& context)
         return make_statistics_scene(context);
     case SceneId::OPTIONS:
         return make_options_scene(context);
+    case SceneId::PAUSE:
+        return make_pause_scene(context);
     case SceneId::VICTORY:
         return make_end_scene(context, true);
     case SceneId::GAME_OVER:
         return make_end_scene(context, false);
     default:
         return make_title_scene(context);
+    }
+}
+
+bool scene_counts_play_time(SceneId id)
+{
+    switch(id)
+    {
+    case SceneId::MAP:
+    case SceneId::DECK:
+    case SceneId::DECK_CHOICE:
+    case SceneId::COMBAT:
+    case SceneId::REWARDS:
+    case SceneId::EVENT:
+    case SceneId::CAMPFIRE:
+    case SceneId::SHOP:
+    case SceneId::ANCIENT:
+    case SceneId::PAUSE:
+        return true;
+    default:
+        return false;
     }
 }
 
