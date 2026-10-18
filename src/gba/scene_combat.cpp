@@ -77,13 +77,28 @@ struct Point
     int y;
 };
 
-// Four to six enemies: the leftmost and rightmost places, and the heights of the front and back rows.
-constexpr int CROWD_LEFT = -26;
-constexpr int CROWD_RIGHT = 108;
+// Three enemies or more share the room right of the hero in lanes of equal width, from the left edge of the first
+// lane (the hero's HP bar ends at -44 and his widest HP label at -51) to the right edge of the screen.
+constexpr int ENEMY_LEFT = -36;
+constexpr int SCREEN_EDGE = 119;
+// Rightmost centre of a 64 px wide enemy sprite, so that the edge of the screen does not cut it.
+constexpr int SPRITE_RIGHT = 88;
+// Right edge of the pile counters (top left): an enemy's intent icon stays right of it.
+constexpr int PILE_RIGHT = -16;
+// Four to six enemies: the heights of the front and back rows.
 constexpr int CROWD_FRONT_Y = -12;
 constexpr int CROWD_BACK_Y = -30;
 // The back row's statuses are written one line above the front row's.
 constexpr int CROWD_STATUS_STEP = 10;
+// Full width of an HP bar at scale 1.
+constexpr int BAR_WIDTH = 64;
+
+int enemy_lane_width(int count)
+{
+    return (SCREEN_EDGE + 1 - ENEMY_LEFT) / bn::max(count, 1);
+}
+
+int enemy_bar_x(int index, int count, bool boss);
 
 Point enemy_slot(int index, int count, bool boss)
 {
@@ -102,40 +117,97 @@ Point enemy_slot(int index, int count, bool boss)
         return index == 0 ? Point{ 22, -20 } : Point{ 86, -22 };
     }
 
+    // Three or more: the sprites spread evenly from the first lane to the last one, held back from the right edge.
+    index = bn::clamp(index, 0, count - 1);
+    int first = enemy_bar_x(0, count, false);
+    int last = bn::min(enemy_bar_x(count - 1, count, false), SPRITE_RIGHT);
+    int x = first + (last - first) * index / (count - 1);
+
     if(count == 3)
     {
-        constexpr Point three[] = { { 4, -18 }, { 54, -24 }, { 104, -18 } };
-        return three[bn::clamp(index, 0, 2)];
+        return { x, index == 1 ? -24 : -18 };
     }
 
-    // Four to six: spread evenly from CROWD_LEFT to CROWD_RIGHT, every other one a row further back (higher up),
-    // so that two neighbours never draw their intent at the same height.
-    index = bn::clamp(index, 0, count - 1);
-    int x = CROWD_LEFT + (CROWD_RIGHT - CROWD_LEFT) * index / (count - 1);
+    // Four to six: every other one a row further back (higher up), so that two neighbours never draw their intent
+    // at the same height.
     return { x, index % 2 ? CROWD_BACK_Y : CROWD_FRONT_Y };
 }
 
-// Width of an enemy's HP bar, by the number of enemies in the row.
-bn::fixed enemy_bar_scale(int count)
+// Centre of an enemy's HP bar and statuses: under its sprite for one or two enemies, else the middle of its lane.
+int enemy_bar_x(int index, int count, bool boss)
 {
-    if(count > 3)
+    if(boss || count <= 2)
     {
-        return bn::fixed(0.4);
+        return enemy_slot(index, count, boss).x;
     }
 
-    return count == 3 ? bn::fixed(0.75) : bn::fixed(1);
+    return ENEMY_LEFT + (2 * index + 1) * (SCREEN_EDGE + 1 - ENEMY_LEFT) / (2 * count);
 }
 
-// Room for the statuses of an enemy: with four enemies or more, the front and back rows write them on two lines,
-// so a line may use the width up to the next enemy of its own row.
-int enemy_status_width(int count)
+// Width of an enemy's HP bar, by the number of enemies in the row: a few pixels narrower than its lane.
+bn::fixed enemy_bar_scale(int count)
 {
-    if(count > 3)
+    if(count <= 2)
     {
-        return 2 * (CROWD_RIGHT - CROWD_LEFT) / (count - 1) - 4;
+        return bn::fixed(1);
     }
 
-    return STATUS_WIDTH;
+    return bn::fixed(bn::min(enemy_lane_width(count) - 6, BAR_WIDTH)) / BAR_WIDTH;
+}
+
+// Width of the label of an HP bar at `max_hp` out of `max_hp`, or of `max_hp` alone when compact.
+int hp_label_width(int max_hp, bool compact)
+{
+    bn::string<16> text;
+    bn::ostringstream stream(text);
+    stream << max_hp;
+
+    if(! compact)
+    {
+        stream << '/' << max_hp;
+    }
+
+    return text_width(text);
+}
+
+// Whether an enemy's HP label shows its HP alone: "190/190" does not fit the lane of one of four enemies.
+bool enemy_hp_compact(int count, int max_hp)
+{
+    return count > 2 && hp_label_width(max_hp, false) > enemy_lane_width(count) - 2;
+}
+
+struct Span
+{
+    int left;
+    int right;
+};
+
+// Room for the statuses of an enemy, from halfway to its neighbour on the left to halfway to the one on its right.
+// With four enemies or more, the front and back rows write them on two lines: the neighbours are those of its row.
+Span enemy_status_span(int index, int count, bool boss)
+{
+    int step = count > 3 ? 2 : 1;
+    int x = enemy_bar_x(index, count, boss);
+    Span span = { ENEMY_LEFT, SCREEN_EDGE };
+
+    if(index - step >= 0)
+    {
+        span.left = (enemy_bar_x(index - step, count, boss) + x) / 2 + 2;
+    }
+
+    if(index + step < count)
+    {
+        span.right = (x + enemy_bar_x(index + step, count, boss)) / 2 - 2;
+    }
+
+    // A lone enemy keeps half the screen, as the hero does.
+    if(span.right - span.left > STATUS_WIDTH)
+    {
+        span.left = bn::max(span.left, bn::min(x - STATUS_WIDTH / 2, span.right - STATUS_WIDTH));
+        span.right = span.left + STATUS_WIDTH;
+    }
+
+    return span;
 }
 
 int enemy_status_y(int index, int count)
@@ -143,19 +215,29 @@ int enemy_status_y(int index, int count)
     return count > 3 && index % 2 ? STATUS_Y - CROWD_STATUS_STEP : STATUS_Y;
 }
 
-// Centre of a status line, moved towards the middle of the screen when the line is too long to fit around
-// `wanted_x`: with three or four statuses it would run past the edge.
-int status_line_x(int wanted_x, const bn::string_view& text)
+// Centre of a line `width` pixels wide, as close to `wanted_x` as `span` lets it.
+int place_in_span(int wanted_x, int width, Span span)
 {
-    constexpr int EDGE = 118;
-    int half = (text_width(text) + 1) / 2;
+    int half = (width + 1) / 2;
 
-    if(half >= EDGE)
+    if(2 * half >= span.right - span.left)
     {
-        return 0;
+        return (span.left + span.right) / 2;
     }
 
-    return bn::clamp(wanted_x, half - EDGE, EDGE - half);
+    return bn::clamp(wanted_x, span.left + half, span.right - half);
+}
+
+// Centre of an enemy's intent icon: above its head (beside it for a boss), right of the pile counters.
+int enemy_intent_x(int slot_x, bool boss)
+{
+    return boss ? slot_x - 62 : bn::max(slot_x - 4, PILE_RIGHT + 8);
+}
+
+// Half the width of a block badge: the shield drawn in its 16 px icon (11 px), or its number when wider.
+int block_badge_half(const bn::string_view& text)
+{
+    return bn::max(6, (text_width(text) + 1) / 2);
 }
 
 // Offsets of the four 64x64 quarters of a 128x128 boss sprite.
@@ -212,11 +294,13 @@ private:
 
     struct EnemyView
     {
-        EnemyView(int slot_x, int slot_y, int bar_x, bool is_boss) :
-            bar(bar_x, BAR_Y),
+        EnemyView(int slot_x, int slot_y, int bar_center, bool is_boss) :
+            bar(bar_center, BAR_Y),
             intent_icon(create_icon(Icon::ATTACK, slot_x, slot_y)),
             x(slot_x),
             y(slot_y),
+            bar_x(bar_center),
+            intent_x(enemy_intent_x(slot_x, is_boss)),
             boss(is_boss)
         {
         }
@@ -231,6 +315,13 @@ private:
         TextLine status_text;
         int x;
         int y;
+        // Centre of the HP bar, its label and the statuses: the middle of the enemy's lane.
+        int bar_x;
+        // Centre of the intent icon, right of the pile counters.
+        int intent_x;
+        // Centre of the status line, which a block badge pushes right in a row of three or more.
+        int status_x = 0;
+        int block_x = 0;
         int shown_block = -1;
         int shown_icon = -1;
         int hurt = 0;
@@ -517,7 +608,7 @@ void CombatScene::_build_enemies()
         const engine::Enemy& enemy = _combat.enemies[index];
         EnemyArt art = enemy_art(enemy.type);
         Point slot = enemy_slot(index, count, art.boss);
-        int bar_x = slot.x;
+        int bar_x = enemy_bar_x(index, count, art.boss);
         EnemyView& view = _enemies.emplace_back(slot.x, slot.y, bar_x, art.boss);
         _create_enemy_parts(view, art);
 
@@ -526,6 +617,7 @@ void CombatScene::_build_enemies()
             view.bar.set_horizontal_scale(enemy_bar_scale(count));
         }
 
+        view.bar.set_compact(enemy_hp_compact(count, enemy.max_hp));
         view.bar.set(enemy.hp, enemy.max_hp);
         view.bar.snap();
 
@@ -546,6 +638,11 @@ void CombatScene::_build_enemies()
         _snap_block[index] = enemy.block;
         view.intent_label.move_to(_intent_x(view) + 10, _enemy_top(view));
         view.intent_icon.set_position(_intent_x(view), _enemy_top(view));
+    }
+
+    // Once the whole row is built: the place of a badge or a status line depends on the number of enemies.
+    for(int index = 0; index < count; ++index)
+    {
         _refresh_enemy_hud(index);
     }
 
@@ -597,7 +694,8 @@ void CombatScene::_summon_enemies(int summoner, unsigned summoned)
         while(_enemies.size() <= index)
         {
             Point slot = enemy_slot(_enemies.size(), count, art.boss);
-            EnemyView& added = _enemies.emplace_back(slot.x, slot.y, slot.x, art.boss);
+            EnemyView& added = _enemies.emplace_back(slot.x, slot.y, enemy_bar_x(_enemies.size(), count, art.boss),
+                                                     art.boss);
             added.gone = true;
             added.bar.set_visible(false);
             added.intent_icon.set_visible(false);
@@ -652,8 +750,16 @@ void CombatScene::_layout_enemies()
         Point slot = enemy_slot(index, count, view.boss);
         view.x = slot.x;
         view.y = slot.y;
-        view.bar.set_position(slot.x, BAR_Y);
+        view.bar_x = enemy_bar_x(index, count, view.boss);
+        view.intent_x = enemy_intent_x(slot.x, view.boss);
+        view.bar.set_position(view.bar_x, BAR_Y);
         view.bar.set_horizontal_scale(enemy_bar_scale(count));
+
+        if(index < int(_combat.enemies.size()))
+        {
+            view.bar.set_compact(enemy_hp_compact(count, _combat.enemies[index].max_hp));
+        }
+
         // The labels under it are written again at the new place.
         view.status_text = "-";
         view.shown_block = -1;
@@ -991,7 +1097,10 @@ void CombatScene::_refresh_hud()
             bn::string<8> text;
             bn::ostringstream stream(text);
             stream << block;
-            _player_block_label.set(PLAYER_X - 30, BAR_Y, text, Align::CENTER, TextColor::WHITE);
+            // Left of the widest HP label, so that a two or three digit block never covers it.
+            int block_x = PLAYER_X - (hp_label_width(player.max_hp, false) + 1) / 2 - block_badge_half(text) - 2;
+            _player_block_icon->set_position(block_x, BAR_Y);
+            _player_block_label.set(block_x, BAR_Y, text, Align::CENTER, TextColor::WHITE);
         }
         else
         {
@@ -1000,14 +1109,25 @@ void CombatScene::_refresh_hud()
         }
     }
 
+    // The hero's statuses stop before the room of the first enemy's, on the same line.
+    Span player_span = { -SCREEN_EDGE, STATUS_WIDTH - SCREEN_EDGE };
+
+    if(! _enemies.empty())
+    {
+        player_span.right = bn::min(player_span.right,
+                                    enemy_status_span(0, _enemies.size(), _enemies[0].boss).left - 4);
+    }
+
+    int player_width = player_span.right - player_span.left;
     TextLine status;
-    status_line(player, status, STATUS_WIDTH);
-    append_enemy_powers(_combat, -1, status, STATUS_WIDTH);
+    status_line(player, status, player_width);
+    append_enemy_powers(_combat, -1, status, player_width);
 
     if(status != _player_status_text)
     {
         _player_status_text = status;
-        _player_status.set(status_line_x(PLAYER_X, status), STATUS_Y, status, Align::CENTER, TextColor::PURPLE);
+        _player_status.set(place_in_span(PLAYER_X, text_width(status), player_span), STATUS_Y, status, Align::CENTER,
+                           TextColor::PURPLE);
     }
 
     bool interactive = _phase == Phase::PLAYER && ! _combat.vakuu_turn_active;
@@ -1183,41 +1303,77 @@ void CombatScene::_refresh_enemy_hud(int index)
                           icon == Icon::ATTACK ? TextColor::RED : TextColor::WHITE);
     view.intent_label.set_visible(view.intent_visible);
 
-    TextLine status;
     int count = _enemies.size();
-    int status_width = enemy_status_width(count);
+    int block = enemy.block;
+    bn::string<8> block_text;
+    bn::ostringstream block_stream(block_text);
+    block_stream << block;
+    int block_half = block_badge_half(block_text);
+    // One or two enemies: the block badge sits left of the widest HP label. In a row of three or more, the lanes are
+    // too narrow for that, so it opens the status line.
+    bool lane_badge = count >= 3 && ! view.boss && block > 0;
+    int badge_width = lane_badge ? 2 * block_half + 2 : 0;
+    int block_x = 0;
+    int block_y = lane_badge ? enemy_status_y(index, count) - 1 : BAR_Y;
+
+    if(! lane_badge && block > 0)
+    {
+        int label_left = view.bar_x - (hp_label_width(enemy.max_hp, enemy_hp_compact(count, enemy.max_hp)) + 1) / 2;
+        block_x = label_left - block_half - 2;
+
+        // Between the two labels when the HP label of the enemy on the left is too wide to leave it room.
+        if(index > 0)
+        {
+            const engine::Enemy& left = _combat.enemies[index - 1];
+            int left_right = _enemies[index - 1].bar_x +
+                             (hp_label_width(left.max_hp, enemy_hp_compact(count, left.max_hp)) + 1) / 2;
+
+            if(block_x - block_half - 2 < left_right)
+            {
+                block_x = (left_right + label_left) / 2;
+            }
+        }
+    }
+
+    TextLine status;
+    Span status_span = enemy_status_span(index, count, view.boss);
+    int status_width = status_span.right - status_span.left - badge_width;
     status_line(enemy, status, status_width);
     append_enemy_powers(_combat, index, status, status_width);
 
-    if(status != view.status_text)
+    // The badge and the statuses make one line, centred as close to the HP bar as the room allows.
+    int text_size = status.empty() ? 0 : text_width(status);
+    int line_x = place_in_span(view.bar_x, badge_width + text_size, status_span);
+    int line_left = line_x - (badge_width + text_size + 1) / 2;
+    int status_x = line_left + badge_width + (text_size + 1) / 2;
+
+    if(lane_badge)
     {
-        view.status_text = status;
-        view.status_label.set(status_line_x(view.x, status), enemy_status_y(index, count), status, Align::CENTER,
-                              TextColor::PURPLE);
+        block_x = line_left + block_half;
     }
 
-    int block = enemy.block;
+    if(status != view.status_text || status_x != view.status_x)
+    {
+        view.status_text = status;
+        view.status_x = status_x;
+        view.status_label.set(status_x, enemy_status_y(index, count), status, Align::CENTER, TextColor::PURPLE);
+    }
 
-    if(block != view.shown_block)
+    if(block != view.shown_block || block_x != view.block_x)
     {
         view.shown_block = block;
+        view.block_x = block_x;
 
         if(block > 0)
         {
-            // Left of the HP bar; in a row of four or more there is no room there, so left of the intent.
-            int block_x = count > 3 ? _intent_x(view) - 16 : view.x - 30;
-            int block_y = count > 3 ? _enemy_top(view) : BAR_Y;
-
             if(! view.block_icon)
             {
                 view.block_icon = create_icon(Icon::DEFEND, block_x, block_y);
                 view.block_icon->set_z_order(Z_FX);
             }
 
-            bn::string<8> text;
-            bn::ostringstream block_stream(text);
-            block_stream << block;
-            view.block_label.set(block_x, block_y, text);
+            view.block_icon->set_position(block_x, block_y);
+            view.block_label.set(block_x, block_y, block_text);
         }
         else
         {
@@ -1242,7 +1398,7 @@ int CombatScene::_body_y(const EnemyView& view) const
 
 int CombatScene::_intent_x(const EnemyView& view) const
 {
-    return view.boss ? view.x - 62 : view.x - 4;
+    return view.intent_x;
 }
 
 bool CombatScene::_any_playable() const

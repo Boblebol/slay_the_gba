@@ -23,6 +23,8 @@ public:
     void set_position(int x, int y);
     void set_visible(bool visible);
     void set_horizontal_scale(bn::fixed scale);
+    // Writes only the HP left, without "/max", where a full label would not fit (a crowded row of enemies).
+    void set_compact(bool compact);
 
     [[nodiscard]] bool animating() const
     {
@@ -42,6 +44,7 @@ private:
     int _frame = 0;
     int _half_width = 16;
     bool _visible = true;
+    bool _compact = false;
 
     void _refresh();
 };
