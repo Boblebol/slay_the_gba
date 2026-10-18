@@ -92,6 +92,16 @@ void HpBar::set_horizontal_scale(bn::fixed scale)
     set_position(_x, _y);
 }
 
+void HpBar::set_compact(bool compact)
+{
+    if(compact != _compact)
+    {
+        _compact = compact;
+        _label_value = -1;
+        _refresh();
+    }
+}
+
 void HpBar::_refresh()
 {
     int shown = _shown.round_integer();
@@ -119,7 +129,13 @@ void HpBar::_refresh()
         _label_value = shown;
         bn::string<16> text;
         bn::ostringstream stream(text);
-        stream << shown << '/' << _max;
+        stream << shown;
+
+        if(! _compact)
+        {
+            stream << '/' << _max;
+        }
+
         _label.set(_x, _y, text);
         _label.set_visible(_visible);
     }
