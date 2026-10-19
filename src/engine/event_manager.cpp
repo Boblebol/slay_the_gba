@@ -225,6 +225,11 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
         case EventEffectType::GAIN_RELIC:
             if (effect.ref.empty()) {
                 run.gain_random_relics(1);
+            } else if (effect.ref == "COMMON") {
+                RewardRng rng(run.next_random());
+                const std::string_view id = draw_relic(rng, run.character, RelicSource::COMMON,
+                                                       std::span<const std::string_view>(run.relics.begin(), run.relics.size()));
+                if (!id.empty()) run.add_relic(id);
             } else if (!run.has_relic(effect.ref)) {
                 run.add_relic(effect.ref);
             }
@@ -250,6 +255,16 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             break;
         case EventEffectType::FIGHT:
             run.begin_fight(effect.ref == "ELITE" ? RoomType::ELITE : RoomType::MONSTER);
+            break;
+        case EventEffectType::DOWNGRADE_CARD:
+            for (int n = 0; n < count_of(effect); ++n) {
+                FixedVector<int, 50> upgraded;
+                for (size_t i = 0; i < run.master_deck.size(); ++i) {
+                    if (run.master_deck[i].upgraded) upgraded.push_back(static_cast<int>(i));
+                }
+                if (upgraded.empty()) break;
+                run.master_deck[upgraded[run.next_random() % upgraded.size()]].upgraded = false;
+            }
             break;
         case EventEffectType::GOTO_PAGE:
         case EventEffectType::LEAVE:
