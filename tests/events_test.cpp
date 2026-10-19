@@ -639,6 +639,14 @@ void test_event_effects() {
             assert(card_meta(run.master_deck[i].id).pool == CardPool::IRONCLAD);
         }
     }
+    // A named card removed: exactly that many copies, no choice asked.
+    {
+        RunManager run = fresh_run();
+        const int defends = count_cards(run, CardId::DEFEND);
+        const size_t deck = run.master_deck.size();
+        EventManager::apply_effect(run, { .type = EventEffectType::REMOVE_CARD, .amount = 2, .card = CardId::DEFEND });
+        assert(count_cards(run, CardId::DEFEND) == defends - 2 && run.master_deck.size() == deck - 2 && !run.has_deck_choice());
+    }
     // Chosen by the player: a deck choice of the right kind and size.
     {
         RunManager run = fresh_run();
@@ -759,6 +767,9 @@ void test_event_pages_and_conditions() {
         assert(!EventManager::meets(run, { .check = EventCheck::HAS_POTION }));
         run.potions.push_back("FIRE_POTION");
         assert(EventManager::meets(run, { .check = EventCheck::HAS_POTION }));
+        const int defends = count_cards(run, CardId::DEFEND);
+        assert(EventManager::meets(run, { .check = EventCheck::HAS_CARD, .amount = static_cast<int16_t>(defends), .card = CardId::DEFEND }));
+        assert(!EventManager::meets(run, { .check = EventCheck::HAS_CARD, .amount = static_cast<int16_t>(defends + 1), .card = CardId::DEFEND }));
     }
     std::cout << "[PASS] Event pages: next page, chained effects, greyed-out options, conditions" << std::endl;
 }
