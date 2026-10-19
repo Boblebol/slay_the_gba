@@ -621,6 +621,9 @@ void test_event_effects() {
         const size_t deck = run.master_deck.size();
         EventManager::apply_effect(run, { .type = EventEffectType::ADD_CARD, .amount = 2, .card = CardId::BASH, .upgraded = true });
         assert(run.master_deck.size() == deck + 2 && run.master_deck[deck].id == CardId::BASH && run.master_deck[deck].upgraded);
+        EventManager::apply_effect(run, { .type = EventEffectType::ADD_CARD });
+        assert(run.master_deck.size() == deck + 3 && card_meta(run.master_deck.back().id).pool == CardPool::COLORLESS);
+        run.master_deck.pop_back();
         EventManager::apply_effect(run, { .type = EventEffectType::ADD_CURSE, .card = CardId::INJURY });
         assert(run.master_deck.back().id == CardId::INJURY);
         EventManager::apply_effect(run, { .type = EventEffectType::ADD_CURSE, .amount = 2 });
