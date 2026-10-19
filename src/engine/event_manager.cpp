@@ -163,7 +163,11 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.lose_max_hp(effect.amount);
             break;
         case EventEffectType::ADD_CARD:
-            for (int n = 0; n < count_of(effect); ++n) run.add_card_to_deck(DeckCard{ effect.card, effect.upgraded });
+            for (int n = 0; n < count_of(effect); ++n) {
+                const CardId card = effect.card_pool.empty() ? effect.card
+                                                             : effect.card_pool[run.next_random() % effect.card_pool.size()];
+                run.add_card_to_deck(DeckCard{ card, effect.upgraded });
+            }
             break;
         case EventEffectType::ADD_CURSE:
             for (int n = 0; n < count_of(effect); ++n) {
@@ -223,7 +227,13 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             break;
         }
         case EventEffectType::GAIN_RELIC:
-            if (effect.ref.empty()) {
+            if (!effect.relic_pool.empty()) {
+                FixedVector<std::string_view, 16> left; // the relics of the pool not owned yet
+                for (const std::string_view relic : effect.relic_pool) {
+                    if (!run.has_relic(relic)) left.push_back(relic);
+                }
+                if (!left.empty()) run.add_relic(left[run.next_random() % left.size()]);
+            } else if (effect.ref.empty()) {
                 run.gain_random_relics(1);
             } else if (!run.has_relic(effect.ref)) {
                 run.add_relic(effect.ref);
