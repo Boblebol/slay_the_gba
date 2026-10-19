@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 90,2 %** — 1172 faits, 13 partiels, 64 à faire (35 hors périmètre).
+**Avancement global : 90,2 %** — 1173 faits, 13 partiels, 63 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -22,13 +22,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
 | [Cartes communes aux cinq éditions](#cartes) | 119 | 0 | 1 | 99,2 % |
-| [Reliques et potions](#reliques) | 319 | 0 | 2 | 99,4 % |
+| [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 35 | 1 | 0 | 98,6 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1172** | **13** | **64** | **90,2 %** |
+| **Total** | **1173** | **13** | **63** | **90,2 %** |
 
 <a id="ironclad"></a>
 
@@ -861,7 +861,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 99,4 %
+## Reliques et potions — 99,7 %
 
 ### Reliques partagées — 100,0 %
 
@@ -1033,9 +1033,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Oui |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 98,0 %
+### Reliques des Anciens — 99,0 %
 
-100 faits, 0 partiel, 2 à faire.
+101 faits, 0 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1107,7 +1107,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Paillettes | Ancienne | Oui |  |
 | Parasol seigneurial | Ancienne | Oui |  |
 | Parchemin arcanique | Ancienne | Oui |  |
-| Parchemin énorme | Ancienne | Non |  |
+| Parchemin énorme | Ancienne | Oui |  |
 | Perle dorée | Ancienne | Oui |  |
 | Perle maudite | Ancienne | Oui |  |
 | Perle radieuse | Ancienne | Oui |  |
