@@ -70,6 +70,11 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::NO_RELIC: return !run.has_relic(condition.ref);
         case EventCheck::MIN_DECK: return run.master_deck.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
         case EventCheck::HAS_POTION: return !run.potions.empty();
+        case EventCheck::CAN_SOULS_POWER:
+            for (const DeckCard& card : run.master_deck) {
+                if (can_enchant(card, Enchantment::SOULS_POWER)) return true;
+            }
+            return false;
         case EventCheck::NONE:
         default: return true;
     }

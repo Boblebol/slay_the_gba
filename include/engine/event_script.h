@@ -94,7 +94,8 @@ enum class EventCheck : uint8_t {
     HAS_RELIC,  // relic `ref` owned
     NO_RELIC,   // relic `ref` not owned
     MIN_DECK,   // at least `amount` cards in the deck
-    HAS_POTION  // at least one potion on the belt
+    HAS_POTION, // at least one potion on the belt
+    CAN_SOULS_POWER // a card of the deck has Exhaust, so it can receive Soul's Power
 };
 
 struct EventCondition {
