@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 92,2 %** — 1189 faits, 12 partiels, 48 à faire (35 hors périmètre).
+**Avancement global : 92,3 %** — 1190 faits, 12 partiels, 47 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 22 | 3 | 40 | 36,2 % |
+| [Évènements et Anciens](#rencontres) | 23 | 3 | 39 | 37,7 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1189** | **12** | **48** | **92,2 %** |
+| **Total** | **1190** | **12** | **47** | **92,3 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 36,2 %
+## Évènements et Anciens — 37,7 %
 
-### Évènements — 27,2 %
+### Évènements — 28,9 %
 
-14 faits, 3 partiels, 40 à faire.
+15 faits, 3 partiels, 39 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1371,7 +1371,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Fleur colossale | Acte 2 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
 | Graine de saphir | Acte 1 (A) | Non |  |
 | Gravures sur bois | Acte 1 (A) | Non |  |
-| Jungle dense | Acte 1 (A) | Non |  |
+| Jungle dense | Acte 1 (A) | Oui |  |
 | La clé de la lanterne | Acte 2 | Oui |  |
 | La légende disait vrai | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | La statue engloutie | Acte 1 (A), Acte 1 (B) | Oui |  |
