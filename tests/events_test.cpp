@@ -628,6 +628,20 @@ void test_event_effects() {
         assert(card_meta(run.master_deck[deck + 3].id).pool == CardPool::CURSE);
         assert(card_meta(run.master_deck[deck + 4].id).pool == CardPool::CURSE);
     }
+    // A potion lost (the last one); a relic lost (the last one, never the starter relic).
+    {
+        RunManager run = fresh_run();
+        EventManager::apply_effect(run, { .type = EventEffectType::LOSE_POTION });
+        run.potions.push_back("FIRE_POTION");
+        run.potions.push_back("BLOCK_POTION");
+        EventManager::apply_effect(run, { .type = EventEffectType::LOSE_POTION });
+        assert(run.potions.size() == 1 && run.potions[0] == "FIRE_POTION");
+        EventManager::apply_effect(run, { .type = EventEffectType::LOSE_RELIC });
+        assert(run.relics.size() == 1 && run.has_relic("BURNING_BLOOD"));
+        run.add_relic("VAJRA");
+        EventManager::apply_effect(run, { .type = EventEffectType::LOSE_RELIC });
+        assert(run.relics.size() == 1 && !run.has_relic("VAJRA"));
+    }
     // Chosen by the player: a deck choice of the right kind and size.
     {
         RunManager run = fresh_run();
@@ -748,6 +762,8 @@ void test_event_pages_and_conditions() {
         assert(!EventManager::meets(run, { .check = EventCheck::HAS_POTION }));
         run.potions.push_back("FIRE_POTION");
         assert(EventManager::meets(run, { .check = EventCheck::HAS_POTION }));
+        assert(EventManager::meets(run, { .check = EventCheck::MIN_RELICS, .amount = 1 }));
+        assert(!EventManager::meets(run, { .check = EventCheck::MIN_RELICS, .amount = 2 }));
     }
     std::cout << "[PASS] Event pages: next page, chained effects, greyed-out options, conditions" << std::endl;
 }

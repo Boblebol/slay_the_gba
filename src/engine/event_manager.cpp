@@ -70,6 +70,7 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::NO_RELIC: return !run.has_relic(condition.ref);
         case EventCheck::MIN_DECK: return run.master_deck.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
         case EventCheck::HAS_POTION: return !run.potions.empty();
+        case EventCheck::MIN_RELICS: return run.relics.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
         case EventCheck::NONE:
         default: return true;
     }
@@ -241,6 +242,12 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             if (!run.relic_reward.empty()) run.phase = RunPhase::REWARD_SCREEN;
             break;
         }
+        case EventEffectType::LOSE_POTION:
+            run.potions.pop_back();
+            break;
+        case EventEffectType::LOSE_RELIC:
+            if (run.relics.size() > 1) run.relics.erase(run.relics.size() - 1);
+            break;
         case EventEffectType::GAIN_POTION:
             if (effect.ref.empty()) {
                 run.gain_random_potions(count_of(effect));
