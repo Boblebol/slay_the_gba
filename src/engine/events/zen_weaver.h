@@ -27,7 +27,7 @@ inline constexpr EventEffect ZEN_WEAVER_ACUPUNCTURE[] = {
 
 inline constexpr EventOption ZEN_WEAVER_START[] = {
     { .label = "Techniques de respiration",
-      .cost_benefit = "Payez 50 Or, ajoutez 2 Illumination.",
+      .cost_benefit = "50 Or : ajoutez 2 Illumination.",
       .result = "Vous respirez lentement, au rythme de l'araignée. Deux Illumination rejoignent votre deck.",
       .effects = ZEN_WEAVER_BREATHING,
       .condition = { .check = EventCheck::MIN_GOLD, .amount = ZEN_WEAVER_BREATHING_COST } },
