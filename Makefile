@@ -86,6 +86,7 @@ ENGINE_SOURCES  := src/engine/card.cpp \
                    src/engine/compendium.cpp \
                    src/engine/navigation.cpp \
                    src/engine/event_manager.cpp \
+                   src/engine/event_registry.cpp \
                    src/engine/pokemon_battle_ui.cpp
 
 # Détection de l'environnement devkitARM / Docker

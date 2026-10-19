@@ -137,11 +137,13 @@ int main() {
               << run.master_deck.size() << " cards.\n";
 
     // 10b. Floor 3: Pokémon-style Mystery Event Encounter
-    EventEncounter ev = EventManager::get_encounter_for_floor(3, 42);
+    run.trigger_event();
+    const EventEncounter& ev = run.current_event;
+    assert(run.phase == RunPhase::EVENT);
     assert(!ev.title.empty());
     assert(ev.choices.size() >= 2);
     char ev_msg[128];
-    EventManager::apply_choice(run, ev.choices[0], ev_msg, sizeof(ev_msg));
+    assert(run.choose_event_choice(0, ev_msg, sizeof(ev_msg)));
     assert(ev_msg[0] != '\0');
     std::cout << "[E2E Step 10b] Encountered Pokémon-style Mystery Event '" << ev.title << "' -> Choice resolved: " << ev_msg << "\n";
 

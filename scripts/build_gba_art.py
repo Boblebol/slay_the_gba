@@ -1773,6 +1773,16 @@ def load_scene_art(path: Path, size: tuple[int, int], brighten: float = 1.0, foc
     return img
 
 
+def event_backgrounds() -> dict[str, tuple[str, float, float]]:
+    """Background of each event file of src/engine/events/ whose painting is in bible/images/events/: name ->
+    (painting, gamma, vertical focus)."""
+    found = {}
+    for path in sorted((ROOT / "src" / "engine" / "events").glob("*.h")):
+        if (BIBLE / "events" / f"{path.stem}.webp").exists():
+            found[path.stem] = (path.stem, 2.0, 0.0)
+    return found
+
+
 def build_scene_bgs() -> None:
     # Title: key art, with a darkened band behind the logo text.
     title = load_scene_art(BIBLE / "misc" / "hero-keyart.jpg", (240, 160), 1.0, 0.35)
@@ -1796,6 +1806,9 @@ def build_scene_bgs() -> None:
         "abyssal_baths": ("abyssal_baths", 2.3, 0.0),
         "mystic_altar": ("the_legends_were_true", 1.8, 0.0),
     }
+    # Every event described by data (src/engine/events/<id>.h) gets the painting of the bible of the same name.
+    for name, (src, gamma, fy) in event_backgrounds().items():
+        events.setdefault(name, (src, gamma, fy))
     for name, (src, gamma, fy) in events.items():
         art = load_scene_art(BIBLE / "events" / f"{src}.webp", (240, 160), gamma, fy, fit_width=True).convert("RGBA")
         draw_panel(art, (0, 88, 239, 159), (120, 104, 200))
