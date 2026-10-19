@@ -34,6 +34,29 @@ int count_of(const EventEffect& effect) {
     return effect.amount > 0 ? effect.amount : 1;
 }
 
+// GAIN_RELIC with a list "A,B,C" in `ref`: the one drawn by `random`.
+std::string_view listed_relic(std::string_view list, uint32_t random) {
+    size_t count = 1;
+    for (char c : list) count += c == ',';
+    const size_t wanted = random % count;
+    size_t start = 0;
+    size_t seen = 0;
+    for (size_t i = 0; i <= list.size(); ++i) {
+        if (i == list.size() || list[i] == ',') {
+            if (seen++ == wanted) return std::string_view(list.data() + start, i - start);
+            start = i + 1;
+        }
+    }
+    return list;
+}
+
+bool is_relic_list(std::string_view ref) {
+    for (char c : ref) {
+        if (c == ',') return true;
+    }
+    return false;
+}
+
 DeckChoiceKind choice_kind(EventEffectType type) {
     switch (type) {
         case EventEffectType::REMOVE_CARD: return DeckChoiceKind::REMOVE;
@@ -225,6 +248,9 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
         case EventEffectType::GAIN_RELIC:
             if (effect.ref.empty()) {
                 run.gain_random_relics(1);
+            } else if (is_relic_list(effect.ref)) {
+                const std::string_view relic = listed_relic(effect.ref, run.next_random());
+                if (!run.has_relic(relic)) run.add_relic(relic);
             } else if (!run.has_relic(effect.ref)) {
                 run.add_relic(effect.ref);
             }
