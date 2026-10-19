@@ -67,7 +67,8 @@ enum class EventEffectType : uint8_t {
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
     FIGHT,          // a fight of the act once the event is left: `ref` "ELITE" for an elite one, else a normal one
     GOTO_PAGE,      // the event goes on with page `amount`
-    LEAVE           // nothing: makes a "leave" option explicit in the data
+    LEAVE,          // nothing: makes a "leave" option explicit in the data
+    TRADE_RELIC     // a random relic of the run is given up for a random one it did not own
 };
 
 // How the cards of REMOVE / UPGRADE / TRANSFORM / ENCHANT are found.

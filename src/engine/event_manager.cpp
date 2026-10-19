@@ -251,6 +251,21 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
         case EventEffectType::FIGHT:
             run.begin_fight(effect.ref == "ELITE" ? RoomType::ELITE : RoomType::MONSTER);
             break;
+        case EventEffectType::TRADE_RELIC: {
+            // The new relic is drawn first (it is never one already owned), then the relic given up leaves the run.
+            if (run.relics.empty()) break;
+            const size_t given = run.next_random() % run.relics.size();
+            const std::string_view lost = run.relics[given];
+            if (run.gain_random_relics(1) == 1) {
+                for (size_t i = 0; i < run.relics.size(); ++i) {
+                    if (run.relics[i] == lost) {
+                        run.relics.erase(i);
+                        break;
+                    }
+                }
+            }
+            break;
+        }
         case EventEffectType::GOTO_PAGE:
         case EventEffectType::LEAVE:
         default:
