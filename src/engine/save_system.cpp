@@ -254,6 +254,7 @@ void SaveManager::autosave_run(const RunManager& run) {
     r.combats_won = run.combats_won;
     r.elites_won = run.elites_won;
     r.bosses_won = run.bosses_won;
+    for (size_t i = 0; i < sizeof(r.events_seen); ++i) r.events_seen[i] = static_cast<uint8_t>(run.events_seen >> (8 * i));
 
     // Ancient met at the start of the act, with its offer
     const bool ancient = run.phase == RunPhase::ANCIENT_BLESSING && run.current_ancient < AncientId::COUNT;
@@ -340,6 +341,8 @@ bool SaveManager::restore_run(RunManager& run) {
     run.combats_won = r.combats_won;
     run.elites_won = r.elites_won;
     run.bosses_won = r.bosses_won;
+    run.events_seen = 0;
+    for (size_t i = 0; i < sizeof(r.events_seen); ++i) run.events_seen |= uint64_t{ r.events_seen[i] } << (8 * i);
 
     // Restore Deck
     run.master_deck.clear();

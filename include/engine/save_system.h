@@ -77,8 +77,10 @@ struct InRunSaveData {
     // Experience of the profile (#11), little endian. It belongs to the profile, not to the run: it sits here
     // because these are the only spare bytes of a profile. The autosave and the end of a run never clear it.
     uint8_t profile_xp[4] = { 0 };
+    // Events met in the run (RunManager::events_seen, little endian), 0 in the saves written before it (#253).
+    uint8_t events_seen[8] = { 0 };
     // Room for what the run will have to remember next, so a new field does not move the ones after it.
-    uint8_t reserved[32 - 2 - MAX_ANCIENT_OFFERS - 11] = { 0 };
+    uint8_t reserved[32 - 2 - MAX_ANCIENT_OFFERS - 11 - 8] = { 0 };
 };
 
 struct SaveProfile {

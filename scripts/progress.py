@@ -186,7 +186,13 @@ def implemented_monsters() -> set[str]:
 
 
 def implemented_events() -> set[str]:
-    return detect(r'enc\.id = "(\w+)"', ENGINE / "event_manager.cpp")
+    """Events described by data: one file src/engine/events/<id>.h each (see include/engine/event_script.h)."""
+    found: set[str] = set()
+    for path in sorted((ENGINE / "events").glob("*.h")):
+        found |= detect(r'\.id = "(\w+)"', path)
+    if not found:
+        raise SystemExit("progress: no event file in src/engine/events; update the detection in scripts/progress.py")
+    return found
 
 
 def implemented_ancients() -> set[str]:

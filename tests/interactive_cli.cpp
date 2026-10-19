@@ -367,7 +367,7 @@ int main() {
             if (std::cin >> ev_choice) {
                 try {
                     int c_idx = std::stoi(ev_choice) - 1;
-                    char msg[128];
+                    char msg[128] = {};
                     run.choose_event_choice(c_idx, msg, sizeof(msg));
                     std::cout << "\n💬 " << msg << "\n";
                 } catch (...) {

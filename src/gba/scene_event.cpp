@@ -114,9 +114,7 @@ public:
         _bg(event_bg(_event.id).create_bg(BG_ORIGIN_X, BG_ORIGIN_Y))
     {
         _title.set(0, -72, bn::string_view(_event.title.data(), _event.title.size()), Align::CENTER, TextColor::GOLD);
-        _writer.start(bn::string_view(_event.dialogue.data(), _event.dialogue.size()));
-        _hp_before = context.run.hp;
-        _gold_before = context.run.gold;
+        _open_page();
     }
 
     [[nodiscard]] bn::optional<SceneId> update() final
@@ -163,6 +161,10 @@ public:
                 _cursor = (_cursor + 1) % count;
                 _refresh_choices();
             }
+            else if(bn::keypad::a_pressed() && ! _event.choices[_cursor].enabled)
+            {
+                play_sfx(Sfx::ERROR);
+            }
             else if(bn::keypad::a_pressed())
             {
                 char message[96] = {};
@@ -190,7 +192,7 @@ public:
                 }
                 else
                 {
-                    return _ctx.run.hp <= 0 ? SceneId::GAME_OVER : scene_after_deck_choice(_ctx, SceneId::MAP);
+                    return _leave_result();
                 }
             }
             break;
@@ -214,13 +216,57 @@ private:
     Label _title;
     Label _prompt;
     Label _detail;
-    bn::vector<Label, 3> _choices;
+    bn::vector<Label, engine::MAX_EVENT_OPTIONS> _choices;
     PopupPool _popups;
     Stage _stage = Stage::DIALOGUE;
     int _timer = 0;
     int _cursor = 0;
     int _hp_before = 0;
     int _gold_before = 0;
+
+    // Shows the page of the event the run is on: its text, then its options.
+    void _open_page()
+    {
+        _writer.start(bn::string_view(_event.dialogue.data(), _event.dialogue.size()));
+        _stage = Stage::DIALOGUE;
+        _cursor = 0;
+        _hp_before = _ctx.run.hp;
+        _gold_before = _ctx.run.gold;
+    }
+
+    // Once the result is read: the next page of the event, or the scene the option leads to.
+    [[nodiscard]] bn::optional<SceneId> _leave_result()
+    {
+        engine::RunManager& run = _ctx.run;
+
+        if(run.hp <= 0)
+        {
+            return SceneId::GAME_OVER;
+        }
+
+        if(run.phase == engine::RunPhase::EVENT)
+        {
+            if(run.has_deck_choice())
+            {
+                return scene_after_deck_choice(_ctx, SceneId::EVENT);
+            }
+
+            _open_page();
+            return bn::nullopt;
+        }
+
+        if(run.phase == engine::RunPhase::IN_COMBAT)
+        {
+            return scene_for_run_phase(_ctx);
+        }
+
+        return scene_after_deck_choice(_ctx, run.phase == engine::RunPhase::REWARD_SCREEN ? SceneId::REWARDS : SceneId::MAP);
+    }
+
+    [[nodiscard]] int _choice_y(int index) const
+    {
+        return PANEL_TOP + index * (_event.choices.size() > 3 ? 12 : 13);
+    }
 
     void _refresh_choices()
     {
@@ -232,8 +278,9 @@ private:
             TextLine line;
             line.append(index == _cursor ? "► " : "  ");
             line.append(bn::string_view(choice.label.data(), choice.label.size()));
-            _choices.emplace_back().set(TEXT_LEFT, PANEL_TOP + index * 13, line, Align::LEFT,
-                                        index == _cursor ? TextColor::GOLD : TextColor::WHITE);
+            // An option the run cannot take (not enough gold...) stays visible, greyed out.
+            TextColor color = ! choice.enabled ? TextColor::GRAY : index == _cursor ? TextColor::GOLD : TextColor::WHITE;
+            _choices.emplace_back().set(TEXT_LEFT, _choice_y(index), line, Align::LEFT, color);
         }
 
         const engine::EventChoice& selected = _event.choices[_cursor];
@@ -248,7 +295,7 @@ private:
         if(_cursor < _choices.size())
         {
             int offset = wave(_timer, 30, 1).round_integer();
-            _choices[_cursor].move_to(TEXT_LEFT + 2 + offset, PANEL_TOP + _cursor * 13);
+            _choices[_cursor].move_to(TEXT_LEFT + 2 + offset, _choice_y(_cursor));
         }
     }
 

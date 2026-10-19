@@ -167,6 +167,8 @@ public:
     PaletteVariant palette = PaletteVariant::CLASSIC;
 
     EventEncounter current_event;
+    // Events met in this run, one bit per slot of EventManager::slots(): an act draws the ones it has not shown yet.
+    uint64_t events_seen = 0;
     // The Ancient met at the start of the act (phase ANCIENT_BLESSING), AncientId::COUNT when there is none, and
     // the relics it offers. The player takes one of them.
     AncientId current_ancient = AncientId::COUNT;
@@ -176,7 +178,12 @@ public:
     void start_run(CharacterId char_id, uint8_t ascension = 0, PaletteVariant pal = PaletteVariant::CLASSIC, uint32_t seed = 42);
     FixedVector<int, 3> get_available_rooms() const;
     void enter_room(int node_index);
+    // Draws the event of a ? room among the ones of the act not met yet (see EventManager::draw).
     void trigger_event();
+    // Opens the event `id` on its first page (phase EVENT) and marks it as met. False when it has no data.
+    bool start_event(std::string_view id);
+    // Applies an option of the page on screen. The run is then on the map, on the next page of the event (phase
+    // EVENT), in a fight or on a reward screen. False for a wrong or greyed-out option.
     bool choose_event_choice(int choice_index, char* out_msg = nullptr, size_t max_len = 0);
 
     // Campfire actions
@@ -342,6 +349,10 @@ public:
     void set_rng_state(uint32_t state) { rng_state_ = state ? state : 12345; }
 
 private:
+    friend class EventManager; // the effects of the events use the draws and the fights below
+    // Starts a fight of the act in a room of type `room` (MONSTER, ELITE or BOSS): the enemies are drawn from the
+    // encounter tables, with the current HP and the master deck. A Fur Coat room gives them 1 HP.
+    void begin_fight(RoomType room, bool fur_coat = false);
     // What follows a campfire action: the map, or with Miniature Tent the rest site again, without that action.
     void end_campfire_action(CampfireAction action);
     uint32_t rng_state_ = 12345;

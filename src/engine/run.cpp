@@ -125,6 +125,8 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     cook_pending = false;
     current_ancient = AncientId::COUNT;
     ancient_offers.clear();
+    events_seen = 0;
+    current_event = {};
     rng_state_ = seed ? seed : 12345;
 
     const auto& cdef = get_character(character);
@@ -256,6 +258,44 @@ FixedVector<EnemyType, MAX_ENEMIES> RunManager::draw_encounter(RoomType room) {
     return monsters;
 }
 
+void RunManager::begin_fight(RoomType room, bool fur_coat) {
+    phase = RunPhase::IN_COMBAT;
+    FixedVector<EnemyType, MAX_ENEMIES> etypes = draw_encounter(room);
+
+    // Start combat with current HP and master deck
+    combat.start_combat_multi(etypes, character);
+    combat.player.hp = hp;
+    combat.player.max_hp = max_hp;
+
+    // Ascension: tougher and harder-hitting enemies depending on the room.
+    // The enemies summoned during the fight get the same.
+    combat.enemy_hp_percent = get_enemy_hp_multiplier(room);
+    combat.enemy_damage_percent = get_enemy_damage_multiplier(room);
+    for (Enemy& foe : combat.enemies) foe.apply_ascension(combat.enemy_hp_percent, combat.enemy_damage_percent);
+    if (fur_coat) {
+        for (Enemy& foe : combat.enemies) foe.hp = 1;
+    }
+    combat.plan_enemies(); // the moves follow the Ascension values just given
+
+    // Replace combat piles with current master deck
+    combat.draw_pile.clear();
+    combat.hand.clear();
+    combat.discard_pile.clear();
+    combat.exhaust_pile.clear();
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        DeckCard card = master_deck[i];
+        card.deck_index = static_cast<uint8_t>(i);
+        // Ghost Seed: the Strikes and Defends of the fight are Ethereal.
+        if (has_relic("GHOST_SEED") && is_strike_or_defend(card.id)) card.added_keywords |= KEYWORD_ETHEREAL;
+        combat.draw_pile.push_back(card);
+    }
+    combat.shuffle_draw_pile();
+    combat.reset_combat_state();
+    register_relic_powers();
+    combat.begin_first_turn();
+    apply_combat_start_relics();
+}
+
 void RunManager::enter_room(int node_index) {
     // Winged Boots: a room off the paths of the current one spends one of the flights.
     if (current_node_index >= 0 && has_relic("WINGED_BOOTS") && relic_counter("WINGED_BOOTS") > 0) {
@@ -279,44 +319,9 @@ void RunManager::enter_room(int node_index) {
     switch (node.type) {
         case RoomType::MONSTER:
         case RoomType::ELITE:
-        case RoomType::BOSS: {
-            phase = RunPhase::IN_COMBAT;
-            FixedVector<EnemyType, MAX_ENEMIES> etypes = draw_encounter(node.type);
-
-            // Start combat with current HP and master deck
-            combat.start_combat_multi(etypes, character);
-            combat.player.hp = hp;
-            combat.player.max_hp = max_hp;
-
-            // Ascension: tougher and harder-hitting enemies depending on the room.
-            // The enemies summoned during the fight get the same.
-            combat.enemy_hp_percent = get_enemy_hp_multiplier(node.type);
-            combat.enemy_damage_percent = get_enemy_damage_multiplier(node.type);
-            for (Enemy& foe : combat.enemies) foe.apply_ascension(combat.enemy_hp_percent, combat.enemy_damage_percent);
-            if (fur_coat_room(node_index)) {
-                for (Enemy& foe : combat.enemies) foe.hp = 1;
-            }
-            combat.plan_enemies(); // the moves follow the Ascension values just given
-
-            // Replace combat piles with current master deck
-            combat.draw_pile.clear();
-            combat.hand.clear();
-            combat.discard_pile.clear();
-            combat.exhaust_pile.clear();
-            for (size_t i = 0; i < master_deck.size(); ++i) {
-                DeckCard card = master_deck[i];
-                card.deck_index = static_cast<uint8_t>(i);
-                // Ghost Seed: the Strikes and Defends of the fight are Ethereal.
-                if (has_relic("GHOST_SEED") && is_strike_or_defend(card.id)) card.added_keywords |= KEYWORD_ETHEREAL;
-                combat.draw_pile.push_back(card);
-            }
-            combat.shuffle_draw_pile();
-            combat.reset_combat_state();
-            register_relic_powers();
-            combat.begin_first_turn();
-            apply_combat_start_relics();
+        case RoomType::BOSS:
+            begin_fight(node.type, fur_coat_room(node_index));
             break;
-        }
         case RoomType::REST_SITE:
             phase = RunPhase::CAMPFIRE;
             break;
@@ -340,7 +345,6 @@ void RunManager::enter_room(int node_index) {
             break;
         case RoomType::EVENT:
             trigger_event();
-            phase = RunPhase::EVENT;
             break;
         default:
             break;
@@ -611,16 +615,28 @@ void RunManager::leave_shop() {
 }
 
 void RunManager::trigger_event() {
-    current_event = EventManager::get_encounter_for_floor(current_floor, next_random());
+    const int slot = EventManager::draw(*this, events_seen, next_random());
+    if (slot < 0) {
+        current_event = {};
+        phase = RunPhase::MAP_NAVIGATION;
+        return;
+    }
+    start_event(EventManager::slots()[slot].id);
+}
+
+bool RunManager::start_event(std::string_view id) {
+    const int slot = EventManager::slot_index(id);
+    const EventDef* def = slot < 0 ? nullptr : EventManager::slots()[slot].def;
+    if (!def || def->pages.empty()) return false;
+    events_seen |= uint64_t{ 1 } << slot;
+    current_event = {};
+    EventManager::open_page(*this, *def, 0);
+    phase = RunPhase::EVENT;
+    return true;
 }
 
 bool RunManager::choose_event_choice(int choice_index, char* out_msg, size_t max_len) {
-    if (choice_index >= 0 && static_cast<size_t>(choice_index) < current_event.choices.size()) {
-        EventManager::apply_choice(*this, current_event.choices[choice_index], out_msg, max_len);
-        phase = RunPhase::MAP_NAVIGATION;
-        return true;
-    }
-    return false;
+    return EventManager::choose(*this, choice_index, out_msg, max_len);
 }
 
 namespace {

@@ -913,7 +913,9 @@ int main() {
     // Test Event Manager: Encounters, Choices & Outcomes
     RunManager ev_run;
     ev_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 42);
-    EventEncounter enc = EventManager::get_encounter_for_floor(3, 42);
+    ev_run.trigger_event();
+    const EventEncounter& enc = ev_run.current_event;
+    assert(ev_run.phase == RunPhase::EVENT);
     assert(!enc.title.empty());
     assert(enc.choices.size() >= 2);
 
@@ -923,7 +925,7 @@ int main() {
     char outcome_msg[128];
 
     // Pick choice 0 (Gain gold / Heal / etc.)
-    EventManager::apply_choice(ev_run, enc.choices[0], outcome_msg, sizeof(outcome_msg));
+    assert(ev_run.choose_event_choice(0, outcome_msg, sizeof(outcome_msg)));
     assert(outcome_msg[0] != '\0');
     assert(ev_run.gold != gold_before_ev || ev_run.hp != hp_before_ev);
     std::cout << "[PASS] Pokémon-style Events: Encounters, Choice Dialogues, and Run State Modifications verified" << std::endl;
