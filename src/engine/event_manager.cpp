@@ -93,6 +93,11 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::NO_RELIC: return !run.has_relic(condition.ref);
         case EventCheck::MIN_DECK: return run.master_deck.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
         case EventCheck::HAS_POTION: return !run.potions.empty();
+        case EventCheck::HAS_CARD: {
+            int copies = 0;
+            for (const DeckCard& card : run.master_deck) copies += card.id == condition.card;
+            return copies >= condition.amount;
+        }
         case EventCheck::NONE:
         default: return true;
     }
@@ -203,6 +208,15 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             }
             break;
         case EventEffectType::REMOVE_CARD:
+            if (effect.card != CardId::NONE) {
+                for (int n = 0; n < count_of(effect); ++n) {
+                    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+                        if (run.master_deck[i].id == effect.card && run.remove_card_from_deck(static_cast<int>(i))) break;
+                    }
+                }
+                break;
+            }
+            [[fallthrough]];
         case EventEffectType::UPGRADE_CARD:
         case EventEffectType::TRANSFORM_CARD:
         case EventEffectType::ENCHANT_CARD: {

@@ -57,7 +57,8 @@ enum class EventEffectType : uint8_t {
     LOSE_MAX_HP,    // amount
     ADD_CARD,       // `amount` copies (1 when 0) of `card`, upgraded when `upgraded`
     ADD_CURSE,      // `amount` copies (1 when 0) of `card`, or of a random curse when `card` is NONE
-    REMOVE_CARD,    // `amount` cards (1 when 0), chosen by the player or drawn at random (`pick`)
+    REMOVE_CARD,    // `amount` cards (1 when 0), chosen by the player or drawn at random (`pick`); with `card`, that many
+                    // copies of exactly that card (Amalgamator: 2 Defends), no choice
     UPGRADE_CARD,   // same
     TRANSFORM_CARD, // same; the new card is upgraded when `upgraded`
     ENCHANT_CARD,   // same, with `enchantment` of `enchant_amount`
@@ -95,13 +96,15 @@ enum class EventCheck : uint8_t {
     HAS_RELIC,  // relic `ref` owned
     NO_RELIC,   // relic `ref` not owned
     MIN_DECK,   // at least `amount` cards in the deck
-    HAS_POTION  // at least one potion on the belt
+    HAS_POTION, // at least one potion on the belt
+    HAS_CARD    // at least `amount` copies of `card` in the deck
 };
 
 struct EventCondition {
     EventCheck check = EventCheck::NONE;
     int16_t amount = 0;
     std::string_view ref = {};
+    CardId card = CardId::NONE;
 };
 
 struct EventOption {
