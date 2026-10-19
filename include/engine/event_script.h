@@ -10,7 +10,8 @@
 //    namespace engine::events. The registry (src/engine/event_registry.cpp) already holds one slot for each of
 //    the 57 events of bible/data/event_v0.111.0.json and picks the file up with __has_include: there is nothing
 //    to register. The choices and effects come from bible/data/event_choices/{a,b,c}.json.
-//    - `acts`: the zones it can be met in (EVENT_ACT_1A ... EVENT_ACT_3, the "acts" of the bible).
+//    - `acts`: the zones it can be met in (EVENT_ACT_1A ... EVENT_ACT_3, the "acts" of the bible). 0: never
+//      drawn, only opened by RunManager::start_event (THE_LANTERN_KEY, brought by its quest card).
 //    - `pages`: page 0 opens the event. An option with a GOTO_PAGE effect leads to that page; any other option
 //      ends the event (the "leave" options have no effect at all).
 //    - An effect a relic already has when obtained (Big Mushroom: +20 Max HP) is not repeated in the event:

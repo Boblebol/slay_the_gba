@@ -577,7 +577,8 @@ void test_event_registry() {
         assert(EventManager::slot_index(slot.id) == static_cast<int>(i));
         if (!slot.def) continue;
         const EventDef& def = *slot.def;
-        assert(def.id == slot.id && !def.title.empty() && !def.pages.empty() && (def.acts & EVENT_ALL_ACTS) != 0);
+        // acts == 0: an event only opened by its trigger (THE_LANTERN_KEY), never drawn.
+        assert(def.id == slot.id && !def.title.empty() && !def.pages.empty() && (def.acts & ~EVENT_ALL_ACTS) == 0);
         for (const EventPage& page : def.pages) {
             assert(!page.text.empty() && !page.options.empty() && page.options.size() <= MAX_EVENT_OPTIONS);
             for (const EventOption& option : page.options) {

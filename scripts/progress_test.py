@@ -31,7 +31,7 @@ def test_empty_tally_is_zero_percent() -> None:
 def test_shared_strike_and_defend_count_for_every_hero() -> None:
     cards = progress.implemented_cards()
     assert {"BASH", "STRIKE_IRONCLAD", "STRIKE_NECROBINDER", "DEFEND_REGENT"} <= cards
-    assert "STRIKE" not in cards and "LANTERN_KEY" not in cards
+    assert "STRIKE" not in cards and "LANTERN_KEY" in cards
 
 
 def test_cards_created_in_combat_are_matched_by_engine_identifier() -> None:
@@ -59,7 +59,7 @@ def test_statuses_follow_the_engine_and_the_overrides() -> None:
     assert find(result.section("necrobinder"), "Cartes", "UNLEASH").status == DONE
     assert find(result.section("bestiaire"), "Boss", "CEREMONIAL_BEAST").status == DONE
     assert find(result.section("silent"), "Cartes", "ABRASIVE").status == DONE
-    assert find(result.section("cartes"), "Quêtes", "LANTERN_KEY").status == TODO
+    assert find(result.section("cartes"), "Quêtes", "LANTERN_KEY").status == DONE
     assert find(result.section("ironclad"), "Cartes", "BLAZE").status == EXCLUDED  # co-op card
     assert 0 < result.percent < 100
     assert result.tally == sum((section.tally for section in result.sections), Tally())
