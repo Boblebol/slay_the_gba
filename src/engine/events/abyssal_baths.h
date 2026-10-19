@@ -22,7 +22,7 @@ inline constexpr EventOption ABYSSAL_BATHS_START[] = {
       .effects = ABYSSAL_BATHS_BATH,
       .condition = { .check = EventCheck::MIN_GOLD, .amount = 35 } },
     { .label = "Plonger dans les profondeurs",
-      .cost_benefit = "Gagnez 80 Or, subissez 8 dégâts de brûlure.",
+      .cost_benefit = "Gagnez 80 Or, perdez 8 PV.",
       .result = "L'eau bouillante vous brûle mais vous repêchez 80 Pièces d'or !",
       .effects = ABYSSAL_BATHS_DIVE },
     { .label = "Repartir",
