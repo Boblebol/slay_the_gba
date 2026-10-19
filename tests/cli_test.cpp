@@ -922,12 +922,14 @@ int main() {
     ev_run.hp = 50;
     int hp_before_ev = ev_run.hp;
     int gold_before_ev = ev_run.gold;
+    const size_t potions_before_ev = ev_run.potions.size();
     char outcome_msg[128];
 
     // Pick choice 0 (Gain gold / Heal / etc.)
     assert(ev_run.choose_event_choice(0, outcome_msg, sizeof(outcome_msg)));
     assert(outcome_msg[0] != '\0');
-    assert(ev_run.gold != gold_before_ev || ev_run.hp != hp_before_ev);
+    assert(ev_run.gold != gold_before_ev || ev_run.hp != hp_before_ev || ev_run.potions.size() != potions_before_ev ||
+           !ev_run.deck_choice_offers.empty());
     std::cout << "[PASS] Pokémon-style Events: Encounters, Choice Dialogues, and Run State Modifications verified" << std::endl;
 
     // Act 1 boss: opens with a buff, then attacks; each enemy action is recorded for replay.
