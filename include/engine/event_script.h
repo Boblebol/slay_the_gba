@@ -66,6 +66,7 @@ enum class EventEffectType : uint8_t {
     RELIC_REWARD,   // a relic drawn like an elite's, offered on the reward screen once the event is left
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
     FIGHT,          // a fight of the act once the event is left: `ref` "ELITE" for an elite one, else a normal one
+    TRADE_POTION,   // the first potion of the belt for an upgraded card of the same rarity, drawn from the hero's pool
     GOTO_PAGE,      // the event goes on with page `amount`
     LEAVE           // nothing: makes a "leave" option explicit in the data
 };

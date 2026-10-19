@@ -1,6 +1,7 @@
 #include "engine/event_manager.h"
 #include "engine/card_meta.h"
 #include "engine/encounter.h"
+#include "engine/potion.h"
 #include "engine/rewards.h"
 #include "engine/run.h"
 #include <algorithm>
@@ -32,6 +33,24 @@ uint8_t zone_bit(ActZone zone) {
 
 int count_of(const EventEffect& effect) {
     return effect.amount > 0 ? effect.amount : 1;
+}
+
+// TRADE_POTION: the first potion of the belt is lost, an upgraded card of the same rarity (Event potions count as
+// Common) joins the deck.
+void trade_first_potion(RunManager& run, uint32_t roll) {
+    if (run.potions.empty()) return;
+    const PotionData* potion = find_potion(run.potions[0]);
+    const CardRarity rarity = !potion ? CardRarity::COMMON
+                              : potion->rarity == "Rare" ? CardRarity::RARE
+                              : potion->rarity == "Uncommon" ? CardRarity::UNCOMMON
+                                                             : CardRarity::COMMON;
+    FixedVector<CardId, 128> candidates;
+    for (CardId id : RunManager::card_reward_pool(run.character)) {
+        if (card_meta(id).rarity == rarity) candidates.push_back(id);
+    }
+    if (candidates.empty()) return;
+    run.potions.erase(0);
+    run.add_card_to_deck(DeckCard{ candidates[roll % candidates.size()], true });
 }
 
 DeckChoiceKind choice_kind(EventEffectType type) {
@@ -250,6 +269,9 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             break;
         case EventEffectType::FIGHT:
             run.begin_fight(effect.ref == "ELITE" ? RoomType::ELITE : RoomType::MONSTER);
+            break;
+        case EventEffectType::TRADE_POTION:
+            trade_first_potion(run, run.next_random());
             break;
         case EventEffectType::GOTO_PAGE:
         case EventEffectType::LEAVE:
