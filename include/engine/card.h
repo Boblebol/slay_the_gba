@@ -708,10 +708,13 @@ enum class Enchantment : uint8_t {
     ROYALLY_APPROVED, // Sceau royal: Innate and Retain
     SHARP,            // Tranchant: the card deals `amount` more damage
     GOOPY,            // Viscosité: Exhaust; once played, the Block it gives is raised by 1 for good (`amount`)
+    CORRUPTED,        // Corruption (Symbiote): the Attack deals 50% more damage and costs CORRUPTED_HP_LOSS HP when played
     COUNT
 };
 
 constexpr uint8_t INKY_WEAK = 1;
+// Corrupted (Symbiote): guessed, the reference does not give the numbers. +50% damage, 2 HP lost per play.
+constexpr int16_t CORRUPTED_HP_LOSS = 2;
 // Mystic Lighter: Enchanted Attacks deal this much more damage per hit.
 constexpr uint8_t MYSTIC_LIGHTER_DAMAGE = 9;
 

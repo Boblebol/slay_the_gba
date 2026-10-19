@@ -261,6 +261,7 @@ public:
     // Ember, Momentum, Mystic Lighter), doubled damage (Instinct), Block (Nimble, Goopy), Weak on each enemy hit (Inky).
     int16_t enchant_damage_now = 0;
     bool enchant_double_now = false;
+    bool enchant_corrupted_now = false; // Corrupted: +50% damage
     int16_t enchant_block_now = 0;
     bool inky_now = false;
     bool rebound_pending = false;    // the next card played this turn goes on top of the draw pile (Rebound)

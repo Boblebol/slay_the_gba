@@ -1668,6 +1668,7 @@ int16_t CombatEngine::hit(Enemy& target, int16_t base) {
     if (resolving_card) {
         base = static_cast<int16_t>(base + enchant_damage_now);
         if (enchant_double_now) percent *= 2;
+        if (enchant_corrupted_now) percent = percent * 3 / 2;
     }
     // Shrink: the player's attacks deal 30% less damage, whatever else adds up.
     if (has_power(PowerId::SHRINK)) percent = percent * SHRINK_PERCENT / 100;
@@ -1988,6 +1989,7 @@ void CombatEngine::reset_combat_state() {
     rebound_pending = false;
     enchant_damage_now = 0;
     enchant_double_now = false;
+    enchant_corrupted_now = false;
     enchant_block_now = 0;
     inky_now = false;
     fatal_kills = 0;
@@ -2495,16 +2497,20 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         // A card played by this one (Havoc) has its own enchantment: this card's is restored after it.
         const int16_t outer_damage = enchant_damage_now;
         const bool outer_double = enchant_double_now;
+        const bool outer_corrupted = enchant_corrupted_now;
         const int16_t outer_block = enchant_block_now;
         const bool outer_inky = inky_now;
         set_enchant_modifiers(card);
         resolving_card = true;
         // Adroit: the card also gains Block.
         if (card.enchantment == Enchantment::ADROIT) gain_block(card.enchant_amount);
+        // Corrupted: the card costs HP each time it is played.
+        if (card.enchantment == Enchantment::CORRUPTED) lose_hp(CORRUPTED_HP_LOSS);
         resolve_effect(card, target_idx, x_value, after_play);
         resolving_card = false;
         enchant_damage_now = outer_damage;
         enchant_double_now = outer_double;
+        enchant_corrupted_now = outer_corrupted;
         enchant_block_now = outer_block;
         inky_now = outer_inky;
         // Momentum: each play adds to the card's damage for the rest of the combat.
@@ -2584,6 +2590,7 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
 void CombatEngine::set_enchant_modifiers(const DeckCard& card) {
     enchant_damage_now = 0;
     enchant_double_now = false;
+    enchant_corrupted_now = false;
     enchant_block_now = 0;
     inky_now = false;
     switch (card.enchantment) {
@@ -2596,6 +2603,9 @@ void CombatEngine::set_enchant_modifiers(const DeckCard& card) {
             break;
         case Enchantment::INSTINCT:
             enchant_double_now = true;
+            break;
+        case Enchantment::CORRUPTED:
+            enchant_corrupted_now = true;
             break;
         case Enchantment::NIMBLE:
         case Enchantment::GOOPY:
