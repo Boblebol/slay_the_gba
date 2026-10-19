@@ -326,7 +326,8 @@ class CardArt:
     enum_name: str   # engine CardId name (lower case)
     # Hero owning the card (frame colour). "hero" = the ROM's own hero, one art file per cartridge.
     # SHARED_OWNERS are on every ROM with a single art file: "status" and "colorless" (grey frame),
-    # "curse" (purple frame), "ancient" (event cards of Ancient rarity: full-card art and the Ancient border).
+    # "curse" (purple frame, kept after the on-screen check of #869: it reads apart from the five hero frames),
+    # "ancient" (event cards of Ancient rarity: full-card art and the Ancient border).
     owner: str
     art: str         # art file relative to bible/images/cards/<folder>/ ; "{hero}" is substituted
     kind: str        # attack | skill | power | status
