@@ -251,6 +251,23 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
         case EventEffectType::FIGHT:
             run.begin_fight(effect.ref == "ELITE" ? RoomType::ELITE : RoomType::MONSTER);
             break;
+        case EventEffectType::DOWNGRADE_CARD:
+            for (int n = 0; n < count_of(effect); ++n) {
+                FixedVector<int, 50> candidates;
+                for (size_t i = 0; i < run.master_deck.size(); ++i) {
+                    if (run.master_deck[i].upgraded) candidates.push_back(static_cast<int>(i));
+                }
+                if (candidates.empty()) break;
+                run.master_deck[candidates[run.next_random() % candidates.size()]].upgraded = false;
+            }
+            break;
+        case EventEffectType::DUPLICATE_DECK: {
+            const size_t size = run.master_deck.size();
+            for (size_t i = 0; i < size; ++i) {
+                if (!run.add_card_to_deck(run.master_deck[i])) break;
+            }
+            break;
+        }
         case EventEffectType::GOTO_PAGE:
         case EventEffectType::LEAVE:
         default:
