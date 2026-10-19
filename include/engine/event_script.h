@@ -61,7 +61,7 @@ enum class EventEffectType : uint8_t {
     UPGRADE_CARD,   // same
     TRANSFORM_CARD, // same; the new card is upgraded when `upgraded`
     ENCHANT_CARD,   // same, with `enchantment` of `enchant_amount`
-    CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left
+    CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left; `ref` a hero ("SILENT"...): his cards
     GAIN_RELIC,     // relic `ref`, or a random relic (as in a chest) when `ref` is empty
     RELIC_REWARD,   // a relic drawn like an elite's, offered on the reward screen once the event is left
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty

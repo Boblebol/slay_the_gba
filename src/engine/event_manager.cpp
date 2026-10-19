@@ -34,6 +34,16 @@ int count_of(const EventEffect& effect) {
     return effect.amount > 0 ? effect.amount : 1;
 }
 
+// CARD_REWARD: the hero whose cards are offered, named by `ref` (empty or unknown: the player's own).
+CharacterId reward_hero(std::string_view ref) {
+    if (ref == "IRONCLAD") return CharacterId::IRONCLAD;
+    if (ref == "SILENT") return CharacterId::SILENT;
+    if (ref == "DEFECT") return CharacterId::DEFECT;
+    if (ref == "REGENT") return CharacterId::REGENT;
+    if (ref == "NECROBINDER") return CharacterId::NECROBINDER;
+    return CharacterId::COUNT;
+}
+
 DeckChoiceKind choice_kind(EventEffectType type) {
     switch (type) {
         case EventEffectType::REMOVE_CARD: return DeckChoiceKind::REMOVE;
@@ -218,7 +228,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.potion_reward = {};
             run.relic_reward = {};
             RewardRng rng(run.next_random());
-            run.draw_card_rewards(false, rng);
+            run.draw_card_rewards(false, rng, CardRarity::NONE, false, reward_hero(effect.ref));
             run.phase = RunPhase::REWARD_SCREEN;
             break;
         }
