@@ -806,7 +806,7 @@ void test_event_draw_per_act() {
     run.current_act = 3;
     size_t available = 0;
     for (const EventSlot& slot : EventManager::slots()) {
-        available += slot.def && (slot.def->acts & EVENT_ACT_3) != 0;
+        available += slot.def && (slot.def->acts & EVENT_ACT_3) != 0 && EventManager::meets(run, slot.def->condition);
     }
     assert(available >= 2);
     for (size_t n = 0; n < available; ++n) {

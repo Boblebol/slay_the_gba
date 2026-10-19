@@ -67,6 +67,7 @@ enum class EventEffectType : uint8_t {
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
     FIGHT,          // a fight of the act once the event is left: `ref` "ELITE" for an elite one, else a normal one
     GOTO_PAGE,      // the event goes on with page `amount`
+    LOSE_CARD,      // the first copy of `card` leaves the deck (the Lantern Key quest card)
     LEAVE           // nothing: makes a "leave" option explicit in the data
 };
 
@@ -94,13 +95,15 @@ enum class EventCheck : uint8_t {
     HAS_RELIC,  // relic `ref` owned
     NO_RELIC,   // relic `ref` not owned
     MIN_DECK,   // at least `amount` cards in the deck
-    HAS_POTION  // at least one potion on the belt
+    HAS_POTION, // at least one potion on the belt
+    HAS_CARD    // at least one copy of `card` in the deck
 };
 
 struct EventCondition {
     EventCheck check = EventCheck::NONE;
     int16_t amount = 0;
     std::string_view ref = {};
+    CardId card = CardId::NONE;
 };
 
 struct EventOption {

@@ -70,6 +70,11 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::NO_RELIC: return !run.has_relic(condition.ref);
         case EventCheck::MIN_DECK: return run.master_deck.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
         case EventCheck::HAS_POTION: return !run.potions.empty();
+        case EventCheck::HAS_CARD:
+            for (const DeckCard& card : run.master_deck) {
+                if (card.id == condition.card) return true;
+            }
+            return false;
         case EventCheck::NONE:
         default: return true;
     }
@@ -250,6 +255,13 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             break;
         case EventEffectType::FIGHT:
             run.begin_fight(effect.ref == "ELITE" ? RoomType::ELITE : RoomType::MONSTER);
+            break;
+        case EventEffectType::LOSE_CARD:
+            for (size_t i = 0; i < run.master_deck.size(); ++i) {
+                if (run.master_deck[i].id != effect.card) continue;
+                run.master_deck.erase(i); // quest cards may be Eternal: not through remove_card_from_deck
+                break;
+            }
             break;
         case EventEffectType::GOTO_PAGE:
         case EventEffectType::LEAVE:
