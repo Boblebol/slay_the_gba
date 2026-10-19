@@ -408,11 +408,11 @@ def extras_fr(progress: Progress) -> str:
     return f"Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : {groups}."
 
 
-def next_version(tally: Tally, tags: list[str], percent: float | None = None) -> str:
+def next_version(tally: Tally, tags: list[str]) -> str:
     """Version of the next release: 0.<whole percentage>.<patch> while something is left to do, 1.0.<patch> once
-    every item is done. `percent` is the global percentage (default: the tally's own). The patch number counts the releases already tagged for the same major.minor."""
+    every item is done. The patch number counts the releases already tagged for the same major.minor."""
     complete = tally.total > 0 and tally.todo == 0 and tally.partial == 0
-    prefix = "1.0" if complete else f"0.{int(tally.percent if percent is None else percent)}"
+    prefix = "1.0" if complete else f"0.{int(tally.percent)}"
     patches = [int(match.group(1)) for tag in tags if (match := re.fullmatch(rf"v{re.escape(prefix)}\.(\d+)", tag))]
     return f"{prefix}.{max(patches) + 1 if patches else 0}"
 
@@ -485,7 +485,7 @@ def main() -> None:
     progress = compute()
     if args.next_version:
         tags = subprocess.run(["git", "tag", "--list", "v*"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.split()
-        print(next_version(progress.tally, tags, progress.percent))
+        print(next_version(progress.tally, tags))
         return
     if args.release_notes:
         print(release_notes(progress), end="")

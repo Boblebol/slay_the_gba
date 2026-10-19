@@ -100,7 +100,6 @@ def test_version_follows_the_percentage_until_everything_is_done() -> None:
     assert progress.next_version(Tally(done=100, partial=0, todo=0, excluded=5), ["v0.99.3"]) == "1.0.0"
     assert progress.next_version(Tally(done=100, partial=0, todo=0), ["v1.0.0"]) == "1.0.1"
     assert progress.next_version(Tally(), []) == "0.0.0"
-    assert progress.next_version(Tally(done=1, todo=99), [], percent=25.5) == "0.25.0"  # the global figure wins
 
 
 def test_override_of_an_unknown_entry_is_rejected() -> None:
