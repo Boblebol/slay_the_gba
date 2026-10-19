@@ -144,10 +144,51 @@ void test_byrdonis_egg() {
     std::cout << "[PASS] Byrdonis Egg: X cost, Quest, Unplayable, hatches into the Byrdpip at a Rest Site" << std::endl;
 }
 
+void test_lantern_key() {
+    for (bool up : { false, true }) {
+        assert(CardDef::get_cost(CardId::LANTERN_KEY, up) == COST_X);
+        assert(CardDef::get(CardId::LANTERN_KEY).type == CardType::QUEST);
+        assert(CardDef::has_keyword(CardId::LANTERN_KEY, up, KEYWORD_UNPLAYABLE));
+
+        // Unplayable.
+        CombatEngine combat = make_fight();
+        combat.hand.push_back(DeckCard(CardId::LANTERN_KEY, up));
+        assert(!combat.can_play_card(0));
+        assert(!combat.play_card(0, 0));
+        assert(combat.player.energy == 3 && combat.hand.size() == 1);
+
+        // In the act where it is found, a ? room is an ordinary event and the key stays.
+        RunManager run;
+        run.start_run(CharacterId::IRONCLAD);
+        const size_t size = run.master_deck.size();
+        run.master_deck.push_back(DeckCard(CardId::LANTERN_KEY, up));
+        enter(run, RoomType::EVENT);
+        assert(run.current_event.id != "THE_LANTERN_KEY" && run.master_deck.size() == size + 1);
+
+        // In the next act, the first ? room is the special event, and the key is used up.
+        run.advance_act();
+        assert(run.master_deck.size() == size + 1 && run.master_deck.back().id == CardId::LANTERN_KEY);
+        enter(run, RoomType::EVENT);
+        assert(run.current_event.id == "THE_LANTERN_KEY" && run.phase == RunPhase::EVENT);
+        assert(run.master_deck.size() == size);
+        for (const DeckCard& card : run.master_deck) assert(card.id != CardId::LANTERN_KEY);
+        const int16_t gold = run.gold;
+        char msg[128];
+        assert(run.choose_event_choice(0, msg, sizeof(msg)));
+        assert(run.gold == gold + LANTERN_KEY_GOLD);
+
+        // The next ? room is ordinary again.
+        enter(run, RoomType::EVENT);
+        assert(run.current_event.id != "THE_LANTERN_KEY");
+    }
+    std::cout << "[PASS] Lantern Key: X cost, Quest, Unplayable, unlocks its special event in the next act" << std::endl;
+}
+
 int main() {
     test_dowsing();
     test_spoils_map();
     test_byrdonis_egg();
+    test_lantern_key();
     std::cout << "All quest card tests passed." << std::endl;
     return 0;
 }

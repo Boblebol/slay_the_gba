@@ -611,6 +611,13 @@ void RunManager::leave_shop() {
 }
 
 void RunManager::trigger_event() {
+    // Lantern Key: an unlocked key (the act changed since it was found) brings its special event, and leaves the deck.
+    for (size_t i = master_deck.size(); i > 0; --i) {
+        if (master_deck[i - 1].id != CardId::LANTERN_KEY || master_deck[i - 1].bonus == 0) continue;
+        master_deck.erase(i - 1);
+        current_event = EventManager::lantern_key_encounter();
+        return;
+    }
     current_event = EventManager::get_encounter_for_floor(current_floor, next_random());
 }
 
@@ -2426,8 +2433,15 @@ void RunManager::advance_act() {
     map_seed = next_random();
     regenerate_map();
     mark_spoils_map_sites();
+    unlock_lantern_keys();
     // The Ancient has a stream of its own: the run's generator only moved for the seed of the new map.
     meet_ancient(draw_ancient(current_act, reward_seed() ^ ANCIENT_SEED_SALT));
+}
+
+void RunManager::unlock_lantern_keys() {
+    for (size_t i = 0; i < master_deck.size(); ++i) {
+        if (master_deck[i].id == CardId::LANTERN_KEY) master_deck[i].bonus = 1;
+    }
 }
 
 void RunManager::mark_spoils_map_sites() {

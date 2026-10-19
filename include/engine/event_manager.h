@@ -37,6 +37,8 @@ struct EventEncounter {
 
 class EventManager {
 public:
+    // The special event the Lantern Key quest card unlocks in the act after the one it was found in.
+    static EventEncounter lantern_key_encounter();
     static EventEncounter get_encounter_for_floor(uint8_t floor, uint32_t seed);
     static bool apply_choice(RunManager& run, const EventChoice& choice, char* out_msg, size_t max_len);
 };

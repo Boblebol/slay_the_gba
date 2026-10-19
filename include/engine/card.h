@@ -669,6 +669,8 @@ enum class CardId : uint16_t {
     SPOILS_MAP,
     // Quest card: hatches into the Byrdpip at a Rest Site
     BYRDONIS_EGG,
+    // Quest card: unlocks the Lantern Key event in the next act
+    LANTERN_KEY,
     // Status card given by the Myte
     TOXIC,
     COUNT

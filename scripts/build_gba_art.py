@@ -889,6 +889,7 @@ CARDS: list[CardArt] = [
     CardArt("dowsing", "status", "dowsing", "status", (NO_COST, NO_COST), folder="quest"),
     CardArt("spoils_map", "status", "spoils_map", "status", (NO_COST, NO_COST), folder="quest"),
     CardArt("byrdonis_egg", "status", "byrdonis_egg", "status", (NO_COST, NO_COST), folder="quest"),
+    CardArt("lantern_key", "status", "lantern_key", "status", (NO_COST, NO_COST), folder="quest"),
     CardArt("toxic", "status", "slimed", "status", (1, 1)),  # no portrait of its own in the reference
 ]
 
