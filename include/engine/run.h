@@ -45,6 +45,7 @@ struct DeckChoice {
     CardId transform_into = CardId::NONE; // TRANSFORM only: fixed result card (NONE = random from the reward pool)
     Enchantment enchantment = Enchantment::NONE; // ENCHANT only: the enchantment put on each chosen card
     uint8_t enchant_amount = 0;                  // ENCHANT only: its amount
+    int8_t only_type = -1;                       // ENCHANT only: the CardType the chosen cards must have, -1 for any
 };
 
 // Sea Glass: cards of another hero offered on pickup.
@@ -288,7 +289,7 @@ public:
     // Asks the player for `count` cards of the deck to upgrade, remove or transform. Nothing is asked when no
     // card of the deck fits.
     void request_deck_choice(DeckChoiceKind kind, int count, bool optional = false, bool upgrade_result = false, CardId transform_into = CardId::NONE,
-                              Enchantment enchantment = Enchantment::NONE, uint8_t enchant_amount = 0);
+                              Enchantment enchantment = Enchantment::NONE, uint8_t enchant_amount = 0, int8_t only_type = -1);
     [[nodiscard]] bool has_deck_choice() const { return deck_choice.kind != DeckChoiceKind::NONE; }
     // True when the card at `deck_index` (of deck_choice_offers for ADD) can be picked for the choice in progress.
     [[nodiscard]] bool deck_choice_allows(int deck_index) const;

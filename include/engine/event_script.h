@@ -85,6 +85,7 @@ struct EventEffect {
     bool upgraded = false;
     Enchantment enchantment = Enchantment::NONE;
     uint8_t enchant_amount = 0;
+    int8_t only_type = -1; // ENCHANT_CARD: the CardType (cast to int) the chosen cards must have, -1 for any
 };
 
 enum class EventCheck : uint8_t {
@@ -94,7 +95,8 @@ enum class EventCheck : uint8_t {
     HAS_RELIC,  // relic `ref` owned
     NO_RELIC,   // relic `ref` not owned
     MIN_DECK,   // at least `amount` cards in the deck
-    HAS_POTION  // at least one potion on the belt
+    HAS_POTION, // at least one potion on the belt
+    CAN_ENCHANT // a card of the deck can be enchanted: of CardType `amount`, or of any type when `amount` is -1
 };
 
 struct EventCondition {

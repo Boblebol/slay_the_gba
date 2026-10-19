@@ -70,6 +70,14 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::NO_RELIC: return !run.has_relic(condition.ref);
         case EventCheck::MIN_DECK: return run.master_deck.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
         case EventCheck::HAS_POTION: return !run.potions.empty();
+        case EventCheck::CAN_ENCHANT:
+            for (const DeckCard& card : run.master_deck) {
+                if (can_enchant(card, Enchantment::SWIFT) &&
+                    (condition.amount < 0 || static_cast<int>(CardDef::get(card.id).type) == condition.amount)) {
+                    return true;
+                }
+            }
+            return false;
         case EventCheck::NONE:
         default: return true;
     }
@@ -186,7 +194,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             const DeckChoiceKind kind = choice_kind(effect.type);
             if (effect.pick == EventPick::CHOOSE) {
                 run.request_deck_choice(kind, count_of(effect), false, effect.upgraded, CardId::NONE, effect.enchantment,
-                                        effect.enchant_amount);
+                                        effect.enchant_amount, effect.only_type);
                 break;
             }
             if (kind == DeckChoiceKind::UPGRADE) {
@@ -198,6 +206,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.deck_choice = {};
             run.deck_choice.kind = kind;
             run.deck_choice.enchantment = effect.enchantment;
+            run.deck_choice.only_type = effect.only_type;
             for (int n = 0; n < count_of(effect); ++n) {
                 FixedVector<int, 50> candidates;
                 for (size_t i = 0; i < run.master_deck.size(); ++i) {
