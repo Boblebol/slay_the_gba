@@ -64,6 +64,7 @@ enum class EventEffectType : uint8_t {
     CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left
     GAIN_RELIC,     // relic `ref`, or a random relic (as in a chest) when `ref` is empty
     RELIC_REWARD,   // a relic drawn like an elite's, offered on the reward screen once the event is left
+    LOSE_POTION,    // `amount` potions (1 when 0) of the belt, drawn at random
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
     FIGHT,          // a fight of the act once the event is left: `ref` "ELITE" for an elite one, else a normal one
     GOTO_PAGE,      // the event goes on with page `amount`
@@ -94,7 +95,8 @@ enum class EventCheck : uint8_t {
     HAS_RELIC,  // relic `ref` owned
     NO_RELIC,   // relic `ref` not owned
     MIN_DECK,   // at least `amount` cards in the deck
-    HAS_POTION  // at least one potion on the belt
+    HAS_POTION, // at least one potion on the belt
+    HAS_ATTACK  // an Attack of the deck that can still be enchanted (ENCHANT_CARD with an Attack-only enchantment)
 };
 
 struct EventCondition {

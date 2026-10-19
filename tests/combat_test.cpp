@@ -4076,6 +4076,16 @@ void test_enchantment_damage() {
     play(sharp, CardId::STRIKE);
     assert(sharp.enemies[0].hp == 200 - 9 - 16 - 6);
 
+    // Vigorous (Vigoureux): only the first play of the combat deals N more damage.
+    CombatEngine vigorous = make_combat(CharacterId::IRONCLAD);
+    vigorous.enemies[0].hp = 200;
+    play(vigorous, enchanted(CardId::STRIKE, Enchantment::VIGOROUS, 8));
+    assert(vigorous.enemies[0].hp == 200 - 14 && vigorous.discard_pile.back().enchant_combat == 1);
+    play(vigorous, vigorous.discard_pile.back());
+    assert(vigorous.enemies[0].hp == 200 - 14 - 6);
+    assert(can_enchant(DeckCard{ CardId::STRIKE, false }, Enchantment::VIGOROUS));
+    assert(!can_enchant(DeckCard{ CardId::DEFEND, false }, Enchantment::VIGOROUS));
+
     // Instinct: the damage of the card is doubled, Strength included.
     CombatEngine instinct = make_combat(CharacterId::IRONCLAD);
     instinct.enemies[0].hp = 200;

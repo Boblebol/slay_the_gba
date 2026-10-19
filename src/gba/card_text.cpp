@@ -2850,6 +2850,8 @@ bn::string_view enchantment_name(engine::Enchantment enchantment)
         return "Tranchant";
     case engine::Enchantment::GOOPY:
         return "Viscosité";
+    case engine::Enchantment::VIGOROUS:
+        return "Vigoureux";
     default:
         return "";
     }
@@ -2916,6 +2918,9 @@ void enchantment_text(const engine::DeckCard& card, bn::istring& title, bn::istr
         break;
     case engine::Enchantment::GOOPY:
         stream << "Épuisement. +1 par jeu.";
+        break;
+    case engine::Enchantment::VIGOROUS:
+        stream << "1re fois : +" << amount << " dégâts.";
         break;
     default:
         break;
