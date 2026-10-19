@@ -4,7 +4,9 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 94,4 %** — 1172 faits, 13 partiels, 64 à faire (35 hors périmètre).
+**Avancement global : 90,2 %** — 1172 faits, 13 partiels, 64 à faire (35 hors périmètre).
+
+Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -26,7 +28,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 35 | 1 | 0 | 98,6 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1172** | **13** | **64** | **94,4 %** |
+| **Total** | **1172** | **13** | **64** | **90,2 %** |
 
 <a id="ironclad"></a>
 
