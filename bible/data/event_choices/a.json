@@ -1,0 +1,1266 @@
+{
+ "source": "https://gamewith.ai/slay-the-spire2/en/events/<ID> (v0.107.1); https://www.keengamer.com/articles/guides/slay-the-spire-2-all-events-and-rewards-guide/; https://slaythespire.wiki.gg/wiki/Module:Events/StS2_data",
+ "events": {
+  "ABYSSAL_BATHS": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Immerse",
+       "label_fr": "S'immerger",
+       "effects": [
+        {
+         "type": "gain_max_hp",
+         "amount": 2,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "lose_hp",
+         "amount": 3,
+         "ref": "",
+         "note": "3 PV, +1 a chaque bain supplementaire",
+         "unknown": false
+        }
+       ],
+       "next": "immerse"
+      },
+      {
+       "label_en": "Abstain",
+       "label_fr": "S'abstenir",
+       "effects": [
+        {
+         "type": "heal",
+         "amount": 10,
+         "ref": "",
+         "note": "recupere les sels cristallins",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    },
+    {
+     "id": "immerse",
+     "options": [
+      {
+       "label_en": "Linger",
+       "label_fr": "S'attarder",
+       "effects": [
+        {
+         "type": "gain_max_hp",
+         "amount": 2,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "lose_hp",
+         "amount": 3,
+         "ref": "",
+         "note": "+1 par bain supplementaire; textes escaladants",
+         "unknown": false
+        }
+       ],
+       "next": "immerse"
+      },
+      {
+       "label_en": "Exit Baths",
+       "label_fr": "Sortir du bain",
+       "effects": [
+        {
+         "type": "leave",
+         "amount": 0,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Linger repete la page immerse; la fin (mort si trop long) n'est pas documentee."
+  },
+  "BATTLEWORN_DUMMY": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Setting 1",
+       "label_fr": "Reglage 1",
+       "effects": [
+        {
+         "type": "fight",
+         "amount": 75,
+         "ref": "Battleworn Dummy",
+         "note": "75 PV, 3 tours",
+         "unknown": false
+        },
+        {
+         "type": "gain_potion",
+         "amount": 1,
+         "ref": "random",
+         "note": "si victoire",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Setting 2",
+       "label_fr": "Reglage 2",
+       "effects": [
+        {
+         "type": "fight",
+         "amount": 150,
+         "ref": "Battleworn Dummy",
+         "note": "150 PV, 3 tours",
+         "unknown": false
+        },
+        {
+         "type": "upgrade_card",
+         "amount": 2,
+         "ref": "random",
+         "note": "si victoire",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Setting 3",
+       "label_fr": "Reglage 3",
+       "effects": [
+        {
+         "type": "fight",
+         "amount": 300,
+         "ref": "Battleworn Dummy",
+         "note": "300 PV, 3 tours",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "random",
+         "note": "si victoire",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Echec (non vaincu en 3 tours): aucune recompense. Libelles exacts des reglages non trouves."
+  },
+  "BYRDONIS_NEST": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Eat the Egg",
+       "label_fr": "Manger l'oeuf",
+       "effects": [
+        {
+         "type": "gain_max_hp",
+         "amount": 7,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Take the Egg",
+       "label_fr": "Prendre l'oeuf",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "BYRDONIS_EGG",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "CRYSTAL_SPHERE": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Uncover Future",
+       "label_fr": "Devoiler l'avenir",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 0,
+         "ref": "",
+         "note": "51-99 or selon la source (keengamer: 56)",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 3,
+         "ref": "Divine",
+         "note": "minijeu de tuiles, 3 divinations",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Payment Plan",
+       "label_fr": "Plan de paiement",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "DEBT",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 6,
+         "ref": "Divine",
+         "note": "6 divinations",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Un libelle 'I'm done pondering' (fin du minijeu) existe. Recompenses des tuiles (or/cartes) non detaillees."
+  },
+  "DOORS_OF_LIGHT_AND_DARK": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Light Door",
+       "label_fr": "Porte de lumiere",
+       "effects": [
+        {
+         "type": "upgrade_card",
+         "amount": 2,
+         "ref": "random",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Dark Door",
+       "label_fr": "Porte d'ombre",
+       "effects": [
+        {
+         "type": "remove_card",
+         "amount": 1,
+         "ref": "",
+         "note": "au choix",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "FAKE_MERCHANT": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Buy bootleg relics",
+       "label_fr": "Acheter des reliques contrefaites",
+       "effects": [
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "ANCHOR???/BLOOD_VIAL???/HAPPY_FLOWER???/LEES_WAFFLE???/MANGO???/MERCHANTS_RUG???/ORICHALCUM???/SNECKO_EYE???/STRIKE_DUMMY???/VENERABLE_TEA_SET???",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "lose_gold",
+         "amount": 0,
+         "ref": "",
+         "note": "prix inconnus",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Throw Foul Potion",
+       "label_fr": "Lancer une Potion infecte",
+       "effects": [
+        {
+         "type": "fight",
+         "amount": 0,
+         "ref": "Fake Merchant",
+         "note": "requiert une Foul Potion; grosses recompenses",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "recompenses exactes inconnues",
+         "unknown": true
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "optionCount=0 dans le JSON (evenement special). Options deduites du wiki: achat de reliques ??? ou combat via Foul Potion."
+  },
+  "HUNGRY_FOR_MUSHROOMS": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Big Mushroom",
+       "label_fr": "Gros champignon",
+       "effects": [
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "BIG_MUSHROOM",
+         "note": "pioche 2 cartes de moins au debut de chaque combat",
+         "unknown": false
+        },
+        {
+         "type": "gain_max_hp",
+         "amount": 20,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Fragrant Mushroom",
+       "label_fr": "Champignon parfume",
+       "effects": [
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "FRAGRANT_MUSHROOM",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "upgrade_card",
+         "amount": 3,
+         "ref": "random",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "lose_hp",
+         "amount": 15,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Un combat contre l'aventurier est evoque dans le texte; details inconnus. keengamer decrit des effets aleatoires differents (soin/buff, or/carte enchantee), source jugee moins fiable."
+  },
+  "LOST_WISP": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Capture the Wisp",
+       "label_fr": "Capturer le feu follet",
+       "effects": [
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "LOST_WISP",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "DECAY",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Search the Nearby Area",
+       "label_fr": "Fouiller les environs",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 0,
+         "ref": "",
+         "note": "45-75 or",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "(third option)",
+       "label_fr": "(3e option)",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "3e option du JSON (optionCount=3) non documentee; la page indique 'Your Max HP is too low' (seuil inconnu)",
+         "unknown": true
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Fouille: 45-75 or (aleatoire); keengamer dit 75."
+  },
+  "POTION_COURIER": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Grab Potions",
+       "label_fr": "Prendre les potions",
+       "effects": [
+        {
+         "type": "gain_potion",
+         "amount": 3,
+         "ref": "FOUL_POTION",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Ransack",
+       "label_fr": "Fouiller",
+       "effects": [
+        {
+         "type": "gain_potion",
+         "amount": 1,
+         "ref": "random Uncommon",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "REFLECTIONS": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Touch a Mirror",
+       "label_fr": "Toucher un miroir",
+       "effects": [
+        {
+         "type": "upgrade_card",
+         "amount": 4,
+         "ref": "random",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 2,
+         "ref": "downgrade random cards",
+         "note": "retrograde 2 cartes aleatoires",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Shatter",
+       "label_fr": "Briser",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "duplicate deck",
+         "note": "duplique tout le deck",
+         "unknown": false
+        },
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "BAD_LUCK",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Ordre des options non confirme."
+  },
+  "ROUND_TEA_PARTY": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Enjoy Your Tea",
+       "label_fr": "Savourer le the",
+       "effects": [
+        {
+         "type": "heal",
+         "amount": 0,
+         "ref": "full",
+         "note": "soin complet",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "ROYAL_POISON",
+         "note": "relique negative",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Pick a Fight",
+       "label_fr": "Chercher la bagarre",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 11,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "random",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "fee"
+      }
+     ]
+    },
+    {
+     "id": "fee",
+     "options": [
+      {
+       "label_en": "Continue",
+       "label_fr": "Continuer",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "ecran 'At least pay the entrance fee' : issue non documentee",
+         "unknown": true
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Page fee: texte seulement, aucune option documentee."
+  },
+  "SLIPPERY_BRIDGE": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Hold On",
+       "label_fr": "S'accrocher",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 3,
+         "ref": "",
+         "note": "+1 par prise supplementaire",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "reroll card to remove",
+         "note": "relance la carte proposee a la suppression",
+         "unknown": false
+        }
+       ],
+       "next": "hold"
+      },
+      {
+       "label_en": "Overcome",
+       "label_fr": "Surmonter",
+       "effects": [
+        {
+         "type": "remove_card",
+         "amount": 1,
+         "ref": "random",
+         "note": "carte aleatoire retiree",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    },
+    {
+     "id": "hold",
+     "options": [
+      {
+       "label_en": "Hold On",
+       "label_fr": "S'accrocher",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 3,
+         "ref": "",
+         "note": "+1 par prise supplementaire; relance la carte",
+         "unknown": false
+        }
+       ],
+       "next": "hold"
+      },
+      {
+       "label_en": "Overcome",
+       "label_fr": "Surmonter",
+       "effects": [
+        {
+         "type": "remove_card",
+         "amount": 1,
+         "ref": "random",
+         "note": "la carte affichee est retiree",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Hold On enchaine des pages avec reactions croissantes; total cumule exact non confirme. keengamer decrit les options differemment (Step Carefully / Risk It, 3 PV)."
+  },
+  "STONE_OF_ALL_TIME": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Drink and Lift",
+       "label_fr": "Boire et soulever",
+       "effects": [
+        {
+         "type": "gain_max_hp",
+         "amount": 10,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "lose random potion",
+         "note": "requiert une potion",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Push",
+       "label_fr": "Pousser",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 6,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "enchant Attack Vigorous 8",
+         "note": "requiert une Attaque",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "(locked Drink and Lift)",
+       "label_fr": "(Boire verrouille: pas de potion)",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "variante verrouillee supposee; texte non documente",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "(locked Push)",
+       "label_fr": "(Pousser verrouille: pas d'attaque)",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "variante verrouillee supposee; texte non documente",
+         "unknown": true
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Les 2 dernieres options sont supposees pour atteindre optionCount=4."
+  },
+  "SYMBIOTE": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Approach",
+       "label_fr": "Approcher",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "enchant Attack CORRUPTED",
+         "note": "au choix; verrouille si aucune Attaque enchantable",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Kill with Fire",
+       "label_fr": "Tuer par le feu",
+       "effects": [
+        {
+         "type": "transform_card",
+         "amount": 1,
+         "ref": "",
+         "note": "au choix",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "(locked Approach)",
+       "label_fr": "(Approcher verrouille)",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "3e option du JSON non documentee",
+         "unknown": true
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "THE_FUTURE_OF_POTIONS": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Insert same-rarity Potion",
+       "label_fr": "Inserer une potion de meme rarete",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "lose inserted potion",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "upgraded card of same rarity as potion",
+         "note": "carte amelioree de meme rarete que la potion",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Choix de la potion parmi celles possedees (keengamer: Common Skill amelioree)."
+  },
+  "THIS_OR_THAT": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "This",
+       "label_fr": "Ceci",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 6,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_gold",
+         "amount": 0,
+         "ref": "",
+         "note": "41-68 or (keengamer: 66)",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "That",
+       "label_fr": "Cela",
+       "effects": [
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "CLUMSY",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "random",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "TRIAL": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Accept",
+       "label_fr": "Accepter",
+       "effects": [
+        {
+         "type": "goto_page",
+         "amount": 0,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "warning"
+      },
+      {
+       "label_en": "Reject",
+       "label_fr": "Refuser",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "interdit: You are not allowed to Reject",
+         "unknown": false
+        }
+       ],
+       "next": "warning"
+      }
+     ]
+    },
+    {
+     "id": "warning",
+     "options": [
+      {
+       "label_en": "Accept",
+       "label_fr": "Accepter",
+       "effects": [
+        {
+         "type": "goto_page",
+         "amount": 0,
+         "ref": "",
+         "note": "tirage d'un proces: merchant, noble ou nondescript",
+         "unknown": false
+        }
+       ],
+       "next": "random_trial"
+      },
+      {
+       "label_en": "Double Down",
+       "label_fr": "Insister",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "consequences letales, valeur inconnue",
+         "unknown": true
+        }
+       ],
+       "next": null
+      }
+     ]
+    },
+    {
+     "id": "merchant",
+     "options": [
+      {
+       "label_en": "Guilty",
+       "label_fr": "Coupable",
+       "effects": [
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "REGRET",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 2,
+         "ref": "random",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Innocent",
+       "label_fr": "Innocent",
+       "effects": [
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "SHAME",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "upgrade_card",
+         "amount": 2,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    },
+    {
+     "id": "noble",
+     "options": [
+      {
+       "label_en": "Guilty",
+       "label_fr": "Coupable",
+       "effects": [
+        {
+         "type": "heal",
+         "amount": 10,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Innocent",
+       "label_fr": "Innocent",
+       "effects": [
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "REGRET",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_gold",
+         "amount": 300,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    },
+    {
+     "id": "nondescript",
+     "options": [
+      {
+       "label_en": "Guilty",
+       "label_fr": "Coupable",
+       "effects": [
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "DOUBT",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 2,
+         "ref": "card rewards",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Innocent",
+       "label_fr": "Innocent",
+       "effects": [
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "DOUBT",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "transform_card",
+         "amount": 2,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "next 'random_trial' = une des pages merchant/noble/nondescript tiree au hasard."
+  },
+  "WATERLOGGED_SCRIPTORIUM": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Bloody Ink",
+       "label_fr": "Encre sanglante",
+       "effects": [
+        {
+         "type": "gain_max_hp",
+         "amount": 6,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Prickly Sponge",
+       "label_fr": "Eponge piquante",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 99,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 2,
+         "ref": "enchant 2 cards STEADY",
+         "note": "requiert 99 or",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Tentacle Quill",
+       "label_fr": "Plume tentaculaire",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 55,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "enchant 1 card STEADY",
+         "note": "requiert 55 or",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "(locked Prickly Sponge)",
+       "label_fr": "(Eponge verrouillee)",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "variante supposee pour optionCount=5",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "(locked Tentacle Quill)",
+       "label_fr": "(Plume verrouillee)",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "variante supposee pour optionCount=5",
+         "unknown": true
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Steady = la carte reste en main (Retain)."
+  },
+  "WHISPERING_HOLLOW": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Exchange Gold",
+       "label_fr": "Echanger de l'or",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 50,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_potion",
+         "amount": 2,
+         "ref": "random",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Hug the Tree",
+       "label_fr": "Etreindre l'arbre",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 9,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "transform_card",
+         "amount": 1,
+         "ref": "",
+         "note": "au choix",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  }
+ }
+}
