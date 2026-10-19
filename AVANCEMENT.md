@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 91,1 %** — 1180 faits, 12 partiels, 57 à faire (35 hors périmètre).
+**Avancement global : 91,2 %** — 1181 faits, 12 partiels, 56 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 13 | 3 | 49 | 22,3 % |
+| [Évènements et Anciens](#rencontres) | 14 | 3 | 48 | 23,8 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1180** | **12** | **57** | **91,1 %** |
+| **Total** | **1181** | **12** | **56** | **91,2 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 22,3 %
+## Évènements et Anciens — 23,8 %
 
-### Évènements — 11,4 %
+### Évènements — 13,2 %
 
-5 faits, 3 partiels, 49 à faire.
+6 faits, 3 partiels, 48 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1355,7 +1355,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Amalgamateur | Acte 2 | Non |  |
 | Arôme du chaos | Acte 1 (A) | Non |  |
 | Automate infesté | Acte 2 | Non |  |
-| Aventure du labyrinthe de la jungle | Acte 1 (A) | Non |  |
+| Aventure du labyrinthe de la jungle | Acte 1 (A) | Oui |  |
 | Bains abyssaux | Acte 1 (B) | Partiel | Récit raccourci et choix réinventés pour la GBA. |
 | Bienvenue chez Wongo’s | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Bosquet des Morphiques | Acte 1 (A) | Non |  |
