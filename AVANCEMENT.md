@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 94,1 %** — 1169 faits, 13 partiels, 67 à faire (35 hors périmètre).
+**Avancement global : 94,4 %** — 1172 faits, 13 partiels, 64 à faire (35 hors périmètre).
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
@@ -24,9 +24,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
-| [Systèmes de jeu](#systemes) | 33 | 1 | 2 | 93,1 % |
-| [Interface, audio et cartouches](#interface) | 20 | 4 | 7 | 71,0 % |
-| **Total** | **1169** | **13** | **67** | **94,1 %** |
+| [Systèmes de jeu](#systemes) | 35 | 1 | 0 | 98,6 % |
+| [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
+| **Total** | **1172** | **13** | **64** | **94,4 %** |
 
 <a id="ironclad"></a>
 
@@ -1518,19 +1518,19 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 93,1 %
+## Systèmes de jeu — 98,6 %
 
-### La Tour — 78,6 %
+### La Tour — 100,0 %
 
-5 faits, 1 partiel, 1 à faire.
+7 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Carte procédurale à embranchements (16 étages) |  | Oui | [#24](https://github.com/Boblebol/slay_the_gba/issues/24) |
 | Trois actes enchaînés, soin entre les actes |  | Oui |  |
 | Salles : monstre, élite, boss, repos, trésor, boutique, évènement |  | Oui |  |
-| Rencontres propres à chaque acte (81 rencontres du jeu d'origine) |  | Partiel | Tables par acte et par salle (faible, normale, élite, boss), acte 1 en variante A ou B : 5 rencontres d'origine jouables, les anciens groupes ailleurs. [#225](https://github.com/Boblebol/slay_the_gba/issues/225) |
-| Un boss différent par acte |  | Non | [#36](https://github.com/Boblebol/slay_the_gba/issues/36) |
+| Rencontres propres à chaque acte (81 rencontres du jeu d'origine) |  | Oui | Tables par acte et par salle (faible, normale, élite, boss), acte 1 en variante A ou B, avec les monstres du jeu d'origine ; le combat précédent est écarté du tirage de la salle suivante. [#225](https://github.com/Boblebol/slay_the_gba/issues/225) |
+| Un boss différent par acte |  | Oui | Chaque acte (acte 1 en variante A ou B) tire son boss parmi 3. [#36](https://github.com/Boblebol/slay_the_gba/issues/36) |
 | Neow en début de partie |  | Oui | Chaque nouvelle partie s'ouvre sur Neow, qui salue le héros puis propose 2 bénédictions et 1 relique avec un prix, une à prendre avant la première carte. [#6](https://github.com/Boblebol/slay_the_gba/issues/6) |
 | Bénédiction d'un Ancien entre les actes |  | Oui | Au début des actes 2 et 3, un Ancien de l'acte (Darv à tout acte) propose 3 reliques, une à prendre. Les reliques dont l'effet manque ne sont pas proposées. [#261](https://github.com/Boblebol/slay_the_gba/issues/261) |
 
@@ -1548,15 +1548,15 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Relique de boss |  | Oui | Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. [#184](https://github.com/Boblebol/slay_the_gba/issues/184) |
 | Cartes rares et peu communes selon la salle |  | Oui | Chaque carte tire sa rareté : 60 / 37 / 3 % après un combat, 50 / 40 / 10 % après un élite, que des Rares après un boss. Pool bâti depuis les cartes du héros. |
 
-### Feu de camp — 66,7 %
+### Feu de camp — 83,3 %
 
-2 faits, 0 partiel, 1 à faire.
+2 faits, 1 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Repos : récupère 30 % des PV |  | Oui |  |
 | Forge : améliorer une carte, avec aperçu |  | Oui |  |
-| Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon) |  | Non | [#271](https://github.com/Boblebol/slay_the_gba/issues/271) |
+| Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon) |  | Partiel | Cuisiner, Soulever, Creuser, Clonage et éclosion de l'Œuf d'oizodon sont jouables au feu de camp ; reste à vérifier les autres actions du jeu d'origine. [#271](https://github.com/Boblebol/slay_the_gba/issues/271) |
 
 ### Marchand — 100,0 %
 
@@ -1607,11 +1607,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 71,0 %
+## Interface, audio et cartouches — 74,2 %
 
-### Écrans — 73,8 %
+### Écrans — 78,6 %
 
-14 faits, 3 partiels, 4 à faire.
+15 faits, 3 partiels, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1631,7 +1631,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Système de dialogue et d'évènements textuels |  | Partiel | [#19](https://github.com/Boblebol/slay_the_gba/issues/19) |
 | Options (volume, commandes) |  | Oui |  |
 | Menu pause en combat et sur la carte |  | Oui | [#10](https://github.com/Boblebol/slay_the_gba/issues/10) |
-| Menu principal interactif |  | Non | [#9](https://github.com/Boblebol/slay_the_gba/issues/9) |
+| Menu principal interactif |  | Oui | Haut/Bas pour naviguer, A pour valider : Continuer (si une partie est sauvegardée), Nouvelle partie, Compendium, Statistiques ; SELECT ouvre les options depuis l'écran titre, les crédits suivent la victoire. [#9](https://github.com/Boblebol/slay_the_gba/issues/9) |
 | Écran titre animé (nuages, tour, brume) |  | Non | [#7](https://github.com/Boblebol/slay_the_gba/issues/7) |
 | Écran titre propre à chaque édition |  | Non | [#3](https://github.com/Boblebol/slay_the_gba/issues/3) |
 | Crédits et cinématique d'introduction |  | Non | [#1](https://github.com/Boblebol/slay_the_gba/issues/1) |
