@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 91,6 %** — 1184 faits, 12 partiels, 53 à faire (35 hors périmètre).
+**Avancement global : 91,7 %** — 1185 faits, 12 partiels, 52 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 17 | 3 | 45 | 28,5 % |
+| [Évènements et Anciens](#rencontres) | 18 | 3 | 44 | 30,0 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1184** | **12** | **53** | **91,6 %** |
+| **Total** | **1185** | **12** | **52** | **91,7 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 28,5 %
+## Évènements et Anciens — 30,0 %
 
-### Évènements — 18,4 %
+### Évènements — 20,2 %
 
-9 faits, 3 partiels, 45 à faire.
+10 faits, 3 partiels, 44 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1397,7 +1397,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Site sans repos | Acte 1 (A) | Non |  |
 | Source mystique | Acte 1 (A) | Non |  |
 | Sphère de cristal | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Stèle de la Vérité | Acte 1 (A) | Non |  |
+| Stèle de la Vérité | Acte 1 (A) | Oui |  |
 | Symbiote | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Tas de déchets | Acte 1 (B) | Non |  |
 | Tisseur zen | Acte 2 | Non |  |
