@@ -923,13 +923,19 @@ int main() {
     int hp_before_ev = ev_run.hp;
     int gold_before_ev = ev_run.gold;
     const size_t potions_before_ev = ev_run.potions.size();
+    const size_t relics_before_ev = ev_run.relics.size();
+    const size_t deck_before_ev = ev_run.master_deck.size();
+    const int max_hp_before_ev = ev_run.max_hp;
     char outcome_msg[128];
 
     // Pick choice 0 (Gain gold / Heal / etc.)
     assert(ev_run.choose_event_choice(0, outcome_msg, sizeof(outcome_msg)));
     assert(outcome_msg[0] != '\0');
-    assert(ev_run.gold != gold_before_ev || ev_run.hp != hp_before_ev || ev_run.potions.size() != potions_before_ev ||
-           !ev_run.deck_choice_offers.empty());
+    // Whatever event the seed draws, choice 0 must change some part of the run state or open a follow-up screen.
+    assert(ev_run.gold != gold_before_ev || ev_run.hp != hp_before_ev || ev_run.max_hp != max_hp_before_ev ||
+           ev_run.potions.size() != potions_before_ev || ev_run.relics.size() != relics_before_ev ||
+           ev_run.master_deck.size() != deck_before_ev || !ev_run.deck_choice_offers.empty() ||
+           ev_run.phase != RunPhase::EVENT);
     std::cout << "[PASS] Pokémon-style Events: Encounters, Choice Dialogues, and Run State Modifications verified" << std::endl;
 
     // Act 1 boss: opens with a buff, then attacks; each enemy action is recorded for replay.
