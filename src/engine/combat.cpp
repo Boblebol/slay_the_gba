@@ -5630,6 +5630,7 @@ void CombatEngine::resolve_effect(DeckCard& played_card, int target_idx, int x_v
         case CardId::DOWSING:
         case CardId::SPOILS_MAP:
         case CardId::BYRDONIS_EGG:
+        case CardId::LANTERN_KEY:
         case CardId::TOXIC:
         case CardId::SOOT:
         case CardId::VOID_CARD:

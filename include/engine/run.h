@@ -98,6 +98,9 @@ struct AncientOffer {
 // others).
 constexpr size_t MAX_ANCIENT_OFFERS = 3;
 
+// Lantern Key: the Gold of the special event it unlocks in the next act. GUESSED, not in the reference data.
+constexpr int16_t LANTERN_KEY_GOLD = 100;
+
 // Spoils Map: the extra Gold of the room it marks in the next act.
 constexpr int16_t SPOILS_MAP_GOLD = 600;
 
@@ -387,6 +390,8 @@ private:
     void count_hook(RunHook hook);
     // Spoils Map: each copy of the deck marks a room of the act's map just drawn (see spoils_map_node).
     void mark_spoils_map_sites();
+    // Lantern Key: a key in the deck when a new act opens (bonus 1) unlocks its special event for the act's first ? room.
+    void unlock_lantern_keys();
     int upgrade_random_cards(int count, bool any_type, CardType type);
 };
 
