@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 92,9 %** — 1194 faits, 12 partiels, 43 à faire (35 hors périmètre).
+**Avancement global : 93,0 %** — 1195 faits, 12 partiels, 42 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 27 | 3 | 35 | 43,8 % |
+| [Évènements et Anciens](#rencontres) | 28 | 3 | 34 | 45,4 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1194** | **12** | **43** | **92,9 %** |
+| **Total** | **1195** | **12** | **42** | **93,0 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 43,8 %
+## Évènements et Anciens — 45,4 %
 
-### Évènements — 36,0 %
+### Évènements — 37,7 %
 
-19 faits, 3 partiels, 35 à faire.
+20 faits, 3 partiels, 34 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1362,7 +1362,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Bricolage | Acte 3 | Non |  |
 | Ceci ou Cela ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Champ de trous à taille corporelle | Acte 2 | Non |  |
-| Chœur lumineux | Acte 1 (A) | Non |  |
+| Chœur lumineux | Acte 1 (A) | Oui |  |
 | Convoyeur sans fin | Acte 1 (B) | Non |  |
 | Coursier de potions | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Développement personnel | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
