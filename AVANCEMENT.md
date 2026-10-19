@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 90,8 %** — 1178 faits, 12 partiels, 59 à faire (35 hors périmètre).
+**Avancement global : 90,9 %** — 1179 faits, 12 partiels, 58 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 11 | 3 | 51 | 19,2 % |
+| [Évènements et Anciens](#rencontres) | 12 | 3 | 50 | 20,8 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1178** | **12** | **59** | **90,8 %** |
+| **Total** | **1179** | **12** | **58** | **90,9 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 19,2 %
+## Évènements et Anciens — 20,8 %
 
-### Évènements — 7,9 %
+### Évènements — 9,6 %
 
-3 faits, 3 partiels, 51 à faire.
+4 faits, 3 partiels, 50 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1381,7 +1381,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | L’avenir des potions ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Mannequin de combat usé | Acte 3 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
 | Maître de thé | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Nid d’oizodon | Acte 1 (A) | Non |  |
+| Nid d’oizodon | Acte 1 (A) | Oui |  |
 | Phare englouti | Acte 1 (B) | Non |  |
 | Philosophes multicolores | Acte 2 | Non |  |
 | Pierre de tous les temps | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
