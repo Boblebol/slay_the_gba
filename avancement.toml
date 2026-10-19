@@ -209,7 +209,7 @@ title = "Feu de camp"
 items = [
   { name = "Repos : récupère 30 % des PV", status = "oui" },
   { name = "Forge : améliorer une carte, avec aperçu", status = "oui" },
-  { name = "Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon)", status = "partiel", issue = 271, note = "Cuisiner, Soulever, Creuser, Clonage et éclosion de l'Œuf d'oizodon sont jouables au feu de camp ; reste à vérifier les autres actions du jeu d'origine." },
+  { name = "Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon)", status = "oui" },
 ]
 
 [[category]]

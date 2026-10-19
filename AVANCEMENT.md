@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 90,2 %** — 1173 faits, 13 partiels, 63 à faire (35 hors périmètre).
+**Avancement global : 90,6 %** — 1176 faits, 12 partiels, 61 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -21,14 +21,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Défectueux](#defect) | 104 | 1 | 0 | 99,5 % |
 | [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
 | [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
-| [Cartes communes aux cinq éditions](#cartes) | 119 | 0 | 1 | 99,2 % |
+| [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
+| [Évènements et Anciens](#rencontres) | 9 | 3 | 53 | 16,2 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
-| [Systèmes de jeu](#systemes) | 35 | 1 | 0 | 98,6 % |
+| [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1173** | **13** | **63** | **90,2 %** |
+| **Total** | **1176** | **12** | **61** | **90,6 %** |
 
 <a id="ironclad"></a>
 
@@ -690,7 +690,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="cartes"></a>
 
-## Cartes communes aux cinq éditions — 99,2 %
+## Cartes communes aux cinq éditions — 100,0 %
 
 ### Cartes incolores — 100,0 %
 
@@ -824,14 +824,14 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Regrets | Malédiction · Malédiction | Oui |  |
 | Souffrance | Malédiction · Malédiction | Oui |  |
 
-### Quêtes — 75,0 %
+### Quêtes — 100,0 %
 
-3 faits, 0 partiel, 1 à faire.
+4 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Carte au trésor | Quête · Quête | Oui |  |
-| Clé de la lanterne | Quête · Quête | Non |  |
+| Clé de la lanterne | Quête · Quête | Oui |  |
 | Rhabdomancie | Quête · Quête | Oui |  |
 | Œuf d'oizodon | Quête · Quête | Oui |  |
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 14,6 %
+## Évènements et Anciens — 16,2 %
 
-### Évènements — 2,6 %
+### Évènements — 4,4 %
 
-0 fait, 3 partiels, 54 à faire.
+1 fait, 3 partiels, 53 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1372,7 +1372,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Graine de saphir | Acte 1 (A) | Non |  |
 | Gravures sur bois | Acte 1 (A) | Non |  |
 | Jungle dense | Acte 1 (A) | Non |  |
-| La clé de la lanterne | Acte 2 | Non |  |
+| La clé de la lanterne | Acte 2 | Oui |  |
 | La légende disait vrai | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | La statue engloutie | Acte 1 (A), Acte 1 (B) | Non |  |
 | Le Marchand ??? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
@@ -1520,7 +1520,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 98,6 %
+## Systèmes de jeu — 100,0 %
 
 ### La Tour — 100,0 %
 
@@ -1550,15 +1550,15 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Relique de boss |  | Oui | Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. [#184](https://github.com/Boblebol/slay_the_gba/issues/184) |
 | Cartes rares et peu communes selon la salle |  | Oui | Chaque carte tire sa rareté : 60 / 37 / 3 % après un combat, 50 / 40 / 10 % après un élite, que des Rares après un boss. Pool bâti depuis les cartes du héros. |
 
-### Feu de camp — 83,3 %
+### Feu de camp — 100,0 %
 
-2 faits, 1 partiel, 0 à faire.
+3 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Repos : récupère 30 % des PV |  | Oui |  |
 | Forge : améliorer une carte, avec aperçu |  | Oui |  |
-| Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon) |  | Partiel | Cuisiner, Soulever, Creuser, Clonage et éclosion de l'Œuf d'oizodon sont jouables au feu de camp ; reste à vérifier les autres actions du jeu d'origine. [#271](https://github.com/Boblebol/slay_the_gba/issues/271) |
+| Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon) |  | Oui |  |
 
 ### Marchand — 100,0 %
 

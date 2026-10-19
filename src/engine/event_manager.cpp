@@ -18,6 +18,30 @@ void safe_copy(char* dest, size_t dest_len, std::string_view src) {
 
 } // namespace
 
+EventEncounter EventManager::lantern_key_encounter() {
+    EventEncounter enc;
+    enc.id = "THE_LANTERN_KEY";
+    enc.title = "La clé de la lanterne";
+    enc.dialogue = "La clé luminescente vibre dans votre sac. Un inconnu surgit : « La voilà, je la cherchais partout ! »";
+
+    EventChoice c1;
+    c1.label = "Rendre la clé";
+    c1.cost_benefit = "Gagnez 100 Or.";
+    c1.outcome_type = EventOutcomeType::GOLD;
+    c1.value = LANTERN_KEY_GOLD;
+    c1.result_message = "L'inconnu vous remercie avec une bourse bien garnie.";
+    enc.choices.push_back(c1);
+
+    EventChoice c2;
+    c2.label = "Garder la clé";
+    c2.cost_benefit = "Gagnez une potion.";
+    c2.outcome_type = EventOutcomeType::POTION;
+    c2.value = 0;
+    c2.result_message = "Vous refusez. L'inconnu vous lance une fiole avant de disparaître.";
+    enc.choices.push_back(c2);
+    return enc;
+}
+
 EventEncounter EventManager::get_encounter_for_floor(uint8_t floor, uint32_t seed) {
     uint32_t idx = (seed + floor) % 4;
     EventEncounter enc;

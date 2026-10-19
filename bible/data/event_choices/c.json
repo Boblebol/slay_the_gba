@@ -1,0 +1,1365 @@
+{
+ "source": "https://gamewith.ai/slay-the-spire2/en/events/<ID> (v0.107.1); https://www.keengamer.com/articles/guides/slay-the-spire-2-all-events-and-rewards-guide/; https://slaythespire.wiki.gg/wiki/Module:Events/StS2_data",
+ "events": {
+  "AROMA_OF_CHAOS": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Let Go",
+       "label_fr": "Lâcher prise",
+       "effects": [
+        {
+         "type": "transform_card",
+         "amount": 1,
+         "ref": "choisie",
+         "note": "transforme une carte au choix",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Maintain Control",
+       "label_fr": "Garder le contrôle",
+       "effects": [
+        {
+         "type": "upgrade_card",
+         "amount": 1,
+         "ref": "choisie",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Valeurs marquées '?' sur gamewith, non précisées."
+  },
+  "BUGSLAYER": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Learn Extermination Technique",
+       "label_fr": "Apprendre la technique d'extermination",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "EXTERMINATE",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Learn Squash Technique",
+       "label_fr": "Apprendre la technique d'écrasement",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "SQUASH",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Stats des cartes Exterminate/Squash non listées sur l'évènement."
+  },
+  "COLOSSAL_FLOWER": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Extract Nectar",
+       "label_fr": "Extraire le nectar",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 35,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Reach Deeper",
+       "label_fr": "Aller plus profond",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 5,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "goto_page",
+         "amount": 0,
+         "ref": "deeper1",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "deeper1"
+      }
+     ]
+    },
+    {
+     "id": "deeper1",
+     "options": [
+      {
+       "label_en": "Extract Nectar",
+       "label_fr": "Extraire le nectar",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 75,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Reach Deeper",
+       "label_fr": "Aller encore plus profond",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 6,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "goto_page",
+         "amount": 0,
+         "ref": "deeper2",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "deeper2"
+      }
+     ]
+    },
+    {
+     "id": "deeper2",
+     "options": [
+      {
+       "label_en": "Extract Nectar",
+       "label_fr": "Extraire le nectar",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 135,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Enter the Center",
+       "label_fr": "Entrer au centre",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 7,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "POLLINOUS_CORE",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Keengamer indique 5/6/7 PV selon l'étape, cohérent avec gamewith."
+  },
+  "DOLL_ROOM": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Pick at Random",
+       "label_fr": "Choisir au hasard",
+       "effects": [
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "un de: DAUGHTER_OF_THE_WIND,MR_STRUGGLES,BING_BONG",
+         "note": "aléatoire",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Take Some Time",
+       "label_fr": "Prendre son temps",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 5,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "1 parmi 2 poupées",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Examine Each and Make the Best Choice",
+       "label_fr": "Examiner chacune et choisir la meilleure",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 15,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "1 parmi 3 poupées: DAUGHTER_OF_THE_WIND,MR_STRUGGLES,BING_BONG",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Le texte gamewith dit 'Choose 1 of 2' pour Take Some Time (les 2 proposées sont tirées parmi 3)."
+  },
+  "ENDLESS_CONVEYOR": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Observe the Chef",
+       "label_fr": "Observer le chef",
+       "effects": [
+        {
+         "type": "upgrade_card",
+         "amount": 1,
+         "ref": "aléatoire",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "goto_page",
+         "amount": 0,
+         "ref": "belt",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "belt"
+      }
+     ]
+    },
+    {
+     "id": "belt",
+     "options": [
+      {
+       "label_en": "Grab Caviar off the Belt",
+       "label_fr": "Prendre du caviar",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 40,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_max_hp",
+         "amount": 4,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "belt"
+      },
+      {
+       "label_en": "Grab Clam Roll off the Belt",
+       "label_fr": "Prendre un roulé de palourde",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 40,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "heal",
+         "amount": 10,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "belt"
+      },
+      {
+       "label_en": "Grab Fried Eel off the Belt",
+       "label_fr": "Prendre une anguille frite",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 40,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "colorless aléatoire",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "belt"
+      },
+      {
+       "label_en": "Grab Golden Fysh off the Belt",
+       "label_fr": "Prendre le Poisson d'or",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 75,
+         "ref": "",
+         "note": "gratuit, 'LUCKY WINNER'",
+         "unknown": false
+        }
+       ],
+       "next": "belt"
+      },
+      {
+       "label_en": "Grab Jelly Liver off the Belt",
+       "label_fr": "Prendre du foie en gelée",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 40,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "transform_card",
+         "amount": 1,
+         "ref": "choisie",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "belt"
+      },
+      {
+       "label_en": "Grab Seapunk Salad off the Belt",
+       "label_fr": "Prendre une salade seapunk",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 40,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "FEEDING_FRENZY",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "belt"
+      },
+      {
+       "label_en": "Grab Spicy Snappy off the Belt",
+       "label_fr": "Prendre un vivaneau épicé",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 40,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "upgrade_card",
+         "amount": 1,
+         "ref": "aléatoire",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "belt"
+      },
+      {
+       "label_en": "Grab Suspicious Condiment off the Belt",
+       "label_fr": "Prendre un condiment suspect",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 40,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_potion",
+         "amount": 1,
+         "ref": "aléatoire",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "belt"
+      },
+      {
+       "label_en": "Leave",
+       "label_fr": "Partir",
+       "effects": [
+        {
+         "type": "leave",
+         "amount": 0,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Hub: le tapis reste disponible jusqu'à Leave; plats payants désactivés si or < 40. Incertain que les 9 plats soient proposés simultanément (peut-être un sous-ensemble tiré au sort)."
+  },
+  "GRAVE_OF_THE_FORGOTTEN": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Accept the Forgotten Soul",
+       "label_fr": "Accepter l'âme oubliée",
+       "effects": [
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "FORGOTTEN_SOUL",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Confront with Truth",
+       "label_fr": "Confronter avec la vérité",
+       "effects": [
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "DECAY",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "SOULS_POWER",
+         "note": "enchanter une carte Exhaust avec Soul's Power",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Confront with Truth (locked)",
+       "label_fr": "Confronter (verrouillé)",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "verrouillé si aucune carte Exhaust enchantable",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Le 3e choix est la variante verrouillée (hypothèse pour optionCount=3). Effet de la relique Forgotten Soul inconnu."
+  },
+  "JUNGLE_MAZE_ADVENTURE": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Join Forces",
+       "label_fr": "Unir ses forces",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 35,
+         "ref": "",
+         "note": "35 à 65 selon gamewith (keengamer: 42)",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Solo Quest",
+       "label_fr": "Quête en solo",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 135,
+         "ref": "",
+         "note": "135 à 165 (keengamer: 140)",
+         "unknown": false
+        },
+        {
+         "type": "lose_hp",
+         "amount": 18,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Montants d'or en fourchette aléatoire."
+  },
+  "MORPHIC_GROVE": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Group",
+       "label_fr": "Le groupe",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 0,
+         "ref": "ALL",
+         "note": "perd tout l'or",
+         "unknown": false
+        },
+        {
+         "type": "transform_card",
+         "amount": 2,
+         "ref": "choisies",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Loner",
+       "label_fr": "Le solitaire",
+       "effects": [
+        {
+         "type": "gain_max_hp",
+         "amount": 5,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Keengamer dit 'lose 100 Gold' alors que gamewith dit tout l'or; on retient tout l'or."
+  },
+  "RANWID_THE_ELDER": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Give 100 Gold",
+       "label_fr": "Donner 100 or",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 100,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "aléatoire",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Give a Potion",
+       "label_fr": "Donner une potion",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "potion",
+         "note": "perd une potion au choix",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "aléatoire",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Give a Relic",
+       "label_fr": "Donner une relique",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "relique",
+         "note": "perd une relique au choix",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 2,
+         "ref": "aléatoire",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Give a Potion (locked)",
+       "label_fr": "Donner une potion (verrouillé)",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "verrouillé sans potion",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Give a Relic (locked)",
+       "label_fr": "Donner une relique (verrouillé)",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "verrouillé sans relique",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Les 2 dernières options sont des variantes verrouillées (hypothèse pour optionCount=5). Aucun Leave listé."
+  },
+  "ROOM_FULL_OF_CHEESE": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Gorge",
+       "label_fr": "Se gaver",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 2,
+         "ref": "2 parmi 8 communes aléatoires",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Search",
+       "label_fr": "Fouiller",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 14,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "CHOSEN_CHEESE",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "SELF_HELP_BOOK": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Read the Entire Book",
+       "label_fr": "Lire le livre en entier",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 2,
+         "ref": "SWIFT",
+         "note": "enchante un Pouvoir avec Swift 2",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Read a Random Passage",
+       "label_fr": "Lire un passage au hasard",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 2,
+         "ref": "NIMBLE",
+         "note": "enchante une Compétence avec Nimble 2",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Read the Back",
+       "label_fr": "Lire la quatrième de couverture",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 2,
+         "ref": "SHARP",
+         "note": "enchante une Attaque avec Sharp 2",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Read the Entire Book (locked)",
+       "label_fr": "verrouillé",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "aucun Pouvoir enchantable",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Read a Random Passage (locked)",
+       "label_fr": "verrouillé",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "aucune Compétence enchantable",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Read the Back (locked)",
+       "label_fr": "verrouillé",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "aucune Attaque enchantable",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Move On",
+       "label_fr": "Passer son chemin",
+       "effects": [
+        {
+         "type": "leave",
+         "amount": 0,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "7 options = 3 lectures + 3 variantes verrouillées + Move On (hypothèse)."
+  },
+  "SPIRIT_GRAFTER": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Let It In",
+       "label_fr": "Le laisser entrer",
+       "effects": [
+        {
+         "type": "heal",
+         "amount": 25,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "METAMORPHOSIS",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Rejection",
+       "label_fr": "Rejet",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 10,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "upgrade_card",
+         "amount": 1,
+         "ref": "choisie",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "SUNKEN_TREASURY": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "First Chest",
+       "label_fr": "Premier coffre",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 52,
+         "ref": "",
+         "note": "52 à 67 (keengamer: 63)",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Second Chest",
+       "label_fr": "Deuxième coffre",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 303,
+         "ref": "",
+         "note": "303 à 363 (keengamer: 306)",
+         "unknown": false
+        },
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "GREED",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "TEA_MASTER": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Bone Tea",
+       "label_fr": "Thé d'os",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 50,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "BONE_TEA",
+         "note": "améliore la main de départ du prochain combat",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Ember Tea",
+       "label_fr": "Thé de braise",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 150,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "EMBER_TEA",
+         "note": "+2 Force au début des 5 prochains combats",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Tea of Discourtesy",
+       "label_fr": "Thé de l'impolitesse",
+       "effects": [
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "TEA_OF_DISCOURTESY",
+         "note": "mélange 2 Dazed dans la pioche au prochain combat",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Bone Tea (locked)",
+       "label_fr": "verrouillé",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "or < 50",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Ember Tea (locked)",
+       "label_fr": "verrouillé",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "or < 150",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Les 2 dernières options sont des variantes verrouillées (hypothèse). Tea of Discourtesy = refus poli."
+  },
+  "THE_LEGENDS_WERE_TRUE": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Nab the Map",
+       "label_fr": "Attraper la carte",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "SPOILS_MAP",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Slowly Find an Exit",
+       "label_fr": "Chercher doucement une sortie",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 8,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_potion",
+         "amount": 1,
+         "ref": "aléatoire",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "TRASH_HEAP": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Dive In",
+       "label_fr": "Plonger dedans",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 8,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "un de: DARKSTONE_PERIAPT,DREAM_CATCHER,HAND_DRILL,MAW_BANK,THE_BOOT",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Grab Random Junk",
+       "label_fr": "Prendre un bric-à-brac au hasard",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 100,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "un de: CALTROPS,CLASH,DISTRACTION,DUAL_WIELD,ENTRENCH,HELLO_WORLD,OUTMANEUVER,REBOUND,RIP_AND_TEAR,STACK",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "WAR_HISTORIAN_REPY": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Unlock the Cage",
+       "label_fr": "Ouvrir la cage",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "LANTERN_KEY",
+         "note": "perd la Lantern Key",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "HISTORY_COURSE",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Unlock the Chest",
+       "label_fr": "Ouvrir le coffre",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "LANTERN_KEY",
+         "note": "perd la Lantern Key",
+         "unknown": false
+        },
+        {
+         "type": "gain_potion",
+         "amount": 2,
+         "ref": "aléatoires",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 2,
+         "ref": "aléatoires",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Gamewith indique 'tout acte', keengamer/wiki Acte 3."
+  },
+  "WELLSPRING": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Bathe",
+       "label_fr": "Se baigner",
+       "effects": [
+        {
+         "type": "remove_card",
+         "amount": 1,
+         "ref": "choisie",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "GUILTY",
+         "note": "malédiction temporaire; durée inconnue",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Bottle",
+       "label_fr": "Mettre en bouteille",
+       "effects": [
+        {
+         "type": "gain_potion",
+         "amount": 1,
+         "ref": "aléatoire",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "ZEN_WEAVER": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Breathing Techniques",
+       "label_fr": "Techniques de respiration",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 50,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_card",
+         "amount": 2,
+         "ref": "ENLIGHTENMENT",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Emotional Awareness",
+       "label_fr": "Conscience émotionnelle",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 125,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "remove_card",
+         "amount": 1,
+         "ref": "choisie",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Arachnid Acupuncture",
+       "label_fr": "Acupuncture arachnéenne",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 250,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "remove_card",
+         "amount": 2,
+         "ref": "choisies",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Locked",
+       "label_fr": "Verrouillé",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "",
+         "note": "Not enough Gold",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  }
+ }
+}
