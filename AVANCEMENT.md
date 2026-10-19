@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 91,3 %** — 1182 faits, 12 partiels, 55 à faire (35 hors périmètre).
+**Avancement global : 91,4 %** — 1183 faits, 12 partiels, 54 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 15 | 3 | 47 | 25,4 % |
+| [Évènements et Anciens](#rencontres) | 16 | 3 | 46 | 26,9 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1182** | **12** | **55** | **91,3 %** |
+| **Total** | **1183** | **12** | **54** | **91,4 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 25,4 %
+## Évènements et Anciens — 26,9 %
 
-### Évènements — 14,9 %
+### Évènements — 16,7 %
 
-7 faits, 3 partiels, 47 à faire.
+8 faits, 3 partiels, 46 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1374,7 +1374,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Jungle dense | Acte 1 (A) | Non |  |
 | La clé de la lanterne | Acte 2 | Oui |  |
 | La légende disait vrai | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| La statue engloutie | Acte 1 (A), Acte 1 (B) | Non |  |
+| La statue engloutie | Acte 1 (A), Acte 1 (B) | Oui |  |
 | Le Marchand ??? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Le procès | Acte 3 | Non |  |
 | Le thé de la table ronde | Acte 3 | Non |  |
