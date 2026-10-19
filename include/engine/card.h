@@ -708,6 +708,7 @@ enum class Enchantment : uint8_t {
     ROYALLY_APPROVED, // Sceau royal: Innate and Retain
     SHARP,            // Tranchant: the card deals `amount` more damage
     GOOPY,            // Viscosité: Exhaust; once played, the Block it gives is raised by 1 for good (`amount`)
+    PERFECT_FIT,      // Ajustement parfait (Field of Man-Sized Holes): each time the draw pile is shuffled, the card goes on top
     COUNT
 };
 
