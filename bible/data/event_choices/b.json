@@ -1,0 +1,1378 @@
+{
+ "source": "https://op.gg/slay-the-spire2/events/<EventName> (v0.111.0); https://www.keengamer.com/articles/guides/slay-the-spire-2-all-events-and-rewards-guide/; https://slaythespire.wiki.gg/wiki/Module:Events/StS2_data; https://gamewith.ai/slay-the-spire2/en/events/LUMINOUS_CHOIR; https://www.switchbladegaming.com/strategy-games/slay-the-spire-2-event-guide/",
+ "events": {
+  "AMALGAMATOR": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Combine Defends: Remove 2 Defends. Add Ultimate Defend to your Deck.",
+       "label_fr": "Fusionner les Défenses : retire 2 Défenses, ajoute Défense ultime.",
+       "effects": [
+        {
+         "type": "remove_card",
+         "amount": 2,
+         "ref": "DEFEND",
+         "note": "2 Défenses",
+         "unknown": false
+        },
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "ULTIMATE_DEFEND",
+         "note": "Skill, gain 11 Block (v0.111)",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Combine Strikes: Remove 2 Strikes. Add Ultimate Strike to your Deck.",
+       "label_fr": "Fusionner les Frappes : retire 2 Frappes, ajoute Frappe ultime.",
+       "effects": [
+        {
+         "type": "remove_card",
+         "amount": 2,
+         "ref": "STRIKE",
+         "note": "2 Frappes",
+         "unknown": false
+        },
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "ULTIMATE_STRIKE",
+         "note": "Attack, 14 damage (v0.111); une source plus ancienne: coût 0, 18 dégâts, Épuise",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Aucun écran de suite. Ascension: aucune variante trouvée."
+  },
+  "BRAIN_LEECH": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Share Knowledge: Choose 1 of 5 random cards to add to your Deck.",
+       "label_fr": "Partager la connaissance : choisir 1 carte parmi 5 aléatoires à ajouter au deck.",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "RANDOM_CHOICE_1_OF_5",
+         "note": "pool inconnue (une source parle de cartes Decay pour Necrobinder)",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Rip the Leech Off: Lose 5 HP. Gain a Colorless card reward.",
+       "label_fr": "Arracher la sangsue : perd 5 PV, récompense de carte incolore.",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 5,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "COLORLESS_CARD_REWARD",
+         "note": "choix d'une carte incolore",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Une source ancienne disait que Rip off donne seulement une perte de PV; v0.111: récompense de carte incolore."
+  },
+  "COLORFUL_PHILOSOPHERS": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Blue: Receive three Defect cards.",
+       "label_fr": "Bleu : trois cartes Defect.",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "DEFECT_CARD_REWARD",
+         "note": "3 cartes de raretés variées, 1 à choisir",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Equality: Receive a Prismatic Shard.",
+       "label_fr": "Égalité : reçoit un Éclat prismatique.",
+       "effects": [
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "PRISMATIC_SHARD",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Red: Receive three Ironclad cards.",
+       "label_fr": "Rouge : trois cartes Ironclad.",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "IRONCLAD_CARD_REWARD",
+         "note": "3 cartes de raretés variées",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Pink: Receive three Necrobinder cards.",
+       "label_fr": "Rose : trois cartes Necrobinder.",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "NECROBINDER_CARD_REWARD",
+         "note": "3 cartes de raretés variées",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Orange: Receive three Regent cards.",
+       "label_fr": "Orange : trois cartes Regent.",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "REGENT_CARD_REWARD",
+         "note": "3 cartes de raretés variées",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Green: Receive three Silent cards.",
+       "label_fr": "Vert : trois cartes Silent.",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "SILENT_CARD_REWARD",
+         "note": "3 cartes de raretés variées",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Couleurs des autres héros plus Égalité. Rareté exacte des 3 cartes non précisée."
+  },
+  "DENSE_VEGETATION": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Trudge On: Lose 8 HP. Remove a card.",
+       "label_fr": "Persévérer : perd 8 PV, retire une carte.",
+       "effects": [
+        {
+         "type": "lose_hp",
+         "amount": 8,
+         "ref": "",
+         "note": "op.gg: 8; keengamer: 11 (version précoce)",
+         "unknown": false
+        },
+        {
+         "type": "remove_card",
+         "amount": 1,
+         "ref": "",
+         "note": "selon keengamer; op.gg affiche 'Gain 0 Gold'",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Rest: Heal HP. Fight some enemies.",
+       "label_fr": "Se reposer : soigne des PV puis combat.",
+       "effects": [
+        {
+         "type": "heal",
+         "amount": 0,
+         "ref": "",
+         "note": "montant introuvable (keengamer: 25)",
+         "unknown": true
+        },
+        {
+         "type": "fight",
+         "amount": 1,
+         "ref": "WRIGGLERS",
+         "note": "groupe de Wrigglers",
+         "unknown": false
+        }
+       ],
+       "next": "fight"
+      }
+     ]
+    },
+    {
+     "id": "fight",
+     "options": [
+      {
+       "label_en": "Fight!",
+       "label_fr": "Combattre !",
+       "effects": [
+        {
+         "type": "fight",
+         "amount": 1,
+         "ref": "WRIGGLERS",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Variantes ascension inconnues. L'écran 'Fight!' suit le choix Rest."
+  },
+  "DROWNING_BEACON": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Bottle: Procure Glowwater Potion.",
+       "label_fr": "Mettre en bouteille : obtient une potion Eau luisante.",
+       "effects": [
+        {
+         "type": "gain_potion",
+         "amount": 1,
+         "ref": "GLOWWATER_POTION",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Climb: Obtain Fresnel Lens. Lose 13 Max HP.",
+       "label_fr": "Grimper : obtient la Lentille de Fresnel, perd 13 PV max.",
+       "effects": [
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "FRESNEL_LENS",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "lose_max_hp",
+         "amount": 13,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "FIELD_OF_MAN_SIZED_HOLES": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Enter Your Hole: Enchant a card with Perfect Fit.",
+       "label_fr": "Entrer dans votre trou : enchante une carte avec Ajustement parfait.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "ENCHANT_PERFECT_FIT",
+         "note": "enchantement sur une carte au choix",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Resist: Remove 2 cards from your Deck and add Normality.",
+       "label_fr": "Résister : retire 2 cartes et ajoute Normalité.",
+       "effects": [
+        {
+         "type": "remove_card",
+         "amount": 2,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "NORMALITY",
+         "note": "injouable, max 3 cartes jouées par tour",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "INFESTED_AUTOMATON": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Study: Gain a random Power.",
+       "label_fr": "Étudier : obtient un Pouvoir aléatoire.",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "RANDOM_POWER",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Touch the Core: Gain a random 0-cost card.",
+       "label_fr": "Toucher le cœur : obtient une carte aléatoire coûtant 0.",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "RANDOM_ZERO_COST_CARD",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Pools exacts non précisés."
+  },
+  "LUMINOUS_CHOIR": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Offer Tribute: Pay 149 Gold. Obtain a random Relic.",
+       "label_fr": "Offrir un tribut : paie 149 or, obtient une relique aléatoire.",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 149,
+         "ref": "",
+         "note": "requis; gamewith dit 100-149",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "RANDOM_RELIC",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Reach into the Flesh: Remove 2 cards from your Deck. Add Spore Mind.",
+       "label_fr": "Plonger la main dans la chair : retire 2 cartes, ajoute Esprit de spores.",
+       "effects": [
+        {
+         "type": "remove_card",
+         "amount": 2,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "SPORE_MIND",
+         "note": "Curse, Exhaust",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "(third option, probably Leave)",
+       "label_fr": "(troisième option, probablement Partir)",
+       "effects": [
+        {
+         "type": "leave",
+         "amount": 0,
+         "ref": "",
+         "note": "optionCount=3 mais seulement 2 options trouvées",
+         "unknown": true
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Troisième option non documentée."
+  },
+  "PUNCH_OFF": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Nab: Add Injury to your Deck. Obtain a random Relic.",
+       "label_fr": "Chiper : ajoute Blessure, obtient une relique aléatoire.",
+       "effects": [
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "INJURY",
+         "note": "Curse injouable",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "RANDOM_RELIC",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "I Can Take Them: Fight them for Greater Rewards.",
+       "label_fr": "Je peux les prendre : combat pour de meilleures récompenses.",
+       "effects": [
+        {
+         "type": "fight",
+         "amount": 1,
+         "ref": "PUNCH_CONSTRUCTS",
+         "note": "2 Constructs de coups",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "RELIC",
+         "note": "relique + récompenses supplémentaires, détails introuvables",
+         "unknown": true
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "RELIC_TRADER": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Take the Top One: Trade [your relic] for [offered relic].",
+       "label_fr": "Prendre celui du haut : échange une relique contre une autre.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "TRADE_RELIC",
+         "note": "reliques perdue et reçue tirées à l'ouverture",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Take the Middle One",
+       "label_fr": "Prendre celui du milieu",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "TRADE_RELIC",
+         "note": "idem",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Take the Bottom One",
+       "label_fr": "Prendre celui du bas",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "TRADE_RELIC",
+         "note": "idem",
+         "unknown": true
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Trois offres d'échange: chacune retire une relique possédée et en donne une autre."
+  },
+  "SAPPHIRE_SEED": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Consume: Heal 9 HP. Upgrade a card in your Deck.",
+       "label_fr": "Consommer : soigne 9 PV, améliore une carte.",
+       "effects": [
+        {
+         "type": "heal",
+         "amount": 9,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "upgrade_card",
+         "amount": 1,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Plant and Nourish: Enchant a card with Sown.",
+       "label_fr": "Planter et nourrir : enchante une carte avec Semé.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "ENCHANT_SOWN",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "SPIRALING_WHIRLPOOL": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Drink: Heal HP.",
+       "label_fr": "Boire : soigne des PV.",
+       "effects": [
+        {
+         "type": "heal",
+         "amount": 0,
+         "ref": "",
+         "note": "montant introuvable (op.gg affiche 0)",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Observe: Enchant a Basic Strike or Defend with Spiral.",
+       "label_fr": "Observer : enchante une Frappe ou Défense de base avec Spirale.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "ENCHANT_SPIRAL",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Reach In: Gain a random Relic and add Writhe to your Deck.",
+       "label_fr": "Plonger la main : relique aléatoire et ajoute Contorsion.",
+       "effects": [
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "RANDOM_RELIC",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "WRITHE",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Reach In vu sur une seule source."
+  },
+  "SUNKEN_STATUE": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Dive into the Water: Gain 111 Gold. Lose 7 HP.",
+       "label_fr": "Plonger dans l'eau : gagne 111 or, perd 7 PV.",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 111,
+         "ref": "",
+         "note": "keengamer: 113",
+         "unknown": false
+        },
+        {
+         "type": "lose_hp",
+         "amount": 7,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Grab the Sword: Obtain the Sword of Stone.",
+       "label_fr": "Prendre l'épée : obtient l'Épée de pierre.",
+       "effects": [
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "SWORD_OF_STONE",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "TABLET_OF_TRUTH": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Decipher: Lose 3 Max HP. Upgrade a random card.",
+       "label_fr": "Déchiffrer : perd 3 PV max, améliore une carte aléatoire.",
+       "effects": [
+        {
+         "type": "lose_max_hp",
+         "amount": 3,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "upgrade_card",
+         "amount": 1,
+         "ref": "RANDOM",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "decipher2"
+      },
+      {
+       "label_en": "Smash: Heal 20 HP.",
+       "label_fr": "Briser : soigne 20 PV.",
+       "effects": [
+        {
+         "type": "heal",
+         "amount": 20,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    },
+    {
+     "id": "decipher2",
+     "options": [
+      {
+       "label_en": "Continue Deciphering: Lose 3 Max HP. Upgrade a random card.",
+       "label_fr": "Continuer : perd 3 PV max, améliore une carte aléatoire.",
+       "effects": [
+        {
+         "type": "lose_max_hp",
+         "amount": 3,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "upgrade_card",
+         "amount": 1,
+         "ref": "RANDOM",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "decipher3"
+      },
+      {
+       "label_en": "Give Up",
+       "label_fr": "Abandonner",
+       "effects": [
+        {
+         "type": "leave",
+         "amount": 0,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    },
+    {
+     "id": "decipher3",
+     "options": [
+      {
+       "label_en": "Keep Deciphering: Lose 3 Max HP. Upgrade a random card.",
+       "label_fr": "Continuer encore : perd 3 PV max, améliore une carte aléatoire.",
+       "effects": [
+        {
+         "type": "lose_max_hp",
+         "amount": 3,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "upgrade_card",
+         "amount": 1,
+         "ref": "RANDOM",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "decipher4"
+      },
+      {
+       "label_en": "Give Up",
+       "label_fr": "Abandonner",
+       "effects": [
+        {
+         "type": "leave",
+         "amount": 0,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    },
+    {
+     "id": "decipher4",
+     "options": [
+      {
+       "label_en": "KEEP DECIPHERING: Lose 3 Max HP. Upgrade a random card.",
+       "label_fr": "CONTINUER : perd 3 PV max, améliore une carte aléatoire.",
+       "effects": [
+        {
+         "type": "lose_max_hp",
+         "amount": 3,
+         "ref": "",
+         "note": "montant exact incertain",
+         "unknown": true
+        },
+        {
+         "type": "upgrade_card",
+         "amount": 1,
+         "ref": "RANDOM",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "decipher5"
+      },
+      {
+       "label_en": "Give Up",
+       "label_fr": "Abandonner",
+       "effects": [
+        {
+         "type": "leave",
+         "amount": 0,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    },
+    {
+     "id": "decipher5",
+     "options": [
+      {
+       "label_en": "Lose Everything: Lose 3 Max HP. Upgrade ALL of your cards.",
+       "label_fr": "Tout perdre : perd 3 PV max, améliore TOUTES les cartes.",
+       "effects": [
+        {
+         "type": "lose_max_hp",
+         "amount": 3,
+         "ref": "",
+         "note": "montant exact incertain",
+         "unknown": true
+        },
+        {
+         "type": "upgrade_card",
+         "amount": 99,
+         "ref": "ALL",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Give Up",
+       "label_fr": "Abandonner",
+       "effects": [
+        {
+         "type": "leave",
+         "amount": 0,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Chaîne de déchiffrage: chaque étape coûte 3 PV max pour une amélioration aléatoire, avec Give Up; la dernière étape améliore TOUTES les cartes. Le coût réel par étape peut augmenter (source ancienne)."
+  },
+  "THE_LANTERN_KEY": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Return the Key: Gain 100 Gold.",
+       "label_fr": "Rendre la clé : gagne 100 or.",
+       "effects": [
+        {
+         "type": "gain_gold",
+         "amount": 100,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Keep the Key: Fight to obtain the Key.",
+       "label_fr": "Garder la clé : combat pour l'obtenir.",
+       "effects": [
+        {
+         "type": "fight",
+         "amount": 1,
+         "ref": "MYSTERIOUS_KNIGHT",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "LANTERN_KEY",
+         "note": "clé obtenue après victoire (utilisée à l'acte 3)",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "TINKER_TIME": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Accept: Create a custom card to add to your Deck.",
+       "label_fr": "Accepter : crée une carte sur mesure ajoutée au deck.",
+       "effects": [
+        {
+         "type": "add_card",
+         "amount": 1,
+         "ref": "CUSTOM_CARD",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "type"
+      }
+     ]
+    },
+    {
+     "id": "type",
+     "options": [
+      {
+       "label_en": "Weapon: Make an Attack.",
+       "label_fr": "Arme : crée une Attaque.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "TYPE_ATTACK",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "effect"
+      },
+      {
+       "label_en": "Gadget: Make a Power.",
+       "label_fr": "Gadget : crée un Pouvoir.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "TYPE_POWER",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "effect"
+      },
+      {
+       "label_en": "Protector: Make a Skill.",
+       "label_fr": "Protecteur : crée une Compétence.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "TYPE_SKILL",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": "effect"
+      }
+     ]
+    },
+    {
+     "id": "effect",
+     "options": [
+      {
+       "label_en": "Chaos: Add a random card into your Hand. It's free to play this turn.",
+       "label_fr": "Chaos : ajoute une carte aléatoire en main, gratuite ce tour.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "RIDER_CHAOS",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Choking: Whenever you play a card this turn, the enemy loses X HP.",
+       "label_fr": "Étranglement : chaque carte jouée ce tour fait perdre X PV à l'ennemi.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "RIDER_CHOKING",
+         "note": "X inconnu",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Curious: Powers cost 1 energy less.",
+       "label_fr": "Curieux : les Pouvoirs coûtent 1 énergie de moins.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "RIDER_CURIOUS",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Energized: Gain energy.",
+       "label_fr": "Énergisé : gagne de l'énergie.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "RIDER_ENERGIZED",
+         "note": "quantité inconnue",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Expertise: Gain X Strength, Y Dexterity.",
+       "label_fr": "Expertise : gagne X Force et Y Dextérité.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "RIDER_EXPERTISE",
+         "note": "X, Y inconnus",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Improvement: At the end of combat, upgrade a random card.",
+       "label_fr": "Amélioration : en fin de combat, améliore une carte aléatoire.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "RIDER_IMPROVEMENT",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Sapping: Apply X Weak, Y Vulnerable.",
+       "label_fr": "Sape : applique X Faiblesse et Y Vulnérable.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 0,
+         "ref": "RIDER_SAPPING",
+         "note": "X, Y inconnus",
+         "unknown": true
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Violence: Hits 2 additional times.",
+       "label_fr": "Violence : frappe 2 fois de plus.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 2,
+         "ref": "RIDER_VIOLENCE",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Wisdom: Draw 3 cards.",
+       "label_fr": "Sagesse : pioche 3 cartes.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 3,
+         "ref": "RIDER_WISDOM",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Parcours: choisir un type de carte, puis un effet (la source wiki parle de 2 types sur 3 et 2 effets sur 3). Valeurs X/Y des effets inconnues."
+  },
+  "UNREST_SITE": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Rest Anyways: Heal to full HP. Receive Poor Sleep.",
+       "label_fr": "Dormir quand même : soigne tous les PV, reçoit Mauvais sommeil.",
+       "effects": [
+        {
+         "type": "heal",
+         "amount": 9999,
+         "ref": "FULL",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "add_curse",
+         "amount": 1,
+         "ref": "POOR_SLEEP",
+         "note": "Curse injouable, Retain",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Kill the Trees: Lose 8 Max HP. Obtain a random Relic.",
+       "label_fr": "Abattre les arbres : perd 8 PV max, relique aléatoire.",
+       "effects": [
+        {
+         "type": "lose_max_hp",
+         "amount": 8,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "RANDOM_RELIC",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": ""
+  },
+  "WELCOME_TO_WONGOS": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Wongo's Bargain Bin: Pay 100 Gold. Obtain 1 random Common Relic.",
+       "label_fr": "Bac à soldes : paie 100 or, 1 relique commune aléatoire.",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 100,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "RANDOM_COMMON_RELIC",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Wongo's Featured Item: Pay 200 Gold. Obtain a specific relic.",
+       "label_fr": "Article vedette : paie 200 or, une relique précise.",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 200,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 1,
+         "ref": "FEATURED_RELIC",
+         "note": "relique rare précise tirée à l'ouverture (keengamer: Frozen Egg)",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Wongo's Mystery Box: Pay 300 Gold. Obtain 3 random Relics after 5 combats.",
+       "label_fr": "Boîte mystère : paie 300 or, 3 reliques aléatoires après 5 combats.",
+       "effects": [
+        {
+         "type": "lose_gold",
+         "amount": 300,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "gain_relic",
+         "amount": 3,
+         "ref": "RANDOM_RELIC",
+         "note": "livrées après 5 combats",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Leave: Downgrade a random card.",
+       "label_fr": "Partir : une carte aléatoire est rétrogradée.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "DOWNGRADE_RANDOM_CARD",
+         "note": "",
+         "unknown": false
+        },
+        {
+         "type": "leave",
+         "amount": 0,
+         "ref": "",
+         "note": "",
+         "unknown": false
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "optionCount=7 dans le JSON de base mais seulement 4 options trouvées; les 3 autres sont inconnues."
+  },
+  "WOOD_CARVINGS": {
+   "pages": [
+    {
+     "id": "start",
+     "options": [
+      {
+       "label_en": "Bird: Choose 1 starter card to Transform into Peck.",
+       "label_fr": "Oiseau : transforme une carte de départ en Picorer.",
+       "effects": [
+        {
+         "type": "transform_card",
+         "amount": 1,
+         "ref": "PECK",
+         "note": "2 dégâts x3",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Snake: Enchant 1 card with Slither.",
+       "label_fr": "Serpent : enchante une carte avec Glissement.",
+       "effects": [
+        {
+         "type": "other",
+         "amount": 1,
+         "ref": "ENCHANT_SLITHER",
+         "note": "verrouillé si aucune carte enchantable; coût de la carte aléatoire",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "Torus: Choose 1 starter card to Transform into Toric Toughness.",
+       "label_fr": "Tore : transforme une carte de départ en Robustesse torique.",
+       "effects": [
+        {
+         "type": "transform_card",
+         "amount": 1,
+         "ref": "TORIC_TOUGHNESS",
+         "note": "5 Armure, +5 Armure au début des 2 tours suivants",
+         "unknown": false
+        }
+       ],
+       "next": null
+      },
+      {
+       "label_en": "(fourth option, probably Leave)",
+       "label_fr": "(quatrième option, probablement Partir)",
+       "effects": [
+        {
+         "type": "leave",
+         "amount": 0,
+         "ref": "",
+         "note": "optionCount=4 mais seulement 3 options trouvées",
+         "unknown": true
+        }
+       ],
+       "next": null
+      }
+     ]
+    }
+   ],
+   "notes": "Quatrième option non documentée."
+  }
+ }
+}
