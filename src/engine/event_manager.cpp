@@ -242,6 +242,22 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.relic_reward = {};
             RewardRng rng(run.next_random());
             run.draw_card_rewards(false, rng);
+            if (effect.ref == "COLORLESS") {
+                // The reward just drawn is replaced by Colorless cards (never a Status, a Curse nor a Quest card).
+                FixedVector<CardId, 128> pool;
+                for (uint16_t raw = 0; raw < static_cast<uint16_t>(CardId::COUNT); ++raw) {
+                    const CardId id = static_cast<CardId>(raw);
+                    const CardType type = CardDef::get(id).type;
+                    if (card_meta(id).pool != CardPool::COLORLESS || card_meta(id).rarity == CardRarity::BASIC) continue;
+                    if (type != CardType::STATUS && type != CardType::CURSE && type != CardType::QUEST) pool.push_back(id);
+                }
+                run.current_card_rewards.clear();
+                while (run.current_card_rewards.size() < 3 && !pool.empty()) {
+                    const size_t pick = run.next_random() % pool.size();
+                    run.current_card_rewards.push_back(DeckCard(pool[pick], run.card_rewards_upgraded));
+                    pool.erase(pick);
+                }
+            }
             run.phase = RunPhase::REWARD_SCREEN;
             break;
         }
@@ -277,6 +293,21 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
         case EventEffectType::FIGHT:
             run.begin_fight(effect.ref == "ELITE" ? RoomType::ELITE : RoomType::MONSTER);
             break;
+        case EventEffectType::CARD_CHOICE: {
+            // Cards of the hero's pool, distinct and never a basic one; the player adds one of them (Sea Glass choice).
+            FixedVector<CardId, 512> pool;
+            for (CardId id : RunManager::card_reward_pool(run.character)) {
+                if (card_meta(id).rarity != CardRarity::BASIC) pool.push_back(id);
+            }
+            run.deck_choice_offers.clear();
+            while (static_cast<int>(run.deck_choice_offers.size()) < count_of(effect) && !pool.empty()) {
+                const size_t pick = run.next_random() % pool.size();
+                run.deck_choice_offers.push_back(DeckCard(pool[pick]));
+                pool.erase(pick);
+            }
+            run.request_deck_choice(DeckChoiceKind::ADD, 1);
+            break;
+        }
         case EventEffectType::GOTO_PAGE:
         case EventEffectType::LEAVE:
         default:
