@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 93,1 %** — 1196 faits, 12 partiels, 41 à faire (35 hors périmètre).
+**Avancement global : 93,2 %** — 1197 faits, 12 partiels, 40 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 29 | 3 | 33 | 46,9 % |
+| [Évènements et Anciens](#rencontres) | 30 | 3 | 32 | 48,5 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1196** | **12** | **41** | **93,1 %** |
+| **Total** | **1197** | **12** | **40** | **93,2 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 46,9 %
+## Évènements et Anciens — 48,5 %
 
-### Évènements — 39,5 %
+### Évènements — 41,2 %
 
-21 faits, 3 partiels, 33 à faire.
+22 faits, 3 partiels, 32 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1380,7 +1380,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Le thé de la table ronde | Acte 3 | Non |  |
 | L’avenir des potions ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Mannequin de combat usé | Acte 3 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
-| Maître de thé | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Maître de thé | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Nid d’oizodon | Acte 1 (A) | Oui |  |
 | Phare englouti | Acte 1 (B) | Oui |  |
 | Philosophes multicolores | Acte 2 | Non |  |
