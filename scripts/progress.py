@@ -122,8 +122,17 @@ class Progress:
     def tally(self) -> Tally:
         return sum((section.tally for section in self.sections), Tally())
 
+    @property
+    def percent(self) -> float:
+        """Global percentage: the plain mean of the section percentages. A section with no counted item is skipped."""
+        percents = [section.tally.percent for section in self.sections if section.tally.total]
+        return sum(percents) / len(percents) if percents else 0.0
+
     def section(self, slug: str) -> Section:
         return next(section for section in self.sections if section.slug == slug)
+
+
+GLOBAL_RULE = "Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant."
 
 
 def percent_fr(value: float) -> str:
@@ -399,11 +408,11 @@ def extras_fr(progress: Progress) -> str:
     return f"Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : {groups}."
 
 
-def next_version(tally: Tally, tags: list[str]) -> str:
+def next_version(tally: Tally, tags: list[str], percent: float | None = None) -> str:
     """Version of the next release: 0.<whole percentage>.<patch> while something is left to do, 1.0.<patch> once
-    every item is done. The patch number counts the releases already tagged for the same major.minor."""
+    every item is done. `percent` is the global percentage (default: the tally's own). The patch number counts the releases already tagged for the same major.minor."""
     complete = tally.total > 0 and tally.todo == 0 and tally.partial == 0
-    prefix = "1.0" if complete else f"0.{int(tally.percent)}"
+    prefix = "1.0" if complete else f"0.{int(tally.percent if percent is None else percent)}"
     patches = [int(match.group(1)) for tag in tags if (match := re.fullmatch(rf"v{re.escape(prefix)}\.(\d+)", tag))]
     return f"{prefix}.{max(patches) + 1 if patches else 0}"
 
@@ -419,13 +428,13 @@ def summary_table(progress: Progress, links: bool = True) -> list[str]:
         title = f"[{section.title}](#{section.slug})" if links else section.title
         out.append(f"| {title} | {t.done} | {t.partial} | {t.todo} | {percent_fr(t.percent)} |")
     t = progress.tally
-    out.append(f"| **Total** | **{t.done}** | **{t.partial}** | **{t.todo}** | **{percent_fr(t.percent)}** |")
+    out.append(f"| **Total** | **{t.done}** | **{t.partial}** | **{t.todo}** | **{percent_fr(progress.percent)}** |")
     return out
 
 
 def release_notes(progress: Progress) -> str:
-    return "\n".join([f"## Avancement : {percent_fr(progress.tally.percent)}", "",
-                      f"{counts_fr(progress.tally).capitalize()}, sur le contenu de Slay the Spire 2.", "",
+    return "\n".join([f"## Avancement : {percent_fr(progress.percent)}", "",
+                      f"{counts_fr(progress.tally).capitalize()}, sur le contenu de Slay the Spire 2. {GLOBAL_RULE}", "",
                       *summary_table(progress, links=False)]) + "\n"
 
 
@@ -440,7 +449,9 @@ def markdown_report(progress: Progress) -> str:
         "> monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans",
         "> se règlent dans [`avancement.toml`](avancement.toml).",
         "",
-        f"**Avancement global : {percent_fr(progress.tally.percent)}** — {counts_fr(progress.tally)}.",
+        f"**Avancement global : {percent_fr(progress.percent)}** — {counts_fr(progress.tally)}.",
+        "",
+        GLOBAL_RULE,
         "",
         "Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 "
         "(patch v0.111.0 Beta, `bible/data`).",
@@ -474,7 +485,7 @@ def main() -> None:
     progress = compute()
     if args.next_version:
         tags = subprocess.run(["git", "tag", "--list", "v*"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.split()
-        print(next_version(progress.tally, tags))
+        print(next_version(progress.tally, tags, progress.percent))
         return
     if args.release_notes:
         print(release_notes(progress), end="")
@@ -482,7 +493,7 @@ def main() -> None:
     write_report(progress)
     for section in progress.sections:
         print(f"{percent_fr(section.tally.percent):>8}  {section.title} — {counts_fr(section.tally)}")
-    print(f"{percent_fr(progress.tally.percent):>8}  TOTAL — {counts_fr(progress.tally)}")
+    print(f"{percent_fr(progress.percent):>8}  TOTAL — {counts_fr(progress.tally)}")
     print("Written", REPORT.relative_to(ROOT))
 
 
