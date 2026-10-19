@@ -464,8 +464,8 @@ def landing_progress(prog: progress.Progress) -> str:
     return panel(f"""<h2 id="avancement">Où en est le portage ?</h2>
 <p class="intro">Le jeu se construit carte après carte. Voici la part du contenu de Slay the Spire 2 déjà
 implémentée dans le code du jeu, recalculée à chaque mise à jour du site.</p>
-<div class="prog-total"><b>{progress.percent_fr(prog.tally.percent)}</b><div>{meter(prog.tally, "Avancement global")}
-<p class="meta">{release}global</p><p class="counters">{counters(prog.tally)}</p></div></div>
+<div class="prog-total"><b>{progress.percent_fr(prog.percent)}</b><div>{meter(prog.tally, "Avancement global", percent=prog.percent)}
+<p class="meta">{release}global</p><p class="counters">{counters(prog.tally)}</p><p class="meta">{progress.GLOBAL_RULE}</p></div></div>
 <div class="sect-grid">{tiles}</div>
 <p><a class="btn small" href="avancement.html">Voir tout le détail ►</a></p>""")
 
@@ -779,20 +779,22 @@ STATUS_BADGE = {progress.DONE: "<i>●</i> Oui", progress.PARTIAL: "<i>◐</i> P
                 progress.EXCLUDED: "<i>–</i> Exclu"}
 
 
-def meter(tally: progress.Tally, label: str, color: str = "") -> str:
+def meter(tally: progress.Tally, label: str, color: str = "", percent: float | None = None) -> str:
     """Progress track of a tally. `label` names what is measured, for screen readers."""
-    width = f"max(3px, {tally.percent:.1f}%)" if tally.percent else "0"
+    value = tally.percent if percent is None else percent
+    width = f"max(3px, {value:.1f}%)" if value else "0"
     fill = f' style="--fill:{color}"' if color else ""
     return (f'<div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" '
-            f'aria-valuenow="{tally.percent:.0f}" aria-label="{esc(label)}"{fill}><span style="width:{width}"></span></div>')
+            f'aria-valuenow="{value:.0f}" aria-label="{esc(label)}"{fill}><span style="width:{width}"></span></div>')
 
 
 def progress_total(prog: progress.Progress) -> str:
     version = progress.current_version()
     release = f"Version {esc(version)} · " if version else ""
-    return (f'<div class="prog-total"><b>{progress.percent_fr(prog.tally.percent)}</b>'
-            f'<div>{meter(prog.tally, "Avancement global")}'
-            f'<p class="meta">{release}{esc(progress.counts_fr(prog.tally))}</p></div></div>')
+    return (f'<div class="prog-total"><b>{progress.percent_fr(prog.percent)}</b>'
+            f'<div>{meter(prog.tally, "Avancement global", percent=prog.percent)}'
+            f'<p class="meta">{release}{esc(progress.counts_fr(prog.tally))}</p>'
+            f'<p class="meta">{esc(progress.GLOBAL_RULE)}</p></div></div>')
 
 
 def progress_tile(section: progress.Section, up: str = "") -> str:
@@ -872,7 +874,7 @@ Les cartes, reliques, potions, monstres et évènements sont détectés dans le 
 </div>""")
     (SITE / "avancement.html").write_text(page(
         "Avancement", body + details, active="avancement.html", path="avancement.html",
-        description=f"Avancement de Slay the GBA : {progress.percent_fr(prog.tally.percent)} du contenu de "
+        description=f"Avancement de Slay the GBA : {progress.percent_fr(prog.percent)} du contenu de "
                     "Slay the Spire 2 est implémenté. Le détail par héros, carte, relique, monstre et système."))
 
 

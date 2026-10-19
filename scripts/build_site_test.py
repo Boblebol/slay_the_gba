@@ -292,7 +292,7 @@ def test_landing_progress_has_one_bar_per_section_and_a_detail_link() -> None:
     prog = make_progress()
     out = build_site.landing_progress(prog)
     assert out.count('class="sect"') == len(prog.sections)
-    assert progress.percent_fr(prog.tally.percent) in out and 'href="avancement.html"' in out
+    assert progress.percent_fr(prog.percent) in out and progress.GLOBAL_RULE in out and 'href="avancement.html"' in out
     assert "cnt-done" in out and "cnt-todo" in out
 
 

@@ -61,8 +61,36 @@ def test_statuses_follow_the_engine_and_the_overrides() -> None:
     assert find(result.section("silent"), "Cartes", "ABRASIVE").status == DONE
     assert find(result.section("cartes"), "Quêtes", "LANTERN_KEY").status == TODO
     assert find(result.section("ironclad"), "Cartes", "BLAZE").status == EXCLUDED  # co-op card
-    assert 0 < result.tally.percent < 100
+    assert 0 < result.percent < 100
     assert result.tally == sum((section.tally for section in result.sections), Tally())
+
+
+def section(slug: str, *tallies: Tally) -> progress.Section:
+    def items(t: Tally) -> tuple[Item, ...]:
+        counts = ((DONE, t.done), (PARTIAL, t.partial), (TODO, t.todo), (EXCLUDED, t.excluded))
+        return tuple(Item(f"{status}{i}", "x", status) for status, n in counts for i in range(n))
+
+    return progress.Section(slug, slug, tuple(progress.Category(f"c{i}", items(t)) for i, t in enumerate(tallies)))
+
+
+def test_global_percent_is_the_mean_of_the_section_percentages() -> None:
+    big = section("big", Tally(done=1, todo=99))  # 1 %
+    small = section("small", Tally(done=1, todo=1))  # 50 %
+    assert progress.Progress((big, small)).percent == pytest.approx(25.5)  # not 2/101 of the items
+
+
+def test_global_percent_skips_sections_without_counted_items() -> None:
+    empty = section("empty", Tally(excluded=3))
+    nothing = section("nothing")
+    full = section("full", Tally(done=2, partial=2))  # 75 %
+    assert progress.Progress((empty, nothing, full)).percent == pytest.approx(75.0)
+    assert progress.Progress((empty, nothing)).percent == 0.0
+
+
+def test_summary_total_row_shows_the_global_percentage() -> None:
+    prog = progress.Progress((section("a", Tally(done=1)), section("b", Tally(todo=3))))
+    assert progress.summary_table(prog)[-1].endswith(f"**{progress.percent_fr(50.0)}** |")
+    assert progress.GLOBAL_RULE in progress.markdown_report(prog)
 
 
 def test_version_follows_the_percentage_until_everything_is_done() -> None:

@@ -135,7 +135,7 @@ so the booklets, the bible and the site always describe the same five editions.
 ### Implementation tracker
 
 [`AVANCEMENT.md`](AVANCEMENT.md) and the site's `avancement.html` page list everything the game has to implement to
-cover Slay the Spire 2 (per hero, then for the whole game), whether each item is done, and the resulting percentage.
+cover Slay the Spire 2 (per hero, then for the whole game), whether each item is done, and the resulting percentage (the global figure is the mean of the section percentages, so each section weighs the same).
 
 * Cards, relics, potions, monsters and events are read from `bible/data` and marked done when the engine implements
   them (`scripts/progress.py` scans `src/engine`), so they follow the code.
