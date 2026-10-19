@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 92,7 %** — 1193 faits, 12 partiels, 44 à faire (35 hors périmètre).
+**Avancement global : 92,9 %** — 1194 faits, 12 partiels, 43 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 26 | 3 | 36 | 42,3 % |
+| [Évènements et Anciens](#rencontres) | 27 | 3 | 35 | 43,8 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1193** | **12** | **44** | **92,7 %** |
+| **Total** | **1194** | **12** | **43** | **92,9 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 42,3 %
+## Évènements et Anciens — 43,8 %
 
-### Évènements — 34,2 %
+### Évènements — 36,0 %
 
-18 faits, 3 partiels, 36 à faire.
+19 faits, 3 partiels, 35 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1364,7 +1364,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Champ de trous à taille corporelle | Acte 2 | Non |  |
 | Chœur lumineux | Acte 1 (A) | Non |  |
 | Convoyeur sans fin | Acte 1 (B) | Non |  |
-| Coursier de potions | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Coursier de potions | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Développement personnel | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Esprit greffeur | Acte 2 | Non |  |
 | Feu follet égaré | Acte 2 | Non |  |
