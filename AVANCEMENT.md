@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 90,2 %** — 1173 faits, 13 partiels, 63 à faire (35 hors périmètre).
+**Avancement global : 90,4 %** — 1174 faits, 12 partiels, 63 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -26,9 +26,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
 | [Évènements et Anciens](#rencontres) | 8 | 3 | 54 | 14,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
-| [Systèmes de jeu](#systemes) | 35 | 1 | 0 | 98,6 % |
+| [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1173** | **13** | **63** | **90,2 %** |
+| **Total** | **1174** | **12** | **63** | **90,4 %** |
 
 <a id="ironclad"></a>
 
@@ -1520,7 +1520,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="systemes"></a>
 
-## Systèmes de jeu — 98,6 %
+## Systèmes de jeu — 100,0 %
 
 ### La Tour — 100,0 %
 
@@ -1550,15 +1550,15 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Relique de boss |  | Oui | Une relique Rare, des cartes et de l'or après le boss des actes 1 et 2. [#184](https://github.com/Boblebol/slay_the_gba/issues/184) |
 | Cartes rares et peu communes selon la salle |  | Oui | Chaque carte tire sa rareté : 60 / 37 / 3 % après un combat, 50 / 40 / 10 % après un élite, que des Rares après un boss. Pool bâti depuis les cartes du héros. |
 
-### Feu de camp — 83,3 %
+### Feu de camp — 100,0 %
 
-2 faits, 1 partiel, 0 à faire.
+3 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Repos : récupère 30 % des PV |  | Oui |  |
 | Forge : améliorer une carte, avec aperçu |  | Oui |  |
-| Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon) |  | Partiel | Cuisiner, Soulever, Creuser, Clonage et éclosion de l'Œuf d'oizodon sont jouables au feu de camp ; reste à vérifier les autres actions du jeu d'origine. [#271](https://github.com/Boblebol/slay_the_gba/issues/271) |
+| Autres actions (Cuisiner, Clonage, éclosion de l'Œuf d'oizodon) |  | Oui |  |
 
 ### Marchand — 100,0 %
 
