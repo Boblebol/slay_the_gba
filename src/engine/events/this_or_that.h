@@ -25,7 +25,7 @@ inline constexpr EventOption THIS_OR_THAT_START[] = {
       .effects = THIS_OR_THAT_THIS,
       .condition = { .check = EventCheck::MIN_HP, .amount = THIS_OR_THAT_HP_COST } },
     { .label = "Cela",
-      .cost_benefit = "Ajoutez Maladresse, gagnez une relique.",
+      .cost_benefit = "Gagnez une relique, +Maladresse.",
       .result = "Vous saisissez la relique maudite. Maladresse rejoint votre deck.",
       .effects = THIS_OR_THAT_THAT },
 };
