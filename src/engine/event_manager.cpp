@@ -69,7 +69,11 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::HAS_RELIC: return run.has_relic(condition.ref);
         case EventCheck::NO_RELIC: return !run.has_relic(condition.ref);
         case EventCheck::MIN_DECK: return run.master_deck.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
-        case EventCheck::HAS_POTION: return !run.potions.empty();
+        case EventCheck::HAS_POTION:
+            for (std::string_view potion : run.potions) {
+                if (condition.ref.empty() || potion == condition.ref) return true;
+            }
+            return false;
         case EventCheck::NONE:
         default: return true;
     }
@@ -250,6 +254,13 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             break;
         case EventEffectType::FIGHT:
             run.begin_fight(effect.ref == "ELITE" ? RoomType::ELITE : RoomType::MONSTER);
+            break;
+        case EventEffectType::LOSE_POTION:
+            for (size_t i = 0; i < run.potions.size(); ++i) {
+                if (run.potions[i] != effect.ref) continue;
+                run.potions.erase(i);
+                break;
+            }
             break;
         case EventEffectType::GOTO_PAGE:
         case EventEffectType::LEAVE:
