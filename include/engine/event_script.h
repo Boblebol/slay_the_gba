@@ -55,7 +55,7 @@ enum class EventEffectType : uint8_t {
     LOSE_HP,        // amount; it can kill (the run then ends on the event)
     GAIN_MAX_HP,    // amount, the HP rise with it
     LOSE_MAX_HP,    // amount
-    ADD_CARD,       // `amount` copies (1 when 0) of `card`, upgraded when `upgraded`
+    ADD_CARD,       // `amount` copies (1 when 0) of `card`, upgraded when `upgraded`; `amount` random Common cards of the hero when `card` is NONE
     ADD_CURSE,      // `amount` copies (1 when 0) of `card`, or of a random curse when `card` is NONE
     REMOVE_CARD,    // `amount` cards (1 when 0), chosen by the player or drawn at random (`pick`)
     UPGRADE_CARD,   // same

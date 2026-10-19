@@ -163,7 +163,18 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.lose_max_hp(effect.amount);
             break;
         case EventEffectType::ADD_CARD:
-            for (int n = 0; n < count_of(effect); ++n) run.add_card_to_deck(DeckCard{ effect.card, effect.upgraded });
+            for (int n = 0; n < count_of(effect); ++n) {
+                CardId card = effect.card;
+                if (card == CardId::NONE) { // a random Common card of the hero
+                    FixedVector<CardId, 128> commons;
+                    for (CardId id : RunManager::card_reward_pool(run.character)) {
+                        if (card_meta(id).rarity == CardRarity::COMMON) commons.push_back(id);
+                    }
+                    if (commons.empty()) break;
+                    card = commons[run.next_random() % commons.size()];
+                }
+                run.add_card_to_deck(DeckCard{ card, effect.upgraded });
+            }
             break;
         case EventEffectType::ADD_CURSE:
             for (int n = 0; n < count_of(effect); ++n) {
