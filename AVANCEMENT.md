@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 90,7 %** — 1177 faits, 12 partiels, 60 à faire (35 hors périmètre).
+**Avancement global : 90,8 %** — 1178 faits, 12 partiels, 59 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 10 | 3 | 52 | 17,7 % |
+| [Évènements et Anciens](#rencontres) | 11 | 3 | 51 | 19,2 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1177** | **12** | **60** | **90,7 %** |
+| **Total** | **1178** | **12** | **59** | **90,8 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 17,7 %
+## Évènements et Anciens — 19,2 %
 
-### Évènements — 6,1 %
+### Évènements — 7,9 %
 
-2 faits, 3 partiels, 52 à faire.
+3 faits, 3 partiels, 51 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1405,7 +1405,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tourbillon aquatique | Acte 1 (B) | Non |  |
 | Trafiquant de reliques | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Trésor englouti | Acte 1 (B) | Non |  |
-| Tueur d’insectes | Acte 2 | Non |  |
+| Tueur d’insectes | Acte 2 | Oui |  |
 | Vallon des Murmures | Acte 1 (A) | Non |  |
 | À coups de poing | Acte 1 (B) | Non |  |
 
