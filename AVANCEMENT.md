@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 92,3 %** — 1190 faits, 12 partiels, 47 à faire (35 hors périmètre).
+**Avancement global : 92,5 %** — 1191 faits, 12 partiels, 46 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 23 | 3 | 39 | 37,7 % |
+| [Évènements et Anciens](#rencontres) | 24 | 3 | 38 | 39,2 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1190** | **12** | **47** | **92,3 %** |
+| **Total** | **1191** | **12** | **46** | **92,5 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 37,7 %
+## Évènements et Anciens — 39,2 %
 
-### Évènements — 28,9 %
+### Évènements — 30,7 %
 
-15 faits, 3 partiels, 39 à faire.
+16 faits, 3 partiels, 38 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1390,7 +1390,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Ranwid l’Aîné | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Reflets stelfeR | Acte 3 | Non |  |
 | Répi, historien de la guerre | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Salle aux poupées | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Salle aux poupées | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Salle du Fromage | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Sangsue cérébrale | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Scriptorium englouti | Acte 1 (B) | Non |  |
