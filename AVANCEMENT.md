@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 91,2 %** — 1181 faits, 12 partiels, 56 à faire (35 hors périmètre).
+**Avancement global : 91,3 %** — 1182 faits, 12 partiels, 55 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 14 | 3 | 48 | 23,8 % |
+| [Évènements et Anciens](#rencontres) | 15 | 3 | 47 | 25,4 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1181** | **12** | **56** | **91,2 %** |
+| **Total** | **1182** | **12** | **55** | **91,3 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,17 +1343,17 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 23,8 %
+## Évènements et Anciens — 25,4 %
 
-### Évènements — 13,2 %
+### Évènements — 14,9 %
 
-6 faits, 3 partiels, 48 à faire.
+7 faits, 3 partiels, 47 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Affamé de champis | Acte 3 | Oui |  |
 | Amalgamateur | Acte 2 | Non |  |
-| Arôme du chaos | Acte 1 (A) | Non |  |
+| Arôme du chaos | Acte 1 (A) | Oui |  |
 | Automate infesté | Acte 2 | Non |  |
 | Aventure du labyrinthe de la jungle | Acte 1 (A) | Oui |  |
 | Bains abyssaux | Acte 1 (B) | Partiel | Récit raccourci et choix réinventés pour la GBA. |
