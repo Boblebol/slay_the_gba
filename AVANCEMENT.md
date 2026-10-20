@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 93,6 %** — 1200 faits, 12 partiels, 37 à faire (35 hors périmètre).
+**Avancement global : 93,8 %** — 1201 faits, 12 partiels, 36 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 33 | 3 | 29 | 53,1 % |
+| [Évènements et Anciens](#rencontres) | 34 | 3 | 28 | 54,6 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1200** | **12** | **37** | **93,6 %** |
+| **Total** | **1201** | **12** | **36** | **93,8 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 53,1 %
+## Évènements et Anciens — 54,6 %
 
-### Évènements — 46,5 %
+### Évènements — 48,2 %
 
-25 faits, 3 partiels, 29 à faire.
+26 faits, 3 partiels, 28 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1393,7 +1393,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Salle aux poupées | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Salle du Fromage | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Sangsue cérébrale | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
-| Scriptorium englouti | Acte 1 (B) | Non |  |
+| Scriptorium englouti | Acte 1 (B) | Oui |  |
 | Site sans repos | Acte 1 (A) | Oui |  |
 | Source mystique | Acte 1 (A) | Oui |  |
 | Sphère de cristal | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
