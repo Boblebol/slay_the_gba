@@ -55,8 +55,8 @@ enum class EventEffectType : uint8_t {
     LOSE_HP,        // amount; it can kill (the run then ends on the event)
     GAIN_MAX_HP,    // amount, the HP rise with it
     LOSE_MAX_HP,    // amount
-    ADD_CARD,       // `amount` copies (1 when 0) of `card` (a random Colorless card when `card` is NONE), upgraded when
-                    // `upgraded`
+    ADD_CARD,       // `amount` copies (1 when 0) of `card` (or of a card of `card_pool`; a random Colorless card when both
+                    // are empty), upgraded when `upgraded`
     ADD_CURSE,      // `amount` copies (1 when 0) of `card`, or of a random curse when `card` is NONE
     ADD_RANDOM_CARD, // a non-Basic card of the hero's pool: a Power (`ref` "POWER") or one costing 0 ("ZERO_COST")
     REMOVE_CARD,    // `amount` cards (1 when 0), chosen by the player or drawn at random (`pick`); with `card`, that many
@@ -65,7 +65,7 @@ enum class EventEffectType : uint8_t {
     TRANSFORM_CARD, // same; the new card is upgraded when `upgraded`
     ENCHANT_CARD,   // same, with `enchantment` of `enchant_amount`
     CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left; `ref` "COLORLESS": Colorless cards
-    GAIN_RELIC,     // relic `ref`, or a random relic (as in a chest) when `ref` is empty
+    GAIN_RELIC,     // relic `ref`, or one of `relic_pool` not owned, or a random relic (as in a chest) when both empty
     RELIC_REWARD,   // a relic drawn like an elite's, offered on the reward screen once the event is left
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
     FIGHT,          // a fight of the act once the event is left: `ref` "ELITE" for an elite one, else a normal one
@@ -91,6 +91,8 @@ struct EventEffect {
     bool upgraded = false;
     Enchantment enchantment = Enchantment::NONE;
     uint8_t enchant_amount = 0;
+    std::span<const std::string_view> relic_pool = {}; // GAIN_RELIC: one relic drawn at random among these
+    std::span<const CardId> card_pool = {};            // ADD_CARD: one card drawn at random among these
 };
 
 enum class EventCheck : uint8_t {
