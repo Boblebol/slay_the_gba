@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 96,2 %** — 1221 faits, 12 partiels, 17 à faire (35 hors périmètre).
+**Avancement global : 96,3 %** — 1222 faits, 12 partiels, 16 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 53 | 3 | 9 | 83,8 % |
+| [Évènements et Anciens](#rencontres) | 54 | 3 | 8 | 85,4 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1221** | **12** | **17** | **96,2 %** |
+| **Total** | **1222** | **12** | **16** | **96,3 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 83,8 %
+## Évènements et Anciens — 85,4 %
 
-### Évènements — 81,6 %
+### Évènements — 83,3 %
 
-45 faits, 3 partiels, 9 à faire.
+46 faits, 3 partiels, 8 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1403,7 +1403,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tisseur zen | Acte 2 | Oui |  |
 | Tombe du guerrier oublié | Acte 3 | Oui |  |
 | Tourbillon aquatique | Acte 1 (B) | Non |  |
-| Trafiquant de reliques | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Trafiquant de reliques | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Trésor englouti | Acte 1 (B) | Oui |  |
 | Tueur d’insectes | Acte 2 | Oui |  |
 | Vallon des Murmures | Acte 1 (A) | Oui |  |
