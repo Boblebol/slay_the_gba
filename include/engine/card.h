@@ -709,6 +709,7 @@ enum class Enchantment : uint8_t {
     SHARP,            // Tranchant: the card deals `amount` more damage
     GOOPY,            // Viscosité: Exhaust; once played, the Block it gives is raised by 1 for good (`amount`)
     VIGOROUS,         // Vigoureux: the first play of the card in a combat deals `amount` more damage
+    SOULS_POWER,      // Pouvoir de l'âme: the card loses Exhaust (only a card that has it)
     STEADY,           // Stabilité: Retain (Waterlogged Scriptorium)
     COUNT
 };
@@ -851,6 +852,7 @@ struct CardDef {
     }
     // Keyword of one copy: from its definition, from its enchantment, or given to that copy during the combat.
     static bool has_keyword(const DeckCard& card, CardKeyword keyword) {
+        if (keyword == KEYWORD_EXHAUST && card.enchantment == Enchantment::SOULS_POWER) return (card.added_keywords & keyword) != 0;
         return (card.added_keywords & keyword) != 0 || (enchantment_keywords(card.enchantment) & keyword) != 0 ||
                has_keyword(card.id, card.upgraded, keyword);
     }

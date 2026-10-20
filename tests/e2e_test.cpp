@@ -141,7 +141,7 @@ int main() {
     const EventEncounter& ev = run.current_event;
     assert(run.phase == RunPhase::EVENT);
     assert(!ev.title.empty());
-    assert(ev.choices.size() >= 2);
+    assert(!ev.choices.empty()); // some events (Endless Conveyor) have a single choice
     char ev_msg[128];
     // The first choice may be unavailable (e.g. it needs a potion): take the first one that resolves.
     bool event_resolved = false;
