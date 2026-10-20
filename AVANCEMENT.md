@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 95,3 %** — 1213 faits, 12 partiels, 24 à faire (35 hors périmètre).
+**Avancement global : 96,4 %** — 1223 faits, 12 partiels, 15 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 46 | 3 | 16 | 73,1 % |
-| [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
+| [Évènements et Anciens](#rencontres) | 55 | 3 | 7 | 86,9 % |
+| [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1213** | **12** | **24** | **95,3 %** |
+| **Total** | **1223** | **12** | **15** | **96,4 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 73,1 %
+## Évènements et Anciens — 86,9 %
 
-### Évènements — 69,3 %
+### Évènements — 85,1 %
 
-38 faits, 3 partiels, 16 à faire.
+47 faits, 3 partiels, 7 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1361,11 +1361,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Bosquet des Morphiques | Acte 1 (A) | Oui |  |
 | Bricolage | Acte 3 | Non |  |
 | Ceci ou Cela ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
-| Champ de trous à taille corporelle | Acte 2 | Non |  |
+| Champ de trous à taille corporelle | Acte 2 | Oui |  |
 | Chœur lumineux | Acte 1 (A) | Oui |  |
 | Convoyeur sans fin | Acte 1 (B) | Oui |  |
 | Coursier de potions | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
-| Développement personnel | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Développement personnel | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Esprit greffeur | Acte 2 | Oui |  |
 | Feu follet égaré | Acte 2 | Non |  |
 | Fleur colossale | Acte 2 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
@@ -1378,20 +1378,20 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Le Marchand ??? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Le procès | Acte 3 | Oui |  |
 | Le thé de la table ronde | Acte 3 | Oui |  |
-| L’avenir des potions ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| L’avenir des potions ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Mannequin de combat usé | Acte 3 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
 | Maître de thé | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Nid d’oizodon | Acte 1 (A) | Oui |  |
 | Phare englouti | Acte 1 (B) | Oui |  |
-| Philosophes multicolores | Acte 2 | Non |  |
-| Pierre de tous les temps | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Philosophes multicolores | Acte 2 | Oui |  |
+| Pierre de tous les temps | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Pont glissant | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Portes de l’ombre et de la lumière | Acte 1 (B) | Oui |  |
 | Ranwid l’Aîné | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Reflets stelfeR | Acte 3 | Oui |  |
-| Répi, historien de la guerre | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Répi, historien de la guerre | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Salle aux poupées | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
-| Salle du Fromage | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Salle du Fromage | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Sangsue cérébrale | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Scriptorium englouti | Acte 1 (B) | Oui |  |
 | Site sans repos | Acte 1 (A) | Oui |  |
@@ -1401,9 +1401,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Symbiote | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Tas de déchets | Acte 1 (B) | Oui |  |
 | Tisseur zen | Acte 2 | Oui |  |
-| Tombe du guerrier oublié | Acte 3 | Non |  |
+| Tombe du guerrier oublié | Acte 3 | Oui |  |
 | Tourbillon aquatique | Acte 1 (B) | Non |  |
-| Trafiquant de reliques | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Trafiquant de reliques | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Trésor englouti | Acte 1 (B) | Oui |  |
 | Tueur d’insectes | Acte 2 | Oui |  |
 | Vallon des Murmures | Acte 1 (A) | Oui |  |
@@ -1500,7 +1500,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 ### Enchantements — 100,0 %
 
-13 faits, 0 partiel, 0 à faire.
+14 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1517,6 +1517,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sceau royal |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
 | Tranchant |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
 | Viscosité |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Vigoureux |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
 
 <a id="systemes"></a>
 
