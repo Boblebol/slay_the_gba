@@ -7,7 +7,7 @@
 namespace engine::events {
 
 inline constexpr EventEffect ROOM_FULL_OF_CHEESE_GORGE[] = {
-    { .type = EventEffectType::ADD_CARD, .amount = 2 }, // card NONE: random Common cards of the hero
+    { .type = EventEffectType::ADD_CARD, .amount = 2, .ref = "COMMON" }, // random Common cards of the hero
 };
 
 inline constexpr EventEffect ROOM_FULL_OF_CHEESE_SEARCH[] = {

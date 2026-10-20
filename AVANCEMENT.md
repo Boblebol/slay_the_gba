@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 93,2 %** — 1197 faits, 12 partiels, 40 à faire (35 hors périmètre).
+**Avancement global : 94,8 %** — 1209 faits, 12 partiels, 28 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 30 | 3 | 32 | 48,5 % |
+| [Évènements et Anciens](#rencontres) | 42 | 3 | 20 | 66,9 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1197** | **12** | **40** | **93,2 %** |
+| **Total** | **1209** | **12** | **28** | **94,8 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,30 +1343,30 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 48,5 %
+## Évènements et Anciens — 66,9 %
 
-### Évènements — 41,2 %
+### Évènements — 62,3 %
 
-22 faits, 3 partiels, 32 à faire.
+34 faits, 3 partiels, 20 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Affamé de champis | Acte 3 | Oui |  |
-| Amalgamateur | Acte 2 | Non |  |
+| Amalgamateur | Acte 2 | Oui |  |
 | Arôme du chaos | Acte 1 (A) | Oui |  |
 | Automate infesté | Acte 2 | Non |  |
 | Aventure du labyrinthe de la jungle | Acte 1 (A) | Oui |  |
 | Bains abyssaux | Acte 1 (B) | Partiel | Récit raccourci et choix réinventés pour la GBA. |
 | Bienvenue chez Wongo’s | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Bosquet des Morphiques | Acte 1 (A) | Non |  |
+| Bosquet des Morphiques | Acte 1 (A) | Oui |  |
 | Bricolage | Acte 3 | Non |  |
-| Ceci ou Cela ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Ceci ou Cela ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Champ de trous à taille corporelle | Acte 2 | Non |  |
 | Chœur lumineux | Acte 1 (A) | Oui |  |
-| Convoyeur sans fin | Acte 1 (B) | Non |  |
+| Convoyeur sans fin | Acte 1 (B) | Oui |  |
 | Coursier de potions | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Développement personnel | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Esprit greffeur | Acte 2 | Non |  |
+| Esprit greffeur | Acte 2 | Oui |  |
 | Feu follet égaré | Acte 2 | Non |  |
 | Fleur colossale | Acte 2 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
 | Graine de saphir | Acte 1 (A) | Non |  |
@@ -1377,7 +1377,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | La statue engloutie | Acte 1 (A), Acte 1 (B) | Oui |  |
 | Le Marchand ??? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Le procès | Acte 3 | Non |  |
-| Le thé de la table ronde | Acte 3 | Non |  |
+| Le thé de la table ronde | Acte 3 | Oui |  |
 | L’avenir des potions ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Mannequin de combat usé | Acte 3 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
 | Maître de thé | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
@@ -1385,29 +1385,29 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Phare englouti | Acte 1 (B) | Oui |  |
 | Philosophes multicolores | Acte 2 | Non |  |
 | Pierre de tous les temps | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Pont glissant | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Pont glissant | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Portes de l’ombre et de la lumière | Acte 1 (B) | Oui |  |
 | Ranwid l’Aîné | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Reflets stelfeR | Acte 3 | Non |  |
+| Reflets stelfeR | Acte 3 | Oui |  |
 | Répi, historien de la guerre | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Salle aux poupées | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Salle du Fromage | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Sangsue cérébrale | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
-| Scriptorium englouti | Acte 1 (B) | Non |  |
+| Scriptorium englouti | Acte 1 (B) | Oui |  |
 | Site sans repos | Acte 1 (A) | Oui |  |
 | Source mystique | Acte 1 (A) | Oui |  |
 | Sphère de cristal | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Stèle de la Vérité | Acte 1 (A) | Oui |  |
 | Symbiote | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Tas de déchets | Acte 1 (B) | Non |  |
-| Tisseur zen | Acte 2 | Non |  |
+| Tas de déchets | Acte 1 (B) | Oui |  |
+| Tisseur zen | Acte 2 | Oui |  |
 | Tombe du guerrier oublié | Acte 3 | Non |  |
 | Tourbillon aquatique | Acte 1 (B) | Non |  |
 | Trafiquant de reliques | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Trésor englouti | Acte 1 (B) | Oui |  |
 | Tueur d’insectes | Acte 2 | Oui |  |
 | Vallon des Murmures | Acte 1 (A) | Oui |  |
-| À coups de poing | Acte 1 (B) | Non |  |
+| À coups de poing | Acte 1 (B) | Oui |  |
 
 ### Anciens — 100,0 %
 
