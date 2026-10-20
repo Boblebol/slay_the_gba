@@ -17,8 +17,8 @@ constexpr size_t ANCIENT_BITSET_BYTES = 1;   // 8 / 8 = 1 byte
 // The enchantment of a card (mechanic #107) is packed into bits the older saves leave at 0, so they still load:
 // its kind above the upgraded bit, its amount above the CardId.
 constexpr uint8_t SAVE_UPGRADED_BIT = 0x01;
-constexpr uint8_t SAVE_ENCHANTMENT_SHIFT = 1;  // DeckCardSave::upgraded, bits 1 to 4
-constexpr uint8_t SAVE_ENCHANTMENT_MASK = 0x0F;
+constexpr uint8_t SAVE_ENCHANTMENT_SHIFT = 1;  // DeckCardSave::upgraded, bits 1 to 5
+constexpr uint8_t SAVE_ENCHANTMENT_MASK = 0x1F;
 constexpr uint8_t SAVE_CARD_ID_BITS = 10;      // DeckCardSave::card_id, bits 0 to 9
 constexpr uint16_t SAVE_CARD_ID_MASK = (1u << SAVE_CARD_ID_BITS) - 1;
 constexpr uint8_t SAVE_ENCHANT_AMOUNT_MAX = 0x3F; // bits 10 to 15
