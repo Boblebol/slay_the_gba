@@ -2,6 +2,7 @@
 
 #include <span>
 
+#include "bn_blending.h"
 #include "bn_keypad.h"
 #include "bn_regular_bg_ptr.h"
 #include "bn_sprite_palette_ptr.h"
@@ -10,10 +11,13 @@
 #include "bn_vector.h"
 
 #include "bn_regular_bg_items_bg_title.h"
+#include "bn_sprite_items_title_glow.h"
+#include "bn_sprite_items_title_mist.h"
 #include "common_variable_16x16_sprite_font.h"
 
 #include "engine/run.h"
 #include "engine/save_system.h"
+#include "engine/title_anim.h"
 
 #include "gba/assets.h"
 #include "gba/audio.h"
@@ -31,6 +35,16 @@ constexpr int LOGO_Y = -62;
 constexpr int MENU_Y = 28;
 constexpr int MENU_SPACING = 11;
 constexpr int MENU_ENTRIES = 4;
+
+// Animated backdrop (#7): two bands of clouds / mist scrolling at different speeds (parallax) over the key art, and a
+// halo pulsing on the Spire. Positions are in screen pixels from the top left corner of the key art.
+constexpr int CLOUD_BAND_Y = -34;
+constexpr int MIST_BAND_Y = 30;
+constexpr int CLOUD_SPEED = 9;  // 64ths of a pixel per frame
+constexpr int MIST_SPEED = 26;
+constexpr int GLOW_X = -13;
+constexpr int GLOW_Y = -40;
+constexpr bn::fixed MIST_ALPHA = bn::fixed(0.45);
 
 enum class MenuEntry : uint8_t
 {
@@ -54,8 +68,31 @@ public:
     explicit TitleScene(GameContext& context) :
         _ctx(context),
         _bg(bn::regular_bg_items::bg_title.create_bg(BG_ORIGIN_X, BG_ORIGIN_Y)),
-        _hero(hero_battler().create_sprite(0, 200))
+        _hero(hero_battler().create_sprite(0, 200)),
+        _glow(bn::sprite_items::title_glow.create_sprite(GLOW_X, GLOW_Y))
     {
+        bn::blending::set_transparency_alpha(MIST_ALPHA);
+        _glow.set_z_order(Z_BACK);
+
+        for(int tile = 0; tile < engine::title_anim::MIST_TILES; ++tile)
+        {
+            _clouds.push_back(bn::sprite_items::title_mist.create_sprite(0, CLOUD_BAND_Y, 0));
+            _mist.push_back(bn::sprite_items::title_mist.create_sprite(0, MIST_BAND_Y, 1));
+        }
+
+        for(bn::sprite_ptr& sprite : _clouds)
+        {
+            sprite.set_blending_enabled(true);
+            sprite.set_z_order(Z_BACK);
+        }
+
+        for(bn::sprite_ptr& sprite : _mist)
+        {
+            sprite.set_blending_enabled(true);
+            sprite.set_z_order(Z_BACK);
+        }
+
+        _animate_backdrop();
         bn::sprite_text_generator logo_generator(common::variable_16x16_sprite_font);
         logo_generator.set_center_alignment();
         logo_generator.set_z_order(Z_TEXT);
@@ -94,9 +131,15 @@ public:
         }
     }
 
+    ~TitleScene() final
+    {
+        bn::blending::set_transparency_alpha(1);
+    }
+
     [[nodiscard]] bn::optional<SceneId> update() final
     {
         ++_timer;
+        _animate_backdrop();
         _animate_logo();
 
         switch(_stage)
@@ -116,6 +159,10 @@ private:
     GameContext& _ctx;
     bn::regular_bg_ptr _bg;
     bn::sprite_ptr _hero;
+    bn::sprite_ptr _glow;
+    bn::vector<bn::sprite_ptr, engine::title_anim::MIST_TILES> _clouds;
+    bn::vector<bn::sprite_ptr, engine::title_anim::MIST_TILES> _mist;
+    int _glow_frame = -1;
     bn::vector<bn::sprite_ptr, 12> _logo;
     bn::vector<int, 12> _logo_x;
     Label _hero_name;
@@ -144,7 +191,7 @@ private:
         {
             _hero_name.set_visible(true);
             _zone.set_visible(true);
-            _press.set_visible((_timer / 24) % 2 == 0);
+            _press.set_visible(engine::title_anim::prompt_visible(_timer));
         }
 
         if(_timer > 20 && bn::keypad::select_pressed())
@@ -424,6 +471,29 @@ private:
         for(Label& label : _menu)
         {
             label.clear();
+        }
+    }
+
+    void _animate_backdrop()
+    {
+        namespace anim = engine::title_anim;
+        _scroll_band(_clouds, anim::mist_scroll(_timer, CLOUD_SPEED), CLOUD_BAND_Y);
+        _scroll_band(_mist, anim::mist_scroll(_timer, MIST_SPEED), MIST_BAND_Y);
+
+        int glow = anim::glow_frame(_timer);
+
+        if(glow != _glow_frame)
+        {
+            _glow_frame = glow;
+            _glow.set_item(bn::sprite_items::title_glow, glow);
+        }
+    }
+
+    static void _scroll_band(bn::vector<bn::sprite_ptr, engine::title_anim::MIST_TILES>& band, int scroll, int y)
+    {
+        for(int tile = 0; tile < band.size(); ++tile)
+        {
+            band[tile].set_position(engine::title_anim::mist_tile_x(tile, scroll) - HALF_W + engine::title_anim::MIST_TILE_W / 2, y);
         }
     }
 
