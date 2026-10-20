@@ -64,13 +64,15 @@ enum class EventEffectType : uint8_t {
     UPGRADE_CARD,   // same
     TRANSFORM_CARD, // same; the new card is upgraded when `upgraded`
     ENCHANT_CARD,   // same, with `enchantment` of `enchant_amount`
-    CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left; `ref` "COLORLESS": Colorless cards
+    CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left; `amount` of them in a row;
+                    // `ref` "COLORLESS": Colorless cards
     GAIN_RELIC,     // relic `ref`, or one of `relic_pool` not owned, or a random Common one when `ref` is "COMMON", or a random relic (as in a chest) when both empty
     RELIC_REWARD,   // a relic drawn like an elite's, offered on the reward screen once the event is left
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
     FIGHT,          // a fight of the act once the event is left: `ref` "ELITE" for an elite one, EVENT_FIGHT_PUNCH_CONSTRUCTS
                     // for the Punch Off one (2 Punch Constructs, a relic reward), else a normal one
-    GOTO_PAGE,      // the event goes on with page `amount`
+    GOTO_PAGE,      // the event goes on with page `amount`; with `enchant_amount` > 1, one of the `enchant_amount` pages
+                    // from `amount` on, drawn at random
     LOSE_POTION,    // the potion `ref` leaves the belt (the Foul Potion thrown at the Fake Merchant)
     DOWNGRADE_CARD, // `amount` random upgraded cards (1 when 0) go back to their base version
     DUPLICATE_DECK, // every card of the deck is copied once (as far as the deck holds)

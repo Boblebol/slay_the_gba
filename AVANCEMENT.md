@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 95,0 %** — 1211 faits, 12 partiels, 26 à faire (35 hors périmètre).
+**Avancement global : 95,2 %** — 1212 faits, 12 partiels, 25 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 44 | 3 | 18 | 70,0 % |
+| [Évènements et Anciens](#rencontres) | 45 | 3 | 17 | 71,5 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1211** | **12** | **26** | **95,0 %** |
+| **Total** | **1212** | **12** | **25** | **95,2 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 70,0 %
+## Évènements et Anciens — 71,5 %
 
-### Évènements — 65,8 %
+### Évènements — 67,5 %
 
-36 faits, 3 partiels, 18 à faire.
+37 faits, 3 partiels, 17 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1357,7 +1357,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Automate infesté | Acte 2 | Oui |  |
 | Aventure du labyrinthe de la jungle | Acte 1 (A) | Oui |  |
 | Bains abyssaux | Acte 1 (B) | Partiel | Récit raccourci et choix réinventés pour la GBA. |
-| Bienvenue chez Wongo’s | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Bienvenue chez Wongo’s | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Bosquet des Morphiques | Acte 1 (A) | Oui |  |
 | Bricolage | Acte 3 | Non |  |
 | Ceci ou Cela ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
