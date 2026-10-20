@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 93,8 %** — 1201 faits, 12 partiels, 36 à faire (35 hors périmètre).
+**Avancement global : 93,9 %** — 1202 faits, 12 partiels, 35 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 34 | 3 | 28 | 54,6 % |
+| [Évènements et Anciens](#rencontres) | 35 | 3 | 27 | 56,2 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1201** | **12** | **36** | **93,8 %** |
+| **Total** | **1202** | **12** | **35** | **93,9 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 54,6 %
+## Évènements et Anciens — 56,2 %
 
-### Évènements — 48,2 %
+### Évènements — 50,0 %
 
-26 faits, 3 partiels, 28 à faire.
+27 faits, 3 partiels, 27 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1385,7 +1385,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Phare englouti | Acte 1 (B) | Oui |  |
 | Philosophes multicolores | Acte 2 | Non |  |
 | Pierre de tous les temps | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Pont glissant | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Pont glissant | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Portes de l’ombre et de la lumière | Acte 1 (B) | Oui |  |
 | Ranwid l’Aîné | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Reflets stelfeR | Acte 3 | Non |  |
