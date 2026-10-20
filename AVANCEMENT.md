@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 94,4 %** — 1206 faits, 12 partiels, 31 à faire (35 hors périmètre).
+**Avancement global : 94,5 %** — 1207 faits, 12 partiels, 30 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 39 | 3 | 23 | 62,3 % |
+| [Évènements et Anciens](#rencontres) | 40 | 3 | 22 | 63,8 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1206** | **12** | **31** | **94,4 %** |
+| **Total** | **1207** | **12** | **30** | **94,5 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 62,3 %
+## Évènements et Anciens — 63,8 %
 
-### Évènements — 57,0 %
+### Évènements — 58,8 %
 
-31 faits, 3 partiels, 23 à faire.
+32 faits, 3 partiels, 22 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1388,7 +1388,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Pont glissant | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Portes de l’ombre et de la lumière | Acte 1 (B) | Oui |  |
 | Ranwid l’Aîné | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Reflets stelfeR | Acte 3 | Non |  |
+| Reflets stelfeR | Acte 3 | Oui |  |
 | Répi, historien de la guerre | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Salle aux poupées | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Salle du Fromage | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
