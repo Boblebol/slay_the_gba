@@ -65,7 +65,7 @@ enum class EventEffectType : uint8_t {
     TRANSFORM_CARD, // same; the new card is upgraded when `upgraded`
     ENCHANT_CARD,   // same, with `enchantment` of `enchant_amount`
     CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left; `amount` of them in a row;
-                    // `ref` "COLORLESS": Colorless cards
+                    // `ref` a hero ("SILENT"...): his cards, "COLORLESS": Colorless cards
     GAIN_RELIC,     // relic `ref`, or one of `relic_pool` not owned, or a random Common one when `ref` is "COMMON", or a random relic (as in a chest) when both empty
     RELIC_REWARD,   // a relic drawn like an elite's, offered on the reward screen once the event is left
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
@@ -99,6 +99,7 @@ struct EventEffect {
     bool upgraded = false;
     Enchantment enchantment = Enchantment::NONE;
     uint8_t enchant_amount = 0;
+    int8_t only_type = -1; // ENCHANT_CARD: the CardType (cast to int) the chosen cards must have, -1 for any
     std::span<const std::string_view> relic_pool = {}; // GAIN_RELIC: one relic drawn at random among these
     std::span<const CardId> card_pool = {};            // ADD_CARD: one card drawn at random among these
 };
@@ -111,6 +112,7 @@ enum class EventCheck : uint8_t {
     NO_RELIC,   // relic `ref` not owned
     MIN_DECK,   // at least `amount` cards in the deck
     HAS_POTION, // at least one potion on the belt, or the potion `ref` when given
+    CAN_ENCHANT, // a card of the deck can be enchanted: of CardType `amount`, or of any type when `amount` is -1
     CAN_SOULS_POWER, // a card of the deck has Exhaust, so it can receive Soul's Power
     HAS_CARD    // at least `amount` copies (1 when 0) of `card` in the deck
 };

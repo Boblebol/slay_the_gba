@@ -34,6 +34,16 @@ int count_of(const EventEffect& effect) {
     return effect.amount > 0 ? effect.amount : 1;
 }
 
+// CARD_REWARD: the hero whose cards are offered, named by `ref` (empty or unknown: the player's own).
+CharacterId reward_hero(std::string_view ref) {
+    if (ref == "IRONCLAD") return CharacterId::IRONCLAD;
+    if (ref == "SILENT") return CharacterId::SILENT;
+    if (ref == "DEFECT") return CharacterId::DEFECT;
+    if (ref == "REGENT") return CharacterId::REGENT;
+    if (ref == "NECROBINDER") return CharacterId::NECROBINDER;
+    return CharacterId::COUNT;
+}
+
 // GAIN_RELIC with a list "A,B,C" in `ref`: the one drawn by `random`.
 std::string_view listed_relic(std::string_view list, uint32_t random) {
     size_t count = 1;
@@ -100,6 +110,14 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::HAS_POTION:
             for (std::string_view potion : run.potions) {
                 if (condition.ref.empty() || potion == condition.ref) return true;
+            }
+            return false;
+        case EventCheck::CAN_ENCHANT:
+            for (const DeckCard& card : run.master_deck) {
+                if (can_enchant(card, Enchantment::SWIFT) &&
+                    (condition.amount < 0 || static_cast<int>(CardDef::get(card.id).type) == condition.amount)) {
+                    return true;
+                }
             }
             return false;
         case EventCheck::HAS_CARD: {
@@ -267,7 +285,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             const DeckChoiceKind kind = choice_kind(effect.type);
             if (effect.pick == EventPick::CHOOSE) {
                 run.request_deck_choice(kind, count_of(effect), false, effect.upgraded, CardId::NONE, effect.enchantment,
-                                        effect.enchant_amount);
+                                        effect.enchant_amount, effect.only_type);
                 break;
             }
             if (kind == DeckChoiceKind::UPGRADE) {
@@ -279,6 +297,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.deck_choice = {};
             run.deck_choice.kind = kind;
             run.deck_choice.enchantment = effect.enchantment;
+            run.deck_choice.only_type = effect.only_type;
             for (int n = 0; n < count_of(effect); ++n) {
                 FixedVector<int, 50> candidates;
                 for (size_t i = 0; i < run.master_deck.size(); ++i) {
@@ -299,7 +318,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.potion_reward = {};
             run.relic_reward = {};
             RewardRng rng(run.next_random());
-            run.draw_card_rewards(false, rng);
+            run.draw_card_rewards(false, rng, CardRarity::NONE, false, reward_hero(effect.ref));
             run.extra_card_rewards = static_cast<uint8_t>(run.extra_card_rewards + count_of(effect) - 1);
             if (effect.ref == "COLORLESS") {
                 // The reward just drawn is replaced by Colorless cards (never a Status, a Curse nor a Quest card).
