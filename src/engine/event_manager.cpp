@@ -219,6 +219,19 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
                 run.add_card_to_deck(DeckCard{ curse, false });
             }
             break;
+        case EventEffectType::ADD_RANDOM_CARD:
+            for (int n = 0; n < count_of(effect); ++n) {
+                FixedVector<CardId, 128> pool;
+                for (CardId id : RunManager::card_reward_pool(run.character)) {
+                    if (card_meta(id).rarity == CardRarity::BASIC) continue;
+                    const bool fits = effect.ref == "POWER" ? CardDef::get(id).type == CardType::POWER
+                                                            : CardDef::get_cost(id, false) == 0;
+                    if (fits) pool.push_back(id);
+                }
+                if (pool.empty()) break;
+                run.add_card_to_deck(DeckCard{ pool[run.next_random() % pool.size()], effect.upgraded });
+            }
+            break;
         case EventEffectType::REMOVE_CARD:
             if (effect.card != CardId::NONE) {
                 for (int n = 0; n < count_of(effect); ++n) {
