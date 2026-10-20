@@ -37,7 +37,8 @@ enum class Transition : uint8_t
 {
     FADE,     // fade to black
     BATTLE,   // Pokemon-like white flashes before the fight
-    QUICK     // short fade, used for overlays such as the deck viewer
+    QUICK,    // short fade, used for overlays such as the deck viewer
+    ROOM      // slow curtain from the map to an event, a shop, a campfire or an Ancient
 };
 
 // State shared by every scene for the whole session.

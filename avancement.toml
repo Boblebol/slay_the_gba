@@ -276,7 +276,7 @@ items = [
   { name = "Défaite (Game Over)", status = "oui", issue = 11 },
   { name = "Victoire", status = "oui", issue = 12 },
   { name = "Indicateurs de vie, d'armure et de progression", status = "partiel", issue = 20 },
-  { name = "Transitions entre les scènes", status = "partiel", issue = 18 },
+  { name = "Transitions entre les scènes", status = "oui", issue = 18 },
   { name = "Système de dialogue et d'évènements textuels", status = "partiel", issue = 19 },
   { name = "Options (volume, commandes)", status = "oui" },
   { name = "Menu pause en combat et sur la carte", status = "oui", issue = 10 },
