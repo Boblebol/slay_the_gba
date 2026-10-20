@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 94,7 %** — 1208 faits, 12 partiels, 29 à faire (35 hors périmètre).
+**Avancement global : 94,8 %** — 1209 faits, 12 partiels, 28 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 41 | 3 | 21 | 65,4 % |
+| [Évènements et Anciens](#rencontres) | 42 | 3 | 20 | 66,9 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1208** | **12** | **29** | **94,7 %** |
+| **Total** | **1209** | **12** | **28** | **94,8 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 65,4 %
+## Évènements et Anciens — 66,9 %
 
-### Évènements — 60,5 %
+### Évènements — 62,3 %
 
-33 faits, 3 partiels, 21 à faire.
+34 faits, 3 partiels, 20 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1407,7 +1407,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Trésor englouti | Acte 1 (B) | Oui |  |
 | Tueur d’insectes | Acte 2 | Oui |  |
 | Vallon des Murmures | Acte 1 (A) | Oui |  |
-| À coups de poing | Acte 1 (B) | Non |  |
+| À coups de poing | Acte 1 (B) | Oui |  |
 
 ### Anciens — 100,0 %
 
