@@ -102,6 +102,11 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::HAS_RELIC: return run.has_relic(condition.ref);
         case EventCheck::NO_RELIC: return !run.has_relic(condition.ref);
         case EventCheck::MIN_DECK: return run.master_deck.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
+        case EventCheck::CAN_SOULS_POWER:
+            for (const DeckCard& card : run.master_deck) {
+                if (can_enchant(card, Enchantment::SOULS_POWER)) return true;
+            }
+            return false;
         case EventCheck::HAS_POTION:
             for (std::string_view potion : run.potions) {
                 if (condition.ref.empty() || potion == condition.ref) return true;
@@ -207,6 +212,15 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             break;
         case EventEffectType::ADD_CARD:
             for (int n = 0; n < count_of(effect); ++n) {
+                if (effect.ref == "COMMON") { // a random Common card of the hero
+                    FixedVector<CardId, 128> commons;
+                    for (CardId id : RunManager::card_reward_pool(run.character)) {
+                        if (card_meta(id).rarity == CardRarity::COMMON) commons.push_back(id);
+                    }
+                    if (commons.empty()) break;
+                    run.add_card_to_deck(DeckCard{ commons[run.next_random() % commons.size()], effect.upgraded });
+                    continue;
+                }
                 CardId added = effect.card_pool.empty() ? effect.card
                                                         : effect.card_pool[run.next_random() % effect.card_pool.size()];
                 if (added == CardId::NONE) {
