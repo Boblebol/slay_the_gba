@@ -143,15 +143,22 @@ int main() {
     assert(!ev.title.empty());
     assert(ev.choices.size() >= 2);
     char ev_msg[128];
-    assert(run.choose_event_choice(0, ev_msg, sizeof(ev_msg)));
+    // The first choice may be unavailable (e.g. it needs a potion): take the first one that resolves.
+    bool event_resolved = false;
+    for (size_t i = 0; i < ev.choices.size() && !event_resolved; ++i) {
+        event_resolved = run.choose_event_choice(static_cast<int>(i), ev_msg, sizeof(ev_msg));
+    }
+    assert(event_resolved);
     assert(ev_msg[0] != '\0');
     std::cout << "[E2E Step 10b] Encountered Pokémon-style Mystery Event '" << ev.title << "' -> Choice resolved: " << ev_msg << "\n";
 
     // 11. Floor 7: Treasure Room Simulation
+    // The Floor 3 event may itself grant a relic, so count relative to the current state.
+    const size_t relics_before_treasure = run.relics.size();
     run.gold += 50;
     run.add_relic("VAJRA");
     SaveManager::instance().autosave_run(run);
-    assert(run.relics.size() == 2);
+    assert(run.relics.size() == relics_before_treasure + 1);
     std::cout << "[E2E Step 11] Floor 7 Treasure Room: Acquired Vajra relic + 50 Gold.\n";
 
     // 12. Floor 10: Merchant / Shop Simulation
