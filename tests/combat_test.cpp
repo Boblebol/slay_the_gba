@@ -4147,6 +4147,14 @@ void test_enchantment_block() {
     assert(goopy.permanent_gains.size() == 1 && goopy.permanent_gains[0].deck_index == 4 && goopy.permanent_gains[0].enchantment);
     play(goopy, goopy.exhaust_pile.back());
     assert(goopy.player.block == 5 + 6);
+
+    // Soul's Power (Pouvoir de l'âme): an Exhaust card is discarded instead of exhausted, and only such a card can have it.
+    CombatEngine soul = make_combat(CharacterId::IRONCLAD);
+    DeckCard impervious = enchanted(CardId::IMPERVIOUS, Enchantment::SOULS_POWER);
+    assert(CardDef::has_keyword(CardId::IMPERVIOUS, false, KEYWORD_EXHAUST) && !CardDef::has_keyword(impervious, KEYWORD_EXHAUST));
+    assert(can_enchant(DeckCard(CardId::IMPERVIOUS), Enchantment::SOULS_POWER) && !can_enchant(DeckCard(CardId::STRIKE), Enchantment::SOULS_POWER));
+    play(soul, impervious);
+    assert(soul.player.block == 30 && soul.exhaust_pile.empty() && soul.discard_pile.back().id == CardId::IMPERVIOUS);
     std::cout << "[PASS] Enchantments on Block: Adroit, Nimble, Goopy" << std::endl;
 }
 

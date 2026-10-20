@@ -2852,6 +2852,8 @@ bn::string_view enchantment_name(engine::Enchantment enchantment)
         return "Viscosité";
     case engine::Enchantment::CORRUPTED:
         return "Corruption";
+    case engine::Enchantment::SOULS_POWER:
+        return "Pouvoir de l'âme";
     case engine::Enchantment::STEADY:
         return "Stabilité";
     default:
@@ -2923,6 +2925,9 @@ void enchantment_text(const engine::DeckCard& card, bn::istring& title, bn::istr
         break;
     case engine::Enchantment::CORRUPTED:
         stream << "Dégâts +50%. Perd " << int(engine::CORRUPTED_HP_LOSS) << " PV par jeu.";
+        break;
+    case engine::Enchantment::SOULS_POWER:
+        stream << "Perd Épuisement.";
         break;
     case engine::Enchantment::STEADY:
         stream << "Retenue.";
