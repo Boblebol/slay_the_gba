@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 93,6 %** — 1200 faits, 12 partiels, 37 à faire (35 hors périmètre).
+**Avancement global : 94,0 %** — 1203 faits, 12 partiels, 34 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 33 | 3 | 29 | 53,1 % |
+| [Évènements et Anciens](#rencontres) | 36 | 3 | 26 | 57,7 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1200** | **12** | **37** | **93,6 %** |
+| **Total** | **1203** | **12** | **34** | **94,0 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 53,1 %
+## Évènements et Anciens — 57,7 %
 
-### Évènements — 46,5 %
+### Évènements — 51,8 %
 
-25 faits, 3 partiels, 29 à faire.
+28 faits, 3 partiels, 26 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1377,7 +1377,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | La statue engloutie | Acte 1 (A), Acte 1 (B) | Oui |  |
 | Le Marchand ??? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Le procès | Acte 3 | Non |  |
-| Le thé de la table ronde | Acte 3 | Non |  |
+| Le thé de la table ronde | Acte 3 | Oui |  |
 | L’avenir des potions ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Mannequin de combat usé | Acte 3 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
 | Maître de thé | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
@@ -1385,7 +1385,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Phare englouti | Acte 1 (B) | Oui |  |
 | Philosophes multicolores | Acte 2 | Non |  |
 | Pierre de tous les temps | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Pont glissant | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Pont glissant | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Portes de l’ombre et de la lumière | Acte 1 (B) | Oui |  |
 | Ranwid l’Aîné | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Reflets stelfeR | Acte 3 | Non |  |
@@ -1393,7 +1393,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Salle aux poupées | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Salle du Fromage | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Sangsue cérébrale | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
-| Scriptorium englouti | Acte 1 (B) | Non |  |
+| Scriptorium englouti | Acte 1 (B) | Oui |  |
 | Site sans repos | Acte 1 (A) | Oui |  |
 | Source mystique | Acte 1 (A) | Oui |  |
 | Sphère de cristal | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
