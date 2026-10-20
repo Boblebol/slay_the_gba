@@ -2852,6 +2852,8 @@ bn::string_view enchantment_name(engine::Enchantment enchantment)
         return "Viscosité";
     case engine::Enchantment::CORRUPTED:
         return "Corruption";
+    case engine::Enchantment::STEADY:
+        return "Stabilité";
     default:
         return "";
     }
@@ -2921,6 +2923,9 @@ void enchantment_text(const engine::DeckCard& card, bn::istring& title, bn::istr
         break;
     case engine::Enchantment::CORRUPTED:
         stream << "Dégâts +50%. Perd " << int(engine::CORRUPTED_HP_LOSS) << " PV par jeu.";
+        break;
+    case engine::Enchantment::STEADY:
+        stream << "Retenue.";
         break;
     default:
         break;

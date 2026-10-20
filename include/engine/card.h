@@ -709,6 +709,7 @@ enum class Enchantment : uint8_t {
     SHARP,            // Tranchant: the card deals `amount` more damage
     GOOPY,            // Viscosité: Exhaust; once played, the Block it gives is raised by 1 for good (`amount`)
     CORRUPTED,        // Corruption (Symbiote): the Attack deals 50% more damage and costs CORRUPTED_HP_LOSS HP when played
+    STEADY,           // Stabilité: Retain (Waterlogged Scriptorium)
     COUNT
 };
 
@@ -772,6 +773,7 @@ constexpr uint16_t enchantment_keywords(Enchantment enchantment) {
         case Enchantment::TEZCATARAS_EMBER: return KEYWORD_ETERNAL;
         case Enchantment::ROYALLY_APPROVED: return KEYWORD_INNATE | KEYWORD_RETAIN;
         case Enchantment::GOOPY: return KEYWORD_EXHAUST;
+        case Enchantment::STEADY: return KEYWORD_RETAIN;
         default: return 0;
     }
 }
