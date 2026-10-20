@@ -207,6 +207,15 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             break;
         case EventEffectType::ADD_CARD:
             for (int n = 0; n < count_of(effect); ++n) {
+                if (effect.ref == "COMMON") { // a random Common card of the hero
+                    FixedVector<CardId, 128> commons;
+                    for (CardId id : RunManager::card_reward_pool(run.character)) {
+                        if (card_meta(id).rarity == CardRarity::COMMON) commons.push_back(id);
+                    }
+                    if (commons.empty()) break;
+                    run.add_card_to_deck(DeckCard{ commons[run.next_random() % commons.size()], effect.upgraded });
+                    continue;
+                }
                 CardId added = effect.card_pool.empty() ? effect.card
                                                         : effect.card_pool[run.next_random() % effect.card_pool.size()];
                 if (added == CardId::NONE) {
