@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 95,9 %** — 1218 faits, 12 partiels, 19 à faire (35 hors périmètre).
+**Avancement global : 96,1 %** — 1219 faits, 12 partiels, 18 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 51 | 3 | 11 | 80,8 % |
+| [Évènements et Anciens](#rencontres) | 52 | 3 | 10 | 82,3 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1218** | **12** | **19** | **95,9 %** |
+| **Total** | **1219** | **12** | **18** | **96,1 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 80,8 %
+## Évènements et Anciens — 82,3 %
 
-### Évènements — 78,1 %
+### Évènements — 79,8 %
 
-43 faits, 3 partiels, 11 à faire.
+44 faits, 3 partiels, 10 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1361,7 +1361,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Bosquet des Morphiques | Acte 1 (A) | Oui |  |
 | Bricolage | Acte 3 | Non |  |
 | Ceci ou Cela ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
-| Champ de trous à taille corporelle | Acte 2 | Non |  |
+| Champ de trous à taille corporelle | Acte 2 | Oui |  |
 | Chœur lumineux | Acte 1 (A) | Oui |  |
 | Convoyeur sans fin | Acte 1 (B) | Oui |  |
 | Coursier de potions | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
