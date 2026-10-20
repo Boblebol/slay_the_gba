@@ -4110,6 +4110,21 @@ void test_enchantment_damage() {
     CombatEngine plain = make_combat(CharacterId::IRONCLAD);
     play(plain, CardId::STRIKE);
     assert(plain.enemies[0].get_status(StatusType::WEAK) == 0);
+    // Perfect Fit (Ajustement parfait): once the draw pile is shuffled, the card is on top of it (the back).
+    CombatEngine fit = make_combat(CharacterId::IRONCLAD);
+    while (!fit.hand.empty()) {
+        fit.discard_pile.push_back(fit.hand.back());
+        fit.hand.pop_back();
+    }
+    fit.draw_pile.clear();
+    for (int i = 0; i < 8; ++i) fit.discard_pile.push_back(DeckCard(CardId::DEFEND));
+    fit.discard_pile.push_back(enchanted(CardId::BASH, Enchantment::PERFECT_FIT));
+    fit.discard_pile.push_back(enchanted(CardId::STRIKE, Enchantment::PERFECT_FIT));
+    for (int i = 0; i < 8; ++i) fit.discard_pile.push_back(DeckCard(CardId::DEFEND));
+    fit.shuffle_discard_into_draw();
+    const size_t top = fit.draw_pile.size();
+    assert(fit.draw_pile[top - 1].enchantment == Enchantment::PERFECT_FIT && fit.draw_pile[top - 2].enchantment == Enchantment::PERFECT_FIT);
+    assert(fit.draw_pile[top - 3].enchantment == Enchantment::NONE);
     std::cout << "[PASS] Enchantments on damage: Sharp, Instinct, Tezcatara's Ember, Momentum, Inky" << std::endl;
 }
 
