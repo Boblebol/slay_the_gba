@@ -79,7 +79,8 @@ enum class EventEffectType : uint8_t {
     DOWNGRADE_CARD, // `amount` random upgraded cards (1 when 0) go back to their base version
     DUPLICATE_DECK, // every card of the deck is copied once (as far as the deck holds)
     LEAVE,          // nothing: makes a "leave" option explicit in the data
-    CARD_CHOICE     // `amount` cards of the hero's pool (rare ones included) are shown, the player adds 1 to the deck
+    CARD_CHOICE,    // `amount` cards of the hero's pool (rare ones included) are shown, the player adds 1 to the deck
+    TRADE_RELIC     // a random relic of the run is given up for a random one it did not own
 };
 
 // `ref` of a FIGHT effect: two Punch Constructs instead of the fight of the act, and a relic with the rewards.
