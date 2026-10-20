@@ -668,6 +668,7 @@ bool can_enchant(const DeckCard& card, Enchantment enchantment) {
         case Enchantment::SHARP:
         case Enchantment::INSTINCT:
         case Enchantment::MOMENTUM:
+        case Enchantment::VIGOROUS:
         case Enchantment::TEZCATARAS_EMBER:
             return type == CardType::ATTACK;
         case Enchantment::SOULS_POWER:

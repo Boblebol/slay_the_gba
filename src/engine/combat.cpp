@@ -2518,6 +2518,8 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         inky_now = outer_inky;
         // Momentum: each play adds to the card's damage for the rest of the combat.
         if (card.enchantment == Enchantment::MOMENTUM) card.enchant_combat = bump(card.enchant_combat, card.enchant_amount);
+        // Vigorous: only the first play of the combat gets the damage.
+        if (card.enchantment == Enchantment::VIGOROUS) card.enchant_combat = 1;
         // Goopy: each play adds 1 to the card's Block, in the deck too.
         if (card.enchantment == Enchantment::GOOPY) {
             card.enchant_amount = bump(card.enchant_amount);
@@ -2602,6 +2604,9 @@ void CombatEngine::set_enchant_modifiers(const DeckCard& card) {
             break;
         case Enchantment::MOMENTUM:
             enchant_damage_now = card.enchant_combat;
+            break;
+        case Enchantment::VIGOROUS:
+            enchant_damage_now = card.enchant_combat == 0 ? card.enchant_amount : 0;
             break;
         case Enchantment::INSTINCT:
             enchant_double_now = true;
