@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 96,7 %** — 1225 faits, 12 partiels, 13 à faire (35 hors périmètre).
+**Avancement global : 96,8 %** — 1226 faits, 11 partiels, 13 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -27,8 +27,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Évènements et Anciens](#rencontres) | 57 | 3 | 5 | 90,0 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
-| [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1225** | **12** | **13** | **96,7 %** |
+| [Interface, audio et cartouches](#interface) | 22 | 3 | 6 | 75,8 % |
+| **Total** | **1226** | **11** | **13** | **96,8 %** |
 
 <a id="ironclad"></a>
 
@@ -1610,11 +1610,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 74,2 %
+## Interface, audio et cartouches — 75,8 %
 
-### Écrans — 78,6 %
+### Écrans — 81,0 %
 
-15 faits, 3 partiels, 3 à faire.
+16 faits, 2 partiels, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1629,7 +1629,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Registre du deck |  | Oui |  |
 | Défaite (Game Over) |  | Oui | [#11](https://github.com/Boblebol/slay_the_gba/issues/11) |
 | Victoire |  | Oui | [#12](https://github.com/Boblebol/slay_the_gba/issues/12) |
-| Indicateurs de vie, d'armure et de progression |  | Partiel | [#20](https://github.com/Boblebol/slay_the_gba/issues/20) |
+| Indicateurs de vie, d'armure et de progression |  | Oui | [#20](https://github.com/Boblebol/slay_the_gba/issues/20) |
 | Transitions entre les scènes |  | Partiel | [#18](https://github.com/Boblebol/slay_the_gba/issues/18) |
 | Système de dialogue et d'évènements textuels |  | Partiel | [#19](https://github.com/Boblebol/slay_the_gba/issues/19) |
 | Options (volume, commandes) |  | Oui |  |
