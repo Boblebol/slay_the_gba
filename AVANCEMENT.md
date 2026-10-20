@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 96,1 %** — 1219 faits, 12 partiels, 18 à faire (35 hors périmètre).
+**Avancement global : 96,2 %** — 1221 faits, 12 partiels, 17 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 52 | 3 | 10 | 82,3 % |
-| [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
+| [Évènements et Anciens](#rencontres) | 53 | 3 | 9 | 83,8 % |
+| [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1219** | **12** | **18** | **96,1 %** |
+| **Total** | **1221** | **12** | **17** | **96,2 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 82,3 %
+## Évènements et Anciens — 83,8 %
 
-### Évènements — 79,8 %
+### Évènements — 81,6 %
 
-44 faits, 3 partiels, 10 à faire.
+45 faits, 3 partiels, 9 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1384,7 +1384,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Nid d’oizodon | Acte 1 (A) | Oui |  |
 | Phare englouti | Acte 1 (B) | Oui |  |
 | Philosophes multicolores | Acte 2 | Oui |  |
-| Pierre de tous les temps | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Pierre de tous les temps | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Pont glissant | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Portes de l’ombre et de la lumière | Acte 1 (B) | Oui |  |
 | Ranwid l’Aîné | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
@@ -1500,7 +1500,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 ### Enchantements — 100,0 %
 
-13 faits, 0 partiel, 0 à faire.
+14 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1517,6 +1517,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sceau royal |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
 | Tranchant |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
 | Viscosité |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Vigoureux |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
 
 <a id="systemes"></a>
 
