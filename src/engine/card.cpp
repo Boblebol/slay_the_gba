@@ -670,6 +670,8 @@ bool can_enchant(const DeckCard& card, Enchantment enchantment) {
         case Enchantment::MOMENTUM:
         case Enchantment::TEZCATARAS_EMBER:
             return type == CardType::ATTACK;
+        case Enchantment::SOULS_POWER:
+            return CardDef::has_keyword(card.id, card.upgraded, KEYWORD_EXHAUST);
         default:
             return true;
     }

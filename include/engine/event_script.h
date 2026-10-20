@@ -112,6 +112,7 @@ enum class EventCheck : uint8_t {
     MIN_DECK,   // at least `amount` cards in the deck
     HAS_POTION, // at least one potion on the belt, or the potion `ref` when given
     CAN_ENCHANT, // a card of the deck can be enchanted: of CardType `amount`, or of any type when `amount` is -1
+    CAN_SOULS_POWER, // a card of the deck has Exhaust, so it can receive Soul's Power
     HAS_CARD    // at least `amount` copies of `card` in the deck
 };
 
