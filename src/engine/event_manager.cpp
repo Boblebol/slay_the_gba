@@ -166,6 +166,7 @@ bool EventManager::choose(RunManager& run, int index, char* out_msg, size_t max_
     for (const EventEffect& effect : option.effects) {
         if (effect.type == EventEffectType::GOTO_PAGE) {
             next_page = effect.amount;
+            if (effect.enchant_amount > 1) next_page += static_cast<int>(run.next_random() % effect.enchant_amount);
             continue;
         }
         apply_effect(run, effect);
@@ -290,6 +291,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.relic_reward = {};
             RewardRng rng(run.next_random());
             run.draw_card_rewards(false, rng);
+            run.extra_card_rewards = static_cast<uint8_t>(run.extra_card_rewards + count_of(effect) - 1);
             if (effect.ref == "COLORLESS") {
                 // The reward just drawn is replaced by Colorless cards (never a Status, a Curse nor a Quest card).
                 FixedVector<CardId, 128> pool;
