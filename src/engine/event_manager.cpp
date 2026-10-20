@@ -192,7 +192,8 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             break;
         case EventEffectType::ADD_CARD:
             for (int n = 0; n < count_of(effect); ++n) {
-                CardId added = effect.card;
+                CardId added = effect.card_pool.empty() ? effect.card
+                                                        : effect.card_pool[run.next_random() % effect.card_pool.size()];
                 if (added == CardId::NONE) {
                     FixedVector<CardId, 64> colorless;
                     for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
@@ -287,7 +288,13 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             break;
         }
         case EventEffectType::GAIN_RELIC:
-            if (effect.ref.empty()) {
+            if (!effect.relic_pool.empty()) {
+                FixedVector<std::string_view, 16> left; // the relics of the pool not owned yet
+                for (const std::string_view relic : effect.relic_pool) {
+                    if (!run.has_relic(relic)) left.push_back(relic);
+                }
+                if (!left.empty()) run.add_relic(left[run.next_random() % left.size()]);
+            } else if (effect.ref.empty()) {
                 run.gain_random_relics(1);
             } else if (is_relic_list(effect.ref)) {
                 const std::string_view relic = listed_relic(effect.ref, run.next_random());
@@ -319,6 +326,23 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.event_fight_ref = effect.ref == EVENT_FIGHT_PUNCH_CONSTRUCTS ? effect.ref : std::string_view{};
             run.begin_fight(effect.ref == "ELITE" ? RoomType::ELITE : RoomType::MONSTER);
             break;
+        case EventEffectType::DOWNGRADE_CARD:
+            for (int n = 0; n < count_of(effect); ++n) {
+                FixedVector<int, 50> candidates;
+                for (size_t i = 0; i < run.master_deck.size(); ++i) {
+                    if (run.master_deck[i].upgraded) candidates.push_back(static_cast<int>(i));
+                }
+                if (candidates.empty()) break;
+                run.master_deck[candidates[run.next_random() % candidates.size()]].upgraded = false;
+            }
+            break;
+        case EventEffectType::DUPLICATE_DECK: {
+            const size_t size = run.master_deck.size();
+            for (size_t i = 0; i < size; ++i) {
+                if (!run.add_card_to_deck(run.master_deck[i])) break;
+            }
+            break;
+        }
         case EventEffectType::CARD_CHOICE: {
             // Cards of the hero's pool, distinct and never a basic one; the player adds one of them (Sea Glass choice).
             FixedVector<CardId, 512> pool;
