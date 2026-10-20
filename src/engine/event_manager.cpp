@@ -123,7 +123,7 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::HAS_CARD: {
             int copies = 0;
             for (const DeckCard& card : run.master_deck) copies += card.id == condition.card;
-            return copies >= condition.amount;
+            return copies >= std::max<int>(1, condition.amount);
         }
         case EventCheck::NONE:
         default: return true;
@@ -382,6 +382,13 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
         case EventEffectType::FIGHT:
             run.event_fight_ref = effect.ref == EVENT_FIGHT_PUNCH_CONSTRUCTS ? effect.ref : std::string_view{};
             run.begin_fight(effect.ref == "ELITE" ? RoomType::ELITE : RoomType::MONSTER);
+            break;
+        case EventEffectType::LOSE_CARD:
+            for (size_t i = 0; i < run.master_deck.size(); ++i) {
+                if (run.master_deck[i].id != effect.card) continue;
+                run.master_deck.erase(i); // quest cards may be Eternal: not through remove_card_from_deck
+                break;
+            }
             break;
         case EventEffectType::LOSE_POTION:
             for (size_t i = 0; i < run.potions.size(); ++i) {

@@ -73,6 +73,7 @@ enum class EventEffectType : uint8_t {
                     // for the Punch Off one (2 Punch Constructs, a relic reward), else a normal one
     GOTO_PAGE,      // the event goes on with page `amount`; with `enchant_amount` > 1, one of the `enchant_amount` pages
                     // from `amount` on, drawn at random
+    LOSE_CARD,      // the first copy of `card` leaves the deck (the Lantern Key quest card)
     LOSE_POTION,    // the potion `ref` leaves the belt (the Foul Potion thrown at the Fake Merchant)
     DOWNGRADE_CARD, // `amount` random upgraded cards (1 when 0) go back to their base version
     DUPLICATE_DECK, // every card of the deck is copied once (as far as the deck holds)
@@ -113,7 +114,7 @@ enum class EventCheck : uint8_t {
     HAS_POTION, // at least one potion on the belt, or the potion `ref` when given
     CAN_ENCHANT, // a card of the deck can be enchanted: of CardType `amount`, or of any type when `amount` is -1
     CAN_SOULS_POWER, // a card of the deck has Exhaust, so it can receive Soul's Power
-    HAS_CARD    // at least `amount` copies of `card` in the deck
+    HAS_CARD    // at least `amount` copies (1 when 0) of `card` in the deck
 };
 
 struct EventCondition {
