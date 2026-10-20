@@ -56,7 +56,7 @@ enum class EventEffectType : uint8_t {
     GAIN_MAX_HP,    // amount, the HP rise with it
     LOSE_MAX_HP,    // amount
     ADD_CARD,       // `amount` copies (1 when 0) of `card` (or of a card of `card_pool`; a random Colorless card when both
-                    // are empty), upgraded when `upgraded`
+                    // are empty; `amount` random Common cards of the hero when `ref` is "COMMON"), upgraded when `upgraded`
     ADD_CURSE,      // `amount` copies (1 when 0) of `card`, or of a random curse when `card` is NONE
     ADD_RANDOM_CARD, // a non-Basic card of the hero's pool: a Power (`ref` "POWER") or one costing 0 ("ZERO_COST")
     REMOVE_CARD,    // `amount` cards (1 when 0), chosen by the player or drawn at random (`pick`); with `card`, that many
@@ -65,7 +65,7 @@ enum class EventEffectType : uint8_t {
     TRANSFORM_CARD, // same; the new card is upgraded when `upgraded`
     ENCHANT_CARD,   // same, with `enchantment` of `enchant_amount`
     CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left; `amount` of them in a row;
-                    // `ref` "COLORLESS": Colorless cards
+                    // `ref` a hero ("SILENT"...): his cards, "COLORLESS": Colorless cards
     GAIN_RELIC,     // relic `ref`, or one of `relic_pool` not owned, or a random Common one when `ref` is "COMMON", or a random relic (as in a chest) when both empty
     RELIC_REWARD,   // a relic drawn like an elite's, offered on the reward screen once the event is left
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty

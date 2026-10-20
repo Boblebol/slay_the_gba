@@ -141,7 +141,7 @@ int main() {
     const EventEncounter& ev = run.current_event;
     assert(run.phase == RunPhase::EVENT);
     assert(!ev.title.empty());
-    assert(!ev.choices.empty()); // some events (Endless Conveyor) have a single choice
+    assert(!ev.choices.empty()); // a single choice when the other is out of reach (Endless Conveyor without gold)
     char ev_msg[128];
     assert(run.choose_event_choice(0, ev_msg, sizeof(ev_msg)));
     assert(ev_msg[0] != '\0');

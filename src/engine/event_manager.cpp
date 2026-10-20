@@ -53,6 +53,16 @@ void trade_first_potion(RunManager& run, uint32_t roll) {
     run.add_card_to_deck(DeckCard{ candidates[roll % candidates.size()], true });
 }
 
+// CARD_REWARD: the hero whose cards are offered, named by `ref` (empty or unknown: the player's own).
+CharacterId reward_hero(std::string_view ref) {
+    if (ref == "IRONCLAD") return CharacterId::IRONCLAD;
+    if (ref == "SILENT") return CharacterId::SILENT;
+    if (ref == "DEFECT") return CharacterId::DEFECT;
+    if (ref == "REGENT") return CharacterId::REGENT;
+    if (ref == "NECROBINDER") return CharacterId::NECROBINDER;
+    return CharacterId::COUNT;
+}
+
 // GAIN_RELIC with a list "A,B,C" in `ref`: the one drawn by `random`.
 std::string_view listed_relic(std::string_view list, uint32_t random) {
     size_t count = 1;
@@ -221,6 +231,15 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             break;
         case EventEffectType::ADD_CARD:
             for (int n = 0; n < count_of(effect); ++n) {
+                if (effect.ref == "COMMON") { // a random Common card of the hero
+                    FixedVector<CardId, 128> commons;
+                    for (CardId id : RunManager::card_reward_pool(run.character)) {
+                        if (card_meta(id).rarity == CardRarity::COMMON) commons.push_back(id);
+                    }
+                    if (commons.empty()) break;
+                    run.add_card_to_deck(DeckCard{ commons[run.next_random() % commons.size()], effect.upgraded });
+                    continue;
+                }
                 CardId added = effect.card_pool.empty() ? effect.card
                                                         : effect.card_pool[run.next_random() % effect.card_pool.size()];
                 if (added == CardId::NONE) {
@@ -309,7 +328,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.potion_reward = {};
             run.relic_reward = {};
             RewardRng rng(run.next_random());
-            run.draw_card_rewards(false, rng);
+            run.draw_card_rewards(false, rng, CardRarity::NONE, false, reward_hero(effect.ref));
             run.extra_card_rewards = static_cast<uint8_t>(run.extra_card_rewards + count_of(effect) - 1);
             if (effect.ref == "COLORLESS") {
                 // The reward just drawn is replaced by Colorless cards (never a Status, a Curse nor a Quest card).
