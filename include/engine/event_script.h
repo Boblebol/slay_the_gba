@@ -58,6 +58,7 @@ enum class EventEffectType : uint8_t {
     ADD_CARD,       // `amount` copies (1 when 0) of `card` (or of a card of `card_pool`; a random Colorless card when both
                     // are empty), upgraded when `upgraded`
     ADD_CURSE,      // `amount` copies (1 when 0) of `card`, or of a random curse when `card` is NONE
+    ADD_RANDOM_CARD, // a non-Basic card of the hero's pool: a Power (`ref` "POWER") or one costing 0 ("ZERO_COST")
     REMOVE_CARD,    // `amount` cards (1 when 0), chosen by the player or drawn at random (`pick`); with `card`, that many
                     // copies of exactly that card (Amalgamator: 2 Defends), no choice
     UPGRADE_CARD,   // same
