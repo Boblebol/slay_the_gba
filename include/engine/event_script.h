@@ -73,6 +73,7 @@ enum class EventEffectType : uint8_t {
                     // for the Punch Off one (2 Punch Constructs, a relic reward), else a normal one
     GOTO_PAGE,      // the event goes on with page `amount`; with `enchant_amount` > 1, one of the `enchant_amount` pages
                     // from `amount` on, drawn at random
+    LOSE_POTION,    // the potion `ref` leaves the belt (the Foul Potion thrown at the Fake Merchant)
     DOWNGRADE_CARD, // `amount` random upgraded cards (1 when 0) go back to their base version
     DUPLICATE_DECK, // every card of the deck is copied once (as far as the deck holds)
     LEAVE,          // nothing: makes a "leave" option explicit in the data
@@ -108,7 +109,7 @@ enum class EventCheck : uint8_t {
     HAS_RELIC,  // relic `ref` owned
     NO_RELIC,   // relic `ref` not owned
     MIN_DECK,   // at least `amount` cards in the deck
-    HAS_POTION, // at least one potion on the belt
+    HAS_POTION, // at least one potion on the belt, or the potion `ref` when given
     HAS_CARD    // at least `amount` copies of `card` in the deck
 };
 
