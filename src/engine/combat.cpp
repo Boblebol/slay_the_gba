@@ -184,6 +184,15 @@ void CombatEngine::shuffle_draw_pile() {
         draw_pile[i] = draw_pile[j];
         draw_pile[j] = temp;
     }
+    // Perfect Fit: the cards that hold it end up on top of the draw pile (its back).
+    FixedVector<DeckCard, 50> fitted;
+    for (size_t i = draw_pile.size(); i-- > 0;) {
+        if (draw_pile[i].enchantment == Enchantment::PERFECT_FIT) {
+            fitted.push_back(draw_pile[i]);
+            draw_pile.erase(i);
+        }
+    }
+    for (const DeckCard& card : fitted) draw_pile.push_back(card);
 }
 
 void CombatEngine::add_power(PowerId id, int16_t amount, bool turn_only, int8_t target) {
