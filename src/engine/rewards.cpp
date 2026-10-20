@@ -114,6 +114,7 @@ std::string_view draw_relic(RewardRng& rng, CharacterId hero, RelicSource source
                                                                                     : RelicRarity::RARE);
     if (source == RelicSource::BOSS) rolled = RelicRarity::RARE;
     if (source == RelicSource::SHOP) rolled = RelicRarity::SHOP;
+    if (source == RelicSource::COMMON) rolled = RelicRarity::COMMON;
 
     std::string_view hero_pool = get_character(hero).english_name;
     for (int attempt = -1; attempt < 3; ++attempt) {

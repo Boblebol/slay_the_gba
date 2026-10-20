@@ -50,7 +50,8 @@ constexpr uint8_t ELITE_CARD_UNCOMMON_CHANCE = 40;  // the remaining 10 % are Ra
 enum class RelicSource : uint8_t {
     ELITE, // Common, Uncommon or Rare, drawn with the rates above
     BOSS,  // Rare
-    SHOP   // Shop rarity
+    SHOP,  // Shop rarity
+    COMMON // Common only (Wongo's bargain bin)
 };
 
 // A potion drawn by rarity (Common, Uncommon, Rare) among the ones `hero` can be offered, never one of
