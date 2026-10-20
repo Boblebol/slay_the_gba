@@ -141,17 +141,19 @@ int main() {
     const EventEncounter& ev = run.current_event;
     assert(run.phase == RunPhase::EVENT);
     assert(!ev.title.empty());
-    assert(ev.choices.size() >= 2);
+    assert(!ev.choices.empty()); // some events (Endless Conveyor) have a single choice
     char ev_msg[128];
     assert(run.choose_event_choice(0, ev_msg, sizeof(ev_msg)));
     assert(ev_msg[0] != '\0');
     std::cout << "[E2E Step 10b] Encountered Pokémon-style Mystery Event '" << ev.title << "' -> Choice resolved: " << ev_msg << "\n";
 
     // 11. Floor 7: Treasure Room Simulation
+    // The Floor 3 event may itself grant a relic, so count relative to the current state.
+    const size_t relics_before_treasure = run.relics.size();
     run.gold += 50;
     run.add_relic("VAJRA");
     SaveManager::instance().autosave_run(run);
-    assert(run.relics.size() == 2);
+    assert(run.relics.size() == relics_before_treasure + 1);
     std::cout << "[E2E Step 11] Floor 7 Treasure Room: Acquired Vajra relic + 50 Gold.\n";
 
     // 12. Floor 10: Merchant / Shop Simulation
