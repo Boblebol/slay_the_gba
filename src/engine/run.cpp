@@ -122,6 +122,7 @@ void RunManager::start_run(CharacterId char_id, uint8_t ascension, PaletteVarian
     elites_won = 0;
     bosses_won = 0;
     current_encounter = {};
+    event_fight_ref = {};
     cook_pending = false;
     current_ancient = AncientId::COUNT;
     ancient_offers.clear();
@@ -218,6 +219,14 @@ FixedVector<int, 3> RunManager::get_available_rooms() const {
 }
 
 FixedVector<EnemyType, MAX_ENEMIES> RunManager::draw_encounter(RoomType room) {
+    // Punch Off: the two Punch Constructs fighting over the treasure.
+    if (event_fight_ref == EVENT_FIGHT_PUNCH_CONSTRUCTS) {
+        current_encounter = "PunchConstructsEvent";
+        FixedVector<EnemyType, MAX_ENEMIES> constructs;
+        constructs.push_back(EnemyType::PUNCH_CONSTRUCT);
+        constructs.push_back(EnemyType::PUNCH_CONSTRUCT);
+        return constructs;
+    }
     std::span<const Encounter> table = encounter_table(act_zone(current_act, map_seed),
                                                        encounter_tier(room, current_floor));
     // A list of one draws nothing, as the rooms with a single choice did before the tables.
@@ -839,6 +848,11 @@ void RunManager::generate_rewards() {
         relic_reward = draw_relic(rng, character, boss ? RelicSource::BOSS : RelicSource::ELITE,
                                   std::span<const std::string_view>(relics.begin(), relics.size()));
     }
+    // Punch Off: the fight chosen for better rewards also gives a relic, like an Elite's.
+    if (event_fight_ref == EVENT_FIGHT_PUNCH_CONSTRUCTS && relics.size() < relics.capacity()) {
+        relic_reward = draw_relic(rng, character, RelicSource::ELITE, std::span<const std::string_view>(relics.begin(), relics.size()));
+    }
+    event_fight_ref = {};
     // Black Star: an Elite gives one more relic, offered once the first one is taken.
     extra_relic_rewards = room == RoomType::ELITE && !relic_reward.empty() && has_relic("BLACK_STAR") ? 1 : 0;
     // White Star: an Elite gives one more set of Rare cards, offered once the first set is taken or skipped.
