@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 96,3 %** — 1222 faits, 12 partiels, 16 à faire (35 hors périmètre).
+**Avancement global : 96,4 %** — 1223 faits, 12 partiels, 15 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 54 | 3 | 8 | 85,4 % |
+| [Évènements et Anciens](#rencontres) | 55 | 3 | 7 | 86,9 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1222** | **12** | **16** | **96,3 %** |
+| **Total** | **1223** | **12** | **15** | **96,4 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 85,4 %
+## Évènements et Anciens — 86,9 %
 
-### Évènements — 83,3 %
+### Évènements — 85,1 %
 
-46 faits, 3 partiels, 8 à faire.
+47 faits, 3 partiels, 7 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1378,7 +1378,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Le Marchand ??? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Le procès | Acte 3 | Oui |  |
 | Le thé de la table ronde | Acte 3 | Oui |  |
-| L’avenir des potions ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| L’avenir des potions ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Mannequin de combat usé | Acte 3 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
 | Maître de thé | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Nid d’oizodon | Acte 1 (A) | Oui |  |
