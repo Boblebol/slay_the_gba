@@ -191,7 +191,18 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.lose_max_hp(effect.amount);
             break;
         case EventEffectType::ADD_CARD:
-            for (int n = 0; n < count_of(effect); ++n) run.add_card_to_deck(DeckCard{ effect.card, effect.upgraded });
+            for (int n = 0; n < count_of(effect); ++n) {
+                CardId added = effect.card;
+                if (added == CardId::NONE) {
+                    FixedVector<CardId, 64> colorless;
+                    for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+                        if (card_meta(static_cast<CardId>(id)).pool == CardPool::COLORLESS) colorless.push_back(static_cast<CardId>(id));
+                    }
+                    if (colorless.empty()) break;
+                    added = colorless[run.next_random() % colorless.size()];
+                }
+                run.add_card_to_deck(DeckCard{ added, effect.upgraded });
+            }
             break;
         case EventEffectType::ADD_CURSE:
             for (int n = 0; n < count_of(effect); ++n) {
