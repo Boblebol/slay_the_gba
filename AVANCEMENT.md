@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 94,8 %** — 1209 faits, 12 partiels, 28 à faire (35 hors périmètre).
+**Avancement global : 95,0 %** — 1211 faits, 12 partiels, 26 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 42 | 3 | 20 | 66,9 % |
+| [Évènements et Anciens](#rencontres) | 44 | 3 | 18 | 70,0 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1209** | **12** | **28** | **94,8 %** |
+| **Total** | **1211** | **12** | **26** | **95,0 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,18 +1343,18 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 66,9 %
+## Évènements et Anciens — 70,0 %
 
-### Évènements — 62,3 %
+### Évènements — 65,8 %
 
-34 faits, 3 partiels, 20 à faire.
+36 faits, 3 partiels, 18 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Affamé de champis | Acte 3 | Oui |  |
 | Amalgamateur | Acte 2 | Oui |  |
 | Arôme du chaos | Acte 1 (A) | Oui |  |
-| Automate infesté | Acte 2 | Non |  |
+| Automate infesté | Acte 2 | Oui |  |
 | Aventure du labyrinthe de la jungle | Acte 1 (A) | Oui |  |
 | Bains abyssaux | Acte 1 (B) | Partiel | Récit raccourci et choix réinventés pour la GBA. |
 | Bienvenue chez Wongo’s | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
@@ -1375,7 +1375,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | La clé de la lanterne | Acte 2 | Oui |  |
 | La légende disait vrai | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | La statue engloutie | Acte 1 (A), Acte 1 (B) | Oui |  |
-| Le Marchand ??? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Le Marchand ??? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Le procès | Acte 3 | Non |  |
 | Le thé de la table ronde | Acte 3 | Oui |  |
 | L’avenir des potions ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |

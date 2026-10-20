@@ -631,11 +631,11 @@ void test_event_effects() {
         assert(card_meta(run.master_deck[deck + 3].id).pool == CardPool::CURSE);
         assert(card_meta(run.master_deck[deck + 4].id).pool == CardPool::CURSE);
     }
-    // A card NONE adds random Common cards of the hero.
+    // ref "COMMON" adds random Common cards of the hero.
     {
         RunManager run = fresh_run();
         const size_t deck = run.master_deck.size();
-        EventManager::apply_effect(run, { .type = EventEffectType::ADD_CARD, .amount = 3 });
+        EventManager::apply_effect(run, { .type = EventEffectType::ADD_CARD, .amount = 3, .ref = "COMMON" });
         assert(run.master_deck.size() == deck + 3);
         for (size_t i = deck; i < deck + 3; ++i) {
             assert(card_meta(run.master_deck[i].id).rarity == CardRarity::COMMON);
