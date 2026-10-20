@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 94,5 %** — 1207 faits, 12 partiels, 30 à faire (35 hors périmètre).
+**Avancement global : 94,7 %** — 1208 faits, 12 partiels, 29 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 40 | 3 | 22 | 63,8 % |
+| [Évènements et Anciens](#rencontres) | 41 | 3 | 21 | 65,4 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1207** | **12** | **30** | **94,5 %** |
+| **Total** | **1208** | **12** | **29** | **94,7 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 63,8 %
+## Évènements et Anciens — 65,4 %
 
-### Évènements — 58,8 %
+### Évènements — 60,5 %
 
-32 faits, 3 partiels, 22 à faire.
+33 faits, 3 partiels, 21 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1399,7 +1399,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sphère de cristal | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Stèle de la Vérité | Acte 1 (A) | Oui |  |
 | Symbiote | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
-| Tas de déchets | Acte 1 (B) | Non |  |
+| Tas de déchets | Acte 1 (B) | Oui |  |
 | Tisseur zen | Acte 2 | Oui |  |
 | Tombe du guerrier oublié | Acte 3 | Non |  |
 | Tourbillon aquatique | Acte 1 (B) | Non |  |
