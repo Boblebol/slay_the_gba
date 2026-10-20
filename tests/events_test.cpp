@@ -621,12 +621,38 @@ void test_event_effects() {
         const size_t deck = run.master_deck.size();
         EventManager::apply_effect(run, { .type = EventEffectType::ADD_CARD, .amount = 2, .card = CardId::BASH, .upgraded = true });
         assert(run.master_deck.size() == deck + 2 && run.master_deck[deck].id == CardId::BASH && run.master_deck[deck].upgraded);
+        EventManager::apply_effect(run, { .type = EventEffectType::ADD_CARD });
+        assert(run.master_deck.size() == deck + 3 && card_meta(run.master_deck.back().id).pool == CardPool::COLORLESS);
+        run.master_deck.pop_back();
         EventManager::apply_effect(run, { .type = EventEffectType::ADD_CURSE, .card = CardId::INJURY });
         assert(run.master_deck.back().id == CardId::INJURY);
         EventManager::apply_effect(run, { .type = EventEffectType::ADD_CURSE, .amount = 2 });
         assert(run.master_deck.size() == deck + 5);
         assert(card_meta(run.master_deck[deck + 3].id).pool == CardPool::CURSE);
         assert(card_meta(run.master_deck[deck + 4].id).pool == CardPool::CURSE);
+    }
+    // A random Common relic, and an upgraded card sent back to its base version.
+    {
+        RunManager run = fresh_run();
+        const size_t relics = run.relics.size();
+        EventManager::apply_effect(run, { .type = EventEffectType::GAIN_RELIC, .ref = "COMMON" });
+        assert(run.relics.size() == relics + 1);
+        assert(find_relic(run.relics.back())->rarity == RelicRarity::COMMON);
+        EventManager::apply_effect(run, { .type = EventEffectType::DOWNGRADE_CARD }); // nothing upgraded: nothing happens
+        run.master_deck[3].upgraded = true;
+        run.master_deck[5].upgraded = true;
+        EventManager::apply_effect(run, { .type = EventEffectType::DOWNGRADE_CARD });
+        assert(run.master_deck[3].upgraded != run.master_deck[5].upgraded);
+        EventManager::apply_effect(run, { .type = EventEffectType::DOWNGRADE_CARD, .amount = 5 });
+        assert(!run.master_deck[3].upgraded && !run.master_deck[5].upgraded);
+    }
+    // A named card removed: exactly that many copies, no choice asked.
+    {
+        RunManager run = fresh_run();
+        const int defends = count_cards(run, CardId::DEFEND);
+        const size_t deck = run.master_deck.size();
+        EventManager::apply_effect(run, { .type = EventEffectType::REMOVE_CARD, .amount = 2, .card = CardId::DEFEND });
+        assert(count_cards(run, CardId::DEFEND) == defends - 2 && run.master_deck.size() == deck - 2 && !run.has_deck_choice());
     }
     // Chosen by the player: a deck choice of the right kind and size.
     {
@@ -748,6 +774,9 @@ void test_event_pages_and_conditions() {
         assert(!EventManager::meets(run, { .check = EventCheck::HAS_POTION }));
         run.potions.push_back("FIRE_POTION");
         assert(EventManager::meets(run, { .check = EventCheck::HAS_POTION }));
+        const int defends = count_cards(run, CardId::DEFEND);
+        assert(EventManager::meets(run, { .check = EventCheck::HAS_CARD, .amount = static_cast<int16_t>(defends), .card = CardId::DEFEND }));
+        assert(!EventManager::meets(run, { .check = EventCheck::HAS_CARD, .amount = static_cast<int16_t>(defends + 1), .card = CardId::DEFEND }));
     }
     std::cout << "[PASS] Event pages: next page, chained effects, greyed-out options, conditions" << std::endl;
 }
