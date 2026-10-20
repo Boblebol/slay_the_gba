@@ -68,6 +68,7 @@ enum class EventEffectType : uint8_t {
                     // `ref` a hero ("SILENT"...): his cards, "COLORLESS": Colorless cards
     GAIN_RELIC,     // relic `ref`, or one of `relic_pool` not owned, or a random Common one when `ref` is "COMMON", or a random relic (as in a chest) when both empty
     RELIC_REWARD,   // a relic drawn like an elite's, offered on the reward screen once the event is left
+    LOSE_RELIC,     // the last relic obtained, never the first one (the starter relic)
     LOSE_POTION,    // the potion `ref` leaves the belt (the Foul Potion thrown at the Fake Merchant), or `amount` potions (1 when 0)
                     // of the belt drawn at random when `ref` is empty
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
@@ -118,6 +119,7 @@ enum class EventCheck : uint8_t {
     HAS_POTION, // at least one potion on the belt, or the potion `ref` when given
     CAN_ENCHANT, // a card of the deck can be enchanted: of CardType `amount`, or of any type when `amount` is -1
     CAN_SOULS_POWER, // a card of the deck has Exhaust, so it can receive Soul's Power
+    MIN_RELICS, // at least `amount` relics owned
     HAS_CARD    // at least `amount` copies (1 when 0) of `card` in the deck
 };
 

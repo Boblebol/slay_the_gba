@@ -631,6 +631,21 @@ void test_event_effects() {
         assert(card_meta(run.master_deck[deck + 3].id).pool == CardPool::CURSE);
         assert(card_meta(run.master_deck[deck + 4].id).pool == CardPool::CURSE);
     }
+    // A potion lost (one of the belt, at random); a relic lost (the last one, never the starter relic).
+    {
+        RunManager run = fresh_run();
+        EventManager::apply_effect(run, { .type = EventEffectType::LOSE_POTION });
+        run.potions.clear();
+        run.potions.push_back("FIRE_POTION");
+        run.potions.push_back("BLOCK_POTION");
+        EventManager::apply_effect(run, { .type = EventEffectType::LOSE_POTION });
+        assert(run.potions.size() == 1);
+        EventManager::apply_effect(run, { .type = EventEffectType::LOSE_RELIC });
+        assert(run.relics.size() == 1 && run.has_relic("BURNING_BLOOD"));
+        run.add_relic("VAJRA");
+        EventManager::apply_effect(run, { .type = EventEffectType::LOSE_RELIC });
+        assert(run.relics.size() == 1 && !run.has_relic("VAJRA"));
+    }
     // ref "COMMON" adds random Common cards of the hero.
     {
         RunManager run = fresh_run();
@@ -799,6 +814,8 @@ void test_event_pages_and_conditions() {
         EventManager::apply_effect(run, { .type = EventEffectType::ENCHANT_CARD, .enchantment = Enchantment::SWIFT,
                                           .enchant_amount = 2, .only_type = static_cast<int8_t>(CardType::POWER) });
         assert(!run.has_deck_choice()); // no Power to enchant: nothing is asked
+        assert(EventManager::meets(run, { .check = EventCheck::MIN_RELICS, .amount = 1 }));
+        assert(!EventManager::meets(run, { .check = EventCheck::MIN_RELICS, .amount = 2 }));
         const int defends = count_cards(run, CardId::DEFEND);
         assert(EventManager::meets(run, { .check = EventCheck::HAS_CARD, .amount = static_cast<int16_t>(defends), .card = CardId::DEFEND }));
         assert(!EventManager::meets(run, { .check = EventCheck::HAS_CARD, .amount = static_cast<int16_t>(defends + 1), .card = CardId::DEFEND }));

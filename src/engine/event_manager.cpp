@@ -144,6 +144,7 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
                 }
             }
             return false;
+        case EventCheck::MIN_RELICS: return run.relics.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
         case EventCheck::HAS_CARD: {
             int copies = 0;
             for (const DeckCard& card : run.master_deck) copies += card.id == condition.card;
@@ -396,6 +397,9 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             if (!run.relic_reward.empty()) run.phase = RunPhase::REWARD_SCREEN;
             break;
         }
+        case EventEffectType::LOSE_RELIC:
+            if (run.relics.size() > 1) run.relics.erase(run.relics.size() - 1);
+            break;
         case EventEffectType::LOSE_POTION:
             if (!effect.ref.empty()) {
                 // The potion `ref` (the Foul Potion thrown at the Fake Merchant).
