@@ -2850,6 +2850,8 @@ bn::string_view enchantment_name(engine::Enchantment enchantment)
         return "Tranchant";
     case engine::Enchantment::GOOPY:
         return "Viscosité";
+    case engine::Enchantment::CORRUPTED:
+        return "Corruption";
     case engine::Enchantment::VIGOROUS:
         return "Vigoureux";
     case engine::Enchantment::PERFECT_FIT:
@@ -2924,6 +2926,9 @@ void enchantment_text(const engine::DeckCard& card, bn::istring& title, bn::istr
         break;
     case engine::Enchantment::GOOPY:
         stream << "Épuisement. +1 par jeu.";
+        break;
+    case engine::Enchantment::CORRUPTED:
+        stream << "Dégâts +50%. Perd " << int(engine::CORRUPTED_HP_LOSS) << " PV par jeu.";
         break;
     case engine::Enchantment::VIGOROUS:
         stream << "1re fois : +" << amount << " dégâts.";

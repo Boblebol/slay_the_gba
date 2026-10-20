@@ -4120,6 +4120,16 @@ void test_enchantment_damage() {
     CombatEngine plain = make_combat(CharacterId::IRONCLAD);
     play(plain, CardId::STRIKE);
     assert(plain.enemies[0].get_status(StatusType::WEAK) == 0);
+
+    // Corrupted (Corruption, Symbiote): the Attack deals 50% more damage and costs 2 HP each time it is played.
+    CombatEngine corrupted = make_combat(CharacterId::IRONCLAD);
+    corrupted.enemies[0].hp = 200;
+    const int16_t hp_before = corrupted.player.hp;
+    play(corrupted, enchanted(CardId::STRIKE, Enchantment::CORRUPTED));
+    assert(corrupted.enemies[0].hp == 200 - 9 && corrupted.player.hp == hp_before - CORRUPTED_HP_LOSS);
+    play(corrupted, CardId::STRIKE);
+    assert(corrupted.enemies[0].hp == 200 - 9 - 6 && corrupted.player.hp == hp_before - CORRUPTED_HP_LOSS);
+    assert(!can_enchant(DeckCard(CardId::DEFEND), Enchantment::CORRUPTED));
     // Perfect Fit (Ajustement parfait): once the draw pile is shuffled, the card is on top of it (the back).
     CombatEngine fit = make_combat(CharacterId::IRONCLAD);
     while (!fit.hand.empty()) {
@@ -4135,7 +4145,7 @@ void test_enchantment_damage() {
     const size_t top = fit.draw_pile.size();
     assert(fit.draw_pile[top - 1].enchantment == Enchantment::PERFECT_FIT && fit.draw_pile[top - 2].enchantment == Enchantment::PERFECT_FIT);
     assert(fit.draw_pile[top - 3].enchantment == Enchantment::NONE);
-    std::cout << "[PASS] Enchantments on damage: Sharp, Instinct, Tezcatara's Ember, Momentum, Inky" << std::endl;
+    std::cout << "[PASS] Enchantments on damage: Sharp, Instinct, Tezcatara's Ember, Momentum, Inky, Corrupted" << std::endl;
 }
 
 void test_enchantment_block() {

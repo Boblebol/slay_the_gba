@@ -141,7 +141,7 @@ int main() {
     const EventEncounter& ev = run.current_event;
     assert(run.phase == RunPhase::EVENT);
     assert(!ev.title.empty());
-    assert(!ev.choices.empty()); // a single choice when the other is out of reach (Endless Conveyor without gold)
+    assert(!ev.choices.empty()); // the event drawn depends on the seed: some open on a single choice
     char ev_msg[128];
     // The first choice may be unavailable (e.g. it needs a potion): take the first one that resolves.
     bool event_resolved = false;
