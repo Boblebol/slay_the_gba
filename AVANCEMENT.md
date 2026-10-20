@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 96,6 %** — 1224 faits, 12 partiels, 14 à faire (35 hors périmètre).
+**Avancement global : 96,7 %** — 1225 faits, 12 partiels, 13 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 56 | 3 | 6 | 88,5 % |
+| [Évènements et Anciens](#rencontres) | 57 | 3 | 5 | 90,0 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1224** | **12** | **14** | **96,6 %** |
+| **Total** | **1225** | **12** | **13** | **96,7 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 88,5 %
+## Évènements et Anciens — 90,0 %
 
-### Évènements — 86,8 %
+### Évènements — 88,6 %
 
-48 faits, 3 partiels, 6 à faire.
+49 faits, 3 partiels, 5 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1398,7 +1398,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Source mystique | Acte 1 (A) | Oui |  |
 | Sphère de cristal | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Stèle de la Vérité | Acte 1 (A) | Oui |  |
-| Symbiote | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Symbiote | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Tas de déchets | Acte 1 (B) | Oui |  |
 | Tisseur zen | Acte 2 | Oui |  |
 | Tombe du guerrier oublié | Acte 3 | Oui |  |
