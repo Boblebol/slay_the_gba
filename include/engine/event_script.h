@@ -56,7 +56,7 @@ enum class EventEffectType : uint8_t {
     GAIN_MAX_HP,    // amount, the HP rise with it
     LOSE_MAX_HP,    // amount
     ADD_CARD,       // `amount` copies (1 when 0) of `card` (or of a card of `card_pool`; a random Colorless card when both
-                    // are empty), upgraded when `upgraded`
+                    // are empty; `amount` random Common cards of the hero when `ref` is "COMMON"), upgraded when `upgraded`
     ADD_CURSE,      // `amount` copies (1 when 0) of `card`, or of a random curse when `card` is NONE
     ADD_RANDOM_CARD, // a non-Basic card of the hero's pool: a Power (`ref` "POWER") or one costing 0 ("ZERO_COST")
     REMOVE_CARD,    // `amount` cards (1 when 0), chosen by the player or drawn at random (`pick`); with `card`, that many
@@ -65,7 +65,7 @@ enum class EventEffectType : uint8_t {
     TRANSFORM_CARD, // same; the new card is upgraded when `upgraded`
     ENCHANT_CARD,   // same, with `enchantment` of `enchant_amount`
     CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left; `amount` of them in a row;
-                    // `ref` "COLORLESS": Colorless cards
+                    // `ref` a hero ("SILENT"...): his cards, "COLORLESS": Colorless cards
     GAIN_RELIC,     // relic `ref`, or one of `relic_pool` not owned, or a random Common one when `ref` is "COMMON", or a random relic (as in a chest) when both empty
     RELIC_REWARD,   // a relic drawn like an elite's, offered on the reward screen once the event is left
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
@@ -73,6 +73,7 @@ enum class EventEffectType : uint8_t {
                     // for the Punch Off one (2 Punch Constructs, a relic reward), else a normal one
     GOTO_PAGE,      // the event goes on with page `amount`; with `enchant_amount` > 1, one of the `enchant_amount` pages
                     // from `amount` on, drawn at random
+    LOSE_CARD,      // the first copy of `card` leaves the deck (the Lantern Key quest card)
     LOSE_POTION,    // the potion `ref` leaves the belt (the Foul Potion thrown at the Fake Merchant)
     DOWNGRADE_CARD, // `amount` random upgraded cards (1 when 0) go back to their base version
     DUPLICATE_DECK, // every card of the deck is copied once (as far as the deck holds)
@@ -98,6 +99,7 @@ struct EventEffect {
     bool upgraded = false;
     Enchantment enchantment = Enchantment::NONE;
     uint8_t enchant_amount = 0;
+    int8_t only_type = -1; // ENCHANT_CARD: the CardType (cast to int) the chosen cards must have, -1 for any
     std::span<const std::string_view> relic_pool = {}; // GAIN_RELIC: one relic drawn at random among these
     std::span<const CardId> card_pool = {};            // ADD_CARD: one card drawn at random among these
 };
@@ -110,8 +112,9 @@ enum class EventCheck : uint8_t {
     NO_RELIC,   // relic `ref` not owned
     MIN_DECK,   // at least `amount` cards in the deck
     HAS_POTION, // at least one potion on the belt, or the potion `ref` when given
+    CAN_ENCHANT, // a card of the deck can be enchanted: of CardType `amount`, or of any type when `amount` is -1
     CAN_SOULS_POWER, // a card of the deck has Exhaust, so it can receive Soul's Power
-    HAS_CARD    // at least `amount` copies of `card` in the deck
+    HAS_CARD    // at least `amount` copies (1 when 0) of `card` in the deck
 };
 
 struct EventCondition {

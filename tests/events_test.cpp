@@ -631,6 +631,17 @@ void test_event_effects() {
         assert(card_meta(run.master_deck[deck + 3].id).pool == CardPool::CURSE);
         assert(card_meta(run.master_deck[deck + 4].id).pool == CardPool::CURSE);
     }
+    // ref "COMMON" adds random Common cards of the hero.
+    {
+        RunManager run = fresh_run();
+        const size_t deck = run.master_deck.size();
+        EventManager::apply_effect(run, { .type = EventEffectType::ADD_CARD, .amount = 3, .ref = "COMMON" });
+        assert(run.master_deck.size() == deck + 3);
+        for (size_t i = deck; i < deck + 3; ++i) {
+            assert(card_meta(run.master_deck[i].id).rarity == CardRarity::COMMON);
+            assert(card_meta(run.master_deck[i].id).pool == CardPool::IRONCLAD);
+        }
+    }
     // A random Common relic, and an upgraded card sent back to its base version.
     {
         RunManager run = fresh_run();
@@ -774,6 +785,20 @@ void test_event_pages_and_conditions() {
         assert(!EventManager::meets(run, { .check = EventCheck::HAS_POTION }));
         run.potions.push_back("FIRE_POTION");
         assert(EventManager::meets(run, { .check = EventCheck::HAS_POTION }));
+        // CAN_ENCHANT: any card, or a card of one type (the starter deck holds no Power).
+        assert(EventManager::meets(run, { .check = EventCheck::CAN_ENCHANT, .amount = -1 }));
+        assert(EventManager::meets(run, { .check = EventCheck::CAN_ENCHANT, .amount = static_cast<int>(CardType::ATTACK) }));
+        assert(!EventManager::meets(run, { .check = EventCheck::CAN_ENCHANT, .amount = static_cast<int>(CardType::POWER) }));
+        // An ENCHANT_CARD with `only_type` only offers the cards of that type: a Skill choice never allows a Strike.
+        EventManager::apply_effect(run, { .type = EventEffectType::ENCHANT_CARD, .enchantment = Enchantment::NIMBLE,
+                                          .enchant_amount = 2, .only_type = static_cast<int8_t>(CardType::SKILL) });
+        assert(run.deck_choice.kind == DeckChoiceKind::ENCHANT && run.deck_choice.only_type == static_cast<int8_t>(CardType::SKILL));
+        for (size_t i = 0; i < run.master_deck.size(); ++i) {
+            assert(run.deck_choice_allows(static_cast<int>(i)) == (CardDef::get(run.master_deck[i].id).type == CardType::SKILL));
+        }
+        EventManager::apply_effect(run, { .type = EventEffectType::ENCHANT_CARD, .enchantment = Enchantment::SWIFT,
+                                          .enchant_amount = 2, .only_type = static_cast<int8_t>(CardType::POWER) });
+        assert(!run.has_deck_choice()); // no Power to enchant: nothing is asked
         const int defends = count_cards(run, CardId::DEFEND);
         assert(EventManager::meets(run, { .check = EventCheck::HAS_CARD, .amount = static_cast<int16_t>(defends), .card = CardId::DEFEND }));
         assert(!EventManager::meets(run, { .check = EventCheck::HAS_CARD, .amount = static_cast<int16_t>(defends + 1), .card = CardId::DEFEND }));
@@ -835,7 +860,7 @@ void test_event_draw_per_act() {
     run.current_act = 3;
     size_t available = 0;
     for (const EventSlot& slot : EventManager::slots()) {
-        available += slot.def && (slot.def->acts & EVENT_ACT_3) != 0;
+        available += slot.def && (slot.def->acts & EVENT_ACT_3) != 0 && EventManager::meets(run, slot.def->condition);
     }
     assert(available >= 2);
     for (size_t n = 0; n < available; ++n) {
