@@ -69,16 +69,20 @@ enum class EventEffectType : uint8_t {
     GAIN_RELIC,     // relic `ref`, or one of `relic_pool` not owned, or a random Common one when `ref` is "COMMON", or a random relic (as in a chest) when both empty
     RELIC_REWARD,   // a relic drawn like an elite's, offered on the reward screen once the event is left
     LOSE_RELIC,     // the last relic obtained, never the first one (the starter relic)
+    LOSE_POTION,    // the potion `ref` leaves the belt (the Foul Potion thrown at the Fake Merchant), or `amount` potions (1 when 0)
+                    // of the belt drawn at random when `ref` is empty
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
     FIGHT,          // a fight of the act once the event is left: `ref` "ELITE" for an elite one, EVENT_FIGHT_PUNCH_CONSTRUCTS
                     // for the Punch Off one (2 Punch Constructs, a relic reward), else a normal one
+    TRADE_POTION,   // the first potion of the belt for an upgraded card of the same rarity, drawn from the hero's pool
     GOTO_PAGE,      // the event goes on with page `amount`; with `enchant_amount` > 1, one of the `enchant_amount` pages
                     // from `amount` on, drawn at random
-    LOSE_POTION,    // the potion `ref` leaves the belt (the Foul Potion thrown at the Fake Merchant), or the last one when `ref` is empty
+    LOSE_CARD,      // the first copy of `card` leaves the deck (the Lantern Key quest card)
     DOWNGRADE_CARD, // `amount` random upgraded cards (1 when 0) go back to their base version
     DUPLICATE_DECK, // every card of the deck is copied once (as far as the deck holds)
     LEAVE,          // nothing: makes a "leave" option explicit in the data
-    CARD_CHOICE     // `amount` cards of the hero's pool (rare ones included) are shown, the player adds 1 to the deck
+    CARD_CHOICE,    // `amount` cards of the hero's pool (rare ones included) are shown, the player adds 1 to the deck
+    TRADE_RELIC     // a random relic of the run is given up for a random one it did not own
 };
 
 // `ref` of a FIGHT effect: two Punch Constructs instead of the fight of the act, and a relic with the rewards.
@@ -99,6 +103,7 @@ struct EventEffect {
     bool upgraded = false;
     Enchantment enchantment = Enchantment::NONE;
     uint8_t enchant_amount = 0;
+    int8_t only_type = -1; // ENCHANT_CARD: the CardType (cast to int) the chosen cards must have, -1 for any
     std::span<const std::string_view> relic_pool = {}; // GAIN_RELIC: one relic drawn at random among these
     std::span<const CardId> card_pool = {};            // ADD_CARD: one card drawn at random among these
 };
@@ -110,10 +115,12 @@ enum class EventCheck : uint8_t {
     HAS_RELIC,  // relic `ref` owned
     NO_RELIC,   // relic `ref` not owned
     MIN_DECK,   // at least `amount` cards in the deck
+    HAS_ATTACK, // an Attack of the deck that can still be enchanted (ENCHANT_CARD with an Attack-only enchantment)
     HAS_POTION, // at least one potion on the belt, or the potion `ref` when given
+    CAN_ENCHANT, // a card of the deck can be enchanted: of CardType `amount`, or of any type when `amount` is -1
     CAN_SOULS_POWER, // a card of the deck has Exhaust, so it can receive Soul's Power
     MIN_RELICS, // at least `amount` relics owned
-    HAS_CARD    // at least `amount` copies of `card` in the deck
+    HAS_CARD    // at least `amount` copies (1 when 0) of `card` in the deck
 };
 
 struct EventCondition {

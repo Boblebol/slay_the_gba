@@ -708,6 +708,8 @@ enum class Enchantment : uint8_t {
     ROYALLY_APPROVED, // Sceau royal: Innate and Retain
     SHARP,            // Tranchant: the card deals `amount` more damage
     GOOPY,            // Viscosité: Exhaust; once played, the Block it gives is raised by 1 for good (`amount`)
+    VIGOROUS,         // Vigoureux: the first play of the card in a combat deals `amount` more damage
+    PERFECT_FIT,      // Ajustement parfait (Field of Man-Sized Holes): each time the draw pile is shuffled, the card goes on top
     SOULS_POWER,      // Pouvoir de l'âme: the card loses Exhaust (only a card that has it)
     STEADY,           // Stabilité: Retain (Waterlogged Scriptorium)
     COUNT

@@ -2,7 +2,7 @@
 // Ranwid l'Aîné (RANWID_THE_ELDER), tous les actes. Choices: bible/data/event_choices/b.json.
 // The reference lists 5 options, the last two being the locked versions (no potion, no relic) of the 2nd and 3rd:
 // here those are the same options greyed out by their condition. The potion and the relic given are not chosen
-// (no screen for it): they are the last potion of the belt and the last relic obtained (never the starter relic,
+// (no screen for it): they are a potion of the belt drawn at random and the last relic obtained (never the starter relic,
 // so a relic must be owned besides it). The new relic(s) are drawn like a chest's, after the loss.
 #include "engine/event_script.h"
 

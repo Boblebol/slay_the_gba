@@ -171,6 +171,7 @@ items = [
   { name = "Sceau royal", status = "oui", issue = 107 },
   { name = "Tranchant", status = "oui", issue = 107 },
   { name = "Viscosité", status = "oui", issue = 107 },
+  { name = "Vigoureux", status = "oui", issue = 107 },
 ]
 
 # ---------------------------------------------------------------------------------------------------------
