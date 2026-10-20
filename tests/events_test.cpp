@@ -631,6 +631,21 @@ void test_event_effects() {
         assert(card_meta(run.master_deck[deck + 3].id).pool == CardPool::CURSE);
         assert(card_meta(run.master_deck[deck + 4].id).pool == CardPool::CURSE);
     }
+    // A random Common relic, and an upgraded card sent back to its base version.
+    {
+        RunManager run = fresh_run();
+        const size_t relics = run.relics.size();
+        EventManager::apply_effect(run, { .type = EventEffectType::GAIN_RELIC, .ref = "COMMON" });
+        assert(run.relics.size() == relics + 1);
+        assert(find_relic(run.relics.back())->rarity == RelicRarity::COMMON);
+        EventManager::apply_effect(run, { .type = EventEffectType::DOWNGRADE_CARD }); // nothing upgraded: nothing happens
+        run.master_deck[3].upgraded = true;
+        run.master_deck[5].upgraded = true;
+        EventManager::apply_effect(run, { .type = EventEffectType::DOWNGRADE_CARD });
+        assert(run.master_deck[3].upgraded != run.master_deck[5].upgraded);
+        EventManager::apply_effect(run, { .type = EventEffectType::DOWNGRADE_CARD, .amount = 5 });
+        assert(!run.master_deck[3].upgraded && !run.master_deck[5].upgraded);
+    }
     // A named card removed: exactly that many copies, no choice asked.
     {
         RunManager run = fresh_run();
