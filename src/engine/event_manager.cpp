@@ -313,6 +313,11 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
                 if (!left.empty()) run.add_relic(left[run.next_random() % left.size()]);
             } else if (effect.ref.empty()) {
                 run.gain_random_relics(1);
+            } else if (effect.ref == "COMMON") {
+                RewardRng rng(run.next_random());
+                const std::string_view id = draw_relic(rng, run.character, RelicSource::COMMON,
+                                                       std::span<const std::string_view>(run.relics.begin(), run.relics.size()));
+                if (!id.empty()) run.add_relic(id);
             } else if (is_relic_list(effect.ref)) {
                 const std::string_view relic = listed_relic(effect.ref, run.next_random());
                 if (!run.has_relic(relic)) run.add_relic(relic);
