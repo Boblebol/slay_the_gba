@@ -2850,6 +2850,8 @@ bn::string_view enchantment_name(engine::Enchantment enchantment)
         return "Tranchant";
     case engine::Enchantment::GOOPY:
         return "Viscosité";
+    case engine::Enchantment::SOULS_POWER:
+        return "Pouvoir de l'âme";
     case engine::Enchantment::STEADY:
         return "Stabilité";
     default:
@@ -2918,6 +2920,9 @@ void enchantment_text(const engine::DeckCard& card, bn::istring& title, bn::istr
         break;
     case engine::Enchantment::GOOPY:
         stream << "Épuisement. +1 par jeu.";
+        break;
+    case engine::Enchantment::SOULS_POWER:
+        stream << "Perd Épuisement.";
         break;
     case engine::Enchantment::STEADY:
         stream << "Retenue.";

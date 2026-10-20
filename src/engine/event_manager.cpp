@@ -92,7 +92,16 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::HAS_RELIC: return run.has_relic(condition.ref);
         case EventCheck::NO_RELIC: return !run.has_relic(condition.ref);
         case EventCheck::MIN_DECK: return run.master_deck.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
-        case EventCheck::HAS_POTION: return !run.potions.empty();
+        case EventCheck::CAN_SOULS_POWER:
+            for (const DeckCard& card : run.master_deck) {
+                if (can_enchant(card, Enchantment::SOULS_POWER)) return true;
+            }
+            return false;
+        case EventCheck::HAS_POTION:
+            for (std::string_view potion : run.potions) {
+                if (condition.ref.empty() || potion == condition.ref) return true;
+            }
+            return false;
         case EventCheck::HAS_CARD: {
             int copies = 0;
             for (const DeckCard& card : run.master_deck) copies += card.id == condition.card;
@@ -157,6 +166,7 @@ bool EventManager::choose(RunManager& run, int index, char* out_msg, size_t max_
     for (const EventEffect& effect : option.effects) {
         if (effect.type == EventEffectType::GOTO_PAGE) {
             next_page = effect.amount;
+            if (effect.enchant_amount > 1) next_page += static_cast<int>(run.next_random() % effect.enchant_amount);
             continue;
         }
         apply_effect(run, effect);
@@ -192,6 +202,15 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             break;
         case EventEffectType::ADD_CARD:
             for (int n = 0; n < count_of(effect); ++n) {
+                if (effect.ref == "COMMON") { // a random Common card of the hero
+                    FixedVector<CardId, 128> commons;
+                    for (CardId id : RunManager::card_reward_pool(run.character)) {
+                        if (card_meta(id).rarity == CardRarity::COMMON) commons.push_back(id);
+                    }
+                    if (commons.empty()) break;
+                    run.add_card_to_deck(DeckCard{ commons[run.next_random() % commons.size()], effect.upgraded });
+                    continue;
+                }
                 CardId added = effect.card_pool.empty() ? effect.card
                                                         : effect.card_pool[run.next_random() % effect.card_pool.size()];
                 if (added == CardId::NONE) {
@@ -281,6 +300,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.relic_reward = {};
             RewardRng rng(run.next_random());
             run.draw_card_rewards(false, rng);
+            run.extra_card_rewards = static_cast<uint8_t>(run.extra_card_rewards + count_of(effect) - 1);
             if (effect.ref == "COLORLESS") {
                 // The reward just drawn is replaced by Colorless cards (never a Status, a Curse nor a Quest card).
                 FixedVector<CardId, 128> pool;
@@ -309,6 +329,11 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
                 if (!left.empty()) run.add_relic(left[run.next_random() % left.size()]);
             } else if (effect.ref.empty()) {
                 run.gain_random_relics(1);
+            } else if (effect.ref == "COMMON") {
+                RewardRng rng(run.next_random());
+                const std::string_view id = draw_relic(rng, run.character, RelicSource::COMMON,
+                                                       std::span<const std::string_view>(run.relics.begin(), run.relics.size()));
+                if (!id.empty()) run.add_relic(id);
             } else if (is_relic_list(effect.ref)) {
                 const std::string_view relic = listed_relic(effect.ref, run.next_random());
                 if (!run.has_relic(relic)) run.add_relic(relic);
@@ -354,6 +379,13 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             }
             break;
         }
+        case EventEffectType::LOSE_POTION:
+            for (size_t i = 0; i < run.potions.size(); ++i) {
+                if (run.potions[i] != effect.ref) continue;
+                run.potions.erase(i);
+                break;
+            }
+            break;
         case EventEffectType::DOWNGRADE_CARD:
             for (int n = 0; n < count_of(effect); ++n) {
                 FixedVector<int, 50> candidates;
