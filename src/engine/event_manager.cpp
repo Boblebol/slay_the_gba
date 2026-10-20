@@ -121,6 +121,11 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::HAS_RELIC: return run.has_relic(condition.ref);
         case EventCheck::NO_RELIC: return !run.has_relic(condition.ref);
         case EventCheck::MIN_DECK: return run.master_deck.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
+        case EventCheck::HAS_ATTACK:
+            for (const DeckCard& card : run.master_deck) {
+                if (can_enchant(card, Enchantment::SHARP)) return true;
+            }
+            return false;
         case EventCheck::CAN_SOULS_POWER:
             for (const DeckCard& card : run.master_deck) {
                 if (can_enchant(card, Enchantment::SOULS_POWER)) return true;
@@ -131,10 +136,18 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
                 if (condition.ref.empty() || potion == condition.ref) return true;
             }
             return false;
+        case EventCheck::CAN_ENCHANT:
+            for (const DeckCard& card : run.master_deck) {
+                if (can_enchant(card, Enchantment::SWIFT) &&
+                    (condition.amount < 0 || static_cast<int>(CardDef::get(card.id).type) == condition.amount)) {
+                    return true;
+                }
+            }
+            return false;
         case EventCheck::HAS_CARD: {
             int copies = 0;
             for (const DeckCard& card : run.master_deck) copies += card.id == condition.card;
-            return copies >= condition.amount;
+            return copies >= std::max<int>(1, condition.amount);
         }
         case EventCheck::NONE:
         default: return true;
@@ -296,7 +309,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             const DeckChoiceKind kind = choice_kind(effect.type);
             if (effect.pick == EventPick::CHOOSE) {
                 run.request_deck_choice(kind, count_of(effect), false, effect.upgraded, CardId::NONE, effect.enchantment,
-                                        effect.enchant_amount);
+                                        effect.enchant_amount, effect.only_type);
                 break;
             }
             if (kind == DeckChoiceKind::UPGRADE) {
@@ -308,6 +321,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.deck_choice = {};
             run.deck_choice.kind = kind;
             run.deck_choice.enchantment = effect.enchantment;
+            run.deck_choice.only_type = effect.only_type;
             for (int n = 0; n < count_of(effect); ++n) {
                 FixedVector<int, 50> candidates;
                 for (size_t i = 0; i < run.master_deck.size(); ++i) {
@@ -382,6 +396,18 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             if (!run.relic_reward.empty()) run.phase = RunPhase::REWARD_SCREEN;
             break;
         }
+        case EventEffectType::LOSE_POTION:
+            if (!effect.ref.empty()) {
+                // The potion `ref` (the Foul Potion thrown at the Fake Merchant).
+                for (size_t i = 0; i < run.potions.size(); ++i) {
+                    if (run.potions[i] != effect.ref) continue;
+                    run.potions.erase(i);
+                    break;
+                }
+                break;
+            }
+            for (int n = 0; n < count_of(effect) && !run.potions.empty(); ++n) run.potions.erase(run.next_random() % run.potions.size());
+            break;
         case EventEffectType::GAIN_POTION:
             if (effect.ref.empty()) {
                 run.gain_random_potions(count_of(effect));
@@ -396,10 +422,25 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
         case EventEffectType::TRADE_POTION:
             trade_first_potion(run, run.next_random());
             break;
-        case EventEffectType::LOSE_POTION:
-            for (size_t i = 0; i < run.potions.size(); ++i) {
-                if (run.potions[i] != effect.ref) continue;
-                run.potions.erase(i);
+        case EventEffectType::TRADE_RELIC: {
+            // The new relic is drawn first (it is never one already owned), then the relic given up leaves the run.
+            if (run.relics.empty()) break;
+            const size_t given = run.next_random() % run.relics.size();
+            const std::string_view lost = run.relics[given];
+            if (run.gain_random_relics(1) == 1) {
+                for (size_t i = 0; i < run.relics.size(); ++i) {
+                    if (run.relics[i] == lost) {
+                        run.relics.erase(i);
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+        case EventEffectType::LOSE_CARD:
+            for (size_t i = 0; i < run.master_deck.size(); ++i) {
+                if (run.master_deck[i].id != effect.card) continue;
+                run.master_deck.erase(i); // quest cards may be Eternal: not through remove_card_from_deck
                 break;
             }
             break;

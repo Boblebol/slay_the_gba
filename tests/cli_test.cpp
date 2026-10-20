@@ -913,6 +913,7 @@ int main() {
     // Test Event Manager: Encounters, Choices & Outcomes
     RunManager ev_run;
     ev_run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 42);
+    ev_run.potions.push_back("FIRE_POTION"); // some events (The Future of Potions) need a potion for choice 0
     ev_run.trigger_event();
     const EventEncounter& enc = ev_run.current_event;
     assert(ev_run.phase == RunPhase::EVENT);

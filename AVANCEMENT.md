@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 95,6 %** — 1215 faits, 12 partiels, 22 à faire (35 hors périmètre).
+**Avancement global : 96,2 %** — 1221 faits, 12 partiels, 17 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 48 | 3 | 14 | 76,2 % |
-| [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
+| [Évènements et Anciens](#rencontres) | 53 | 3 | 9 | 83,8 % |
+| [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1215** | **12** | **22** | **95,6 %** |
+| **Total** | **1221** | **12** | **17** | **96,2 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 76,2 %
+## Évènements et Anciens — 83,8 %
 
-### Évènements — 72,8 %
+### Évènements — 81,6 %
 
-40 faits, 3 partiels, 14 à faire.
+45 faits, 3 partiels, 9 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1361,11 +1361,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Bosquet des Morphiques | Acte 1 (A) | Oui |  |
 | Bricolage | Acte 3 | Non |  |
 | Ceci ou Cela ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
-| Champ de trous à taille corporelle | Acte 2 | Non |  |
+| Champ de trous à taille corporelle | Acte 2 | Oui |  |
 | Chœur lumineux | Acte 1 (A) | Oui |  |
 | Convoyeur sans fin | Acte 1 (B) | Oui |  |
 | Coursier de potions | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
-| Développement personnel | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Développement personnel | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Esprit greffeur | Acte 2 | Oui |  |
 | Feu follet égaré | Acte 2 | Non |  |
 | Fleur colossale | Acte 2 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
@@ -1383,13 +1383,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Maître de thé | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Nid d’oizodon | Acte 1 (A) | Oui |  |
 | Phare englouti | Acte 1 (B) | Oui |  |
-| Philosophes multicolores | Acte 2 | Non |  |
-| Pierre de tous les temps | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Philosophes multicolores | Acte 2 | Oui |  |
+| Pierre de tous les temps | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Pont glissant | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Portes de l’ombre et de la lumière | Acte 1 (B) | Oui |  |
 | Ranwid l’Aîné | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Reflets stelfeR | Acte 3 | Oui |  |
-| Répi, historien de la guerre | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Répi, historien de la guerre | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Salle aux poupées | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Salle du Fromage | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Sangsue cérébrale | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
@@ -1500,7 +1500,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 ### Enchantements — 100,0 %
 
-13 faits, 0 partiel, 0 à faire.
+14 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1517,6 +1517,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Sceau royal |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
 | Tranchant |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
 | Viscosité |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
+| Vigoureux |  | Oui | [#107](https://github.com/Boblebol/slay_the_gba/issues/107) |
 
 <a id="systemes"></a>
 
