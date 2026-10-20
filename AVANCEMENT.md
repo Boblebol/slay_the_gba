@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 95,8 %** — 1217 faits, 12 partiels, 20 à faire (35 hors périmètre).
+**Avancement global : 95,9 %** — 1218 faits, 12 partiels, 19 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 50 | 3 | 12 | 79,2 % |
+| [Évènements et Anciens](#rencontres) | 51 | 3 | 11 | 80,8 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1217** | **12** | **20** | **95,8 %** |
+| **Total** | **1218** | **12** | **19** | **95,9 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 79,2 %
+## Évènements et Anciens — 80,8 %
 
-### Évènements — 76,3 %
+### Évènements — 78,1 %
 
-42 faits, 3 partiels, 12 à faire.
+43 faits, 3 partiels, 11 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1389,7 +1389,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Portes de l’ombre et de la lumière | Acte 1 (B) | Oui |  |
 | Ranwid l’Aîné | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Reflets stelfeR | Acte 3 | Oui |  |
-| Répi, historien de la guerre | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
+| Répi, historien de la guerre | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Salle aux poupées | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Salle du Fromage | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Sangsue cérébrale | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
