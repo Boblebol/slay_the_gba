@@ -143,7 +143,12 @@ int main() {
     assert(!ev.title.empty());
     assert(!ev.choices.empty()); // a single choice when the other is out of reach (Endless Conveyor without gold)
     char ev_msg[128];
-    assert(run.choose_event_choice(0, ev_msg, sizeof(ev_msg)));
+    // The first choice may be unavailable (e.g. it needs a potion): take the first one that resolves.
+    bool event_resolved = false;
+    for (size_t i = 0; i < ev.choices.size() && !event_resolved; ++i) {
+        event_resolved = run.choose_event_choice(static_cast<int>(i), ev_msg, sizeof(ev_msg));
+    }
+    assert(event_resolved);
     assert(ev_msg[0] != '\0');
     std::cout << "[E2E Step 10b] Encountered Pokémon-style Mystery Event '" << ev.title << "' -> Choice resolved: " << ev_msg << "\n";
 

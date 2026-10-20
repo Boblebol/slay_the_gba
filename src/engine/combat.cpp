@@ -184,6 +184,15 @@ void CombatEngine::shuffle_draw_pile() {
         draw_pile[i] = draw_pile[j];
         draw_pile[j] = temp;
     }
+    // Perfect Fit: the cards that hold it end up on top of the draw pile (its back).
+    FixedVector<DeckCard, 50> fitted;
+    for (size_t i = draw_pile.size(); i-- > 0;) {
+        if (draw_pile[i].enchantment == Enchantment::PERFECT_FIT) {
+            fitted.push_back(draw_pile[i]);
+            draw_pile.erase(i);
+        }
+    }
+    for (const DeckCard& card : fitted) draw_pile.push_back(card);
 }
 
 void CombatEngine::add_power(PowerId id, int16_t amount, bool turn_only, int8_t target) {
@@ -2509,6 +2518,8 @@ void CombatEngine::run_card(DeckCard& card, int target_index, bool random_target
         inky_now = outer_inky;
         // Momentum: each play adds to the card's damage for the rest of the combat.
         if (card.enchantment == Enchantment::MOMENTUM) card.enchant_combat = bump(card.enchant_combat, card.enchant_amount);
+        // Vigorous: only the first play of the combat gets the damage.
+        if (card.enchantment == Enchantment::VIGOROUS) card.enchant_combat = 1;
         // Goopy: each play adds 1 to the card's Block, in the deck too.
         if (card.enchantment == Enchantment::GOOPY) {
             card.enchant_amount = bump(card.enchant_amount);
@@ -2593,6 +2604,9 @@ void CombatEngine::set_enchant_modifiers(const DeckCard& card) {
             break;
         case Enchantment::MOMENTUM:
             enchant_damage_now = card.enchant_combat;
+            break;
+        case Enchantment::VIGOROUS:
+            enchant_damage_now = card.enchant_combat == 0 ? card.enchant_amount : 0;
             break;
         case Enchantment::INSTINCT:
             enchant_double_now = true;
