@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 94,3 %** — 1205 faits, 12 partiels, 32 à faire (35 hors périmètre).
+**Avancement global : 94,4 %** — 1206 faits, 12 partiels, 31 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
-| [Évènements et Anciens](#rencontres) | 38 | 3 | 24 | 60,8 % |
+| [Évènements et Anciens](#rencontres) | 39 | 3 | 23 | 62,3 % |
 | [Règles de combat](#regles) | 62 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 21 | 4 | 6 | 74,2 % |
-| **Total** | **1205** | **12** | **32** | **94,3 %** |
+| **Total** | **1206** | **12** | **31** | **94,4 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 60,8 %
+## Évènements et Anciens — 62,3 %
 
-### Évènements — 55,3 %
+### Évènements — 57,0 %
 
-30 faits, 3 partiels, 24 à faire.
+31 faits, 3 partiels, 23 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1363,7 +1363,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Ceci ou Cela ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Champ de trous à taille corporelle | Acte 2 | Non |  |
 | Chœur lumineux | Acte 1 (A) | Oui |  |
-| Convoyeur sans fin | Acte 1 (B) | Non |  |
+| Convoyeur sans fin | Acte 1 (B) | Oui |  |
 | Coursier de potions | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Développement personnel | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Non |  |
 | Esprit greffeur | Acte 2 | Oui |  |
