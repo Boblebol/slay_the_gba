@@ -98,6 +98,7 @@ struct EventEffect {
     bool upgraded = false;
     Enchantment enchantment = Enchantment::NONE;
     uint8_t enchant_amount = 0;
+    int8_t only_type = -1; // ENCHANT_CARD: the CardType (cast to int) the chosen cards must have, -1 for any
     std::span<const std::string_view> relic_pool = {}; // GAIN_RELIC: one relic drawn at random among these
     std::span<const CardId> card_pool = {};            // ADD_CARD: one card drawn at random among these
 };
@@ -110,6 +111,7 @@ enum class EventCheck : uint8_t {
     NO_RELIC,   // relic `ref` not owned
     MIN_DECK,   // at least `amount` cards in the deck
     HAS_POTION, // at least one potion on the belt, or the potion `ref` when given
+    CAN_ENCHANT, // a card of the deck can be enchanted: of CardType `amount`, or of any type when `amount` is -1
     CAN_SOULS_POWER, // a card of the deck has Exhaust, so it can receive Soul's Power
     HAS_CARD    // at least `amount` copies of `card` in the deck
 };

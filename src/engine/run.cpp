@@ -1706,12 +1706,13 @@ void RunManager::add_potion_slots(int count) {
 }
 
 void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool optional, bool upgrade_result, CardId transform_into,
-                                    Enchantment enchantment, uint8_t enchant_amount) {
+                                    Enchantment enchantment, uint8_t enchant_amount, int8_t only_type) {
     deck_choice = {};
     if (kind == DeckChoiceKind::NONE || count <= 0) return;
     deck_choice.kind = kind;
     deck_choice.enchantment = enchantment;
     deck_choice.enchant_amount = enchant_amount;
+    deck_choice.only_type = only_type;
     int candidates = 0;
     const size_t choices = kind == DeckChoiceKind::ADD ? deck_choice_offers.size() : master_deck.size();
     for (size_t i = 0; i < choices; ++i) {
@@ -1744,6 +1745,7 @@ bool RunManager::deck_choice_allows(int deck_index) const {
         case DeckChoiceKind::REMOVE:
         case DeckChoiceKind::TRANSFORM: return !CardDef::is_eternal(master_deck[deck_index]);
         case DeckChoiceKind::ENCHANT:
+            if (deck_choice.only_type >= 0 && static_cast<int>(CardDef::get(master_deck[deck_index].id).type) != deck_choice.only_type) return false;
             // Imbued is only ever offered on a Skill (Electric Shrymp).
             if (deck_choice.enchantment == Enchantment::IMBUED && CardDef::get(master_deck[deck_index].id).type != CardType::SKILL) return false;
             // Royally Approved (Royal Stamp) is only ever offered on an Attack or a Skill.
@@ -1786,7 +1788,7 @@ bool RunManager::resolve_deck_choice(int deck_index) {
     // The cards left may not allow as many picks as asked (deck emptied, everything upgraded).
     DeckChoice next = deck_choice;
     request_deck_choice(next.kind, next.remaining - 1, next.optional, next.upgrade_result, next.transform_into,
-                      next.enchantment, next.enchant_amount);
+                      next.enchantment, next.enchant_amount, next.only_type);
     finish_preserved_fog();
     finish_cook();
     return true;
