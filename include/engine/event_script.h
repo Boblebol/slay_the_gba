@@ -58,19 +58,23 @@ enum class EventEffectType : uint8_t {
     ADD_CARD,       // `amount` copies (1 when 0) of `card` (or of a card of `card_pool`; a random Colorless card when both
                     // are empty), upgraded when `upgraded`
     ADD_CURSE,      // `amount` copies (1 when 0) of `card`, or of a random curse when `card` is NONE
+    ADD_RANDOM_CARD, // a non-Basic card of the hero's pool: a Power (`ref` "POWER") or one costing 0 ("ZERO_COST")
     REMOVE_CARD,    // `amount` cards (1 when 0), chosen by the player or drawn at random (`pick`); with `card`, that many
                     // copies of exactly that card (Amalgamator: 2 Defends), no choice
     UPGRADE_CARD,   // same
     TRANSFORM_CARD, // same; the new card is upgraded when `upgraded`
     ENCHANT_CARD,   // same, with `enchantment` of `enchant_amount`
-    CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left; `ref` "COLORLESS": Colorless cards
-    GAIN_RELIC,     // relic `ref`, or one of `relic_pool` not owned, or a random relic (as in a chest) when both empty
+    CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left; `amount` of them in a row;
+                    // `ref` "COLORLESS": Colorless cards
+    GAIN_RELIC,     // relic `ref`, or one of `relic_pool` not owned, or a random Common one when `ref` is "COMMON", or a random relic (as in a chest) when both empty
     RELIC_REWARD,   // a relic drawn like an elite's, offered on the reward screen once the event is left
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
     FIGHT,          // a fight of the act once the event is left: `ref` "ELITE" for an elite one, EVENT_FIGHT_PUNCH_CONSTRUCTS
                     // for the Punch Off one (2 Punch Constructs, a relic reward), else a normal one
-    GOTO_PAGE,      // the event goes on with page `amount`
+    GOTO_PAGE,      // the event goes on with page `amount`; with `enchant_amount` > 1, one of the `enchant_amount` pages
+                    // from `amount` on, drawn at random
     LOSE_CARD,      // the first copy of `card` leaves the deck (the Lantern Key quest card)
+    LOSE_POTION,    // the potion `ref` leaves the belt (the Foul Potion thrown at the Fake Merchant)
     DOWNGRADE_CARD, // `amount` random upgraded cards (1 when 0) go back to their base version
     DUPLICATE_DECK, // every card of the deck is copied once (as far as the deck holds)
     LEAVE,          // nothing: makes a "leave" option explicit in the data
@@ -106,7 +110,7 @@ enum class EventCheck : uint8_t {
     HAS_RELIC,  // relic `ref` owned
     NO_RELIC,   // relic `ref` not owned
     MIN_DECK,   // at least `amount` cards in the deck
-    HAS_POTION, // at least one potion on the belt
+    HAS_POTION, // at least one potion on the belt, or the potion `ref` when given
     HAS_CARD    // at least `amount` copies (1 when 0) of `card` in the deck
 };
 
