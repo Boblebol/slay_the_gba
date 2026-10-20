@@ -73,6 +73,7 @@ enum class EventEffectType : uint8_t {
     GAIN_POTION,    // potion `ref`, or `amount` random potions (1 when 0) when `ref` is empty
     FIGHT,          // a fight of the act once the event is left: `ref` "ELITE" for an elite one, EVENT_FIGHT_PUNCH_CONSTRUCTS
                     // for the Punch Off one (2 Punch Constructs, a relic reward), else a normal one
+    TRADE_POTION,   // the first potion of the belt for an upgraded card of the same rarity, drawn from the hero's pool
     GOTO_PAGE,      // the event goes on with page `amount`; with `enchant_amount` > 1, one of the `enchant_amount` pages
                     // from `amount` on, drawn at random
     LOSE_CARD,      // the first copy of `card` leaves the deck (the Lantern Key quest card)
