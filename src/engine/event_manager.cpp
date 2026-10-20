@@ -34,6 +34,29 @@ int count_of(const EventEffect& effect) {
     return effect.amount > 0 ? effect.amount : 1;
 }
 
+// GAIN_RELIC with a list "A,B,C" in `ref`: the one drawn by `random`.
+std::string_view listed_relic(std::string_view list, uint32_t random) {
+    size_t count = 1;
+    for (char c : list) count += c == ',';
+    const size_t wanted = random % count;
+    size_t start = 0;
+    size_t seen = 0;
+    for (size_t i = 0; i <= list.size(); ++i) {
+        if (i == list.size() || list[i] == ',') {
+            if (seen++ == wanted) return std::string_view(list.data() + start, i - start);
+            start = i + 1;
+        }
+    }
+    return list;
+}
+
+bool is_relic_list(std::string_view ref) {
+    for (char c : ref) {
+        if (c == ',') return true;
+    }
+    return false;
+}
+
 DeckChoiceKind choice_kind(EventEffectType type) {
     switch (type) {
         case EventEffectType::REMOVE_CARD: return DeckChoiceKind::REMOVE;
@@ -71,6 +94,11 @@ bool EventManager::meets(const RunManager& run, const EventCondition& condition)
         case EventCheck::MIN_DECK: return run.master_deck.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
         case EventCheck::HAS_POTION: return !run.potions.empty();
         case EventCheck::MIN_RELICS: return run.relics.size() >= static_cast<size_t>(std::max<int16_t>(0, condition.amount));
+        case EventCheck::HAS_CARD: {
+            int copies = 0;
+            for (const DeckCard& card : run.master_deck) copies += card.id == condition.card;
+            return copies >= condition.amount;
+        }
         case EventCheck::NONE:
         default: return true;
     }
@@ -164,7 +192,19 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.lose_max_hp(effect.amount);
             break;
         case EventEffectType::ADD_CARD:
-            for (int n = 0; n < count_of(effect); ++n) run.add_card_to_deck(DeckCard{ effect.card, effect.upgraded });
+            for (int n = 0; n < count_of(effect); ++n) {
+                CardId added = effect.card_pool.empty() ? effect.card
+                                                        : effect.card_pool[run.next_random() % effect.card_pool.size()];
+                if (added == CardId::NONE) {
+                    FixedVector<CardId, 64> colorless;
+                    for (uint16_t id = 0; id < static_cast<uint16_t>(CardId::COUNT); ++id) {
+                        if (card_meta(static_cast<CardId>(id)).pool == CardPool::COLORLESS) colorless.push_back(static_cast<CardId>(id));
+                    }
+                    if (colorless.empty()) break;
+                    added = colorless[run.next_random() % colorless.size()];
+                }
+                run.add_card_to_deck(DeckCard{ added, effect.upgraded });
+            }
             break;
         case EventEffectType::ADD_CURSE:
             for (int n = 0; n < count_of(effect); ++n) {
@@ -181,6 +221,15 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             }
             break;
         case EventEffectType::REMOVE_CARD:
+            if (effect.card != CardId::NONE) {
+                for (int n = 0; n < count_of(effect); ++n) {
+                    for (size_t i = 0; i < run.master_deck.size(); ++i) {
+                        if (run.master_deck[i].id == effect.card && run.remove_card_from_deck(static_cast<int>(i))) break;
+                    }
+                }
+                break;
+            }
+            [[fallthrough]];
         case EventEffectType::UPGRADE_CARD:
         case EventEffectType::TRANSFORM_CARD:
         case EventEffectType::ENCHANT_CARD: {
@@ -220,12 +269,37 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             run.relic_reward = {};
             RewardRng rng(run.next_random());
             run.draw_card_rewards(false, rng);
+            if (effect.ref == "COLORLESS") {
+                // The reward just drawn is replaced by Colorless cards (never a Status, a Curse nor a Quest card).
+                FixedVector<CardId, 128> pool;
+                for (uint16_t raw = 0; raw < static_cast<uint16_t>(CardId::COUNT); ++raw) {
+                    const CardId id = static_cast<CardId>(raw);
+                    const CardType type = CardDef::get(id).type;
+                    if (card_meta(id).pool != CardPool::COLORLESS || card_meta(id).rarity == CardRarity::BASIC) continue;
+                    if (type != CardType::STATUS && type != CardType::CURSE && type != CardType::QUEST) pool.push_back(id);
+                }
+                run.current_card_rewards.clear();
+                while (run.current_card_rewards.size() < 3 && !pool.empty()) {
+                    const size_t pick = run.next_random() % pool.size();
+                    run.current_card_rewards.push_back(DeckCard(pool[pick], run.card_rewards_upgraded));
+                    pool.erase(pick);
+                }
+            }
             run.phase = RunPhase::REWARD_SCREEN;
             break;
         }
         case EventEffectType::GAIN_RELIC:
-            if (effect.ref.empty()) {
+            if (!effect.relic_pool.empty()) {
+                FixedVector<std::string_view, 16> left; // the relics of the pool not owned yet
+                for (const std::string_view relic : effect.relic_pool) {
+                    if (!run.has_relic(relic)) left.push_back(relic);
+                }
+                if (!left.empty()) run.add_relic(left[run.next_random() % left.size()]);
+            } else if (effect.ref.empty()) {
                 run.gain_random_relics(1);
+            } else if (is_relic_list(effect.ref)) {
+                const std::string_view relic = listed_relic(effect.ref, run.next_random());
+                if (!run.has_relic(relic)) run.add_relic(relic);
             } else if (!run.has_relic(effect.ref)) {
                 run.add_relic(effect.ref);
             }
@@ -256,8 +330,41 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             }
             break;
         case EventEffectType::FIGHT:
+            run.event_fight_ref = effect.ref == EVENT_FIGHT_PUNCH_CONSTRUCTS ? effect.ref : std::string_view{};
             run.begin_fight(effect.ref == "ELITE" ? RoomType::ELITE : RoomType::MONSTER);
             break;
+        case EventEffectType::DOWNGRADE_CARD:
+            for (int n = 0; n < count_of(effect); ++n) {
+                FixedVector<int, 50> candidates;
+                for (size_t i = 0; i < run.master_deck.size(); ++i) {
+                    if (run.master_deck[i].upgraded) candidates.push_back(static_cast<int>(i));
+                }
+                if (candidates.empty()) break;
+                run.master_deck[candidates[run.next_random() % candidates.size()]].upgraded = false;
+            }
+            break;
+        case EventEffectType::DUPLICATE_DECK: {
+            const size_t size = run.master_deck.size();
+            for (size_t i = 0; i < size; ++i) {
+                if (!run.add_card_to_deck(run.master_deck[i])) break;
+            }
+            break;
+        }
+        case EventEffectType::CARD_CHOICE: {
+            // Cards of the hero's pool, distinct and never a basic one; the player adds one of them (Sea Glass choice).
+            FixedVector<CardId, 512> pool;
+            for (CardId id : RunManager::card_reward_pool(run.character)) {
+                if (card_meta(id).rarity != CardRarity::BASIC) pool.push_back(id);
+            }
+            run.deck_choice_offers.clear();
+            while (static_cast<int>(run.deck_choice_offers.size()) < count_of(effect) && !pool.empty()) {
+                const size_t pick = run.next_random() % pool.size();
+                run.deck_choice_offers.push_back(DeckCard(pool[pick]));
+                pool.erase(pick);
+            }
+            run.request_deck_choice(DeckChoiceKind::ADD, 1);
+            break;
+        }
         case EventEffectType::GOTO_PAGE:
         case EventEffectType::LEAVE:
         default:
