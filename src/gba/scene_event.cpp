@@ -7,6 +7,7 @@
 
 #include "gba/assets.h"
 #include "gba/audio.h"
+#include "gba/dialogue_box.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
 #include "gba/text.h"
@@ -24,86 +25,8 @@ constexpr int TEXT_LEFT = -112;
 constexpr int TEXT_WIDTH = 224;
 constexpr int MAX_LINES = 5;
 
-// Reveals wrapped text one character at a time, Pokemon dialogue style.
-class Typewriter
-{
-public:
-    void start(const bn::string_view& text)
-    {
-        wrap_text(text, TEXT_WIDTH, _lines);
-        _labels.clear();
-
-        for(int index = 0; index < _lines.size(); ++index)
-        {
-            _labels.emplace_back();
-        }
-
-        _line = 0;
-        _bytes = 0;
-        _tick = 0;
-    }
-
-    void clear()
-    {
-        _lines.clear();
-        _labels.clear();
-    }
-
-    [[nodiscard]] bool done() const
-    {
-        return _line >= _lines.size();
-    }
-
-    void finish()
-    {
-        for(int index = _line; index < _lines.size(); ++index)
-        {
-            _labels[index].set(TEXT_LEFT, PANEL_TOP + index * LINE_HEIGHT, _lines[index], Align::LEFT);
-        }
-
-        _line = _lines.size();
-    }
-
-    void update()
-    {
-        if(done())
-        {
-            return;
-        }
-
-        if(++_tick < 2)
-        {
-            return;
-        }
-
-        _tick = 0;
-        const TextLine& line = _lines[_line];
-
-        // Advance by one UTF-8 character.
-        ++_bytes;
-
-        while(_bytes < line.size() && (static_cast<unsigned char>(line[_bytes]) & 0xC0) == 0x80)
-        {
-            ++_bytes;
-        }
-
-        _labels[_line].set(TEXT_LEFT, PANEL_TOP + _line * LINE_HEIGHT, bn::string_view(line.data(), _bytes),
-                           Align::LEFT);
-
-        if(_bytes >= line.size())
-        {
-            ++_line;
-            _bytes = 0;
-        }
-    }
-
-private:
-    bn::vector<TextLine, MAX_LINES> _lines;
-    bn::vector<Label, MAX_LINES> _labels;
-    int _line = 0;
-    int _bytes = 0;
-    int _tick = 0;
-};
+constexpr DialogueStyle PANEL_STYLE = { TEXT_LEFT, PANEL_TOP, LINE_HEIGHT, TEXT_WIDTH, MAX_LINES, Align::LEFT,
+                                        TextColor::WHITE };
 
 class EventScene final : public Scene
 {
@@ -131,6 +54,11 @@ public:
                 if(! _writer.done())
                 {
                     _writer.finish();
+                }
+                else if(_writer.has_next_page())
+                {
+                    play_sfx(Sfx::UI_CURSOR);
+                    _writer.next_page();
                 }
                 else
                 {
@@ -167,11 +95,11 @@ public:
             }
             else if(bn::keypad::a_pressed())
             {
-                char message[96] = {};
+                char message[256] = {};
                 _ctx.run.choose_event_choice(_cursor, message, sizeof(message));
                 _choices.clear();
                 _detail.clear();
-                _writer.start(bn::string_view(message));
+                _writer.start(bn::string_view(message), PANEL_STYLE);
                 _stage = Stage::RESULT;
                 _spawn_outcome_popups();
             }
@@ -189,6 +117,11 @@ public:
                 if(! _writer.done())
                 {
                     _writer.finish();
+                }
+                else if(_writer.has_next_page())
+                {
+                    play_sfx(Sfx::UI_CURSOR);
+                    _writer.next_page();
                 }
                 else
                 {
@@ -212,10 +145,10 @@ private:
     GameContext& _ctx;
     const engine::EventEncounter& _event;
     bn::regular_bg_ptr _bg;
-    Typewriter _writer;
+    DialogueBox _writer;
     Label _title;
     Label _prompt;
-    Label _detail;
+    bn::vector<Label, 2> _detail;
     bn::vector<Label, engine::MAX_EVENT_OPTIONS> _choices;
     PopupPool _popups;
     Stage _stage = Stage::DIALOGUE;
@@ -227,7 +160,7 @@ private:
     // Shows the page of the event the run is on: its text, then its options.
     void _open_page()
     {
-        _writer.start(bn::string_view(_event.dialogue.data(), _event.dialogue.size()));
+        _writer.start(bn::string_view(_event.dialogue.data(), _event.dialogue.size()), PANEL_STYLE);
         _stage = Stage::DIALOGUE;
         _cursor = 0;
         _hp_before = _ctx.run.hp;
@@ -284,10 +217,15 @@ private:
         }
 
         const engine::EventChoice& selected = _event.choices[_cursor];
-        bn::vector<TextLine, 1> lines;
+        // The preview of the consequences may need two lines.
+        bn::vector<TextLine, 2> lines;
         wrap_text(bn::string_view(selected.cost_benefit.data(), selected.cost_benefit.size()), TEXT_WIDTH, lines);
-        _detail.set(TEXT_LEFT, 64, lines.empty() ? bn::string_view() : bn::string_view(lines[0]), Align::LEFT,
-                    TextColor::BLUE);
+        _detail.clear();
+
+        for(int index = 0; index < lines.size(); ++index)
+        {
+            _detail.emplace_back().set(TEXT_LEFT, 60 + index * LINE_HEIGHT, lines[index], Align::LEFT, TextColor::BLUE);
+        }
     }
 
     void _choices_bob()

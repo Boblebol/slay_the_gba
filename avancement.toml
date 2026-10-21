@@ -277,7 +277,7 @@ items = [
   { name = "Victoire", status = "oui", issue = 12 },
   { name = "Indicateurs de vie, d'armure et de progression", status = "oui", issue = 20 },
   { name = "Transitions entre les scènes", status = "partiel", issue = 18 },
-  { name = "Système de dialogue et d'évènements textuels", status = "partiel", issue = 19 },
+  { name = "Système de dialogue et d'évènements textuels", status = "oui", issue = 19, note = "Texte typewriter avec petit bip, accents, retour à la ligne et pages au-delà de 5 lignes ; aperçu des conséquences sous chaque choix." },
   { name = "Options (volume, commandes)", status = "oui" },
   { name = "Menu pause en combat et sur la carte", status = "oui", issue = 10 },
   { name = "Menu principal interactif", status = "oui", issue = 9, note = "Haut/Bas pour naviguer, A pour valider : Continuer (si une partie est sauvegardée), Nouvelle partie, Compendium, Statistiques ; SELECT ouvre les options depuis l'écran titre, les crédits suivent la victoire." },

@@ -13,6 +13,7 @@
 
 #include "gba/assets.h"
 #include "gba/audio.h"
+#include "gba/dialogue_box.h"
 #include "gba/fx.h"
 #include "gba/layers.h"
 #include "gba/text.h"
@@ -76,6 +77,7 @@ public:
         ++_timer;
         _popups.update();
         _portrait.set_y(PORTRAIT_Y + wave(_timer, 120, 2));
+        _speech.update();
 
         if(_leave_timer > 0)
         {
@@ -96,10 +98,15 @@ public:
 
         if(_greeting)
         {
-            if(bn::keypad::a_pressed())
+            if(bn::keypad::a_pressed() && ! _speech.done())
+            {
+                _speech.finish();
+            }
+            else if(bn::keypad::a_pressed())
             {
                 play_sfx(Sfx::UI_CONFIRM);
                 _greeting = false;
+                _speech.clear();
                 _refresh();
             }
 
@@ -162,6 +169,7 @@ private:
     Label _kind;
     bn::vector<Label, MAX_ROWS> _rows;
     bn::vector<Label, PANEL_LINES> _desc;
+    DialogueBox _speech; // Neow's greeting, typed letter by letter
     PopupPool _popups;
     int _timer = 0;
     int _cursor = 0;
@@ -179,15 +187,8 @@ private:
         {
             _prompt.clear();
             _kind.clear();
-            bn::vector<TextLine, PANEL_LINES> lines;
-            wrap_text(NEOW_GREETING, PANEL_TEXT_WIDTH, lines);
-
-            for(int index = 0; index < lines.size(); ++index)
-            {
-                _desc.emplace_back().set(0, PANEL_TEXT_Y + index * PANEL_LINE_HEIGHT, lines[index], Align::CENTER,
-                                         TextColor::WHITE);
-            }
-
+            _speech.start(NEOW_GREETING, DialogueStyle{ 0, PANEL_TEXT_Y, PANEL_LINE_HEIGHT, PANEL_TEXT_WIDTH,
+                                                        PANEL_LINES, Align::CENTER, TextColor::WHITE });
             _hint.set(0, 68, "A Continuer", Align::CENTER, TextColor::GRAY);
             return;
         }
