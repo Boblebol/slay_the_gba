@@ -365,6 +365,7 @@ private:
     bn::optional<bn::sprite_ptr> _player_block_icon;
 
     Label _energy_label;
+    Label _progress_label;
     Label _resource_label;
     Label _pile_label;
     Label _discard_label;
@@ -518,6 +519,14 @@ CombatScene::CombatScene(GameContext& context) :
 
     _player_bar.set(_combat.player.hp, _combat.player.max_hp);
     _player_bar.snap();
+
+    // Progress in the Spire, top left corner: left of the enemies' intents (PILE_RIGHT) and above the pile counters.
+    {
+        TextLine progress;
+        bn::ostringstream stream(progress);
+        stream << "Acte " << int(_ctx.run.current_act) << " - Étage " << int(_ctx.run.current_floor) << "/16";
+        _progress_label.set(-116, -75, progress, Align::LEFT, TextColor::GRAY);
+    }
 
     _build_enemies();
     engine::discover_enemies(engine::SaveManager::instance().get_active_profile(), _combat);
