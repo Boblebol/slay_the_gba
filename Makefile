@@ -38,6 +38,13 @@ else
     USERCXXFLAGS += -DHERO_IRONCLAD
 endif
 
+# Version tag shown on the title screen (#3): the VERSION file, written by the release workflow. Passed as a bare
+# token (0.98.6) that the scene stringifies, so that no quote has to survive the sub-makes.
+# Exported: the sub-make that builds the ROM runs from the build folder, where VERSION is not found.
+GAME_VERSION ?= $(strip $(shell cat $(abspath $(dir $(firstword $(MAKEFILE_LIST))))/VERSION 2>/dev/null))
+export GAME_VERSION
+USERCXXFLAGS += -DSLAY_VERSION=$(GAME_VERSION)
+
 BUILD           := build_$(TARGET)
 LIBBUTANO       := butano/butano
 PYTHON          := python3
