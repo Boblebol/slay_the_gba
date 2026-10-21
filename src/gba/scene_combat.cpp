@@ -17,6 +17,7 @@
 #include "bn_sprite_items_fx_slash.h"
 
 #include "engine/compendium.h"
+#include "engine/hero_pose.h"
 #include "engine/options.h"
 #include "engine/potion.h"
 #include "engine/save_system.h"
@@ -399,6 +400,7 @@ private:
     int _player_lunge = 0;
     int _player_guard = 0;
     int _player_death = 0;
+    engine::HeroPose _player_pose = engine::HeroPose::IDLE;
     int _banner_timer = 0;
     int _banner_y = -48;
     bool _victory = false;
@@ -3016,6 +3018,14 @@ void CombatScene::_update_player()
     bn::fixed_point shake = _shake.offset();
     bn::fixed x = PLAYER_X + shake.x();
     bn::fixed y = PLAYER_Y + shake.y() + wave(_ctx.frame, 64, 1);
+
+    engine::HeroPose pose = engine::hero_pose(_player_lunge, _player_hurt, _player_death);
+
+    if(pose != _player_pose)
+    {
+        _player_pose = pose;
+        _player.set_tiles(hero_battler().tiles_item(), int(pose));
+    }
 
     if(_player_lunge > 0)
     {

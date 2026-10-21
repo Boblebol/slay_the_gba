@@ -297,7 +297,7 @@ items = [
   { name = "Effets sonores", status = "oui", issue = 14 },
   { name = "Sept musiques en boucle", status = "oui", issue = 15 },
   { name = "Logo et identité graphique", status = "non", issue = 8 },
-  { name = "Poses des héros tirées des artworks sources (attaque, blessure)", status = "non", issue = 2 },
+  { name = "Poses des héros tirées des artworks sources (attaque, blessure)", status = "oui", issue = 2, note = "Repos, attaque et blessure de chaque héros ; poses procédurales, le dépôt n'a pas d'artwork en pied." },
   { name = "Animations des ennemis et des boss", status = "partiel", issue = 17, note = "Flottement au repos et fondu de mort ; pas d'animation d'attaque." },
 ]
 

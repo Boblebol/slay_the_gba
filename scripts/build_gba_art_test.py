@@ -208,6 +208,43 @@ def test_a_mini_card_sheet_is_one_palette_with_white_and_two_frames_per_card(her
     assert build_gba_art.SHEET_WHITE in [tuple(palette[i:i + 3]) for i in range(0, 48, 3)]
 
 
+# --- Hero poses -------------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("hero", HEROES)
+def test_a_hero_sheet_is_one_palette_with_an_idle_an_attack_and_a_hurt_pose(hero: str) -> None:
+    with Image.open(build_gba_art.OUT / f"hero_{hero}.bmp") as bmp:
+        assert bmp.size == (64, 64 * len(build_gba_art.HERO_POSES))
+        sheet = np.asarray(bmp)
+        palette = bmp.getpalette()[:48]
+    assert build_gba_art.HERO_POSES == ("idle", "attack", "hurt")  # frame order of include/engine/hero_pose.h
+    assert int(sheet.max()) <= 15
+    colors = [tuple(palette[i:i + 3]) for i in range(0, 48, 3)]
+    for accent in (build_gba_art.FX_WHITE, *build_gba_art.HERO_FX[hero]):
+        assert build_gba_art.to_gba(accent) in colors
+    idle, attack, hurt = (sheet[i * 64:(i + 1) * 64] for i in range(3))
+    assert (idle != attack).sum() > 100 and (idle != hurt).sum() > 100
+
+
+def test_a_hero_sheet_rebuilds_to_the_committed_one(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    for hero in HEROES:
+        (tmp_path / f"player_{hero}.bmp").write_bytes((build_gba_art.OUT / f"player_{hero}.bmp").read_bytes())
+    monkeypatch.setattr(build_gba_art, "OUT", tmp_path)
+    build_gba_art.build_heroes()
+    for hero in HEROES:
+        with Image.open(tmp_path / f"hero_{hero}.bmp") as built, \
+                Image.open(build_gba_art.ROOT / "graphics" / f"hero_{hero}.bmp") as committed:
+            assert np.array_equal(np.asarray(built), np.asarray(committed)), hero
+
+
+def test_lean_keeps_the_feet_and_moves_the_head() -> None:
+    body = np.zeros((8, 8), dtype=np.uint8)
+    body[2:8, 3] = 5
+    leaned = build_gba_art.lean(body, 2)
+    assert leaned[7, 3] == 5 and leaned[2, 5] == 5 and leaned[2, 3] == 0
+    assert build_gba_art.lean(body, 0, drop=1)[3, 3] == 5
+
+
 # --- Frames -----------------------------------------------------------------------------------
 
 

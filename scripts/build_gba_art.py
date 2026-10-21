@@ -2041,33 +2041,170 @@ def build_font() -> None:
     FONT_HEADER.write_text("\n".join(lines))
 
 
+# Battle poses of a hero sprite sheet, in frame order (include/engine/hero_pose.h follows it).
+HERO_POSES = ("idle", "attack", "hurt")
+HERO_OUTLINE = (12, 8, 16)
+FX_WHITE = (248, 248, 248)
+# The two accent colours of each hero's attack effect; with white they keep their own palette slots.
+HERO_FX = {
+    "ironclad": ((248, 160, 64), (200, 48, 40)),     # orange sword trail, red edge
+    "silent": ((200, 208, 224), (120, 232, 96)),     # dagger steel, poison
+    "defect": ((64, 208, 240), (40, 96, 192)),       # cyan beam, blue glow
+    "regent": ((248, 224, 96), (216, 136, 40)),      # gold star, amber
+    "necrobinder": ((176, 96, 240), (64, 208, 240)),  # violet soul, cyan core
+}
+ATTACK_LEAN = 5    # pixels the top of the body moves towards the enemies while striking
+HURT_LEAN = -6     # ... and away from them when hit
+DEFECT_DROP = 4    # the Defect sits lower so that its orb slots fit above its head
+DEFECT_SLOTS = ((21, 7), (32, 3), (43, 7))  # centres of the three empty orb slots
+
+
+def lean(body: np.ndarray, amount: int, drop: int = 0) -> np.ndarray:
+    """Shear an indexed sprite: its bottom row stays, its top row moves `amount` pixels (and `drop` down)."""
+    rows = np.nonzero(body.any(axis=1))[0]
+    out = np.zeros_like(body)
+    if len(rows) == 0:
+        return out
+    top, bottom = int(rows[0]), int(rows[-1])
+    for y in range(top, bottom + 1):
+        dx = round(amount * (bottom - y) / max(1, bottom - top))
+        ty = y + drop
+        if not 0 <= ty < body.shape[0]:
+            continue
+        row = body[y]
+        if dx > 0:
+            out[ty, dx:] = row[:-dx]
+        elif dx < 0:
+            out[ty, :dx] = row[-dx:]
+        else:
+            out[ty] = row
+    return out
+
+
+def rim_and_outline(rgb: np.ndarray, opaque: np.ndarray) -> np.ndarray:
+    """RGBA of a body: rim light on its top-left edges and a one pixel dark outline around it."""
+    h, w = opaque.shape
+    img = np.zeros((h, w, 4), dtype=np.uint8)
+    img[..., :3] = rgb
+    img[..., 3] = np.where(opaque, 255, 0)
+    edge = opaque & ~np.roll(opaque, 1, axis=0) | opaque & ~np.roll(opaque, 1, axis=1)
+    lit = np.clip(rgb.astype(np.int32) + 60, 0, 255).astype(np.uint8)
+    img[edge, :3] = lit[edge]
+    grown = opaque.copy()
+    grown[1:, :] |= opaque[:-1, :]
+    grown[:-1, :] |= opaque[1:, :]
+    grown[:, 1:] |= opaque[:, :-1]
+    grown[:, :-1] |= opaque[:, 1:]
+    ring = grown & ~opaque
+    img[ring, :3] = HERO_OUTLINE
+    img[ring, 3] = 255
+    return img
+
+
+def ring(fx: np.ndarray, cx: float, cy: float, r0: float, r1: float, value: int,
+         a0: float = -180, a1: float = 180) -> None:
+    """Paint `value` on the pixels of `fx` between radii r0 and r1 and angles a0..a1 (degrees, y down)."""
+    h, w = fx.shape
+    ys, xs = np.mgrid[0:h, 0:w]
+    dx, dy = xs + 0.5 - cx, ys + 0.5 - cy
+    r = np.hypot(dx, dy)
+    angle = np.degrees(np.arctan2(dy, dx))
+    fx[(r >= r0) & (r <= r1) & (angle >= a0) & (angle <= a1)] = value
+
+
+def spark(fx: np.ndarray, cx: int, cy: int, size: int, value: int, core: int | None = None) -> None:
+    """Four-pointed star: a plus of arms `size` long, with a 3x3 core."""
+    h, w = fx.shape
+    for d in range(-size, size + 1):
+        for x, y in ((cx + d, cy), (cx, cy + d)):
+            if 0 <= x < w and 0 <= y < h:
+                fx[y, x] = value
+    fx[max(0, cy - 1):cy + 2, max(0, cx - 1):cx + 2] = value
+    if core is not None:
+        fx[cy, cx] = core
+
+
+def attack_fx(hero: str, fx: np.ndarray) -> None:
+    """The hero's attack effect, in front of the leaning body (1 = white, 2 and 3 = the hero's accents)."""
+    if hero == "ironclad":       # sword slash: a crescent trail on the enemy side
+        ring(fx, 36, 34, 19, 24, 2, -75, 75)
+        ring(fx, 36, 34, 21, 23, 1, -60, 60)
+        ring(fx, 36, 34, 24, 25, 3, -45, 45)
+    elif hero == "silent":       # thrown dagger dripping poison
+        fx[29:33, 46:62] = 2
+        fx[30:32, 47:63] = 1
+        fx[26:36, 44:46] = 3
+        for x, y in ((49, 34), (53, 36), (56, 34), (50, 38)):
+            fx[y:y + 2, x] = 3
+    elif hero == "defect":       # beam shot from the chest core
+        fx[36:41, 42:64] = 3
+        fx[37:40, 42:64] = 2
+        fx[38, 44:64] = 1
+        ring(fx, 42, 38.5, 0, 4.5, 2)
+        ring(fx, 42, 38.5, 0, 2.5, 1)
+    elif hero == "regent":       # a falling star hurled forwards
+        spark(fx, 53, 24, 8, 3)
+        spark(fx, 53, 24, 5, 2, 1)
+        fx[23:26, 52:55] = 1
+        spark(fx, 44, 12, 2, 2, 1)
+        spark(fx, 58, 36, 2, 2, 1)
+    elif hero == "necrobinder":  # soul wisp flying from the staff
+        for i, (x, y, r) in enumerate(((49, 12, 3), (54, 17, 4.5), (59, 23, 5.5))):
+            ring(fx, x, y, 0, r, 2)
+            ring(fx, x, y, 0, r - 2, 3 if i == 2 else 1)
+
+
+def hurt_fx(fx: np.ndarray) -> None:
+    """White impact spark where the blow lands, with two recoil streaks."""
+    spark(fx, 55, 24, 5, 1)
+    fx[17, 57:63] = 1
+    fx[31, 57:63] = 1
+
+
+def hero_frames(hero: str, body: np.ndarray, rgb_of: np.ndarray) -> tuple[list[np.ndarray], list[np.ndarray]]:
+    """RGBA body layer and effect layer (0 = none, 1-3 = effect colours) of each pose of HERO_POSES."""
+    drop = DEFECT_DROP if hero == "defect" else 0
+    poses = {"idle": lean(body, 0, drop), "attack": lean(body, ATTACK_LEAN, drop), "hurt": lean(body, HURT_LEAN, drop + 1)}
+    bodies, effects = [], []
+    for pose in HERO_POSES:
+        indices = poses[pose]
+        rgba = rim_and_outline(rgb_of[indices], indices != 0)
+        fx = np.zeros(indices.shape, dtype=np.uint8)
+        if hero == "defect":  # empty orb slots float above the head
+            for x, y in DEFECT_SLOTS:
+                ring(fx, x, y, 1.5, 2.6, 3)
+        if pose == "attack":
+            attack_fx(hero, fx)
+        elif pose == "hurt":
+            hurt_fx(fx)
+        bodies.append(rgba)
+        effects.append(fx)
+    return bodies, effects
+
+
 def build_heroes() -> None:
-    """Outlined, rim-lit copies of the hand-made hero sprites so they pop against painted backdrops."""
+    """Battle sprite sheet of each hero: idle, attack and hurt poses drawn from its hand-made sprite.
+
+    The bible has no full-body hero artwork (only 85x85 pool icons and the key art), so the poses are made
+    procedurally from player_<hero>.bmp: the body leans, and each hero gets its own attack effect.
+    The three frames share one 16-colour palette: 12 body colours, white and the hero's two accents."""
     for hero in HEROES:
         src = Image.open(OUT / f"player_{hero}.bmp")
-        idx = np.array(src)
-        rgb = np.array(src.convert("RGB"))
-        opaque = idx != 0  # index 0 is the magenta transparent colour in these sprites
-        img = np.zeros((64, 64, 4), dtype=np.uint8)
-        img[..., :3] = rgb
-        img[..., 3] = np.where(opaque, 255, 0)
-
-        # Rim light on the top-left edges of the silhouette.
-        edge = opaque & ~np.roll(opaque, 1, axis=0) | opaque & ~np.roll(opaque, 1, axis=1)
-        lit = np.clip(rgb.astype(np.int32) + 60, 0, 255).astype(np.uint8)
-        img[edge, :3] = lit[edge]
-
-        # One pixel dark outline around the silhouette.
-        grown = opaque.copy()
-        grown[1:, :] |= opaque[:-1, :]
-        grown[:-1, :] |= opaque[1:, :]
-        grown[:, 1:] |= opaque[:, :-1]
-        grown[:, :-1] |= opaque[:, 1:]
-        ring = grown & ~opaque
-        img[ring] = (12, 8, 16, 255)
-
-        indices, palette = rgba_to_sprite(Image.fromarray(img, "RGBA"), 15)
-        save_sprite(f"hero_{hero}", [indices], palette, 64)
+        body = np.array(src)  # index 0 is the magenta transparent colour in these sprites
+        flat = src.getpalette()
+        rgb_of = np.array([flat[i * 3:i * 3 + 3] for i in range(256)], dtype=np.uint8)
+        bodies, effects = hero_frames(hero, body, rgb_of)
+        fx_colors = [FX_WHITE, *HERO_FX[hero]]
+        opaque = np.concatenate([b[..., :3][b[..., 3] > 0] for b in bodies])
+        base = quantize_opaque(opaque, 15 - len(fx_colors))
+        palette = base + fx_colors
+        frames = []
+        for rgba, fx in zip(bodies, effects):
+            indices = nearest_indices(rgba[..., :3], base) + 1
+            indices[rgba[..., 3] == 0] = 0
+            indices[fx > 0] = len(base) + fx[fx > 0]
+            frames.append(indices)
+        save_sprite(f"hero_{hero}", frames, [TRANSPARENT] + palette, 64)
 
 
 def main() -> None:
