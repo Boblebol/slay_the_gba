@@ -17,6 +17,7 @@
 #include "bn_sprite_items_fx_slash.h"
 
 #include "engine/compendium.h"
+#include "engine/hero_animation.h"
 #include "engine/options.h"
 #include "engine/potion.h"
 #include "engine/save_system.h"
@@ -394,10 +395,8 @@ private:
     bool _vakuu_announced = false;
     int _selected = 0;
     int _target = 0;
-    int _player_hurt = 0;
-    int _player_lunge = 0;
-    int _player_guard = 0;
-    int _player_death = 0;
+    engine::HeroAnimation _hero_anim;
+    engine::HeroPose _hero_pose = engine::HeroPose::IDLE;
     int _banner_timer = 0;
     int _banner_y = -48;
     bool _victory = false;
@@ -585,9 +584,9 @@ void CombatScene::_apply_player_tint()
     bn::sprite_palette_ptr palette = _player.palette();
     bn::fixed intensity = palette_variant_intensity(_ctx.palette);
 
-    if(_player_hurt > 0)
+    if(_hero_anim.hurt > 0)
     {
-        palette.set_fade(bn::color(31, 4, 4), bn::fixed(_player_hurt) / 20);
+        palette.set_fade(bn::color(31, 4, 4), bn::fixed(_hero_anim.hurt) / engine::HERO_HURT_FRAMES);
     }
     else if(intensity > 0)
     {
@@ -1528,7 +1527,7 @@ void CombatScene::_resolve_diffs(bool attack_card)
 
     if(gained_block > 0)
     {
-        _player_guard = 14;
+        _hero_anim.guard = engine::HERO_GUARD_FRAMES;
 
         if(max_lost_hp < 0)
         {
@@ -2010,7 +2009,7 @@ void CombatScene::_drink_potion(int index, int target)
     else if(_combat.state == engine::CombatState::DEFEAT)
     {
         // A card played by the potion cost the player's last HP.
-        _player_death = DEATH_FRAMES;
+        _hero_anim.death = DEATH_FRAMES;
         _victory = false;
         _phase = Phase::END_BANNER;
         _timer = 0;
@@ -2358,7 +2357,7 @@ void CombatScene::_resolve_choice()
     }
     else if(_combat.state == engine::CombatState::DEFEAT)
     {
-        _player_death = DEATH_FRAMES;
+        _hero_anim.death = DEATH_FRAMES;
         _victory = false;
         _phase = Phase::END_BANNER;
         _timer = 0;
@@ -2448,7 +2447,7 @@ void CombatScene::_update_card_flight()
 
     if(attack && _timer == FLIGHT_GROW + FLIGHT_HOLD)
     {
-        _player_lunge = 16;
+        _hero_anim.attack = engine::HERO_ATTACK_FRAMES;
     }
 
     if(_timer == FLIGHT_IMPACT)
@@ -2523,7 +2522,7 @@ void CombatScene::_update_card_flight()
         else if(_combat.state == engine::CombatState::DEFEAT)
         {
             // A card that costs HP killed its player.
-            _player_death = DEATH_FRAMES;
+            _hero_anim.death = DEATH_FRAMES;
             _victory = false;
             _phase = Phase::END_BANNER;
         }
@@ -2628,7 +2627,7 @@ void CombatScene::_update_enemy_turn()
             {
                 stream << '-' << record.damage_to_player;
                 _popups.spawn(PLAYER_X + 8, PLAYER_Y - 10, text, TextColor::RED);
-                _player_hurt = 20;
+                _hero_anim.hurt = engine::HERO_HURT_FRAMES;
                 play_sfx(record.damage_to_player >= 10 ? Sfx::HIT_HEAVY : Sfx::HIT_SLASH);
                 _shake.start(12, record.damage_to_player >= 10 ? 5 : 3);
                 _fx.spawn(bn::sprite_items::fx_slash, PLAYER_X, PLAYER_Y, 0, 4, 2, true);
@@ -2775,7 +2774,7 @@ void CombatScene::_update_enemy_turn()
 
             if(record.player_hp_after <= 0)
             {
-                _player_death = DEATH_FRAMES;
+                _hero_anim.death = DEATH_FRAMES;
                 _phase = Phase::END_BANNER;
                 _victory = false;
                 _timer = 0;
@@ -2823,7 +2822,7 @@ void CombatScene::_update_enemy_turn()
 
         if(_combat.state == engine::CombatState::DEFEAT)
         {
-            _player_death = DEATH_FRAMES;
+            _hero_anim.death = DEATH_FRAMES;
             _victory = false;
             _phase = Phase::END_BANNER;
             _timer = 0;
@@ -3008,34 +3007,31 @@ void CombatScene::_update_player()
     bn::fixed x = PLAYER_X + shake.x();
     bn::fixed y = PLAYER_Y + shake.y() + wave(_ctx.frame, 64, 1);
 
-    if(_player_lunge > 0)
+    engine::HeroFrame pose = engine::hero_frame(engine::hero_attack_style(current_hero()), _hero_anim, _ctx.frame);
+    x += pose.dx;
+    y += pose.dy;
+
+    if(pose.pose != _hero_pose)
     {
-        bn::fixed t = bn::fixed(16 - _player_lunge) / 16;
-        bn::fixed reach = t < bn::fixed(0.4) ? ease_out(t / bn::fixed(0.4)) : 1 - ease_in_out((t - bn::fixed(0.4)) / bn::fixed(0.6));
-        x += reach * 30;
-        --_player_lunge;
+        // One pose in video memory at a time: the tiles of the previous one are released.
+        _hero_pose = pose.pose;
+        _player.set_tiles(hero_battler().tiles_item(), int(pose.pose));
     }
 
-    if(_player_guard > 0)
+    if(_hero_anim.death > 0)
     {
-        x -= _player_guard > 7 ? 3 : 1;
-        --_player_guard;
-    }
-
-    if(_player_hurt > 0)
-    {
-        x -= (_player_hurt % 4 < 2 ? 3 : 0) + _player_hurt / 5;
-        --_player_hurt;
-        _apply_player_tint();
-    }
-
-    if(_player_death > 0)
-    {
-        bn::fixed t = 1 - bn::fixed(_player_death) / DEATH_FRAMES;
+        bn::fixed t = 1 - bn::fixed(_hero_anim.death) / DEATH_FRAMES;
         _player.set_blending_enabled(true);
         bn::blending::set_transparency_alpha(1 - t * bn::fixed(0.8));
         y += t * 12;
-        --_player_death;
+    }
+
+    bool hurt = _hero_anim.hurt > 0;
+    engine::advance(_hero_anim);
+
+    if(hurt)
+    {
+        _apply_player_tint(); // the red flash fades with the countdown, and is gone when it ends
     }
 
     if(_phase != Phase::INTRO)

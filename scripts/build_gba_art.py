@@ -2041,32 +2041,90 @@ def build_font() -> None:
     FONT_HEADER.write_text("\n".join(lines))
 
 
+# Frames of graphics/hero_<hero>.bmp, top to bottom: same order as engine::HeroPose (include/engine/hero_animation.h).
+HERO_POSES = ("idle", "breath", "attack", "hurt", "guard")
+
+
+def shear_rows(idx: np.ndarray, lean: int) -> np.ndarray:
+    """Slide each row sideways, the top of the silhouette by `lean` pixels and the feet not at all."""
+    rows = np.nonzero((idx != 0).any(axis=1))[0]
+    top, bottom = int(rows[0]), int(rows[-1])
+    out = np.zeros_like(idx)
+    for y in range(top, bottom + 1):
+        dx = round(lean * (bottom - y) / max(1, bottom - top))
+        out[y] = np.roll(idx[y], dx)
+        if dx > 0:
+            out[y, :dx] = 0
+        elif dx < 0:
+            out[y, dx:] = 0
+    return out
+
+
+def hero_pose(idx: np.ndarray, pose: str) -> np.ndarray:
+    """One pose of a hero, drawn from its standing sprite (palette indices, 0 = transparent).
+
+    The feet stay on the same row in every pose so that the hero does not hop when the frame changes.
+    """
+    rows = np.nonzero((idx != 0).any(axis=1))[0]
+    top, bottom = int(rows[0]), int(rows[-1])
+    height = bottom - top + 1
+    if pose == "idle":
+        return idx.copy()
+    if pose == "breath":
+        # Breathing out: head and shoulders sink by one pixel, the legs do not move.
+        split = top + height * 3 // 5
+        out = idx.copy()
+        out[top + 1 : split + 1] = idx[top:split]
+        out[top] = 0
+        return out
+    if pose == "attack":
+        # Leaning into the blow, towards the enemies on the right.
+        return shear_rows(idx, 5)
+    if pose == "hurt":
+        # Thrown back by the hit.
+        return shear_rows(idx, -4)
+    if pose == "guard":
+        # Crouched behind the block: a tenth shorter and slightly drawn back.
+        crouched = max(1, height * 9 // 10)
+        out = np.zeros_like(idx)
+        for row in range(crouched):
+            out[bottom - row] = idx[bottom - row * height // crouched]
+        return shear_rows(out, -2)
+    raise ValueError(f"unknown hero pose {pose}")
+
+
+def outlined_hero(idx: np.ndarray, rgb_palette: np.ndarray) -> np.ndarray:
+    """RGBA image of a pose with a rim light on its top-left edges and a one pixel dark outline."""
+    rgb = rgb_palette[idx]
+    opaque = idx != 0  # index 0 is the magenta transparent colour in these sprites
+    img = np.zeros((*idx.shape, 4), dtype=np.uint8)
+    img[..., :3] = rgb
+    img[..., 3] = np.where(opaque, 255, 0)
+
+    edge = opaque & ~np.roll(opaque, 1, axis=0) | opaque & ~np.roll(opaque, 1, axis=1)
+    lit = np.clip(rgb.astype(np.int32) + 60, 0, 255).astype(np.uint8)
+    img[edge, :3] = lit[edge]
+
+    grown = opaque.copy()
+    grown[1:, :] |= opaque[:-1, :]
+    grown[:-1, :] |= opaque[1:, :]
+    grown[:, 1:] |= opaque[:, :-1]
+    grown[:, :-1] |= opaque[:, 1:]
+    ring = grown & ~opaque
+    img[ring] = (12, 8, 16, 255)
+    return img
+
+
 def build_heroes() -> None:
-    """Outlined, rim-lit copies of the hand-made hero sprites so they pop against painted backdrops."""
+    """Outlined, rim-lit copies of the hand-made hero sprites so they pop against painted backdrops, one frame
+    per pose (HERO_POSES). Only the shown frame is in video memory: the combat scene swaps the tiles."""
     for hero in HEROES:
         src = Image.open(OUT / f"player_{hero}.bmp")
         idx = np.array(src)
-        rgb = np.array(src.convert("RGB"))
-        opaque = idx != 0  # index 0 is the magenta transparent colour in these sprites
-        img = np.zeros((64, 64, 4), dtype=np.uint8)
-        img[..., :3] = rgb
-        img[..., 3] = np.where(opaque, 255, 0)
-
-        # Rim light on the top-left edges of the silhouette.
-        edge = opaque & ~np.roll(opaque, 1, axis=0) | opaque & ~np.roll(opaque, 1, axis=1)
-        lit = np.clip(rgb.astype(np.int32) + 60, 0, 255).astype(np.uint8)
-        img[edge, :3] = lit[edge]
-
-        # One pixel dark outline around the silhouette.
-        grown = opaque.copy()
-        grown[1:, :] |= opaque[:-1, :]
-        grown[:-1, :] |= opaque[1:, :]
-        grown[:, 1:] |= opaque[:, :-1]
-        grown[:, :-1] |= opaque[:, 1:]
-        ring = grown & ~opaque
-        img[ring] = (12, 8, 16, 255)
-
-        indices, palette = rgba_to_sprite(Image.fromarray(img, "RGBA"), 15)
+        flat = src.getpalette()[: 256 * 3]
+        rgb_palette = np.array(flat + [0] * (256 * 3 - len(flat)), dtype=np.uint8).reshape(256, 3)
+        frames = [outlined_hero(hero_pose(idx, pose), rgb_palette) for pose in HERO_POSES]
+        indices, palette = rgba_to_sprite(Image.fromarray(np.vstack(frames), "RGBA"), 15)
         save_sprite(f"hero_{hero}", [indices], palette, 64)
 
 

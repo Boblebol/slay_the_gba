@@ -25,7 +25,7 @@ items = [
   { name = "Épuisement de ses cartes et synergies d'Épuisement", status = "oui" },
   { name = "Sacrifice de PV contre de la puissance (cartes « Perdez X PV »)", status = "oui" },
   { name = "Gain de Force tour après tour (Enflammer, Forme démoniaque)", status = "oui" },
-  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "oui", issue = 16 },
 ]
 
 [[category]]
@@ -38,7 +38,7 @@ items = [
   { name = "Défausse au choix (Survivant, Acrobaties)", status = "oui" },
   { name = "Surins : attaques à 0 énergie créées en combat", status = "oui" },
   { name = "Ruse : carte jouée gratuitement quand elle est défaussée", status = "oui", issue = 73 },
-  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "oui", issue = 16 },
 ]
 
 [[category]]
@@ -55,7 +55,7 @@ items = [
   { name = "Focalisation : renforce tous les Orbes", status = "oui" },
   { name = "Emplacements d'Orbe variables (Condensateur)", status = "oui" },
   { name = "Compteur d'Orbes affiché en combat", status = "oui" },
-  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "oui", issue = 16 },
 ]
 
 [[category]]
@@ -67,7 +67,7 @@ items = [
   { name = "Forger la Lame souveraine", status = "oui", issue = 102 },
   { name = "Sbires (Frappe de sbire, Sbire en piqué)", status = "oui", issue = 103 },
   { name = "Compteur d'Étoiles affiché en combat", status = "oui" },
-  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "oui", issue = 16 },
 ]
 
 [[category]]
@@ -80,7 +80,7 @@ items = [
   { name = "Âmes ajoutées à la Pioche", status = "oui" },
   { name = "Cartes Éthérées", status = "oui" },
   { name = "PV de Titos affichés en combat", status = "oui" },
-  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "oui", issue = 16 },
 ]
 
 # ---------------------------------------------------------------------------------------------------------
