@@ -275,7 +275,7 @@ items = [
   { name = "Registre du deck", status = "oui" },
   { name = "Défaite (Game Over)", status = "oui", issue = 11 },
   { name = "Victoire", status = "oui", issue = 12 },
-  { name = "Indicateurs de vie, d'armure et de progression", status = "partiel", issue = 20 },
+  { name = "Indicateurs de vie, d'armure et de progression", status = "oui", issue = 20 },
   { name = "Transitions entre les scènes", status = "partiel", issue = 18 },
   { name = "Système de dialogue et d'évènements textuels", status = "partiel", issue = 19 },
   { name = "Options (volume, commandes)", status = "oui" },
