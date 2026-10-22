@@ -221,6 +221,12 @@ def sfx_error() -> np.ndarray:
     return 0.45 * square(note("C3"), length, 0.5) * attack_release(length)
 
 
+def sfx_text_blip() -> np.ndarray:
+    """Soft, very short tick: the voice of a dialogue box typing a letter."""
+    length = len(timeline(0.022))
+    return 0.3 * triangle(note("E5"), length) * decay(length, 90)
+
+
 SOUND_EFFECTS: dict[str, Callable[[], np.ndarray]] = {
     "sfx_ui_cursor": sfx_ui_cursor,
     "sfx_ui_confirm": sfx_ui_confirm,
@@ -240,6 +246,7 @@ SOUND_EFFECTS: dict[str, Callable[[], np.ndarray]] = {
     "sfx_debuff": sfx_debuff,
     "sfx_turn_start": sfx_turn_start,
     "sfx_error": sfx_error,
+    "sfx_text_blip": sfx_text_blip,
 }
 
 

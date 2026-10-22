@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["markdown>=3.6", "pillow>=10"]
+# dependencies = ["markdown>=3.6", "pillow>=10", "numpy>=1.26"]
 # ///
 """Generate the static Slay the GBA website (site/) from the design bible and the game art.
 
@@ -21,6 +21,7 @@ import markdown
 from PIL import Image
 
 import progress
+from build_identity import icon_image
 from editions import (CONTROLS, DIFFICULTY, ENCOUNTER_FR, ENERGY, GOLD, HEROES, POTION_SLOTS, RARITY_FR, TYPE_FR,
                       Hero)
 
@@ -273,7 +274,7 @@ def build_assets() -> None:
     for mon in ["cultist", "jaw_worm", "louse", "gremlin_nob"]:
         export_sprite(f"mon_{mon}", f"mon_{mon}")
     export_sprite("boss_ceremonial_beast", "boss_ceremonial_beast", 64, (0, 1, 2, 3), (2, 2))
-    export_sprite("map_boss_ceremonial_beast", "icon")
+    icon_image().save(ASSETS / "sprites" / "icon.png")  # favicon of the visual identity (#8)
     for bg in ["title", "map", "campfire", "shop", "rewards", "victory", "gameover", "event_battleworn_dummy",
                "event_colossal_flower", "event_abyssal_baths", "event_mystic_altar"]:
         export_bg(f"bg_{bg}", bg)

@@ -54,6 +54,8 @@ const bn::sound_item& sfx_item(Sfx sfx)
         return bn::sound_items::sfx_debuff;
     case Sfx::TURN_START:
         return bn::sound_items::sfx_turn_start;
+    case Sfx::TEXT_BLIP:
+        return bn::sound_items::sfx_text_blip;
     default:
         return bn::sound_items::sfx_error;
     }
