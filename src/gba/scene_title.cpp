@@ -3,6 +3,7 @@
 #include <span>
 
 #include "bn_blending.h"
+#include "bn_bg_palette_ptr.h"
 #include "bn_keypad.h"
 #include "bn_regular_bg_ptr.h"
 #include "bn_sprite_palette_ptr.h"
@@ -18,6 +19,7 @@
 #include "engine/run.h"
 #include "engine/save_system.h"
 #include "engine/title_anim.h"
+#include "engine/title_edition.h"
 
 #include "gba/assets.h"
 #include "gba/audio.h"
@@ -48,6 +50,34 @@ constexpr int GLOW_X = -13;
 constexpr int GLOW_Y = -40;
 constexpr bn::fixed MIST_ALPHA = bn::fixed(0.45);
 
+#define SLAY_STRINGIFY_IMPL(token) #token
+#define SLAY_STRINGIFY(token) SLAY_STRINGIFY_IMPL(token)
+
+#ifdef SLAY_VERSION
+constexpr const char* GAME_VERSION = SLAY_STRINGIFY(SLAY_VERSION);
+#else
+constexpr const char* GAME_VERSION = "";
+#endif
+
+[[nodiscard]] TextColor accent_color(engine::title_edition::Accent accent)
+{
+    using Accent = engine::title_edition::Accent;
+
+    switch(accent)
+    {
+    case Accent::GREEN:
+        return TextColor::GREEN;
+    case Accent::BLUE:
+        return TextColor::BLUE;
+    case Accent::GOLD:
+        return TextColor::GOLD;
+    case Accent::PURPLE:
+        return TextColor::PURPLE;
+    default:
+        return TextColor::RED;
+    }
+}
+
 enum class MenuEntry : uint8_t
 {
     CONTINUE,   // only when a run is saved
@@ -76,6 +106,15 @@ public:
         bn::blending::set_transparency_alpha(MIST_ALPHA);
         _glow.set_z_order(Z_BACK);
 
+        // Edition identity (#3): the key art and the halo fade towards the colour of the edition, its name sits under
+        // the logo and the version tag in the corner.
+        const engine::title_edition::Theme theme = engine::title_edition::theme(current_hero());
+        const bn::color tint = bn::color(theme.tint_bgr555);
+        bn::bg_palette_ptr bg_palette = _bg.palette();
+        bg_palette.set_fade(tint, bn::fixed(theme.tint_strength) / 32);
+        bn::sprite_palette_ptr glow_palette = _glow.palette();
+        glow_palette.set_fade(tint, bn::fixed(0.5));
+
         for(int tile = 0; tile < engine::title_anim::MIST_TILES; ++tile)
         {
             _clouds.push_back(bn::sprite_items::title_mist.create_sprite(0, CLOUD_BAND_Y, 0));
@@ -103,8 +142,13 @@ public:
             _logo_x.push_back(x);
         }
 
-        const engine::CharacterDef& hero = engine::get_character(current_hero());
-        _hero_name.set(0, -42, bn::string_view(hero.name.data(), hero.name.size()), Align::CENTER, TextColor::GOLD);
+        // The edition name already carries the hero's name, so it replaces the separate hero name label: the OAM
+        // (128 sprites) has no room left for both next to the zone, the prompt and the credits.
+        _hero_name.set(0, -42, bn::string_view(theme.edition.data(), theme.edition.size()), Align::CENTER,
+                       accent_color(theme.accent));
+        char version[16];
+        int version_length = engine::title_edition::format_version(GAME_VERSION, version, 15);
+        _version.set(HALF_W - 3, 62, bn::string_view(version, version_length), Align::RIGHT, TextColor::GRAY);
         _hero_name.set_visible(false);
         _zone.set(0, -31, hero_zone_name(), Align::CENTER, TextColor::GRAY);
         _zone.set_visible(false);
@@ -164,6 +208,7 @@ private:
     int _glow_frame = -1;
     bn::vector<bn::sprite_ptr, 12> _logo;
     bn::vector<int, 12> _logo_x;
+    Label _version;
     Label _hero_name;
     Label _zone;
     Label _press;
