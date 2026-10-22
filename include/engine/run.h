@@ -34,7 +34,8 @@ enum class DeckChoiceKind : uint8_t {
     TRANSFORM,
     ENCHANT,
     DUPLICATE, // the chosen card gets one more copy in the deck
-    ADD        // the chosen card of RunManager::deck_choice_offers joins the deck (Sea Glass)
+    ADD,       // the chosen card of RunManager::deck_choice_offers joins the deck (Sea Glass)
+    PACK       // one pack of deck_choice_offers joins the deck, all its cards at once (Scroll Boxes); the index is the pack
 };
 
 struct DeckChoice {
@@ -50,6 +51,11 @@ struct DeckChoice {
 
 // Sea Glass: cards of another hero offered on pickup.
 constexpr size_t SEA_GLASS_CARDS = 15;
+
+// Scroll Boxes: PACK_CHOICE_PACKS packs of PACK_CHOICE_CARDS cards each are offered, one is added to the deck.
+// Guessed (#711): the reference only says "1 of 2 packs of cards"; 3 cards per pack, as a card reward.
+constexpr size_t PACK_CHOICE_PACKS = 2;
+constexpr size_t PACK_CHOICE_CARDS = 3;
 
 // Moments of a run, outside the fights, a relic can act on. Each one is a private `on_...` method of RunManager.
 enum class RunHook : uint8_t {
@@ -133,7 +139,8 @@ public:
     uint8_t potion_slots = BASE_POTION_SLOTS; // size of the belt: `potions` never holds more
     // Cards of the deck the player still has to choose. The room is left once it is resolved.
     DeckChoice deck_choice;
-    // ADD only: the cards offered, that the indices of the choice refer to instead of the deck.
+    // ADD and PACK only: the cards offered, that the indices of the choice refer to instead of the deck (for PACK,
+    // pack n is the PACK_CHOICE_CARDS cards from n * PACK_CHOICE_CARDS on, and the index of the choice is n).
     FixedVector<DeckCard, SEA_GLASS_CARDS> deck_choice_offers;
     FixedVector<RelicCounter, MAX_RELIC_COUNTERS> relic_counters;
     // How many times each hook ran since the start of the run: read by the tests and the debug tools.
