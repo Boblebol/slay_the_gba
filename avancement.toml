@@ -277,13 +277,13 @@ items = [
   { name = "Victoire", status = "oui", issue = 12 },
   { name = "Indicateurs de vie, d'armure et de progression", status = "oui", issue = 20 },
   { name = "Transitions entre les scènes", status = "oui", issue = 18 },
-  { name = "Système de dialogue et d'évènements textuels", status = "partiel", issue = 19 },
+  { name = "Système de dialogue et d'évènements textuels", status = "oui", issue = 19, note = "Texte typewriter avec petit bip, accents, retour à la ligne et pages au-delà de 5 lignes ; aperçu des conséquences sous chaque choix." },
   { name = "Options (volume, commandes)", status = "oui" },
   { name = "Menu pause en combat et sur la carte", status = "oui", issue = 10 },
   { name = "Menu principal interactif", status = "oui", issue = 9, note = "Haut/Bas pour naviguer, A pour valider : Continuer (si une partie est sauvegardée), Nouvelle partie, Compendium, Statistiques ; SELECT ouvre les options depuis l'écran titre, les crédits suivent la victoire." },
   { name = "Écran titre animé (nuages, tour, brume)", status = "oui", issue = 7, note = "Deux bandes de nuages et de brume défilent à des vitesses différentes, la Spire pulse, l'invite clignote." },
   { name = "Écran titre propre à chaque édition", status = "non", issue = 3 },
-  { name = "Crédits et cinématique d'introduction", status = "non", issue = 1 },
+  { name = "Crédits et cinématique d'introduction", status = "oui", issue = 1, note = "Carte de crédits (Mega Crit, Butano par GValiente, Alexandre Enouf), puis la Spire monte de l'ombre en silhouette pixelisée, reprend ses couleurs et le logo apparaît lettre par lettre ; START ou A passe directement à l'écran titre." },
   { name = "Crédits de fin", status = "oui", issue = 22 },
 ]
 
@@ -296,9 +296,9 @@ items = [
   { name = "Police avec accents français", status = "oui" },
   { name = "Effets sonores", status = "oui", issue = 14 },
   { name = "Sept musiques en boucle", status = "oui", issue = 15 },
-  { name = "Logo et identité graphique", status = "non", issue = 8 },
+  { name = "Logo et identité graphique", status = "oui", issue = 8, note = "Logo pixel art de l'écran titre, icône du site, palette de 16 couleurs commune au texte et aux boîtes de dialogue." },
   { name = "Poses des héros tirées des artworks sources (attaque, blessure)", status = "oui", issue = 2, note = "Cinq poses par héros (repos, souffle, attaque, blessure, garde) et un effet d'attaque propre à chacun ; poses procédurales, le dépôt n'a pas d'artwork en pied." },
-  { name = "Animations des ennemis et des boss", status = "partiel", issue = 17, note = "Flottement au repos et fondu de mort ; pas d'animation d'attaque." },
+  { name = "Animations des ennemis et des boss", status = "oui", issue = 17, note = "Procédurales sur le sprite existant : repos selon l'intention, attaque, recul, effondrement." },
 ]
 
 [[category]]
