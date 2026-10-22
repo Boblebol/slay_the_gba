@@ -266,7 +266,7 @@ def build_assets() -> None:
     (ASSETS / "sprites").mkdir(parents=True, exist_ok=True)
     (ASSETS / "bg").mkdir(parents=True, exist_ok=True)
     for hero in HEROES:
-        export_sprite(f"hero_{hero.slug}", f"hero_{hero.slug}", 64)  # idle pose of the sheet
+        export_sprite(f"hero_{hero.slug}", f"hero_{hero.slug}", 64)  # standing pose, the first frame
         export_sprite(f"ui_energy_{hero.slug}", f"energy_{hero.slug}")
         export_sprite(f"card_strike_{hero.slug}", f"card_strike_{hero.slug}")
         export_bg(f"bg_battle_{hero.slug}", f"battle_{hero.slug}")

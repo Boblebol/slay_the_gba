@@ -2041,11 +2041,11 @@ def build_font() -> None:
     FONT_HEADER.write_text("\n".join(lines))
 
 
-# Battle poses of a hero sprite sheet, in frame order (include/engine/hero_pose.h follows it).
-HERO_POSES = ("idle", "attack", "hurt")
+# Frames of graphics/hero_<hero>.bmp, top to bottom: same order as engine::HeroPose (include/engine/hero_animation.h).
+HERO_POSES = ("idle", "breath", "attack", "hurt", "guard")
 HERO_OUTLINE = (12, 8, 16)
 FX_WHITE = (248, 248, 248)
-# The two accent colours of each hero's attack effect; with white they keep their own palette slots.
+# The two accent colours of each hero's attack effect (#2); with white they keep their own palette slots.
 HERO_FX = {
     "ironclad": ((248, 160, 64), (200, 48, 40)),     # orange sword trail, red edge
     "silent": ((200, 208, 224), (120, 232, 96)),     # dagger steel, poison
@@ -2053,51 +2053,77 @@ HERO_FX = {
     "regent": ((248, 224, 96), (216, 136, 40)),      # gold star, amber
     "necrobinder": ((176, 96, 240), (64, 208, 240)),  # violet soul, cyan core
 }
-ATTACK_LEAN = 5    # pixels the top of the body moves towards the enemies while striking
-HURT_LEAN = -6     # ... and away from them when hit
 DEFECT_DROP = 4    # the Defect sits lower so that its orb slots fit above its head
 DEFECT_SLOTS = ((21, 7), (32, 3), (43, 7))  # centres of the three empty orb slots
 
 
-def lean(body: np.ndarray, amount: int, drop: int = 0) -> np.ndarray:
-    """Shear an indexed sprite: its bottom row stays, its top row moves `amount` pixels (and `drop` down)."""
-    rows = np.nonzero(body.any(axis=1))[0]
-    out = np.zeros_like(body)
-    if len(rows) == 0:
-        return out
+def shear_rows(idx: np.ndarray, lean: int) -> np.ndarray:
+    """Slide each row sideways, the top of the silhouette by `lean` pixels and the feet not at all."""
+    rows = np.nonzero((idx != 0).any(axis=1))[0]
     top, bottom = int(rows[0]), int(rows[-1])
+    out = np.zeros_like(idx)
     for y in range(top, bottom + 1):
-        dx = round(amount * (bottom - y) / max(1, bottom - top))
-        ty = y + drop
-        if not 0 <= ty < body.shape[0]:
-            continue
-        row = body[y]
+        dx = round(lean * (bottom - y) / max(1, bottom - top))
+        out[y] = np.roll(idx[y], dx)
         if dx > 0:
-            out[ty, dx:] = row[:-dx]
+            out[y, :dx] = 0
         elif dx < 0:
-            out[ty, :dx] = row[-dx:]
-        else:
-            out[ty] = row
+            out[y, dx:] = 0
     return out
 
 
-def rim_and_outline(rgb: np.ndarray, opaque: np.ndarray) -> np.ndarray:
-    """RGBA of a body: rim light on its top-left edges and a one pixel dark outline around it."""
-    h, w = opaque.shape
-    img = np.zeros((h, w, 4), dtype=np.uint8)
+def hero_pose(idx: np.ndarray, pose: str) -> np.ndarray:
+    """One pose of a hero, drawn from its standing sprite (palette indices, 0 = transparent).
+
+    The feet stay on the same row in every pose so that the hero does not hop when the frame changes.
+    """
+    rows = np.nonzero((idx != 0).any(axis=1))[0]
+    top, bottom = int(rows[0]), int(rows[-1])
+    height = bottom - top + 1
+    if pose == "idle":
+        return idx.copy()
+    if pose == "breath":
+        # Breathing out: head and shoulders sink by one pixel, the legs do not move.
+        split = top + height * 3 // 5
+        out = idx.copy()
+        out[top + 1 : split + 1] = idx[top:split]
+        out[top] = 0
+        return out
+    if pose == "attack":
+        # Leaning into the blow, towards the enemies on the right.
+        return shear_rows(idx, 5)
+    if pose == "hurt":
+        # Thrown back by the hit.
+        return shear_rows(idx, -4)
+    if pose == "guard":
+        # Crouched behind the block: a tenth shorter and slightly drawn back.
+        crouched = max(1, height * 9 // 10)
+        out = np.zeros_like(idx)
+        for row in range(crouched):
+            out[bottom - row] = idx[bottom - row * height // crouched]
+        return shear_rows(out, -2)
+    raise ValueError(f"unknown hero pose {pose}")
+
+
+def outlined_hero(idx: np.ndarray, rgb_palette: np.ndarray) -> np.ndarray:
+    """RGBA image of a pose with a rim light on its top-left edges and a one pixel dark outline."""
+    rgb = rgb_palette[idx]
+    opaque = idx != 0  # index 0 is the magenta transparent colour in these sprites
+    img = np.zeros((*idx.shape, 4), dtype=np.uint8)
     img[..., :3] = rgb
     img[..., 3] = np.where(opaque, 255, 0)
+
     edge = opaque & ~np.roll(opaque, 1, axis=0) | opaque & ~np.roll(opaque, 1, axis=1)
     lit = np.clip(rgb.astype(np.int32) + 60, 0, 255).astype(np.uint8)
     img[edge, :3] = lit[edge]
+
     grown = opaque.copy()
     grown[1:, :] |= opaque[:-1, :]
     grown[:-1, :] |= opaque[1:, :]
     grown[:, 1:] |= opaque[:, :-1]
     grown[:, :-1] |= opaque[:, 1:]
     ring = grown & ~opaque
-    img[ring, :3] = HERO_OUTLINE
-    img[ring, 3] = 255
+    img[ring] = (*HERO_OUTLINE, 255)
     return img
 
 
@@ -2161,50 +2187,46 @@ def hurt_fx(fx: np.ndarray) -> None:
     fx[31, 57:63] = 1
 
 
-def hero_frames(hero: str, body: np.ndarray, rgb_of: np.ndarray) -> tuple[list[np.ndarray], list[np.ndarray]]:
-    """RGBA body layer and effect layer (0 = none, 1-3 = effect colours) of each pose of HERO_POSES."""
-    drop = DEFECT_DROP if hero == "defect" else 0
-    poses = {"idle": lean(body, 0, drop), "attack": lean(body, ATTACK_LEAN, drop), "hurt": lean(body, HURT_LEAN, drop + 1)}
-    bodies, effects = [], []
-    for pose in HERO_POSES:
-        indices = poses[pose]
-        rgba = rim_and_outline(rgb_of[indices], indices != 0)
-        fx = np.zeros(indices.shape, dtype=np.uint8)
-        if hero == "defect":  # empty orb slots float above the head
-            for x, y in DEFECT_SLOTS:
-                ring(fx, x, y, 1.5, 2.6, 3)
-        if pose == "attack":
-            attack_fx(hero, fx)
-        elif pose == "hurt":
-            hurt_fx(fx)
-        bodies.append(rgba)
-        effects.append(fx)
-    return bodies, effects
+def hero_effects(hero: str, pose: str) -> np.ndarray:
+    """Effect layer of one pose (0 = none, 1 = white, 2 and 3 = the hero's accents), drawn over the body."""
+    fx = np.zeros((64, 64), dtype=np.uint8)
+    if hero == "defect":  # empty orb slots float above the head
+        for x, y in DEFECT_SLOTS:
+            ring(fx, x, y, 1.5, 2.6, 3)
+    if pose == "attack":
+        attack_fx(hero, fx)
+    elif pose == "hurt":
+        hurt_fx(fx)
+    return fx
 
 
 def build_heroes() -> None:
-    """Battle sprite sheet of each hero: idle, attack and hurt poses drawn from its hand-made sprite.
+    """Battle sprite sheet of each hero, one 64x64 frame per pose (HERO_POSES), drawn from its hand-made sprite.
 
-    The bible has no full-body hero artwork (only 85x85 pool icons and the key art), so the poses are made
-    procedurally from player_<hero>.bmp: the body leans, and each hero gets its own attack effect.
-    The three frames share one 16-colour palette: 12 body colours, white and the hero's two accents."""
+    The bible has no full-body hero artwork, so the poses are made procedurally from player_<hero>.bmp: an
+    outlined, rim-lit body that breathes, leans, recoils or crouches, plus the hero's own attack effect (#2).
+    All frames share one 16-colour palette: 12 body colours, white and the hero's two accents. Only the shown
+    frame is in video memory: the combat scene swaps the tiles."""
     for hero in HEROES:
         src = Image.open(OUT / f"player_{hero}.bmp")
-        body = np.array(src)  # index 0 is the magenta transparent colour in these sprites
-        flat = src.getpalette()
-        rgb_of = np.array([flat[i * 3:i * 3 + 3] for i in range(256)], dtype=np.uint8)
-        bodies, effects = hero_frames(hero, body, rgb_of)
+        idx = np.array(src)
+        if hero == "defect":
+            idx = np.roll(idx, DEFECT_DROP, axis=0)
+            idx[:DEFECT_DROP] = 0
+        flat = src.getpalette()[: 256 * 3]
+        rgb_palette = np.array(flat + [0] * (256 * 3 - len(flat)), dtype=np.uint8).reshape(256, 3)
+        bodies = [outlined_hero(hero_pose(idx, pose), rgb_palette) for pose in HERO_POSES]
+        effects = [hero_effects(hero, pose) for pose in HERO_POSES]
         fx_colors = [FX_WHITE, *HERO_FX[hero]]
         opaque = np.concatenate([b[..., :3][b[..., 3] > 0] for b in bodies])
         base = quantize_opaque(opaque, 15 - len(fx_colors))
-        palette = base + fx_colors
         frames = []
         for rgba, fx in zip(bodies, effects):
             indices = nearest_indices(rgba[..., :3], base) + 1
             indices[rgba[..., 3] == 0] = 0
             indices[fx > 0] = len(base) + fx[fx > 0]
             frames.append(indices)
-        save_sprite(f"hero_{hero}", frames, [TRANSPARENT] + palette, 64)
+        save_sprite(f"hero_{hero}", frames, [TRANSPARENT] + base + fx_colors, 64)
 
 
 def main() -> None:

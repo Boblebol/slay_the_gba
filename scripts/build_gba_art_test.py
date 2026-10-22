@@ -212,18 +212,24 @@ def test_a_mini_card_sheet_is_one_palette_with_white_and_two_frames_per_card(her
 
 
 @pytest.mark.parametrize("hero", HEROES)
-def test_a_hero_sheet_is_one_palette_with_an_idle_an_attack_and_a_hurt_pose(hero: str) -> None:
+def test_a_hero_sheet_keeps_slots_for_white_and_the_hero_attack_effect(hero: str) -> None:
+    """The attack frame carries the hero's own effect (#2) in colours the body never uses; the hit frame a white spark."""
     with Image.open(build_gba_art.OUT / f"hero_{hero}.bmp") as bmp:
-        assert bmp.size == (64, 64 * len(build_gba_art.HERO_POSES))
         sheet = np.asarray(bmp)
         palette = bmp.getpalette()[:48]
-    assert build_gba_art.HERO_POSES == ("idle", "attack", "hurt")  # frame order of include/engine/hero_pose.h
     assert int(sheet.max()) <= 15
     colors = [tuple(palette[i:i + 3]) for i in range(0, 48, 3)]
-    for accent in (build_gba_art.FX_WHITE, *build_gba_art.HERO_FX[hero]):
-        assert build_gba_art.to_gba(accent) in colors
-    idle, attack, hurt = (sheet[i * 64:(i + 1) * 64] for i in range(3))
-    assert (idle != attack).sum() > 100 and (idle != hurt).sum() > 100
+    fx = [build_gba_art.to_gba(c) for c in (build_gba_art.FX_WHITE, *build_gba_art.HERO_FX[hero])]
+    white = max(i for i, c in enumerate(colors) if c == fx[0] and colors[i + 1:i + 3] == fx[1:])
+    fx_slots = [white, white + 1, white + 2]
+    frame = {pose: sheet[i * 64:(i + 1) * 64] for i, pose in enumerate(build_gba_art.HERO_POSES)}
+    effect = {pose: int(np.isin(f, fx_slots).sum()) for pose, f in frame.items()}
+    assert effect["attack"] > effect["idle"] + 40
+    assert (frame["hurt"] == white).sum() > (frame["idle"] == white).sum()
+    if hero == "defect":  # empty orb slots above the head in every pose
+        assert all((f[:10] == white + 2).sum() > 10 for f in frame.values())
+    else:
+        assert effect["idle"] == effect["breath"] == effect["guard"] == 0
 
 
 def test_a_hero_sheet_rebuilds_to_the_committed_one(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -235,14 +241,6 @@ def test_a_hero_sheet_rebuilds_to_the_committed_one(tmp_path: Path, monkeypatch:
         with Image.open(tmp_path / f"hero_{hero}.bmp") as built, \
                 Image.open(build_gba_art.ROOT / "graphics" / f"hero_{hero}.bmp") as committed:
             assert np.array_equal(np.asarray(built), np.asarray(committed)), hero
-
-
-def test_lean_keeps_the_feet_and_moves_the_head() -> None:
-    body = np.zeros((8, 8), dtype=np.uint8)
-    body[2:8, 3] = 5
-    leaned = build_gba_art.lean(body, 2)
-    assert leaned[7, 3] == 5 and leaned[2, 5] == 5 and leaned[2, 3] == 0
-    assert build_gba_art.lean(body, 0, drop=1)[3, 3] == 5
 
 
 # --- Frames -----------------------------------------------------------------------------------
@@ -357,3 +355,27 @@ def test_write_json_and_indexed_bmp_go_where_they_are_told(tmp_path: Path) -> No
     with Image.open(tmp_path / "x.bmp") as bmp:
         assert bmp.mode == "P" and bmp.size == (2, 1)
         assert [bmp.getpixel((x, 0)) for x in range(2)] == [0, 1]
+
+
+def test_hero_poses_keep_the_feet_and_move_the_upper_body() -> None:
+    """Every pose of graphics/hero_<hero>.bmp (#16) stands on the same row; only the body above moves."""
+    idx = np.zeros((64, 64), dtype=np.uint8)
+    idx[20:60, 28:36] = 3  # a plain column, top row 20, feet on row 59
+    poses = {pose: build_gba_art.hero_pose(idx, pose) for pose in build_gba_art.HERO_POSES}
+    assert build_gba_art.HERO_POSES == ("idle", "breath", "attack", "hurt", "guard")
+    for pose, frame in poses.items():
+        assert (frame[59] == idx[59]).all(), pose
+        assert not frame[60:].any(), pose
+    assert (poses["idle"] == idx).all()
+    first_row = {pose: int(np.nonzero(frame.any(axis=1))[0][0]) for pose, frame in poses.items()}
+    assert first_row["breath"] == 21  # head one pixel lower
+    assert first_row["guard"] > 21  # crouched
+    head_x = {pose: int(np.nonzero(frame[first_row[pose]])[0][0]) for pose, frame in poses.items()}
+    assert head_x["attack"] > 28  # leaning towards the enemies on the right
+    assert head_x["hurt"] < 28  # thrown back
+
+
+@pytest.mark.parametrize("hero", HEROES)
+def test_hero_sheet_has_one_64_pixel_frame_per_pose(hero: str) -> None:
+    sheet = Image.open(build_gba_art.OUT / f"hero_{hero}.bmp")
+    assert sheet.size == (64, 64 * len(build_gba_art.HERO_POSES))

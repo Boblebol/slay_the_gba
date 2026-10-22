@@ -25,7 +25,7 @@ items = [
   { name = "Épuisement de ses cartes et synergies d'Épuisement", status = "oui" },
   { name = "Sacrifice de PV contre de la puissance (cartes « Perdez X PV »)", status = "oui" },
   { name = "Gain de Force tour après tour (Enflammer, Forme démoniaque)", status = "oui" },
-  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "oui", issue = 16 },
 ]
 
 [[category]]
@@ -38,7 +38,7 @@ items = [
   { name = "Défausse au choix (Survivant, Acrobaties)", status = "oui" },
   { name = "Surins : attaques à 0 énergie créées en combat", status = "oui" },
   { name = "Ruse : carte jouée gratuitement quand elle est défaussée", status = "oui", issue = 73 },
-  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "oui", issue = 16 },
 ]
 
 [[category]]
@@ -55,7 +55,7 @@ items = [
   { name = "Focalisation : renforce tous les Orbes", status = "oui" },
   { name = "Emplacements d'Orbe variables (Condensateur)", status = "oui" },
   { name = "Compteur d'Orbes affiché en combat", status = "oui" },
-  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "oui", issue = 16 },
 ]
 
 [[category]]
@@ -67,7 +67,7 @@ items = [
   { name = "Forger la Lame souveraine", status = "oui", issue = 102 },
   { name = "Sbires (Frappe de sbire, Sbire en piqué)", status = "oui", issue = 103 },
   { name = "Compteur d'Étoiles affiché en combat", status = "oui" },
-  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "oui", issue = 16 },
 ]
 
 [[category]]
@@ -80,7 +80,7 @@ items = [
   { name = "Âmes ajoutées à la Pioche", status = "oui" },
   { name = "Cartes Éthérées", status = "oui" },
   { name = "PV de Titos affichés en combat", status = "oui" },
-  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "partiel", issue = 16, note = "Flottement au repos, secousse et fondu de mort ; pas de poses dessinées." },
+  { name = "Animations du héros (repos, attaque, dégâts, garde)", status = "oui", issue = 16 },
 ]
 
 # ---------------------------------------------------------------------------------------------------------
@@ -276,12 +276,12 @@ items = [
   { name = "Défaite (Game Over)", status = "oui", issue = 11 },
   { name = "Victoire", status = "oui", issue = 12 },
   { name = "Indicateurs de vie, d'armure et de progression", status = "oui", issue = 20 },
-  { name = "Transitions entre les scènes", status = "partiel", issue = 18 },
+  { name = "Transitions entre les scènes", status = "oui", issue = 18 },
   { name = "Système de dialogue et d'évènements textuels", status = "partiel", issue = 19 },
   { name = "Options (volume, commandes)", status = "oui" },
   { name = "Menu pause en combat et sur la carte", status = "oui", issue = 10 },
   { name = "Menu principal interactif", status = "oui", issue = 9, note = "Haut/Bas pour naviguer, A pour valider : Continuer (si une partie est sauvegardée), Nouvelle partie, Compendium, Statistiques ; SELECT ouvre les options depuis l'écran titre, les crédits suivent la victoire." },
-  { name = "Écran titre animé (nuages, tour, brume)", status = "non", issue = 7 },
+  { name = "Écran titre animé (nuages, tour, brume)", status = "oui", issue = 7, note = "Deux bandes de nuages et de brume défilent à des vitesses différentes, la Spire pulse, l'invite clignote." },
   { name = "Écran titre propre à chaque édition", status = "non", issue = 3 },
   { name = "Crédits et cinématique d'introduction", status = "non", issue = 1 },
   { name = "Crédits de fin", status = "oui", issue = 22 },
@@ -297,7 +297,7 @@ items = [
   { name = "Effets sonores", status = "oui", issue = 14 },
   { name = "Sept musiques en boucle", status = "oui", issue = 15 },
   { name = "Logo et identité graphique", status = "non", issue = 8 },
-  { name = "Poses des héros tirées des artworks sources (attaque, blessure)", status = "oui", issue = 2, note = "Repos, attaque et blessure de chaque héros ; poses procédurales, le dépôt n'a pas d'artwork en pied." },
+  { name = "Poses des héros tirées des artworks sources (attaque, blessure)", status = "oui", issue = 2, note = "Cinq poses par héros (repos, souffle, attaque, blessure, garde) et un effet d'attaque propre à chacun ; poses procédurales, le dépôt n'a pas d'artwork en pied." },
   { name = "Animations des ennemis et des boss", status = "partiel", issue = 17, note = "Flottement au repos et fondu de mort ; pas d'animation d'attaque." },
 ]
 
