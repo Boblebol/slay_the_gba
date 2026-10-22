@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 96,8 %** — 1226 faits, 11 partiels, 13 à faire (35 hors périmètre).
+**Avancement global : 97,0 %** — 1227 faits, 10 partiels, 13 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -27,8 +27,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Évènements et Anciens](#rencontres) | 57 | 3 | 5 | 90,0 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
-| [Interface, audio et cartouches](#interface) | 22 | 3 | 6 | 75,8 % |
-| **Total** | **1226** | **11** | **13** | **96,8 %** |
+| [Interface, audio et cartouches](#interface) | 23 | 2 | 6 | 77,4 % |
+| **Total** | **1227** | **10** | **13** | **97,0 %** |
 
 <a id="ironclad"></a>
 
@@ -1610,11 +1610,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 75,8 %
+## Interface, audio et cartouches — 77,4 %
 
-### Écrans — 81,0 %
+### Écrans — 83,3 %
 
-16 faits, 2 partiels, 3 à faire.
+17 faits, 1 partiel, 3 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1630,7 +1630,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Défaite (Game Over) |  | Oui | [#11](https://github.com/Boblebol/slay_the_gba/issues/11) |
 | Victoire |  | Oui | [#12](https://github.com/Boblebol/slay_the_gba/issues/12) |
 | Indicateurs de vie, d'armure et de progression |  | Oui | [#20](https://github.com/Boblebol/slay_the_gba/issues/20) |
-| Transitions entre les scènes |  | Partiel | [#18](https://github.com/Boblebol/slay_the_gba/issues/18) |
+| Transitions entre les scènes |  | Oui | [#18](https://github.com/Boblebol/slay_the_gba/issues/18) |
 | Système de dialogue et d'évènements textuels |  | Partiel | [#19](https://github.com/Boblebol/slay_the_gba/issues/19) |
 | Options (volume, commandes) |  | Oui |  |
 | Menu pause en combat et sur la carte |  | Oui | [#10](https://github.com/Boblebol/slay_the_gba/issues/10) |

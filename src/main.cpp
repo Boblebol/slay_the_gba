@@ -1,6 +1,8 @@
 #include "bn_bg_palettes.h"
 #include "bn_core.h"
 
+#include "engine/scene_transition.h"
+
 #include "gba/assets.h"
 #include "gba/audio.h"
 #include "gba/fx.h"
@@ -12,40 +14,35 @@ namespace
 {
 
 constexpr int FADE_IN_FRAMES = 14;
-constexpr int FADE_OUT_FRAMES = 12;
 constexpr int QUICK_FADE_FRAMES = 5;
 
+engine::TransitionStyle transition_style(gba::Transition transition)
+{
+    switch(transition)
+    {
+    case gba::Transition::BATTLE:
+        return engine::TransitionStyle::BATTLE;
+    case gba::Transition::QUICK:
+        return engine::TransitionStyle::QUICK;
+    case gba::Transition::ROOM:
+        return engine::TransitionStyle::ROOM;
+    default:
+        return engine::TransitionStyle::FADE;
+    }
+}
+
+// Plays the exit transition described by engine/scene_transition.h through the hardware fade
+// registers: one palette write per frame, no scene loading in between, so it stays at 60 FPS.
 void play_exit_transition(gba::Transition transition)
 {
-    if(transition == gba::Transition::BATTLE)
-    {
-        // Two white flashes, then a fast fade to black, like entering a wild battle.
-        for(int flash = 0; flash < 2; ++flash)
-        {
-            for(int frame = 0; frame < 10; ++frame)
-            {
-                bn::fixed t = frame < 5 ? bn::fixed(frame) / 5 : bn::fixed(10 - frame) / 5;
-                gba::set_screen_fade(bn::color(31, 31, 31), t * bn::fixed(0.85));
-                gba::update_audio();
-                bn::core::update();
-            }
-        }
-
-        for(int frame = 1; frame <= 10; ++frame)
-        {
-            gba::set_screen_fade(bn::fixed(frame) / 10);
-            gba::update_audio();
-            bn::core::update();
-        }
-
-        return;
-    }
-
-    int frames = transition == gba::Transition::QUICK ? QUICK_FADE_FRAMES : FADE_OUT_FRAMES;
+    engine::TransitionStyle style = transition_style(transition);
+    int frames = engine::transition_frames(style);
 
     for(int frame = 1; frame <= frames; ++frame)
     {
-        gba::set_screen_fade(gba::ease_in_out(bn::fixed(frame) / frames));
+        engine::TransitionStep step = engine::transition_step(style, frame);
+        bn::fixed intensity = bn::fixed(step.level) / engine::TRANSITION_MAX_LEVEL;
+        gba::set_screen_fade(step.white ? bn::color(31, 31, 31) : bn::color(0, 0, 0), intensity);
         gba::update_audio();
         bn::core::update();
     }

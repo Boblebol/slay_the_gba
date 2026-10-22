@@ -95,12 +95,16 @@ SceneId scene_for_run_phase(GameContext& context)
         context.transition = Transition::BATTLE;
         return SceneId::COMBAT;
     case engine::RunPhase::EVENT:
+        context.transition = Transition::ROOM;
         return SceneId::EVENT;
     case engine::RunPhase::CAMPFIRE:
+        context.transition = Transition::ROOM;
         return SceneId::CAMPFIRE;
     case engine::RunPhase::SHOP:
+        context.transition = Transition::ROOM;
         return SceneId::SHOP;
     case engine::RunPhase::ANCIENT_BLESSING:
+        context.transition = Transition::ROOM;
         return SceneId::ANCIENT;
     case engine::RunPhase::TREASURE:
     {
