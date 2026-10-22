@@ -47,6 +47,8 @@ constexpr int STATUS_Y = 9;
 constexpr int STATUS_WIDTH = 112;
 constexpr int HAND_Y = 64;
 constexpr int HAND_FOCUS_Y = 57;
+// Refusal messages ("Pas assez d'énergie"...): above the HP bars and the status lines, which they hid at HAND_FOCUS_Y - 24.
+constexpr int MESSAGE_POPUP_Y = HAND_FOCUS_Y - 44;
 constexpr int HAND_PICKED_Y = 50;
 constexpr int BANNER_Y = -48;
 // Prompt of a card choice, centred under the intent icons (lowest bottom edge -36, a boss's) and the pile counters
@@ -1656,7 +1658,7 @@ void CombatScene::_update_player_input()
         if(_ctx.run.potions.empty())
         {
             play_sfx(Sfx::ERROR);
-            _popups.spawn(0, HAND_FOCUS_Y - 24, "Aucune potion", TextColor::RED);
+            _popups.spawn(0, MESSAGE_POPUP_Y, "Aucune potion", TextColor::RED);
         }
         else
         {
@@ -1704,7 +1706,7 @@ void CombatScene::_update_player_input()
             }
 
             play_sfx(Sfx::ERROR);
-            _popups.spawn(_hand[_selected].x.round_integer(), HAND_FOCUS_Y - 24, reason, TextColor::RED);
+            _popups.spawn(_hand[_selected].x.round_integer(), MESSAGE_POPUP_Y, reason, TextColor::RED);
             _hand[_selected].x += 6;
             return;
         }
@@ -2319,7 +2321,7 @@ void CombatScene::_update_choice_input()
         else if(! _combat.choice_allows(_choice_index(_selected)) || _picked.size() >= wanted)
         {
             play_sfx(Sfx::ERROR);
-            _popups.spawn(_hand[_selected].x.round_integer(), HAND_FOCUS_Y - 24, "Impossible", TextColor::RED);
+            _popups.spawn(_hand[_selected].x.round_integer(), MESSAGE_POPUP_Y, "Impossible", TextColor::RED);
             return;
         }
         else
@@ -2345,7 +2347,7 @@ void CombatScene::_update_choice_input()
         else
         {
             play_sfx(Sfx::ERROR);
-            _popups.spawn(0, HAND_FOCUS_Y - 24, "Choisis d'abord", TextColor::RED);
+            _popups.spawn(0, MESSAGE_POPUP_Y, "Choisis d'abord", TextColor::RED);
         }
     }
 }
