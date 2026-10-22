@@ -49,6 +49,26 @@ Rencontres aléatoires, choix moraux et récompenses/pénalités sur la carte.</
 </ul>
 <p>De la vapeur s'élève de bassins bouillonnants d'un liquide brûlant, dont les couleurs ondulent selon un rythme hypnotique. Des excroissances incrustées de coquillages pendent du plafond, laissant goutter une substance visqueuse qui grésille et frémit au contact du sol. L'air est lourd, saturé de sel, et d'une substance qui paraît sans aucun doute organique.</p>
 <p>À mesure que vous vous approchez du plus grand bassin, le liquide se met à onduler. Les eaux bouillonnent avec de plus en plus d'intensité, comme si elles pressentaient votre arrivée.</p>
+<!-- choix:ABYSSAL_BATHS -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Bains Abyssaux | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Des bassins fumants émettent des vapeurs minérales revigorantes. Au fond d'une vasque, des pièces d'or scintillent. »</p>
+<ul>
+<li><strong>Se prélasser dans le bain</strong> - Récupérez 25 PV, coûte 35 Or.</li>
+<li>Condition : au moins 35 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 35 Or ; soigne 25 PV</li>
+<li>Résultat : « Les vapeurs chaudes dissolvent vos courbatures (+25 PV). »</li>
+<li><strong>Plonger dans les profondeurs</strong> - Gagnez 80 Or, perdez 8 PV.</li>
+<li>Effets : perd 8 PV ; gagne 80 Or</li>
+<li>Résultat : « L'eau bouillante vous brûle mais vous repêchez 80 Pièces d'or ! »</li>
+<li><strong>Repartir</strong> - Ignorer les bains.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous reprenez votre ascension sans vous attarder. »</li>
+</ul>
+<!-- /choix:ABYSSAL_BATHS -->
+
 <h3 id="amalgamateur-amalgamator"><img alt="Amalgamateur" loading="lazy" src="../../bible/images/events/amalgamator.webp" /> Amalgamateur (<code>AMALGAMATOR</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act2</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -58,6 +78,24 @@ Rencontres aléatoires, choix moraux et récompenses/pénalités sur la carte.</
 <p>Vous collez l’oreille contre la paroi, quand celle-ci s’ouvre soudain, révélant une énorme silhouette à six bras attelée à son ouvrage.
 Son « visage » est un tourbillon de glyphes lumineux qui dansent en cercle.</p>
 <p>« Un être doté d’un Esprit Ascendant a trouvé mon atelier ? Le moment est venu de réaliser quelque ALLIAGE ! »</p>
+<!-- choix:AMALGAMATOR -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Amalgamateur | <strong>Zones :</strong> Acte 2</li>
+</ul>
+<p>Page 0 (début) : « BANG ! BANG !!! Un énorme être à six bras, au visage de glyphes lumineux, surgit d'un mur et s'écrie : « Un être doté d'un Esprit Ascendant a trouvé mon atelier ? Réalisons quelque ALLIAGE ! » »</p>
+<ul>
+<li><strong>Fusionner les Défenses</strong> - -2 Défenses, +Défense ultime.</li>
+<li>Condition : posséder 2 × Defend (sinon l'option est grisée)</li>
+<li>Effets : retire 2 × Defend du deck ; ajoute au deck 1 × Ultimate Defend</li>
+<li>Résultat : « Les six bras martèlent vos Défenses jusqu'à n'en faire qu'une. Vous obtenez Défense ultime ! »</li>
+<li><strong>Fusionner les Frappes</strong> - -2 Frappes, +Frappe ultime.</li>
+<li>Condition : posséder 2 × Strike (sinon l'option est grisée)</li>
+<li>Effets : retire 2 × Strike du deck ; ajoute au deck 1 × Ultimate Strike</li>
+<li>Résultat : « Les six bras forgent vos Frappes en un seul coup. Vous obtenez Frappe ultime ! »</li>
+</ul>
+<!-- /choix:AMALGAMATOR -->
+
 <h3 id="arome-du-chaos-aroma_of_chaos"><img alt="Arôme du chaos" loading="lazy" src="../../bible/images/events/aroma_of_chaos.webp" /> Arôme du chaos (<code>AROMA_OF_CHAOS</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -65,6 +103,22 @@ Son « visage » est un tourbillon de glyphes lumineux qui dansent en cercle.</p
 </ul>
 <p>Un mélange de parfums de fleurs, de pourriture fétide, et autre chose, quelque chose d’indéfinissable. L’odeur s’intensifie à chacun de vos pas, et vous avez l’impression que le monde autour de vous se tord et se déforme.</p>
 <p>Submergé(e) par une sensation de chaos mouvant, vous commencez à en perdre toute notion de vous-même.</p>
+<!-- choix:AROMA_OF_CHAOS -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Arôme du chaos | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Dans une clairière, un mélange de fleurs, de pourriture et d'autre chose vous submerge. Le monde se tord autour de vous et vous perdez toute notion de vous-même. »</p>
+<ul>
+<li><strong>Lâcher prise</strong> - Transformez une carte.</li>
+<li>Effets : transforme 1 carte (au choix)</li>
+<li>Résultat : « Le chaos vous emporte. Choisissez la carte qui se transformera. »</li>
+<li><strong>Garder le contrôle</strong> - Améliorez une carte.</li>
+<li>Effets : améliore 1 carte (au choix)</li>
+<li>Résultat : « Vous résistez au tourbillon. Choisissez la carte à améliorer. »</li>
+</ul>
+<!-- /choix:AROMA_OF_CHAOS -->
+
 <h3 id="mannequin-de-combat-use-battleworn_dummy"><img alt="Mannequin de combat usé" loading="lazy" src="../../bible/images/events/battleworn_dummy.webp" /> Mannequin de combat usé (<code>BATTLEWORN_DUMMY</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act3</code> | <strong>Nombre d'options :</strong> <code>3</code></li>
@@ -75,6 +129,25 @@ RÉGLEZ LE PARAMÈTRE OU SUBISSEZ UNE HUMILIATION LÉTALE.
 Options disponibles : »</p>
 <p>Après ce message terrifiant, le mannequin énonce les instructions en détail.</p>
 <p>Que choisissez-vous ?</p>
+<!-- choix:BATTLEWORN_DUMMY -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Mannequin d'Entraînement | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « « BZZZT ! SÉQUENCE D'ENTRAÎNEMENT INITIÉE ! Réglez vos coups ou subissez une humiliation létale ! » »</p>
+<ul>
+<li><strong>Attaque acharnée</strong> - Subissez 6 dégâts, gagnez 60 Or.</li>
+<li>Effets : perd 6 PV ; gagne 60 Or</li>
+<li>Résultat : « Vous frappez sans retenue ! Le mannequin explose en pièces d'or. »</li>
+<li><strong>Réparer les rouages</strong> - Améliorez une carte de votre deck.</li>
+<li>Effets : améliore 1 carte (au choix)</li>
+<li>Résultat : « Vous étudiez la mécanique interne. Une de vos cartes est améliorée (+) ! »</li>
+<li><strong>Prendre la fuite</strong> - Passez votre chemin sans risque.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous quittez discrètement la salle. »</li>
+</ul>
+<!-- /choix:BATTLEWORN_DUMMY -->
+
 <h3 id="sangsue-cerebrale-brain_leech"><img alt="Sangsue cérébrale" loading="lazy" src="../../bible/images/events/brain_leech.webp" /> Sangsue cérébrale (<code>BRAIN_LEECH</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -83,6 +156,22 @@ Options disponibles : »</p>
 <p>Vous ressentez une douleur aiguë sur le dessus du crâne tandis qu’une pensée poignarde votre esprit.</p>
 <p>« PARTAGER CONNAISSANCE ??? »</p>
 <p>Vous hésitez sur la marche à suivre...</p>
+<!-- choix:BRAIN_LEECH -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Sangsue cérébrale | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « <em>poum</em> Vous ressentez une douleur aiguë sur le dessus du crâne tandis qu'une pensée poignarde votre esprit. « PARTAGER CONNAISSANCE ??? » Vous hésitez sur la marche à suivre... »</p>
+<ul>
+<li><strong>Partager la connaissance</strong> - Choisissez 1 carte parmi 5.</li>
+<li>Effets : propose 5 cartes du héros (rares comprises), le joueur en ajoute 1</li>
+<li>Résultat : « La sangsue vous souffle cinq savoirs. Vous allez en choisir un pour votre deck. »</li>
+<li><strong>Arracher la sangsue</strong> - Perdez 5 PV, carte incolore.</li>
+<li>Effets : perd 5 PV ; récompense de carte ×1 (Incolores), à la sortie de l'évènement</li>
+<li>Résultat : « Vous arrachez la sangsue d'un coup sec. Vous allez choisir une carte incolore. »</li>
+</ul>
+<!-- /choix:BRAIN_LEECH -->
+
 <h3 id="tueur-dinsectes-bugslayer"><img alt="Tueur d’insectes" loading="lazy" src="../../bible/images/events/bugslayer.webp" /> Tueur d’insectes (<code>BUGSLAYER</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act2</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -91,6 +180,22 @@ Options disponibles : »</p>
 <p>Sentant venir la défaite, les insectes s’éparpillent. Vous vous tournez vers votre nouveau compagnon.
 « Veux-tu quelques conseils pour exterminer ces nuisibles ? »</p>
 <p>Quelle courtoisie. Vous acceptez son offre d’un hochement de la tête.</p>
+<!-- choix:BUGSLAYER -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Tueur d'insectes | <strong>Zones :</strong> Acte 2</li>
+</ul>
+<p>Page 0 (début) : « Un essaim d'insectes s'éparpille : un puissant guerrier combattait à vos côtés depuis le début ! « Veux-tu quelques conseils pour exterminer ces nuisibles ? » Vous acceptez d'un hochement de tête. »</p>
+<ul>
+<li><strong>Extermination</strong> - Ajoutez Extermination au deck.</li>
+<li>Effets : ajoute au deck 1 × Exterminate</li>
+<li>Résultat : « Le guerrier vous montre comment balayer tout un essaim. Vous obtenez Extermination ! »</li>
+<li><strong>Aplatissement</strong> - Ajoutez Aplatissement au deck.</li>
+<li>Effets : ajoute au deck 1 × Squash</li>
+<li>Résultat : « Le guerrier vous apprend à écraser un nuisible d'un seul coup. Vous obtenez Aplatissement ! »</li>
+</ul>
+<!-- /choix:BUGSLAYER -->
+
 <h3 id="nid-doizodon-byrdonis_nest"><img alt="Nid d’oizodon" loading="lazy" src="../../bible/images/events/byrdonis_nest.webp" /> Nid d’oizodon (<code>BYRDONIS_NEST</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -98,6 +203,22 @@ Options disponibles : »</p>
 </ul>
 <p>Dans l’alcôve d’où l’oizo a pris la fuite, un œuf solitaire gît, abandonné et sans surveillance. </p>
 <p>Votre estomac gargouille...</p>
+<!-- choix:BYRDONIS_NEST -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Nid d'oizodon | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Vous apercevez une Énorme Bête se traînant pour chasser un Oizo Vert blessé. Dans l'alcôve d'où l'oizo a pris la fuite, un oeuf solitaire gît, abandonné et sans surveillance. Votre estomac gargouille... »</p>
+<ul>
+<li><strong>Manger l'oeuf</strong> - Gagnez 7 PV Max.</li>
+<li>Effets : +7 PV max</li>
+<li>Résultat : « Vous gobez l'oeuf d'un trait. Vous vous sentez plus robuste ! »</li>
+<li><strong>Prendre l'oeuf</strong> - Ajoute un Oeuf d'oizodon.</li>
+<li>Effets : ajoute au deck 1 × Byrdonis Egg</li>
+<li>Résultat : « Vous glissez l'oeuf dans votre sac. Il éclora peut-être à un feu de camp. »</li>
+</ul>
+<!-- /choix:BYRDONIS_NEST -->
+
 <h3 id="philosophes-multicolores-colorful_philosophers"><img alt="Philosophes multicolores" loading="lazy" src="../../bible/images/events/colorful_philosophers.webp" /> Philosophes multicolores (<code>COLORFUL_PHILOSOPHERS</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act2</code> | <strong>Nombre d'options :</strong> <code>6</code></li>
@@ -106,6 +227,43 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 </ul>
 <p>À mesure que vous écoutez, vous comprenez que l’enjeu réel de la discussion consiste à déterminer laquelle des couleurs est LA MEILLEURE.</p>
 <p>Vous intervenez pour donner votre avis.</p>
+<!-- choix:COLORFUL_PHILOSOPHERS -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Philosophes multicolores | <strong>Zones :</strong> Acte 2</li>
+</ul>
+<p>Page 0 (début) : « Perchées sur un dais, trois statues de couleurs différentes débattent avec ardeur : quelle couleur est LA MEILLEURE ? Vous intervenez pour donner votre avis. »</p>
+<ul>
+<li><strong>Bleu</strong> - 3 cartes Defect, une au choix.</li>
+<li>Effets : récompense de carte ×1 (DEFECT), à la sortie de l'évènement</li>
+<li>Résultat : « Les statues bleues exultent. Vous choisirez l'une de leurs cartes. »</li>
+<li><strong>Rouge</strong> - 3 cartes Ironclad, une au choix.</li>
+<li>Effets : récompense de carte ×1 (IRONCLAD), à la sortie de l'évènement</li>
+<li>Résultat : « Les statues rouges rugissent de joie. Vous choisirez l'une de leurs cartes. »</li>
+<li><strong>Rose</strong> - 3 cartes Necrobinder, une au choix.</li>
+<li>Effets : récompense de carte ×1 (NECROBINDER), à la sortie de l'évènement</li>
+<li>Résultat : « Les statues roses sourient. Vous choisirez l'une de leurs cartes. »</li>
+<li><strong>Autres couleurs</strong> - Orange, vert ou Égalité.</li>
+<li>Effets : mène à la page 1</li>
+<li>Résultat : « Vous reprenez la parole. »</li>
+</ul>
+<p>Page 1 : « Les statues attendent votre avis avec impatience. Orange, vert, ou bien aucune couleur ne l'emporte ? »</p>
+<ul>
+<li><strong>Orange</strong> - 3 cartes Regent, une au choix.</li>
+<li>Effets : récompense de carte ×1 (REGENT), à la sortie de l'évènement</li>
+<li>Résultat : « Les statues orange se rengorgent. Vous choisirez l'une de leurs cartes. »</li>
+<li><strong>Vert</strong> - 3 cartes Silent, une au choix.</li>
+<li>Effets : récompense de carte ×1 (SILENT), à la sortie de l'évènement</li>
+<li>Résultat : « Les statues vertes hochent la tête. Vous choisirez l'une de leurs cartes. »</li>
+<li><strong>Égalité</strong> - Gagnez l'Éclat prismatique.</li>
+<li>Effets : gagne la relique PRISMATIC_SHARD</li>
+<li>Résultat : « Aucune couleur n'est meilleure qu'une autre ! Les statues vous remercient : vous obtenez l'Éclat prismatique. »</li>
+<li><strong>Retour</strong> - Bleu, rouge ou rose.</li>
+<li>Effets : mène à la page 0</li>
+<li>Résultat : « Vous reprenez la parole. »</li>
+</ul>
+<!-- /choix:COLORFUL_PHILOSOPHERS -->
+
 <h3 id="fleur-colossale-colossal_flower"><img alt="Fleur colossale" loading="lazy" src="../../bible/images/events/colossal_flower.webp" /> Fleur colossale (<code>COLOSSAL_FLOWER</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act2</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -113,6 +271,25 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 </ul>
 <p>Au rythme des pulsations de ses pétales aux couleurs changeantes, vous gagnez la sensation qu’un Puissant amas de pollen niche en son centre ; mais les pétales ondoyantes sont aussi tranchants que des lames de rasoir, et leurs mouvements imprévisibles.</p>
 <p>Vous pourriez vous contenter d’un peu de nectar doré, mais la tentation du trésor au centre est extrêmement forte...</p>
+<!-- choix:COLOSSAL_FLOWER -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Fleur Colossale | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Une fleur cyclopéenne exsude un parfum suave. Du nectar doré perle sur ses pétales tranchants comme des rasoirs. »</p>
+<ul>
+<li><strong>Boire le nectar doré</strong> - Récupérez 20 PV.</li>
+<li>Effets : soigne 20 PV</li>
+<li>Résultat : « Le nectar restaure vos forces (+20 PV) ! »</li>
+<li><strong>Arracher l'Épine Ancestrale</strong> - Subissez 10 dégâts, obtenez la Relique Vajra (+1 Force).</li>
+<li>Effets : perd 10 PV ; gagne la relique VAJRA</li>
+<li>Résultat : « Vous coupez l'épine au prix d'une vive blessure. Vous obtenez Vajra ! »</li>
+<li><strong>Contourner la plante</strong> - Ne prenez aucun risque.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous contournez la fleur avec précaution. »</li>
+</ul>
+<!-- /choix:COLOSSAL_FLOWER -->
+
 <h3 id="sphere-de-cristal-crystal_sphere"><img alt="Sphère de cristal" loading="lazy" src="../../bible/images/events/crystal_sphere.webp" /> Sphère de cristal (<code>CRYSTAL_SPHERE</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -121,6 +298,23 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 <p>Une voix rauque se fait entendre lorsque vous pénétrez dans une hutte mystique.</p>
 <p>« Votre destin vous amène. Nous devons interroger vos fortunes et votre avenir afin que vous puissiez TOUS NOUS SAUVER !! »
 « Bien, voici les prestations possibles pour les révélations de la Sphère de cristal. Et n’oubliez pas de signer cette décharge, » dit-elle en sortant une plume et un parchemin.</p>
+<!-- choix:CRYSTAL_SPHERE -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Sphère de cristal | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « « J'avais prédit votre venue ! » lance une voix rauque dans la hutte mystique. « Votre destin vous amène. Voici les prestations de la Sphère de cristal. N'oubliez pas de signer cette décharge. » »</p>
+<ul>
+<li><strong>Dévoiler l'avenir</strong> - Payez 56 Or, 3 divinations.</li>
+<li>Condition : au moins 56 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 56 Or ; gagne 1 potion aléatoire ; récompense de carte ×1 (du héros), à la sortie de l'évènement</li>
+<li>Résultat : « Vous payez la voyante. La sphère s'illumine et dévoile vos fortunes ! »</li>
+<li><strong>Plan de paiement</strong> - Ajoute Dette, 6 divinations.</li>
+<li>Effets : ajoute au deck 1 × Debt ; gagne 2 potions aléatoire ; récompense de carte ×1 (du héros), à la sortie de l'évènement</li>
+<li>Résultat : « Vous signez la décharge. La sphère révèle six fortunes, et une dette s'ajoute à votre deck. »</li>
+</ul>
+<!-- /choix:CRYSTAL_SPHERE -->
+
 <h3 id="jungle-dense-dense_vegetation"><img alt="Jungle dense" loading="lazy" src="../../bible/images/events/dense_vegetation.webp" /> Jungle dense (<code>DENSE_VEGETATION</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -128,6 +322,40 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 </ul>
 <p>« Tu es perdu, pris au dépourvu, et la mort approche inexorablement. »</p>
 <p>Que faites-vous ?</p>
+<!-- choix:DENSE_VEGETATION -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Jungle dense | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Après un long détour par le mauvais chemin, vous voilà dans une jungle de fougères, de buissons et de lianes. Surtout de lianes. Épuisé, vous pensez : « Tu es perdu, et la mort approche. » Que faites-vous ? »</p>
+<ul>
+<li><strong>S'accrocher</strong> - Perdez 3 PV, relancez la carte.</li>
+<li>Effets : perd 3 PV ; mène à la page 1</li>
+<li>Résultat : « Vous vous accrochez aux lianes et reprenez votre souffle. »</li>
+<li><strong>Surmonter</strong> - Une carte au hasard est retirée.</li>
+<li>Effets : retire 1 carte du deck (au hasard)</li>
+<li>Résultat : « Vous vous frayez un chemin dans la jungle. Une carte au hasard de votre deck est retirée. »</li>
+</ul>
+<p>Page 1 : « Les lianes vous enserrent toujours. L'épuisement vous gagne. Que faites-vous ? »</p>
+<ul>
+<li><strong>S'accrocher</strong> - Perdez 4 PV, relancez la carte.</li>
+<li>Effets : perd 4 PV ; mène à la page 2</li>
+<li>Résultat : « Vous vous accrochez encore, à bout de forces. »</li>
+<li><strong>Surmonter</strong> - Une carte au hasard est retirée.</li>
+<li>Effets : retire 1 carte du deck (au hasard)</li>
+<li>Résultat : « Vous vous frayez un chemin dans la jungle. Une carte au hasard de votre deck est retirée. »</li>
+</ul>
+<p>Page 2 : « Les lianes vous enserrent toujours. Vous tenez à peine debout. Que faites-vous ? »</p>
+<ul>
+<li><strong>S'accrocher</strong> - Perdez 5 PV, relancez la carte.</li>
+<li>Effets : perd 5 PV ; mène à la page 2</li>
+<li>Résultat : « Vous vous accrochez encore, à bout de forces. »</li>
+<li><strong>Surmonter</strong> - Une carte au hasard est retirée.</li>
+<li>Effets : retire 1 carte du deck (au hasard)</li>
+<li>Résultat : « Vous vous frayez un chemin dans la jungle. Une carte au hasard de votre deck est retirée. »</li>
+</ul>
+<!-- /choix:DENSE_VEGETATION -->
+
 <h3 id="salle-aux-poupees-doll_room"><img alt="Salle aux poupées" loading="lazy" src="../../bible/images/events/doll_room.webp" /> Salle aux poupées (<code>DOLL_ROOM</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>3</code></li>
@@ -136,6 +364,46 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 <p>Elle est remplie de toutes sortes de poupées. Chacune d’entre elles est unique : leurs expressions vont de la joie à la tristesse, et leurs tenues traversent les siècles, voire même des mondes inconnus au vôtre.</p>
 <p>Un chœur de murmures gagne progressivement en intensité, jusqu’à tel point que les poupées sont en train de hurler plus fort les unes que les autres, tentant de vous interpeller...</p>
 <p>Vous devez en choisir une et partir le plus vite possible.</p>
+<!-- choix:DOLL_ROOM -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Salle aux poupées | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Une pièce dissimulée, remplie de poupées toutes uniques. Leurs murmures enflent jusqu'aux hurlements: elles veulent que vous les choisissiez. Prenez-en une et partez vite. »</p>
+<ul>
+<li><strong>Choisir au hasard</strong> - Une poupée au hasard.</li>
+<li>Effets : gagne la relique DAUGHTER_OF_THE_WIND,MR_STRUGGLES,BING_BONG</li>
+<li>Résultat : « Vous attrapez une poupée sans regarder et filez. Vous obtenez une relique ! »</li>
+<li><strong>Prendre son temps</strong> - Perdez 5 PV, 1 poupée sur 2.</li>
+<li>Effets : perd 5 PV ; mène à la page 1</li>
+<li>Résultat : « Vous prenez votre temps, malgré les cris. Perdez 5 PV. »</li>
+<li><strong>Examiner chacune</strong> - Perdez 15 PV, 1 poupée sur 3.</li>
+<li>Effets : perd 15 PV ; mène à la page 2</li>
+<li>Résultat : « Vous examinez chaque poupée, les oreilles en sang. Perdez 15 PV. »</li>
+</ul>
+<p>Page 1 : « Deux poupées se détachent des autres. Laquelle emportez-vous ? »</p>
+<ul>
+<li><strong>Fille des vents</strong> - Chaque Attaque donne 1 Armure.</li>
+<li>Effets : gagne la relique DAUGHTER_OF_THE_WIND</li>
+<li>Résultat : « Vous emportez la Fille des vents. »</li>
+<li><strong>Monsieur Carnage</strong> - Dégâts = tour, à tous, chaque tour.</li>
+<li>Effets : gagne la relique MR_STRUGGLES</li>
+<li>Résultat : « Vous emportez Monsieur Carnage. »</li>
+</ul>
+<p>Page 2 : « Après un examen minutieux, trois poupées se distinguent. Laquelle emportez-vous ? »</p>
+<ul>
+<li><strong>Fille des vents</strong> - Chaque Attaque donne 1 Armure.</li>
+<li>Effets : gagne la relique DAUGHTER_OF_THE_WIND</li>
+<li>Résultat : « Vous emportez la Fille des vents. »</li>
+<li><strong>Monsieur Carnage</strong> - Dégâts = tour, à tous, chaque tour.</li>
+<li>Effets : gagne la relique MR_STRUGGLES</li>
+<li>Résultat : « Vous emportez Monsieur Carnage. »</li>
+<li><strong>Bing bong</strong> - Chaque carte ajoutée est copiée.</li>
+<li>Effets : gagne la relique BING_BONG</li>
+<li>Résultat : « Vous emportez Bing bong. »</li>
+</ul>
+<!-- /choix:DOLL_ROOM -->
+
 <h3 id="portes-de-lombre-et-de-la-lumiere-doors_of_light_and_dark"><img alt="Portes de l’ombre et de la lumière" loading="lazy" src="../../bible/images/events/doors_of_light_and_dark.webp" /> Portes de l’ombre et de la lumière (<code>DOORS_OF_LIGHT_AND_DARK</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1b</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -144,12 +412,44 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 <p>Lorsque vous entrez, vous découvrez deux portes scintillantes ainsi qu’un portier élégamment vêtu.
 « Un visiteur, enfin ! Venez, je vous en prie ! Choisissez une porte, n’importe laquelle ! »</p>
 <p>Sommes-nous toujours dans la Tour ? Comment cet endroit peut-il être aussi propre ?</p>
+<!-- choix:DOORS_OF_LIGHT_AND_DARK -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Portes de l'ombre et de la lumière | <strong>Zones :</strong> Acte 1b</li>
+</ul>
+<p>Page 0 (début) : « Une porte existe là où il n'y en avait pas. Dedans, deux portes scintillantes et un portier élégant : « Un visiteur, enfin ! Choisissez une porte, n'importe laquelle ! » »</p>
+<ul>
+<li><strong>Porte de lumière</strong> - Améliorez 2 cartes au hasard.</li>
+<li>Effets : améliore 2 cartes (au hasard)</li>
+<li>Résultat : « La lumière vous enveloppe. Deux de vos cartes sont améliorées (+) ! »</li>
+<li><strong>Porte d'ombre</strong> - Retirez une carte de votre deck.</li>
+<li>Effets : retire 1 carte du deck (au choix)</li>
+<li>Résultat : « L'ombre vous avale. Choisissez la carte qu'elle emportera. »</li>
+</ul>
+<!-- /choix:DOORS_OF_LIGHT_AND_DARK -->
+
 <h3 id="phare-englouti-drowning_beacon"><img alt="Phare englouti" loading="lazy" src="../../bible/images/events/drowning_beacon.webp" /> Phare englouti (<code>DROWNING_BEACON</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1b</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
 <li><strong>Description :</strong> Après avoir traversé un paysage onirique d’eaux calmes et de rochers, vous émergez face à un phare en train de s'enfoncer dans la boue et qui émet une lueur d'anti-lumière.</li>
 </ul>
 <p>Vous pouvez mettre en bouteille un peu du liquide faiblement luminescent qui s’est accumulé ici, ou bien vous pouvez tenter d’atteindre le sommet du phare afin d’en récupérer la lentille.</p>
+<!-- choix:DROWNING_BEACON -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Phare englouti | <strong>Zones :</strong> Acte 1b</li>
+</ul>
+<p>Page 0 (début) : « Après un paysage onirique d'eaux calmes et de rochers, vous émergez face à un phare qui s'enfonce dans la boue et émet une lueur d'anti-lumière. Mettre en bouteille le liquide luminescent, ou grimper récupérer la lentille ? »</p>
+<ul>
+<li><strong>Mettre en bouteille</strong> - Obtenez Potion luminescente.</li>
+<li>Effets : gagne la potion GLOWWATER_POTION</li>
+<li>Résultat : « Vous recueillez le liquide faiblement luminescent dans une fiole. Vous obtenez Potion luminescente ! »</li>
+<li><strong>Grimper</strong> - Lentille de Fresnel, -13 PV Max.</li>
+<li>Effets : gagne la relique FRESNEL_LENS ; -13 PV max</li>
+<li>Résultat : « L'ascension vous épuise, mais vous arrachez la lentille. Vous obtenez Lentille de Fresnel ! »</li>
+</ul>
+<!-- /choix:DROWNING_BEACON -->
+
 <h3 id="convoyeur-sans-fin-endless_conveyor"><img alt="Convoyeur sans fin" loading="lazy" src="../../bible/images/events/endless_conveyor.webp" /> Convoyeur sans fin (<code>ENDLESS_CONVEYOR</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1b</code> | <strong>Nombre d'options :</strong> <code>1</code></li>
@@ -159,11 +459,209 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 <p>À l'intérieur, un chef cuisinier svelte doté de nombreux bras prépare avec dextérité des bouchées alléchantes qu'il pose sur un convoyeur en chitine sinueux.</p>
 <p>De l'un de ses bras, le chef indique un panneau :
 40 Pièces d'or par assiette</p>
+<!-- choix:ENDLESS_CONVEYOR -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Convoyeur sans fin | <strong>Zones :</strong> Acte 1b</li>
+</ul>
+<p>Page 0 (début) : « Vous entrez dans une baraque à l'enseigne de travers : « FESTIN À VOLONTÉ - PAYEZ SELON VOTRE FAIM ! » Un chef svelte à nombreux bras pose des bouchées sur un convoyeur de chitine. Un panneau : 40 Pièces d'or par assiette. »</p>
+<ul>
+<li><strong>Observer le chef</strong> - Améliore une carte aléatoire.</li>
+<li>Effets : améliore 1 carte (au hasard) ; mène à la page 1</li>
+<li>Résultat : « Le chef ondule au-dessus de ses plats. Vous retenez ses gestes : une carte aléatoire sera améliorée. »</li>
+</ul>
+<p>Page 1 : « Le convoyeur de chitine serpente devant vous, chargé de plats. 40 Pièces d'or par assiette. »</p>
+<ul>
+<li><strong>Caviar</strong> - -40 Or, +4 PV Max.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; +4 PV max ; mène à la page 1</li>
+<li>Résultat : « Des perles salées éclatent sous la dent. Vous gagnez 4 PV Max. »</li>
+<li><strong>Roulé de palourde</strong> - -40 Or, soigne 10 PV.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; soigne 10 PV ; mène à la page 1</li>
+<li>Résultat : « Un roulé tiède et réconfortant. Vous récupérez 10 PV. »</li>
+<li><strong>Anguille frite</strong> - -40 Or, une carte incolore.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; ajoute au deck 1 carte Incolore aléatoire ; mène à la page 1</li>
+<li>Résultat : « Une anguille croustillante, étrangement nourrissante. Une carte incolore rejoint votre deck. »</li>
+<li><strong>Plats suivants</strong> - Le tapis continue d'avancer.</li>
+<li>Effets : mène à la page 2</li>
+<li>Résultat : « Le tapis roule encore. »</li>
+</ul>
+<p>Page 2 : « Le convoyeur de chitine serpente devant vous, chargé de plats. 40 Pièces d'or par assiette. »</p>
+<ul>
+<li><strong>Poisson d'or</strong> - Gratuit : gagnez 75 Or.</li>
+<li>Effets : gagne 75 Or ; mène à la page 5</li>
+<li>Résultat : « GAGNANT CHANCEUX ! Le chef vous glisse 75 Pièces d'or avec le poisson. »</li>
+<li><strong>Foie en gelée</strong> - -40 Or, transforme une carte.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; transforme 1 carte (au choix) ; mène à la page 2</li>
+<li>Résultat : « Le foie en gelée tremble, puis vous transforme de l'intérieur. Choisissez la carte à transformer. »</li>
+<li><strong>Salade seapunk</strong> - -40 Or, ajoute Repas frénétique.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; ajoute au deck 1 × Feeding Frenzy ; mène à la page 2</li>
+<li>Résultat : « Une salade frénétique ! Repas frénétique rejoint votre deck. »</li>
+<li><strong>Plats suivants</strong> - Le tapis continue d'avancer.</li>
+<li>Effets : mène à la page 3</li>
+<li>Résultat : « Le tapis roule encore. »</li>
+</ul>
+<p>Page 3 : « Le convoyeur de chitine serpente devant vous, chargé de plats. 40 Pièces d'or par assiette. »</p>
+<ul>
+<li><strong>Vivaneau épicé</strong> - -40 Or, améliore une carte.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; améliore 1 carte (au hasard) ; mène à la page 3</li>
+<li>Résultat : « Le vivaneau est si épicé qu'il vous aiguise l'esprit. Une carte aléatoire sera améliorée. »</li>
+<li><strong>Condiment suspect</strong> - -40 Or, une potion aléatoire.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; gagne 1 potion aléatoire ; mène à la page 3</li>
+<li>Résultat : « Le condiment sent le soufre, mais le chef hoche la tête. Vous obtenez une potion. »</li>
+<li><strong>Plats précédents</strong> - Revenir au début du tapis.</li>
+<li>Effets : mène à la page 1</li>
+<li>Résultat : « Le tapis ramène les premiers plats. »</li>
+<li><strong>Partir</strong> - Quitter la baraque.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous quittez la baraque, le ventre plein, le chef agitant six bras d'adieu. »</li>
+</ul>
+<p>Page 4 : « Le convoyeur de chitine serpente devant vous, chargé de plats. 40 Pièces d'or par assiette. »</p>
+<ul>
+<li><strong>Caviar</strong> - -40 Or, +4 PV Max.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; +4 PV max ; mène à la page 4</li>
+<li>Résultat : « Des perles salées éclatent sous la dent. Vous gagnez 4 PV Max. »</li>
+<li><strong>Roulé de palourde</strong> - -40 Or, soigne 10 PV.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; soigne 10 PV ; mène à la page 4</li>
+<li>Résultat : « Un roulé tiède et réconfortant. Vous récupérez 10 PV. »</li>
+<li><strong>Anguille frite</strong> - -40 Or, une carte incolore.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; ajoute au deck 1 carte Incolore aléatoire ; mène à la page 4</li>
+<li>Résultat : « Une anguille croustillante, étrangement nourrissante. Une carte incolore rejoint votre deck. »</li>
+<li><strong>Plats suivants</strong> - Le tapis continue d'avancer.</li>
+<li>Effets : mène à la page 5</li>
+<li>Résultat : « Le tapis roule encore. »</li>
+</ul>
+<p>Page 5 : « Le convoyeur de chitine serpente devant vous, chargé de plats. 40 Pièces d'or par assiette. »</p>
+<ul>
+<li><strong>Foie en gelée</strong> - -40 Or, transforme une carte.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; transforme 1 carte (au choix) ; mène à la page 5</li>
+<li>Résultat : « Le foie en gelée tremble, puis vous transforme de l'intérieur. Choisissez la carte à transformer. »</li>
+<li><strong>Salade seapunk</strong> - -40 Or, ajoute Repas frénétique.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; ajoute au deck 1 × Feeding Frenzy ; mène à la page 5</li>
+<li>Résultat : « Une salade frénétique ! Repas frénétique rejoint votre deck. »</li>
+<li><strong>Plats suivants</strong> - Le tapis continue d'avancer.</li>
+<li>Effets : mène à la page 6</li>
+<li>Résultat : « Le tapis roule encore. »</li>
+</ul>
+<p>Page 6 : « Le convoyeur de chitine serpente devant vous, chargé de plats. 40 Pièces d'or par assiette. »</p>
+<ul>
+<li><strong>Vivaneau épicé</strong> - -40 Or, améliore une carte.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; améliore 1 carte (au hasard) ; mène à la page 6</li>
+<li>Résultat : « Le vivaneau est si épicé qu'il vous aiguise l'esprit. Une carte aléatoire sera améliorée. »</li>
+<li><strong>Condiment suspect</strong> - -40 Or, une potion aléatoire.</li>
+<li>Condition : au moins 40 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 40 Or ; gagne 1 potion aléatoire ; mène à la page 6</li>
+<li>Résultat : « Le condiment sent le soufre, mais le chef hoche la tête. Vous obtenez une potion. »</li>
+<li><strong>Plats précédents</strong> - Revenir au début du tapis.</li>
+<li>Effets : mène à la page 4</li>
+<li>Résultat : « Le tapis ramène les premiers plats. »</li>
+<li><strong>Partir</strong> - Quitter la baraque.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous quittez la baraque, le ventre plein, le chef agitant six bras d'adieu. »</li>
+</ul>
+<!-- /choix:ENDLESS_CONVEYOR -->
+
 <h3 id="le-marchand-fake_merchant"><img alt="Le Marchand ???" src="" /> Le Marchand ??? (<code>FAKE_MERCHANT</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>0</code></li>
 <li><strong>Description :</strong> À faire</li>
 </ul>
+<!-- choix:FAKE_MERCHANT -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Le Marchand ??? | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Un marchand au sourire un peu trop large vous interpelle : « Des reliques rares, rien que pour vous ! » Quelque chose cloche chez lui. »</p>
+<ul>
+<li><strong>Reliques contrefaites</strong> - Achetez une relique pour 50 Or.</li>
+<li>Effets : mène à la page 1</li>
+<li>Résultat : « Le marchand étale sa marchandise, tout sourire. »</li>
+<li><strong>Lancer une Potion infecte</strong> - Défiez le marchand au combat.</li>
+<li>Condition : posséder la potion FOUL_POTION (sinon l'option est grisée)</li>
+<li>Effets : perd la potion FOUL_POTION ; déclenche un combat normal, à la sortie de l'évènement</li>
+<li>Résultat : « La fiole éclate sur le marchand. Son sourire disparaît : il se jette sur vous ! »</li>
+<li><strong>Partir</strong> - Ne rien acheter.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous passez votre chemin. Le marchand vous regarde partir sans un mot. »</li>
+</ul>
+<p>Page 1 : « « Ces reliques sont authentiques, je le jure ! » Chacune coûte 50 Or. »</p>
+<ul>
+<li><strong>Ancre ???</strong> - 50 Or.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne la relique FAKE_ANCHOR</li>
+<li>Résultat : « Vous payez 50 Or. Vous obtenez Ancre ???. »</li>
+<li><strong>Fiole de sang ???</strong> - 50 Or.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne la relique FAKE_BLOOD_VIAL</li>
+<li>Résultat : « Vous payez 50 Or. Vous obtenez Fiole de sang ???. »</li>
+<li><strong>Fleur joyeuse ???</strong> - 50 Or.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne la relique FAKE_HAPPY_FLOWER</li>
+<li>Résultat : « Vous payez 50 Or. Vous obtenez Fleur joyeuse ???. »</li>
+<li><strong>Voir la suite</strong> - Autres reliques.</li>
+<li>Effets : mène à la page 2</li>
+<li>Résultat : « Le marchand sort d'autres reliques de sa besace. »</li>
+</ul>
+<p>Page 2 : « « Encore quelques merveilles, ami ! » Chaque relique coûte 50 Or. »</p>
+<ul>
+<li><strong>Gaufre de Lee ???</strong> - 50 Or.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne la relique FAKE_LEES_WAFFLE</li>
+<li>Résultat : « Vous payez 50 Or. Vous obtenez Gaufre de Lee ???. »</li>
+<li><strong>Mangue ???</strong> - 50 Or.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne la relique FAKE_MANGO</li>
+<li>Résultat : « Vous payez 50 Or. Vous obtenez Mangue ???. »</li>
+<li><strong>Tapis du Marchand ???</strong> - 50 Or.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne la relique FAKE_MERCHANTS_RUG</li>
+<li>Résultat : « Vous payez 50 Or. Vous obtenez Le tapis du Marchand ???. »</li>
+<li><strong>Voir la suite</strong> - Autres reliques.</li>
+<li>Effets : mène à la page 3</li>
+<li>Résultat : « Le marchand fouille encore sa besace. »</li>
+</ul>
+<p>Page 3 : « « Les dernières, et pas les moins belles ! » Chaque relique coûte 50 Or. »</p>
+<ul>
+<li><strong>Orichalque ???</strong> - 50 Or.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne la relique FAKE_ORICHALCUM</li>
+<li>Résultat : « Vous payez 50 Or. Vous obtenez Orichalque ???. »</li>
+<li><strong>Œil de geckobra ???</strong> - 50 Or.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne la relique FAKE_SNECKO_EYE</li>
+<li>Résultat : « Vous payez 50 Or. Vous obtenez Œil de geckobra ???. »</li>
+<li><strong>Mannequin ???</strong> - 50 Or.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne la relique FAKE_STRIKE_DUMMY</li>
+<li>Résultat : « Vous payez 50 Or. Vous obtenez Mannequin d'entraînement ???. »</li>
+<li><strong>Voir la suite</strong> - Autres reliques.</li>
+<li>Effets : mène à la page 4</li>
+<li>Résultat : « Le marchand sort enfin le fond de sa besace. »</li>
+</ul>
+<p>Page 4 : « « Le tout dernier, mon préféré ! » Il coûte 50 Or. »</p>
+<ul>
+<li><strong>Service à thé ???</strong> - 50 Or.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne la relique FAKE_VENERABLE_TEA_SET</li>
+<li>Résultat : « Vous payez 50 Or. Vous obtenez Service à thé vénérable ???. »</li>
+<li><strong>Partir</strong> - Ne rien acheter.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous quittez l'étal. Le marchand vous regarde partir sans un mot. »</li>
+</ul>
+<!-- /choix:FAKE_MERCHANT -->
+
 <h3 id="champ-de-trous-a-taille-corporelle-field_of_man_sized_holes"><img alt="Champ de trous à taille corporelle" loading="lazy" src="../../bible/images/events/field_of_man_sized_holes.webp" /> Champ de trous à taille corporelle (<code>FIELD_OF_MAN_SIZED_HOLES</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act2</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -171,6 +669,22 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 </ul>
 <p>L’une de ces silhouettes correspond à la vôtre.</p>
 <p>La correspondance est parfaite...</p>
+<!-- choix:FIELD_OF_MAN_SIZED_HOLES -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Champ de trous à taille corporelle | <strong>Zones :</strong> Acte 2</li>
+</ul>
+<p>Page 0 (début) : « Vous vous arrêtez devant un énorme champ dans lequel sont taillées de larges silhouettes de corps. L'une de ces silhouettes correspond à la vôtre. La correspondance est parfaite... »</p>
+<ul>
+<li><strong>Entrer dans votre trou</strong> - Enchantez une carte au choix.</li>
+<li>Effets : enchante 1 carte (au choix) : PERFECT_FIT</li>
+<li>Résultat : « Vous vous glissez dans le trou, il vous va comme un gant. Vous allez choisir une carte à enchanter. »</li>
+<li><strong>Résister</strong> - Retirez 2 cartes, ajoutez Normalité.</li>
+<li>Effets : retire 2 cartes du deck (au choix) ; ajoute au deck 1 × Normality</li>
+<li>Résultat : « Vous résistez à l'appel du trou. Vous allez retirer 2 cartes, et la Normalité s'installe. »</li>
+</ul>
+<!-- /choix:FIELD_OF_MAN_SIZED_HOLES -->
+
 <h3 id="tombe-du-guerrier-oublie-grave_of_the_forgotten"><img alt="Tombe du guerrier oublié" loading="lazy" src="../../bible/images/events/grave_of_the_forgotten.webp" /> Tombe du guerrier oublié (<code>GRAVE_OF_THE_FORGOTTEN</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act3</code> | <strong>Nombre d'options :</strong> <code>3</code></li>
@@ -178,6 +692,23 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 </ul>
 <p>Un guerrier orgueilleux est tombé au combat, mais son âme ne trouve pas le repos. Elle veut continuer à se battre, et vous pouvez ressentir qu’elle implore de voyager à vos côtés.</p>
 <p>Mais peut-être vaudrait-il mieux pour elle qu’elle se confronte à la réalité ?</p>
+<!-- choix:GRAVE_OF_THE_FORGOTTEN -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Tombe du guerrier oublié | <strong>Zones :</strong> Acte 3</li>
+</ul>
+<p>Page 0 (début) : « Une tombe solitaire, surmontée d'une flamme bleue. L'âme d'un guerrier orgueilleux y implore de voyager à vos côtés. Peut-être vaudrait-il mieux qu'elle affronte la réalité ? »</p>
+<ul>
+<li><strong>Accepter l'âme</strong> - Gagnez Âme oubliée.</li>
+<li>Effets : gagne la relique FORGOTTEN_SOUL</li>
+<li>Résultat : « La flamme bleue se glisse en vous. Vous obtenez Âme oubliée ! »</li>
+<li><strong>Confronter</strong> - Gagnez Déclin, enchantez une carte.</li>
+<li>Condition : une carte du deck a Épuisement (sinon l'option est grisée)</li>
+<li>Effets : ajoute au deck 1 × Decay ; enchante 1 carte (au choix) : SOULS_POWER</li>
+<li>Résultat : « L'âme s'éteint, mais sa peine vous marque. Vous obtenez Déclin ! Choisissez une carte qui perdra Épuisement. »</li>
+</ul>
+<!-- /choix:GRAVE_OF_THE_FORGOTTEN -->
+
 <h3 id="affame-de-champis-hungry_for_mushrooms"><img alt="Affamé de champis" loading="lazy" src="../../bible/images/events/hungry_for_mushrooms.webp" /> Affamé de champis (<code>HUNGRY_FOR_MUSHROOMS</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -186,12 +717,44 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 </ul>
 <p>Vous suivez l’odeur et arrivez dans un campement accueillant où cuisent toutes sortes de champignons appétissants ! Vous avez si faim que vous ne vous préoccupez pas de leur innocuité.
 (Si faim que vous ne remarquez même pas l’aventurier mort qui gît à terre.)</p>
+<!-- choix:HUNGRY_FOR_MUSHROOMS -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Affamé de champis | <strong>Zones :</strong> Acte 3</li>
+</ul>
+<p>Page 0 (début) : « Une odeur incroyable vous mène à un campement où cuisent des champignons appétissants. Vous avez si faim que vous ne remarquez même pas l'aventurier mort qui gît à terre. »</p>
+<ul>
+<li><strong>Gros champignon</strong> - +20 PV Max, 2 cartes de moins au combat</li>
+<li>Effets : gagne la relique BIG_MUSHROOM</li>
+<li>Résultat : « Vous dévorez le gros champignon. Vous vous sentez... plus grand. Vous obtenez Gros champi ! »</li>
+<li><strong>Champignon parfumé</strong> - Perdez 15 PV, améliorez 2 cartes</li>
+<li>Effets : gagne la relique FRAGRANT_MUSHROOM</li>
+<li>Résultat : « Un parfum enivrant vous monte à la tête. Vous obtenez Champi aromatique ! »</li>
+</ul>
+<!-- /choix:HUNGRY_FOR_MUSHROOMS -->
+
 <h3 id="automate-infeste-infested_automaton"><img alt="Automate infesté" loading="lazy" src="../../bible/images/events/infested_automaton.webp" /> Automate infesté (<code>INFESTED_AUTOMATON</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act2</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
 <li><strong>Description :</strong> Vous arrivez dans une salle remplie de robots morts.</li>
 </ul>
 <p>Un seul automate paraît encore en service, mais son cœur faiblement lumineux est englouti par une excroissance organique grotesque, et il ne réagit plus.</p>
+<!-- choix:INFESTED_AUTOMATON -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Automate infesté | <strong>Zones :</strong> Acte 2</li>
+</ul>
+<p>Page 0 (début) : « Vous arrivez dans une salle remplie de robots morts. Un seul automate paraît encore en service, mais son coeur faiblement lumineux est englouti par une excroissance organique grotesque, et il ne réagit plus. »</p>
+<ul>
+<li><strong>Étudier</strong> - Ajoute un Pouvoir aléatoire.</li>
+<li>Effets : ajoute au deck 1 carte Pouvoir aléatoire du héros</li>
+<li>Résultat : « Vous étudiez les circuits de l'automate et en tirez un savoir-faire inattendu. »</li>
+<li><strong>Toucher le coeur</strong> - Ajoute une carte aléatoire à 0.</li>
+<li>Effets : ajoute au deck 1 carte coûtant 0 aléatoire du héros</li>
+<li>Résultat : « Votre main effleure le coeur luisant. Une carte vous revient en mémoire. »</li>
+</ul>
+<!-- /choix:INFESTED_AUTOMATON -->
+
 <h3 id="aventure-du-labyrinthe-de-la-jungle-jungle_maze_adventure"><img alt="Aventure du labyrinthe de la jungle" loading="lazy" src="../../bible/images/events/jungle_maze_adventure.webp" /> Aventure du labyrinthe de la jungle (<code>JUNGLE_MAZE_ADVENTURE</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -199,6 +762,23 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 </ul>
 <p>Ils vous proposent d’unir vos forces aux leurs pour vous embarquer dans une Quête épique, dans le but de piller les trésors de ce labyrinthe. Étant vous-même un aventurier expérimenté, vous ne vous faites pas d’illusions sur les pièges mortels et les gardiens redoutables dont est sûrement rempli ce labyrinthe.</p>
 <p>Ce serait plus simple si vous travailliez ensemble, mais il faudra alors partager le butin.</p>
+<!-- choix:JUNGLE_MAZE_ADVENTURE -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Aventure du labyrinthe de la jungle | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Dans une clairière, une bande d'aventuriers hétéroclite, l'air démoralisée, vous indique un labyrinthe géant. Ils vous proposent de piller ses trésors ensemble, mais il faudra alors partager le butin. »</p>
+<ul>
+<li><strong>Unir ses forces</strong> - Gagnez 42 Or.</li>
+<li>Effets : gagne 42 Or</li>
+<li>Résultat : « Vous explorez le labyrinthe en équipe et partagez le butin. Vous obtenez 42 Or. »</li>
+<li><strong>Quête en solo</strong> - Gagnez 140 Or, perdez 18 PV.</li>
+<li>Condition : plus de 18 PV (sinon l'option est grisée)</li>
+<li>Effets : gagne 140 Or ; perd 18 PV</li>
+<li>Résultat : « Seul contre les pièges, vous gardez tout le trésor. Vous obtenez 140 Or, mais y laissez 18 PV. »</li>
+</ul>
+<!-- /choix:JUNGLE_MAZE_ADVENTURE -->
+
 <h3 id="feu-follet-egare-lost_wisp"><img alt="Feu follet égaré" loading="lazy" src="../../bible/images/events/lost_wisp.webp" /> Feu follet égaré (<code>LOST_WISP</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act2</code> | <strong>Nombre d'options :</strong> <code>3</code></li>
@@ -206,12 +786,46 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 Ce dernier semble attirer toutes sortes de bestioles ; mais voilà que vous voyez en émaner des flammes !</li>
 </ul>
 <p>Vous vous approchez pour l’examiner.</p>
+<!-- choix:LOST_WISP -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<p><em>Pas encore dans le jeu</em> : choix de la référence (<code>bible/data/event_choices</code>).</p>
+<p>Page <code>start</code> :</p>
+<ul>
+<li><strong>Capturer le feu follet</strong> (Capture the Wisp)</li>
+<li>Effets : gain relic 1 (LOST_WISP) ; add curse 1 (DECAY)</li>
+<li><strong>Fouiller les environs</strong> (Search the Nearby Area)</li>
+<li>Effets : gain gold - 45-75 or</li>
+<li><strong>(3e option)</strong> ((third option))</li>
+<li>Effets : other - 3e option du JSON (optionCount=3) non documentee; la page indique 'Your Max HP is too low' (seuil inconnu)</li>
+</ul>
+<!-- /choix:LOST_WISP -->
+
 <h3 id="chur-lumineux-luminous_choir"><img alt="Chœur lumineux" loading="lazy" src="../../bible/images/events/luminous_choir.webp" /> Chœur lumineux (<code>LUMINOUS_CHOIR</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>3</code></li>
 <li><strong>Description :</strong> Vous arrivez dans une clairière baignée d’une étrange lueur bleue. Tout autour de vous, des champignons géants aux chapeaux gonflés répandent des ondes colorées par bioluminescence. Tandis que vous vous approchez, les champignons commencent à émettre des mélodies obsédantes et envoûtantes qui résonnent jusque dans votre poitrine.</li>
 </ul>
 <p>Vous remarquez quelque chose de brillant, incrusté dans la chair du plus grand des champignons, et qui pulse au rythme de leur musique.</p>
+<!-- choix:LUMINOUS_CHOIR -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Chœur lumineux | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Dans une clairière baignée d'une lueur bleue, des champignons géants chantent des mélodies envoûtantes. Quelque chose de brillant pulse dans la chair du plus grand d'entre eux. »</p>
+<ul>
+<li><strong>Offrir un tribut</strong> - Payez 149 Or, gagnez une relique.</li>
+<li>Condition : au moins 149 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 149 Or ; gagne une relique aléatoire</li>
+<li>Résultat : « Le chœur s'apaise et le champignon libère une relique. »</li>
+<li><strong>Plonger la main</strong> - Retirez 2 cartes, +1 malédiction.</li>
+<li>Effets : retire 2 cartes du deck (au choix) ; ajoute au deck 1 × Spore Mind</li>
+<li>Résultat : « Vous plongez la main dans la chair du champignon. Choisissez 2 cartes à retirer ; Conscience sporique rejoint votre deck. »</li>
+<li><strong>Partir</strong> - Ne rien faire.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous quittez la clairière, la mélodie résonnant encore dans votre poitrine. »</li>
+</ul>
+<!-- /choix:LUMINOUS_CHOIR -->
+
 <h3 id="bosquet-des-morphiques-morphic_grove"><img alt="Bosquet des Morphiques" loading="lazy" src="../../bible/images/events/morphic_grove.webp" /> Bosquet des Morphiques (<code>MORPHIC_GROVE</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -220,6 +834,22 @@ Un chœur chaleureux vous assaille en guise de salutations : c'est un groupe de
 </ul>
 <p>L'un des Morphiques se tient dans un coin à l’écart des autres. Celui-ci n’est clairement pas de nature sociable.</p>
 <p>Vous approchez-vous du groupe ou de l’individu solitaire ?</p>
+<!-- choix:MORPHIC_GROVE -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Bosquet des Morphiques | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Un bosquet d'arbres cristallins vacille avec entrain. Des Morphiques gazouillants vous saluent en choeur, sauf un, seul dans son coin. Vous approchez-vous du groupe ou du solitaire ? »</p>
+<ul>
+<li><strong>Le groupe</strong> - Perdez tout l'Or, transformez 2 cartes.</li>
+<li>Effets : perd 32767 Or ; transforme 2 cartes (au choix)</li>
+<li>Résultat : « Les Morphiques réclament tout votre Or et remodèlent votre deck. Choisissez 2 cartes à transformer. »</li>
+<li><strong>Le solitaire</strong> - Gagnez 5 PV Max.</li>
+<li>Effets : +5 PV max</li>
+<li>Résultat : « Le Morphique solitaire vous gratifie d'un regard timide. Vous gagnez 5 PV Max. »</li>
+</ul>
+<!-- /choix:MORPHIC_GROVE -->
+
 <h3 id="coursier-de-potions-potion_courier"><img alt="Coursier de potions" loading="lazy" src="../../bible/images/events/potion_courier.webp" /> Coursier de potions (<code>POTION_COURIER</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -227,12 +857,44 @@ Un chœur chaleureux vous assaille en guise de salutations : c'est un groupe de
 Pas un mouvement. Pas un signe de vie. Mort !?
 Ses affaires semblent avoir été fouillées, mais vous apercevez un lot de Potions à l’odeur âcre avec un mot : "Destinataire : Le Marchand".</li>
 </ul>
+<!-- choix:POTION_COURIER -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Coursier de potions | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Une odeur âcre flotte dans l'air. Un Coursier de potions gît à terre, sans un souffle. Ses affaires ont été fouillées, mais un lot de potions nauséabondes reste, marqué : « Destinataire : Le Marchand ». »</p>
+<ul>
+<li><strong>Prendre les potions</strong> - Gagnez 3 Potions infectes.</li>
+<li>Effets : gagne la potion FOUL_POTION ; gagne la potion FOUL_POTION ; gagne la potion FOUL_POTION</li>
+<li>Résultat : « Vous emportez le lot, le nez pincé. Vous obtenez 3 Potions infectes ! »</li>
+<li><strong>Fouiller</strong> - Gagnez 1 potion au hasard.</li>
+<li>Effets : gagne 1 potion aléatoire</li>
+<li>Résultat : « Vous fouillez ses affaires et dénichez une potion intacte. »</li>
+</ul>
+<!-- /choix:POTION_COURIER -->
+
 <h3 id="a-coups-de-poing-punch_off"><img alt="À coups de poing" loading="lazy" src="../../bible/images/events/punch_off.webp" /> À coups de poing (<code>PUNCH_OFF</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1b</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
 <li><strong>Description :</strong> Deux Assemblages de pugilat sont en pleine bagarre, et vous apercevez entre eux un trésor...</li>
 </ul>
 <p>Devriez-vous essayer de l’attraper ?</p>
+<!-- choix:PUNCH_OFF -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> À coups de poing | <strong>Zones :</strong> Acte 1b</li>
+</ul>
+<p>Page 0 (début) : « Deux Assemblages de pugilat sont en pleine bagarre, et vous apercevez entre eux un trésor... Devriez-vous essayer de l'attraper ? »</p>
+<ul>
+<li><strong>Chiper</strong> - Relique aléatoire, +Blessure.</li>
+<li>Effets : ajoute au deck 1 × Injury ; gagne une relique aléatoire</li>
+<li>Résultat : « Vous filez le trésor sous le nez des combattants. Un coup au passage vous laisse une Blessure. »</li>
+<li><strong>Je peux les prendre</strong> - Combat : relique et récompenses.</li>
+<li>Effets : déclenche 2 Constructions à poing, puis une relique, à la sortie de l'évènement</li>
+<li>Résultat : « Vous vous jetez dans la mêlée ! Les deux Assemblages se tournent vers vous. »</li>
+</ul>
+<!-- /choix:PUNCH_OFF -->
+
 <h3 id="ranwid-laine-ranwid_the_elder"><img alt="Ranwid l’Aîné" loading="lazy" src="../../bible/images/events/ranwid_the_elder.webp" /> Ranwid l’Aîné (<code>RANWID_THE_ELDER</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>5</code></li>
@@ -240,12 +902,51 @@ Ses affaires semblent avoir été fouillées, mais vous apercevez un lot de Poti
  « Nous nous rencontrons à nouveau... c’est moi, Ranwid ! »</li>
 </ul>
 <p>Vous ne connaissez pas cet homme.</p>
+<!-- choix:RANWID_THE_ELDER -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Ranwid l'Aîné | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Vous êtes approché par la personne la plus âgée que vous ayez jamais vue. « Nous nous rencontrons à nouveau... c'est moi, Ranwid ! » Vous ne connaissez pas cet homme. »</p>
+<ul>
+<li><strong>Donner 100 Or</strong> - -100 Or, gagnez une relique.</li>
+<li>Condition : au moins 100 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 100 Or ; gagne une relique aléatoire</li>
+<li>Résultat : « Ranwid empoche vos pièces avec un sourire édenté et vous tend une relique. »</li>
+<li><strong>Donner une potion</strong> - -1 potion, gagnez une relique.</li>
+<li>Condition : au moins une potion (sinon l'option est grisée)</li>
+<li>Effets : perd 1 potion au hasard ; gagne une relique aléatoire</li>
+<li>Résultat : « Ranwid boit la potion d'un trait, puis vous tend une relique. »</li>
+<li><strong>Donner une relique</strong> - -1 relique, gagnez-en 2.</li>
+<li>Condition : au moins 2 reliques (sinon l'option est grisée)</li>
+<li>Effets : perd la dernière relique obtenue ; gagne une relique aléatoire ; gagne une relique aléatoire</li>
+<li>Résultat : « Ranwid examine longuement votre relique, puis vous en rend deux autres. »</li>
+</ul>
+<!-- /choix:RANWID_THE_ELDER -->
+
 <h3 id="reflets-stelfer-reflections"><img alt="Reflets stelfeR" loading="lazy" src="../../bible/images/events/reflections.webp" /> Reflets stelfeR (<code>REFLECTIONS</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
 <li><strong>Description :</strong> Que se passe-t-il ? Quelque chose ici ne tourne pas rond...
 ...dnor sap enruot en ici esohc euqleuQ ? il-t-essap es euQ</li>
 </ul>
+<!-- choix:REFLECTIONS -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Reflets stelfeR | <strong>Zones :</strong> Acte 3</li>
+</ul>
+<p>Page 0 (début) : « Que se passe-t-il ? Quelque chose ici ne tourne pas rond...
+...dnor sap enruot ici esohc euqleuQ »</p>
+<ul>
+<li><strong>Toucher un miroir</strong> - Améliore 4 cartes, rétrograde 2.</li>
+<li>Effets : améliore 4 cartes (au hasard) ; 2 cartes améliorées redevient normale (au hasard)</li>
+<li>Résultat : « Le miroir ondule. Quatre cartes brillent plus fort, deux autres se ternissent. »</li>
+<li><strong>Briser</strong> - Dupliquez le deck, Malchance.</li>
+<li>Effets : chaque carte du deck est copiée une fois ; ajoute au deck 1 × Bad Luck</li>
+<li>Résultat : « Le miroir éclate : chaque carte se retrouve en double. Vous obtenez Malchance. »</li>
+</ul>
+<!-- /choix:REFLECTIONS -->
+
 <h3 id="trafiquant-de-reliques-relic_trader"><img alt="Trafiquant de reliques" loading="lazy" src="../../bible/images/events/relic_trader.webp" /> Trafiquant de reliques (<code>RELIC_TRADER</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>3</code></li>
@@ -253,6 +954,25 @@ Ses affaires semblent avoir été fouillées, mais vous apercevez un lot de Poti
 </ul>
 <p>« Bienvenue ! T’as quelque chose à troquer ? »
 vous demande-t-elle en ouvrant grand son manteau, révélant par-dessous un éventail de marchandises plus suspectes les unes que les autres..</p>
+<!-- choix:RELIC_TRADER -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Trafiquant de reliques | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Vous tournez un coin lorsque vous vous retrouvez nez-à-nez avec une figure voilée. « Bienvenue ! T'as quelque chose à troquer ? » Elle ouvre grand son manteau, révélant des marchandises plus suspectes les unes que les autres... »</p>
+<ul>
+<li><strong>Prendre celui du haut</strong> - Échangez une relique au hasard.</li>
+<li>Effets : échange une relique au hasard contre une relique qu'on n'avait pas</li>
+<li>Résultat : « Le trafiquant empoche l'une de vos reliques et vous glisse celle du haut. »</li>
+<li><strong>Prendre celui du milieu</strong> - Échangez une relique au hasard.</li>
+<li>Effets : échange une relique au hasard contre une relique qu'on n'avait pas</li>
+<li>Résultat : « Le trafiquant empoche l'une de vos reliques et vous glisse celle du milieu. »</li>
+<li><strong>Prendre celui du bas</strong> - Échangez une relique au hasard.</li>
+<li>Effets : échange une relique au hasard contre une relique qu'on n'avait pas</li>
+<li>Résultat : « Le trafiquant empoche l'une de vos reliques et vous glisse celle du bas. »</li>
+</ul>
+<!-- /choix:RELIC_TRADER -->
+
 <h3 id="salle-du-fromage-room_full_of_cheese"><img alt="Salle du Fromage" loading="lazy" src="../../bible/images/events/room_full_of_cheese.webp" /> Salle du Fromage (<code>ROOM_FULL_OF_CHEESE</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -261,6 +981,23 @@ vous demande-t-elle en ouvrant grand son manteau, révélant par-dessous un éve
 <p>Vous jetez un œil tout autour de vous pour vous assurer qu’il n’y a pas de pièges, et remarquez qu’au-dessus de vous se trouve... encore du fromage. Les bougies dans la pièce semblent être faites de fromage. Le mobilier est aussi en fromage.
 Soudain, la porte se referme derrière vous.</p>
 <p>Elle est aussi faite de fromage.</p>
+<!-- choix:ROOM_FULL_OF_CHEESE -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Salle du Fromage | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Cette salle est remplie de fromage ! Les bougies, le mobilier, et même la porte qui vient de se refermer derrière vous sont en fromage. »</p>
+<ul>
+<li><strong>Se gaver</strong> - +2 cartes communes aléatoires.</li>
+<li>Effets : ajoute au deck 2 carte Communes du héros</li>
+<li>Résultat : « Vous vous empiffrez jusqu'à l'écoeurement. Deux cartes rejoignent votre deck. »</li>
+<li><strong>Fouiller</strong> - Perdez 14 PV, relique Fromage.</li>
+<li>Condition : plus de 14 PV (sinon l'option est grisée)</li>
+<li>Effets : perd 14 PV ; gagne la relique CHOSEN_CHEESE</li>
+<li>Résultat : « Vous fouillez dans le fromage et vous en prenez plein la figure. Vous obtenez Fromage d'élection ! »</li>
+</ul>
+<!-- /choix:ROOM_FULL_OF_CHEESE -->
+
 <h3 id="le-the-de-la-table-ronde-round_tea_party"><img alt="Le thé de la table ronde" loading="lazy" src="../../bible/images/events/round_tea_party.webp" /> Le thé de la table ronde (<code>ROUND_TEA_PARTY</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -269,12 +1006,47 @@ Soudain, la porte se referme derrière vous.</p>
 <p>Après être entré à l’intérieur d’une rotonde sans prétention, vous vous retrouvez parmi un groupe de commandants, de généraux, de seigneurs de guerre et de mercenaires en train de prendre... le thé ?
 Un gigantesque chevalier portant sur la tête une couronne dorée prend la parole.</p>
 <p>« C’est à cette heure tardive que vous vous manifestez pour prendre le Thé ?! »</p>
+<!-- choix:ROUND_TEA_PARTY -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Le thé de la table ronde | <strong>Zones :</strong> Acte 3</li>
+</ul>
+<p>Page 0 (début) : « Vous trouvez une invitation à un goûter destiné à un certain « Monseigneur Galalot » et vous vous y rendez à sa place. Dans une rotonde, des commandants et des mercenaires prennent le thé. Un géant couronné d'or s'écrie : « C'est à cette heure que vous vous manifestez ?! » »</p>
+<ul>
+<li><strong>Savourer le thé</strong> - Soin complet. Poison royal.</li>
+<li>Effets : soigne 999 PV ; gagne la relique ROYAL_POISON</li>
+<li>Résultat : « Le thé est délicieux et vous revigore, mais son arrière-goût est étrangement amer. Vous obtenez Poison royal ! »</li>
+<li><strong>Chercher la bagarre</strong> - Perdez 11 PV, gagnez une relique.</li>
+<li>Condition : plus de 11 PV (sinon l'option est grisée)</li>
+<li>Effets : perd 11 PV ; gagne une relique aléatoire ; mène à la page 1</li>
+<li>Résultat : « Vous renversez la table. Les coups pleuvent, mais vous repartez avec un butin ! »</li>
+</ul>
+<p>Page 1 : « Le géant couronné vous toise : « Vous allez au moins payer le droit d'entrée ! » »</p>
+<ul>
+<li><strong>Continuer</strong> - Rien de plus à payer.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Le chevalier à la couronne vous congédie d'un geste. Au moins, vous avez payé l'entrée. »</li>
+</ul>
+<!-- /choix:ROUND_TEA_PARTY -->
+
 <h3 id="graine-de-saphir-sapphire_seed"><img alt="Graine de saphir" loading="lazy" src="../../bible/images/events/sapphire_seed.webp" /> Graine de saphir (<code>SAPPHIRE_SEED</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
 <li><strong>Description :</strong> Vous manquez de peu de marcher sur un éclat de... graine ? Sa couleur ne laisse aucun doute : il s’agit d’une Graine de saphir ! Ces graines extraordinaires étaient pourtant portées disparues !?</li>
 </ul>
 <p>La légende voudrait que leur consommation pourrait fortement amplifier votre endurance. Mais si vous plantiez plutôt la graine pour la faire croître ?</p>
+<!-- choix:SAPPHIRE_SEED -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<p><em>Pas encore dans le jeu</em> : choix de la référence (<code>bible/data/event_choices</code>).</p>
+<p>Page <code>start</code> :</p>
+<ul>
+<li><strong>Consommer : soigne 9 PV, améliore une carte.</strong> (Consume: Heal 9 HP. Upgrade a card in your Deck.)</li>
+<li>Effets : heal 9 ; upgrade card 1</li>
+<li><strong>Planter et nourrir : enchante une carte avec Semé.</strong> (Plant and Nourish: Enchant a card with Sown.)</li>
+<li>Effets : other 1 (ENCHANT_SOWN)</li>
+</ul>
+<!-- /choix:SAPPHIRE_SEED -->
+
 <h3 id="developpement-personnel-self_help_book"><img alt="Développement personnel" loading="lazy" src="../../bible/images/events/self_help_book.webp" /> Développement personnel (<code>SELF_HELP_BOOK</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>7</code></li>
@@ -283,11 +1055,59 @@ Un gigantesque chevalier portant sur la tête une couronne dorée prend la parol
 </ul>
 <p>Le livre est incrusté de sang ; vous le jugez donc hautement douteux à première vue.</p>
 <p>Le lisez-vous ?</p>
+<!-- choix:SELF_HELP_BOOK -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Développement personnel | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « À terre gît un tome intitulé « Les 3 méthodes secrètes pour terrasser la Tour ». Il est incrusté de sang : vous le jugez hautement douteux. Le lisez-vous ? »</p>
+<ul>
+<li><strong>Lire le livre en entier</strong> - Pouvoir : Célérité 2.</li>
+<li>Condition : une carte de type 2 peut être enchantée (sinon l'option est grisée)</li>
+<li>Effets : enchante 1 carte (au choix) : SWIFT 2, type 2</li>
+<li>Résultat : « Vous lisez tout le livre. Choisirez un Pouvoir à envoûter avec Célérité 2. »</li>
+<li><strong>Lire un passage au hasard</strong> - Compétence : Agilité 2.</li>
+<li>Condition : une carte de type 1 peut être enchantée (sinon l'option est grisée)</li>
+<li>Effets : enchante 1 carte (au choix) : NIMBLE 2, type 1</li>
+<li>Résultat : « Vous lisez un passage au hasard. Choisirez une Compétence à envoûter avec Agilité 2. »</li>
+<li><strong>Lire la 4e de couverture</strong> - Attaque : Tranchant 2.</li>
+<li>Condition : une carte de type 0 peut être enchantée (sinon l'option est grisée)</li>
+<li>Effets : enchante 1 carte (au choix) : SHARP 2, type 0</li>
+<li>Résultat : « Vous lisez la quatrième de couverture. Choisirez une Attaque à envoûter avec Tranchant 2. »</li>
+<li><strong>Passer son chemin</strong> - Ne rien lire.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Ce livre ensanglanté est bien trop douteux. Vous passez votre chemin. »</li>
+</ul>
+<!-- /choix:SELF_HELP_BOOK -->
+
 <h3 id="pont-glissant-slippery_bridge"><img alt="Pont glissant" loading="lazy" src="../../bible/images/events/slippery_bridge.webp" /> Pont glissant (<code>SLIPPERY_BRIDGE</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
 <li><strong>Description :</strong> Alors que vous êtes en train de traverser un pont en bois chancelant, un torrent de pluie se lève soudainement. De puissantes rafales de vent vous assaillent, menaçant de mettre fin à votre périple.</li>
 </ul>
+<!-- choix:SLIPPERY_BRIDGE -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Pont glissant | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Alors que vous traversez un pont de bois chancelant, un torrent de pluie se lève. De puissantes rafales de vent menacent de mettre fin à votre périple. »</p>
+<ul>
+<li><strong>Persévérer</strong> - Perdez 8 PV, retirez une carte.</li>
+<li>Condition : plus de 8 PV (sinon l'option est grisée)</li>
+<li>Effets : perd 8 PV ; retire 1 carte du deck (au choix)</li>
+<li>Résultat : « Vous avancez contre le vent, à pas lents. Choisissez une carte à retirer de votre deck. »</li>
+<li><strong>Se reposer</strong> - Soignez 25 PV, puis combattez.</li>
+<li>Effets : soigne 25 PV ; mène à la page 1</li>
+<li>Résultat : « Vous vous abritez et reprenez des forces. Mais quelque chose remue sous le pont... »</li>
+</ul>
+<p>Page 1 : « Des créatures grouillantes montent à l'assaut du pont. »</p>
+<ul>
+<li><strong>Combattre !</strong> - Un combat commence.</li>
+<li>Effets : déclenche un combat normal, à la sortie de l'évènement</li>
+<li>Résultat : « Des larves surgissent de sous le pont ! »</li>
+</ul>
+<!-- /choix:SLIPPERY_BRIDGE -->
+
 <h3 id="tourbillon-aquatique-spiraling_whirlpool"><img alt="Tourbillon aquatique" loading="lazy" src="../../bible/images/events/spiraling_whirlpool.webp" /> Tourbillon aquatique (<code>SPIRALING_WHIRLPOOL</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1b</code> | <strong>Nombre d'options :</strong> <code>3</code></li>
@@ -296,6 +1116,20 @@ Un gigantesque chevalier portant sur la tête une couronne dorée prend la parol
 <p>Tourne et tourne et tourne et tourne...
 ....et tourne encore... quel spectacle......</p>
 <p>Que faites-vous ?</p>
+<!-- choix:SPIRALING_WHIRLPOOL -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<p><em>Pas encore dans le jeu</em> : choix de la référence (<code>bible/data/event_choices</code>).</p>
+<p>Page <code>start</code> :</p>
+<ul>
+<li><strong>Boire : soigne des PV.</strong> (Drink: Heal HP.)</li>
+<li>Effets : heal - montant introuvable (op.gg affiche 0)</li>
+<li><strong>Observer : enchante une Frappe ou Défense de base avec Spirale.</strong> (Observe: Enchant a Basic Strike or Defend with Spiral.)</li>
+<li>Effets : other 1 (ENCHANT_SPIRAL)</li>
+<li><strong>Plonger la main : relique aléatoire et ajoute Contorsion.</strong> (Reach In: Gain a random Relic and add Writhe to your Deck.)</li>
+<li>Effets : gain relic 1 (RANDOM_RELIC) ; add curse 1 (WRITHE)</li>
+</ul>
+<!-- /choix:SPIRALING_WHIRLPOOL -->
+
 <h3 id="esprit-greffeur-spirit_grafter"><img alt="Esprit greffeur" loading="lazy" src="../../bible/images/events/spirit_grafter.webp" /> Esprit greffeur (<code>SPIRIT_GRAFTER</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act2</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -303,6 +1137,22 @@ Un gigantesque chevalier portant sur la tête une couronne dorée prend la parol
 </ul>
 <p>...le gigotement cesse. Le cocon prend feu ! Que se passe-t-il ? 
 Dans une déflagration de flammes et de lumière, un Esprit greffeur vous fonce dessus, menaçant de fusionner avec votre être. »</p>
+<!-- choix:SPIRIT_GRAFTER -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Esprit greffeur | <strong>Zones :</strong> Acte 2</li>
+</ul>
+<p>Page 0 (début) : « Un cocon pend au-dessus de vous, gigotant. Soudain il prend feu et, dans une déflagration de flammes et de lumière, un Esprit greffeur vous fonce dessus, menaçant de fusionner avec votre être. »</p>
+<ul>
+<li><strong>Le laisser entrer</strong> - Soignez 25 PV, gagnez Métamorphose.</li>
+<li>Effets : soigne 25 PV ; ajoute au deck 1 × Metamorphosis</li>
+<li>Résultat : « L'esprit fusionne avec vous. Vous vous sentez mieux. Vous obtenez Métamorphose ! »</li>
+<li><strong>Rejet</strong> - Perdez 10 PV, améliorez une carte.</li>
+<li>Effets : perd 10 PV ; améliore 1 carte (au choix)</li>
+<li>Résultat : « Vous repoussez l'esprit, non sans mal. Choisissez la carte à améliorer. »</li>
+</ul>
+<!-- /choix:SPIRIT_GRAFTER -->
+
 <h3 id="pierre-de-tous-les-temps-stone_of_all_time"><img alt="Pierre de tous les temps" loading="lazy" src="../../bible/images/events/stone_of_all_time.webp" /> Pierre de tous les temps (<code>STONE_OF_ALL_TIME</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>4</code></li>
@@ -311,6 +1161,27 @@ Dans une déflagration de flammes et de lumière, un Esprit greffeur vous fonce 
 <p>Vous trouvez une plaque avec l’inscription suivante :
 Pierre de tous les temps.</p>
 <p>Sa présence, sa forme et les parures qui la recouvrent indiquent que cette cour fut construite autour de cette Pierre, et que celle-ci n’a jamais quitté son emplacement.</p>
+<!-- choix:STONE_OF_ALL_TIME -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Pierre de tous les temps | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Un énorme rocher trône au centre d'une cour abandonnée. Une plaque indique : « Pierre de tous les temps ». La cour fut construite autour de cette Pierre, qui n'a jamais quitté son emplacement. »</p>
+<ul>
+<li><strong>Boire et soulever</strong> - Perdez 1 potion, +10 PV Max.</li>
+<li>Condition : au moins une potion (sinon l'option est grisée)</li>
+<li>Effets : perd 1 potion au hasard ; +10 PV max</li>
+<li>Résultat : « Vous videz une potion et soulevez la Pierre à bout de bras. Vous gagnez 10 PV Max. »</li>
+<li><strong>Pousser</strong> - Perdez 6 PV, Attaque Vigoureuse 8.</li>
+<li>Condition : une Attaque du deck peut être enchantée (sinon l'option est grisée)</li>
+<li>Effets : perd 6 PV ; enchante 1 carte (au choix) : VIGOROUS 8</li>
+<li>Résultat : « Vous poussez la Pierre de toutes vos forces. Choisissez une Attaque à envoûter de Vigoureux 8. »</li>
+<li><strong>Partir</strong> - Ne touchez pas à la Pierre.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « La Pierre est là depuis toujours. Elle y restera. »</li>
+</ul>
+<!-- /choix:STONE_OF_ALL_TIME -->
+
 <h3 id="la-statue-engloutie-sunken_statue"><img alt="La statue engloutie" loading="lazy" src="../../bible/images/events/sunken_statue.webp" /> La statue engloutie (<code>SUNKEN_STATUE</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -319,6 +1190,23 @@ Pierre de tous les temps.</p>
 <p>Par ailleurs, vous remarquez que quelque chose scintille au fond du lac.
 Des offrandes votives ?</p>
 <p>Vous ne diriez pas non à un peu d’argent...</p>
+<!-- choix:SUNKEN_STATUE -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> La statue engloutie | <strong>Zones :</strong> Acte 1a, Acte 1b</li>
+</ul>
+<p>Page 0 (début) : « Une statue érodée, à moitié immergée dans un bassin, agrippe une épée de pierre. Quelque chose scintille au fond du lac : des offrandes votives ? Un peu d'argent ne serait pas de refus... »</p>
+<ul>
+<li><strong>Plonger dans l'eau</strong> - Gagnez 111 Or, perdez 7 PV.</li>
+<li>Condition : plus de 7 PV (sinon l'option est grisée)</li>
+<li>Effets : gagne 111 Or ; perd 7 PV</li>
+<li>Résultat : « Vous plongez et remontez des poignées de pièces : +111 Or, -7 PV. »</li>
+<li><strong>Prendre l'épée</strong> - Obtenez l'Épée de pierre.</li>
+<li>Effets : gagne la relique SWORD_OF_STONE</li>
+<li>Résultat : « Vous arrachez l'épée aux mains de la statue. Vous obtenez l'Épée de pierre ! »</li>
+</ul>
+<!-- /choix:SUNKEN_STATUE -->
+
 <h3 id="tresor-englouti-sunken_treasury"><img alt="Trésor englouti" loading="lazy" src="../../bible/images/events/sunken_treasury.webp" /> Trésor englouti (<code>SUNKEN_TREASURY</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1b</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -327,12 +1215,44 @@ Vous apercevez 2 coffres, mais seulement 1 clé d’aspect fragile.</li>
 </ul>
 <p>Le premier coffre : Lorsque vous le secouez, vous entendez des cliquetis et des tintements. Quelques pièces d’or.
 Le deuxième coffre : Énorme, orné de décorations, et assurément maudit. Beaucoup de pièces d’or !</p>
+<!-- choix:SUNKEN_TREASURY -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Trésor englouti | <strong>Zones :</strong> Acte 1b</li>
+</ul>
+<p>Page 0 (début) : « Une chambre forte à moitié engloutie renferme 2 coffres, mais une seule clé fragile. Le premier cliquette de quelques pièces. Le second, énorme et orné, est sans doute maudit. »</p>
+<ul>
+<li><strong>Premier coffre</strong> - Gagnez 52 Or.</li>
+<li>Effets : gagne 52 Or</li>
+<li>Résultat : « La clé tourne. Quelques pièces d'or tintent au fond du coffre : +52 Or. »</li>
+<li><strong>Deuxième coffre</strong> - Gagnez 303 Or, Cupidité.</li>
+<li>Effets : gagne 303 Or ; ajoute au deck 1 × Greed</li>
+<li>Résultat : « Une fortune déborde du coffre maudit : +303 Or. Vous obtenez la malédiction Cupidité. »</li>
+</ul>
+<!-- /choix:SUNKEN_TREASURY -->
+
 <h3 id="symbiote-symbiote"><img alt="Symbiote" loading="lazy" src="../../bible/images/events/symbiote.webp" /> Symbiote (<code>SYMBIOTE</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>3</code></li>
 <li><strong>Description :</strong> Au cours de votre périple, vous tombez sur un polype sombre et amorphe. Vous avez le pressentiment qu’il est très ancien, et très maléfique. </li>
 </ul>
 <p>Approchez...</p>
+<!-- choix:SYMBIOTE -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Symbiote | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Au cours de votre périple, vous tombez sur un polype sombre et amorphe. Vous avez le pressentiment qu'il est très ancien, et très maléfique. Approchez... »</p>
+<ul>
+<li><strong>Approcher</strong> - Corrompez une Attaque au choix.</li>
+<li>Effets : enchante 1 carte (au choix) : CORRUPTED</li>
+<li>Résultat : « Le polype vous enveloppe. Vous allez choisir l'Attaque qu'il corrompra. »</li>
+<li><strong>Tuer par le feu</strong> - Transformez une carte au choix.</li>
+<li>Effets : transforme 1 carte (au choix)</li>
+<li>Résultat : « Les flammes dévorent le polype. Vous allez choisir une carte à transformer. »</li>
+</ul>
+<!-- /choix:SYMBIOTE -->
+
 <h3 id="stele-de-la-verite-tablet_of_truth"><img alt="Stèle de la Vérité" loading="lazy" src="../../bible/images/events/tablet_of_truth.webp" /> Stèle de la Vérité (<code>TABLET_OF_TRUTH</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -340,12 +1260,85 @@ Le deuxième coffre : Énorme, orné de décorations, et assurément maudit. Be
 </ul>
 <p>À l’intérieur, vous trouvez une stèle recouverte d’inscriptions qui vous semblent familières. Votre intuition vous dit que vous êtes capable de déchiffrer cette langue sans trop de difficulté... Cependant, une fois que vous commencerez à traduire, vous aurez besoin de toute votre concentration.</p>
 <p>Une énergie apaisante émane de la stèle, et vous pourriez la détruire afin de libérer son pouvoir guérisseur au lieu de la lire.</p>
+<!-- choix:TABLET_OF_TRUTH -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Stèle de la Vérité | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Dans un caveau, une stèle couverte d'inscriptions familières. Vous pouvez la déchiffrer, mais cela exigera toute votre concentration, ou la détruire pour libérer son pouvoir guérisseur. »</p>
+<ul>
+<li><strong>Déchiffrer</strong> - -3 PV Max, améliore 1 carte au hasard.</li>
+<li>Effets : -3 PV max ; améliore 1 carte (au hasard) ; mène à la page 1</li>
+<li>Résultat : « Les symboles s'éclairent peu à peu. Une de vos cartes est améliorée (+) ! »</li>
+<li><strong>Briser</strong> - Soignez 20 PV.</li>
+<li>Effets : soigne 20 PV</li>
+<li>Résultat : « Vous fracassez la stèle. Son énergie apaisante vous envahit. »</li>
+</ul>
+<p>Page 1 : « Vous continuez la traduction. Votre esprit se fatigue, mais la stèle en révèle davantage. »</p>
+<ul>
+<li><strong>Continuer</strong> - -3 PV Max, améliore 1 carte au hasard.</li>
+<li>Effets : -3 PV max ; améliore 1 carte (au hasard) ; mène à la page 2</li>
+<li>Résultat : « Le sens vous apparaît, mais votre tête vous fait mal. Une de vos cartes est améliorée (+) ! »</li>
+<li><strong>Abandonner</strong> - Quittez la stèle.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous détournez les yeux de la stèle. »</li>
+</ul>
+<p>Page 2 : « La stèle livre un nouveau passage. Votre concentration vacille. »</p>
+<ul>
+<li><strong>Continuer encore</strong> - -3 PV Max, améliore 1 carte au hasard.</li>
+<li>Effets : -3 PV max ; améliore 1 carte (au hasard) ; mène à la page 3</li>
+<li>Résultat : « Vous poursuivez, le front en sueur. Une de vos cartes est améliorée (+) ! »</li>
+<li><strong>Abandonner</strong> - Quittez la stèle.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous détournez les yeux de la stèle. »</li>
+</ul>
+<p>Page 3 : « Chaque mot pèse davantage. Il reste peu à lire, mais le prix s'alourdit. »</p>
+<ul>
+<li><strong>CONTINUER</strong> - -3 PV Max, améliore 1 carte au hasard.</li>
+<li>Effets : -3 PV max ; améliore 1 carte (au hasard) ; mène à la page 4</li>
+<li>Résultat : « Les mots résonnent dans votre crâne. Une de vos cartes est améliorée (+) ! »</li>
+<li><strong>Abandonner</strong> - Quittez la stèle.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous détournez les yeux de la stèle. »</li>
+</ul>
+<p>Page 4 : « Le dernier passage est là. Le lire vous coûtera cher, mais votre deck n'aura plus de secrets. »</p>
+<ul>
+<li><strong>Tout perdre</strong> - -3 PV Max, améliore TOUTES les cartes.</li>
+<li>Effets : -3 PV max ; améliore 99 cartes (au hasard)</li>
+<li>Résultat : « La vérité vous submerge. Toutes vos cartes sont améliorées (+) ! »</li>
+<li><strong>Abandonner</strong> - Quittez la stèle.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous détournez les yeux de la stèle. »</li>
+</ul>
+<!-- /choix:TABLET_OF_TRUTH -->
+
 <h3 id="maitre-de-the-tea_master"><img alt="Maître de thé" loading="lazy" src="../../bible/images/events/tea_master.webp" /> Maître de thé (<code>TEA_MASTER</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>5</code></li>
 <li><strong>Description :</strong> Vous arrivez par hasard dans une petite cahute mal éclairée ; l’atmosphère à l’intérieur est calme et contemplative, et, partout, des variétés de thé dont l’exhaustivité frôle l’obsession sont exposées.</li>
 </ul>
 <p>L’homme à l’intérieur vous indique une sélection de thés, chacun étiqueté d’un prix élevé.</p>
+<!-- choix:TEA_MASTER -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Maître de thé | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Vous arrivez par hasard dans une petite cahute mal éclairée ; l'atmosphère y est calme et contemplative, et des variétés de thé dont l'exhaustivité frôle l'obsession sont exposées. L'homme à l'intérieur vous indique une sélection de thés, chacun étiqueté d'un prix élevé. »</p>
+<ul>
+<li><strong>Thé d'os</strong> - 50 Or. Main de départ améliorée.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne la relique BONE_TEA</li>
+<li>Résultat : « Le thé d'os vous réchauffe les os. Vous obtenez Thé d'os ! »</li>
+<li><strong>Thé de braise</strong> - 150 Or. +2 Force, 5 combats.</li>
+<li>Condition : au moins 150 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 150 Or ; gagne la relique EMBER_TEA</li>
+<li>Résultat : « Le thé de braise vous brûle la gorge. Vous obtenez Thé de braise ! »</li>
+<li><strong>Thé de l'impolitesse</strong> - Gratuit. +2 Hébété au combat.</li>
+<li>Effets : gagne la relique TEA_OF_DISCOURTESY</li>
+<li>Résultat : « Le maître de thé vous toise. Vous obtenez Thé de l'impolitesse ! »</li>
+</ul>
+<!-- /choix:TEA_MASTER -->
+
 <h3 id="lavenir-des-potions-the_future_of_potions"><img alt="L’avenir des potions ?" loading="lazy" src="../../bible/images/events/the_future_of_potions.webp" /> L’avenir des potions ? (<code>THE_FUTURE_OF_POTIONS</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>1</code></li>
@@ -353,6 +1346,23 @@ Le deuxième coffre : Énorme, orné de décorations, et assurément maudit. Be
 Vous remarquez qu’il dispose d’emplacements où des liquides semblent pouvoir être transformés en petits comprimés faciles à digérer.</li>
 </ul>
 <p>L’idée de convertir vos potions tonifiantes en toutes petites bouchées vous gêne un peu, mais c’est peut-être l’occasion d’essayer de nouvelles choses ?</p>
+<!-- choix:THE_FUTURE_OF_POTIONS -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> L'avenir des potions ? | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Un énorme appareil pivote sur son axe en bourdonnant. Ses emplacements semblent transformer les liquides en petits comprimés faciles à digérer. Et si vous essayiez quelque chose de nouveau ? »</p>
+<ul>
+<li><strong>Insérer une potion</strong> - Potion contre carte améliorée.</li>
+<li>Condition : au moins une potion (sinon l'option est grisée)</li>
+<li>Effets : échange la première potion contre une carte améliorée de même rareté</li>
+<li>Résultat : « La machine avale votre potion et recrache un comprimé : une carte améliorée de même rareté rejoint votre deck. »</li>
+<li><strong>Partir</strong> - Ne rien insérer.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous laissez l'appareil à ses expériences et poursuivez votre chemin. »</li>
+</ul>
+<!-- /choix:THE_FUTURE_OF_POTIONS -->
+
 <h3 id="la-cle-de-la-lanterne-the_lantern_key"><img alt="La clé de la lanterne" src="" /> La clé de la lanterne (<code>THE_LANTERN_KEY</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act2</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -360,6 +1370,22 @@ Vous remarquez qu’il dispose d’emplacements où des liquides semblent pouvoi
 </ul>
 <p>« La voilà, je la cherchais partout ! Si tu permets... »</p>
 <p>Cette personne ne vous inspire pas confiance, mais il vaut peut-être mieux ne pas juger les gens trop vite.</p>
+<!-- choix:THE_LANTERN_KEY -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> La clé de la lanterne | <strong>Zones :</strong> aucune (ouvert par une quête uniquement)</li>
+</ul>
+<p>Page 0 (début) : « La clé luminescente vibre dans votre sac. Un inconnu surgit : « La voilà, je la cherchais partout ! » »</p>
+<ul>
+<li><strong>Rendre la clé</strong> - Gagnez 100 Or.</li>
+<li>Effets : gagne 100 Or</li>
+<li>Résultat : « L'inconnu vous remercie avec une bourse bien garnie. »</li>
+<li><strong>Garder la clé</strong> - Gagnez une potion.</li>
+<li>Effets : gagne la potion FIRE_POTION</li>
+<li>Résultat : « Vous refusez. L'inconnu vous lance une fiole avant de disparaître. »</li>
+</ul>
+<!-- /choix:THE_LANTERN_KEY -->
+
 <h3 id="la-legende-disait-vrai-the_legends_were_true"><img alt="La légende disait vrai" loading="lazy" src="../../bible/images/events/the_legends_were_true.webp" /> La légende disait vrai (<code>THE_LEGENDS_WERE_TRUE</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -367,6 +1393,23 @@ Vous remarquez qu’il dispose d’emplacements où des liquides semblent pouvoi
 </ul>
 <p>Devant vous, illuminé, se tient un podium sur lequel est posé une carte dessinée. Vous ressentez l’envie pressante de vous en emparer.</p>
 <p>Tout ceci est très suspect.</p>
+<!-- choix:THE_LEGENDS_WERE_TRUE -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> La légende disait vrai | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Dans une pièce plongée dans le noir, une lueur éclaire soudain un podium où repose une carte dessinée, et la porte claque derrière vous. Vous ressentez l'envie pressante de vous en emparer. Tout ceci est très suspect. »</p>
+<ul>
+<li><strong>Attraper la carte</strong> - Ajoute Carte au trésor.</li>
+<li>Effets : ajoute au deck 1 × Spoils Map</li>
+<li>Résultat : « Vous vous emparez de la carte. La porte se rouvre : vous voilà avec un plan au trésor ! »</li>
+<li><strong>Chercher une sortie</strong> - Perdez 8 PV, gagnez 1 potion.</li>
+<li>Condition : plus de 8 PV (sinon l'option est grisée)</li>
+<li>Effets : perd 8 PV ; gagne 1 potion aléatoire</li>
+<li>Résultat : « Vous tâtonnez dans le noir, vous cognant partout, et finissez par trouver une potion et la sortie. »</li>
+</ul>
+<!-- /choix:THE_LEGENDS_WERE_TRUE -->
+
 <h3 id="ceci-ou-cela-this_or_that"><img alt="Ceci ou Cela ?" loading="lazy" src="../../bible/images/events/this_or_that.webp" /> Ceci ou Cela ? (<code>THIS_OR_THAT</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -374,18 +1417,91 @@ Vous remarquez qu’il dispose d’emplacements où des liquides semblent pouvoi
 </ul>
 <p>« Ceci... ou Cela ? »
 chuchote une voix rauque d’en-dessous.</p>
+<!-- choix:THIS_OR_THAT -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Ceci ou Cela ? | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « Des bras jaillissent d'un trou dans le sol, tenant un sac suspect rempli de richesses et une relique clairement maudite. « Ceci... ou Cela ? » chuchote une voix rauque d'en-dessous. »</p>
+<ul>
+<li><strong>Ceci</strong> - Perdez 6 PV, gagnez 55 Or.</li>
+<li>Condition : plus de 6 PV (sinon l'option est grisée)</li>
+<li>Effets : perd 6 PV ; gagne 55 Or</li>
+<li>Résultat : « Le sac vous mord la main, mais il est bien rempli. Vous gagnez 55 Or ! »</li>
+<li><strong>Cela</strong> - Gagnez une relique, +Maladresse.</li>
+<li>Effets : ajoute au deck 1 × Clumsy ; gagne une relique aléatoire</li>
+<li>Résultat : « Vous saisissez la relique maudite. Maladresse rejoint votre deck. »</li>
+</ul>
+<!-- /choix:THIS_OR_THAT -->
+
 <h3 id="bricolage-tinker_time"><img alt="Bricolage" loading="lazy" src="../../bible/images/events/tinker_time.webp" /> Bricolage (<code>TINKER_TIME</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act3</code> | <strong>Nombre d'options :</strong> <code>1</code></li>
 <li><strong>Description :</strong> Après avoir traversé un véritable océan de cadavres, vous tombez sur une ingénieure aux airs de savante folle en train de farfouiller à la recherche de quelque chose d’utile.</li>
 </ul>
 <p>« Oui. Salut, bonjour ! Tu as l’air d’être un guerrier compétent... J’ai besoin de quelqu’un pour tester mon prochain atrociteur ! Ça t’intéresse ? »</p>
+<!-- choix:TINKER_TIME -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<p><em>Pas encore dans le jeu</em> : choix de la référence (<code>bible/data/event_choices</code>).</p>
+<p>Page <code>start</code> :</p>
+<ul>
+<li><strong>Accepter : crée une carte sur mesure ajoutée au deck.</strong> (Accept: Create a custom card to add to your Deck.)</li>
+<li>Effets : add card 1 (CUSTOM_CARD)</li>
+</ul>
+<p>Page <code>type</code> :</p>
+<ul>
+<li><strong>Arme : crée une Attaque.</strong> (Weapon: Make an Attack.)</li>
+<li>Effets : other 1 (TYPE_ATTACK)</li>
+<li><strong>Gadget : crée un Pouvoir.</strong> (Gadget: Make a Power.)</li>
+<li>Effets : other 1 (TYPE_POWER)</li>
+<li><strong>Protecteur : crée une Compétence.</strong> (Protector: Make a Skill.)</li>
+<li>Effets : other 1 (TYPE_SKILL)</li>
+</ul>
+<p>Page <code>effect</code> :</p>
+<ul>
+<li><strong>Chaos : ajoute une carte aléatoire en main, gratuite ce tour.</strong> (Chaos: Add a random card into your Hand. It's free to play this turn.)</li>
+<li>Effets : other 1 (RIDER_CHAOS)</li>
+<li><strong>Étranglement : chaque carte jouée ce tour fait perdre X PV à l'ennemi.</strong> (Choking: Whenever you play a card this turn, the enemy loses X HP.)</li>
+<li>Effets : other (RIDER_CHOKING) - X inconnu</li>
+<li><strong>Curieux : les Pouvoirs coûtent 1 énergie de moins.</strong> (Curious: Powers cost 1 energy less.)</li>
+<li>Effets : other 1 (RIDER_CURIOUS)</li>
+<li><strong>Énergisé : gagne de l'énergie.</strong> (Energized: Gain energy.)</li>
+<li>Effets : other (RIDER_ENERGIZED) - quantité inconnue</li>
+<li><strong>Expertise : gagne X Force et Y Dextérité.</strong> (Expertise: Gain X Strength, Y Dexterity.)</li>
+<li>Effets : other (RIDER_EXPERTISE) - X, Y inconnus</li>
+<li><strong>Amélioration : en fin de combat, améliore une carte aléatoire.</strong> (Improvement: At the end of combat, upgrade a random card.)</li>
+<li>Effets : other 1 (RIDER_IMPROVEMENT)</li>
+<li><strong>Sape : applique X Faiblesse et Y Vulnérable.</strong> (Sapping: Apply X Weak, Y Vulnerable.)</li>
+<li>Effets : other (RIDER_SAPPING) - X, Y inconnus</li>
+<li><strong>Violence : frappe 2 fois de plus.</strong> (Violence: Hits 2 additional times.)</li>
+<li>Effets : other 2 (RIDER_VIOLENCE)</li>
+<li><strong>Sagesse : pioche 3 cartes.</strong> (Wisdom: Draw 3 cards.)</li>
+<li>Effets : other 3 (RIDER_WISDOM)</li>
+</ul>
+<!-- /choix:TINKER_TIME -->
+
 <h3 id="tas-de-dechets-trash_heap"><img alt="Tas de déchets" loading="lazy" src="../../bible/images/events/trash_heap.webp" /> Tas de déchets (<code>TRASH_HEAP</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1b</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
 <li><strong>Description :</strong> Vous découvrez un gigantesque tas d’armes et de breloques abandonnées, ainsi que toutes sortes de babioles insolites. Le tas paraît vibrer et se mouvoir, comme s’il grandissait de l’intérieur...</li>
 </ul>
 <p>Si vous cherchez en surface, vous trouverez sans doute des objets de valeur. Mais si vous fouillez plus en profondeur, vous pourriez trouver des trésors exotiques.</p>
+<!-- choix:TRASH_HEAP -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Tas de déchets | <strong>Zones :</strong> Acte 1b</li>
+</ul>
+<p>Page 0 (début) : « Un gigantesque tas d'armes et de breloques abandonnées vibre, comme s'il grandissait de l'intérieur. En surface, vous trouverez sans doute des objets de valeur ; en fouillant plus profond, des trésors exotiques. »</p>
+<ul>
+<li><strong>Plonger dedans</strong> - Perdez 8 PV, gagnez une relique.</li>
+<li>Effets : perd 8 PV ; gagne 1 relique parmi : DARKSTONE_PERIAPT, DREAM_CATCHER, HAND_DRILL, MAW_BANK, THE_BOOT</li>
+<li>Résultat : « Vous fouillez en profondeur, au prix de quelques coupures. Vous trouvez une relique ! »</li>
+<li><strong>Bric-à-brac au hasard</strong> - Gagnez 100 Or et une carte.</li>
+<li>Effets : gagne 100 Or ; ajoute au deck 1 carte parmi : Caltrops, Clash, Distraction, Dual Wield, Entrench, Hello World, Outmaneuver, Rebound, Rip and Tear, Stack</li>
+<li>Résultat : « Vous ramassez ce qui traîne en surface : de l'or, et une carte oubliée. »</li>
+</ul>
+<!-- /choix:TRASH_HEAP -->
+
 <h3 id="le-proces-trial"><img alt="Le procès" loading="lazy" src="../../bible/images/events/trial.webp" /> Le procès (<code>TRIAL</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -393,6 +1509,58 @@ chuchote une voix rauque d’en-dessous.</p>
 </ul>
 <p>Tandis que vous passez sous une arche dorée, un beuglement de cors se fait entendre, des confettis jaillissent, et des banderoles se déploient du plafond !</p>
 <p>« Citoyen -1, vous êtes LE DÉCIDEUR pour le Procès d’aujourd’hui. »</p>
+<!-- choix:TRIAL -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Le procès | <strong>Zones :</strong> Acte 3</li>
+</ul>
+<p>Page 0 (début) : « Vous rejoignez une file entrant dans un énorme bâtiment. Sous une arche dorée, des cors beuglent, des confettis jaillissent : « Citoyen -1, vous êtes LE DÉCIDEUR pour le Procès d'aujourd'hui. » »</p>
+<ul>
+<li><strong>Accepter</strong> - Devenez le Décideur.</li>
+<li>Effets : mène à la page 1</li>
+<li>Résultat : « Vous prenez place sur l'estrade, sous les acclamations. »</li>
+<li><strong>Refuser</strong> - Vous n'en avez pas le droit.</li>
+<li>Effets : mène à la page 1</li>
+<li>Résultat : « « Le Décideur n'a pas le droit de refuser. » Des gardes vous poussent vers l'estrade. »</li>
+</ul>
+<p>Page 1 : « Le juge vous fixe : « Le Décideur ne peut se dérober. Rendez votre verdict... ou insistez, et assumez les conséquences. » »</p>
+<ul>
+<li><strong>Accepter</strong> - Un procès est tiré au sort.</li>
+<li>Effets : mène à l'une des pages 2 à 4 (tirée au hasard)</li>
+<li>Résultat : « On amène l'accusé devant vous. »</li>
+<li><strong>Insister</strong> - Conséquences mortelles.</li>
+<li>Effets : perd 999 PV</li>
+<li>Résultat : « Vous défiez la cour. Elle ne le prend pas bien. »</li>
+</ul>
+<p>Page 2 : « Un marchand est à la barre, accusé d'avoir vendu des reliques truquées. Coupable ou innocent ? »</p>
+<ul>
+<li><strong>Coupable</strong> - 2 reliques, ajoute Regrets.</li>
+<li>Effets : ajoute au deck 1 × Regret ; gagne une relique aléatoire ; gagne une relique aléatoire</li>
+<li>Résultat : « Le marchand est condamné ; ses biens vous reviennent. Vous obtenez 2 reliques, et des Regrets. »</li>
+<li><strong>Innocent</strong> - Améliore 2 cartes, ajoute Honte.</li>
+<li>Effets : ajoute au deck 1 × Shame ; améliore 2 cartes (au choix)</li>
+<li>Résultat : « Le marchand vous remercie. Choisissez 2 cartes à améliorer ; vous obtenez la Honte. »</li>
+</ul>
+<p>Page 3 : « Un noble drapé de soie est à la barre, accusé de crimes que personne ne détaille. Coupable ou innocent ? »</p>
+<ul>
+<li><strong>Coupable</strong> - Récupérez 10 PV.</li>
+<li>Effets : soigne 10 PV</li>
+<li>Résultat : « Le noble est condamné sous les vivats. Vous vous sentez mieux (+10 PV). »</li>
+<li><strong>Innocent</strong> - Gagnez 300 Or, ajoute Regrets.</li>
+<li>Effets : ajoute au deck 1 × Regret ; gagne 300 Or</li>
+<li>Résultat : « Le noble vous glisse une bourse bien remplie (+300 Or). Vous obtenez des Regrets. »</li>
+</ul>
+<p>Page 4 : « Un individu quelconque, que personne ne semble reconnaître, est à la barre. Coupable ou innocent ? »</p>
+<ul>
+<li><strong>Coupable</strong> - 2 choix de carte, ajoute Doute.</li>
+<li>Effets : ajoute au deck 1 × Doubt ; récompense de carte ×2 (du héros), à la sortie de l'évènement</li>
+<li>Résultat : « La cour vous récompense. Vous obtenez le Doute ; choisissez une carte, puis une autre. »</li>
+<li><strong>Innocent</strong> - Transforme 2 cartes, ajoute Doute.</li>
+<li>Effets : ajoute au deck 1 × Doubt ; transforme 2 cartes (au choix)</li>
+<li>Résultat : « L'accusé s'éclipse. Vous obtenez le Doute ; choisissez 2 cartes à transformer. »</li>
+</ul>
+<!-- /choix:TRIAL -->
+
 <h3 id="site-sans-repos-unrest_site"><img alt="Site sans repos" loading="lazy" src="../../bible/images/events/unrest_site.webp" /> Site sans repos (<code>UNREST_SITE</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -401,6 +1569,22 @@ Ou du moins, c’est ce que vous pensiez.</li>
 </ul>
 <p>Une fois le feu allumé, il se met à croître de tous côtés et semble s’étendre vers un bosquet d’arbres dégoulinant de sève.</p>
 <p>Essayez-vous de trouver le sommeil malgré tout ?</p>
+<!-- choix:UNREST_SITE -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Site sans repos | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Vous découvrez un Site de repos isolé et allumez un feu pour vous reposer. Ou du moins, c'est ce que vous pensiez. Le feu croît de tous côtés et s'étend vers un bosquet d'arbres dégoulinant de sève. Essayez-vous de trouver le sommeil malgré tout ? »</p>
+<ul>
+<li><strong>Dormir quand même</strong> - Soignez tous vos PV, Mauvais sommeil.</li>
+<li>Effets : soigne 9999 PV ; ajoute au deck 1 × Poor Sleep</li>
+<li>Résultat : « Vous dormez d'un sommeil agité. Vos PV sont restaurés, mais Mauvais sommeil rejoint votre deck. »</li>
+<li><strong>Abattre les arbres</strong> - Perdez 8 PV Max, gagnez une relique.</li>
+<li>Effets : -8 PV max ; gagne une relique aléatoire</li>
+<li>Résultat : « Vous abattez les arbres dégoulinants de sève. Une relique roule à vos pieds, mais vous perdez 8 PV Max. »</li>
+</ul>
+<!-- /choix:UNREST_SITE -->
+
 <h3 id="repi-historien-de-la-guerre-war_historian_repy"><img alt="Répi, historien de la guerre" loading="lazy" src="../../bible/images/events/war_historian_repy.webp" /> Répi, historien de la guerre (<code>WAR_HISTORIAN_REPY</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -408,24 +1592,105 @@ Ou du moins, c’est ce que vous pensiez.</li>
 </ul>
 <p>L’érudit marmonne quelque chose à propos de soi-disantes « Clés à usage unique » tout en griffonnant furieusement sur son parchemin.</p>
 <p>Il semblerait que vous puissiez déverrouiller soit la cage, soit le coffre.</p>
+<!-- choix:WAR_HISTORIAN_REPY -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Répi, historien de la guerre | <strong>Zones :</strong> tous les actes</li>
+<li><strong>Apparaît seulement si :</strong> posséder 1 × Lantern Key</li>
+</ul>
+<p>Page 0 (début) : « Un érudit est prisonnier d'une cage suspendue, près d'un coffre. Il marmonne sur des « clés à usage unique » en griffonnant sur son parchemin. Vous pouvez ouvrir la cage ou le coffre. »</p>
+<ul>
+<li><strong>Ouvrir la cage</strong> - Clé perdue, Manuel d'Histoire.</li>
+<li>Condition : posséder 1 × Lantern Key (sinon l'option est grisée)</li>
+<li>Effets : perd 1 × Lantern Key ; gagne la relique HISTORY_COURSE</li>
+<li>Résultat : « La cage s'ouvre. Répi vous offre son Manuel d'Histoire et file à ses archives. »</li>
+<li><strong>Ouvrir le coffre</strong> - Clé perdue, 2 potions, 2 reliques.</li>
+<li>Condition : posséder 1 × Lantern Key (sinon l'option est grisée)</li>
+<li>Effets : perd 1 × Lantern Key ; gagne 2 potions aléatoire ; gagne une relique aléatoire ; gagne une relique aléatoire</li>
+<li>Résultat : « Le coffre s'ouvre sur 2 potions et 2 reliques. Répi proteste dans sa cage. »</li>
+</ul>
+<!-- /choix:WAR_HISTORIAN_REPY -->
+
 <h3 id="scriptorium-englouti-waterlogged_scriptorium"><img alt="Scriptorium englouti" loading="lazy" src="../../bible/images/events/waterlogged_scriptorium.webp" /> Scriptorium englouti (<code>WATERLOGGED_SCRIPTORIUM</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1b</code> | <strong>Nombre d'options :</strong> <code>5</code></li>
 <li><strong>Description :</strong> Tandis que vous faites votre chemin à travers les passages embourbés, vous tombez sur une silhouette émaciée qui tient une petite boutique. Sur les nombreuses étagères sont tassées des liasses de vélins et parchemins humides.</li>
 </ul>
 <p>Remarquant qu’un client est entré, le scribe-commerçant accourt pour vous servir puis vous indique le matériel exposé sur le bureau.</p>
+<!-- choix:WATERLOGGED_SCRIPTORIUM -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Scriptorium englouti | <strong>Zones :</strong> Acte 1b</li>
+</ul>
+<p>Page 0 (début) : « Dans les passages embourbés, vous tombez sur une silhouette émaciée qui tient une petite boutique, où s'entassent des liasses de vélins et de parchemins humides. Le scribe-commerçant accourt et vous indique le matériel exposé sur le bureau. »</p>
+<ul>
+<li><strong>Encre sanglante</strong> - Gagnez 6 PV Max.</li>
+<li>Effets : +6 PV max</li>
+<li>Résultat : « Vous trempez la plume dans l'encre sanglante. Vous vous sentez plus robuste : +6 PV Max ! »</li>
+<li><strong>Éponge piquante</strong> - Payez 99 Or, 2 cartes Stables.</li>
+<li>Condition : au moins 99 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 99 Or ; enchante 2 cartes (au choix) : STEADY</li>
+<li>Résultat : « Le scribe vous tend l'éponge contre 99 Or. Vous allez choisir 2 cartes à rendre Stables. »</li>
+<li><strong>Plume tentaculaire</strong> - Payez 55 Or, 1 carte Stable.</li>
+<li>Condition : au moins 55 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 55 Or ; enchante 1 carte (au choix) : STEADY</li>
+<li>Résultat : « Le scribe vous cède la plume contre 55 Or. Vous allez choisir 1 carte à rendre Stable. »</li>
+</ul>
+<!-- /choix:WATERLOGGED_SCRIPTORIUM -->
+
 <h3 id="bienvenue-chez-wongos-welcome_to_wongos"><img alt="Bienvenue chez Wongo’s" loading="lazy" src="../../bible/images/events/welcome_to_wongos.webp" /> Bienvenue chez Wongo’s (<code>WELCOME_TO_WONGOS</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a, Acte act1b, Acte act2, Acte act3</code> | <strong>Nombre d'options :</strong> <code>7</code></li>
 <li><strong>Description :</strong> « Bienvenue chez Wongo’s. Nous avons tout ce que vous désirez à prix Wongtastique, » annonce le vendeur le moins enthousiaste que vous ayez jamais rencontré.</li>
 </ul>
 <p>« Jetez un œil à nos articles et passez un bon moment chez Wongo’s, » poursuit-elle, sans même lever la tête. »</p>
+<!-- choix:WELCOME_TO_WONGOS -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Bienvenue chez Wongo's | <strong>Zones :</strong> tous les actes</li>
+</ul>
+<p>Page 0 (début) : « « Bienvenue chez Wongo's. Nous avons tout ce que vous désirez à prix Wongtastique, » annonce le vendeur le moins enthousiaste que vous ayez jamais rencontré, sans même lever la tête. »</p>
+<ul>
+<li><strong>Bac à soldes</strong> - Payez 100 Or, 1 relique commune.</li>
+<li>Condition : au moins 100 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 100 Or ; gagne une relique Commune aléatoire</li>
+<li>Résultat : « Vous fouillez le bac et en sortez une relique. La vendeuse encaisse sans lever la tête. »</li>
+<li><strong>Article vedette</strong> - Payez 200 Or, gagnez Oeuf gelé.</li>
+<li>Condition : au moins 200 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 200 Or ; gagne la relique FROZEN_EGG</li>
+<li>Résultat : « « Wongtastique, » soupire la vendeuse. Vous obtenez Oeuf gelé ! »</li>
+<li><strong>Boîte mystère</strong> - Payez 300 Or, 3 reliques aléatoires.</li>
+<li>Condition : au moins 300 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 300 Or ; gagne une relique aléatoire ; gagne une relique aléatoire ; gagne une relique aléatoire</li>
+<li>Résultat : « La boîte s'ouvre sur trois reliques. « Merci d'avoir choisi Wongo's. » »</li>
+<li><strong>Partir</strong> - Une carte améliorée est rétrogradée.</li>
+<li>Effets : 1 carte améliorée redevient normale (au hasard)</li>
+<li>Résultat : « Vous partez les mains vides. Une de vos cartes perd son amélioration. »</li>
+</ul>
+<!-- /choix:WELCOME_TO_WONGOS -->
+
 <h3 id="source-mystique-wellspring"><img alt="Source mystique" loading="lazy" src="../../bible/images/events/wellspring.webp" /> Source mystique (<code>WELLSPRING</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
 <li><strong>Description :</strong> Vous suivez un bruit de clapotis jusqu’à sa source et vous trouvez captivé par un bassin paisible. À la surface de l’eau vert émeraude flottent des granules lumineux.</li>
 </ul>
 <p>Vous avez envie de vous baigner. Quel est le pire qui puisse arriver ?</p>
+<!-- choix:WELLSPRING -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Source mystique | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Vous suivez un bruit de clapotis jusqu'à sa source et vous trouvez captivé par un bassin paisible. À la surface de l'eau vert émeraude flottent des granules lumineux. Vous avez envie de vous baigner. Quel est le pire qui puisse arriver ? »</p>
+<ul>
+<li><strong>Se baigner</strong> - Retirez une carte, +Culpabilité.</li>
+<li>Effets : retire 1 carte du deck (au choix) ; ajoute au deck 1 × Guilty</li>
+<li>Résultat : « L'eau vous lave de vos fardeaux, mais vous en sortez coupable. Choisissez une carte à retirer. »</li>
+<li><strong>Mettre en bouteille</strong> - Gagnez une potion aléatoire.</li>
+<li>Effets : gagne 1 potion aléatoire</li>
+<li>Résultat : « Vous remplissez une fiole d'eau scintillante. Vous obtenez une potion ! »</li>
+</ul>
+<!-- /choix:WELLSPRING -->
+
 <h3 id="vallon-des-murmures-whispering_hollow"><img alt="Vallon des Murmures" loading="lazy" src="../../bible/images/events/whispering_hollow.webp" /> Vallon des Murmures (<code>WHISPERING_HOLLOW</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>2</code></li>
@@ -433,6 +1698,24 @@ Ou du moins, c’est ce que vous pensiez.</li>
 </ul>
 <p>Comme cet arbre est sinistre. Il murmure</p>
 <p>...faire échange.....</p>
+<!-- choix:WHISPERING_HOLLOW -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Vallon des Murmures | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Au milieu d'un vallon d'arbres morts se dresse un arbre blanc comme l'os. Des boules d'argile pendent de ses branches, courbées comme une cage thoracique. Il murmure : « ...faire échange... » »</p>
+<ul>
+<li><strong>Échanger de l'or</strong> - Payez 50 Or, gagnez 2 potions.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; gagne 2 potions aléatoire</li>
+<li>Résultat : « Vous glissez vos pièces dans la cage de branches. Elle vous rend 2 potions. »</li>
+<li><strong>Étreindre l'arbre</strong> - Perdez 9 PV, transformez 1 carte.</li>
+<li>Condition : plus de 9 PV (sinon l'option est grisée)</li>
+<li>Effets : perd 9 PV ; transforme 1 carte (au choix)</li>
+<li>Résultat : « Les branches vous serrent à vous briser les côtes. Vous perdez 9 PV et une carte va se transformer. »</li>
+</ul>
+<!-- /choix:WHISPERING_HOLLOW -->
+
 <h3 id="gravures-sur-bois-wood_carvings"><img alt="Gravures sur bois" loading="lazy" src="../../bible/images/events/wood_carvings.webp" /> Gravures sur bois (<code>WOOD_CARVINGS</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act1a</code> | <strong>Nombre d'options :</strong> <code>4</code></li>
@@ -440,6 +1723,22 @@ Ou du moins, c’est ce que vous pensiez.</li>
 </ul>
 <p>Un oiseau, un serpent, et... un tore ?</p>
 <p>Un piédestal à proximité est muni d’emplacements qui correspondent au bas des figurines. Laquelle des figurines placez-vous sur le piédestal ?</p>
+<!-- choix:WOOD_CARVINGS -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<p><em>Pas encore dans le jeu</em> : choix de la référence (<code>bible/data/event_choices</code>).</p>
+<p>Page <code>start</code> :</p>
+<ul>
+<li><strong>Oiseau : transforme une carte de départ en Picorer.</strong> (Bird: Choose 1 starter card to Transform into Peck.)</li>
+<li>Effets : transform card 1 (PECK) - 2 dégâts x3</li>
+<li><strong>Serpent : enchante une carte avec Glissement.</strong> (Snake: Enchant 1 card with Slither.)</li>
+<li>Effets : other 1 (ENCHANT_SLITHER) - verrouillé si aucune carte enchantable; coût de la carte aléatoire</li>
+<li><strong>Tore : transforme une carte de départ en Robustesse torique.</strong> (Torus: Choose 1 starter card to Transform into Toric Toughness.)</li>
+<li>Effets : transform card 1 (TORIC_TOUGHNESS) - 5 Armure, +5 Armure au début des 2 tours suivants</li>
+<li><strong>(quatrième option, probablement Partir)</strong> ((fourth option, probably Leave))</li>
+<li>Effets : leave - optionCount=4 mais seulement 3 options trouvées</li>
+</ul>
+<!-- /choix:WOOD_CARVINGS -->
+
 <h3 id="tisseur-zen-zen_weaver"><img alt="Tisseur zen" loading="lazy" src="../../bible/images/events/zen_weaver.webp" /> Tisseur zen (<code>ZEN_WEAVER</code>)</h3>
 <ul>
 <li><strong>Zone :</strong> <code>Acte act2</code> | <strong>Nombre d'options :</strong> <code>4</code></li>
@@ -448,7 +1747,31 @@ Mais rapidement, une vague de calme vous gagne...</li>
 </ul>
 <p>« Du calme. Il faut que tu arrêtes de défaire ma toile. »</p>
 <p>Comment avez-vous réussi à vous calmer si vite ?
-Une toute petite araignée descend à votre rencontre. Elle semble bien vouloir vous apprendre quelques techniques en échange de pièces d’or.</p></div></section>
+Une toute petite araignée descend à votre rencontre. Elle semble bien vouloir vous apprendre quelques techniques en échange de pièces d’or.</p>
+<!-- choix:ZEN_WEAVER -->
+<p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
+<ul>
+<li><strong>Titre en jeu :</strong> Tisseur zen | <strong>Zones :</strong> Acte 2</li>
+</ul>
+<p>Page 0 (début) : « Vous traversez par inadvertance une toile d'araignée. PANIQUE ! Mais une vague de calme vous gagne. Une minuscule araignée descend : contre quelques pièces d'or, elle vous apprendra des techniques. »</p>
+<ul>
+<li><strong>Techniques de respiration</strong> - 50 Or : ajoutez 2 Illumination.</li>
+<li>Condition : au moins 50 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 50 Or ; ajoute au deck 2 × Enlightenment</li>
+<li>Résultat : « Vous respirez lentement, au rythme de l'araignée. Deux Illumination rejoignent votre deck. »</li>
+<li><strong>Conscience émotionnelle</strong> - Payez 125 Or, retirez une carte.</li>
+<li>Condition : au moins 125 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 125 Or ; retire 1 carte du deck (au choix)</li>
+<li>Résultat : « L'araignée vous aide à lâcher prise. Choisissez une carte à retirer de votre deck. »</li>
+<li><strong>Acupuncture arachnéenne</strong> - Payez 250 Or, retirez 2 cartes.</li>
+<li>Condition : au moins 250 Or (sinon l'option est grisée)</li>
+<li>Effets : perd 250 Or ; retire 2 cartes du deck (au choix)</li>
+<li>Résultat : « Les pattes de l'araignée piquent avec précision. Choisissez 2 cartes à retirer de votre deck. »</li>
+<li><strong>Partir</strong> - Ne rien payer.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous remerciez la petite araignée et poursuivez votre route. »</li>
+</ul>
+<!-- /choix:ZEN_WEAVER --></div></section>
 </main>
 <footer class="foot">
   <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>

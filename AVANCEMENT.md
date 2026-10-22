@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 97,4 %** — 1233 faits, 5 partiels, 12 à faire (35 hors périmètre).
+**Avancement global : 98,3 %** — 1238 faits, 3 partiels, 9 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -22,13 +22,13 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Le Régent](#regent) | 100 | 0 | 0 | 100,0 % |
 | [La Nécrolieuse](#necrobinder) | 102 | 0 | 0 | 100,0 % |
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
-| [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
+| [Reliques et potions](#reliques) | 321 | 0 | 0 | 100,0 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
 | [Évènements et Anciens](#rencontres) | 57 | 3 | 5 | 90,0 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
-| [Interface, audio et cartouches](#interface) | 24 | 2 | 5 | 80,6 % |
-| **Total** | **1233** | **5** | **12** | **97,4 %** |
+| [Interface, audio et cartouches](#interface) | 28 | 0 | 3 | 90,3 % |
+| **Total** | **1238** | **3** | **9** | **98,3 %** |
 
 <a id="ironclad"></a>
 
@@ -861,7 +861,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="reliques"></a>
 
-## Reliques et potions — 99,7 %
+## Reliques et potions — 100,0 %
 
 ### Reliques partagées — 100,0 %
 
@@ -1033,9 +1033,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épée de pierre | Évènement | Oui |  |
 | Œil de geckobra ??? | Évènement | Oui |  |
 
-### Reliques des Anciens — 99,0 %
+### Reliques des Anciens — 100,0 %
 
-101 faits, 0 partiel, 1 à faire.
+102 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1055,7 +1055,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Brouillard en conserve | Ancienne | Oui |  |
 | Cage vide | Ancienne | Oui |  |
 | Caisse d'alchimie | Ancienne | Oui |  |
-| Caisse de parchemins | Ancienne | Non |  |
+| Caisse de parchemins | Ancienne | Oui |  |
 | Caisse à jouets | Ancienne | Oui |  |
 | Canne à pêche | Ancienne | Oui |  |
 | Cape distinguée | Ancienne | Oui |  |
@@ -1610,11 +1610,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 80,6 %
+## Interface, audio et cartouches — 90,3 %
 
-### Écrans — 88,1 %
+### Écrans — 95,2 %
 
-18 faits, 1 partiel, 2 à faire.
+20 faits, 0 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1631,18 +1631,18 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Victoire |  | Oui | [#12](https://github.com/Boblebol/slay_the_gba/issues/12) |
 | Indicateurs de vie, d'armure et de progression |  | Oui | [#20](https://github.com/Boblebol/slay_the_gba/issues/20) |
 | Transitions entre les scènes |  | Oui | [#18](https://github.com/Boblebol/slay_the_gba/issues/18) |
-| Système de dialogue et d'évènements textuels |  | Partiel | [#19](https://github.com/Boblebol/slay_the_gba/issues/19) |
+| Système de dialogue et d'évènements textuels |  | Oui | Texte typewriter avec petit bip, accents, retour à la ligne et pages au-delà de 5 lignes ; aperçu des conséquences sous chaque choix. [#19](https://github.com/Boblebol/slay_the_gba/issues/19) |
 | Options (volume, commandes) |  | Oui |  |
 | Menu pause en combat et sur la carte |  | Oui | [#10](https://github.com/Boblebol/slay_the_gba/issues/10) |
 | Menu principal interactif |  | Oui | Haut/Bas pour naviguer, A pour valider : Continuer (si une partie est sauvegardée), Nouvelle partie, Compendium, Statistiques ; SELECT ouvre les options depuis l'écran titre, les crédits suivent la victoire. [#9](https://github.com/Boblebol/slay_the_gba/issues/9) |
 | Écran titre animé (nuages, tour, brume) |  | Oui | Deux bandes de nuages et de brume défilent à des vitesses différentes, la Spire pulse, l'invite clignote. [#7](https://github.com/Boblebol/slay_the_gba/issues/7) |
 | Écran titre propre à chaque édition |  | Non | [#3](https://github.com/Boblebol/slay_the_gba/issues/3) |
-| Crédits et cinématique d'introduction |  | Non | [#1](https://github.com/Boblebol/slay_the_gba/issues/1) |
+| Crédits et cinématique d'introduction |  | Oui | Carte de crédits (Mega Crit, Butano par GValiente, Alexandre Enouf), puis la Spire monte de l'ombre en silhouette pixelisée, reprend ses couleurs et le logo apparaît lettre par lettre ; START ou A passe directement à l'écran titre. [#1](https://github.com/Boblebol/slay_the_gba/issues/1) |
 | Crédits de fin |  | Oui | [#22](https://github.com/Boblebol/slay_the_gba/issues/22) |
 
-### Graphismes et audio — 68,8 %
+### Graphismes et audio — 87,5 %
 
-5 faits, 1 partiel, 2 à faire.
+7 faits, 0 partiel, 1 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1651,9 +1651,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Police avec accents français |  | Oui |  |
 | Effets sonores |  | Oui | [#14](https://github.com/Boblebol/slay_the_gba/issues/14) |
 | Sept musiques en boucle |  | Oui | [#15](https://github.com/Boblebol/slay_the_gba/issues/15) |
-| Logo et identité graphique |  | Non | [#8](https://github.com/Boblebol/slay_the_gba/issues/8) |
+| Logo et identité graphique |  | Oui | Logo pixel art de l'écran titre, icône du site, palette de 16 couleurs commune au texte et aux boîtes de dialogue. [#8](https://github.com/Boblebol/slay_the_gba/issues/8) |
 | Poses des héros tirées des artworks sources (attaque, blessure) |  | Non | [#2](https://github.com/Boblebol/slay_the_gba/issues/2) |
-| Animations des ennemis et des boss |  | Partiel | Flottement au repos et fondu de mort ; pas d'animation d'attaque. [#17](https://github.com/Boblebol/slay_the_gba/issues/17) |
+| Animations des ennemis et des boss |  | Oui | Procédurales sur le sprite existant : repos selon l'intention, attaque, recul, effondrement. [#17](https://github.com/Boblebol/slay_the_gba/issues/17) |
 
 ### Cartouches — 50,0 %
 
