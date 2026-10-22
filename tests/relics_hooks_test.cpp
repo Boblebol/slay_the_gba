@@ -5119,6 +5119,39 @@ void test_sea_glass() {
     std::cout << "[PASS] Sea Glass: 15 cards of another hero, any number added to the deck" << std::endl;
 }
 
+void test_scroll_boxes() {
+    // Obtained: 2 packs of 3 distinct non-Basic cards of the hero are offered, one whole pack joins the deck.
+    RunManager run;
+    run.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 711);
+    const size_t deck = run.master_deck.size();
+    run.add_relic("SCROLL_BOXES");
+    assert(run.has_relic("SCROLL_BOXES"));
+    assert(run.has_deck_choice() && run.deck_choice.kind == DeckChoiceKind::PACK && !run.deck_choice.optional);
+    assert(run.deck_choice.remaining == 1 && run.deck_choice_offers.size() == PACK_CHOICE_PACKS * PACK_CHOICE_CARDS);
+    for (size_t i = 0; i < run.deck_choice_offers.size(); ++i) {
+        assert(card_meta(run.deck_choice_offers[i].id).pool == CardPool::IRONCLAD);
+        assert(card_meta(run.deck_choice_offers[i].id).rarity != CardRarity::BASIC);
+        for (size_t j = 0; j < i; ++j) assert(run.deck_choice_offers[i].id != run.deck_choice_offers[j].id);
+    }
+    // There is no skipping and only two packs.
+    assert(!run.skip_deck_choice() && run.has_deck_choice());
+    assert(!run.resolve_deck_choice(2) && !run.resolve_deck_choice(-1));
+    CardId second_pack[PACK_CHOICE_CARDS];
+    for (size_t i = 0; i < PACK_CHOICE_CARDS; ++i) second_pack[i] = run.deck_choice_offers[PACK_CHOICE_CARDS + i].id;
+    assert(run.resolve_deck_choice(1));
+    assert(!run.has_deck_choice() && run.deck_choice_offers.empty());
+    assert(run.master_deck.size() == deck + PACK_CHOICE_CARDS);
+    for (size_t i = 0; i < PACK_CHOICE_CARDS; ++i) assert(run.master_deck[deck + i].id == second_pack[i]);
+
+    // Without the relic, no pack is offered.
+    RunManager plain;
+    plain.start_run(CharacterId::IRONCLAD, 0, PaletteVariant::CLASSIC, 711);
+    plain.add_relic("ANCHOR");
+    assert(!plain.has_relic("SCROLL_BOXES") && !plain.has_deck_choice() && plain.deck_choice_offers.empty());
+    assert(plain.master_deck.size() == deck);
+    std::cout << "[PASS] Scroll Boxes: 1 pack of 3 cards out of 2 added to the deck" << std::endl;
+}
+
 int main() {
   std::cout << "=== Relics on Combat Hooks ===" << std::endl;
     test_attack_relics();
@@ -5314,5 +5347,6 @@ int main() {
     test_sword_of_stone();
     test_miniature_tent();
     test_sea_glass();
+    test_scroll_boxes();
     return 0;
 }

@@ -285,11 +285,16 @@ endif
 # -------------------------------------------------------------------------------------------------
 # 🌐 SITE WEB (généré depuis la bible)
 # -------------------------------------------------------------------------------------------------
-.PHONY: site site-build site-package site-dist deploy deploy-preview progress
+.PHONY: site site-build site-package site-dist deploy deploy-preview progress docs-events
 
 # Implementation tracker: rewrites AVANCEMENT.md from the engine sources and avancement.toml.
 progress:
 	@uv run scripts/progress.py
+
+# Choices of the events (#252): bible/data/event_game_v0.111.0.json and the choices of bible/18_evenements.md,
+# generated from src/engine/events. `make docs-events CHECK=--check` only tells whether they are up to date.
+docs-events:
+	@uv run scripts/build_event_docs.py $(CHECK)
 
 site-build:
 	@printf "$(CYAN)==> Génération du site web dans site/...$(RESET)\n"

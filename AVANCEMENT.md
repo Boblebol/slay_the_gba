@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 96,8 %** — 1226 faits, 11 partiels, 13 à faire (35 hors périmètre).
+**Avancement global : 97,4 %** — 1233 faits, 5 partiels, 12 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -16,23 +16,23 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 | Section | Fait | Partiel | À faire | Avancement |
 |---|---:|---:|---:|---:|
-| [Soldat de Fer](#ironclad) | 101 | 1 | 0 | 99,5 % |
-| [La Silencieuse](#silent) | 100 | 1 | 0 | 99,5 % |
-| [Le Défectueux](#defect) | 104 | 1 | 0 | 99,5 % |
-| [Le Régent](#regent) | 99 | 1 | 0 | 99,5 % |
-| [La Nécrolieuse](#necrobinder) | 101 | 1 | 0 | 99,5 % |
+| [Soldat de Fer](#ironclad) | 102 | 0 | 0 | 100,0 % |
+| [La Silencieuse](#silent) | 101 | 0 | 0 | 100,0 % |
+| [Le Défectueux](#defect) | 105 | 0 | 0 | 100,0 % |
+| [Le Régent](#regent) | 100 | 0 | 0 | 100,0 % |
+| [La Nécrolieuse](#necrobinder) | 102 | 0 | 0 | 100,0 % |
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 320 | 0 | 1 | 99,7 % |
 | [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
 | [Évènements et Anciens](#rencontres) | 57 | 3 | 5 | 90,0 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
-| [Interface, audio et cartouches](#interface) | 22 | 3 | 6 | 75,8 % |
-| **Total** | **1226** | **11** | **13** | **96,8 %** |
+| [Interface, audio et cartouches](#interface) | 24 | 2 | 5 | 80,6 % |
+| **Total** | **1233** | **5** | **12** | **97,4 %** |
 
 <a id="ironclad"></a>
 
-## Soldat de Fer — 99,5 %
+## Soldat de Fer — 100,0 %
 
 ### Cartes — 100,0 %
 
@@ -146,9 +146,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Langue du Démon | Rare | Oui |  |
 | Soufre | Boutique | Oui |  |
 
-### Mécaniques — 93,8 %
+### Mécaniques — 100,0 %
 
-7 faits, 1 partiel, 0 à faire.
+8 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -159,11 +159,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Épuisement de ses cartes et synergies d'Épuisement |  | Oui |  |
 | Sacrifice de PV contre de la puissance (cartes « Perdez X PV ») |  | Oui |  |
 | Gain de Force tour après tour (Enflammer, Forme démoniaque) |  | Oui |  |
-| Animations du héros (repos, attaque, dégâts, garde) |  | Partiel | Flottement au repos, secousse et fondu de mort ; pas de poses dessinées. [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
+| Animations du héros (repos, attaque, dégâts, garde) |  | Oui | [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
 
 <a id="silent"></a>
 
-## La Silencieuse — 99,5 %
+## La Silencieuse — 100,0 %
 
 ### Cartes — 100,0 %
 
@@ -278,9 +278,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Grû en papier | Rare | Oui |  |
 | Parchemin de ninja | Boutique | Oui |  |
 
-### Mécaniques — 92,9 %
+### Mécaniques — 100,0 %
 
-6 faits, 1 partiel, 0 à faire.
+7 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -290,11 +290,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Défausse au choix (Survivant, Acrobaties) |  | Oui |  |
 | Surins : attaques à 0 énergie créées en combat |  | Oui |  |
 | Ruse : carte jouée gratuitement quand elle est défaussée |  | Oui | [#73](https://github.com/Boblebol/slay_the_gba/issues/73) |
-| Animations du héros (repos, attaque, dégâts, garde) |  | Partiel | Flottement au repos, secousse et fondu de mort ; pas de poses dessinées. [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
+| Animations du héros (repos, attaque, dégâts, garde) |  | Oui | [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
 
 <a id="defect"></a>
 
-## Le Défectueux — 99,5 %
+## Le Défectueux — 100,0 %
 
 ### Cartes — 100,0 %
 
@@ -409,9 +409,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Puce émotionnelle | Rare | Oui |  |
 | Condensateur runique | Boutique | Oui |  |
 
-### Mécaniques — 95,5 %
+### Mécaniques — 100,0 %
 
-10 faits, 1 partiel, 0 à faire.
+11 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -425,11 +425,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Focalisation : renforce tous les Orbes |  | Oui |  |
 | Emplacements d'Orbe variables (Condensateur) |  | Oui |  |
 | Compteur d'Orbes affiché en combat |  | Oui |  |
-| Animations du héros (repos, attaque, dégâts, garde) |  | Partiel | Flottement au repos, secousse et fondu de mort ; pas de poses dessinées. [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
+| Animations du héros (repos, attaque, dégâts, garde) |  | Oui | [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
 
 <a id="regent"></a>
 
-## Le Régent — 99,5 %
+## Le Régent — 100,0 %
 
 ### Cartes — 100,0 %
 
@@ -544,9 +544,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Pâtisserie lunaire | Rare | Oui |  |
 | Sbire de Vitruve | Boutique | Oui |  |
 
-### Mécaniques — 91,7 %
+### Mécaniques — 100,0 %
 
-5 faits, 1 partiel, 0 à faire.
+6 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -555,11 +555,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Forger la Lame souveraine |  | Oui | [#102](https://github.com/Boblebol/slay_the_gba/issues/102) |
 | Sbires (Frappe de sbire, Sbire en piqué) |  | Oui | [#103](https://github.com/Boblebol/slay_the_gba/issues/103) |
 | Compteur d'Étoiles affiché en combat |  | Oui |  |
-| Animations du héros (repos, attaque, dégâts, garde) |  | Partiel | Flottement au repos, secousse et fondu de mort ; pas de poses dessinées. [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
+| Animations du héros (repos, attaque, dégâts, garde) |  | Oui | [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
 
 <a id="necrobinder"></a>
 
-## La Nécrolieuse — 99,5 %
+## La Nécrolieuse — 100,0 %
 
 ### Cartes — 100,0 %
 
@@ -674,9 +674,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tuile en ivoire | Rare | Oui |  |
 | Sceau immortel | Boutique | Oui |  |
 
-### Mécaniques — 92,9 %
+### Mécaniques — 100,0 %
 
-6 faits, 1 partiel, 0 à faire.
+7 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -686,7 +686,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Âmes ajoutées à la Pioche |  | Oui |  |
 | Cartes Éthérées |  | Oui |  |
 | PV de Titos affichés en combat |  | Oui |  |
-| Animations du héros (repos, attaque, dégâts, garde) |  | Partiel | Flottement au repos, secousse et fondu de mort ; pas de poses dessinées. [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
+| Animations du héros (repos, attaque, dégâts, garde) |  | Oui | [#16](https://github.com/Boblebol/slay_the_gba/issues/16) |
 
 <a id="cartes"></a>
 
@@ -1610,11 +1610,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 75,8 %
+## Interface, audio et cartouches — 80,6 %
 
-### Écrans — 81,0 %
+### Écrans — 88,1 %
 
-16 faits, 2 partiels, 3 à faire.
+18 faits, 1 partiel, 2 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1630,12 +1630,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Défaite (Game Over) |  | Oui | [#11](https://github.com/Boblebol/slay_the_gba/issues/11) |
 | Victoire |  | Oui | [#12](https://github.com/Boblebol/slay_the_gba/issues/12) |
 | Indicateurs de vie, d'armure et de progression |  | Oui | [#20](https://github.com/Boblebol/slay_the_gba/issues/20) |
-| Transitions entre les scènes |  | Partiel | [#18](https://github.com/Boblebol/slay_the_gba/issues/18) |
+| Transitions entre les scènes |  | Oui | [#18](https://github.com/Boblebol/slay_the_gba/issues/18) |
 | Système de dialogue et d'évènements textuels |  | Partiel | [#19](https://github.com/Boblebol/slay_the_gba/issues/19) |
 | Options (volume, commandes) |  | Oui |  |
 | Menu pause en combat et sur la carte |  | Oui | [#10](https://github.com/Boblebol/slay_the_gba/issues/10) |
 | Menu principal interactif |  | Oui | Haut/Bas pour naviguer, A pour valider : Continuer (si une partie est sauvegardée), Nouvelle partie, Compendium, Statistiques ; SELECT ouvre les options depuis l'écran titre, les crédits suivent la victoire. [#9](https://github.com/Boblebol/slay_the_gba/issues/9) |
-| Écran titre animé (nuages, tour, brume) |  | Non | [#7](https://github.com/Boblebol/slay_the_gba/issues/7) |
+| Écran titre animé (nuages, tour, brume) |  | Oui | Deux bandes de nuages et de brume défilent à des vitesses différentes, la Spire pulse, l'invite clignote. [#7](https://github.com/Boblebol/slay_the_gba/issues/7) |
 | Écran titre propre à chaque édition |  | Non | [#3](https://github.com/Boblebol/slay_the_gba/issues/3) |
 | Crédits et cinématique d'introduction |  | Non | [#1](https://github.com/Boblebol/slay_the_gba/issues/1) |
 | Crédits de fin |  | Oui | [#22](https://github.com/Boblebol/slay_the_gba/issues/22) |

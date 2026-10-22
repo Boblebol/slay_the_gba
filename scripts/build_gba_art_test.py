@@ -320,3 +320,27 @@ def test_write_json_and_indexed_bmp_go_where_they_are_told(tmp_path: Path) -> No
     with Image.open(tmp_path / "x.bmp") as bmp:
         assert bmp.mode == "P" and bmp.size == (2, 1)
         assert [bmp.getpixel((x, 0)) for x in range(2)] == [0, 1]
+
+
+def test_hero_poses_keep_the_feet_and_move_the_upper_body() -> None:
+    """Every pose of graphics/hero_<hero>.bmp (#16) stands on the same row; only the body above moves."""
+    idx = np.zeros((64, 64), dtype=np.uint8)
+    idx[20:60, 28:36] = 3  # a plain column, top row 20, feet on row 59
+    poses = {pose: build_gba_art.hero_pose(idx, pose) for pose in build_gba_art.HERO_POSES}
+    assert build_gba_art.HERO_POSES == ("idle", "breath", "attack", "hurt", "guard")
+    for pose, frame in poses.items():
+        assert (frame[59] == idx[59]).all(), pose
+        assert not frame[60:].any(), pose
+    assert (poses["idle"] == idx).all()
+    first_row = {pose: int(np.nonzero(frame.any(axis=1))[0][0]) for pose, frame in poses.items()}
+    assert first_row["breath"] == 21  # head one pixel lower
+    assert first_row["guard"] > 21  # crouched
+    head_x = {pose: int(np.nonzero(frame[first_row[pose]])[0][0]) for pose, frame in poses.items()}
+    assert head_x["attack"] > 28  # leaning towards the enemies on the right
+    assert head_x["hurt"] < 28  # thrown back
+
+
+@pytest.mark.parametrize("hero", HEROES)
+def test_hero_sheet_has_one_64_pixel_frame_per_pose(hero: str) -> None:
+    sheet = Image.open(build_gba_art.OUT / f"hero_{hero}.bmp")
+    assert sheet.size == (64, 64 * len(build_gba_art.HERO_POSES))

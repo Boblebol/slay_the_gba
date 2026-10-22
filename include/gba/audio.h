@@ -25,7 +25,8 @@ enum class Sfx : uint8_t
     BUFF,
     DEBUFF,
     TURN_START,
-    ERROR          // invalid action (not enough energy or gold)
+    ERROR,         // invalid action (not enough energy or gold)
+    TEXT_BLIP      // voice of a dialogue box typing its letters (#19)
 };
 
 // Plays a sound effect at the volume chosen in the options (silent when set to 0).

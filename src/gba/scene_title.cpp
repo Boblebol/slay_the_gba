@@ -7,7 +7,6 @@
 #include "bn_keypad.h"
 #include "bn_regular_bg_ptr.h"
 #include "bn_sprite_palette_ptr.h"
-#include "bn_sprite_text_generator.h"
 #include "bn_sstream.h"
 #include "bn_vector.h"
 
@@ -15,6 +14,7 @@
 #include "bn_sprite_items_title_glow.h"
 #include "bn_sprite_items_title_mist.h"
 #include "common_variable_16x16_sprite_font.h"
+#include "bn_sprite_items_title_logo.h"
 
 #include "engine/run.h"
 #include "engine/save_system.h"
@@ -34,6 +34,8 @@ namespace
 {
 
 constexpr int LOGO_Y = -62;
+constexpr int LOGO_PIECES = 5;      // 32x32 frames of title_logo, left to right (scripts/build_identity.py)
+constexpr int LOGO_PIECE_W = 32;
 constexpr int MENU_Y = 28;
 constexpr int MENU_SPACING = 11;
 constexpr int MENU_ENTRIES = 4;
@@ -132,15 +134,12 @@ public:
         }
 
         _animate_backdrop();
-        bn::sprite_text_generator logo_generator(common::variable_16x16_sprite_font);
-        logo_generator.set_center_alignment();
-        logo_generator.set_z_order(Z_TEXT);
-        logo_generator.generate(0, LOGO_Y, "SLAY THE GBA", _logo);
-
-        for(bn::sprite_ptr& sprite : _logo)
+        for(int piece = 0; piece < LOGO_PIECES; ++piece)
         {
-            _logo_x.push_back(sprite.x().round_integer());
-            sprite.set_y(-120);
+            int x = (piece - LOGO_PIECES / 2) * LOGO_PIECE_W;
+            _logo.push_back(bn::sprite_items::title_logo.create_sprite(x, -120, piece));
+            _logo.back().set_z_order(Z_TEXT);
+            _logo_x.push_back(x);
         }
 
         // The edition name already carries the hero's name, so it replaces the separate hero name label: the OAM
@@ -544,7 +543,7 @@ private:
 
     void _animate_logo()
     {
-        // Letters drop in one after the other with a small bounce, then float gently.
+        // Logo pieces drop in one after the other with a small bounce, then float gently.
         for(int index = 0; index < _logo.size(); ++index)
         {
             int local = _timer - index * 3;
@@ -565,7 +564,7 @@ private:
             }
             else
             {
-                y = LOGO_Y + wave(_timer + index * 5, 90, 1);
+                y = LOGO_Y + wave(_timer, 90, 1); // the pieces float together: a letter never splits
             }
 
             _logo[index].set_position(_logo_x[index], y);

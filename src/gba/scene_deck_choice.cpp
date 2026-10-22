@@ -52,6 +52,15 @@ public:
             return bn::nullopt;
         }
 
+        // Scroll Boxes: the picker shows one pack, UP and DOWN go to the other one.
+        if(run.deck_choice.kind == engine::DeckChoiceKind::PACK &&
+           (bn::keypad::up_pressed() || bn::keypad::down_pressed()))
+        {
+            _pack = 1 - _pack;
+            play_sfx(Sfx::UI_CURSOR);
+            _refresh();
+        }
+
         if(bn::keypad::a_pressed() && _picker.size() > 0)
         {
             engine::DeckChoiceKind kind = run.deck_choice.kind;
@@ -91,6 +100,7 @@ private:
     Label _hint;
     PopupPool _popups;
     int _leave_timer = 0;
+    int _pack = 0; // PACK only: the pack shown
 
     [[nodiscard]] static bn::string_view _done_text(engine::DeckChoiceKind kind)
     {
@@ -106,6 +116,8 @@ private:
             return "Copiée !";
         case engine::DeckChoiceKind::ADD:
             return "Ajoutée !";
+        case engine::DeckChoiceKind::PACK:
+            return "Pack ajouté !";
         default:
             return "Transformée !";
         }
@@ -126,6 +138,22 @@ private:
 
         engine::DeckChoiceKind kind = run.deck_choice.kind;
         _picker.set_preview_upgraded(kind == engine::DeckChoiceKind::UPGRADE);
+
+        // Scroll Boxes: the cards of one pack, all of them tagged with the number of the pack.
+        if(kind == engine::DeckChoiceKind::PACK)
+        {
+            for(int index = 0; index < int(engine::PACK_CHOICE_CARDS); ++index)
+            {
+                _picker.add(run.deck_choice_offers[_pack * engine::PACK_CHOICE_CARDS + index], _pack);
+            }
+
+            TextLine pack_title;
+            bn::ostringstream pack_stream(pack_title);
+            pack_stream << "PACK " << (_pack + 1) << "/" << int(engine::PACK_CHOICE_PACKS) << " - AJOUTER 1 PACK";
+            _title.set(0, -72, pack_title, Align::CENTER, TextColor::GOLD);
+            _hint.set(0, 73, "▲▼ Pack   ◄► Carte   A Prendre le pack", Align::CENTER, TextColor::GRAY);
+            return;
+        }
 
         // Sea Glass: the cards offered, not the deck's.
         bool offers = kind == engine::DeckChoiceKind::ADD;

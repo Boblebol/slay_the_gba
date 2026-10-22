@@ -26,7 +26,7 @@ constexpr CampfireRelic CAMPFIRE_RELICS[] = {
 // Ancient relics whose effect the engine does not resolve yet: an Ancient never offers them. An id leaves this
 // list once its effect is written.
 constexpr std::string_view ANCIENT_RELICS_PENDING[] = {
-    "SCROLL_BOXES",
+    "", // placeholder: an array cannot be empty
 };
 
 bool ancient_relic_pending(std::string_view relic_id) {
@@ -1027,6 +1027,20 @@ void RunManager::on_relic_obtained(std::string_view relic_id) {
         }
         request_deck_choice(DeckChoiceKind::ADD, static_cast<int>(deck_choice_offers.size()), true);
     }
+    // Scroll Boxes: 2 packs of cards of the hero, one of them joins the deck (see DeckChoiceKind::PACK).
+    if (relic_id == "SCROLL_BOXES" && has_relic("SCROLL_BOXES")) {
+        deck_choice_offers.clear();
+        FixedVector<CardId, 512> pool;
+        for (CardId id : card_reward_pool(character)) {
+            if (card_meta(id).rarity != CardRarity::BASIC) pool.push_back(id);
+        }
+        while (deck_choice_offers.size() < PACK_CHOICE_PACKS * PACK_CHOICE_CARDS && !pool.empty()) {
+            size_t pick = next_random() % pool.size();
+            deck_choice_offers.push_back(DeckCard(pool[pick]));
+            pool.erase(pick);
+        }
+        request_deck_choice(DeckChoiceKind::PACK, 1);
+    }
     // Toy Box: 5 random relics, the Wax Relics, right after the box; they melt away one by one (on_combat_won).
     if (relic_id == "TOY_BOX" && has_relic("TOY_BOX")) {
         int wax = gain_random_relics(TOY_BOX_WAX_RELICS);
@@ -1714,7 +1728,8 @@ void RunManager::request_deck_choice(DeckChoiceKind kind, int count, bool option
     deck_choice.enchant_amount = enchant_amount;
     deck_choice.only_type = only_type;
     int candidates = 0;
-    const size_t choices = kind == DeckChoiceKind::ADD ? deck_choice_offers.size() : master_deck.size();
+    const size_t choices = kind == DeckChoiceKind::ADD ? deck_choice_offers.size()
+                         : kind == DeckChoiceKind::PACK ? PACK_CHOICE_PACKS : master_deck.size();
     for (size_t i = 0; i < choices; ++i) {
         if (deck_choice_allows(static_cast<int>(i))) ++candidates;
     }
@@ -1738,6 +1753,12 @@ bool RunManager::deck_choice_allows(int deck_index) const {
     if (deck_choice.kind == DeckChoiceKind::ADD) {
         return deck_index >= 0 && static_cast<size_t>(deck_index) < deck_choice_offers.size() &&
                master_deck.size() < master_deck.capacity();
+    }
+    if (deck_choice.kind == DeckChoiceKind::PACK) {
+        // A pack is whole, and the deck holds all its cards.
+        return deck_index >= 0 && static_cast<size_t>(deck_index) < PACK_CHOICE_PACKS &&
+               (static_cast<size_t>(deck_index) + 1) * PACK_CHOICE_CARDS <= deck_choice_offers.size() &&
+               master_deck.size() + PACK_CHOICE_CARDS <= master_deck.capacity();
     }
     if (deck_index < 0 || static_cast<size_t>(deck_index) >= master_deck.size()) return false;
     switch (deck_choice.kind) {
@@ -1780,6 +1801,11 @@ bool RunManager::resolve_deck_choice(int deck_index) {
         case DeckChoiceKind::ADD:
             done = add_card_to_deck(deck_choice_offers[deck_index]);
             if (done) deck_choice_offers.erase(static_cast<size_t>(deck_index));
+            break;
+        case DeckChoiceKind::PACK:
+            for (size_t i = 0; i < PACK_CHOICE_CARDS; ++i) add_card_to_deck(deck_choice_offers[static_cast<size_t>(deck_index) * PACK_CHOICE_CARDS + i]);
+            deck_choice_offers.clear();
+            done = true;
             break;
         default: break;
     }
