@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 98,3 %** — 1238 faits, 3 partiels, 9 à faire (35 hors périmètre).
+**Avancement global : 98,5 %** — 1239 faits, 3 partiels, 8 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -27,8 +27,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Évènements et Anciens](#rencontres) | 57 | 3 | 5 | 90,0 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
-| [Interface, audio et cartouches](#interface) | 28 | 0 | 3 | 90,3 % |
-| **Total** | **1238** | **3** | **9** | **98,3 %** |
+| [Interface, audio et cartouches](#interface) | 29 | 0 | 2 | 93,5 % |
+| **Total** | **1239** | **3** | **8** | **98,5 %** |
 
 <a id="ironclad"></a>
 
@@ -1610,11 +1610,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 90,3 %
+## Interface, audio et cartouches — 93,5 %
 
-### Écrans — 95,2 %
+### Écrans — 100,0 %
 
-20 faits, 0 partiel, 1 à faire.
+21 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1636,7 +1636,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Menu pause en combat et sur la carte |  | Oui | [#10](https://github.com/Boblebol/slay_the_gba/issues/10) |
 | Menu principal interactif |  | Oui | Haut/Bas pour naviguer, A pour valider : Continuer (si une partie est sauvegardée), Nouvelle partie, Compendium, Statistiques ; SELECT ouvre les options depuis l'écran titre, les crédits suivent la victoire. [#9](https://github.com/Boblebol/slay_the_gba/issues/9) |
 | Écran titre animé (nuages, tour, brume) |  | Oui | Deux bandes de nuages et de brume défilent à des vitesses différentes, la Spire pulse, l'invite clignote. [#7](https://github.com/Boblebol/slay_the_gba/issues/7) |
-| Écran titre propre à chaque édition |  | Non | [#3](https://github.com/Boblebol/slay_the_gba/issues/3) |
+| Écran titre propre à chaque édition |  | Oui | Teinte de la cartouche sur l'illustration et le halo, nom de l'édition sous le logo, étiquette de version (vX.Y.Z) dans le coin. [#3](https://github.com/Boblebol/slay_the_gba/issues/3) |
 | Crédits et cinématique d'introduction |  | Oui | Carte de crédits (Mega Crit, Butano par GValiente, Alexandre Enouf), puis la Spire monte de l'ombre en silhouette pixelisée, reprend ses couleurs et le logo apparaît lettre par lettre ; START ou A passe directement à l'écran titre. [#1](https://github.com/Boblebol/slay_the_gba/issues/1) |
 | Crédits de fin |  | Oui | [#22](https://github.com/Boblebol/slay_the_gba/issues/22) |
 
