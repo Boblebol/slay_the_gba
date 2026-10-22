@@ -283,7 +283,7 @@ items = [
   { name = "Menu principal interactif", status = "oui", issue = 9, note = "Haut/Bas pour naviguer, A pour valider : Continuer (si une partie est sauvegardée), Nouvelle partie, Compendium, Statistiques ; SELECT ouvre les options depuis l'écran titre, les crédits suivent la victoire." },
   { name = "Écran titre animé (nuages, tour, brume)", status = "oui", issue = 7, note = "Deux bandes de nuages et de brume défilent à des vitesses différentes, la Spire pulse, l'invite clignote." },
   { name = "Écran titre propre à chaque édition", status = "non", issue = 3 },
-  { name = "Crédits et cinématique d'introduction", status = "non", issue = 1 },
+  { name = "Crédits et cinématique d'introduction", status = "oui", issue = 1, note = "Carte de crédits (Mega Crit, Butano par GValiente, Alexandre Enouf), puis la Spire monte de l'ombre en silhouette pixelisée, reprend ses couleurs et le logo apparaît lettre par lettre ; START ou A passe directement à l'écran titre." },
   { name = "Crédits de fin", status = "oui", issue = 22 },
 ]
 
