@@ -226,8 +226,9 @@ def test_a_hero_sheet_keeps_slots_for_white_and_the_hero_attack_effect(hero: str
     effect = {pose: int(np.isin(f, fx_slots).sum()) for pose, f in frame.items()}
     assert effect["attack"] > effect["idle"] + 40
     assert (frame["hurt"] == white).sum() > (frame["idle"] == white).sum()
-    if hero == "defect":  # empty orb slots above the head in every pose
-        assert all((f[:10] == white + 2).sum() > 10 for f in frame.values())
+    if hero == "defect":  # empty orb slots behind the head in every pose, below the HUD line
+        assert all((f[11:36, :24] == white + 2).sum() > 30 for f in frame.values())
+        assert all((f[:11] == white + 2).sum() == 0 for f in frame.values())
     else:
         assert effect["idle"] == effect["breath"] == effect["guard"] == 0
 

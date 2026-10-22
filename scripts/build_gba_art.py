@@ -2053,8 +2053,10 @@ HERO_FX = {
     "regent": ((248, 224, 96), (216, 136, 40)),      # gold star, amber
     "necrobinder": ((176, 96, 240), (64, 208, 240)),  # violet soul, cyan core
 }
-DEFECT_DROP = 4    # the Defect sits lower so that its orb slots fit above its head
-DEFECT_SLOTS = ((21, 7), (32, 3), (43, 7))  # centres of the three empty orb slots
+DEFECT_DROP = 4    # the Defect sits lower so that its antenna clears the HUD line above it
+# Centres of the three empty orb slots: a crescent behind the head, below the "Orbes x/y" line of the combat HUD
+# (which covers the top 11 rows of the sprite) and away from the attack and hit effects on the enemy side.
+DEFECT_SLOTS = ((19, 14), (14, 22), (13, 31))
 
 
 def shear_rows(idx: np.ndarray, lean: int) -> np.ndarray:
@@ -2190,7 +2192,7 @@ def hurt_fx(fx: np.ndarray) -> None:
 def hero_effects(hero: str, pose: str) -> np.ndarray:
     """Effect layer of one pose (0 = none, 1 = white, 2 and 3 = the hero's accents), drawn over the body."""
     fx = np.zeros((64, 64), dtype=np.uint8)
-    if hero == "defect":  # empty orb slots float above the head
+    if hero == "defect":  # empty orb slots float behind the head
         for x, y in DEFECT_SLOTS:
             ring(fx, x, y, 1.5, 2.6, 3)
     if pose == "attack":
