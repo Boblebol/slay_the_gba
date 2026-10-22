@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 98,5 %** — 1239 faits, 3 partiels, 8 à faire (35 hors périmètre).
+**Avancement global : 98,8 %** — 1240 faits, 3 partiels, 7 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -27,8 +27,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Évènements et Anciens](#rencontres) | 57 | 3 | 5 | 90,0 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
-| [Interface, audio et cartouches](#interface) | 29 | 0 | 2 | 93,5 % |
-| **Total** | **1239** | **3** | **8** | **98,5 %** |
+| [Interface, audio et cartouches](#interface) | 30 | 0 | 1 | 96,8 % |
+| **Total** | **1240** | **3** | **7** | **98,8 %** |
 
 <a id="ironclad"></a>
 
@@ -1610,7 +1610,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 93,5 %
+## Interface, audio et cartouches — 96,8 %
 
 ### Écrans — 100,0 %
 
@@ -1640,9 +1640,9 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Crédits et cinématique d'introduction |  | Oui | Carte de crédits (Mega Crit, Butano par GValiente, Alexandre Enouf), puis la Spire monte de l'ombre en silhouette pixelisée, reprend ses couleurs et le logo apparaît lettre par lettre ; START ou A passe directement à l'écran titre. [#1](https://github.com/Boblebol/slay_the_gba/issues/1) |
 | Crédits de fin |  | Oui | [#22](https://github.com/Boblebol/slay_the_gba/issues/22) |
 
-### Graphismes et audio — 87,5 %
+### Graphismes et audio — 100,0 %
 
-7 faits, 0 partiel, 1 à faire.
+8 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1652,7 +1652,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Effets sonores |  | Oui | [#14](https://github.com/Boblebol/slay_the_gba/issues/14) |
 | Sept musiques en boucle |  | Oui | [#15](https://github.com/Boblebol/slay_the_gba/issues/15) |
 | Logo et identité graphique |  | Oui | Logo pixel art de l'écran titre, icône du site, palette de 16 couleurs commune au texte et aux boîtes de dialogue. [#8](https://github.com/Boblebol/slay_the_gba/issues/8) |
-| Poses des héros tirées des artworks sources (attaque, blessure) |  | Non | [#2](https://github.com/Boblebol/slay_the_gba/issues/2) |
+| Poses des héros tirées des artworks sources (attaque, blessure) |  | Oui | Cinq poses par héros (repos, souffle, attaque, blessure, garde) et un effet d'attaque propre à chacun ; poses procédurales, le dépôt n'a pas d'artwork en pied. [#2](https://github.com/Boblebol/slay_the_gba/issues/2) |
 | Animations des ennemis et des boss |  | Oui | Procédurales sur le sprite existant : repos selon l'intention, attaque, recul, effondrement. [#17](https://github.com/Boblebol/slay_the_gba/issues/17) |
 
 ### Cartouches — 50,0 %
