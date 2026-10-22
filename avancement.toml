@@ -298,7 +298,7 @@ items = [
   { name = "Sept musiques en boucle", status = "oui", issue = 15 },
   { name = "Logo et identité graphique", status = "non", issue = 8 },
   { name = "Poses des héros tirées des artworks sources (attaque, blessure)", status = "non", issue = 2 },
-  { name = "Animations des ennemis et des boss", status = "partiel", issue = 17, note = "Flottement au repos et fondu de mort ; pas d'animation d'attaque." },
+  { name = "Animations des ennemis et des boss", status = "oui", issue = 17, note = "Procédurales sur le sprite existant : repos selon l'intention, attaque, recul, effondrement." },
 ]
 
 [[category]]
