@@ -208,6 +208,42 @@ def test_a_mini_card_sheet_is_one_palette_with_white_and_two_frames_per_card(her
     assert build_gba_art.SHEET_WHITE in [tuple(palette[i:i + 3]) for i in range(0, 48, 3)]
 
 
+# --- Hero poses -------------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("hero", HEROES)
+def test_a_hero_sheet_keeps_slots_for_white_and_the_hero_attack_effect(hero: str) -> None:
+    """The attack frame carries the hero's own effect (#2) in colours the body never uses; the hit frame a white spark."""
+    with Image.open(build_gba_art.OUT / f"hero_{hero}.bmp") as bmp:
+        sheet = np.asarray(bmp)
+        palette = bmp.getpalette()[:48]
+    assert int(sheet.max()) <= 15
+    colors = [tuple(palette[i:i + 3]) for i in range(0, 48, 3)]
+    fx = [build_gba_art.to_gba(c) for c in (build_gba_art.FX_WHITE, *build_gba_art.HERO_FX[hero])]
+    white = max(i for i, c in enumerate(colors) if c == fx[0] and colors[i + 1:i + 3] == fx[1:])
+    fx_slots = [white, white + 1, white + 2]
+    frame = {pose: sheet[i * 64:(i + 1) * 64] for i, pose in enumerate(build_gba_art.HERO_POSES)}
+    effect = {pose: int(np.isin(f, fx_slots).sum()) for pose, f in frame.items()}
+    assert effect["attack"] > effect["idle"] + 40
+    assert (frame["hurt"] == white).sum() > (frame["idle"] == white).sum()
+    if hero == "defect":  # empty orb slots behind the head in every pose, below the HUD line
+        assert all((f[11:36, :24] == white + 2).sum() > 30 for f in frame.values())
+        assert all((f[:11] == white + 2).sum() == 0 for f in frame.values())
+    else:
+        assert effect["idle"] == effect["breath"] == effect["guard"] == 0
+
+
+def test_a_hero_sheet_rebuilds_to_the_committed_one(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    for hero in HEROES:
+        (tmp_path / f"player_{hero}.bmp").write_bytes((build_gba_art.OUT / f"player_{hero}.bmp").read_bytes())
+    monkeypatch.setattr(build_gba_art, "OUT", tmp_path)
+    build_gba_art.build_heroes()
+    for hero in HEROES:
+        with Image.open(tmp_path / f"hero_{hero}.bmp") as built, \
+                Image.open(build_gba_art.ROOT / "graphics" / f"hero_{hero}.bmp") as committed:
+            assert np.array_equal(np.asarray(built), np.asarray(committed)), hero
+
+
 # --- Frames -----------------------------------------------------------------------------------
 
 
