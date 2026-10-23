@@ -307,6 +307,13 @@ void test_defect() {
     assert(combat.player.orbs.size() == 1 && combat.enemies[0].hp == 42);
     combat.end_player_turn();
     assert(combat.enemies[0].hp == 39);
+    // The scene shows the Lightning damage before the enemies act from the HP kept at the end of the turn.
+    assert(combat.turn_end_enemy_hp.size() == 1 && combat.turn_end_enemy_hp[0] == 39);
+    // Mercury Hourglass hits at the start of the next turn: not part of the end of the turn.
+    CombatEngine hourglass = make_combat(CharacterId::DEFECT);
+    hourglass.add_power(PowerId::MERCURY_HOURGLASS, 3);
+    hourglass.end_player_turn();
+    assert(hourglass.enemies[0].hp == 39 && hourglass.turn_end_enemy_hp[0] == 42);
 
     // Frost passive block (2, Dexterity ignored) protects during the enemy turn.
     CombatEngine frost = make_combat(CharacterId::DEFECT);
