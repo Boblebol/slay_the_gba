@@ -499,6 +499,12 @@ public:
     int count_alive_enemies() const;
     int get_first_alive_enemy_index() const;
 
+    // What took the last HP of the player: index of the enemy whose attack did, SELF_INFLICTED_HP_LOSS for a card,
+    // relic, power or status of its own, NO_HP_LOSS_YET before any loss in this combat.
+    static constexpr int8_t NO_HP_LOSS_YET = -2;
+    static constexpr int8_t SELF_INFLICTED_HP_LOSS = -1;
+    int8_t last_hp_loss_source = NO_HP_LOSS_YET;
+
     void shuffle_draw_pile();
     void set_log(std::string_view msg);
 
