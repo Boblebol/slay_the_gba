@@ -1780,6 +1780,7 @@ void CombatEngine::spend_stars(int amount) {
 
 void CombatEngine::note_player_hp_lost(int16_t amount) {
     if (amount <= 0) return;
+    last_hp_loss_source = SELF_INFLICTED_HP_LOSS; // the enemy attack overrides it right after
     counters.hp_lost = static_cast<int16_t>(counters.hp_lost + amount);
     counters.combat_hp_losses = bump(counters.combat_hp_losses);
     if (player.hp <= 0) {
@@ -1937,6 +1938,7 @@ void CombatEngine::start_combat_multi(std::span<const EnemyType> enemy_types, Ch
 
     enemies.clear();
     last_enemy_actions.clear();
+    last_hp_loss_source = NO_HP_LOSS_YET;
     for (size_t i = 0; i < enemy_types.size() && i < MAX_ENEMIES; ++i) {
         Enemy e;
         e.init(enemy_types[i]);
@@ -6843,6 +6845,7 @@ void CombatEngine::execute_enemy_turn() {
             // The Gambit: one unblocked point of attack damage and the hero is dead.
             if (gambit_active && record.damage_to_player > 0 && enemies[i].current_intent.base_damage > 0) player.hp = 0;
             note_player_hp_lost(record.damage_to_player);
+            if (record.damage_to_player > 0) last_hp_loss_source = static_cast<int8_t>(i);
             record.damage_blocked = shield_before - (player.block + player.minion_hp + player.minion_block);
             record.block_gained = enemies[i].block; // execute_turn() clears block before gaining it
             record.player_hp_after = player.hp;

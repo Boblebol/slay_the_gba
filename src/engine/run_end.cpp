@@ -43,12 +43,20 @@ RunSummary summarize_run(const RunManager& run, bool victory) {
     summary.play_seconds = run.play_frames / PLAY_FRAMES_PER_SECOND;
 
     if (summary.cause == RunEndCause::COMBAT && !run.combat.enemies.empty()) {
-        // The enemy still standing; the first one when every enemy fell with the hero.
-        summary.killer = run.combat.enemies[0].name;
-        for (size_t i = 0; i < run.combat.enemies.size(); ++i) {
-            if (run.combat.enemies[i].is_alive()) {
-                summary.killer = run.combat.enemies[i].name;
-                break;
+        // The enemy whose attack took the last HP; a loss of the hero's own makes no enemy the killer.
+        const int8_t source = run.combat.last_hp_loss_source;
+        if (source == CombatEngine::SELF_INFLICTED_HP_LOSS) {
+            summary.self_inflicted = true;
+        } else if (source >= 0 && static_cast<size_t>(source) < run.combat.enemies.size()) {
+            summary.killer = run.combat.enemies[source].name;
+        } else {
+            // Unknown: the enemy still standing, the first one when every enemy fell with the hero.
+            summary.killer = run.combat.enemies[0].name;
+            for (size_t i = 0; i < run.combat.enemies.size(); ++i) {
+                if (run.combat.enemies[i].is_alive()) {
+                    summary.killer = run.combat.enemies[i].name;
+                    break;
+                }
             }
         }
     } else if (summary.cause == RunEndCause::EVENT) {
