@@ -289,6 +289,9 @@ public:
     bool vakuu_turn_active = false;
 
     FixedVector<EnemyActionRecord, MAX_ENEMIES> last_enemy_actions;
+    // HP of each enemy once the end of the player's turn is resolved (orb passives, Doom...), before the enemies
+    // act: the scene shows that damage on its own. Set by end_player_turn, which empties it when it stops earlier.
+    FixedVector<int16_t, MAX_ENEMIES> turn_end_enemy_hp;
 
     CombatState state = CombatState::PLAYER_TURN;
     int turn_number = 1;

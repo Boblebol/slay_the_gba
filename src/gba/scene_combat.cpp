@@ -484,6 +484,7 @@ private:
 
     void _snapshot();
     void _resolve_diffs(bool attack_card);
+    void _show_turn_end_damage();
     void _set_banner(const bn::string_view& text, TextColor color);
     [[nodiscard]] int _enemy_top(const EnemyView& view) const;
     [[nodiscard]] int _intent_x(const EnemyView& view) const;
@@ -1467,6 +1468,58 @@ void CombatScene::_snapshot()
     {
         _snap_hp[index] = _combat.enemies[index].hp;
         _snap_block[index] = _combat.enemies[index].block;
+    }
+}
+
+// Damage the end of the player's turn dealt to the enemies (Lightning orbs, Doom...), before they act: a popup
+// over each enemy hit, its bar, and the death of the enemies it killed.
+void CombatScene::_show_turn_end_damage()
+{
+    bn::string<16> text;
+    bool hit = false;
+    bool killed = false;
+
+    for(int index = 0; index < int(_combat.turn_end_enemy_hp.size()) && index < _enemies.size(); ++index)
+    {
+        const engine::Enemy& enemy = _combat.enemies[index];
+        EnemyView& view = _enemies[index];
+        int hp = _combat.turn_end_enemy_hp[index];
+        int lost_hp = _snap_hp[index] - hp;
+
+        if(lost_hp <= 0 || view.gone)
+        {
+            continue;
+        }
+
+        hit = true;
+        view.hurt = ENEMY_HURT_FRAMES;
+        _fx.spawn(bn::sprite_items::fx_burst, view.x + 6, _body_y(view) + 4, FX_HIT, 4, 3);
+        text.clear();
+        bn::ostringstream stream(text);
+        stream << '-' << lost_hp;
+        _popups.spawn(view.x + 12, _body_y(view) - 6, text, TextColor::RED);
+        view.bar.set(bn::max(hp, 0), enemy.max_hp);
+
+        if(hp <= 0 && view.death == 0)
+        {
+            view.death = DEATH_FRAMES;
+            killed = true;
+
+            for(bn::sprite_ptr& part : view.parts)
+            {
+                part.set_blending_enabled(true);
+                part.set_mosaic_enabled(true);
+            }
+        }
+    }
+
+    if(killed)
+    {
+        play_sfx(Sfx::ENEMY_DEATH);
+    }
+    else if(hit)
+    {
+        play_sfx(Sfx::HIT_SLASH);
     }
 }
 
@@ -2600,6 +2653,7 @@ void CombatScene::_update_enemy_turn()
         _hand.clear();
         _snapshot();
         _combat.end_player_turn();
+        _show_turn_end_damage();
 
         for(EnemyView& view : _enemies)
         {

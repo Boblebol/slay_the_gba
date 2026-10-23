@@ -6571,6 +6571,7 @@ void CombatEngine::end_player_turn() {
     // The records describe this end of turn only: when the enemies do not act (they die at the end of the
     // player's turn, an extra turn skips them), the scene must not replay the turn before, maybe of another fight.
     last_enemy_actions.clear();
+    turn_end_enemy_hp.clear();
     double_block_turn = false;
     attack_double_now = false;
     // A choice left unanswered is answered for the player.
@@ -6688,6 +6689,7 @@ void CombatEngine::end_player_turn() {
     player.add_status(StatusType::FOCUS, static_cast<int16_t>(-temp_focus));
     temp_focus = 0;
     settle_deaths();
+    for (const Enemy& foe : enemies) turn_end_enemy_hp.push_back(foe.hp);
 
     // Doom takes the player at the end of the turn, like any enemy.
     int16_t doom = player.get_status(StatusType::DOOM);
