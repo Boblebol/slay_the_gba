@@ -2811,6 +2811,10 @@ void CombatScene::_update_enemy_turn()
 
     if(step_time == end_time)
     {
+        // The HP the player has now, before the end banner: the turn start may have cost the last ones (Crimson
+        // Mantle, Inferno), or Doom taken them at the end of the player's turn.
+        _player_bar.set(_combat.player.hp, _combat.player.max_hp);
+
         // Poison may have killed enemies during their turn.
         for(int index = 0; index < _enemies.size(); ++index)
         {
@@ -2851,7 +2855,6 @@ void CombatScene::_update_enemy_turn()
             return;
         }
 
-        _player_bar.set(_combat.player.hp, _combat.player.max_hp);
         TextLine text;
         bn::ostringstream stream(text);
         stream << "Tour " << _combat.turn_number;
