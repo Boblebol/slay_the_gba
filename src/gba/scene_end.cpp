@@ -159,7 +159,8 @@ private:
     {
         TextLine text;
         bn::ostringstream stream(text);
-        bn::string_view killer(summary.killer.data(), summary.killer.size());
+        // An empty std::string_view has a null pointer, which bn::string_view refuses.
+        bn::string_view killer = summary.killer.empty() ? bn::string_view("") : bn::string_view(summary.killer.data(), summary.killer.size());
 
         switch(summary.cause)
         {
@@ -167,7 +168,14 @@ private:
             stream << "La Tour s'incline devant vous.";
             break;
         case engine::RunEndCause::COMBAT:
-            stream << "Vaincu par " << killer;
+            if(summary.self_inflicted)
+            {
+                stream << "Achevé par vos propres effets";
+            }
+            else
+            {
+                stream << "Vaincu par " << killer;
+            }
             break;
         case engine::RunEndCause::EVENT:
             stream << "Emporté par : " << killer;

@@ -88,6 +88,15 @@ void test_cause_and_killer() {
     assert(summary.cause == RunEndCause::COMBAT);
     assert(summary.killer == "Second");
 
+    // The last HP came from the hero's own card or effect: no enemy is blamed.
+    run.combat.last_hp_loss_source = CombatEngine::SELF_INFLICTED_HP_LOSS;
+    summary = summarize_run(run, false);
+    assert(summary.cause == RunEndCause::COMBAT && summary.self_inflicted && summary.killer.empty());
+    // The last HP came from the attack of the second enemy, even if the first still stands.
+    run.combat.last_hp_loss_source = 1;
+    summary = summarize_run(run, false);
+    assert(!summary.self_inflicted && summary.killer == "Second");
+
     // Abandoned from the pause menu, even in the middle of a fight.
     run.phase = RunPhase::GAME_OVER;
     summary = summarize_run(run, false);
@@ -104,6 +113,27 @@ void test_cause_and_killer() {
     summary = summarize_run(run, true);
     assert(summary.cause == RunEndCause::VICTORY && summary.killer.empty());
     std::cout << "  cause and killer: OK\n";
+}
+
+void test_engine_records_who_took_the_last_hp() {
+    CombatEngine combat;
+    combat.start_combat(EnemyType::CULTIST, CharacterId::IRONCLAD);
+    assert(combat.last_hp_loss_source == CombatEngine::NO_HP_LOSS_YET);
+    // A card of the hero that costs HP (Hemokinesis at 2 HP).
+    combat.player.hp = 2;
+    combat.lose_hp(2);
+    assert(combat.state == CombatState::DEFEAT);
+    assert(combat.last_hp_loss_source == CombatEngine::SELF_INFLICTED_HP_LOSS);
+
+    // An enemy attack that finishes the hero names that enemy (the Jaw Worm opens with Chomp).
+    CombatEngine attacked;
+    attacked.start_combat(EnemyType::JAW_WORM, CharacterId::IRONCLAD);
+    attacked.player.hp = 1;
+    attacked.player.block = 0;
+    attacked.end_player_turn();
+    assert(attacked.state == CombatState::DEFEAT);
+    assert(attacked.last_hp_loss_source == 0);
+    std::cout << "  engine records the source: OK\n";
 }
 
 void test_summary_and_score() {
@@ -229,6 +259,7 @@ int main() {
     std::cout << "Run end (#11, #12)\n";
     test_statistics_follow_the_run();
     test_cause_and_killer();
+    test_engine_records_who_took_the_last_hp();
     test_summary_and_score();
     test_record_gives_experience_and_ascension();
     test_statistics_saved_with_the_run();

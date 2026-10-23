@@ -51,6 +51,8 @@ struct RunSummary
     uint32_t score = 0;
     // COMBAT: name of the enemy that won the fight. EVENT: title of the event. Empty otherwise.
     std::string_view killer;
+    // COMBAT: the last HP came from a card, relic or status of the hero, not from an enemy (killer is empty).
+    bool self_inflicted = false;
 };
 
 [[nodiscard]] constexpr uint32_t profile_level(uint32_t xp)
