@@ -82,6 +82,7 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "MECHA_KNIGHT", false, true },
     { "BYGONE_EFFIGY", false, true },
     { "BYRDONIS", true, true },
+    { "BYRDPIP", false, false },
     { "PHROG_PARASITE", true, true },
     { "WRIGGLER", true, true },
     { "THE_INSATIABLE", false, true },
@@ -1715,6 +1716,10 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.status_amount = ascended_damage ? 2 : 1;
             current_intent.description = "Jet de bulles (7 blk, +1 Force)";
         }
+    } else if (type == EnemyType::BYRDPIP) {
+        // The Byrdpip that follows the player (9999 HP) has no move but NOTHING: it does nothing, turn after turn.
+        current_intent.type = EnemyIntentType::STUN;
+        current_intent.description = "Ne fait rien";
     } else if (type == EnemyType::OSTY) {
         // Titos, summoned by the Entomancer, has no move: it does nothing, turn after turn.
         current_intent.type = EnemyIntentType::STUN;

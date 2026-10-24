@@ -430,6 +430,7 @@ enum class EnemyType : uint8_t {
     MECHA_KNIGHT,
     BYGONE_EFFIGY,
     BYRDONIS,
+    BYRDPIP, // Act 1 (A) summon, the companion of the Byrdpip relic
     PHROG_PARASITE,
     WRIGGLER,
     THE_INSATIABLE, // Act 2 boss
