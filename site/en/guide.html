@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide — Slay the GBA</title>
+<meta name="description" content="How to play Slay the GBA: a run, the rooms, combat, controls, Ascension and saving.">
+<link rel="canonical" href="https://slay-the-gba.alexandre-enouf.fr/en/guide.html">
+<meta name="theme-color" content="#0d0b16">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Slay the GBA">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="Guide — Slay the GBA">
+<meta property="og:description" content="How to play Slay the GBA: a run, the rooms, combat, controls, Ascension and saving.">
+<meta property="og:url" content="https://slay-the-gba.alexandre-enouf.fr/en/guide.html">
+<meta property="og:image" content="https://slay-the-gba.alexandre-enouf.fr/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Slay the GBA — title screen on Game Boy Advance">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Guide — Slay the GBA">
+<meta name="twitter:description" content="How to play Slay the GBA: a run, the rooms, combat, controls, Ascension and saving.">
+<meta name="twitter:image" content="https://slay-the-gba.alexandre-enouf.fr/assets/og.png">
+<link rel="apple-touch-icon" href="../assets/sprites/icon.png">
+<link rel="alternate" hreflang="fr" href="https://slay-the-gba.alexandre-enouf.fr/guide.html">
+<link rel="alternate" hreflang="en" href="https://slay-the-gba.alexandre-enouf.fr/en/guide.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="../assets/sprites/icon.png">
+</head>
+<body class="">
+<header class="top">
+  <a class="brand" href="index.html"><img src="../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="index.html">Home</a><a href="heros.html">Heroes</a><a href="cartes.html">Cards</a><a href="bestiaire.html">Bestiary</a><a href="reliques.html">Relics</a><a href="potions.html">Potions</a><a href="evenements.html">Events</a><a href="anciens.html">Ancients</a><a href="avancement.html">Progress</a><a href="guide.html" class="on">Guide</a><a href="../bible/index.html">Bible (FR)</a><a class="lang" href="../guide.html" hreflang="fr" lang="fr" title="Version française">FR</a></nav>
+</header>
+<main>
+<section class="panel "><div class="md"><h1>How to play</h1>
+<p>Slay the GBA is a roguelike deckbuilder: you climb the Spire with a small deck of cards, fight your way up three
+acts and grow stronger with every card, relic and potion you pick up. Every run is different, and a defeat sends you
+back to the start. The game itself is in French; this guide uses the English names of Slay the Spire 2.</p>
+<h2>A run, from start to finish</h2>
+<ol>
+<li><strong>Pick your cartridge.</strong> Each of the five ROMs is one hero, with their own starting deck, starting relic and
+   signature mechanic. On the title screen, choose <em>Nouvelle partie</em> (new run), then the hero's colour and, once
+   unlocked, the Ascension level.</li>
+<li><strong>Neow greets you.</strong> Every run opens on Neow, who offers 2 blessings and 1 relic with a price: take one before
+   the first map.</li>
+<li><strong>Climb the act.</strong> Each act is a branching map of 16 floors. You pick your path room by room, up to the boss at
+   the top.</li>
+<li><strong>Beat the boss.</strong> After the act 1 and act 2 bosses you get a Rare relic, cards and gold, and heal between acts.</li>
+<li><strong>Meet an Ancient.</strong> At the start of acts 2 and 3 an Ancient offers you 3 relics: take one. Their gifts are
+   among the most powerful items of a run.</li>
+<li><strong>Win the run</strong> by beating the act 3 boss. The credits roll, and the hero unlocks the next Ascension level.</li>
+</ol>
+<h2>Rooms on the map</h2>
+<table>
+<thead>
+<tr>
+<th>Room</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>⚔️ Monster</td>
+<td>A normal fight. Rewards: gold, one card out of three (or skip), sometimes a potion.</td>
+</tr>
+<tr>
+<td>😈 Elite</td>
+<td>A much harder fight. Rewards: a relic, more gold and better cards.</td>
+</tr>
+<tr>
+<td>🔥 Campfire</td>
+<td><strong>Rest</strong> to heal 30% of your max HP, or <strong>Smith</strong> to upgrade a card for good (with a preview).</td>
+</tr>
+<tr>
+<td>🎁 Treasure</td>
+<td>A chest with gold and a relic.</td>
+</tr>
+<tr>
+<td>💰 Merchant</td>
+<td>Buy cards, relics and potions, or pay to remove a card from your deck (the price goes up each time).</td>
+</tr>
+<tr>
+<td>❓ Event</td>
+<td>A short story with choices: risks, trades, curses and rewards.</td>
+</tr>
+<tr>
+<td>👑 Boss</td>
+<td>The guardian of the act.</td>
+</tr>
+</tbody>
+</table>
+<h2>Combat</h2>
+<ul>
+<li>You get <strong>3 energy</strong> per turn and draw <strong>5 cards</strong>. Each card costs energy (the number in its corner).</li>
+<li><strong>Attacks</strong> deal damage, <strong>Skills</strong> mostly give Block or utility, <strong>Powers</strong> stay in effect until the end of the
+  fight.</li>
+<li><strong>Block</strong> absorbs damage and is reset at the start of your turn.</li>
+<li>Above every enemy, its <strong>intent</strong> shows what it will do next turn: attack (with the damage), defend, buff or
+  debuff. Plan around it.</li>
+<li>Key statuses: <strong>Strength</strong> adds damage to every attack, <strong>Dexterity</strong> adds Block, <strong>Vulnerable</strong> makes the target
+  take 50% more damage, <strong>Weak</strong> makes it deal 25% less, <strong>Poison</strong> hurts at the start of its turn and goes down by 1.</li>
+<li>Cards you play go to the Discard Pile, which is shuffled back into the Draw Pile when it runs out. <strong>Exhausted</strong>
+  cards are gone until the end of the fight.</li>
+<li>You carry up to <strong>3 potions</strong>. Drink one during your turn with the potion belt button.</li>
+</ul>
+<h2>Controls</h2>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>Button</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Map</td>
+<td>◄ ►</td>
+<td>Choose the next room</td>
+</tr>
+<tr>
+<td>Map</td>
+<td>▲ ▼</td>
+<td>Scroll the Spire</td>
+</tr>
+<tr>
+<td>Map</td>
+<td>A</td>
+<td>Walk to the room</td>
+</tr>
+<tr>
+<td>Combat</td>
+<td>◄ ►</td>
+<td>Select a card</td>
+</tr>
+<tr>
+<td>Combat</td>
+<td>A</td>
+<td>Play the card (then pick a target when several enemies are alive)</td>
+</tr>
+<tr>
+<td>Combat</td>
+<td>B</td>
+<td>Cancel targeting</td>
+</tr>
+<tr>
+<td>Combat</td>
+<td>R</td>
+<td>End the turn (L with the <em>Quick</em> control preset)</td>
+</tr>
+<tr>
+<td>Combat</td>
+<td>L</td>
+<td>Potion belt (R with the <em>Quick</em> control preset)</td>
+</tr>
+<tr>
+<td>Map / combat</td>
+<td>START</td>
+<td>Pause menu</td>
+</tr>
+<tr>
+<td>Map / combat</td>
+<td>SELECT</td>
+<td>Deck viewer (B to go back)</td>
+</tr>
+<tr>
+<td>Menus</td>
+<td>A / B</td>
+<td>Confirm / cancel</td>
+</tr>
+</tbody>
+</table>
+<p>The control preset and the music and sound volumes are in the options (SELECT on the title screen).</p>
+<h2>Ascension</h2>
+<p>Every win unlocks the next Ascension level for that hero, up to 10. The handicaps add up:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Handicap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>More frequent elites</td>
+</tr>
+<tr>
+<td>A2 to A4</td>
+<td>Monsters, then elites, then bosses deal more damage</td>
+</tr>
+<tr>
+<td>A5</td>
+<td>Less healing after a boss</td>
+</tr>
+<tr>
+<td>A6</td>
+<td>Start with 10% less HP</td>
+</tr>
+<tr>
+<td>A7 to A9</td>
+<td>Monsters, then elites, then bosses have more HP</td>
+</tr>
+<tr>
+<td>A10</td>
+<td>The Ascender's Bane curse in your starting deck</td>
+</tr>
+</tbody>
+</table>
+<h2>Saving</h2>
+<p>The run is saved automatically on the cartridge (SRAM) at every room, with your settings. Choose <em>Continuer</em>
+(continue) on the title screen to pick it back up. The title menu also has the <em>Compendium</em> (the cards, relics and
+monsters you have met) and your run statistics.</p>
+<h2>A few tips</h2>
+<ul>
+<li>Not every card reward is worth taking: a lean deck draws its best cards more often.</li>
+<li>Elites hurt early in act 1. Fight one only when your deck can take it, and plan your path toward campfires.</li>
+<li>Upgrade the cards you play every fight first.</li>
+<li>Read the enemy intents before you commit your energy: sometimes the best turn is all Block.</li>
+</ul></div></section>
+</main>
+<footer class="foot">
+  <p>Slay the GBA — unofficial fan game. <i>Slay the Spire</i> © Mega Crit. Butano engine © Gustavo Valiente.</p>
+  <p>Data: project bible (patch v0.111.0 Beta). The game itself is in French. <a href="mentions.html">Legal notice &amp; privacy</a> · <a href="https://alexandre-enouf.fr/blog/slay-the-gba-vibe-coding-game-boy-advance/?lang=en" target="_blank" rel="noopener">How this game was vibe coded</a></p>
+  <div class="ae-footer">
+    <a class="ae-logo" href="https://alexandre-enouf.fr/" target="_blank" rel="noopener">Alexandre <em>Enouf</em></a>
+    <span class="ae-tag">Product developer &amp; AI builder · Paris, France</span>
+    <nav class="ae-links" aria-label="Author links">
+      <a href="https://alexandre-enouf.fr/#lab" target="_blank" rel="noopener">⚡ Lab &amp; Projects</a>
+      <a href="https://alexandre-enouf.fr/blog/" target="_blank" rel="noopener">📖 Blog</a>
+      <a href="https://github.com/Boblebol" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/alexandreenouf-47834990" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:alexandre.enouf@gmail.com">Contact</a>
+    </nav>
+  </div>
+</footer>
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Defect — Slay the GBA</title>
+<meta name="description" content="Defect Edition of Slay the GBA: One automaton, three slots, endless circuits. Lightning, frost, dark and plasma orbs; Focus and Evokes. Every card and the slay_defect.gba ROM.">
+<link rel="canonical" href="https://slay-the-gba.alexandre-enouf.fr/en/heros/defect.html">
+<meta name="theme-color" content="#0d0b16">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Slay the GBA">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="The Defect — Slay the GBA">
+<meta property="og:description" content="Defect Edition of Slay the GBA: One automaton, three slots, endless circuits. Lightning, frost, dark and plasma orbs; Focus and Evokes. Every card and the slay_defect.gba ROM.">
+<meta property="og:url" content="https://slay-the-gba.alexandre-enouf.fr/en/heros/defect.html">
+<meta property="og:image" content="https://slay-the-gba.alexandre-enouf.fr/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Slay the GBA — title screen on Game Boy Advance">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Defect — Slay the GBA">
+<meta name="twitter:description" content="Defect Edition of Slay the GBA: One automaton, three slots, endless circuits. Lightning, frost, dark and plasma orbs; Focus and Evokes. Every card and the slay_defect.gba ROM.">
+<meta name="twitter:image" content="https://slay-the-gba.alexandre-enouf.fr/assets/og.png">
+<link rel="apple-touch-icon" href="../../assets/sprites/icon.png">
+<link rel="alternate" hreflang="fr" href="https://slay-the-gba.alexandre-enouf.fr/heros/defect.html">
+<link rel="alternate" hreflang="en" href="https://slay-the-gba.alexandre-enouf.fr/en/heros/defect.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="icon" href="../../assets/sprites/icon.png">
+</head>
+<body class="hero-defect">
+<header class="top">
+  <a class="brand" href="../index.html"><img src="../../assets/sprites/icon.png" alt="">SLAY THE GBA</a>
+  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
+  <nav><a href="../index.html">Home</a><a href="../heros.html" class="on">Heroes</a><a href="../cartes.html">Cards</a><a href="../bestiaire.html">Bestiary</a><a href="../reliques.html">Relics</a><a href="../potions.html">Potions</a><a href="../evenements.html">Events</a><a href="../anciens.html">Ancients</a><a href="../avancement.html">Progress</a><a href="../guide.html">Guide</a><a href="../../bible/index.html">Bible (FR)</a><a class="lang" href="../../heros/defect.html" hreflang="fr" lang="fr" title="Version française">FR</a></nav>
+</header>
+<main>
+
+<section class="hero-banner small" style="background-image:url(../../assets/bg/battle_defect.png)">
+  <div class="hero-inner split">
+    <img class="pix giant" src="../../assets/sprites/hero_defect.png" alt="The Defect">
+    <div><p class="kicker">Defect Edition · Cartridge slay_defect.gba · In game: Le Défectueux</p><h1>The Defect</h1><p class="lead">“One automaton, three slots, endless circuits.”</p>
+    <p>The engineer&#x27;s hero: every channeled orb works for you, turn after turn. Raise your Focus, line up lightning and frost, and watch the machine run away with the fight.</p><div class="cta"><a class="btn" href="../../roms/slay_defect.gba" download>▼ Download slay_defect.gba <small>(2752 KB)</small></a><a class="btn ghost" href="../../bible/livret_defect.html">Read the booklet (FR)</a></div></div>
+  </div>
+</section>
+<div class="stats"><div><b>75</b><span>HP</span></div><div><b>3</b><span>energy</span></div><div><b>99</b><span>gold</span></div><div><b>91</b><span>cards</span></div><div><b>29</b><span>attacks</span></div><div><b>41</b><span>skills</span></div><div><b>21</b><span>powers</span></div><div><b>★★</b><span>intermediate</span></div></div>
+<section class="panel "><div class="story"><div><h2>Awakened combat automaton</h2><p>An automaton built to purge the Spire, the Defect grew a mind of its own after its targeting subsystems failed. Powered by a cracked core, it keeps orbs of lightning, frost, darkness and plasma orbiting its chassis.</p><p><b>Ideal for</b> players who like to plan, optimise and watch an engine run by itself.</p>
+<p class="meta">Zone: Astral Complex · Cartridge colour: <span class="swatch" style="background:#3870d8"></span> Sapphire Blue</p></div>
+<figure class="shot"><img class="pix" src="../../assets/screens/combat_defect.png" alt="Battle of The Defect"><figcaption>The Defect in the arena, a real capture of the ROM</figcaption></figure></div></section>
+<section class="panel "><h2>Signature mechanic: Orbs &amp; Focus</h2><p>The Defect Channels Orbs into its slots. Each orb acts on its own at the end of the turn (Lightning: damage, Frost: Block, Dark: charge, Plasma: energy) and releases a stronger effect when it is Evoked or pushed out by a new orb. Focus strengthens every orb at once.</p><h3>Key cards</h3><div class="cards"><article class="card t-skill p-defect" data-type="Skill" data-rarity="Basic" data-name="zap zap">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/zap.webp" alt="Zap"><span class="gem">1</span></div>
+  <h4>Zap</h4>
+  <p class="meta">Skill · Basic</p>
+  <p class="desc"><b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</p>
+  
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="ball lightning ball_lightning">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/ball_lightning.webp" alt="Ball Lightning"><span class="gem">1</span></div>
+  <h4>Ball Lightning</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 7 damage.<br><b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 10 damage.<br><b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="glacier glacier">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/glacier.webp" alt="Glacier"><span class="gem">2</span></div>
+  <h4>Glacier</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Gain 6 <b class="kw">Block</b>.<br><b class="kw">Channel</b> 2 <b class="kw">Frost</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 9 <b class="kw">Block</b>.<br><b class="kw">Channel</b> 2 <b class="kw">Frost</b>.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Rare" data-name="echo form echo_form">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/echo_form.webp" alt="Echo Form"><span class="gem">3</span></div>
+  <h4>Echo Form</h4>
+  <p class="meta">Power · Rare</p>
+  <p class="desc"><b class="kw">Ethereal</b>.<br>The first card you play each turn is played an extra time.</p>
+  
+</article></div></section>
+<section class="panel "><h2>Starting kit</h2><div class="sheet">
+<div class="relic big"><img loading="lazy" src="../../../bible/images/relics/cracked_core.webp" alt=""><div><b>Cracked Core</b><p>At the start of each combat, <b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</p></div></div>
+<div><h3>Starting deck (10 cards)</h3><ul class="starter"><li><b>4×</b> Strike <span class="meta">— Deal 6 damage.</span></li><li><b>4×</b> Defend <span class="meta">— Gain 5 <b class="kw">Block</b>.</span></li><li><b>1×</b> Zap <span class="meta">— <b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</span></li><li><b>1×</b> Dualcast <span class="meta">— <b class="kw">Evoke</b> your rightmost Orb twice.</span></li></ul>
+<p class="meta">99 gold · 3 energy per turn · 3 potion slots</p></div>
+<img class="pix energy" src="../../assets/sprites/energy_defect.png" alt="Energy orb">
+</div></section>
+<section class="panel "><h2>The 4 palettes</h2><p>Choose how The Defect looks at the start of every run.</p><div class="palettes"><div class="palette"><span class="swatch big" style="background:#00f8f8"></span><div><b>Electric Blue (Classic)</b><p>The automaton&#x27;s forged cobalt chassis.</p></div></div><div class="palette"><span class="swatch big" style="background:#f88000"></span><div><b>Cyberpunk Neon (Chromatic)</b><p>A bright orange finish overloaded with energy.</p></div></div><div class="palette"><span class="swatch big" style="background:#101030"></span><div><b>Starless Void (Shadow)</b><p>A matte black alloy without a single reflection.</p></div></div><div class="palette"><span class="swatch big" style="background:#f8b000"></span><div><b>Antique Copper (Gold)</b><p>A golden brass frame restored from a lost age.</p></div></div></div></section>
+<section class="panel "><h2>Survival tips</h2><ol class="tips"><li><b>Cracked Core</b> channels a Lightning orb from the start: play <b>Dualcast</b> early for a big burst.</li><li>Frost orbs make free Block every turn: two or three are enough to stabilise a fight.</li><li>Focus (Defragment, Biased Cognition) is the stat that takes the deck from good to unplayable for the enemy.</li><li>Capacitor adds slots: more orbs, more passive effects.</li></ol><p><a class="btn small" href="../../bible/livret_defect.html">The edition booklet (FR) ►</a> <a class="btn small ghost" href="../../bible/11_cartes_defect.html">Card tome (FR) ►</a></p></section>
+<section class="panel "><h2>Edition progress: 100.0%</h2>
+<p>What is already implemented in the game code, across all of The Defect's cards, relics and mechanics.</p>
+<div class="prog-cat"><div class="prog-row"><span><b>Cards</b><span class="meta">86 done, 0 partial, 0 to do (5 out of scope)</span></span><div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-label="Cards" style="--fill:#3870d8"><span style="width:max(3px, 100.0%)"></span></div><span class="prog-num">100.0%</span></div></div><div class="prog-cat"><div class="prog-row"><span><b>Relics</b><span class="meta">8 done, 0 partial, 0 to do</span></span><div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-label="Relics" style="--fill:#3870d8"><span style="width:max(3px, 100.0%)"></span></div><span class="prog-num">100.0%</span></div></div><div class="prog-cat"><div class="prog-row"><span><b>Mechanics</b><span class="meta">11 done, 0 partial, 0 to do</span></span><div class="meter" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-label="Mechanics" style="--fill:#3870d8"><span style="width:max(3px, 100.0%)"></span></div><span class="prog-num">100.0%</span></div></div><p><a class="btn small" href="../avancement.html#defect">See the detail ►</a></p></section>
+<section class="panel"><h2>Every card (91)</h2><div class="filters" data-target=".cards">
+  <input type="search" placeholder="Search a card…" data-search>
+  <div class="chips"><button class="on" data-filter-type="">All types</button><button data-filter-type="Attack">Attack</button><button data-filter-type="Skill">Skill</button><button data-filter-type="Power">Power</button></div>
+  <div class="chips"><button class="on" data-filter-rarity="">All rarities</button><button data-filter-rarity="Basic">Basic</button><button data-filter-rarity="Common">Common</button><button data-filter-rarity="Uncommon">Uncommon</button><button data-filter-rarity="Rare">Rare</button><button data-filter-rarity="Ancient">Ancient</button></div>
+  <p class="count"></p>
+</div><div class="cards"><article class="card t-skill p-defect" data-type="Skill" data-rarity="Basic" data-name="defend defend_defect">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/defend_defect.webp" alt="Defend"><span class="gem">1</span></div>
+  <h4>Defend</h4>
+  <p class="meta">Skill · Basic</p>
+  <p class="desc">Gain 5 <b class="kw">Block</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 8 <b class="kw">Block</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Basic" data-name="dualcast dualcast">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/dualcast.webp" alt="Dualcast"><span class="gem">1</span></div>
+  <h4>Dualcast</h4>
+  <p class="meta">Skill · Basic</p>
+  <p class="desc"><b class="kw">Evoke</b> your rightmost Orb twice.</p>
+  
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Basic" data-name="strike strike_defect">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/strike_defect.webp" alt="Strike"><span class="gem">1</span></div>
+  <h4>Strike</h4>
+  <p class="meta">Attack · Basic</p>
+  <p class="desc">Deal 6 damage.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 9 damage.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Basic" data-name="zap zap">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/zap.webp" alt="Zap"><span class="gem">1</span></div>
+  <h4>Zap</h4>
+  <p class="meta">Skill · Basic</p>
+  <p class="desc"><b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</p>
+  
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="ball lightning ball_lightning">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/ball_lightning.webp" alt="Ball Lightning"><span class="gem">1</span></div>
+  <h4>Ball Lightning</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 7 damage.<br><b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 10 damage.<br><b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="barrage barrage">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/barrage.webp" alt="Barrage"><span class="gem">1</span></div>
+  <h4>Barrage</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 5 damage for each <b class="kw">Channeled</b> Orb.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 7 damage for each <b class="kw">Channeled</b> Orb.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="beam cell beam_cell">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/beam_cell.webp" alt="Beam Cell"><span class="gem">0</span></div>
+  <h4>Beam Cell</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 3 damage.<br>Apply 1 <b class="kw">Vulnerable</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 4 damage.<br>Apply 2 <b class="kw">Vulnerable</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Common" data-name="boost away boost_away">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/boost_away.webp" alt="Boost Away"><span class="gem">0</span></div>
+  <h4>Boost Away</h4>
+  <p class="meta">Skill · Common</p>
+  <p class="desc">Gain 6 <b class="kw">Block</b>.<br>Add a <b class="kw">Dazed</b> into your <b class="kw">Discard Pile</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 9 <b class="kw">Block</b>.<br>Add a <b class="kw">Dazed</b> into your <b class="kw">Discard Pile</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Common" data-name="charge battery charge_battery">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/charge_battery.webp" alt="Charge Battery"><span class="gem">1</span></div>
+  <h4>Charge Battery</h4>
+  <p class="meta">Skill · Common</p>
+  <p class="desc">Gain 7 <b class="kw">Block</b>.<br>Next turn, gain 1 <span class="nrg">●</span>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 10 <b class="kw">Block</b>.<br>Next turn, gain 1 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="claw claw">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/claw.webp" alt="Claw"><span class="gem">0</span></div>
+  <h4>Claw</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 3 damage.<br>Increase the damage of ALL Claw cards by 2 this combat.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 4 damage.<br>Increase the damage of ALL Claw cards by 3 this combat.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="cold snap cold_snap">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/cold_snap.webp" alt="Cold Snap"><span class="gem">1</span></div>
+  <h4>Cold Snap</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 6 damage.<br><b class="kw">Channel</b> 1 <b class="kw">Frost</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 9 damage.<br><b class="kw">Channel</b> 1 <b class="kw">Frost</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="compile driver compile_driver">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/compile_driver.webp" alt="Compile Driver"><span class="gem">1</span></div>
+  <h4>Compile Driver</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 7 damage.<br>Draw 1 card for each unique Orb you have.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 10 damage.<br>Draw 1 card for each unique Orb you have.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Common" data-name="coolheaded coolheaded">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/coolheaded.webp" alt="Coolheaded"><span class="gem">1</span></div>
+  <h4>Coolheaded</h4>
+  <p class="meta">Skill · Common</p>
+  <p class="desc"><b class="kw">Channel</b> 1 <b class="kw">Frost</b>.<br>Draw 1 card.</p>
+  <details><summary>Upgraded +</summary><p class="desc up"><b class="kw">Channel</b> 1 <b class="kw">Frost</b>.<br>Draw 2 cards.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="focused strike focused_strike">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/focused_strike.webp" alt="Focused Strike"><span class="gem">1</span></div>
+  <h4>Focused Strike</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 9 damage.<br>Gain 1 <b class="kw">Focus</b> this turn.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 11 damage.<br>Gain 2 <b class="kw">Focus</b> this turn.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="go for the eyes go_for_the_eyes">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/go_for_the_eyes.webp" alt="Go for the Eyes"><span class="gem">0</span></div>
+  <h4>Go for the Eyes</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 3 damage.<br>If the enemy intends to attack, apply 1 <b class="kw">Weak</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 4 damage.<br>If the enemy intends to attack, apply 2 <b class="kw">Weak</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="gunk up gunk_up">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/gunk_up.webp" alt="Gunk Up"><span class="gem">1</span></div>
+  <h4>Gunk Up</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 4 damage 3 times.<br>Add a <b class="kw">Slimed</b> into your <b class="kw">Discard Pile</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 5 damage 3 times.<br>Add a <b class="kw">Slimed</b> into your <b class="kw">Discard Pile</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Common" data-name="hologram hologram">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/hologram.webp" alt="Hologram"><span class="gem">1</span></div>
+  <h4>Hologram</h4>
+  <p class="meta">Skill · Common</p>
+  <p class="desc">Gain 3 <b class="kw">Block</b>.<br>Put a card from your <b class="kw">Discard Pile</b> into your <b class="kw">Hand</b>.<br><b class="kw">Exhaust</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 5 <b class="kw">Block</b>.<br>Put a card from your <b class="kw">Discard Pile</b> into your <b class="kw">Hand</b>.<br><b class="kw">Exhaust</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Common" data-name="hotfix hotfix">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/hotfix.webp" alt="Hotfix"><span class="gem">0</span></div>
+  <h4>Hotfix</h4>
+  <p class="meta">Skill · Common</p>
+  <p class="desc">Gain 2 <b class="kw">Focus</b> this turn.<br><b class="kw">Exhaust</b>.</p>
+  
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Common" data-name="leap leap">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/leap.webp" alt="Leap"><span class="gem">1</span></div>
+  <h4>Leap</h4>
+  <p class="meta">Skill · Common</p>
+  <p class="desc">Gain 9 <b class="kw">Block</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 12 <b class="kw">Block</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Common" data-name="lightning rod lightning_rod">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/lightning_rod.webp" alt="Lightning Rod"><span class="gem">1</span></div>
+  <h4>Lightning Rod</h4>
+  <p class="meta">Skill · Common</p>
+  <p class="desc">Gain 4 <b class="kw">Block</b>.<br>At the start of the next 2 turns, <b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 7 <b class="kw">Block</b>.<br>At the start of the next 2 turns, <b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="momentum strike momentum_strike">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/momentum_strike.webp" alt="Momentum Strike"><span class="gem">1</span></div>
+  <h4>Momentum Strike</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 11 damage.<br>Reduce this card&#x27;s cost to 0 <span class="nrg">●</span>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 15 damage.<br>Reduce this card&#x27;s cost to 0 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="sweeping beam sweeping_beam">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/sweeping_beam.webp" alt="Sweeping Beam"><span class="gem">1</span></div>
+  <h4>Sweeping Beam</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 6 damage to ALL enemies.<br>Draw 1 card.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 9 damage to ALL enemies.<br>Draw 1 card.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Common" data-name="turbo turbo">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/turbo.webp" alt="Turbo"><span class="gem">0</span></div>
+  <h4>Turbo</h4>
+  <p class="meta">Skill · Common</p>
+  <p class="desc">Gain 2 <span class="nrg">●</span>.<br>Add a <b class="kw">Void</b> into your <b class="kw">Discard Pile</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 3 <span class="nrg">●</span>.<br>Add a <b class="kw">Void</b> into your <b class="kw">Discard Pile</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Common" data-name="uproar uproar">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/uproar.webp" alt="Uproar"><span class="gem">2</span></div>
+  <h4>Uproar</h4>
+  <p class="meta">Attack · Common</p>
+  <p class="desc">Deal 6 damage twice.<br>Play a random Attack from your <b class="kw">Draw Pile</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 8 damage twice.<br>Play a random Attack from your <b class="kw">Draw Pile</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="boot sequence boot_sequence">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/boot_sequence.webp" alt="Boot Sequence"><span class="gem">0</span></div>
+  <h4>Boot Sequence</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc"><b class="kw">Innate</b>.<br>Gain 10 <b class="kw">Block</b>.<br><b class="kw">Exhaust</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up"><b class="kw">Innate</b>.<br>Gain 13 <b class="kw">Block</b>.<br><b class="kw">Exhaust</b>.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Uncommon" data-name="bulk up bulk_up">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/bulk_up.webp" alt="Bulk Up"><span class="gem">2</span></div>
+  <h4>Bulk Up</h4>
+  <p class="meta">Power · Uncommon</p>
+  <p class="desc">Lose 1 Orb Slot.<br>Gain 2 <b class="kw">Strength</b>.<br>Gain 2 <b class="kw">Dexterity</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Lose 1 Orb Slot.<br>Gain 3 <b class="kw">Strength</b>.<br>Gain 3 <b class="kw">Dexterity</b>.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Uncommon" data-name="capacitor capacitor">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/capacitor.webp" alt="Capacitor"><span class="gem">1</span></div>
+  <h4>Capacitor</h4>
+  <p class="meta">Power · Uncommon</p>
+  <p class="desc">Gain 2 Orb Slots.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 3 Orb Slots.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="chaos chaos">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/chaos.webp" alt="Chaos"><span class="gem">1</span></div>
+  <h4>Chaos</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc"><b class="kw">Channel</b> 1 random Orb.</p>
+  <details><summary>Upgraded +</summary><p class="desc up"><b class="kw">Channel</b> 2 random Orbs.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="chill chill">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/chill.webp" alt="Chill"><span class="gem">0</span></div>
+  <h4>Chill</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc"><b class="kw">Channel</b> 1 <b class="kw">Frost</b> for each enemy.<br><b class="kw">Exhaust</b>.</p>
+  
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="compact compact">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/compact.webp" alt="Compact"><span class="gem">1</span></div>
+  <h4>Compact</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Gain 6 <b class="kw">Block</b>.<br><b class="kw">Transform</b> all Status cards in your <b class="kw">Hand</b> into <b class="kw">Fuel</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 7 <b class="kw">Block</b>.<br><b class="kw">Transform</b> all Status cards in your <b class="kw">Hand</b> into <b class="kw">Fuel+</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="darkness darkness">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/darkness.webp" alt="Darkness"><span class="gem">1</span></div>
+  <h4>Darkness</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc"><b class="kw">Channel</b> 1 <b class="kw">Dark</b>.<br>Trigger the passive ability of all <b class="kw">Dark</b> Orbs.</p>
+  <details><summary>Upgraded +</summary><p class="desc up"><b class="kw">Channel</b> 1 <b class="kw">Dark</b>.<br>Trigger the passive ability of all <b class="kw">Dark</b> Orbs twice.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="double energy double_energy">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/double_energy.webp" alt="Double Energy"><span class="gem">1</span></div>
+  <h4>Double Energy</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Double your Energy.<br><b class="kw">Exhaust</b>.</p>
+  
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="energy surge energy_surge">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/energy_surge.webp" alt="Energy Surge"><span class="gem">1</span></div>
+  <h4>Energy Surge</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">ALL players gain 2 <span class="nrg">●</span>.<br><b class="kw">Exhaust</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">ALL players gain 3 <span class="nrg">●</span>.<br><b class="kw">Exhaust</b>.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Uncommon" data-name="feral feral">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/feral.webp" alt="Feral"><span class="gem">2</span></div>
+  <h4>Feral</h4>
+  <p class="meta">Power · Uncommon</p>
+  <p class="desc">The first time you play a<br>0<span class="nrg">●</span> Attack each turn,<br>return it to your <b class="kw">Hand</b>.</p>
+  
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="fight through fight_through">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/fight_through.webp" alt="Fight Through"><span class="gem">1</span></div>
+  <h4>Fight Through</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Gain 13 <b class="kw">Block</b>.<br>Add 2 <b class="kw">Wounds</b> into your <b class="kw">Discard Pile</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 17 <b class="kw">Block</b>.<br>Add 2 <b class="kw">Wounds</b> into your <b class="kw">Discard Pile</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Uncommon" data-name="ftl ftl">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/ftl.webp" alt="Ftl"><span class="gem">0</span></div>
+  <h4>Ftl</h4>
+  <p class="meta">Attack · Uncommon</p>
+  <p class="desc">Deal 5 damage.<br>If you have played fewer than 3 cards this turn, draw 1 card.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 6 damage.<br>If you have played fewer than 4 cards this turn, draw 1 card.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="fusion fusion">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/fusion.webp" alt="Fusion"><span class="gem">1</span></div>
+  <h4>Fusion</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc"><b class="kw">Channel</b> 1 <b class="kw">Plasma</b>.<br><b class="kw">Exhaust</b>.</p>
+  
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="glacier glacier">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/glacier.webp" alt="Glacier"><span class="gem">2</span></div>
+  <h4>Glacier</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Gain 6 <b class="kw">Block</b>.<br><b class="kw">Channel</b> 2 <b class="kw">Frost</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 9 <b class="kw">Block</b>.<br><b class="kw">Channel</b> 2 <b class="kw">Frost</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="glasswork glasswork">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/glasswork.webp" alt="Glasswork"><span class="gem">1</span></div>
+  <h4>Glasswork</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Gain 5 <b class="kw">Block</b>.<br><b class="kw">Channel</b> 1 <b class="kw">Glass</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 8 <b class="kw">Block</b>.<br><b class="kw">Channel</b> 1 <b class="kw">Glass</b>.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Uncommon" data-name="hailstorm hailstorm">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/hailstorm.webp" alt="Hailstorm"><span class="gem">1</span></div>
+  <h4>Hailstorm</h4>
+  <p class="meta">Power · Uncommon</p>
+  <p class="desc">At the end of your turn, if you have <b class="kw">Frost</b>, deal 6 damage to ALL enemies.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">At the end of your turn, if you have <b class="kw">Frost</b>, deal 8 damage to ALL enemies.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="hibernate hibernate">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/hibernate.webp" alt="Hibernate"><span class="gem">2</span></div>
+  <h4>Hibernate</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">This turn, your <b class="kw">Frost</b> grants ALL allies <b class="kw">Block</b>.<br>Channel 2 <b class="kw">Frost</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">This turn, your <b class="kw">Frost</b> grants ALL allies <b class="kw">Block</b>.<br>Channel 3 <b class="kw">Frost</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="ignition ignition">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/ignition.webp" alt="Ignition"><span class="gem">1</span></div>
+  <h4>Ignition</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Another player <b class="kw">Channels</b> <b class="kw">Plasma</b>.<br><b class="kw">Exhaust</b>.</p>
+  
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Uncommon" data-name="iteration iteration">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/iteration.webp" alt="Iteration"><span class="gem">1</span></div>
+  <h4>Iteration</h4>
+  <p class="meta">Power · Uncommon</p>
+  <p class="desc">The first time you draw a Status each turn, draw 2 cards.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">The first time you draw a Status each turn, draw 3 cards.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Uncommon" data-name="loop loop">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/loop.webp" alt="Loop"><span class="gem">1</span></div>
+  <h4>Loop</h4>
+  <p class="meta">Power · Uncommon</p>
+  <p class="desc">At the start of your turn, trigger the passive ability of your rightmost Orb.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">At the start of your turn, trigger the passive ability of your rightmost Orb 2 times.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Uncommon" data-name="null null">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/null.webp" alt="Null"><span class="gem">2</span></div>
+  <h4>Null</h4>
+  <p class="meta">Attack · Uncommon</p>
+  <p class="desc">Deal 10 damage.<br>Apply 1 <b class="kw">Weak</b>.<br><b class="kw">Channel</b> 1 <b class="kw">Dark</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 13 damage.<br>Apply 2 <b class="kw">Weak</b>.<br><b class="kw">Channel</b> 1 <b class="kw">Dark</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="overclock overclock">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/overclock.webp" alt="Overclock"><span class="gem">0</span></div>
+  <h4>Overclock</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Draw 2 cards.<br>Add a <b class="kw">Burn</b> into your <b class="kw">Discard Pile</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Draw 3 cards.<br>Add a <b class="kw">Burn</b> into your <b class="kw">Discard Pile</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Uncommon" data-name="refract refract">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/refract.webp" alt="Refract"><span class="gem">3</span></div>
+  <h4>Refract</h4>
+  <p class="meta">Attack · Uncommon</p>
+  <p class="desc">Deal 10 damage twice.<br><b class="kw">Channel</b> 2 <b class="kw">Glass</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 13 damage twice.<br><b class="kw">Channel</b> 2 <b class="kw">Glass</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Uncommon" data-name="rocket punch rocket_punch">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/rocket_punch.webp" alt="Rocket Punch"><span class="gem">2</span></div>
+  <h4>Rocket Punch</h4>
+  <p class="meta">Attack · Uncommon</p>
+  <p class="desc">Deal 13 damage.<br>Draw 1 card.<br>Whenever you create a Status, reduce this card&#x27;s cost by 1 <span class="nrg">●</span> until played.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 14 damage.<br>Draw 2 cards.<br>Whenever you create a Status, reduce this card&#x27;s cost by 1 <span class="nrg">●</span> until played.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="scavenge scavenge">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/scavenge.webp" alt="Scavenge"><span class="gem">1</span></div>
+  <h4>Scavenge</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc"><b class="kw">Exhaust</b> a card.<br>Next turn, gain 2 <span class="nrg">●</span>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up"><b class="kw">Exhaust</b> a card.<br>Next turn, gain 3 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Uncommon" data-name="scrape scrape">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/scrape.webp" alt="Scrape"><span class="gem">1</span></div>
+  <h4>Scrape</h4>
+  <p class="meta">Attack · Uncommon</p>
+  <p class="desc">Deal 7 damage.<br>Draw 4 cards.<br>Discard all cards drawn this way that do not cost 0 <span class="nrg">●</span>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 10 damage.<br>Draw 5 cards.<br>Discard all cards drawn this way that do not cost 0 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="shadow shield shadow_shield">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/shadow_shield.webp" alt="Shadow Shield"><span class="gem">2</span></div>
+  <h4>Shadow Shield</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Gain 11 <b class="kw">Block</b>.<br><b class="kw">Channel</b> 1 <b class="kw">Dark</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 15 <b class="kw">Block</b>.<br><b class="kw">Channel</b> 1 <b class="kw">Dark</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="skim skim">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/skim.webp" alt="Skim"><span class="gem">1</span></div>
+  <h4>Skim</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Draw 3 cards.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Draw 4 cards.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Uncommon" data-name="smokestack smokestack">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/smokestack.webp" alt="Smokestack"><span class="gem">1</span></div>
+  <h4>Smokestack</h4>
+  <p class="meta">Power · Uncommon</p>
+  <p class="desc">Whenever you create a Status, deal 5 damage to ALL enemies.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Whenever you create a Status, deal 7 damage to ALL enemies.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Uncommon" data-name="storm storm">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/storm.webp" alt="Storm"><span class="gem">1</span></div>
+  <h4>Storm</h4>
+  <p class="meta">Power · Uncommon</p>
+  <p class="desc">Whenever you play a Power, <b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Whenever you play a Power, <b class="kw">Channel</b> 2 <b class="kw">Lightning</b>.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Uncommon" data-name="subroutine subroutine">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/subroutine.webp" alt="Subroutine"><span class="gem">1</span></div>
+  <h4>Subroutine</h4>
+  <p class="meta">Power · Uncommon</p>
+  <p class="desc">Whenever you play a Power, gain <span class="nrg">●</span>.</p>
+  
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Uncommon" data-name="sunder sunder">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/sunder.webp" alt="Sunder"><span class="gem">3</span></div>
+  <h4>Sunder</h4>
+  <p class="meta">Attack · Uncommon</p>
+  <p class="desc">Deal 26 damage.<br>If this kills an enemy, gain 3 <span class="nrg">●</span>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 34 damage.<br>If this kills an enemy, gain 3 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="synchronize synchronize">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/synchronize.webp" alt="Synchronize"><span class="gem">1</span></div>
+  <h4>Synchronize</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Gain 1 <b class="kw">Focus</b> this turn for each unique Orb you have.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 2 <b class="kw">Focus</b> this turn for each unique Orb you have.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Uncommon" data-name="synthesis synthesis">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/synthesis.webp" alt="Synthesis"><span class="gem">2</span></div>
+  <h4>Synthesis</h4>
+  <p class="meta">Attack · Uncommon</p>
+  <p class="desc">Deal 14 damage.<br>The next Power you play costs 0 <span class="nrg">●</span>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 20 damage.<br>The next Power you play costs 0 <span class="nrg">●</span>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="tempest tempest">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/tempest.webp" alt="Tempest"><span class="gem">X</span></div>
+  <h4>Tempest</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc"><b class="kw">Channel</b> X <b class="kw">Lightning</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up"><b class="kw">Channel</b> X+1 <b class="kw">Lightning</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Uncommon" data-name="tesla coil tesla_coil">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/tesla_coil.webp" alt="Tesla Coil"><span class="gem">0</span></div>
+  <h4>Tesla Coil</h4>
+  <p class="meta">Attack · Uncommon</p>
+  <p class="desc">Deal 3 damage.<br>Trigger all <b class="kw">Lightning</b> against the enemy.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 4 damage.<br>Trigger all <b class="kw">Lightning</b> against the enemy twice.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Uncommon" data-name="thunder thunder">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/thunder.webp" alt="Thunder"><span class="gem">1</span></div>
+  <h4>Thunder</h4>
+  <p class="meta">Power · Uncommon</p>
+  <p class="desc">Whenever you <b class="kw">Evoke Lightning</b>, deal 8 damage to each enemy hit.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Whenever you <b class="kw">Evoke Lightning</b>, deal 11 damage to each enemy hit.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Uncommon" data-name="white noise white_noise">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/white_noise.webp" alt="White Noise"><span class="gem">1</span></div>
+  <h4>White Noise</h4>
+  <p class="meta">Skill · Uncommon</p>
+  <p class="desc">Add a random Power into your <b class="kw">Hand</b>. It&#x27;s free to play this turn.<br><b class="kw">Exhaust</b>.</p>
+  
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Rare" data-name="adaptive strike adaptive_strike">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/adaptive_strike.webp" alt="Adaptive Strike"><span class="gem">2</span></div>
+  <h4>Adaptive Strike</h4>
+  <p class="meta">Attack · Rare</p>
+  <p class="desc">Deal 18 damage.<br>Add a 0<span class="nrg">●</span> copy of this card into your <b class="kw">Discard Pile</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 23 damage.<br>Add a 0<span class="nrg">●</span> copy of this card into your <b class="kw">Discard Pile</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Rare" data-name="all for one all_for_one">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/all_for_one.webp" alt="All for One"><span class="gem">2</span></div>
+  <h4>All for One</h4>
+  <p class="meta">Attack · Rare</p>
+  <p class="desc">Deal 10 damage.<br>Put ALL 0<span class="nrg">●</span> cards from your <b class="kw">Discard Pile</b> into your <b class="kw">Hand</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 14 damage.<br>Put ALL 0<span class="nrg">●</span> cards from your <b class="kw">Discard Pile</b> into your <b class="kw">Hand</b>.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Rare" data-name="buffer buffer">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/buffer.webp" alt="Buffer"><span class="gem">2</span></div>
+  <h4>Buffer</h4>
+  <p class="meta">Power · Rare</p>
+  <p class="desc">Prevent the next time you would lose HP.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Prevent the next 2 times you would lose HP.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Rare" data-name="consuming shadow consuming_shadow">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/consuming_shadow.webp" alt="Consuming Shadow"><span class="gem">2</span></div>
+  <h4>Consuming Shadow</h4>
+  <p class="meta">Power · Rare</p>
+  <p class="desc"><b class="kw">Channel</b> 2 <b class="kw">Dark</b>.<br>At the end of your turn, <b class="kw">Evoke</b> your leftmost Orb.</p>
+  <details><summary>Upgraded +</summary><p class="desc up"><b class="kw">Channel</b> 3 <b class="kw">Dark</b>.<br>At the end of your turn, <b class="kw">Evoke</b> your leftmost Orb.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Rare" data-name="coolant coolant">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/coolant.webp" alt="Coolant"><span class="gem">1</span></div>
+  <h4>Coolant</h4>
+  <p class="meta">Power · Rare</p>
+  <p class="desc">At the start of your turn, gain 2 <b class="kw">Block</b> for each unique Orb you have.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">At the start of your turn, gain 3 <b class="kw">Block</b> for each unique Orb you have.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Rare" data-name="creative ai creative_ai">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/creative_ai.webp" alt="Creative Ai"><span class="gem">3</span></div>
+  <h4>Creative Ai</h4>
+  <p class="meta">Power · Rare</p>
+  <p class="desc">At the start of your turn, add a random Power into your <b class="kw">Hand</b>.</p>
+  
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Rare" data-name="defragment defragment">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/defragment.webp" alt="Defragment"><span class="gem">1</span></div>
+  <h4>Defragment</h4>
+  <p class="meta">Power · Rare</p>
+  <p class="desc">Gain 1 <b class="kw">Focus</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 2 <b class="kw">Focus</b>.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Rare" data-name="echo form echo_form">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/echo_form.webp" alt="Echo Form"><span class="gem">3</span></div>
+  <h4>Echo Form</h4>
+  <p class="meta">Power · Rare</p>
+  <p class="desc"><b class="kw">Ethereal</b>.<br>The first card you play each turn is played an extra time.</p>
+  
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Rare" data-name="flak cannon flak_cannon">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/flak_cannon.webp" alt="Flak Cannon"><span class="gem">2</span></div>
+  <h4>Flak Cannon</h4>
+  <p class="meta">Attack · Rare</p>
+  <p class="desc"><b class="kw">Exhaust</b> ALL your Status cards.<br>Deal 8 damage to a random enemy for each card <b class="kw">Exhausted</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up"><b class="kw">Exhaust</b> ALL your Status cards.<br>Deal 11 damage to a random enemy for each card <b class="kw">Exhausted</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Rare" data-name="genetic algorithm genetic_algorithm">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/genetic_algorithm.webp" alt="Genetic Algorithm"><span class="gem">1</span></div>
+  <h4>Genetic Algorithm</h4>
+  <p class="meta">Skill · Rare</p>
+  <p class="desc">Gain 1 <b class="kw">Block</b>.<br>Permanently increase this card&#x27;s <b class="kw">Block</b> by 3.<br><b class="kw">Exhaust</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 1 <b class="kw">Block</b>.<br>Permanently increase this card&#x27;s <b class="kw">Block</b> by 4.<br><b class="kw">Exhaust</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Rare" data-name="helix drill helix_drill">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/helix_drill.webp" alt="Helix Drill"><span class="gem">0</span></div>
+  <h4>Helix Drill</h4>
+  <p class="meta">Attack · Rare</p>
+  <p class="desc">Deal 3 damage for each <span class="nrg">●</span> spent on other cards this turn.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 5 damage for each <span class="nrg">●</span> spent on other cards this turn.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Rare" data-name="hyperbeam hyperbeam">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/hyperbeam.webp" alt="Hyperbeam"><span class="gem">2</span></div>
+  <h4>Hyperbeam</h4>
+  <p class="meta">Attack · Rare</p>
+  <p class="desc">Deal 24 damage to ALL enemies.<br>Lose 3 <b class="kw">Focus</b> this turn.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 30 damage to ALL enemies.<br>Lose 3 <b class="kw">Focus</b> this turn.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Rare" data-name="ice lance ice_lance">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/ice_lance.webp" alt="Ice Lance"><span class="gem">3</span></div>
+  <h4>Ice Lance</h4>
+  <p class="meta">Attack · Rare</p>
+  <p class="desc">Deal 19 damage.<br><b class="kw">Channel</b> 3 <b class="kw">Frost</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 24 damage.<br><b class="kw">Channel</b> 3 <b class="kw">Frost</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Rare" data-name="imitation learning imitation_learning">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/imitation_learning.webp" alt="Imitation Learning"><span class="gem">1</span></div>
+  <h4>Imitation Learning</h4>
+  <p class="meta">Skill · Rare</p>
+  <p class="desc">Choose another player.<br>The next 2 times they play a Power, you play a copy of it.<br><b class="kw">Exhaust</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Choose another player.<br>The next 3 times they play a Power, you play a copy of it.<br><b class="kw">Exhaust</b>.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Rare" data-name="machine learning machine_learning">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/machine_learning.webp" alt="Machine Learning"><span class="gem">1</span></div>
+  <h4>Machine Learning</h4>
+  <p class="meta">Power · Rare</p>
+  <p class="desc">At the start of your turn, draw 1 additional card.</p>
+  <details><summary>Upgraded +</summary><p class="desc up"><b class="kw">Innate</b>.<br>At the start of your turn, draw 1 additional card.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Rare" data-name="meteor strike meteor_strike">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/meteor_strike.webp" alt="Meteor Strike"><span class="gem">5</span></div>
+  <h4>Meteor Strike</h4>
+  <p class="meta">Attack · Rare</p>
+  <p class="desc">Deal 24 damage.<br><b class="kw">Channel</b> 3 <b class="kw">Plasma</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 30 damage.<br><b class="kw">Channel</b> 3 <b class="kw">Plasma</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Rare" data-name="modded modded">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/modded.webp" alt="Modded"><span class="gem">0</span></div>
+  <h4>Modded</h4>
+  <p class="meta">Skill · Rare</p>
+  <p class="desc">Gain 1 Orb Slot.<br>Draw 1 card. Increase this card&#x27;s cost by 1.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 1 Orb Slot.<br>Draw 2 cards. Increase this card&#x27;s cost by 1.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Rare" data-name="multi cast multi_cast">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/multi_cast.webp" alt="Multi Cast"><span class="gem">X</span></div>
+  <h4>Multi Cast</h4>
+  <p class="meta">Skill · Rare</p>
+  <p class="desc"><b class="kw">Evoke</b> your rightmost Orb X times.</p>
+  <details><summary>Upgraded +</summary><p class="desc up"><b class="kw">Evoke</b> your rightmost Orb X+1 times.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Rare" data-name="one for all one_for_all">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/one_for_all.webp" alt="One for All"><span class="gem">1</span></div>
+  <h4>One for All</h4>
+  <p class="meta">Power · Rare</p>
+  <p class="desc">EVERYONE&#x27;S 0 <span class="nrg">●</span> Attacks deal 3 additional damage.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">EVERYONE&#x27;S 0 <span class="nrg">●</span> Attacks deal 4 additional damage.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Rare" data-name="rainbow rainbow">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/rainbow.webp" alt="Rainbow"><span class="gem">2</span></div>
+  <h4>Rainbow</h4>
+  <p class="meta">Skill · Rare</p>
+  <p class="desc"><b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.<br><b class="kw">Channel</b> 1 <b class="kw">Frost</b>.<br><b class="kw">Channel</b> 1 <b class="kw">Dark</b>.<br><b class="kw">Exhaust</b>.</p>
+  
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Rare" data-name="reboot reboot">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/reboot.webp" alt="Reboot"><span class="gem">0</span></div>
+  <h4>Reboot</h4>
+  <p class="meta">Skill · Rare</p>
+  <p class="desc">Shuffle ALL your cards into your <b class="kw">Draw Pile</b>.<br>Draw 4 cards.<br><b class="kw">Exhaust</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Shuffle ALL your cards into your <b class="kw">Draw Pile</b>.<br>Draw 6 cards.<br><b class="kw">Exhaust</b>.</p></details>
+</article><article class="card t-attack p-defect" data-type="Attack" data-rarity="Rare" data-name="shatter shatter">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/shatter.webp" alt="Shatter"><span class="gem">1</span></div>
+  <h4>Shatter</h4>
+  <p class="meta">Attack · Rare</p>
+  <p class="desc">Deal 7 damage to ALL enemies.<br><b class="kw">Evoke</b> all of your Orbs twice.<br><b class="kw">Exhaust</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Deal 11 damage to ALL enemies.<br><b class="kw">Evoke</b> all of your Orbs twice.<br><b class="kw">Exhaust</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Rare" data-name="signal boost signal_boost">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/signal_boost.webp" alt="Signal Boost"><span class="gem">1</span></div>
+  <h4>Signal Boost</h4>
+  <p class="meta">Skill · Rare</p>
+  <p class="desc">The next Power you play is played an additional time.<br><b class="kw">Exhaust</b>.</p>
+  
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Rare" data-name="spinner spinner">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/spinner.webp" alt="Spinner"><span class="gem">1</span></div>
+  <h4>Spinner</h4>
+  <p class="meta">Power · Rare</p>
+  <p class="desc">At the start of your turn, <b class="kw">Channel</b> 1 <b class="kw">Glass</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up"><b class="kw">Channel</b> 1 <b class="kw">Glass</b>.<br>At the start of your turn, <b class="kw">Channel</b> 1 <b class="kw">Glass</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Rare" data-name="supercritical supercritical">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/supercritical.webp" alt="Supercritical"><span class="gem">0</span></div>
+  <h4>Supercritical</h4>
+  <p class="meta">Skill · Rare</p>
+  <p class="desc">Gain 4 <span class="nrg">●</span>.<br><b class="kw">Exhaust</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 6 <span class="nrg">●</span>.<br><b class="kw">Exhaust</b>.</p></details>
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Rare" data-name="trash to treasure trash_to_treasure">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/trash_to_treasure.webp" alt="Trash to Treasure"><span class="gem">1</span></div>
+  <h4>Trash to Treasure</h4>
+  <p class="meta">Power · Rare</p>
+  <p class="desc">Whenever you create a Status, <b class="kw">Channel</b> 1 random Orb.</p>
+  
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Rare" data-name="voltaic voltaic">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/voltaic.webp" alt="Voltaic"><span class="gem">3</span></div>
+  <h4>Voltaic</h4>
+  <p class="meta">Skill · Rare</p>
+  <p class="desc"><b class="kw">Channel Lightning</b> equal to the <b class="kw">Lightning</b> already <b class="kw">Channeled</b> this combat.<br><b class="kw">Exhaust</b>.</p>
+  
+</article><article class="card t-power p-defect" data-type="Power" data-rarity="Ancient" data-name="biased cognition biased_cognition">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/biased_cognition.webp" alt="Biased Cognition"><span class="gem">1</span></div>
+  <h4>Biased Cognition</h4>
+  <p class="meta">Power · Ancient</p>
+  <p class="desc">Gain 5 <b class="kw">Focus</b>.<br>At the start of your turn, lose 1 <b class="kw">Focus</b>.</p>
+  <details><summary>Upgraded +</summary><p class="desc up">Gain 6 <b class="kw">Focus</b>.<br>At the start of your turn, lose 1 <b class="kw">Focus</b>.</p></details>
+</article><article class="card t-skill p-defect" data-type="Skill" data-rarity="Ancient" data-name="quadcast quadcast">
+  <div class="art"><img loading="lazy" src="../../../bible/images/cards/defect/quadcast.webp" alt="Quadcast"><span class="gem">1</span></div>
+  <h4>Quadcast</h4>
+  <p class="meta">Skill · Ancient</p>
+  <p class="desc"><b class="kw">Evoke</b> your rightmost Orb 4 times.</p>
+  
+</article></div></section>
+<section class="panel "><h2>Exclusive relics</h2><div class="relics"><div class="relic"><img loading="lazy" src="../../../bible/images/relics/cracked_core.webp" alt=""><div><b>Cracked Core</b><p>At the start of each combat, <b class="kw">Channel</b> 1 <b class="kw">Lightning</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../../bible/images/relics/data_disk.webp" alt=""><div><b>Data Disk</b><p>Start each combat with 1 <b class="kw">Focus</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../../bible/images/relics/emotion_chip.webp" alt=""><div><b>Emotion Chip</b><p>If you lost HP during the previous turn, trigger the passive ability of all Orbs at the start of your turn.</p></div></div><div class="relic"><img loading="lazy" src="../../../bible/images/relics/gold_plated_cables.webp" alt=""><div><b>Gold Plated Cables</b><p>Your rightmost Orb triggers its passive an additional time.</p></div></div><div class="relic"><img loading="lazy" src="../../../bible/images/relics/metronome.webp" alt=""><div><b>Metronome</b><p>The first time you <b class="kw">Channel</b> 7 <b class="kw">Orbs</b> each combat, deal 30 damage to ALL enemies.</p></div></div><div class="relic"><img loading="lazy" src="../../../bible/images/relics/power_cell.webp" alt=""><div><b>Power Cell</b><p>At the start of each combat, add 2 zero-cost cards from your <b class="kw">Draw Pile</b> into your <b class="kw">Hand</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../../bible/images/relics/runic_capacitor.webp" alt=""><div><b>Runic Capacitor</b><p>Start each combat with 3 additional <b class="kw">Orb Slots</b>.</p></div></div><div class="relic"><img loading="lazy" src="../../../bible/images/relics/symbiotic_virus.webp" alt=""><div><b>Symbiotic Virus</b><p>At the start of each combat, <b class="kw">Channel</b> 1 <b class="kw">Dark</b>.</p></div></div></div></section>
+<section class="panel "><h2>The other editions</h2><p class="pager"><a href="silent.html">◄ The Silent</a><a href="regent.html">The Regent ►</a></p><div class="carts"><a class="cart" href="../heros/ironclad.html" style="--hc:#c82030;--ha:#f05030">
+  <div class="cart-label" style="background-image:url(../../assets/bg/battle_ironclad.png)">
+    <span class="cart-ref">SLAYIRON</span>
+    <img class="pix" src="../../assets/sprites/hero_ironclad.png" alt="The Ironclad">
+  </div>
+  <div class="cart-info"><b>The Ironclad</b><span>Ironclad Edition</span>
+  <em>“Brute strength, forged in blood.”</em>
+  <small>80 HP · Strength &amp; sacrifice · <span class="diff" title="Beginner friendly">★☆☆</span></small></div>
+</a><a class="cart" href="../heros/silent.html" style="--hc:#40a048;--ha:#78d060">
+  <div class="cart-label" style="background-image:url(../../assets/bg/battle_silent.png)">
+    <span class="cart-ref">SLAYSILENT</span>
+    <img class="pix" src="../../assets/sprites/hero_silent.png" alt="The Silent">
+  </div>
+  <div class="cart-info"><b>The Silent</b><span>Silent Edition</span>
+  <em>“Strike unseen. Let the venom finish the job.”</em>
+  <small>70 HP · Poison &amp; shivs · <span class="diff" title="Intermediate">★★☆</span></small></div>
+</a><a class="cart" href="../heros/regent.html" style="--hc:#e89828;--ha:#f0c060">
+  <div class="cart-label" style="background-image:url(../../assets/bg/battle_regent.png)">
+    <span class="cart-ref">SLAYREGENT</span>
+    <img class="pix" src="../../assets/sprites/hero_regent.png" alt="The Regent">
+  </div>
+  <div class="cart-info"><b>The Regent</b><span>Regent Edition</span>
+  <em>“A crown, the stars, and the Spire on its knees.”</em>
+  <small>75 HP · Stars &amp; Sovereign Blade · <span class="diff" title="Expert">★★★</span></small></div>
+</a><a class="cart" href="../heros/necrobinder.html" style="--hc:#c860b8;--ha:#e8b0ff">
+  <div class="cart-label" style="background-image:url(../../assets/bg/battle_necrobinder.png)">
+    <span class="cart-ref">SLAYNECRO</span>
+    <img class="pix" src="../../assets/sprites/hero_necrobinder.png" alt="The Necrobinder">
+  </div>
+  <div class="cart-info"><b>The Necrobinder</b><span>Necrobinder Edition</span>
+  <em>“She never fights alone.”</em>
+  <small>65 HP · Osty &amp; Doom · <span class="diff" title="Expert">★★★</span></small></div>
+</a></div></section>
+
+</main>
+<footer class="foot">
+  <p>Slay the GBA — unofficial fan game. <i>Slay the Spire</i> © Mega Crit. Butano engine © Gustavo Valiente.</p>
+  <p>Data: project bible (patch v0.111.0 Beta). The game itself is in French. <a href="../mentions.html">Legal notice &amp; privacy</a> · <a href="https://alexandre-enouf.fr/blog/slay-the-gba-vibe-coding-game-boy-advance/?lang=en" target="_blank" rel="noopener">How this game was vibe coded</a></p>
+  <div class="ae-footer">
+    <a class="ae-logo" href="https://alexandre-enouf.fr/" target="_blank" rel="noopener">Alexandre <em>Enouf</em></a>
+    <span class="ae-tag">Product developer &amp; AI builder · Paris, France</span>
+    <nav class="ae-links" aria-label="Author links">
+      <a href="https://alexandre-enouf.fr/#lab" target="_blank" rel="noopener">⚡ Lab &amp; Projects</a>
+      <a href="https://alexandre-enouf.fr/blog/" target="_blank" rel="noopener">📖 Blog</a>
+      <a href="https://github.com/Boblebol" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/alexandreenouf-47834990" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:alexandre.enouf@gmail.com">Contact</a>
+    </nav>
+  </div>
+</footer>
+<script src="../../assets/site.js"></script>
+</body>
+</html>

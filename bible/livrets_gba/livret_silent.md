@@ -63,7 +63,9 @@ Les commandes sont identiques sur les cinq cartouches.
 | Combat | **◄ ►** | Sélectionner une carte |
 | Combat | **A** | Jouer la carte (puis choisir la cible si plusieurs ennemis) |
 | Combat | **B** | Annuler le ciblage |
-| Combat | **START / R** | Finir le tour |
+| Combat | **R** | Finir le tour (L avec le préréglage Rapide) |
+| Combat | **L** | Ceinture de potions (R avec le préréglage Rapide) |
+| Carte / Combat | **START** | Menu pause |
 | Carte / Combat | **SELECT** | Registre du deck (B pour revenir) |
 | Menus | **A / B** | Valider / annuler |
 

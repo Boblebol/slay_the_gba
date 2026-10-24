@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/index.html</loc><priority>0.6</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/</loc><priority>1.0</priority></url>
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/heros.html</loc><priority>0.8</priority></url>
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/heros/ironclad.html</loc><priority>0.8</priority></url>
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/heros/silent.html</loc><priority>0.8</priority></url>
@@ -15,6 +15,23 @@
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/evenements.html</loc><priority>0.6</priority></url>
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/anciens.html</loc><priority>0.6</priority></url>
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/guide.html</loc><priority>0.6</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/mentions.html</loc><priority>0.6</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/index.html</loc><priority>1.0</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/heros.html</loc><priority>0.8</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/heros/ironclad.html</loc><priority>0.8</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/heros/silent.html</loc><priority>0.8</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/heros/defect.html</loc><priority>0.8</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/heros/regent.html</loc><priority>0.8</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/heros/necrobinder.html</loc><priority>0.8</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/avancement.html</loc><priority>0.6</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/cartes.html</loc><priority>0.6</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/bestiaire.html</loc><priority>0.6</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/reliques.html</loc><priority>0.6</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/potions.html</loc><priority>0.6</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/evenements.html</loc><priority>0.6</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/anciens.html</loc><priority>0.6</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/guide.html</loc><priority>0.6</priority></url>
+  <url><loc>https://slay-the-gba.alexandre-enouf.fr/en/mentions.html</loc><priority>0.6</priority></url>
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/bible/00_personnages.html</loc><priority>0.6</priority></url>
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/bible/01_neow.html</loc><priority>0.6</priority></url>
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/bible/02_darv.html</loc><priority>0.6</priority></url>
@@ -45,5 +62,4 @@
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/bible/livret_regent.html</loc><priority>0.6</priority></url>
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/bible/livret_silent.html</loc><priority>0.6</priority></url>
   <url><loc>https://slay-the-gba.alexandre-enouf.fr/bible/index.html</loc><priority>0.6</priority></url>
-  <url><loc>https://slay-the-gba.alexandre-enouf.fr/mentions.html</loc><priority>0.6</priority></url>
 </urlset>
