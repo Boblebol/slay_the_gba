@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 99,9 %** — 1248 faits, 1 partiel, 0 à faire (35 hors périmètre).
+**Avancement global : 100,0 %** — 1249 faits, 0 partiel, 0 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 321 | 0 | 0 | 100,0 % |
 | [Bestiaire](#bestiaire) | 104 | 0 | 0 | 100,0 % |
-| [Évènements et Anciens](#rencontres) | 64 | 1 | 0 | 99,2 % |
+| [Évènements et Anciens](#rencontres) | 65 | 0 | 0 | 100,0 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 30 | 0 | 0 | 100,0 % |
-| **Total** | **1248** | **1** | **0** | **99,9 %** |
+| **Total** | **1249** | **0** | **0** | **100,0 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 99,2 %
+## Évènements et Anciens — 100,0 %
 
-### Évènements — 99,1 %
+### Évènements — 100,0 %
 
-56 faits, 1 partiel, 0 à faire.
+57 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1379,7 +1379,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Le procès | Acte 3 | Oui |  |
 | Le thé de la table ronde | Acte 3 | Oui |  |
 | L’avenir des potions ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
-| Mannequin de combat usé | Acte 3 | Partiel | Réglages, PV, 3 tours et récompenses fidèles ; valeurs devinées : le mannequin n'attaque pas, les 2 améliorations sont au choix du joueur. |
+| Mannequin de combat usé | Acte 3 | Oui |  |
 | Maître de thé | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Nid d’oizodon | Acte 1 (A) | Oui |  |
 | Phare englouti | Acte 1 (B) | Oui |  |
