@@ -91,6 +91,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::FLAIL_KNIGHT: return "FLAIL_KNIGHT";
         case EnemyType::SOUL_NEXUS: return "SOUL_NEXUS";
         case EnemyType::BYRDONIS: return "BYRDONIS";
+        case EnemyType::BYRDPIP: return "BYRDPIP";
         case EnemyType::PHROG_PARASITE: return "PHROG_PARASITE";
         case EnemyType::WRIGGLER: return "WRIGGLER";
         case EnemyType::THE_INSATIABLE: return "THE_INSATIABLE";
@@ -361,6 +362,7 @@ void test_reference_encounters() {
     // engine yet. The Slumbering Beetle and the Nectar, Silk and Egg Bowlbugs wait for the random bugs of
     // BowlbugsNormal and SlumberingBeetleNormal.
     // The Wriggler is the companion of the Phrog Parasite, which fights alone for now.
+    // The Byrdpip follows the player (Byrdpip relic) and is never in an encounter.
     // The Battleworn Dummy is only met through its event (BattlewornDummyEvent), never drawn in a room.
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
@@ -369,7 +371,7 @@ void test_reference_encounters() {
                                                           EnemyType::PARAFRIGHT, EnemyType::ZAPBOT,
                                                           EnemyType::GUARDBOT, EnemyType::BOWLBUG_NECTAR,
                                                           EnemyType::BOWLBUG_SILK, EnemyType::BOWLBUG_EGG,
-                                                          EnemyType::WRIGGLER, EnemyType::TOUGH_EGG,
+                                                          EnemyType::WRIGGLER, EnemyType::TOUGH_EGG, EnemyType::BYRDPIP,
                                                           EnemyType::BATTLEWORN_DUMMY };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
