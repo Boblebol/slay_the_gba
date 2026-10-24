@@ -23,6 +23,9 @@
 <meta name="twitter:description" content="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance. Cinq héros, cinq cartouches gratuites, combats façon Pokémon.">
 <meta name="twitter:image" content="https://slay-the-gba.alexandre-enouf.fr/assets/og.png">
 <link rel="apple-touch-icon" href="assets/sprites/icon.png">
+<link rel="alternate" hreflang="fr" href="https://slay-the-gba.alexandre-enouf.fr/">
+<link rel="alternate" hreflang="en" href="https://slay-the-gba.alexandre-enouf.fr/en/index.html">
+<link rel="alternate" hreflang="x-default" href="https://slay-the-gba.alexandre-enouf.fr/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
@@ -33,7 +36,7 @@
 <header class="top">
   <a class="brand" href="index.html"><img src="assets/sprites/icon.png" alt="">SLAY THE GBA</a>
   <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
-  <nav><a href="index.html" class="on">Accueil</a><a href="heros.html">Héros</a><a href="cartes.html">Cartes</a><a href="bestiaire.html">Bestiaire</a><a href="reliques.html">Reliques</a><a href="potions.html">Potions</a><a href="evenements.html">Évènements</a><a href="anciens.html">Anciens</a><a href="avancement.html">Avancement</a><a href="guide.html">Guide</a><a href="bible/index.html">Bible</a></nav>
+  <nav><a href="index.html" class="on">Accueil</a><a href="heros.html">Héros</a><a href="cartes.html">Cartes</a><a href="bestiaire.html">Bestiaire</a><a href="reliques.html">Reliques</a><a href="potions.html">Potions</a><a href="evenements.html">Évènements</a><a href="anciens.html">Anciens</a><a href="avancement.html">Avancement</a><a href="guide.html">Guide</a><a href="bible/index.html">Bible</a><a class="lang" href="en/index.html" hreflang="en" lang="en" title="English version">EN</a></nav>
 </header>
 <main>
 
@@ -49,6 +52,8 @@
 </section>
 
 <div class="stats"><div><b>5</b><span>éditions</span></div><div><b>569</b><span>cartes</span></div><div><b>104</b><span>monstres</span></div><div><b>298</b><span>reliques</span></div><div><b>63</b><span>potions</span></div><div><b>57</b><span>évènements</span></div><div><b>8</b><span>Anciens</span></div></div>
+
+<section class="panel callout"><h2 id="testeurs">🎉 100 % atteint : testeurs recherchés !</h2><p>Tout le contenu de Slay the Spire 2 de la bible du projet (patch v0.111.0 Beta) est maintenant dans les cinq cartouches : cartes, reliques, potions, monstres, boss, évènements et Anciens. Il faut maintenant des joueurs. Téléchargez une édition, faites une partie et racontez-moi : bug, crash, blocage, équilibrage, texte qui déborde, tout m'intéresse.</p><div class="cta"><a class="btn small" href="https://github.com/Boblebol/slay_the_gba/issues/new" target="_blank" rel="noopener">Signaler un bug ou donner un avis ►</a><a class="btn small ghost" href="mailto:alexandre.enouf@gmail.com">Par e-mail</a></div></section>
 
 <section class="panel "><h2 id="editions">Choisissez votre édition</h2><p class="intro">Comme les grandes séries portables vendues en plusieurs versions, Slay the GBA existe en <b>cinq cartouches</b>. Chacune a son héros, son deck de 90+ cartes, sa relique, sa couleur, sa zone et sa mécanique signature.</p><div class="tabs"><button type="button" class="cart tab" data-edition="ironclad" style="--hc:#c82030;--ha:#f05030" aria-pressed="true"><span class="cart-ref">SLAYIRON</span><img class="pix" src="assets/sprites/hero_ironclad.png" alt=""><b>Soldat de Fer</b></button><button type="button" class="cart tab" data-edition="silent" style="--hc:#40a048;--ha:#78d060" aria-pressed="false"><span class="cart-ref">SLAYSILENT</span><img class="pix" src="assets/sprites/hero_silent.png" alt=""><b>La Silencieuse</b></button><button type="button" class="cart tab" data-edition="defect" style="--hc:#3870d8;--ha:#58b0f0" aria-pressed="false"><span class="cart-ref">SLAYDEFECT</span><img class="pix" src="assets/sprites/hero_defect.png" alt=""><b>Le Défectueux</b></button><button type="button" class="cart tab" data-edition="regent" style="--hc:#e89828;--ha:#f0c060" aria-pressed="false"><span class="cart-ref">SLAYREGENT</span><img class="pix" src="assets/sprites/hero_regent.png" alt=""><b>Le Régent</b></button><button type="button" class="cart tab" data-edition="necrobinder" style="--hc:#c860b8;--ha:#e8b0ff" aria-pressed="false"><span class="cart-ref">SLAYNECRO</span><img class="pix" src="assets/sprites/hero_necrobinder.png" alt=""><b>La Nécrolieuse</b></button></div><div class="edition-panel" data-panel="ironclad" style="--hc:#c82030;--ha:#f05030">
   <div class="ed-shot">
