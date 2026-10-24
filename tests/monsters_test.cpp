@@ -5804,6 +5804,21 @@ void test_seapunk_ascension() {
     std::cout << "[PASS] Seapunk: Ascension gives 47 to 49 HP, Sea Kick 13, Bubble Burp 8 Block + 2 Strength" << std::endl;
 }
 
+void test_byrdpip() {
+    // Oizillon, the Byrdpip relic's companion: 9999 HP and no move, so it does nothing turn after turn.
+    check_monster(EnemyType::BYRDPIP, "Oizillon", 9999, {
+        { STUN, 0, 0, 0 }, { STUN, 0, 0, 0 }, { STUN, 0, 0, 0 }, { STUN, 0, 0, 0 },
+    });
+    CombatEngine combat = make_combat(CharacterId::IRONCLAD, EnemyType::BYRDPIP);
+    Enemy& pip = combat.enemies[0];
+    assert(pip.ascension_hp() == 0 && pip.hp_spread() == 0);
+    pip.ascend(true, true);
+    combat.plan_enemies();
+    assert(pip.hp == 9999 && pip.max_hp == 9999);
+    assert(pip.current_intent.type == STUN && pip.intent_damage(combat.player) == 0);
+    std::cout << "[PASS] Oizillon: 9999 HP, does nothing every turn, Ascension changes nothing" << std::endl;
+}
+
 void test_osty() {
     // Titos, summoned by the Entomancer: 1 HP and no move, so it does nothing turn after turn.
     check_monster(EnemyType::OSTY, "Titos", 1, {
@@ -6477,6 +6492,7 @@ int main() {
     std::cout << "=== Monsters ===" << std::endl;
     test_fuzzy_wurm_crawler();
     test_osty();
+    test_byrdpip();
     test_osty_ascension();
     test_crossbow_ruby_raider();
     test_brute_ruby_raider();
