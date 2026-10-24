@@ -1676,11 +1676,11 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
             current_intent.description = "Fuite";
         }
     } else if (type == EnemyType::BATTLEWORN_DUMMY) {
-        // The event gives it 3 turns: it does nothing but wait (guessed: the reference lists no move), then the
-        // sequence ends and it leaves, unbeaten, after the third turn of the player.
+        // The event gives it 3 turns (Time Limit 3): its only move, Nothing, shows a sleep intent, then the sequence
+        // ends and it leaves, unbeaten, after the third turn of the player.
         if (turn_number < BATTLEWORN_DUMMY_TURNS) {
-            current_intent.type = EnemyIntentType::BUFF;
-            current_intent.description = "Séquence en cours";
+            current_intent.type = EnemyIntentType::STUN;
+            current_intent.description = "Rien";
         } else {
             current_intent.type = EnemyIntentType::ESCAPE;
             current_intent.description = "Fin de la séquence";

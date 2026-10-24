@@ -34,7 +34,7 @@ inline void test_battleworn_dummy() {
         assert(fight.run.phase == RunPhase::IN_COMBAT && fight.run.combat.enemies.size() == 1);
         const Enemy& dummy = fight.run.combat.enemies[0];
         assert(dummy.type == EnemyType::BATTLEWORN_DUMMY && dummy.hp == hp[setting - 1] && dummy.max_hp == hp[setting - 1]);
-        assert(dummy.current_intent.type == EnemyIntentType::BUFF);
+        assert(dummy.current_intent.type == EnemyIntentType::STUN && dummy.current_intent.base_damage == 0);
     }
 
     // Left alive, it goes after the player's third turn and gives nothing.
@@ -66,16 +66,15 @@ inline void test_battleworn_dummy() {
         assert(fight.run.event_fight_ref.empty());
     }
 
-    // Beaten, setting 2: 2 cards of the deck to upgrade, no other reward.
+    // Beaten, setting 2: 2 random cards of the deck upgraded at once, no choice and no other reward.
     {
         EventRun fight = start_dummy_fight(2);
+        const int upgraded = fight.upgraded_cards();
         fight.run.combat.state = CombatState::VICTORY;
         fight.run.proceed_after_combat();
-        assert(fight.run.phase == RunPhase::REWARD_SCREEN && fight.run.has_deck_choice());
-        assert(fight.run.deck_choice.kind == DeckChoiceKind::UPGRADE && fight.run.deck_choice.remaining == 2);
+        assert(fight.run.phase == RunPhase::REWARD_SCREEN && !fight.run.has_deck_choice());
+        assert(fight.upgraded_cards() == upgraded + 2);
         assert(fight.run.potion_reward.empty() && fight.run.relic_reward.empty() && fight.run.current_card_rewards.empty());
-        assert(fight.run.resolve_deck_choice(0) && fight.run.resolve_deck_choice(1));
-        assert(fight.upgraded_cards() == 2 && !fight.run.has_deck_choice());
     }
 
     // Beaten, setting 3: a relic.
@@ -89,6 +88,6 @@ inline void test_battleworn_dummy() {
         assert(fight.run.take_relic_reward() && fight.run.relics.size() == relics + 1);
     }
 
-    std::cout << "[PASS] Battleworn Dummy: 75 / 150 / 300 HP in 3 turns for a potion / 2 upgrades / a relic, nothing if it leaves"
+    std::cout << "[PASS] Battleworn Dummy: 75 / 150 / 300 HP in 3 turns for a potion / 2 random upgrades / a relic, nothing if it leaves"
               << std::endl;
 }
