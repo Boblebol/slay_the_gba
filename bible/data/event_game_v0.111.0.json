@@ -4200,7 +4200,99 @@
   },
   {
    "id": "LOST_WISP",
-   "implemented": false
+   "implemented": true,
+   "title": "Feu follet égaré",
+   "acts": 4,
+   "condition": {
+    "check": "NONE",
+    "amount": 0,
+    "ref": "",
+    "card": ""
+   },
+   "pages": [
+    {
+     "text": "Au loin se dresse une scène étrange. Des montagnes d'insectes morts entourent un petit granule lumineux. Il attire toutes sortes de bestioles, et des flammes en émanent. Vous vous approchez.",
+     "options": [
+      {
+       "label": "Capturer le feu follet",
+       "cost_benefit": "Obtenez Feu follet égaré. Ajoutez Pourriture.",
+       "result": "Vous refermez la main sur le granule brûlant. Il vous suit désormais, mais un mal rampant vous gagne.",
+       "condition": {
+        "check": "NO_RELIC",
+        "amount": 0,
+        "ref": "LOST_WISP",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_RELIC",
+         "amount": 0,
+         "ref": "LOST_WISP",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "ADD_CURSE",
+         "amount": 0,
+         "ref": "",
+         "card": "Decay",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Fouiller les environs",
+       "cost_benefit": "Gagnez 60 Or.",
+       "result": "Parmi les carcasses d'insectes, vous trouvez de quoi remplir votre bourse : 60 Or.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_GOLD",
+         "amount": 60,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Partir",
+       "cost_benefit": "Ne rien faire.",
+       "result": "Les flammes vous inquiètent. Vous rebroussez chemin.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": []
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "LUMINOUS_CHOIR",
@@ -5132,7 +5224,87 @@
   },
   {
    "id": "SAPPHIRE_SEED",
-   "implemented": false
+   "implemented": true,
+   "title": "Graine de saphir",
+   "acts": 1,
+   "condition": {
+    "check": "NONE",
+    "amount": 0,
+    "ref": "",
+    "card": ""
+   },
+   "pages": [
+    {
+     "text": "Vous manquez de peu de marcher sur un éclat de... graine ? Sa couleur ne laisse aucun doute : c'est une Graine de saphir ! La légende dit qu'elle amplifie l'endurance. Ou qu'on peut la planter.",
+     "options": [
+      {
+       "label": "Consommer",
+       "cost_benefit": "Soignez 9 PV. Améliorez une carte.",
+       "result": "Vous croquez la graine. Une chaleur vous envahit : 9 PV rendus. Choisissez une carte à améliorer.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "HEAL",
+         "amount": 9,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "UPGRADE_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Planter et nourrir",
+       "cost_benefit": "Enchantez une carte avec Semé.",
+       "result": "Vous enterrez la graine. Choisissez une carte à enchanter.",
+       "condition": {
+        "check": "CAN_ENCHANT",
+        "amount": -1,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ENCHANT_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "SWIFT",
+         "enchant_amount": 1,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "SELF_HELP_BOOK",
@@ -5373,7 +5545,113 @@
   },
   {
    "id": "SPIRALING_WHIRLPOOL",
-   "implemented": false
+   "implemented": true,
+   "title": "Tourbillon aquatique",
+   "acts": 2,
+   "condition": {
+    "check": "NONE",
+    "amount": 0,
+    "ref": "",
+    "card": ""
+   },
+   "pages": [
+    {
+     "text": "Vous tombez sur un énorme tourbillon aquatique. L'eau s'écrase sur les murs, ornés de motifs en spirale. Il tourne, tourne, tourne... quel spectacle ! Que faites-vous ?",
+     "options": [
+      {
+       "label": "Boire",
+       "cost_benefit": "Soignez 20 PV.",
+       "result": "Vous buvez l'eau tourbillonnante. Elle est étonnamment douce : 20 PV rendus.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "HEAL",
+         "amount": 20,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Observer",
+       "cost_benefit": "Enchantez une carte avec Spirale.",
+       "result": "Les spirales vous hypnotisent. Choisissez une carte à enchanter.",
+       "condition": {
+        "check": "CAN_ENCHANT",
+        "amount": -1,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ENCHANT_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "ADROIT",
+         "enchant_amount": 3,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Plonger la main",
+       "cost_benefit": "Relique aléatoire. Ajoutez Contorsion.",
+       "result": "Votre bras s'enfonce dans le vortex et en ressort avec une relique, mais le corps tordu.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_RELIC",
+         "amount": 0,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "ADD_CURSE",
+         "amount": 0,
+         "ref": "",
+         "card": "Writhe",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "SPIRIT_GRAFTER",
@@ -6614,7 +6892,380 @@
   },
   {
    "id": "TINKER_TIME",
-   "implemented": false
+   "implemented": true,
+   "title": "Bricolage",
+   "acts": 8,
+   "condition": {
+    "check": "NONE",
+    "amount": 0,
+    "ref": "",
+    "card": ""
+   },
+   "pages": [
+    {
+     "text": "Après avoir traversé un océan de cadavres, vous tombez sur une ingénieure en train de farfouiller. « Salut ! Tu as l'air compétent... J'ai besoin de quelqu'un pour tester mon prochain atrociteur ! »",
+     "options": [
+      {
+       "label": "Accepter",
+       "cost_benefit": "Créez une carte sur mesure.",
+       "result": "Elle sort ses outils avec un sourire inquiétant.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GOTO_PAGE",
+         "amount": 1,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "« Parfait ! Quel genre d'engin veux-tu ? » Une arme, un gadget ou un protecteur.",
+     "options": [
+      {
+       "label": "Arme",
+       "cost_benefit": "Créez une Attaque.",
+       "result": "Une lame de bric et de broc prend forme.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GOTO_PAGE",
+         "amount": 2,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Gadget",
+       "cost_benefit": "Créez un Pouvoir.",
+       "result": "Un mécanisme bourdonnant prend forme.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GOTO_PAGE",
+         "amount": 3,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Protecteur",
+       "cost_benefit": "Créez une Compétence.",
+       "result": "Une carapace bancale prend forme.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GOTO_PAGE",
+         "amount": 4,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Une arme. « Et quel petit supplément y ajouter ? »",
+     "options": [
+      {
+       "label": "Amélioration",
+       "cost_benefit": "Ajoutez la carte, améliorée.",
+       "result": "L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "Ultimate Strike",
+         "pick": "CHOOSE",
+         "upgraded": true,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Chaos",
+       "cost_benefit": "Ajoutez une carte incolore aléatoire.",
+       "result": "L'atrociteur s'emballe et crache une carte inattendue.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Sagesse",
+       "cost_benefit": "Choisissez 1 carte parmi 3.",
+       "result": "L'ingénieure vous tend trois plans. Choisissez-en un.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "CARD_CHOICE",
+         "amount": 3,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Un gadget. « Et quel petit supplément y ajouter ? »",
+     "options": [
+      {
+       "label": "Amélioration",
+       "cost_benefit": "Ajoutez la carte, améliorée.",
+       "result": "L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "Panache",
+         "pick": "CHOOSE",
+         "upgraded": true,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Chaos",
+       "cost_benefit": "Ajoutez une carte incolore aléatoire.",
+       "result": "L'atrociteur s'emballe et crache une carte inattendue.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Sagesse",
+       "cost_benefit": "Choisissez 1 carte parmi 3.",
+       "result": "L'ingénieure vous tend trois plans. Choisissez-en un.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "CARD_CHOICE",
+         "amount": 3,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Un protecteur. « Et quel petit supplément y ajouter ? »",
+     "options": [
+      {
+       "label": "Amélioration",
+       "cost_benefit": "Ajoutez la carte, améliorée.",
+       "result": "L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "Ultimate Defend",
+         "pick": "CHOOSE",
+         "upgraded": true,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Chaos",
+       "cost_benefit": "Ajoutez une carte incolore aléatoire.",
+       "result": "L'atrociteur s'emballe et crache une carte inattendue.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Sagesse",
+       "cost_benefit": "Choisissez 1 carte parmi 3.",
+       "result": "L'ingénieure vous tend trois plans. Choisissez-en un.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "CARD_CHOICE",
+         "amount": 3,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "TRASH_HEAP",
@@ -7821,7 +8472,112 @@
   },
   {
    "id": "WOOD_CARVINGS",
-   "implemented": false
+   "implemented": true,
+   "title": "Gravures sur bois",
+   "acts": 1,
+   "condition": {
+    "check": "NONE",
+    "amount": 0,
+    "ref": "",
+    "card": ""
+   },
+   "pages": [
+    {
+     "text": "Vous ouvrez une boîte poussiéreuse : 3 figurines en bois gravées. Un oiseau, un serpent et... un tore ? Un piédestal proche a des emplacements pour leur base. Laquelle placez-vous ?",
+     "options": [
+      {
+       "label": "L'oiseau",
+       "cost_benefit": "Transformez une carte en Picorer.",
+       "result": "L'oiseau s'emboîte parfaitement. Choisissez une carte à transformer en Picorer.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "TRANSFORM_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "Peck",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Le serpent",
+       "cost_benefit": "Enchantez une Attaque avec Glissement.",
+       "result": "Le serpent glisse dans son logement. Choisissez une Attaque à enchanter.",
+       "condition": {
+        "check": "HAS_ATTACK",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ENCHANT_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "ROYALLY_APPROVED",
+         "enchant_amount": 1,
+         "only_type": 0,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Le tore",
+       "cost_benefit": "Transformez une carte en Robustesse torique.",
+       "result": "Le tore tourne sur lui-même. Choisissez une carte à transformer en Robustesse torique.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "TRANSFORM_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "Toric Toughness",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Partir",
+       "cost_benefit": "Ne rien placer.",
+       "result": "Vous refermez la boîte sans toucher aux figurines.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": []
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "ZEN_WEAVER",

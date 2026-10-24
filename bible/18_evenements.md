@@ -843,16 +843,20 @@ Vous vous approchez pour l’examiner.
 <!-- choix:LOST_WISP -->
 **Choix dans le jeu** (généré depuis `src/engine/events`) :
 
-*Pas encore dans le jeu* : choix de la référence (`bible/data/event_choices`).
+* **Titre en jeu :** Feu follet égaré | **Zones :** Acte 2
 
-Page `start` :
+Page 0 (début) : « Au loin se dresse une scène étrange. Des montagnes d'insectes morts entourent un petit granule lumineux. Il attire toutes sortes de bestioles, et des flammes en émanent. Vous vous approchez. »
 
-* **Capturer le feu follet** (Capture the Wisp)
-  * Effets : gain relic 1 (LOST_WISP) ; add curse 1 (DECAY)
-* **Fouiller les environs** (Search the Nearby Area)
-  * Effets : gain gold - 45-75 or
-* **(3e option)** ((third option))
-  * Effets : other - 3e option du JSON (optionCount=3) non documentee; la page indique 'Your Max HP is too low' (seuil inconnu)
+* **Capturer le feu follet** - Obtenez Feu follet égaré. Ajoutez Pourriture.
+  * Condition : ne pas posséder la relique LOST_WISP (sinon l'option est grisée)
+  * Effets : gagne la relique LOST_WISP ; ajoute au deck 1 × Decay
+  * Résultat : « Vous refermez la main sur le granule brûlant. Il vous suit désormais, mais un mal rampant vous gagne. »
+* **Fouiller les environs** - Gagnez 60 Or.
+  * Effets : gagne 60 Or
+  * Résultat : « Parmi les carcasses d'insectes, vous trouvez de quoi remplir votre bourse : 60 Or. »
+* **Partir** - Ne rien faire.
+  * Effets : aucun
+  * Résultat : « Les flammes vous inquiètent. Vous rebroussez chemin. »
 
 <!-- /choix:LOST_WISP -->
 
@@ -1095,14 +1099,17 @@ La légende voudrait que leur consommation pourrait fortement amplifier votre en
 <!-- choix:SAPPHIRE_SEED -->
 **Choix dans le jeu** (généré depuis `src/engine/events`) :
 
-*Pas encore dans le jeu* : choix de la référence (`bible/data/event_choices`).
+* **Titre en jeu :** Graine de saphir | **Zones :** Acte 1a
 
-Page `start` :
+Page 0 (début) : « Vous manquez de peu de marcher sur un éclat de... graine ? Sa couleur ne laisse aucun doute : c'est une Graine de saphir ! La légende dit qu'elle amplifie l'endurance. Ou qu'on peut la planter. »
 
-* **Consommer : soigne 9 PV, améliore une carte.** (Consume: Heal 9 HP. Upgrade a card in your Deck.)
-  * Effets : heal 9 ; upgrade card 1
-* **Planter et nourrir : enchante une carte avec Semé.** (Plant and Nourish: Enchant a card with Sown.)
-  * Effets : other 1 (ENCHANT_SOWN)
+* **Consommer** - Soignez 9 PV. Améliorez une carte.
+  * Effets : soigne 9 PV ; améliore 1 carte (au choix)
+  * Résultat : « Vous croquez la graine. Une chaleur vous envahit : 9 PV rendus. Choisissez une carte à améliorer. »
+* **Planter et nourrir** - Enchantez une carte avec Semé.
+  * Condition : une carte du deck peut être enchantée (sinon l'option est grisée)
+  * Effets : enchante 1 carte (au choix) : SWIFT 1
+  * Résultat : « Vous enterrez la graine. Choisissez une carte à enchanter. »
 
 <!-- /choix:SAPPHIRE_SEED -->
 
@@ -1179,16 +1186,20 @@ Que faites-vous ?
 <!-- choix:SPIRALING_WHIRLPOOL -->
 **Choix dans le jeu** (généré depuis `src/engine/events`) :
 
-*Pas encore dans le jeu* : choix de la référence (`bible/data/event_choices`).
+* **Titre en jeu :** Tourbillon aquatique | **Zones :** Acte 1b
 
-Page `start` :
+Page 0 (début) : « Vous tombez sur un énorme tourbillon aquatique. L'eau s'écrase sur les murs, ornés de motifs en spirale. Il tourne, tourne, tourne... quel spectacle ! Que faites-vous ? »
 
-* **Boire : soigne des PV.** (Drink: Heal HP.)
-  * Effets : heal - montant introuvable (op.gg affiche 0)
-* **Observer : enchante une Frappe ou Défense de base avec Spirale.** (Observe: Enchant a Basic Strike or Defend with Spiral.)
-  * Effets : other 1 (ENCHANT_SPIRAL)
-* **Plonger la main : relique aléatoire et ajoute Contorsion.** (Reach In: Gain a random Relic and add Writhe to your Deck.)
-  * Effets : gain relic 1 (RANDOM_RELIC) ; add curse 1 (WRITHE)
+* **Boire** - Soignez 20 PV.
+  * Effets : soigne 20 PV
+  * Résultat : « Vous buvez l'eau tourbillonnante. Elle est étonnamment douce : 20 PV rendus. »
+* **Observer** - Enchantez une carte avec Spirale.
+  * Condition : une carte du deck peut être enchantée (sinon l'option est grisée)
+  * Effets : enchante 1 carte (au choix) : ADROIT 3
+  * Résultat : « Les spirales vous hypnotisent. Choisissez une carte à enchanter. »
+* **Plonger la main** - Relique aléatoire. Ajoutez Contorsion.
+  * Effets : gagne une relique aléatoire ; ajoute au deck 1 × Writhe
+  * Résultat : « Votre bras s'enfonce dans le vortex et en ressort avec une relique, mais le corps tordu. »
 
 <!-- /choix:SPIRALING_WHIRLPOOL -->
 
@@ -1510,42 +1521,61 @@ Page 0 (début) : « Des bras jaillissent d'un trou dans le sol, tenant un sac s
 <!-- choix:TINKER_TIME -->
 **Choix dans le jeu** (généré depuis `src/engine/events`) :
 
-*Pas encore dans le jeu* : choix de la référence (`bible/data/event_choices`).
+* **Titre en jeu :** Bricolage | **Zones :** Acte 3
 
-Page `start` :
+Page 0 (début) : « Après avoir traversé un océan de cadavres, vous tombez sur une ingénieure en train de farfouiller. « Salut ! Tu as l'air compétent... J'ai besoin de quelqu'un pour tester mon prochain atrociteur ! » »
 
-* **Accepter : crée une carte sur mesure ajoutée au deck.** (Accept: Create a custom card to add to your Deck.)
-  * Effets : add card 1 (CUSTOM_CARD)
+* **Accepter** - Créez une carte sur mesure.
+  * Effets : mène à la page 1
+  * Résultat : « Elle sort ses outils avec un sourire inquiétant. »
 
-Page `type` :
+Page 1 : « « Parfait ! Quel genre d'engin veux-tu ? » Une arme, un gadget ou un protecteur. »
 
-* **Arme : crée une Attaque.** (Weapon: Make an Attack.)
-  * Effets : other 1 (TYPE_ATTACK)
-* **Gadget : crée un Pouvoir.** (Gadget: Make a Power.)
-  * Effets : other 1 (TYPE_POWER)
-* **Protecteur : crée une Compétence.** (Protector: Make a Skill.)
-  * Effets : other 1 (TYPE_SKILL)
+* **Arme** - Créez une Attaque.
+  * Effets : mène à la page 2
+  * Résultat : « Une lame de bric et de broc prend forme. »
+* **Gadget** - Créez un Pouvoir.
+  * Effets : mène à la page 3
+  * Résultat : « Un mécanisme bourdonnant prend forme. »
+* **Protecteur** - Créez une Compétence.
+  * Effets : mène à la page 4
+  * Résultat : « Une carapace bancale prend forme. »
 
-Page `effect` :
+Page 2 : « Une arme. « Et quel petit supplément y ajouter ? » »
 
-* **Chaos : ajoute une carte aléatoire en main, gratuite ce tour.** (Chaos: Add a random card into your Hand. It's free to play this turn.)
-  * Effets : other 1 (RIDER_CHAOS)
-* **Étranglement : chaque carte jouée ce tour fait perdre X PV à l'ennemi.** (Choking: Whenever you play a card this turn, the enemy loses X HP.)
-  * Effets : other (RIDER_CHOKING) - X inconnu
-* **Curieux : les Pouvoirs coûtent 1 énergie de moins.** (Curious: Powers cost 1 energy less.)
-  * Effets : other 1 (RIDER_CURIOUS)
-* **Énergisé : gagne de l'énergie.** (Energized: Gain energy.)
-  * Effets : other (RIDER_ENERGIZED) - quantité inconnue
-* **Expertise : gagne X Force et Y Dextérité.** (Expertise: Gain X Strength, Y Dexterity.)
-  * Effets : other (RIDER_EXPERTISE) - X, Y inconnus
-* **Amélioration : en fin de combat, améliore une carte aléatoire.** (Improvement: At the end of combat, upgrade a random card.)
-  * Effets : other 1 (RIDER_IMPROVEMENT)
-* **Sape : applique X Faiblesse et Y Vulnérable.** (Sapping: Apply X Weak, Y Vulnerable.)
-  * Effets : other (RIDER_SAPPING) - X, Y inconnus
-* **Violence : frappe 2 fois de plus.** (Violence: Hits 2 additional times.)
-  * Effets : other 2 (RIDER_VIOLENCE)
-* **Sagesse : pioche 3 cartes.** (Wisdom: Draw 3 cards.)
-  * Effets : other 3 (RIDER_WISDOM)
+* **Amélioration** - Ajoutez la carte, améliorée.
+  * Effets : ajoute au deck 1 × Ultimate Strike améliorée
+  * Résultat : « L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée. »
+* **Chaos** - Ajoutez une carte incolore aléatoire.
+  * Effets : ajoute au deck 1 carte Incolore aléatoire
+  * Résultat : « L'atrociteur s'emballe et crache une carte inattendue. »
+* **Sagesse** - Choisissez 1 carte parmi 3.
+  * Effets : propose 3 cartes du héros (rares comprises), le joueur en ajoute 1
+  * Résultat : « L'ingénieure vous tend trois plans. Choisissez-en un. »
+
+Page 3 : « Un gadget. « Et quel petit supplément y ajouter ? » »
+
+* **Amélioration** - Ajoutez la carte, améliorée.
+  * Effets : ajoute au deck 1 × Panache améliorée
+  * Résultat : « L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée. »
+* **Chaos** - Ajoutez une carte incolore aléatoire.
+  * Effets : ajoute au deck 1 carte Incolore aléatoire
+  * Résultat : « L'atrociteur s'emballe et crache une carte inattendue. »
+* **Sagesse** - Choisissez 1 carte parmi 3.
+  * Effets : propose 3 cartes du héros (rares comprises), le joueur en ajoute 1
+  * Résultat : « L'ingénieure vous tend trois plans. Choisissez-en un. »
+
+Page 4 : « Un protecteur. « Et quel petit supplément y ajouter ? » »
+
+* **Amélioration** - Ajoutez la carte, améliorée.
+  * Effets : ajoute au deck 1 × Ultimate Defend améliorée
+  * Résultat : « L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée. »
+* **Chaos** - Ajoutez une carte incolore aléatoire.
+  * Effets : ajoute au deck 1 carte Incolore aléatoire
+  * Résultat : « L'atrociteur s'emballe et crache une carte inattendue. »
+* **Sagesse** - Choisissez 1 carte parmi 3.
+  * Effets : propose 3 cartes du héros (rares comprises), le joueur en ajoute 1
+  * Résultat : « L'ingénieure vous tend trois plans. Choisissez-en un. »
 
 <!-- /choix:TINKER_TIME -->
 
@@ -1800,18 +1830,23 @@ Un piédestal à proximité est muni d’emplacements qui correspondent au bas d
 <!-- choix:WOOD_CARVINGS -->
 **Choix dans le jeu** (généré depuis `src/engine/events`) :
 
-*Pas encore dans le jeu* : choix de la référence (`bible/data/event_choices`).
+* **Titre en jeu :** Gravures sur bois | **Zones :** Acte 1a
 
-Page `start` :
+Page 0 (début) : « Vous ouvrez une boîte poussiéreuse : 3 figurines en bois gravées. Un oiseau, un serpent et... un tore ? Un piédestal proche a des emplacements pour leur base. Laquelle placez-vous ? »
 
-* **Oiseau : transforme une carte de départ en Picorer.** (Bird: Choose 1 starter card to Transform into Peck.)
-  * Effets : transform card 1 (PECK) - 2 dégâts x3
-* **Serpent : enchante une carte avec Glissement.** (Snake: Enchant 1 card with Slither.)
-  * Effets : other 1 (ENCHANT_SLITHER) - verrouillé si aucune carte enchantable; coût de la carte aléatoire
-* **Tore : transforme une carte de départ en Robustesse torique.** (Torus: Choose 1 starter card to Transform into Toric Toughness.)
-  * Effets : transform card 1 (TORIC_TOUGHNESS) - 5 Armure, +5 Armure au début des 2 tours suivants
-* **(quatrième option, probablement Partir)** ((fourth option, probably Leave))
-  * Effets : leave - optionCount=4 mais seulement 3 options trouvées
+* **L'oiseau** - Transformez une carte en Picorer.
+  * Effets : transforme 1 × Peck (au choix)
+  * Résultat : « L'oiseau s'emboîte parfaitement. Choisissez une carte à transformer en Picorer. »
+* **Le serpent** - Enchantez une Attaque avec Glissement.
+  * Condition : une Attaque du deck peut être enchantée (sinon l'option est grisée)
+  * Effets : enchante 1 carte (au choix) : ROYALLY_APPROVED 1, type 0
+  * Résultat : « Le serpent glisse dans son logement. Choisissez une Attaque à enchanter. »
+* **Le tore** - Transformez une carte en Robustesse torique.
+  * Effets : transforme 1 × Toric Toughness (au choix)
+  * Résultat : « Le tore tourne sur lui-même. Choisissez une carte à transformer en Robustesse torique. »
+* **Partir** - Ne rien placer.
+  * Effets : aucun
+  * Résultat : « Vous refermez la boîte sans toucher aux figurines. »
 
 <!-- /choix:WOOD_CARVINGS -->
 
