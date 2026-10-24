@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 98,8 %** — 1240 faits, 3 partiels, 7 à faire (35 hors périmètre).
+**Avancement global : 99,1 %** — 1240 faits, 3 partiels, 6 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -27,8 +27,8 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Évènements et Anciens](#rencontres) | 57 | 3 | 5 | 90,0 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
-| [Interface, audio et cartouches](#interface) | 30 | 0 | 1 | 96,8 % |
-| **Total** | **1240** | **3** | **7** | **98,8 %** |
+| [Interface, audio et cartouches](#interface) | 30 | 0 | 0 | 100,0 % |
+| **Total** | **1240** | **3** | **6** | **99,1 %** |
 
 <a id="ironclad"></a>
 
@@ -1610,7 +1610,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="interface"></a>
 
-## Interface, audio et cartouches — 96,8 %
+## Interface, audio et cartouches — 100,0 %
 
 ### Écrans — 100,0 %
 
@@ -1655,11 +1655,10 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Poses des héros tirées des artworks sources (attaque, blessure) |  | Oui | Cinq poses par héros (repos, souffle, attaque, blessure, garde) et un effet d'attaque propre à chacun ; poses procédurales, le dépôt n'a pas d'artwork en pied. [#2](https://github.com/Boblebol/slay_the_gba/issues/2) |
 | Animations des ennemis et des boss |  | Oui | Procédurales sur le sprite existant : repos selon l'intention, attaque, recul, effondrement. [#17](https://github.com/Boblebol/slay_the_gba/issues/17) |
 
-### Cartouches — 50,0 %
+### Cartouches — 100,0 %
 
-1 fait, 0 partiel, 1 à faire.
+1 fait, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
 | Cinq ROMs, une par héros |  | Oui |  |
-| ROM unique réunissant tout le contenu |  | Non | [#4](https://github.com/Boblebol/slay_the_gba/issues/4) |
