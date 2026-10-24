@@ -52,20 +52,73 @@ Rencontres aléatoires, choix moraux et récompenses/pénalités sur la carte.</
 <!-- choix:ABYSSAL_BATHS -->
 <p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
 <ul>
-<li><strong>Titre en jeu :</strong> Bains Abyssaux | <strong>Zones :</strong> tous les actes</li>
+<li><strong>Titre en jeu :</strong> Bains Abyssaux | <strong>Zones :</strong> Acte 1b</li>
 </ul>
-<p>Page 0 (début) : « Des bassins fumants émettent des vapeurs minérales revigorantes. Au fond d'une vasque, des pièces d'or scintillent. »</p>
+<p>Page 0 (début) : « Dans une salle solitaire, des bassins fumants aux couleurs hypnotiques bouillonnent sous des excroissances coquillées. L'air est lourd de sel. Le plus grand bassin ondule, comme s'il pressentait votre venue. »</p>
 <ul>
-<li><strong>Se prélasser dans le bain</strong> - Récupérez 25 PV, coûte 35 Or.</li>
-<li>Condition : au moins 35 Or (sinon l'option est grisée)</li>
-<li>Effets : perd 35 Or ; soigne 25 PV</li>
-<li>Résultat : « Les vapeurs chaudes dissolvent vos courbatures (+25 PV). »</li>
-<li><strong>Plonger dans les profondeurs</strong> - Gagnez 80 Or, perdez 8 PV.</li>
-<li>Effets : perd 8 PV ; gagne 80 Or</li>
-<li>Résultat : « L'eau bouillante vous brûle mais vous repêchez 80 Pièces d'or ! »</li>
-<li><strong>Repartir</strong> - Ignorer les bains.</li>
+<li><strong>S'immerger</strong> - +2 PV Max, perdez 3 PV.</li>
+<li>Condition : plus de 3 PV (sinon l'option est grisée)</li>
+<li>Effets : +2 PV max ; perd 3 PV ; mène à la page 1</li>
+<li>Résultat : « Vous vous glissez dans le bassin. Le liquide vous brûle, mais vous vous sentez grandir (+2 PV Max, -3 PV). »</li>
+<li><strong>S'abstenir</strong> - Récupérez 10 PV.</li>
+<li>Effets : soigne 10 PV</li>
+<li>Résultat : « Vous ramassez les sels cristallins qui bordent le bassin. Ils vous soignent (+10 PV). »</li>
+</ul>
+<p>Page 1 : « Le liquide brûlant vous enveloppe. Votre corps picote, votre esprit s'éclaircit. Le bassin vous invite à rester. »</p>
+<ul>
+<li><strong>S'attarder</strong> - +2 PV Max, perdez 4 PV.</li>
+<li>Condition : plus de 4 PV (sinon l'option est grisée)</li>
+<li>Effets : +2 PV max ; perd 4 PV ; mène à la page 2</li>
+<li>Résultat : « Vous vous attardez. La brûlure s'aggrave, mais vous gagnez en robustesse (+2 PV Max, -4 PV). »</li>
+<li><strong>Sortir du bain</strong> - Quittez les bassins.</li>
 <li>Effets : aucun</li>
-<li>Résultat : « Vous reprenez votre ascension sans vous attarder. »</li>
+<li>Résultat : « Vous sortez du bain, ruisselant et transformé. »</li>
+</ul>
+<p>Page 2 : « La chaleur devient mordante. Le bassin pulse autour de vous comme un cœur. Quelque chose en vous grandit, et cela fait mal. »</p>
+<ul>
+<li><strong>S'attarder</strong> - +2 PV Max, perdez 5 PV.</li>
+<li>Condition : plus de 5 PV (sinon l'option est grisée)</li>
+<li>Effets : +2 PV max ; perd 5 PV ; mène à la page 3</li>
+<li>Résultat : « Vous restez. La douleur est vive, votre corps s'endurcit encore (+2 PV Max, -5 PV). »</li>
+<li><strong>Sortir du bain</strong> - Quittez les bassins.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous sortez du bain, ruisselant et transformé. »</li>
+</ul>
+<p>Page 3 : « Vos oreilles bourdonnent. La substance visqueuse s'infiltre sous votre peau. Partir semble de plus en plus difficile. »</p>
+<ul>
+<li><strong>S'attarder</strong> - +2 PV Max, perdez 6 PV.</li>
+<li>Condition : plus de 6 PV (sinon l'option est grisée)</li>
+<li>Effets : +2 PV max ; perd 6 PV ; mène à la page 4</li>
+<li>Résultat : « Vous tenez bon. L'eau vous mord, vous gagnez encore en vigueur (+2 PV Max, -6 PV). »</li>
+<li><strong>Sortir du bain</strong> - Quittez les bassins.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous sortez du bain, ruisselant et transformé. »</li>
+</ul>
+<p>Page 4 : « Le bain bouillonne avec rage. Chaque seconde vous brûle, chaque seconde vous renforce. Où est la limite ? »</p>
+<ul>
+<li><strong>S'attarder</strong> - +2 PV Max, perdez 7 PV.</li>
+<li>Condition : plus de 7 PV (sinon l'option est grisée)</li>
+<li>Effets : +2 PV max ; perd 7 PV ; mène à la page 5</li>
+<li>Résultat : « Vous retenez un cri. Le bain vous façonne à ses dépens (+2 PV Max, -7 PV). »</li>
+<li><strong>Sortir du bain</strong> - Quittez les bassins.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous sortez du bain, ruisselant et transformé. »</li>
+</ul>
+<p>Page 5 : « Vous ne distinguez plus la douleur de la chaleur. Le bassin chante. Un dernier bain, peut-être ? »</p>
+<ul>
+<li><strong>S'attarder</strong> - +2 PV Max, perdez 8 PV.</li>
+<li>Condition : plus de 8 PV (sinon l'option est grisée)</li>
+<li>Effets : +2 PV max ; perd 8 PV ; mène à la page 6</li>
+<li>Résultat : « Un dernier bain. Le liquide vous dévore et vous façonne à la fois (+2 PV Max, -8 PV). »</li>
+<li><strong>Sortir du bain</strong> - Quittez les bassins.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous sortez du bain, ruisselant et transformé. »</li>
+</ul>
+<p>Page 6 : « Vos forces vous quittent : le bassin vous recrache, à bout de souffle et plus robuste. Il est temps de sortir. »</p>
+<ul>
+<li><strong>Sortir du bain</strong> - Quittez les bassins.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous sortez du bain, ruisselant et transformé. »</li>
 </ul>
 <!-- /choix:ABYSSAL_BATHS -->
 
@@ -132,19 +185,19 @@ Options disponibles : »</p>
 <!-- choix:BATTLEWORN_DUMMY -->
 <p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
 <ul>
-<li><strong>Titre en jeu :</strong> Mannequin d'Entraînement | <strong>Zones :</strong> tous les actes</li>
+<li><strong>Titre en jeu :</strong> Mannequin de combat usé | <strong>Zones :</strong> Acte 3</li>
 </ul>
-<p>Page 0 (début) : « « BZZZT ! SÉQUENCE D'ENTRAÎNEMENT INITIÉE ! Réglez vos coups ou subissez une humiliation létale ! » »</p>
+<p>Page 0 (début) : « Le mannequin grésille, bourdonne, puis s'illumine : « BZZZT ! SÉQUENCE D'ENTRAÎNEMENT INITIÉE ! VOUS AVEZ 3 TOURS POUR ME VAINCRE. RÉGLEZ LE PARAMÈTRE OU SUBISSEZ UNE HUMILIATION LÉTALE. » »</p>
 <ul>
-<li><strong>Attaque acharnée</strong> - Subissez 6 dégâts, gagnez 60 Or.</li>
-<li>Effets : perd 6 PV ; gagne 60 Or</li>
-<li>Résultat : « Vous frappez sans retenue ! Le mannequin explose en pièces d'or. »</li>
-<li><strong>Réparer les rouages</strong> - Améliorez une carte de votre deck.</li>
-<li>Effets : améliore 1 carte (au choix)</li>
-<li>Résultat : « Vous étudiez la mécanique interne. Une de vos cartes est améliorée (+) ! »</li>
-<li><strong>Prendre la fuite</strong> - Passez votre chemin sans risque.</li>
-<li>Effets : aucun</li>
-<li>Résultat : « Vous quittez discrètement la salle. »</li>
+<li><strong>Réglage 1</strong> - 75 PV, 3 tours. Victoire : une potion.</li>
+<li>Effets : déclenche un combat normal, à la sortie de l'évènement</li>
+<li>Résultat : « Le mannequin cliquette et se met en position. Le compte à rebours commence ! »</li>
+<li><strong>Réglage 2</strong> - 150 PV, 3 tours. Victoire : 2 améliorations.</li>
+<li>Effets : déclenche un combat normal, à la sortie de l'évènement</li>
+<li>Résultat : « Le mannequin cliquette et se met en position. Le compte à rebours commence ! »</li>
+<li><strong>Réglage 3</strong> - 300 PV, 3 tours. Victoire : une relique.</li>
+<li>Effets : déclenche un combat normal, à la sortie de l'évènement</li>
+<li>Résultat : « Le mannequin cliquette et se met en position. Le compte à rebours commence ! »</li>
 </ul>
 <!-- /choix:BATTLEWORN_DUMMY -->
 
@@ -274,19 +327,37 @@ Perchées sur un dais, 3 statues de couleurs différentes sont engagées dans un
 <!-- choix:COLOSSAL_FLOWER -->
 <p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
 <ul>
-<li><strong>Titre en jeu :</strong> Fleur Colossale | <strong>Zones :</strong> tous les actes</li>
+<li><strong>Titre en jeu :</strong> Fleur Colossale | <strong>Zones :</strong> Acte 2</li>
 </ul>
-<p>Page 0 (début) : « Une fleur cyclopéenne exsude un parfum suave. Du nectar doré perle sur ses pétales tranchants comme des rasoirs. »</p>
+<p>Page 0 (début) : « Une fleur colossale pousse au sommet d'un monticule d'ossements. Ses pétales changeants, tranchants comme des rasoirs, pulsent autour d'un amas de pollen. Un peu de nectar doré suffirait... mais le trésor du centre vous tente. »</p>
 <ul>
-<li><strong>Boire le nectar doré</strong> - Récupérez 20 PV.</li>
-<li>Effets : soigne 20 PV</li>
-<li>Résultat : « Le nectar restaure vos forces (+20 PV) ! »</li>
-<li><strong>Arracher l'Épine Ancestrale</strong> - Subissez 10 dégâts, obtenez la Relique Vajra (+1 Force).</li>
-<li>Effets : perd 10 PV ; gagne la relique VAJRA</li>
-<li>Résultat : « Vous coupez l'épine au prix d'une vive blessure. Vous obtenez Vajra ! »</li>
-<li><strong>Contourner la plante</strong> - Ne prenez aucun risque.</li>
-<li>Effets : aucun</li>
-<li>Résultat : « Vous contournez la fleur avec précaution. »</li>
+<li><strong>Extraire le nectar</strong> - Gagnez 35 Or.</li>
+<li>Effets : gagne 35 Or</li>
+<li>Résultat : « Vous recueillez le nectar doré du bout des pétales, sans vous blesser (+35 Or). »</li>
+<li><strong>Aller plus profond</strong> - Perdez 5 PV.</li>
+<li>Condition : plus de 5 PV (sinon l'option est grisée)</li>
+<li>Effets : perd 5 PV ; mène à la page 1</li>
+<li>Résultat : « Vous glissez le bras entre les pétales. Ils vous entaillent (-5 PV). »</li>
+</ul>
+<p>Page 1 : « Les pétales ondoient, imprévisibles. Plus profond, le nectar est plus riche, mais le centre reste hors d'atteinte. Jusqu'où irez-vous ? »</p>
+<ul>
+<li><strong>Extraire le nectar</strong> - Gagnez 75 Or.</li>
+<li>Effets : gagne 75 Or</li>
+<li>Résultat : « Le nectar est plus épais ici. Vous en remplissez vos poches (+75 Or). »</li>
+<li><strong>Aller encore plus profond</strong> - Perdez 6 PV.</li>
+<li>Condition : plus de 6 PV (sinon l'option est grisée)</li>
+<li>Effets : perd 6 PV ; mène à la page 2</li>
+<li>Résultat : « Vous poussez plus loin. Les pétales se referment sur votre bras (-6 PV). »</li>
+</ul>
+<p>Page 2 : « Le pollen luit tout près, entre des pétales qui se resserrent. Encore un effort, ou prenez ce nectar épais et partez. »</p>
+<ul>
+<li><strong>Extraire le nectar</strong> - Gagnez 135 Or.</li>
+<li>Effets : gagne 135 Or</li>
+<li>Résultat : « Un nectar presque solide : une fortune dorée (+135 Or). »</li>
+<li><strong>Entrer au centre</strong> - Perdez 7 PV, obtenez le Noyau pollinique.</li>
+<li>Condition : plus de 7 PV (sinon l'option est grisée)</li>
+<li>Effets : perd 7 PV ; gagne la relique POLLINOUS_CORE</li>
+<li>Résultat : « Vous plongez au cœur de la fleur, lacéré, et en ressortez le Noyau pollinique (-7 PV). »</li>
 </ul>
 <!-- /choix:COLOSSAL_FLOWER -->
 
@@ -788,15 +859,21 @@ Ce dernier semble attirer toutes sortes de bestioles ; mais voilà que vous vo
 <p>Vous vous approchez pour l’examiner.</p>
 <!-- choix:LOST_WISP -->
 <p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
-<p><em>Pas encore dans le jeu</em> : choix de la référence (<code>bible/data/event_choices</code>).</p>
-<p>Page <code>start</code> :</p>
 <ul>
-<li><strong>Capturer le feu follet</strong> (Capture the Wisp)</li>
-<li>Effets : gain relic 1 (LOST_WISP) ; add curse 1 (DECAY)</li>
-<li><strong>Fouiller les environs</strong> (Search the Nearby Area)</li>
-<li>Effets : gain gold - 45-75 or</li>
-<li><strong>(3e option)</strong> ((third option))</li>
-<li>Effets : other - 3e option du JSON (optionCount=3) non documentee; la page indique 'Your Max HP is too low' (seuil inconnu)</li>
+<li><strong>Titre en jeu :</strong> Feu follet égaré | <strong>Zones :</strong> Acte 2</li>
+</ul>
+<p>Page 0 (début) : « Au loin se dresse une scène étrange. Des montagnes d'insectes morts entourent un petit granule lumineux. Il attire toutes sortes de bestioles, et des flammes en émanent. Vous vous approchez. »</p>
+<ul>
+<li><strong>Capturer le feu follet</strong> - Obtenez Feu follet égaré. Ajoutez Pourriture.</li>
+<li>Condition : ne pas posséder la relique LOST_WISP (sinon l'option est grisée)</li>
+<li>Effets : gagne la relique LOST_WISP ; ajoute au deck 1 × Decay</li>
+<li>Résultat : « Vous refermez la main sur le granule brûlant. Il vous suit désormais, mais un mal rampant vous gagne. »</li>
+<li><strong>Fouiller les environs</strong> - Gagnez 60 Or.</li>
+<li>Effets : gagne 60 Or</li>
+<li>Résultat : « Parmi les carcasses d'insectes, vous trouvez de quoi remplir votre bourse : 60 Or. »</li>
+<li><strong>Partir</strong> - Ne rien faire.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Les flammes vous inquiètent. Vous rebroussez chemin. »</li>
 </ul>
 <!-- /choix:LOST_WISP -->
 
@@ -1037,13 +1114,18 @@ Un gigantesque chevalier portant sur la tête une couronne dorée prend la parol
 <p>La légende voudrait que leur consommation pourrait fortement amplifier votre endurance. Mais si vous plantiez plutôt la graine pour la faire croître ?</p>
 <!-- choix:SAPPHIRE_SEED -->
 <p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
-<p><em>Pas encore dans le jeu</em> : choix de la référence (<code>bible/data/event_choices</code>).</p>
-<p>Page <code>start</code> :</p>
 <ul>
-<li><strong>Consommer : soigne 9 PV, améliore une carte.</strong> (Consume: Heal 9 HP. Upgrade a card in your Deck.)</li>
-<li>Effets : heal 9 ; upgrade card 1</li>
-<li><strong>Planter et nourrir : enchante une carte avec Semé.</strong> (Plant and Nourish: Enchant a card with Sown.)</li>
-<li>Effets : other 1 (ENCHANT_SOWN)</li>
+<li><strong>Titre en jeu :</strong> Graine de saphir | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Vous manquez de peu de marcher sur un éclat de... graine ? Sa couleur ne laisse aucun doute : c'est une Graine de saphir ! La légende dit qu'elle amplifie l'endurance. Ou qu'on peut la planter. »</p>
+<ul>
+<li><strong>Consommer</strong> - Soignez 9 PV. Améliorez une carte.</li>
+<li>Effets : soigne 9 PV ; améliore 1 carte (au choix)</li>
+<li>Résultat : « Vous croquez la graine. Une chaleur vous envahit : 9 PV rendus. Choisissez une carte à améliorer. »</li>
+<li><strong>Planter et nourrir</strong> - Enchantez une carte avec Semé.</li>
+<li>Condition : une carte du deck peut être enchantée (sinon l'option est grisée)</li>
+<li>Effets : enchante 1 carte (au choix) : SWIFT 1</li>
+<li>Résultat : « Vous enterrez la graine. Choisissez une carte à enchanter. »</li>
 </ul>
 <!-- /choix:SAPPHIRE_SEED -->
 
@@ -1118,15 +1200,21 @@ Un gigantesque chevalier portant sur la tête une couronne dorée prend la parol
 <p>Que faites-vous ?</p>
 <!-- choix:SPIRALING_WHIRLPOOL -->
 <p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
-<p><em>Pas encore dans le jeu</em> : choix de la référence (<code>bible/data/event_choices</code>).</p>
-<p>Page <code>start</code> :</p>
 <ul>
-<li><strong>Boire : soigne des PV.</strong> (Drink: Heal HP.)</li>
-<li>Effets : heal - montant introuvable (op.gg affiche 0)</li>
-<li><strong>Observer : enchante une Frappe ou Défense de base avec Spirale.</strong> (Observe: Enchant a Basic Strike or Defend with Spiral.)</li>
-<li>Effets : other 1 (ENCHANT_SPIRAL)</li>
-<li><strong>Plonger la main : relique aléatoire et ajoute Contorsion.</strong> (Reach In: Gain a random Relic and add Writhe to your Deck.)</li>
-<li>Effets : gain relic 1 (RANDOM_RELIC) ; add curse 1 (WRITHE)</li>
+<li><strong>Titre en jeu :</strong> Tourbillon aquatique | <strong>Zones :</strong> Acte 1b</li>
+</ul>
+<p>Page 0 (début) : « Vous tombez sur un énorme tourbillon aquatique. L'eau s'écrase sur les murs, ornés de motifs en spirale. Il tourne, tourne, tourne... quel spectacle ! Que faites-vous ? »</p>
+<ul>
+<li><strong>Boire</strong> - Soignez 20 PV.</li>
+<li>Effets : soigne 20 PV</li>
+<li>Résultat : « Vous buvez l'eau tourbillonnante. Elle est étonnamment douce : 20 PV rendus. »</li>
+<li><strong>Observer</strong> - Enchantez une carte avec Spirale.</li>
+<li>Condition : une carte du deck peut être enchantée (sinon l'option est grisée)</li>
+<li>Effets : enchante 1 carte (au choix) : ADROIT 3</li>
+<li>Résultat : « Les spirales vous hypnotisent. Choisissez une carte à enchanter. »</li>
+<li><strong>Plonger la main</strong> - Relique aléatoire. Ajoutez Contorsion.</li>
+<li>Effets : gagne une relique aléatoire ; ajoute au deck 1 × Writhe</li>
+<li>Résultat : « Votre bras s'enfonce dans le vortex et en ressort avec une relique, mais le corps tordu. »</li>
 </ul>
 <!-- /choix:SPIRALING_WHIRLPOOL -->
 
@@ -1442,41 +1530,62 @@ chuchote une voix rauque d’en-dessous.</p>
 <p>« Oui. Salut, bonjour ! Tu as l’air d’être un guerrier compétent... J’ai besoin de quelqu’un pour tester mon prochain atrociteur ! Ça t’intéresse ? »</p>
 <!-- choix:TINKER_TIME -->
 <p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
-<p><em>Pas encore dans le jeu</em> : choix de la référence (<code>bible/data/event_choices</code>).</p>
-<p>Page <code>start</code> :</p>
 <ul>
-<li><strong>Accepter : crée une carte sur mesure ajoutée au deck.</strong> (Accept: Create a custom card to add to your Deck.)</li>
-<li>Effets : add card 1 (CUSTOM_CARD)</li>
+<li><strong>Titre en jeu :</strong> Bricolage | <strong>Zones :</strong> Acte 3</li>
 </ul>
-<p>Page <code>type</code> :</p>
+<p>Page 0 (début) : « Après avoir traversé un océan de cadavres, vous tombez sur une ingénieure en train de farfouiller. « Salut ! Tu as l'air compétent... J'ai besoin de quelqu'un pour tester mon prochain atrociteur ! » »</p>
 <ul>
-<li><strong>Arme : crée une Attaque.</strong> (Weapon: Make an Attack.)</li>
-<li>Effets : other 1 (TYPE_ATTACK)</li>
-<li><strong>Gadget : crée un Pouvoir.</strong> (Gadget: Make a Power.)</li>
-<li>Effets : other 1 (TYPE_POWER)</li>
-<li><strong>Protecteur : crée une Compétence.</strong> (Protector: Make a Skill.)</li>
-<li>Effets : other 1 (TYPE_SKILL)</li>
+<li><strong>Accepter</strong> - Créez une carte sur mesure.</li>
+<li>Effets : mène à la page 1</li>
+<li>Résultat : « Elle sort ses outils avec un sourire inquiétant. »</li>
 </ul>
-<p>Page <code>effect</code> :</p>
+<p>Page 1 : « « Parfait ! Quel genre d'engin veux-tu ? » Une arme, un gadget ou un protecteur. »</p>
 <ul>
-<li><strong>Chaos : ajoute une carte aléatoire en main, gratuite ce tour.</strong> (Chaos: Add a random card into your Hand. It's free to play this turn.)</li>
-<li>Effets : other 1 (RIDER_CHAOS)</li>
-<li><strong>Étranglement : chaque carte jouée ce tour fait perdre X PV à l'ennemi.</strong> (Choking: Whenever you play a card this turn, the enemy loses X HP.)</li>
-<li>Effets : other (RIDER_CHOKING) - X inconnu</li>
-<li><strong>Curieux : les Pouvoirs coûtent 1 énergie de moins.</strong> (Curious: Powers cost 1 energy less.)</li>
-<li>Effets : other 1 (RIDER_CURIOUS)</li>
-<li><strong>Énergisé : gagne de l'énergie.</strong> (Energized: Gain energy.)</li>
-<li>Effets : other (RIDER_ENERGIZED) - quantité inconnue</li>
-<li><strong>Expertise : gagne X Force et Y Dextérité.</strong> (Expertise: Gain X Strength, Y Dexterity.)</li>
-<li>Effets : other (RIDER_EXPERTISE) - X, Y inconnus</li>
-<li><strong>Amélioration : en fin de combat, améliore une carte aléatoire.</strong> (Improvement: At the end of combat, upgrade a random card.)</li>
-<li>Effets : other 1 (RIDER_IMPROVEMENT)</li>
-<li><strong>Sape : applique X Faiblesse et Y Vulnérable.</strong> (Sapping: Apply X Weak, Y Vulnerable.)</li>
-<li>Effets : other (RIDER_SAPPING) - X, Y inconnus</li>
-<li><strong>Violence : frappe 2 fois de plus.</strong> (Violence: Hits 2 additional times.)</li>
-<li>Effets : other 2 (RIDER_VIOLENCE)</li>
-<li><strong>Sagesse : pioche 3 cartes.</strong> (Wisdom: Draw 3 cards.)</li>
-<li>Effets : other 3 (RIDER_WISDOM)</li>
+<li><strong>Arme</strong> - Créez une Attaque.</li>
+<li>Effets : mène à la page 2</li>
+<li>Résultat : « Une lame de bric et de broc prend forme. »</li>
+<li><strong>Gadget</strong> - Créez un Pouvoir.</li>
+<li>Effets : mène à la page 3</li>
+<li>Résultat : « Un mécanisme bourdonnant prend forme. »</li>
+<li><strong>Protecteur</strong> - Créez une Compétence.</li>
+<li>Effets : mène à la page 4</li>
+<li>Résultat : « Une carapace bancale prend forme. »</li>
+</ul>
+<p>Page 2 : « Une arme. « Et quel petit supplément y ajouter ? » »</p>
+<ul>
+<li><strong>Amélioration</strong> - Ajoutez la carte, améliorée.</li>
+<li>Effets : ajoute au deck 1 × Ultimate Strike améliorée</li>
+<li>Résultat : « L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée. »</li>
+<li><strong>Chaos</strong> - Ajoutez une carte incolore aléatoire.</li>
+<li>Effets : ajoute au deck 1 carte Incolore aléatoire</li>
+<li>Résultat : « L'atrociteur s'emballe et crache une carte inattendue. »</li>
+<li><strong>Sagesse</strong> - Choisissez 1 carte parmi 3.</li>
+<li>Effets : propose 3 cartes du héros (rares comprises), le joueur en ajoute 1</li>
+<li>Résultat : « L'ingénieure vous tend trois plans. Choisissez-en un. »</li>
+</ul>
+<p>Page 3 : « Un gadget. « Et quel petit supplément y ajouter ? » »</p>
+<ul>
+<li><strong>Amélioration</strong> - Ajoutez la carte, améliorée.</li>
+<li>Effets : ajoute au deck 1 × Panache améliorée</li>
+<li>Résultat : « L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée. »</li>
+<li><strong>Chaos</strong> - Ajoutez une carte incolore aléatoire.</li>
+<li>Effets : ajoute au deck 1 carte Incolore aléatoire</li>
+<li>Résultat : « L'atrociteur s'emballe et crache une carte inattendue. »</li>
+<li><strong>Sagesse</strong> - Choisissez 1 carte parmi 3.</li>
+<li>Effets : propose 3 cartes du héros (rares comprises), le joueur en ajoute 1</li>
+<li>Résultat : « L'ingénieure vous tend trois plans. Choisissez-en un. »</li>
+</ul>
+<p>Page 4 : « Un protecteur. « Et quel petit supplément y ajouter ? » »</p>
+<ul>
+<li><strong>Amélioration</strong> - Ajoutez la carte, améliorée.</li>
+<li>Effets : ajoute au deck 1 × Ultimate Defend améliorée</li>
+<li>Résultat : « L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée. »</li>
+<li><strong>Chaos</strong> - Ajoutez une carte incolore aléatoire.</li>
+<li>Effets : ajoute au deck 1 carte Incolore aléatoire</li>
+<li>Résultat : « L'atrociteur s'emballe et crache une carte inattendue. »</li>
+<li><strong>Sagesse</strong> - Choisissez 1 carte parmi 3.</li>
+<li>Effets : propose 3 cartes du héros (rares comprises), le joueur en ajoute 1</li>
+<li>Résultat : « L'ingénieure vous tend trois plans. Choisissez-en un. »</li>
 </ul>
 <!-- /choix:TINKER_TIME -->
 
@@ -1725,17 +1834,24 @@ Ou du moins, c’est ce que vous pensiez.</li>
 <p>Un piédestal à proximité est muni d’emplacements qui correspondent au bas des figurines. Laquelle des figurines placez-vous sur le piédestal ?</p>
 <!-- choix:WOOD_CARVINGS -->
 <p><strong>Choix dans le jeu</strong> (généré depuis <code>src/engine/events</code>) :</p>
-<p><em>Pas encore dans le jeu</em> : choix de la référence (<code>bible/data/event_choices</code>).</p>
-<p>Page <code>start</code> :</p>
 <ul>
-<li><strong>Oiseau : transforme une carte de départ en Picorer.</strong> (Bird: Choose 1 starter card to Transform into Peck.)</li>
-<li>Effets : transform card 1 (PECK) - 2 dégâts x3</li>
-<li><strong>Serpent : enchante une carte avec Glissement.</strong> (Snake: Enchant 1 card with Slither.)</li>
-<li>Effets : other 1 (ENCHANT_SLITHER) - verrouillé si aucune carte enchantable; coût de la carte aléatoire</li>
-<li><strong>Tore : transforme une carte de départ en Robustesse torique.</strong> (Torus: Choose 1 starter card to Transform into Toric Toughness.)</li>
-<li>Effets : transform card 1 (TORIC_TOUGHNESS) - 5 Armure, +5 Armure au début des 2 tours suivants</li>
-<li><strong>(quatrième option, probablement Partir)</strong> ((fourth option, probably Leave))</li>
-<li>Effets : leave - optionCount=4 mais seulement 3 options trouvées</li>
+<li><strong>Titre en jeu :</strong> Gravures sur bois | <strong>Zones :</strong> Acte 1a</li>
+</ul>
+<p>Page 0 (début) : « Vous ouvrez une boîte poussiéreuse : 3 figurines en bois gravées. Un oiseau, un serpent et... un tore ? Un piédestal proche a des emplacements pour leur base. Laquelle placez-vous ? »</p>
+<ul>
+<li><strong>L'oiseau</strong> - Transformez une carte en Picorer.</li>
+<li>Effets : transforme 1 × Peck (au choix)</li>
+<li>Résultat : « L'oiseau s'emboîte parfaitement. Choisissez une carte à transformer en Picorer. »</li>
+<li><strong>Le serpent</strong> - Enchantez une Attaque avec Glissement.</li>
+<li>Condition : une Attaque du deck peut être enchantée (sinon l'option est grisée)</li>
+<li>Effets : enchante 1 carte (au choix) : ROYALLY_APPROVED 1, type 0</li>
+<li>Résultat : « Le serpent glisse dans son logement. Choisissez une Attaque à enchanter. »</li>
+<li><strong>Le tore</strong> - Transformez une carte en Robustesse torique.</li>
+<li>Effets : transforme 1 × Toric Toughness (au choix)</li>
+<li>Résultat : « Le tore tourne sur lui-même. Choisissez une carte à transformer en Robustesse torique. »</li>
+<li><strong>Partir</strong> - Ne rien placer.</li>
+<li>Effets : aucun</li>
+<li>Résultat : « Vous refermez la boîte sans toucher aux figurines. »</li>
 </ul>
 <!-- /choix:WOOD_CARVINGS -->
 

@@ -4,13 +4,13 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 99,8 %** — 1246 faits, 3 partiels, 0 à faire (35 hors périmètre).
+**Avancement global : 99,9 %** — 1248 faits, 1 partiel, 0 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
 Un élément partiel compte pour moitié. Le référentiel est le contenu de Slay the Spire 2 (patch v0.111.0 Beta, `bible/data`).
 
-Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Beckon, Burn, Cleave, Dazed, Debris, Frantic Escape, Fuel, Giant Rock, Infection, Luminesce, Metallicize, Minion Dive Bomb, Minion Sacrifice, Minion Strike, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Toxic, Void, Wither, Wound ; monstres Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
+Déjà jouables mais absents du référentiel Slay the Spire 2, donc non comptés : cartes Beckon, Burn, Cleave, Dazed, Debris, Frantic Escape, Fuel, Giant Rock, Infection, Luminesce, Metallicize, Minion Dive Bomb, Minion Sacrifice, Minion Strike, Shiv, Slimed, Soot, Soul, Sovereign Blade, Sweeping Gaze, Toxic, Void, Wither, Wound ; monstres Battleworn Dummy, Cultist, Gremlin Nob, Jaw Worm, Louse ; évènements Mystic Altar.
 
 ## Synthèse
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 321 | 0 | 0 | 100,0 % |
 | [Bestiaire](#bestiaire) | 104 | 0 | 0 | 100,0 % |
-| [Évènements et Anciens](#rencontres) | 62 | 3 | 0 | 97,7 % |
+| [Évènements et Anciens](#rencontres) | 64 | 1 | 0 | 99,2 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 30 | 0 | 0 | 100,0 % |
-| **Total** | **1246** | **3** | **0** | **99,8 %** |
+| **Total** | **1248** | **1** | **0** | **99,9 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 97,7 %
+## Évènements et Anciens — 99,2 %
 
-### Évènements — 97,4 %
+### Évènements — 99,1 %
 
-54 faits, 3 partiels, 0 à faire.
+56 faits, 1 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1356,7 +1356,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Arôme du chaos | Acte 1 (A) | Oui |  |
 | Automate infesté | Acte 2 | Oui |  |
 | Aventure du labyrinthe de la jungle | Acte 1 (A) | Oui |  |
-| Bains abyssaux | Acte 1 (B) | Partiel | Récit raccourci et choix réinventés pour la GBA. |
+| Bains abyssaux | Acte 1 (B) | Oui |  |
 | Bienvenue chez Wongo’s | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Bosquet des Morphiques | Acte 1 (A) | Oui |  |
 | Bricolage | Acte 3 | Oui |  |
@@ -1368,7 +1368,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Développement personnel | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Esprit greffeur | Acte 2 | Oui |  |
 | Feu follet égaré | Acte 2 | Oui |  |
-| Fleur colossale | Acte 2 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
+| Fleur colossale | Acte 2 | Oui |  |
 | Graine de saphir | Acte 1 (A) | Oui |  |
 | Gravures sur bois | Acte 1 (A) | Oui |  |
 | Jungle dense | Acte 1 (A) | Oui |  |
@@ -1379,7 +1379,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Le procès | Acte 3 | Oui |  |
 | Le thé de la table ronde | Acte 3 | Oui |  |
 | L’avenir des potions ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
-| Mannequin de combat usé | Acte 3 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
+| Mannequin de combat usé | Acte 3 | Partiel | Réglages, PV, 3 tours et récompenses fidèles ; valeurs devinées : le mannequin n'attaque pas, les 2 améliorations sont au choix du joueur. |
 | Maître de thé | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Nid d’oizodon | Acte 1 (A) | Oui |  |
 | Phare englouti | Acte 1 (B) | Oui |  |
