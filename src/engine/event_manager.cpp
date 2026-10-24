@@ -309,7 +309,7 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
         case EventEffectType::ENCHANT_CARD: {
             const DeckChoiceKind kind = choice_kind(effect.type);
             if (effect.pick == EventPick::CHOOSE) {
-                run.request_deck_choice(kind, count_of(effect), false, effect.upgraded, CardId::NONE, effect.enchantment,
+                run.request_deck_choice(kind, count_of(effect), false, effect.upgraded, effect.card, effect.enchantment,
                                         effect.enchant_amount, effect.only_type);
                 break;
             }

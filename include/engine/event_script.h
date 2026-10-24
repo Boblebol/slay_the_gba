@@ -62,7 +62,7 @@ enum class EventEffectType : uint8_t {
     REMOVE_CARD,    // `amount` cards (1 when 0), chosen by the player or drawn at random (`pick`); with `card`, that many
                     // copies of exactly that card (Amalgamator: 2 Defends), no choice
     UPGRADE_CARD,   // same
-    TRANSFORM_CARD, // same; the new card is upgraded when `upgraded`
+    TRANSFORM_CARD, // same; the new card is upgraded when `upgraded`, and is `card` when given (Wood Carvings)
     ENCHANT_CARD,   // same, with `enchantment` of `enchant_amount`
     CARD_REWARD,    // a card reward (1 card out of 3, may be skipped) once the event is left; `amount` of them in a row;
                     // `ref` a hero ("SILENT"...): his cards, "COLORLESS": Colorless cards
