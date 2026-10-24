@@ -469,8 +469,13 @@ enum class EnemyType : uint8_t {
     DECIMILLIPEDE_SEGMENT_FRONT,  // Act 2 elite
     DECIMILLIPEDE_SEGMENT_MIDDLE, // Act 2 elite
     MYTE,                         // Act 2
-    THIEVING_HOPPER               // Act 2
+    THIEVING_HOPPER,              // Act 2
+    BATTLEWORN_DUMMY              // the Battleworn Dummy event (3 turns to beat it), never met in a room
 };
+
+// The Battleworn Dummy event: the HP of the dummy at each of the 3 settings, and the turns it gives to beat it.
+constexpr int16_t BATTLEWORN_DUMMY_HP[3] = { 75, 150, 300 };
+constexpr int BATTLEWORN_DUMMY_TURNS = 3;
 
 // Flutter the Thieving Hopper gives itself: the attack hits it takes at half damage.
 constexpr int16_t THIEVING_HOPPER_FLUTTER = 5;

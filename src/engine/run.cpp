@@ -227,6 +227,13 @@ FixedVector<EnemyType, MAX_ENEMIES> RunManager::draw_encounter(RoomType room) {
         constructs.push_back(EnemyType::PUNCH_CONSTRUCT);
         return constructs;
     }
+    // Battleworn Dummy: the training dummy alone, with the HP of the setting (see begin_fight).
+    if (event_fight_ref == EVENT_FIGHT_BATTLEWORN_DUMMY) {
+        current_encounter = "BattlewornDummyEvent";
+        FixedVector<EnemyType, MAX_ENEMIES> dummy;
+        dummy.push_back(EnemyType::BATTLEWORN_DUMMY);
+        return dummy;
+    }
     std::span<const Encounter> table = encounter_table(act_zone(current_act, map_seed),
                                                        encounter_tier(room, current_floor));
     // A list of one draws nothing, as the rooms with a single choice did before the tables.
@@ -281,6 +288,11 @@ void RunManager::begin_fight(RoomType room, bool fur_coat) {
     combat.enemy_hp_percent = get_enemy_hp_multiplier(room);
     combat.enemy_damage_percent = get_enemy_damage_multiplier(room);
     for (Enemy& foe : combat.enemies) foe.apply_ascension(combat.enemy_hp_percent, combat.enemy_damage_percent);
+    // The dummy has the HP of its setting, whatever the Ascension.
+    if (event_fight_ref == EVENT_FIGHT_BATTLEWORN_DUMMY) {
+        const size_t setting = std::clamp<size_t>(event_fight_setting, 1, 3) - 1;
+        for (Enemy& foe : combat.enemies) foe.max_hp = foe.hp = BATTLEWORN_DUMMY_HP[setting];
+    }
     if (fur_coat) {
         for (Enemy& foe : combat.enemies) foe.hp = 1;
     }
@@ -851,6 +863,22 @@ void RunManager::generate_rewards() {
     // Punch Off: the fight chosen for better rewards also gives a relic, like an Elite's.
     if (event_fight_ref == EVENT_FIGHT_PUNCH_CONSTRUCTS && relics.size() < relics.capacity()) {
         relic_reward = draw_relic(rng, character, RelicSource::ELITE, std::span<const std::string_view>(relics.begin(), relics.size()));
+    }
+    // Battleworn Dummy: only beating it in time gives something, and nothing else (no gold, no cards).
+    if (event_fight_ref == EVENT_FIGHT_BATTLEWORN_DUMMY) {
+        gold_reward = 0;
+        current_card_rewards.clear();
+        extra_card_rewards = 0;
+        potion_reward = {};
+        relic_reward = {};
+        if (event_fight_setting == 1 && !has_relic("SOZU")) {
+            potion_reward = draw_potion(rng, character);
+        } else if (event_fight_setting == 2) {
+            // The reference upgrades 2 random cards; here the player picks them, so that the gain shows on screen.
+            request_deck_choice(DeckChoiceKind::UPGRADE, 2, false);
+        } else if (event_fight_setting >= 3 && relics.size() < relics.capacity()) {
+            relic_reward = draw_relic(rng, character, RelicSource::ELITE, std::span<const std::string_view>(relics.begin(), relics.size()));
+        }
     }
     event_fight_ref = {};
     // Black Star: an Elite gives one more relic, offered once the first one is taken.
@@ -2456,6 +2484,7 @@ void RunManager::proceed_after_combat() {
 
     // Every enemy ran away: the fight is over, but there is nothing to take.
     if (combat.every_enemy_escaped()) {
+        event_fight_ref = {};
         phase = RunPhase::MAP_NAVIGATION;
         return;
     }

@@ -319,6 +319,4 @@ items = [
 [overrides.monsters]
 
 [overrides.events]
-ABYSSAL_BATHS = { status = "partiel", note = "Récit raccourci et choix réinventés pour la GBA." }
-BATTLEWORN_DUMMY = { status = "partiel", note = "Récit raccourci et choix réinventés pour la GBA." }
-COLOSSAL_FLOWER = { status = "partiel", note = "Récit raccourci et choix réinventés pour la GBA." }
+BATTLEWORN_DUMMY = { status = "partiel", note = "Réglages, PV, 3 tours et récompenses fidèles ; valeurs devinées : le mannequin n'attaque pas, les 2 améliorations sont au choix du joueur." }

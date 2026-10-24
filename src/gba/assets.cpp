@@ -53,6 +53,7 @@
 #include "bn_sprite_items_mon_zapbot.h"
 #include "bn_sprite_items_mon_nibbit.h"
 #include "bn_sprite_items_mon_globe_head.h"
+#include "bn_sprite_items_mon_battleworn_dummy.h"
 #include "bn_sprite_items_mon_punch_construct.h"
 #include "bn_sprite_items_mon_bowlbug_nectar.h"
 #include "bn_sprite_items_mon_devoted_sculptor.h"
@@ -574,6 +575,8 @@ EnemyArt enemy_art(engine::EnemyType type)
         return { &bn::sprite_items::mon_myte, false };
     case engine::EnemyType::THIEVING_HOPPER:
         return { &bn::sprite_items::mon_thieving_hopper, false };
+    case engine::EnemyType::BATTLEWORN_DUMMY:
+        return { &bn::sprite_items::mon_battleworn_dummy, false };
     case engine::EnemyType::FUZZY_WURM_CRAWLER:
         return { &bn::sprite_items::mon_fuzzy_wurm_crawler, false };
     case engine::EnemyType::CROSSBOW_RUBY_RAIDER:

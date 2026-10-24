@@ -6,7 +6,7 @@
    "id": "ABYSSAL_BATHS",
    "implemented": true,
    "title": "Bains Abyssaux",
-   "acts": 15,
+   "acts": 2,
    "condition": {
     "check": "NONE",
     "amount": 0,
@@ -15,22 +15,22 @@
    },
    "pages": [
     {
-     "text": "Des bassins fumants émettent des vapeurs minérales revigorantes. Au fond d'une vasque, des pièces d'or scintillent.",
+     "text": "Dans une salle solitaire, des bassins fumants aux couleurs hypnotiques bouillonnent sous des excroissances coquillées. L'air est lourd de sel. Le plus grand bassin ondule, comme s'il pressentait votre venue.",
      "options": [
       {
-       "label": "Se prélasser dans le bain",
-       "cost_benefit": "Récupérez 25 PV, coûte 35 Or.",
-       "result": "Les vapeurs chaudes dissolvent vos courbatures (+25 PV).",
+       "label": "S'immerger",
+       "cost_benefit": "+2 PV Max, perdez 3 PV.",
+       "result": "Vous vous glissez dans le bassin. Le liquide vous brûle, mais vous vous sentez grandir (+2 PV Max, -3 PV).",
        "condition": {
-        "check": "MIN_GOLD",
-        "amount": 35,
+        "check": "MIN_HP",
+        "amount": 3,
         "ref": "",
         "card": ""
        },
        "effects": [
         {
-         "type": "LOSE_GOLD",
-         "amount": 35,
+         "type": "GAIN_MAX_HP",
+         "amount": 2,
          "ref": "",
          "card": "",
          "pick": "CHOOSE",
@@ -42,8 +42,21 @@
          "card_pool": []
         },
         {
-         "type": "HEAL",
-         "amount": 25,
+         "type": "LOSE_HP",
+         "amount": 3,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "GOTO_PAGE",
+         "amount": 1,
          "ref": "",
          "card": "",
          "pick": "CHOOSE",
@@ -57,9 +70,9 @@
        ]
       },
       {
-       "label": "Plonger dans les profondeurs",
-       "cost_benefit": "Gagnez 80 Or, perdez 8 PV.",
-       "result": "L'eau bouillante vous brûle mais vous repêchez 80 Pièces d'or !",
+       "label": "S'abstenir",
+       "cost_benefit": "Récupérez 10 PV.",
+       "result": "Vous ramassez les sels cristallins qui bordent le bassin. Ils vous soignent (+10 PV).",
        "condition": {
         "check": "NONE",
         "amount": 0,
@@ -67,6 +80,326 @@
         "card": ""
        },
        "effects": [
+        {
+         "type": "HEAL",
+         "amount": 10,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Le liquide brûlant vous enveloppe. Votre corps picote, votre esprit s'éclaircit. Le bassin vous invite à rester.",
+     "options": [
+      {
+       "label": "S'attarder",
+       "cost_benefit": "+2 PV Max, perdez 4 PV.",
+       "result": "Vous vous attardez. La brûlure s'aggrave, mais vous gagnez en robustesse (+2 PV Max, -4 PV).",
+       "condition": {
+        "check": "MIN_HP",
+        "amount": 4,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_MAX_HP",
+         "amount": 2,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "LOSE_HP",
+         "amount": 4,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "GOTO_PAGE",
+         "amount": 2,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Sortir du bain",
+       "cost_benefit": "Quittez les bassins.",
+       "result": "Vous sortez du bain, ruisselant et transformé.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": []
+      }
+     ]
+    },
+    {
+     "text": "La chaleur devient mordante. Le bassin pulse autour de vous comme un cœur. Quelque chose en vous grandit, et cela fait mal.",
+     "options": [
+      {
+       "label": "S'attarder",
+       "cost_benefit": "+2 PV Max, perdez 5 PV.",
+       "result": "Vous restez. La douleur est vive, votre corps s'endurcit encore (+2 PV Max, -5 PV).",
+       "condition": {
+        "check": "MIN_HP",
+        "amount": 5,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_MAX_HP",
+         "amount": 2,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "LOSE_HP",
+         "amount": 5,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "GOTO_PAGE",
+         "amount": 3,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Sortir du bain",
+       "cost_benefit": "Quittez les bassins.",
+       "result": "Vous sortez du bain, ruisselant et transformé.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": []
+      }
+     ]
+    },
+    {
+     "text": "Vos oreilles bourdonnent. La substance visqueuse s'infiltre sous votre peau. Partir semble de plus en plus difficile.",
+     "options": [
+      {
+       "label": "S'attarder",
+       "cost_benefit": "+2 PV Max, perdez 6 PV.",
+       "result": "Vous tenez bon. L'eau vous mord, vous gagnez encore en vigueur (+2 PV Max, -6 PV).",
+       "condition": {
+        "check": "MIN_HP",
+        "amount": 6,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_MAX_HP",
+         "amount": 2,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "LOSE_HP",
+         "amount": 6,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "GOTO_PAGE",
+         "amount": 4,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Sortir du bain",
+       "cost_benefit": "Quittez les bassins.",
+       "result": "Vous sortez du bain, ruisselant et transformé.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": []
+      }
+     ]
+    },
+    {
+     "text": "Le bain bouillonne avec rage. Chaque seconde vous brûle, chaque seconde vous renforce. Où est la limite ?",
+     "options": [
+      {
+       "label": "S'attarder",
+       "cost_benefit": "+2 PV Max, perdez 7 PV.",
+       "result": "Vous retenez un cri. Le bain vous façonne à ses dépens (+2 PV Max, -7 PV).",
+       "condition": {
+        "check": "MIN_HP",
+        "amount": 7,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_MAX_HP",
+         "amount": 2,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "LOSE_HP",
+         "amount": 7,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "GOTO_PAGE",
+         "amount": 5,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Sortir du bain",
+       "cost_benefit": "Quittez les bassins.",
+       "result": "Vous sortez du bain, ruisselant et transformé.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": []
+      }
+     ]
+    },
+    {
+     "text": "Vous ne distinguez plus la douleur de la chaleur. Le bassin chante. Un dernier bain, peut-être ?",
+     "options": [
+      {
+       "label": "S'attarder",
+       "cost_benefit": "+2 PV Max, perdez 8 PV.",
+       "result": "Un dernier bain. Le liquide vous dévore et vous façonne à la fois (+2 PV Max, -8 PV).",
+       "condition": {
+        "check": "MIN_HP",
+        "amount": 8,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_MAX_HP",
+         "amount": 2,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
         {
          "type": "LOSE_HP",
          "amount": 8,
@@ -81,8 +414,8 @@
          "card_pool": []
         },
         {
-         "type": "GAIN_GOLD",
-         "amount": 80,
+         "type": "GOTO_PAGE",
+         "amount": 6,
          "ref": "",
          "card": "",
          "pick": "CHOOSE",
@@ -96,9 +429,26 @@
        ]
       },
       {
-       "label": "Repartir",
-       "cost_benefit": "Ignorer les bains.",
-       "result": "Vous reprenez votre ascension sans vous attarder.",
+       "label": "Sortir du bain",
+       "cost_benefit": "Quittez les bassins.",
+       "result": "Vous sortez du bain, ruisselant et transformé.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": []
+      }
+     ]
+    },
+    {
+     "text": "Vos forces vous quittent : le bassin vous recrache, à bout de souffle et plus robuste. Il est temps de sortir.",
+     "options": [
+      {
+       "label": "Sortir du bain",
+       "cost_benefit": "Quittez les bassins.",
+       "result": "Vous sortez du bain, ruisselant et transformé.",
        "condition": {
         "check": "NONE",
         "amount": 0,
@@ -282,8 +632,8 @@
   {
    "id": "BATTLEWORN_DUMMY",
    "implemented": true,
-   "title": "Mannequin d'Entraînement",
-   "acts": 15,
+   "title": "Mannequin de combat usé",
+   "acts": 8,
    "condition": {
     "check": "NONE",
     "amount": 0,
@@ -292,12 +642,12 @@
    },
    "pages": [
     {
-     "text": "« BZZZT ! SÉQUENCE D'ENTRAÎNEMENT INITIÉE ! Réglez vos coups ou subissez une humiliation létale ! »",
+     "text": "Le mannequin grésille, bourdonne, puis s'illumine : « BZZZT ! SÉQUENCE D'ENTRAÎNEMENT INITIÉE ! VOUS AVEZ 3 TOURS POUR ME VAINCRE. RÉGLEZ LE PARAMÈTRE OU SUBISSEZ UNE HUMILIATION LÉTALE. »",
      "options": [
       {
-       "label": "Attaque acharnée",
-       "cost_benefit": "Subissez 6 dégâts, gagnez 60 Or.",
-       "result": "Vous frappez sans retenue ! Le mannequin explose en pièces d'or.",
+       "label": "Réglage 1",
+       "cost_benefit": "75 PV, 3 tours. Victoire : une potion.",
+       "result": "Le mannequin cliquette et se met en position. Le compte à rebours commence !",
        "condition": {
         "check": "NONE",
         "amount": 0,
@@ -306,48 +656,9 @@
        },
        "effects": [
         {
-         "type": "LOSE_HP",
-         "amount": 6,
-         "ref": "",
-         "card": "",
-         "pick": "CHOOSE",
-         "upgraded": false,
-         "enchantment": "",
-         "enchant_amount": 0,
-         "only_type": -1,
-         "relic_pool": [],
-         "card_pool": []
-        },
-        {
-         "type": "GAIN_GOLD",
-         "amount": 60,
-         "ref": "",
-         "card": "",
-         "pick": "CHOOSE",
-         "upgraded": false,
-         "enchantment": "",
-         "enchant_amount": 0,
-         "only_type": -1,
-         "relic_pool": [],
-         "card_pool": []
-        }
-       ]
-      },
-      {
-       "label": "Réparer les rouages",
-       "cost_benefit": "Améliorez une carte de votre deck.",
-       "result": "Vous étudiez la mécanique interne. Une de vos cartes est améliorée (+) !",
-       "condition": {
-        "check": "NONE",
-        "amount": 0,
-        "ref": "",
-        "card": ""
-       },
-       "effects": [
-        {
-         "type": "UPGRADE_CARD",
+         "type": "FIGHT",
          "amount": 1,
-         "ref": "",
+         "ref": "BATTLEWORN_DUMMY",
          "card": "",
          "pick": "CHOOSE",
          "upgraded": false,
@@ -360,16 +671,56 @@
        ]
       },
       {
-       "label": "Prendre la fuite",
-       "cost_benefit": "Passez votre chemin sans risque.",
-       "result": "Vous quittez discrètement la salle.",
+       "label": "Réglage 2",
+       "cost_benefit": "150 PV, 3 tours. Victoire : 2 améliorations.",
+       "result": "Le mannequin cliquette et se met en position. Le compte à rebours commence !",
        "condition": {
         "check": "NONE",
         "amount": 0,
         "ref": "",
         "card": ""
        },
-       "effects": []
+       "effects": [
+        {
+         "type": "FIGHT",
+         "amount": 2,
+         "ref": "BATTLEWORN_DUMMY",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Réglage 3",
+       "cost_benefit": "300 PV, 3 tours. Victoire : une relique.",
+       "result": "Le mannequin cliquette et se met en position. Le compte à rebours commence !",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "FIGHT",
+         "amount": 3,
+         "ref": "BATTLEWORN_DUMMY",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
       }
      ]
     }
@@ -837,7 +1188,7 @@
    "id": "COLOSSAL_FLOWER",
    "implemented": true,
    "title": "Fleur Colossale",
-   "acts": 15,
+   "acts": 4,
    "condition": {
     "check": "NONE",
     "amount": 0,
@@ -846,12 +1197,12 @@
    },
    "pages": [
     {
-     "text": "Une fleur cyclopéenne exsude un parfum suave. Du nectar doré perle sur ses pétales tranchants comme des rasoirs.",
+     "text": "Une fleur colossale pousse au sommet d'un monticule d'ossements. Ses pétales changeants, tranchants comme des rasoirs, pulsent autour d'un amas de pollen. Un peu de nectar doré suffirait... mais le trésor du centre vous tente.",
      "options": [
       {
-       "label": "Boire le nectar doré",
-       "cost_benefit": "Récupérez 20 PV.",
-       "result": "Le nectar restaure vos forces (+20 PV) !",
+       "label": "Extraire le nectar",
+       "cost_benefit": "Gagnez 35 Or.",
+       "result": "Vous recueillez le nectar doré du bout des pétales, sans vous blesser (+35 Or).",
        "condition": {
         "check": "NONE",
         "amount": 0,
@@ -860,8 +1211,8 @@
        },
        "effects": [
         {
-         "type": "HEAL",
-         "amount": 20,
+         "type": "GAIN_GOLD",
+         "amount": 35,
          "ref": "",
          "card": "",
          "pick": "CHOOSE",
@@ -875,9 +1226,53 @@
        ]
       },
       {
-       "label": "Arracher l'Épine Ancestrale",
-       "cost_benefit": "Subissez 10 dégâts, obtenez la Relique Vajra (+1 Force).",
-       "result": "Vous coupez l'épine au prix d'une vive blessure. Vous obtenez Vajra !",
+       "label": "Aller plus profond",
+       "cost_benefit": "Perdez 5 PV.",
+       "result": "Vous glissez le bras entre les pétales. Ils vous entaillent (-5 PV).",
+       "condition": {
+        "check": "MIN_HP",
+        "amount": 5,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "LOSE_HP",
+         "amount": 5,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "GOTO_PAGE",
+         "amount": 1,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Les pétales ondoient, imprévisibles. Plus profond, le nectar est plus riche, mais le centre reste hors d'atteinte. Jusqu'où irez-vous ?",
+     "options": [
+      {
+       "label": "Extraire le nectar",
+       "cost_benefit": "Gagnez 75 Or.",
+       "result": "Le nectar est plus épais ici. Vous en remplissez vos poches (+75 Or).",
        "condition": {
         "check": "NONE",
         "amount": 0,
@@ -886,8 +1281,104 @@
        },
        "effects": [
         {
+         "type": "GAIN_GOLD",
+         "amount": 75,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Aller encore plus profond",
+       "cost_benefit": "Perdez 6 PV.",
+       "result": "Vous poussez plus loin. Les pétales se referment sur votre bras (-6 PV).",
+       "condition": {
+        "check": "MIN_HP",
+        "amount": 6,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
          "type": "LOSE_HP",
-         "amount": 10,
+         "amount": 6,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "GOTO_PAGE",
+         "amount": 2,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Le pollen luit tout près, entre des pétales qui se resserrent. Encore un effort, ou prenez ce nectar épais et partez.",
+     "options": [
+      {
+       "label": "Extraire le nectar",
+       "cost_benefit": "Gagnez 135 Or.",
+       "result": "Un nectar presque solide : une fortune dorée (+135 Or).",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_GOLD",
+         "amount": 135,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Entrer au centre",
+       "cost_benefit": "Perdez 7 PV, obtenez le Noyau pollinique.",
+       "result": "Vous plongez au cœur de la fleur, lacéré, et en ressortez le Noyau pollinique (-7 PV).",
+       "condition": {
+        "check": "MIN_HP",
+        "amount": 7,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "LOSE_HP",
+         "amount": 7,
          "ref": "",
          "card": "",
          "pick": "CHOOSE",
@@ -901,7 +1392,7 @@
         {
          "type": "GAIN_RELIC",
          "amount": 0,
-         "ref": "VAJRA",
+         "ref": "POLLINOUS_CORE",
          "card": "",
          "pick": "CHOOSE",
          "upgraded": false,
@@ -912,18 +1403,6 @@
          "card_pool": []
         }
        ]
-      },
-      {
-       "label": "Contourner la plante",
-       "cost_benefit": "Ne prenez aucun risque.",
-       "result": "Vous contournez la fleur avec précaution.",
-       "condition": {
-        "check": "NONE",
-        "amount": 0,
-        "ref": "",
-        "card": ""
-       },
-       "effects": []
       }
      ]
     }
@@ -3721,7 +4200,99 @@
   },
   {
    "id": "LOST_WISP",
-   "implemented": false
+   "implemented": true,
+   "title": "Feu follet égaré",
+   "acts": 4,
+   "condition": {
+    "check": "NONE",
+    "amount": 0,
+    "ref": "",
+    "card": ""
+   },
+   "pages": [
+    {
+     "text": "Au loin se dresse une scène étrange. Des montagnes d'insectes morts entourent un petit granule lumineux. Il attire toutes sortes de bestioles, et des flammes en émanent. Vous vous approchez.",
+     "options": [
+      {
+       "label": "Capturer le feu follet",
+       "cost_benefit": "Obtenez Feu follet égaré. Ajoutez Pourriture.",
+       "result": "Vous refermez la main sur le granule brûlant. Il vous suit désormais, mais un mal rampant vous gagne.",
+       "condition": {
+        "check": "NO_RELIC",
+        "amount": 0,
+        "ref": "LOST_WISP",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_RELIC",
+         "amount": 0,
+         "ref": "LOST_WISP",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "ADD_CURSE",
+         "amount": 0,
+         "ref": "",
+         "card": "Decay",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Fouiller les environs",
+       "cost_benefit": "Gagnez 60 Or.",
+       "result": "Parmi les carcasses d'insectes, vous trouvez de quoi remplir votre bourse : 60 Or.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_GOLD",
+         "amount": 60,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Partir",
+       "cost_benefit": "Ne rien faire.",
+       "result": "Les flammes vous inquiètent. Vous rebroussez chemin.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": []
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "LUMINOUS_CHOIR",
@@ -4653,7 +5224,87 @@
   },
   {
    "id": "SAPPHIRE_SEED",
-   "implemented": false
+   "implemented": true,
+   "title": "Graine de saphir",
+   "acts": 1,
+   "condition": {
+    "check": "NONE",
+    "amount": 0,
+    "ref": "",
+    "card": ""
+   },
+   "pages": [
+    {
+     "text": "Vous manquez de peu de marcher sur un éclat de... graine ? Sa couleur ne laisse aucun doute : c'est une Graine de saphir ! La légende dit qu'elle amplifie l'endurance. Ou qu'on peut la planter.",
+     "options": [
+      {
+       "label": "Consommer",
+       "cost_benefit": "Soignez 9 PV. Améliorez une carte.",
+       "result": "Vous croquez la graine. Une chaleur vous envahit : 9 PV rendus. Choisissez une carte à améliorer.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "HEAL",
+         "amount": 9,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "UPGRADE_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Planter et nourrir",
+       "cost_benefit": "Enchantez une carte avec Semé.",
+       "result": "Vous enterrez la graine. Choisissez une carte à enchanter.",
+       "condition": {
+        "check": "CAN_ENCHANT",
+        "amount": -1,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ENCHANT_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "SWIFT",
+         "enchant_amount": 1,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "SELF_HELP_BOOK",
@@ -4894,7 +5545,113 @@
   },
   {
    "id": "SPIRALING_WHIRLPOOL",
-   "implemented": false
+   "implemented": true,
+   "title": "Tourbillon aquatique",
+   "acts": 2,
+   "condition": {
+    "check": "NONE",
+    "amount": 0,
+    "ref": "",
+    "card": ""
+   },
+   "pages": [
+    {
+     "text": "Vous tombez sur un énorme tourbillon aquatique. L'eau s'écrase sur les murs, ornés de motifs en spirale. Il tourne, tourne, tourne... quel spectacle ! Que faites-vous ?",
+     "options": [
+      {
+       "label": "Boire",
+       "cost_benefit": "Soignez 20 PV.",
+       "result": "Vous buvez l'eau tourbillonnante. Elle est étonnamment douce : 20 PV rendus.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "HEAL",
+         "amount": 20,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Observer",
+       "cost_benefit": "Enchantez une carte avec Spirale.",
+       "result": "Les spirales vous hypnotisent. Choisissez une carte à enchanter.",
+       "condition": {
+        "check": "CAN_ENCHANT",
+        "amount": -1,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ENCHANT_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "ADROIT",
+         "enchant_amount": 3,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Plonger la main",
+       "cost_benefit": "Relique aléatoire. Ajoutez Contorsion.",
+       "result": "Votre bras s'enfonce dans le vortex et en ressort avec une relique, mais le corps tordu.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GAIN_RELIC",
+         "amount": 0,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        },
+        {
+         "type": "ADD_CURSE",
+         "amount": 0,
+         "ref": "",
+         "card": "Writhe",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "SPIRIT_GRAFTER",
@@ -6135,7 +6892,380 @@
   },
   {
    "id": "TINKER_TIME",
-   "implemented": false
+   "implemented": true,
+   "title": "Bricolage",
+   "acts": 8,
+   "condition": {
+    "check": "NONE",
+    "amount": 0,
+    "ref": "",
+    "card": ""
+   },
+   "pages": [
+    {
+     "text": "Après avoir traversé un océan de cadavres, vous tombez sur une ingénieure en train de farfouiller. « Salut ! Tu as l'air compétent... J'ai besoin de quelqu'un pour tester mon prochain atrociteur ! »",
+     "options": [
+      {
+       "label": "Accepter",
+       "cost_benefit": "Créez une carte sur mesure.",
+       "result": "Elle sort ses outils avec un sourire inquiétant.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GOTO_PAGE",
+         "amount": 1,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "« Parfait ! Quel genre d'engin veux-tu ? » Une arme, un gadget ou un protecteur.",
+     "options": [
+      {
+       "label": "Arme",
+       "cost_benefit": "Créez une Attaque.",
+       "result": "Une lame de bric et de broc prend forme.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GOTO_PAGE",
+         "amount": 2,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Gadget",
+       "cost_benefit": "Créez un Pouvoir.",
+       "result": "Un mécanisme bourdonnant prend forme.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GOTO_PAGE",
+         "amount": 3,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Protecteur",
+       "cost_benefit": "Créez une Compétence.",
+       "result": "Une carapace bancale prend forme.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "GOTO_PAGE",
+         "amount": 4,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Une arme. « Et quel petit supplément y ajouter ? »",
+     "options": [
+      {
+       "label": "Amélioration",
+       "cost_benefit": "Ajoutez la carte, améliorée.",
+       "result": "L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "Ultimate Strike",
+         "pick": "CHOOSE",
+         "upgraded": true,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Chaos",
+       "cost_benefit": "Ajoutez une carte incolore aléatoire.",
+       "result": "L'atrociteur s'emballe et crache une carte inattendue.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Sagesse",
+       "cost_benefit": "Choisissez 1 carte parmi 3.",
+       "result": "L'ingénieure vous tend trois plans. Choisissez-en un.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "CARD_CHOICE",
+         "amount": 3,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Un gadget. « Et quel petit supplément y ajouter ? »",
+     "options": [
+      {
+       "label": "Amélioration",
+       "cost_benefit": "Ajoutez la carte, améliorée.",
+       "result": "L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "Panache",
+         "pick": "CHOOSE",
+         "upgraded": true,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Chaos",
+       "cost_benefit": "Ajoutez une carte incolore aléatoire.",
+       "result": "L'atrociteur s'emballe et crache une carte inattendue.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Sagesse",
+       "cost_benefit": "Choisissez 1 carte parmi 3.",
+       "result": "L'ingénieure vous tend trois plans. Choisissez-en un.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "CARD_CHOICE",
+         "amount": 3,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "text": "Un protecteur. « Et quel petit supplément y ajouter ? »",
+     "options": [
+      {
+       "label": "Amélioration",
+       "cost_benefit": "Ajoutez la carte, améliorée.",
+       "result": "L'ingénieure peaufine son œuvre : la carte rejoint votre deck, améliorée.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "Ultimate Defend",
+         "pick": "CHOOSE",
+         "upgraded": true,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Chaos",
+       "cost_benefit": "Ajoutez une carte incolore aléatoire.",
+       "result": "L'atrociteur s'emballe et crache une carte inattendue.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ADD_CARD",
+         "amount": 0,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Sagesse",
+       "cost_benefit": "Choisissez 1 carte parmi 3.",
+       "result": "L'ingénieure vous tend trois plans. Choisissez-en un.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "CARD_CHOICE",
+         "amount": 3,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "TRASH_HEAP",
@@ -7342,7 +8472,112 @@
   },
   {
    "id": "WOOD_CARVINGS",
-   "implemented": false
+   "implemented": true,
+   "title": "Gravures sur bois",
+   "acts": 1,
+   "condition": {
+    "check": "NONE",
+    "amount": 0,
+    "ref": "",
+    "card": ""
+   },
+   "pages": [
+    {
+     "text": "Vous ouvrez une boîte poussiéreuse : 3 figurines en bois gravées. Un oiseau, un serpent et... un tore ? Un piédestal proche a des emplacements pour leur base. Laquelle placez-vous ?",
+     "options": [
+      {
+       "label": "L'oiseau",
+       "cost_benefit": "Transformez une carte en Picorer.",
+       "result": "L'oiseau s'emboîte parfaitement. Choisissez une carte à transformer en Picorer.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "TRANSFORM_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "Peck",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Le serpent",
+       "cost_benefit": "Enchantez une Attaque avec Glissement.",
+       "result": "Le serpent glisse dans son logement. Choisissez une Attaque à enchanter.",
+       "condition": {
+        "check": "HAS_ATTACK",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "ENCHANT_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "ROYALLY_APPROVED",
+         "enchant_amount": 1,
+         "only_type": 0,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Le tore",
+       "cost_benefit": "Transformez une carte en Robustesse torique.",
+       "result": "Le tore tourne sur lui-même. Choisissez une carte à transformer en Robustesse torique.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": [
+        {
+         "type": "TRANSFORM_CARD",
+         "amount": 1,
+         "ref": "",
+         "card": "Toric Toughness",
+         "pick": "CHOOSE",
+         "upgraded": false,
+         "enchantment": "",
+         "enchant_amount": 0,
+         "only_type": -1,
+         "relic_pool": [],
+         "card_pool": []
+        }
+       ]
+      },
+      {
+       "label": "Partir",
+       "cost_benefit": "Ne rien placer.",
+       "result": "Vous refermez la boîte sans toucher aux figurines.",
+       "condition": {
+        "check": "NONE",
+        "amount": 0,
+        "ref": "",
+        "card": ""
+       },
+       "effects": []
+      }
+     ]
+    }
+   ]
   },
   {
    "id": "ZEN_WEAVER",

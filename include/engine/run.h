@@ -187,6 +187,7 @@ public:
     std::string_view current_encounter; // id of the encounter of the last fight entered (see encounter.h)
     // Set by an event's FIGHT effect (event_script.h) until the rewards of that fight: EVENT_FIGHT_PUNCH_CONSTRUCTS.
     std::string_view event_fight_ref;
+    uint8_t event_fight_setting = 0; // EVENT_FIGHT_BATTLEWORN_DUMMY: the setting chosen, 1 to 3
 
     void start_run(CharacterId char_id, uint8_t ascension = 0, PaletteVariant pal = PaletteVariant::CLASSIC, uint32_t seed = 42);
     FixedVector<int, 3> get_available_rooms() const;

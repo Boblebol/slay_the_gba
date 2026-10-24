@@ -296,7 +296,9 @@ private:
         _loot_kind.clear();
         _loot_text.clear();
         _hint.set(116, -40, "START Passer", Align::RIGHT, TextColor::GRAY);
-        _prompt.set(-116, -40, "Choisissez une carte", Align::LEFT, TextColor::WHITE);
+        // The Battleworn Dummy gives no card: only its potion, relic or upgrades.
+        _prompt.set(-116, -40, _ctx.run.current_card_rewards.empty() ? "Rien d'autre à prendre" : "Choisissez une carte",
+                    Align::LEFT, TextColor::WHITE);
         _refresh_hint();
         _refresh_text();
     }

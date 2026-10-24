@@ -131,6 +131,7 @@ std::string_view enemy_identifier(EnemyType type) {
         case EnemyType::DECIMILLIPEDE_SEGMENT_MIDDLE: return "DECIMILLIPEDE_SEGMENT_MIDDLE";
         case EnemyType::MYTE: return "MYTE";
         case EnemyType::THIEVING_HOPPER: return "THIEVING_HOPPER";
+        case EnemyType::BATTLEWORN_DUMMY: return "BATTLEWORN_DUMMY";
     }
     return {};
 }
@@ -362,6 +363,7 @@ void test_reference_encounters() {
     // BowlbugsNormal and SlumberingBeetleNormal.
     // The Wriggler is the companion of the Phrog Parasite, which fights alone for now.
     // The Byrdpip follows the player (Byrdpip relic) and is never in an encounter.
+    // The Battleworn Dummy is only met through its event (BattlewornDummyEvent), never drawn in a room.
     const std::set<EnemyType> waiting_for_a_companion = { EnemyType::FAT_GREMLIN, EnemyType::EYE_WITH_TEETH,
                                                           EnemyType::STABBOT, EnemyType::NOISEBOT,
                                                           EnemyType::GAS_BOMB, EnemyType::SNEAKY_GREMLIN,
@@ -369,7 +371,8 @@ void test_reference_encounters() {
                                                           EnemyType::PARAFRIGHT, EnemyType::ZAPBOT,
                                                           EnemyType::GUARDBOT, EnemyType::BOWLBUG_NECTAR,
                                                           EnemyType::BOWLBUG_SILK, EnemyType::BOWLBUG_EGG,
-                                                          EnemyType::WRIGGLER, EnemyType::TOUGH_EGG, EnemyType::BYRDPIP };
+                                                          EnemyType::WRIGGLER, EnemyType::TOUGH_EGG, EnemyType::BYRDPIP,
+                                                          EnemyType::BATTLEWORN_DUMMY };
     for (int i = 0; !enemy_identifier(static_cast<EnemyType>(i)).empty(); ++i) {
         EnemyType type = static_cast<EnemyType>(i);
         assert(met.count(type) == (waiting_for_a_companion.count(type) ? 0 : 1));

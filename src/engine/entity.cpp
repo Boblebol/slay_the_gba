@@ -122,8 +122,9 @@ constexpr EnemySheet ENEMY_SHEETS[] = {
     { "DECIMILLIPEDE_SEGMENT_MIDDLE", true, true },
     { "MYTE", true, true },
     { "THIEVING_HOPPER", false, true },
+    { "BATTLEWORN_DUMMY", false, false },
 };
-static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::THIEVING_HOPPER) + 1,
+static_assert(std::size(ENEMY_SHEETS) == static_cast<size_t>(EnemyType::BATTLEWORN_DUMMY) + 1,
               "one sheet per EnemyType");
 
 const EnemySheet* sheet_entry(EnemyType type) {
@@ -192,6 +193,11 @@ void Enemy::init(EnemyType enemy_type) {
         name = "Gremlin Nob";
         max_hp = 82;
         hp = 82;
+    } else if (type == EnemyType::BATTLEWORN_DUMMY) {
+        // Not in the reference's monster list (an event's fight): hand-written, its HP are set by the event's setting.
+        name = "Mannequin usé";
+        max_hp = BATTLEWORN_DUMMY_HP[0];
+        hp = max_hp;
     } else {
         name = "Monstre";
         max_hp = 30;
@@ -1668,6 +1674,16 @@ void Enemy::plan_turn(int turn_number, const PlanContext& context) {
         } else {
             current_intent.type = EnemyIntentType::ESCAPE;
             current_intent.description = "Fuite";
+        }
+    } else if (type == EnemyType::BATTLEWORN_DUMMY) {
+        // The event gives it 3 turns: it does nothing but wait (guessed: the reference lists no move), then the
+        // sequence ends and it leaves, unbeaten, after the third turn of the player.
+        if (turn_number < BATTLEWORN_DUMMY_TURNS) {
+            current_intent.type = EnemyIntentType::BUFF;
+            current_intent.description = "Séquence en cours";
+        } else {
+            current_intent.type = EnemyIntentType::ESCAPE;
+            current_intent.description = "Fin de la séquence";
         }
     } else if (type == EnemyType::TERROR_EEL) {
         // Crash, Thrash (+6 Vigor), and again. Once at half its HP or less (triggered), it is stunned, then
