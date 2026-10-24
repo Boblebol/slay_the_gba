@@ -306,7 +306,6 @@ section = "interface"
 title = "Cartouches"
 items = [
   { name = "Cinq ROMs, une par héros", status = "oui" },
-  { name = "ROM unique réunissant tout le contenu", status = "non", issue = 4 },
 ]
 
 # ---------------------------------------------------------------------------------------------------------
