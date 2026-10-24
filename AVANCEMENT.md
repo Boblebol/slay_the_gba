@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 99,1 %** — 1240 faits, 3 partiels, 6 à faire (35 hors périmètre).
+**Avancement global : 99,2 %** — 1241 faits, 3 partiels, 5 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -23,12 +23,12 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [La Nécrolieuse](#necrobinder) | 102 | 0 | 0 | 100,0 % |
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 321 | 0 | 0 | 100,0 % |
-| [Bestiaire](#bestiaire) | 103 | 0 | 1 | 99,0 % |
+| [Bestiaire](#bestiaire) | 104 | 0 | 0 | 100,0 % |
 | [Évènements et Anciens](#rencontres) | 57 | 3 | 5 | 90,0 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 30 | 0 | 0 | 100,0 % |
-| **Total** | **1240** | **3** | **6** | **99,1 %** |
+| **Total** | **1241** | **3** | **5** | **99,2 %** |
 
 <a id="ironclad"></a>
 
@@ -1214,11 +1214,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="bestiaire"></a>
 
-## Bestiaire — 99,0 %
+## Bestiaire — 100,0 %
 
-### Monstres — 98,6 %
+### Monstres — 100,0 %
 
-71 faits, 0 partiel, 1 à faire.
+72 faits, 0 partiel, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1233,7 +1233,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Limon feuillu (M) | Monstre · Acte 1 (A) | Oui |  |
 | Limon feuillu (S) | Monstre · Acte 1 (A) | Oui |  |
 | Mycoptère | Monstre · Acte 1 (A) | Oui |  |
-| Oizillon | Invocation · Acte 1 (A) | Non |  |
+| Oizillon | Invocation · Acte 1 (A) | Oui |  |
 | Rampeluche | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur Arbalétrier | Monstre · Acte 1 (A) | Oui |  |
 | Rôdeur Brute | Monstre · Acte 1 (A) | Oui |  |
