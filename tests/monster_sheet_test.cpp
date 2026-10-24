@@ -10,11 +10,11 @@ using namespace engine;
 
 namespace {
 
-constexpr int ENEMY_TYPES = static_cast<int>(EnemyType::THIEVING_HOPPER) + 1;
+constexpr int ENEMY_TYPES = static_cast<int>(EnemyType::BATTLEWORN_DUMMY) + 1;
 
 bool is_hand_written(EnemyType type) {
     return type == EnemyType::CULTIST || type == EnemyType::JAW_WORM || type == EnemyType::LOUSE ||
-           type == EnemyType::GREMLIN_NOB;
+           type == EnemyType::GREMLIN_NOB || type == EnemyType::BATTLEWORN_DUMMY;
 }
 
 // The monsters whose attacks keep their usual damage at Ascension, while their sheet gives more.

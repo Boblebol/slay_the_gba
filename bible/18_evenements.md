@@ -16,20 +16,73 @@ De la vapeur s'élève de bassins bouillonnants d'un liquide brûlant, dont les 
 <!-- choix:ABYSSAL_BATHS -->
 **Choix dans le jeu** (généré depuis `src/engine/events`) :
 
-* **Titre en jeu :** Bains Abyssaux | **Zones :** tous les actes
+* **Titre en jeu :** Bains Abyssaux | **Zones :** Acte 1b
 
-Page 0 (début) : « Des bassins fumants émettent des vapeurs minérales revigorantes. Au fond d'une vasque, des pièces d'or scintillent. »
+Page 0 (début) : « Dans une salle solitaire, des bassins fumants aux couleurs hypnotiques bouillonnent sous des excroissances coquillées. L'air est lourd de sel. Le plus grand bassin ondule, comme s'il pressentait votre venue. »
 
-* **Se prélasser dans le bain** - Récupérez 25 PV, coûte 35 Or.
-  * Condition : au moins 35 Or (sinon l'option est grisée)
-  * Effets : perd 35 Or ; soigne 25 PV
-  * Résultat : « Les vapeurs chaudes dissolvent vos courbatures (+25 PV). »
-* **Plonger dans les profondeurs** - Gagnez 80 Or, perdez 8 PV.
-  * Effets : perd 8 PV ; gagne 80 Or
-  * Résultat : « L'eau bouillante vous brûle mais vous repêchez 80 Pièces d'or ! »
-* **Repartir** - Ignorer les bains.
+* **S'immerger** - +2 PV Max, perdez 3 PV.
+  * Condition : plus de 3 PV (sinon l'option est grisée)
+  * Effets : +2 PV max ; perd 3 PV ; mène à la page 1
+  * Résultat : « Vous vous glissez dans le bassin. Le liquide vous brûle, mais vous vous sentez grandir (+2 PV Max, -3 PV). »
+* **S'abstenir** - Récupérez 10 PV.
+  * Effets : soigne 10 PV
+  * Résultat : « Vous ramassez les sels cristallins qui bordent le bassin. Ils vous soignent (+10 PV). »
+
+Page 1 : « Le liquide brûlant vous enveloppe. Votre corps picote, votre esprit s'éclaircit. Le bassin vous invite à rester. »
+
+* **S'attarder** - +2 PV Max, perdez 4 PV.
+  * Condition : plus de 4 PV (sinon l'option est grisée)
+  * Effets : +2 PV max ; perd 4 PV ; mène à la page 2
+  * Résultat : « Vous vous attardez. La brûlure s'aggrave, mais vous gagnez en robustesse (+2 PV Max, -4 PV). »
+* **Sortir du bain** - Quittez les bassins.
   * Effets : aucun
-  * Résultat : « Vous reprenez votre ascension sans vous attarder. »
+  * Résultat : « Vous sortez du bain, ruisselant et transformé. »
+
+Page 2 : « La chaleur devient mordante. Le bassin pulse autour de vous comme un cœur. Quelque chose en vous grandit, et cela fait mal. »
+
+* **S'attarder** - +2 PV Max, perdez 5 PV.
+  * Condition : plus de 5 PV (sinon l'option est grisée)
+  * Effets : +2 PV max ; perd 5 PV ; mène à la page 3
+  * Résultat : « Vous restez. La douleur est vive, votre corps s'endurcit encore (+2 PV Max, -5 PV). »
+* **Sortir du bain** - Quittez les bassins.
+  * Effets : aucun
+  * Résultat : « Vous sortez du bain, ruisselant et transformé. »
+
+Page 3 : « Vos oreilles bourdonnent. La substance visqueuse s'infiltre sous votre peau. Partir semble de plus en plus difficile. »
+
+* **S'attarder** - +2 PV Max, perdez 6 PV.
+  * Condition : plus de 6 PV (sinon l'option est grisée)
+  * Effets : +2 PV max ; perd 6 PV ; mène à la page 4
+  * Résultat : « Vous tenez bon. L'eau vous mord, vous gagnez encore en vigueur (+2 PV Max, -6 PV). »
+* **Sortir du bain** - Quittez les bassins.
+  * Effets : aucun
+  * Résultat : « Vous sortez du bain, ruisselant et transformé. »
+
+Page 4 : « Le bain bouillonne avec rage. Chaque seconde vous brûle, chaque seconde vous renforce. Où est la limite ? »
+
+* **S'attarder** - +2 PV Max, perdez 7 PV.
+  * Condition : plus de 7 PV (sinon l'option est grisée)
+  * Effets : +2 PV max ; perd 7 PV ; mène à la page 5
+  * Résultat : « Vous retenez un cri. Le bain vous façonne à ses dépens (+2 PV Max, -7 PV). »
+* **Sortir du bain** - Quittez les bassins.
+  * Effets : aucun
+  * Résultat : « Vous sortez du bain, ruisselant et transformé. »
+
+Page 5 : « Vous ne distinguez plus la douleur de la chaleur. Le bassin chante. Un dernier bain, peut-être ? »
+
+* **S'attarder** - +2 PV Max, perdez 8 PV.
+  * Condition : plus de 8 PV (sinon l'option est grisée)
+  * Effets : +2 PV max ; perd 8 PV ; mène à la page 6
+  * Résultat : « Un dernier bain. Le liquide vous dévore et vous façonne à la fois (+2 PV Max, -8 PV). »
+* **Sortir du bain** - Quittez les bassins.
+  * Effets : aucun
+  * Résultat : « Vous sortez du bain, ruisselant et transformé. »
+
+Page 6 : « Vos forces vous quittent : le bassin vous recrache, à bout de souffle et plus robuste. Il est temps de sortir. »
+
+* **Sortir du bain** - Quittez les bassins.
+  * Effets : aucun
+  * Résultat : « Vous sortez du bain, ruisselant et transformé. »
 
 <!-- /choix:ABYSSAL_BATHS -->
 
@@ -101,19 +154,19 @@ Que choisissez-vous ?
 <!-- choix:BATTLEWORN_DUMMY -->
 **Choix dans le jeu** (généré depuis `src/engine/events`) :
 
-* **Titre en jeu :** Mannequin d'Entraînement | **Zones :** tous les actes
+* **Titre en jeu :** Mannequin de combat usé | **Zones :** Acte 3
 
-Page 0 (début) : « « BZZZT ! SÉQUENCE D'ENTRAÎNEMENT INITIÉE ! Réglez vos coups ou subissez une humiliation létale ! » »
+Page 0 (début) : « Le mannequin grésille, bourdonne, puis s'illumine : « BZZZT ! SÉQUENCE D'ENTRAÎNEMENT INITIÉE ! VOUS AVEZ 3 TOURS POUR ME VAINCRE. RÉGLEZ LE PARAMÈTRE OU SUBISSEZ UNE HUMILIATION LÉTALE. » »
 
-* **Attaque acharnée** - Subissez 6 dégâts, gagnez 60 Or.
-  * Effets : perd 6 PV ; gagne 60 Or
-  * Résultat : « Vous frappez sans retenue ! Le mannequin explose en pièces d'or. »
-* **Réparer les rouages** - Améliorez une carte de votre deck.
-  * Effets : améliore 1 carte (au choix)
-  * Résultat : « Vous étudiez la mécanique interne. Une de vos cartes est améliorée (+) ! »
-* **Prendre la fuite** - Passez votre chemin sans risque.
-  * Effets : aucun
-  * Résultat : « Vous quittez discrètement la salle. »
+* **Réglage 1** - 75 PV, 3 tours. Victoire : une potion.
+  * Effets : déclenche un combat normal, à la sortie de l'évènement
+  * Résultat : « Le mannequin cliquette et se met en position. Le compte à rebours commence ! »
+* **Réglage 2** - 150 PV, 3 tours. Victoire : 2 améliorations.
+  * Effets : déclenche un combat normal, à la sortie de l'évènement
+  * Résultat : « Le mannequin cliquette et se met en position. Le compte à rebours commence ! »
+* **Réglage 3** - 300 PV, 3 tours. Victoire : une relique.
+  * Effets : déclenche un combat normal, à la sortie de l'évènement
+  * Résultat : « Le mannequin cliquette et se met en position. Le compte à rebours commence ! »
 
 <!-- /choix:BATTLEWORN_DUMMY -->
 
@@ -249,19 +302,37 @@ Vous pourriez vous contenter d’un peu de nectar doré, mais la tentation du tr
 <!-- choix:COLOSSAL_FLOWER -->
 **Choix dans le jeu** (généré depuis `src/engine/events`) :
 
-* **Titre en jeu :** Fleur Colossale | **Zones :** tous les actes
+* **Titre en jeu :** Fleur Colossale | **Zones :** Acte 2
 
-Page 0 (début) : « Une fleur cyclopéenne exsude un parfum suave. Du nectar doré perle sur ses pétales tranchants comme des rasoirs. »
+Page 0 (début) : « Une fleur colossale pousse au sommet d'un monticule d'ossements. Ses pétales changeants, tranchants comme des rasoirs, pulsent autour d'un amas de pollen. Un peu de nectar doré suffirait... mais le trésor du centre vous tente. »
 
-* **Boire le nectar doré** - Récupérez 20 PV.
-  * Effets : soigne 20 PV
-  * Résultat : « Le nectar restaure vos forces (+20 PV) ! »
-* **Arracher l'Épine Ancestrale** - Subissez 10 dégâts, obtenez la Relique Vajra (+1 Force).
-  * Effets : perd 10 PV ; gagne la relique VAJRA
-  * Résultat : « Vous coupez l'épine au prix d'une vive blessure. Vous obtenez Vajra ! »
-* **Contourner la plante** - Ne prenez aucun risque.
-  * Effets : aucun
-  * Résultat : « Vous contournez la fleur avec précaution. »
+* **Extraire le nectar** - Gagnez 35 Or.
+  * Effets : gagne 35 Or
+  * Résultat : « Vous recueillez le nectar doré du bout des pétales, sans vous blesser (+35 Or). »
+* **Aller plus profond** - Perdez 5 PV.
+  * Condition : plus de 5 PV (sinon l'option est grisée)
+  * Effets : perd 5 PV ; mène à la page 1
+  * Résultat : « Vous glissez le bras entre les pétales. Ils vous entaillent (-5 PV). »
+
+Page 1 : « Les pétales ondoient, imprévisibles. Plus profond, le nectar est plus riche, mais le centre reste hors d'atteinte. Jusqu'où irez-vous ? »
+
+* **Extraire le nectar** - Gagnez 75 Or.
+  * Effets : gagne 75 Or
+  * Résultat : « Le nectar est plus épais ici. Vous en remplissez vos poches (+75 Or). »
+* **Aller encore plus profond** - Perdez 6 PV.
+  * Condition : plus de 6 PV (sinon l'option est grisée)
+  * Effets : perd 6 PV ; mène à la page 2
+  * Résultat : « Vous poussez plus loin. Les pétales se referment sur votre bras (-6 PV). »
+
+Page 2 : « Le pollen luit tout près, entre des pétales qui se resserrent. Encore un effort, ou prenez ce nectar épais et partez. »
+
+* **Extraire le nectar** - Gagnez 135 Or.
+  * Effets : gagne 135 Or
+  * Résultat : « Un nectar presque solide : une fortune dorée (+135 Or). »
+* **Entrer au centre** - Perdez 7 PV, obtenez le Noyau pollinique.
+  * Condition : plus de 7 PV (sinon l'option est grisée)
+  * Effets : perd 7 PV ; gagne la relique POLLINOUS_CORE
+  * Résultat : « Vous plongez au cœur de la fleur, lacéré, et en ressortez le Noyau pollinique (-7 PV). »
 
 <!-- /choix:COLOSSAL_FLOWER -->
 

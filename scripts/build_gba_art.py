@@ -180,6 +180,8 @@ MONSTERS: dict[str, str] = {
     "zapbot": "zapbot",
     "cubex_construct": "cubex_construct",
     "punch_construct": "punch_construct",
+    # The dummy of the Battleworn Dummy event has no monster art in the reference: cut out of the event picture.
+    "battleworn_dummy": "battleworn_dummy",
     "globe_head": "globe_head",
     "bowlbug_nectar": "bowlbug_nectar",
     "axebot": "axebot",

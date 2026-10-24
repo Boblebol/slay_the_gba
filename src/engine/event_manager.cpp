@@ -420,7 +420,9 @@ void EventManager::apply_effect(RunManager& run, const EventEffect& effect) {
             }
             break;
         case EventEffectType::FIGHT:
-            run.event_fight_ref = effect.ref == EVENT_FIGHT_PUNCH_CONSTRUCTS ? effect.ref : std::string_view{};
+            run.event_fight_ref = effect.ref == EVENT_FIGHT_PUNCH_CONSTRUCTS || effect.ref == EVENT_FIGHT_BATTLEWORN_DUMMY
+                                      ? effect.ref : std::string_view{};
+            run.event_fight_setting = static_cast<uint8_t>(effect.amount);
             run.begin_fight(effect.ref == "ELITE" ? RoomType::ELITE : RoomType::MONSTER);
             break;
         case EventEffectType::TRADE_POTION:

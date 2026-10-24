@@ -87,6 +87,9 @@ enum class EventEffectType : uint8_t {
 
 // `ref` of a FIGHT effect: two Punch Constructs instead of the fight of the act, and a relic with the rewards.
 constexpr std::string_view EVENT_FIGHT_PUNCH_CONSTRUCTS = "PUNCH_CONSTRUCTS";
+// `ref` of a FIGHT effect: the Battleworn Dummy of setting `amount` (1 to 3). It has BATTLEWORN_DUMMY_HP[amount - 1]
+// HP and leaves after BATTLEWORN_DUMMY_TURNS turns; only a win gives a reward: a potion, 2 upgrades or a relic.
+constexpr std::string_view EVENT_FIGHT_BATTLEWORN_DUMMY = "BATTLEWORN_DUMMY";
 
 // How the cards of REMOVE / UPGRADE / TRANSFORM / ENCHANT are found.
 enum class EventPick : uint8_t {
