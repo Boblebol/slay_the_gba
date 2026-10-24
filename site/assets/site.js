@@ -1,3 +1,6 @@
+// The English pages (site/en/) say so on <html lang="en">: counts below follow it.
+const english = document.documentElement.lang === "en";
+
 // Card filters (type / rarity / text) and simple list searches.
 document.querySelectorAll(".filters:not([data-progress])").forEach((box) => {
   const scope = box.parentElement;
@@ -15,7 +18,7 @@ document.querySelectorAll(".filters:not([data-progress])").forEach((box) => {
       card.classList.toggle("hidden", !ok);
       if (ok) shown += 1;
     });
-    if (count) count.textContent = `${shown} carte${shown > 1 ? "s" : ""}`;
+    if (count) count.textContent = `${shown} ${english ? "card" : "carte"}${shown > 1 ? "s" : ""}`;
   };
 
   box.querySelectorAll("[data-filter-type]").forEach((button) => {
@@ -77,7 +80,7 @@ document.querySelectorAll("[data-progress]").forEach((box) => {
     document.querySelectorAll(".prog-section").forEach((section) => {
       section.classList.toggle("hidden", !section.querySelector("details.prog-cat:not(.hidden)"));
     });
-    if (count) count.textContent = `${shown} élément${shown > 1 ? "s" : ""}`;
+    if (count) count.textContent = `${shown} ${english ? "item" : "élément"}${shown > 1 ? "s" : ""}`;
   };
 
   box.querySelectorAll("[data-filter-status]").forEach((button) => {

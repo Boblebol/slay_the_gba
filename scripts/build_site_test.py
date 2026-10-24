@@ -34,7 +34,14 @@ def isolated_site(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setattr(build_site, "ASSETS", site / "assets")
     monkeypatch.setattr(build_site, "ROMS", site / "roms")
     monkeypatch.setattr(build_site, "PAGES", [])
+    monkeypatch.setattr(build_site, "LANG", "fr")
     return site
+
+
+@pytest.fixture
+def english(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Build the English pages (site/en/)."""
+    monkeypatch.setattr(build_site, "LANG", "en")
 
 
 # --- HTML escaping ---------------------------------------------------------------------------
@@ -322,30 +329,95 @@ def test_build_index_renders_five_panels_and_keeps_seo_and_nav(isolated_site: Pa
     assert f'<link rel="canonical" href="{build_site.SITE_URL}/">' in out
 
 
-def test_page_switches_language_and_links_the_other_landing() -> None:
+def test_page_switches_language_and_links_its_translation() -> None:
     fr = build_site.page("Accueil", "", path="")
     assert '<html lang="fr">' in fr and 'href="en/index.html" hreflang="en"' in fr and 'hreflang="x-default"' in fr
-    en = build_site.page("Home", "", depth=1, path="en/index.html", lang="en")
-    assert '<html lang="en">' in en and 'content="en_US"' in en and 'href="../index.html" hreflang="fr"' in en
-    assert "unofficial fan game" in en and build_site.ARTICLE_URL_EN in en
-    assert 'hreflang="x-default"' not in build_site.page("Cartes", "", path="cartes.html")
+    cards = build_site.page("Cartes", "", path="cartes.html")
+    assert 'href="en/cartes.html" hreflang="en"' in cards and 'hreflang="x-default"' not in cards
+    assert f'hreflang="en" href="{build_site.SITE_URL}/en/cartes.html"' in cards
+    assert f'hreflang="fr" href="{build_site.SITE_URL}/cartes.html"' in cards
 
 
-@pytest.mark.parametrize(("en", "text"), [(False, "testeurs recherchés"), (True, "playtesters wanted")])
-def test_testers_panel_links_feedback_and_celebrates_completion(en: bool, text: str,
+def test_english_page_lives_under_en_and_links_back_to_french(english: None) -> None:
+    out = build_site.page("Silent", "", depth=1, path="heros/silent.html")
+    assert '<html lang="en">' in out and 'content="en_US"' in out
+    assert 'href="../../heros/silent.html" hreflang="fr"' in out  # site/en/heros/ -> site/heros/
+    assert f'<link rel="canonical" href="{build_site.SITE_URL}/en/heros/silent.html">' in out
+    assert 'href="../../assets/style.css"' in out and 'href="../cartes.html"' in out  # assets are shared
+    assert 'href="../../bible/index.html">Bible (FR)' in out
+    assert "unofficial fan game" in out and build_site.ARTICLE_URL_EN in out
+    assert build_site.PAGES == ["en/heros/silent.html"]
+
+
+def test_untranslated_page_switches_to_the_other_landing() -> None:
+    out = build_site.page("Tome", "", depth=1, path="bible/01_x.html", translated=False)
+    assert 'href="../en/index.html" hreflang="en"' in out and 'rel="alternate"' not in out
+
+
+def test_english_pages_are_written_under_en(isolated_site: Path, english: None) -> None:
+    build_site.write_page("heros/x.html", "x")
+    assert (isolated_site / "en" / "heros" / "x.html").read_text() == "x"
+
+
+@pytest.mark.parametrize(("lang", "text"), [("fr", "testeurs recherchés"), ("en", "playtesters wanted")])
+def test_testers_panel_links_feedback_and_celebrates_completion(lang: str, text: str,
                                                                 monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(build_site, "LANG", lang)
     prog = make_progress()
     monkeypatch.setattr(type(prog), "percent", property(lambda self: 100.0))
-    out = build_site.testers_panel(prog, en=en)
+    out = build_site.testers_panel(prog)
     assert text in out and "100" in out and build_site.FEEDBACK_URL in out and 'class="panel callout"' in out
 
 
-def test_build_index_en_says_the_game_is_french_and_offers_every_rom(isolated_site: Path) -> None:
-    build_site.build_index_en(make_progress())
+def test_english_landing_says_the_game_is_french_and_offers_every_rom(isolated_site: Path, english: None) -> None:
+    cards = [{"id": cid, "pool": "Ironclad", "name": cid.title()} for h in HEROES for cid, _ in h.starter]
+    relics = [{"id": h.relic_id, "name": f"Relique {h.slug}"} for h in HEROES]
+    build_site.build_index(cards, [{"acts": [1]}], relics, [], [], make_progress())
     out = (isolated_site / "en" / "index.html").read_text()
-    assert '<html lang="en">' in out and "The game is in French" in out
+    assert '<html lang="en">' in out and "The game is in French" in out and "Choose your hero" in out
     for h in HEROES:
         assert f'href="../roms/{h.rom}"' in out and h.english in out
-    for anchor in ("language", "testers", "editions", "download", "faq"):
+    for anchor in ("language", "testers", "editions", "telecharger", "faq"):
         assert f'id="{anchor}"' in out
+    assert 'src="../assets/sprites/hero_ironclad.png"' in out
     assert build_site.PAGES == ["en/index.html"]
+
+
+def test_english_card_uses_the_english_template_and_class_name(english: None) -> None:
+    card = {"id": "BASH", "className": "Bash", "name": "Heurt", "type": "Attack", "rarity": "Basic",
+            "pool": "Ironclad", "energy": 2, "imagePath": "/x.webp", "description": "Deal {Damage:diff()} damage.",
+            "vars": {"Damage": 8}, "upgrade": {"damage": "+2"}, "descBase": "Infligez 8 dégâts.",
+            "descUpgraded": "Infligez 10 dégâts."}
+    out = card_html(card, 0)
+    assert "<h4>Bash</h4>" in out and "Attack · Basic" in out and "Deal 8 damage." in out
+    assert "Upgraded +" in out and "Deal 10 damage." in out and 'src="../../bible/x.webp"' in out
+
+
+def test_english_card_without_a_usable_template_falls_back_to_french(english: None) -> None:
+    card = {"id": "X", "className": "MadScience", "name": "Science folle", "type": "Skill", "rarity": "Rare",
+            "pool": "Event", "imagePath": "/x.webp", "description": "{CardType:choose(Attack):a|b}",
+            "descBase": "Texte <g>français</g>."}
+    assert 'Texte <b class="kw">français</b>.' in card_html(card, 0) and "<h4>Mad Science</h4>" in card_html(card, 0)
+
+
+def test_english_tracker_items_use_data_names_and_translated_texts(english: None,
+                                                                   monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(build_site, "EN_NAMES", {"STRIKE_IRONCLAD": "Strike"})
+    data_item = progress.Item("STRIKE_IRONCLAD", "Frappe", progress.DONE, "Base · Attaque")
+    assert build_site.item_name(data_item) == "Strike" and build_site.item_detail(data_item) == "Basic · Attack"
+    assert build_site.item_name(progress.Item("BATTLEWORN_DUMMY", "Mannequin", progress.DONE)) == "Battleworn Dummy"
+    out = build_site.progress_item(progress.Item("Mécaniques", "Mécaniques", progress.PARTIAL))
+    assert "<b>Mechanics</b>" in out and "Partial" in out
+    assert build_site.counts(progress.Tally(3, 1, 2, 1)) == "3 done, 1 partial, 2 to do (1 out of scope)"
+    assert build_site.percent(12.34) == "12.3%"
+
+
+def test_sitemap_ranks_english_pages_like_their_french_counterparts(isolated_site: Path) -> None:
+    Image.new("RGB", (4, 4)).save(isolated_site / "assets" / "screens" / "title.png")
+    build_site.PAGES.extend(["en/index.html", "en/heros/silent.html", "en/cartes.html"])
+    build_site.build_seo_files()
+    sitemap = (isolated_site / "sitemap.xml").read_text()
+    base = build_site.SITE_URL
+    assert f"<loc>{base}/en/index.html</loc><priority>1.0</priority>" in sitemap
+    assert f"<loc>{base}/en/heros/silent.html</loc><priority>0.8</priority>" in sitemap
+    assert f"<loc>{base}/en/cartes.html</loc><priority>0.6</priority>" in sitemap
