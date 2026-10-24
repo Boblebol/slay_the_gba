@@ -4,7 +4,7 @@
 > monstres et évènements sont détectés dans le code du moteur ; les mécaniques, systèmes et écrans
 > se règlent dans [`avancement.toml`](avancement.toml).
 
-**Avancement global : 99,2 %** — 1241 faits, 3 partiels, 5 à faire (35 hors périmètre).
+**Avancement global : 99,8 %** — 1246 faits, 3 partiels, 0 à faire (35 hors périmètre).
 
 Le pourcentage global est la moyenne des pourcentages des sections, chaque section pesant autant.
 
@@ -24,11 +24,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | [Cartes communes aux cinq éditions](#cartes) | 120 | 0 | 0 | 100,0 % |
 | [Reliques et potions](#reliques) | 321 | 0 | 0 | 100,0 % |
 | [Bestiaire](#bestiaire) | 104 | 0 | 0 | 100,0 % |
-| [Évènements et Anciens](#rencontres) | 57 | 3 | 5 | 90,0 % |
+| [Évènements et Anciens](#rencontres) | 62 | 3 | 0 | 97,7 % |
 | [Règles de combat](#regles) | 63 | 0 | 0 | 100,0 % |
 | [Systèmes de jeu](#systemes) | 36 | 0 | 0 | 100,0 % |
 | [Interface, audio et cartouches](#interface) | 30 | 0 | 0 | 100,0 % |
-| **Total** | **1241** | **3** | **5** | **99,2 %** |
+| **Total** | **1246** | **3** | **0** | **99,8 %** |
 
 <a id="ironclad"></a>
 
@@ -1343,11 +1343,11 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 
 <a id="rencontres"></a>
 
-## Évènements et Anciens — 90,0 %
+## Évènements et Anciens — 97,7 %
 
-### Évènements — 88,6 %
+### Évènements — 97,4 %
 
-49 faits, 3 partiels, 5 à faire.
+54 faits, 3 partiels, 0 à faire.
 
 | Élément | Détail | Fait | Note |
 |---|---|---|---|
@@ -1359,7 +1359,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Bains abyssaux | Acte 1 (B) | Partiel | Récit raccourci et choix réinventés pour la GBA. |
 | Bienvenue chez Wongo’s | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Bosquet des Morphiques | Acte 1 (A) | Oui |  |
-| Bricolage | Acte 3 | Non |  |
+| Bricolage | Acte 3 | Oui |  |
 | Ceci ou Cela ? | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Champ de trous à taille corporelle | Acte 2 | Oui |  |
 | Chœur lumineux | Acte 1 (A) | Oui |  |
@@ -1367,10 +1367,10 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Coursier de potions | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Développement personnel | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Esprit greffeur | Acte 2 | Oui |  |
-| Feu follet égaré | Acte 2 | Non |  |
+| Feu follet égaré | Acte 2 | Oui |  |
 | Fleur colossale | Acte 2 | Partiel | Récit raccourci et choix réinventés pour la GBA. |
-| Graine de saphir | Acte 1 (A) | Non |  |
-| Gravures sur bois | Acte 1 (A) | Non |  |
+| Graine de saphir | Acte 1 (A) | Oui |  |
+| Gravures sur bois | Acte 1 (A) | Oui |  |
 | Jungle dense | Acte 1 (A) | Oui |  |
 | La clé de la lanterne | Acte 2 | Oui |  |
 | La légende disait vrai | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
@@ -1402,7 +1402,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Tas de déchets | Acte 1 (B) | Oui |  |
 | Tisseur zen | Acte 2 | Oui |  |
 | Tombe du guerrier oublié | Acte 3 | Oui |  |
-| Tourbillon aquatique | Acte 1 (B) | Non |  |
+| Tourbillon aquatique | Acte 1 (B) | Oui |  |
 | Trafiquant de reliques | Acte 1 (A), Acte 1 (B), Acte 2, Acte 3 | Oui |  |
 | Trésor englouti | Acte 1 (B) | Oui |  |
 | Tueur d’insectes | Acte 2 | Oui |  |
