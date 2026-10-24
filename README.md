@@ -1,47 +1,88 @@
-# Slay The GBA 🗡️🃏
+# Slay the GBA 🗡️🃏
 
-A faithful **Slay the Spire** demake for the **Nintendo Game Boy Advance**, built with modern **C++20** and the **Butano** engine.
+**Slay the Spire 2 demade for the Game Boy Advance.** Five heroes, five cartridges, one Spire to climb, in 240×160
+with Pokémon-style battles and the game's real card art. Free, unofficial fan game, written in C++20 with the
+[Butano](https://github.com/GValiente/butano) engine.
 
----
+> 🇫🇷 **The game is in French.** Every in-game text (cards, relics, events, menus) is in French, and so is most of
+> the website. If you know Slay the Spire, the card art, numbers and intent icons carry you a long way. An English
+> version will depend on how much interest there is.
 
-## 🎮 Features & MVP
+🌐 **Website & downloads:** [slay-the-gba.alexandre-enouf.fr](https://slay-the-gba.alexandre-enouf.fr/en/index.html)
+(English page) · [French site](https://slay-the-gba.alexandre-enouf.fr/) ·
+📦 [Latest release](https://github.com/Boblebol/slay_the_gba/releases/latest) ·
+📖 [How it was built](https://alexandre-enouf.fr/blog/slay-the-gba-vibe-coding-game-boy-advance/?lang=en)
 
-* **Decoupled Combat Engine**: Hardware-agnostic game logic running on both real GBA hardware and host terminal (Mac/Linux).
-* **Ironclad Starter Deck**:
-  * `Strike` (1 Energy, 6 Damage)
-  * `Defend` (1 Energy, 5 Block)
-  * `Bash` (2 Energy, 8 Damage + 2 Vulnerable)
-  * Bonus cards: `Iron Wave`, `Cleave`, `Anger`
-* **Status Effect System**:
-  * Vulnerable (+50% damage taken)
-  * Weak (-25% damage dealt)
-  * Strength (+flat damage bonus)
-  * Ritual (Cultist gains strength at end of turn)
-* **Classic Enemies**:
-  * **Cultist** (*"Caw Caaw!"* with Incantation & Dark Strike)
-  * **Jaw Worm** (Chomp, Thrash, Bellow)
-* **Burning Blood Relic**: Heals 6 HP at the end of combat.
-* **GBA Interface (240x160)**:
-  * Top HUD: Player & Enemy HP, Block shields, Energy meter.
-  * Intent display: Enemy projected attack/buff displayed above the enemy.
-  * Detailed card inspector & hand selector.
-
----
-
-## 🕹️ Controls (GBA)
-
-| Screen | Button | Action |
+| | | |
 |---|---|---|
-| Map | **D-Pad Left / Right** | Choose the next room |
-| Map | **D-Pad Up / Down** | Scroll the tower |
-| Map | **A** | Walk to the selected room |
-| Combat | **D-Pad Left / Right** | Select a card in hand |
-| Combat | **A** | Play the card (then pick a target when several enemies are alive) |
-| Combat | **START** or **R** | End the turn |
-| Map / Combat | **SELECT** | Open the deck viewer (**B** to go back) |
-| Menus | **A / B** | Confirm / cancel |
+| ![Title screen](site/assets/screens/title.png) | ![Map of the Spire](site/assets/screens/map.png) | ![Combat](site/assets/screens/combat.png) |
+| ![Card impact](site/assets/screens/impact.png) | ![Event](site/assets/screens/event.png) | ![Shop](site/assets/screens/shop.png) |
 
 ---
+
+## 🎉 100% reached: playtesters wanted!
+
+The implementation tracker ([`AVANCEMENT.md`](AVANCEMENT.md)) is at **100%** since v1.0.0: every card, relic, potion,
+monster, boss, event and Ancient of the Slay the Spire 2 data in the project bible (patch v0.111.0 Beta) is in the
+game, and a full run works from the title screen to the final boss with all five heroes.
+
+Now it needs players. Download an edition, play a run, and
+**[open an issue](https://github.com/Boblebol/slay_the_gba/issues/new)** for anything you notice: bugs, crashes,
+softlocks, balance, text that overflows the screen. Feedback by e-mail works too:
+[alexandre.enouf@gmail.com](mailto:alexandre.enouf@gmail.com).
+
+---
+
+## 🎮 What's in the game
+
+* **Five cartridges, one per hero**, like the classic handheld games sold in several versions: The Ironclad
+  (`slay_ironclad.gba`), The Silent, The Defect, The Regent and The Necrobinder. Each has its own card pool,
+  starting relic, colour, title screen and signature mechanic.
+* **A full run**: Neow at the start, a 3-act Spire with branching paths, monsters, elites, bosses (each act draws
+  its boss from several), events, shops, campfires, treasure, the Ancients between acts, victory and credits.
+* **The Slay the Spire 2 content**: ~570 cards, ~300 relics, potions, enchantments, curses, summons, orbs and
+  the rest of each hero's mechanics, with the values of the reference game.
+* **A GBA interface**: hero seen from behind on the left, enemies on the right with their intents, cards that zoom
+  in before hitting, floating damage, mosaic deaths, chiptune music and sound effects.
+* **Quality of life**: automatic save on the cartridge (SRAM), pause menu, options (volume, control presets),
+  Ascension levels, compendium and run statistics.
+
+## ▶️ How to play
+
+1. Download a `.gba` file from the [website](https://slay-the-gba.alexandre-enouf.fr/en/index.html#download) or the
+   [latest release](https://github.com/Boblebol/slay_the_gba/releases/latest).
+2. Open it in a Game Boy Advance emulator: [mGBA](https://mgba.io/downloads.html) on a computer, Delta on
+   iPhone/iPad, My Boy! or RetroArch on Android.
+3. Or copy it to a flash cart (EZ-Flash, EverDrive) and play on a real GBA, GBA SP, Game Boy Micro or DS.
+
+The game shows its controls on screen. In combat: **D-Pad** to pick a card, **A** to play it (then pick a target),
+**B** to cancel, **R** or **L** to end the turn depending on the control preset chosen in the options, **START** to
+pause, **SELECT** to look at the deck.
+
+## 🤖 How it was made
+
+No line of this game was written by hand: the code, tests, art pipeline and documentation were produced by
+autonomous AI coding agents (Claude), working through GitHub issues and pull requests, checking their own work
+with native tests and a headless mGBA emulator. The full story is in the
+[blog post](https://alexandre-enouf.fr/blog/slay-the-gba-vibe-coding-game-boy-advance/?lang=en).
+
+---
+
+## 🛠️ Build from source
+
+The build falls back to Docker (`devkitpro/devkitarm`) when devkitARM is not installed on the host.
+
+```bash
+git clone --recursive https://github.com/Boblebol/slay_the_gba
+make ironclad      # one cartridge (also: silent, defect, regent, necrobinder)
+make roms          # the five cartridges
+make test          # native engine tests (clang++, no GBA needed)
+make play          # play the combat engine in a terminal
+```
+
+The game rules live in the hardware-agnostic `src/engine/` (compiled natively for the tests); the GBA
+presentation layer lives in `src/gba/`. Contributors and agents follow [`AGENTS.md`](AGENTS.md) (in French):
+one branch and one pull request per issue.
 
 ## 🎨 Art Pipeline
 
@@ -71,52 +112,11 @@ the hardware-agnostic `src/engine/`.
 
 ---
 
-## 🛠️ Quick Start & Build
-
-The build system supports **automatic Docker fallback** (via OrbStack/Docker with `devkitpro/devkitarm`), so you don't even need devkitARM installed on your host machine!
-
-### 1. Build the GBA ROM
-```bash
-make
-```
-This generates `slay_the_gba.gba` (approx 110 KB), ready to be loaded into any GBA emulator (like **mGBA**) or flashed onto an authentic flashcart (EZ-Flash / EverDrive).
-
-### 2. Play in Terminal (Native CLI Prototype)
-Want to test the card logic and play immediately without launching an emulator?
-```bash
-make play
-```
-
-### 3. Run Native Unit Tests
-```bash
-make test
-```
-
----
-
-## 📁 Project Structure
-
-```
-slay_the_gba/
-├── include/
-│   └── engine/           # Pure C++20 core game engine (cards, entities, combat)
-├── src/
-│   ├── engine/           # Card & Entity & Combat logic
-│   └── main.cpp          # GBA presentation layer (Butano loop, keypad, text HUD)
-├── tests/
-│   ├── cli_test.cpp      # Automated unit test suite
-│   └── interactive_cli.cpp # Playable terminal game runner
-├── butano/               # Submodule: Butano GBA modern C++ framework
-├── Makefile              # Dual-target build system (GBA ROM + native runner)
-└── slay_the_gba.gba      # Compiled Game Boy Advance ROM
-```
-
----
-
-## 📖 Inspiration & Credits
-* [Tonc: GBA Programming Guide](https://www.coranac.com/tonc/text/) by J Vijn
+## 📖 Credits
+* Original game design, card texts and art by Mega Crit Games (*Slay the Spire*, *Slay the Spire 2*). This is an
+  unofficial, non-commercial fan project with no ties to Mega Crit or Nintendo.
 * [Butano C++ Engine](https://github.com/GValiente/butano) by Gustavo Valiente
-* Original game design & mechanics by Mega Crit Games (*Slay the Spire*)
+* [Tonc: GBA Programming Guide](https://www.coranac.com/tonc/text/) by J Vijn
 
 ## 🌐 Website
 
@@ -126,6 +126,9 @@ events, ancients and the full design bible) is generated into `site/`:
 ```bash
 make site          # build and open in the browser (make site-build: build only)
 ```
+
+The site is in French, like the game. `site/en/index.html` is an English landing page (pitch, French-only notice,
+downloads, how to play, FAQ) generated by `build_index_en()`; every page links to the other language from the menu.
 
 The five cartridges ("éditions") are defined once in `scripts/editions.py` (name, colour, zone, tagline,
 signature mechanic, palettes, showcase cards). `make site-build` first regenerates the five instruction booklets

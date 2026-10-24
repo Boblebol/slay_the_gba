@@ -320,3 +320,32 @@ def test_build_index_renders_five_panels_and_keeps_seo_and_nav(isolated_site: Pa
         assert f'id="{anchor}"' in out
     assert "<details class='faq'>" in out and "Choisissez votre héros" in out
     assert f'<link rel="canonical" href="{build_site.SITE_URL}/">' in out
+
+
+def test_page_switches_language_and_links_the_other_landing() -> None:
+    fr = build_site.page("Accueil", "", path="")
+    assert '<html lang="fr">' in fr and 'href="en/index.html" hreflang="en"' in fr and 'hreflang="x-default"' in fr
+    en = build_site.page("Home", "", depth=1, path="en/index.html", lang="en")
+    assert '<html lang="en">' in en and 'content="en_US"' in en and 'href="../index.html" hreflang="fr"' in en
+    assert "unofficial fan game" in en and build_site.ARTICLE_URL_EN in en
+    assert 'hreflang="x-default"' not in build_site.page("Cartes", "", path="cartes.html")
+
+
+@pytest.mark.parametrize(("en", "text"), [(False, "testeurs recherchés"), (True, "playtesters wanted")])
+def test_testers_panel_links_feedback_and_celebrates_completion(en: bool, text: str,
+                                                                monkeypatch: pytest.MonkeyPatch) -> None:
+    prog = make_progress()
+    monkeypatch.setattr(type(prog), "percent", property(lambda self: 100.0))
+    out = build_site.testers_panel(prog, en=en)
+    assert text in out and "100" in out and build_site.FEEDBACK_URL in out and 'class="panel callout"' in out
+
+
+def test_build_index_en_says_the_game_is_french_and_offers_every_rom(isolated_site: Path) -> None:
+    build_site.build_index_en(make_progress())
+    out = (isolated_site / "en" / "index.html").read_text()
+    assert '<html lang="en">' in out and "The game is in French" in out
+    for h in HEROES:
+        assert f'href="../roms/{h.rom}"' in out and h.english in out
+    for anchor in ("language", "testers", "editions", "download", "faq"):
+        assert f'id="{anchor}"' in out
+    assert build_site.PAGES == ["en/index.html"]

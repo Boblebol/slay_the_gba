@@ -34,6 +34,12 @@ GRAPHICS = ROOT / "graphics"
 # Public URL used for canonical links, Open Graph and the sitemap (override with SITE_URL=...).
 SITE_URL = os.environ.get("SITE_URL", "https://slay-the-gba.alexandre-enouf.fr").rstrip("/")
 ARTICLE_URL = "https://alexandre-enouf.fr/blog/slay-the-gba-vibe-coding-game-boy-advance/"
+ARTICLE_URL_EN = ARTICLE_URL + "?lang=en"
+REPO_URL = "https://github.com/Boblebol/slay_the_gba"
+FEEDBACK_URL = f"{REPO_URL}/issues/new"  # where playtesters report bugs and feedback
+ARTICLE_URL_EN = "https://alexandre-enouf.fr/en/blog/slay-the-gba-vibe-coding-game-boy-advance/"
+REPO_URL = "https://github.com/Boblebol/slay_the_gba"
+FEEDBACK_URL = f"{REPO_URL}/issues/new"  # where testers report bugs and feedback
 PAGES: list[str] = []  # indexable pages, collected for sitemap.xml
 
 # ---------------------------------------------------------------------------------------------
@@ -92,9 +98,12 @@ def rom_size(hero: "Hero") -> str:
     return f"{path.stat().st_size / 1024:.0f} Ko" if path.exists() else "à compiler"
 
 
-def download_button(hero: "Hero", depth: int, cls: str = "btn") -> str:
+def download_button(hero: "Hero", depth: int, cls: str = "btn", en: bool = False) -> str:
+    size = rom_size(hero)
+    if en:
+        size = size.replace(" Ko", " KB").replace("à compiler", "not built yet")
     return (f'<a class="{cls}" href="{"../" * depth}roms/{hero.rom}" download>'
-            f'▼ Télécharger {esc(hero.rom)} <small>({rom_size(hero)})</small></a>')
+            f'▼ {"Download" if en else "Télécharger"} {esc(hero.rom)} <small>({size})</small></a>')
 
 
 def img_path(image_path: str, depth: int) -> str:
@@ -118,13 +127,23 @@ NAV = [
     ("guide.html", "Guide"),
     ("bible/index.html", "Bible"),
 ]
+# The English pages only translate the landing: the encyclopedia stays in French, the language of the game.
+NAV_EN = [
+    ("en/index.html", "Home"),
+    ("heros.html", "Heroes (FR)"),
+    ("cartes.html", "Cards (FR)"),
+    ("avancement.html", "Progress (FR)"),
+]
 
 
 def page(title: str, body: str, *, depth: int = 0, active: str = "", theme: str = "", description: str = "",
-         path: str = "", noindex: bool = False, absolute: bool = False) -> str:
-    """Wrap a page body in the site shell. `path` is the page's URL path, used for SEO tags and the sitemap."""
+         path: str = "", noindex: bool = False, absolute: bool = False, lang: str = "fr") -> str:
+    """Wrap a page body in the site shell. `path` is the page's URL path, used for SEO tags and the sitemap.
+    `lang="en"` gives the English shell (navigation, footer, locale) and links back to the French landing."""
     up = "/" if absolute else "../" * depth
-    desc = description or "Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance, une cartouche par héros."
+    en = lang == "en"
+    desc = description or ("Slay the GBA: Slay the Spire 2 reimagined on Game Boy Advance, one cartridge per hero." if en
+                           else "Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance, une cartouche par héros.")
     canonical = f"{SITE_URL}/{path}" if path else SITE_URL + "/"
     if path and not noindex:
         PAGES.append(path)
@@ -133,24 +152,38 @@ def page(title: str, body: str, *, depth: int = 0, active: str = "", theme: str 
 <meta name="robots" content="{'noindex, follow' if noindex else 'index, follow'}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Slay the GBA">
-<meta property="og:locale" content="fr_FR">
+<meta property="og:locale" content="{'en_US' if en else 'fr_FR'}">
 <meta property="og:title" content="{esc(title)} — Slay the GBA">
 <meta property="og:description" content="{esc(desc)}">
 <meta property="og:url" content="{esc(canonical)}">
 <meta property="og:image" content="{SITE_URL}/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Slay the GBA — écran titre sur Game Boy Advance">
+<meta property="og:image:alt" content="{'Slay the GBA — title screen on Game Boy Advance' if en else 'Slay the GBA — écran titre sur Game Boy Advance'}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{esc(title)} — Slay the GBA">
 <meta name="twitter:description" content="{esc(desc)}">
 <meta name="twitter:image" content="{SITE_URL}/assets/og.png">
 <link rel="apple-touch-icon" href="{up}assets/sprites/icon.png">"""
+    if path in ("", "en/index.html"):  # the two landings point at each other for search engines
+        seo += (f'\n<link rel="alternate" hreflang="fr" href="{SITE_URL}/">'
+                f'\n<link rel="alternate" hreflang="en" href="{SITE_URL}/en/index.html">'
+                f'\n<link rel="alternate" hreflang="x-default" href="{SITE_URL}/">')
     links = "".join(
-        f'<a href="{up}{href}"{" class=\"on\"" if href == active else ""}>{esc(label)}</a>' for href, label in NAV
+        f'<a href="{up}{href}"{" class=\"on\"" if href == active else ""}>{esc(label)}</a>' for href, label in (NAV_EN if en else NAV)
     )
+    switch = (f'<a class="lang" href="{up}index.html" hreflang="fr" lang="fr" title="Version française">FR</a>' if en else
+              f'<a class="lang" href="{up}en/index.html" hreflang="en" lang="en" title="English version">EN</a>')
+    if en:
+        foot = f"""<p>Slay the GBA — unofficial fan game. <i>Slay the Spire</i> © Mega Crit. Butano engine © Gustavo Valiente.</p>
+  <p>Data: project bible (patch v0.111.0 Beta). <a href="{up}mentions.html">Legal notice &amp; privacy (FR)</a> · <a href="{ARTICLE_URL_EN}" target="_blank" rel="noopener">How this game was vibe coded</a></p>"""
+        tag, author_label = "Product developer &amp; AI builder · Paris, France", "Author links"
+    else:
+        foot = f"""<p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
+  <p>Données : bible du projet (patch v0.111.0 Beta). <a href="{up}mentions.html">Mentions légales &amp; confidentialité</a> · <a href="{ARTICLE_URL}" target="_blank" rel="noopener">Comment ce jeu a été vibe codé</a></p>"""
+        tag, author_label = "Développeur produit &amp; Builder IA · Paris, France", "Liens de l'auteur"
     return f"""<!doctype html>
-<html lang="fr">
+<html lang="{lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -167,18 +200,17 @@ def page(title: str, body: str, *, depth: int = 0, active: str = "", theme: str 
 <header class="top">
   <a class="brand" href="{up}index.html"><img src="{up}assets/sprites/icon.png" alt="">SLAY THE GBA</a>
   <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
-  <nav>{links}</nav>
+  <nav>{links}{switch}</nav>
 </header>
 <main>
 {body}
 </main>
 <footer class="foot">
-  <p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
-  <p>Données : bible du projet (patch v0.111.0 Beta). <a href="{up}mentions.html">Mentions légales &amp; confidentialité</a> · <a href="{ARTICLE_URL}" target="_blank" rel="noopener">Comment ce jeu a été vibe codé</a></p>
+  {foot}
   <div class="ae-footer">
     <a class="ae-logo" href="https://alexandre-enouf.fr/" target="_blank" rel="noopener">Alexandre <em>Enouf</em></a>
-    <span class="ae-tag">Développeur produit &amp; Builder IA · Paris, France</span>
-    <nav class="ae-links" aria-label="Liens de l'auteur">
+    <span class="ae-tag">{tag}</span>
+    <nav class="ae-links" aria-label="{author_label}">
       <a href="https://alexandre-enouf.fr/#lab" target="_blank" rel="noopener">⚡ Lab &amp; Projets</a>
       <a href="https://alexandre-enouf.fr/blog/" target="_blank" rel="noopener">📖 Blog</a>
       <a href="https://github.com/Boblebol" target="_blank" rel="noopener">GitHub</a>
@@ -514,6 +546,29 @@ def landing_bible(monsters_html: str) -> str:
 <p><a class="btn small" href="bible/livrets.html">×{livrets} Livrets d'instructions ►</a> <a class="btn small ghost" href="bible/index.html">Toute la bible ►</a></p>""")
 
 
+def testers_panel(prog: progress.Progress, *, en: bool = False) -> str:
+    """Call for playtesters, shown on both landings: where to report a bug or give feedback."""
+    done = prog.percent >= 100
+    if en:
+        title = "100% reached: playtesters wanted!" if done else "Playtesters wanted!"
+        text = ("Every piece of Slay the Spire 2 content in the project bible (patch v0.111.0 Beta) is now in the five "
+                "cartridges: cards, relics, potions, monsters, bosses, events and Ancients. " if done else "")
+        text += ("Now it needs players. Grab an edition, play a run and tell me how it went: bugs, crashes, softlocks, "
+                 "balance, text that overflows, anything.")
+        links = (f'<a class="btn small" href="{FEEDBACK_URL}" target="_blank" rel="noopener">Report a bug or give feedback ►</a>'
+                 '<a class="btn small ghost" href="mailto:alexandre.enouf@gmail.com">By e-mail</a>')
+    else:
+        title = "100 % atteint : testeurs recherchés !" if done else "Testeurs recherchés !"
+        text = ("Tout le contenu de Slay the Spire 2 de la bible du projet (patch v0.111.0 Beta) est maintenant dans les "
+                "cinq cartouches : cartes, reliques, potions, monstres, boss, évènements et Anciens. " if done else "")
+        text += ("Il faut maintenant des joueurs. Téléchargez une édition, faites une partie et racontez-moi : bug, crash, "
+                 "blocage, équilibrage, texte qui déborde, tout m'intéresse.")
+        links = (f'<a class="btn small" href="{FEEDBACK_URL}" target="_blank" rel="noopener">Signaler un bug ou donner un avis ►</a>'
+                 '<a class="btn small ghost" href="mailto:alexandre.enouf@gmail.com">Par e-mail</a>')
+    anchor = "testers" if en else "testeurs"
+    return panel(f'<h2 id="{anchor}">🎉 {title}</h2><p>{text}</p><div class="cta">{links}</div>', "callout")
+
+
 def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], potions: list[dict], events: list[dict],
                 prog: progress.Progress) -> None:
     by_id = cards_by_id(cards)
@@ -550,6 +605,8 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
 
 <div class="stats">{stat_html}</div>
 
+{testers_panel(prog)}
+
 {panel(f'<h2 id="editions">Choisissez votre édition</h2><p class="intro">Comme les grandes séries portables vendues en plusieurs versions, Slay the GBA existe en <b>cinq cartouches</b>. Chacune a son héros, son deck de {pool_size}+ cartes, sa relique, sa couleur, sa zone et sa mécanique signature.</p><div class="tabs">' + tabs + '</div>' + showcases + f'<p class="meta">Toutes les éditions : {common}</p><details class="faq"><summary>Comparer les cinq éditions</summary>' + comparison_table(by_id, relic_by_id) + '</details><details class="faq"><summary>Commandes (identiques sur les cinq cartouches)</summary>' + controls_table() + '</details>')}
 
 {landing_progress(prog)}
@@ -579,6 +636,104 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
 """
     (SITE / "index.html").write_text(page("Accueil", body, active="index.html", path="", theme=f"hero-{DEFAULT_EDITION}",
                                           description="Slay the GBA : Slay the Spire 2 réinventé sur Game Boy Advance. Cinq héros, cinq cartouches gratuites, combats façon Pokémon."))
+
+
+# English landing: one entry per edition (tagline, signature mechanic, difficulty), keyed by hero slug.
+HERO_EN = {
+    "ironclad": ("Brute strength, forged in blood.", "Strength & sacrifice", "Beginner friendly"),
+    "silent": ("Strike unseen. Let the venom finish the job.", "Poison & shivs", "Intermediate"),
+    "defect": ("One automaton, three slots, endless circuits.", "Orbs & Focus", "Intermediate"),
+    "regent": ("A crown, the stars, and the Spire on its knees.", "Stars & Sovereign Blade", "Expert"),
+    "necrobinder": ("She never fights alone.", "Osty & Doom", "Expert"),
+}
+
+FAQ_EN = [
+    ("Is the game in English?",
+     "Not yet: every text in the game (cards, relics, events, menus) is in <b>French</b>, as is this website's "
+     "encyclopedia. Card art, numbers and icons make most of it readable if you know Slay the Spire. An English "
+     "version is possible if there is enough interest: tell me!"),
+    ("Which edition should I start with?",
+     "<b>The Ironclad</b>: 80 HP, a relic that heals after every fight and a straightforward deck. The Silent and the "
+     "Defect ask for more planning; the Regent and the Necrobinder, new in Slay the Spire 2, are for seasoned players."),
+    ("Is it free?",
+     "Yes. The five ROMs are homebrew builds you can download for free. No commercial ROM is distributed."),
+    ("Is my run saved?",
+     "Yes, automatically on the cartridge (SRAM) at every room. Pick <i>Continuer</i> on the title screen to resume."),
+    ("Can I play on a real Game Boy Advance?",
+     "Yes: copy the ROM to a flash cart (EZ-Flash, EverDrive) and play on GBA, GBA SP, Game Boy Micro or DS."),
+    ("Is this an official game?",
+     "No. Slay the GBA is an unofficial, non-commercial fan game with no ties to Mega Crit or Nintendo."),
+]
+
+STEPS_EN = """<ol class="steps">
+<li><b>Download your hero's cartridge</b> (a <code>.gba</code> file) from the editions above.</li>
+<li><b>Install a free Game Boy Advance emulator</b>:
+  <ul>
+    <li>Computer (Windows, macOS, Linux): <a href="https://mgba.io/downloads.html" target="_blank" rel="noopener">mGBA</a> (recommended).</li>
+    <li>iPhone / iPad: <a href="https://apps.apple.com/app/delta-game-emulator/id1048524688" target="_blank" rel="noopener">Delta</a>.</li>
+    <li>Android: <a href="https://play.google.com/store/apps/details?id=com.fastemulator.gba" target="_blank" rel="noopener">My Boy!</a> or <a href="https://www.retroarch.com/" target="_blank" rel="noopener">RetroArch</a>.</li>
+  </ul></li>
+<li><b>Open the <code>.gba</code> file</b> in the emulator and press START.</li>
+<li>Got real hardware? Copy the ROM to a flash cart (EZ-Flash, EverDrive) and play on GBA, GBA SP or DS.</li>
+</ol>"""
+
+LANGUAGE_NOTICE_EN = (
+    '<h2 id="language">🇫🇷 The game is in French</h2><p>All in-game text (cards, relics, events, menus) is in '
+    '<b>French</b>, and so is the <a href="../cartes.html">card encyclopedia</a> on this site. If you know Slay the '
+    'Spire, the card art, numbers and intent icons carry you a long way. An English version will depend on how much '
+    'interest there is.</p>')
+
+
+def edition_card_en(h: Hero) -> str:
+    tagline, mechanic, difficulty = HERO_EN[h.slug]
+    return f"""<div class="cart" style="--hc:{h.color};--ha:{h.accent}">
+  <div class="cart-label" style="background-image:url(../assets/bg/battle_{h.slug}.png)">
+    <span class="cart-ref">{esc(h.ref)}</span>
+    <img class="pix" src="../assets/sprites/hero_{h.slug}.png" alt="{esc(h.english)}">
+  </div>
+  <div class="cart-info"><b>{esc(h.english)}</b><span>In game: {esc(h.name)}</span>
+  <em>“{esc(tagline)}”</em>
+  <small>{h.hp} HP · {esc(mechanic)} · {stars(h.difficulty)} {difficulty}</small>
+  {download_button(h, 1, "btn small", en=True)}</div>
+</div>"""
+
+
+def build_index_en(prog: progress.Progress) -> None:
+    """English landing (site/en/index.html): pitch, French-only notice, editions, downloads, how to play, FAQ."""
+    (SITE / "en").mkdir(exist_ok=True)
+    version = progress.current_version()
+    badge = f'<span class="ver">v{esc(version)}</span>' if version else ""
+    carts = "".join(edition_card_en(h) for h in HEROES)
+    faq = "".join(f"<details class='faq'><summary>{esc(q)}</summary><p>{a}</p></details>" for q, a in FAQ_EN)
+    thumbs = "".join(f'<a class="thumb" href="../assets/screens/{n}.png"><img class="pix" loading="lazy" src="../assets/screens/{n}.png" alt=""></a>'
+                     for n in ("title", "map", "combat", "impact", "event", "shop"))
+    body = f"""
+<section class="hero-banner landing" style="background-image:url(../assets/bg/title.png)">
+  <div class="hero-inner">
+    <p class="kicker">{badge}<span>Game Boy Advance · Roguelike deckbuilder · 5 editions</span></p>
+    <h1>SLAY<br>THE GBA</h1>
+    <p class="lead"><b>Slay the Spire 2 in your pocket.</b> Five heroes, five cartridges, one Spire to climb, in 240×160 with Pokémon-style battles and the game's real card art.</p>
+    <div class="cta"><a class="btn big" href="#download">▼ Download for free</a><a class="btn ghost big" href="#editions">Pick my edition</a></div>
+  </div>
+</section>
+
+{panel(LANGUAGE_NOTICE_EN, "callout")}
+
+{testers_panel(prog, en=True)}
+
+{panel(f'<h2 id="editions">Five editions, one per hero</h2><p class="intro">Like the classic handheld series sold in several versions, Slay the GBA comes as <b>five cartridges</b>. Each one has its hero, card pool, starting relic, colour and signature mechanic. The Spire, monsters, shared relics, potions, events and Ancients are the same in all five.</p><div class="carts">{carts}</div>')}
+
+{panel(f'<h2 id="screens">Screenshots</h2><p>Real captures of the ROM, taken in an emulator.</p><div class="thumbs">{thumbs}</div><p><a href="../index.html#captures">More screenshots (French page) ►</a></p>')}
+
+{panel('<h2 id="download">Play in 3 minutes</h2>' + STEPS_EN + f'<p class="meta">Source code, release notes and every ROM: <a href="{REPO_URL}" target="_blank" rel="noopener">GitHub</a>.</p>')}
+
+{panel('<h2 id="faq">FAQ</h2>' + faq + f'<p><a class="btn small ghost" href="{ARTICLE_URL_EN}" target="_blank" rel="noopener">📖 The story of the project</a></p>')}
+"""
+    (SITE / "en" / "index.html").write_text(
+        page("Slay the Spire 2 on Game Boy Advance", body, depth=1, active="en/index.html", path="en/index.html",
+             theme=f"hero-{DEFAULT_EDITION}", lang="en",
+             description="Slay the GBA: a free Slay the Spire 2 demake for Game Boy Advance. Five heroes, five "
+                         "cartridges, Pokémon-style battles. In French, playtesters wanted."))
 
 
 def build_heroes_index(cards: list[dict], relics: list[dict]) -> None:
@@ -973,6 +1128,7 @@ def main() -> None:
     build_assets()
     copy_roms()
     build_index(cards, monsters["monsters"], relics, potions, events, prog)
+    build_index_en(prog)
     build_heroes_index(cards, relics)
     build_hero_pages(cards, relics, prog)
     build_progress_page(prog)

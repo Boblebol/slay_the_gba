@@ -480,3 +480,10 @@ details[open] > summary.prog-row > span:first-child b::before { content: "▾ ";
 @media (prefers-reduced-motion: reduce) {
   .press-start { animation: none; }
 }
+
+/* Language switch (FR/EN) and the highlighted call-out panels of the landings. */
+.top nav a.lang { border-color: var(--line); color: var(--gold); }
+.panel.callout { border-color: var(--gold); background: linear-gradient(180deg, #2a2410, var(--panel)); }
+.panel.callout .cta { margin-top: 12px; }
+.carts > .cart { min-width: 0; }
+.cart-info .btn { white-space: normal; overflow-wrap: anywhere; margin-top: 8px; }
