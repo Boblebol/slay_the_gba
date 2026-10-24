@@ -1,9 +1,8 @@
 #pragma once
 // Mannequin de combat usé (BATTLEWORN_DUMMY), Act 3. Choices: bible/data/event_choices/a.json.
 // Three settings, each a fight against the dummy that lasts 3 turns (it leaves after the third, unbeaten, and then
-// gives nothing): 75 HP for a potion, 150 HP for 2 upgrades, 300 HP for a relic. Guessed: the dummy never attacks (the
-// reference lists no move), the 2 upgrades are picked by the player (the reference draws them), and there is no
-// "leave" option (the reference has none either).
+// gives nothing): 75 HP for a random potion, 150 HP for 2 random cards upgraded, 300 HP for a random relic. The dummy
+// never attacks (its only move is Nothing) and there is no "leave" option, as in the reference.
 #include "engine/event_script.h"
 
 namespace engine::events {
@@ -26,7 +25,7 @@ inline constexpr EventOption BATTLEWORN_DUMMY_START[] = {
       .result = "Le mannequin cliquette et se met en position. Le compte à rebours commence !",
       .effects = BATTLEWORN_DUMMY_SETTING_1 },
     { .label = "Réglage 2",
-      .cost_benefit = "150 PV, 3 tours. Victoire : 2 améliorations.",
+      .cost_benefit = "150 PV, 3 tours. Victoire : 2 cartes améliorées au hasard.",
       .result = "Le mannequin cliquette et se met en position. Le compte à rebours commence !",
       .effects = BATTLEWORN_DUMMY_SETTING_2 },
     { .label = "Réglage 3",

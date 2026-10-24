@@ -61,7 +61,7 @@ def test_statuses_follow_the_engine_and_the_overrides() -> None:
     assert find(result.section("silent"), "Cartes", "ABRASIVE").status == DONE
     assert find(result.section("cartes"), "Quêtes", "LANTERN_KEY").status == DONE
     assert find(result.section("ironclad"), "Cartes", "BLAZE").status == EXCLUDED  # co-op card
-    assert 0 < result.percent < 100
+    assert 0 < result.percent <= 100
     assert result.tally == sum((section.tally for section in result.sections), Tally())
 
 

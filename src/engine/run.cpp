@@ -874,8 +874,7 @@ void RunManager::generate_rewards() {
         if (event_fight_setting == 1 && !has_relic("SOZU")) {
             potion_reward = draw_potion(rng, character);
         } else if (event_fight_setting == 2) {
-            // The reference upgrades 2 random cards; here the player picks them, so that the gain shows on screen.
-            request_deck_choice(DeckChoiceKind::UPGRADE, 2, false);
+            upgrade_random_cards(2);
         } else if (event_fight_setting >= 3 && relics.size() < relics.capacity()) {
             relic_reward = draw_relic(rng, character, RelicSource::ELITE, std::span<const std::string_view>(relics.begin(), relics.size()));
         }
