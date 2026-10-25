@@ -132,7 +132,8 @@ or your `.sav` if you can. Code contributions go through pull requests: see [`CO
 * Original game design, card texts, names and art by [Mega Crit](https://www.megacrit.com/) (*Slay the Spire*,
   *Slay the Spire 2*).
 * [Butano C++ Engine](https://github.com/GValiente/butano) by Gustavo Valiente (zlib license), and the libraries it
-  bundles.
+  bundles in each ROM (maxmod, libtonc, agbabi…, all permissive: MIT, zlib, ISC, MPL, public domain). Their
+  licenses are in [`butano/licenses/`](https://github.com/GValiente/butano/tree/master/licenses).
 * [Tonc: GBA Programming Guide](https://www.coranac.com/tonc/text/) by J Vijn
 * Music and sound effects are synthesised by `scripts/build_gba_audio.py`: no third-party audio.
 
@@ -146,6 +147,8 @@ approved by Mega Crit or Nintendo.
   Mega Crit's artwork, reproduced here for a free fan adaptation.
 * *Game Boy Advance* is a trademark of Nintendo. No Nintendo code or BIOS is included; the cartridges are homebrew
   built with the free devkitARM toolchain.
+* The hero battle sprites, the music, the sound effects, the interface and the code are the project's own work;
+  every other illustration is Mega Crit's art, downscaled and converted to the GBA palette.
 * The game is free. It must not be sold, nor bundled with anything sold.
 * If you hold rights on any of this content and want something changed or removed, open an issue or write to
   [alexandre.enouf@gmail.com](mailto:alexandre.enouf@gmail.com): it will be handled promptly.
