@@ -1637,7 +1637,7 @@ Déjà jouables mais absents du référentiel Slay the Spire 2, donc non compté
 | Menu principal interactif |  | Oui | Haut/Bas pour naviguer, A pour valider : Continuer (si une partie est sauvegardée), Nouvelle partie, Compendium, Statistiques ; SELECT ouvre les options depuis l'écran titre, les crédits suivent la victoire. [#9](https://github.com/Boblebol/slay_the_gba/issues/9) |
 | Écran titre animé (nuages, tour, brume) |  | Oui | Deux bandes de nuages et de brume défilent à des vitesses différentes, la Spire pulse, l'invite clignote. [#7](https://github.com/Boblebol/slay_the_gba/issues/7) |
 | Écran titre propre à chaque édition |  | Oui | Teinte de la cartouche sur l'illustration et le halo, nom de l'édition sous le logo, étiquette de version (vX.Y.Z) dans le coin. [#3](https://github.com/Boblebol/slay_the_gba/issues/3) |
-| Crédits et cinématique d'introduction |  | Oui | Carte de crédits (Mega Crit, Butano par GValiente, Alexandre Enouf), puis la Spire monte de l'ombre en silhouette pixelisée, reprend ses couleurs et le logo apparaît lettre par lettre ; START ou A passe directement à l'écran titre. [#1](https://github.com/Boblebol/slay_the_gba/issues/1) |
+| Crédits et cinématique d'introduction |  | Oui | Carte de crédits (Mega Crit, Butano par GValiente, Alexandre Enouf) qui s'efface vers l'écran titre ; START ou A passe directement à l'écran titre. [#1](https://github.com/Boblebol/slay_the_gba/issues/1) |
 | Crédits de fin |  | Oui | [#22](https://github.com/Boblebol/slay_the_gba/issues/22) |
 
 ### Graphismes et audio — 100,0 %
