@@ -1,5 +1,14 @@
 # Slay the GBA 🗡️🃏
 
+[![Latest release](https://img.shields.io/github/v/release/Boblebol/slay_the_gba?label=release)](https://github.com/Boblebol/slay_the_gba/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/Boblebol/slay_the_gba/total)](https://github.com/Boblebol/slay_the_gba/releases)
+[![Release build](https://github.com/Boblebol/slay_the_gba/actions/workflows/release.yml/badge.svg)](https://github.com/Boblebol/slay_the_gba/actions/workflows/release.yml)
+![Platform: Game Boy Advance](https://img.shields.io/badge/platform-Game%20Boy%20Advance-5a2d82)
+[![Engine: Butano](https://img.shields.io/badge/engine-Butano-orange)](https://github.com/GValiente/butano)
+![Language: French](https://img.shields.io/badge/langue-fran%C3%A7ais-blue)
+[![License: MIT (code only)](https://img.shields.io/badge/license-MIT%20(code%20only)-green)](NOTICE.md)
+![Fan game, unofficial](https://img.shields.io/badge/fan%20game-unofficial-lightgrey)
+
 **Slay the Spire 2 demade for the Game Boy Advance.** Five heroes, five cartridges, one Spire to climb, in 240×160
 with Pokémon-style battles and the game's real card art. Free, unofficial fan game, written in C++20 with the
 [Butano](https://github.com/GValiente/butano) engine.
@@ -27,7 +36,7 @@ monster, boss, event and Ancient of the Slay the Spire 2 data in the project bib
 game, and a full run works from the title screen to the final boss with all five heroes.
 
 Now it needs players. Download an edition, play a run, and
-**[open an issue](https://github.com/Boblebol/slay_the_gba/issues/new)** for anything you notice: bugs, crashes,
+**[report a bug](https://github.com/Boblebol/slay_the_gba/issues/new?template=bug_report.yml)** (a short form, in French, English answers welcome) for anything you notice: bugs, crashes,
 softlocks, balance, text that overflows the screen. Feedback by e-mail works too:
 [alexandre.enouf@gmail.com](mailto:alexandre.enouf@gmail.com).
 
@@ -112,11 +121,42 @@ the hardware-agnostic `src/engine/`.
 
 ---
 
+## 🤝 Contributing
+
+Bug reports from playtesters are the most useful contribution right now: use the
+[bug report form](https://github.com/Boblebol/slay_the_gba/issues/new?template=bug_report.yml) and attach a screenshot
+or your `.sav` if you can. Code contributions go through pull requests: see [`CONTRIBUTING.md`](CONTRIBUTING.md)
+(build, tests, branch and PR rules) and the [code of conduct](CODE_OF_CONDUCT.md). Security issues: see
+[`SECURITY.md`](SECURITY.md).
+
 ## 📖 Credits
-* Original game design, card texts and art by Mega Crit Games (*Slay the Spire*, *Slay the Spire 2*). This is an
-  unofficial, non-commercial fan project with no ties to Mega Crit or Nintendo.
-* [Butano C++ Engine](https://github.com/GValiente/butano) by Gustavo Valiente
+* Original game design, card texts, names and art by [Mega Crit](https://www.megacrit.com/) (*Slay the Spire*,
+  *Slay the Spire 2*).
+* [Butano C++ Engine](https://github.com/GValiente/butano) by Gustavo Valiente (zlib license), and the libraries it
+  bundles in each ROM (maxmod, libtonc, agbabi…, all permissive: MIT, zlib, ISC, MPL, public domain). Their
+  licenses are in [`butano/licenses/`](https://github.com/GValiente/butano/tree/master/licenses).
 * [Tonc: GBA Programming Guide](https://www.coranac.com/tonc/text/) by J Vijn
+* Music and sound effects are synthesised by `scripts/build_gba_audio.py`: no third-party audio.
+
+## ⚖️ Legal notice
+
+**Slay the GBA is an unofficial, non-commercial fan project.** It is not affiliated with, endorsed, sponsored or
+approved by Mega Crit or Nintendo.
+
+* *Slay the Spire*, *Slay the Spire 2*, their names, characters, card and relic texts and artwork are the property
+  of Mega Crit. The card, monster and event illustrations under `bible/images/`, `graphics/` and `site/` are
+  Mega Crit's artwork, reproduced here for a free fan adaptation.
+* *Game Boy Advance* is a trademark of Nintendo. No Nintendo code or BIOS is included; the cartridges are homebrew
+  built with the free devkitARM toolchain.
+* The hero battle sprites, the music, the sound effects, the interface and the code are the project's own work;
+  every other illustration is Mega Crit's art, downscaled and converted to the GBA palette.
+* The game is free. It must not be sold, nor bundled with anything sold.
+* If you hold rights on any of this content and want something changed or removed, open an issue or write to
+  [alexandre.enouf@gmail.com](mailto:alexandre.enouf@gmail.com): it will be handled promptly.
+
+**License:** the project's own code, hero sprites, music and sound effects are under the [MIT license](LICENSE).
+The Mega Crit content listed above is **not**: [`NOTICE.md`](NOTICE.md) says exactly what the license covers, and
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) lists the licenses of Butano and the libraries in the ROMs.
 
 ## 🌐 Website
 
