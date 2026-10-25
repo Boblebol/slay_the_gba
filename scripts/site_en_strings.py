@@ -274,10 +274,9 @@ TRACKER = {
         "The cartridge colour on the art and the glow, the edition name under the logo, a version label (vX.Y.Z) in "
         "the corner.",
     "Crédits et cinématique d'introduction": "Credits and intro cutscene",
-    "Carte de crédits (Mega Crit, Butano par GValiente, Alexandre Enouf), puis la Spire monte de l'ombre en silhouette pixelisée, reprend ses couleurs et le logo apparaît lettre par lettre ; START ou A passe directement à l'écran titre.":
-        "A credits card (Mega Crit, Butano by GValiente, Alexandre Enouf), then the Spire rises from the dark as a "
-        "pixel silhouette, regains its colours and the logo appears letter by letter; START or A skips to the title "
-        "screen.",
+    "Carte de crédits (Mega Crit, Butano par GValiente, Alexandre Enouf) qui s'efface vers l'écran titre ; START ou A passe directement à l'écran titre.":
+        "A credits card (Mega Crit, Butano by GValiente, Alexandre Enouf) that fades into the title screen; START or A "
+        "skips to the title screen.",
     "Crédits de fin": "End credits",
     "Sprites des 5 héros et arène par édition": "Sprites of the 5 heroes and an arena per edition",
     "Illustrations des cartes jouables": "Art of the playable cards",
