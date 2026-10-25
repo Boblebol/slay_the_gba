@@ -1310,7 +1310,7 @@ def build_legal_page() -> None:
 <h2>Hébergement</h2>
 <p>Netlify, Inc., 512 2nd Street, Suite 200, San Francisco, CA 94107, États-Unis — <a href="https://www.netlify.com" rel="noopener">netlify.com</a>.</p>
 <h2>Propriété intellectuelle</h2>
-<p>Slay the GBA est un fan-game non officiel, sans lien avec Mega Crit. <i>Slay the Spire</i>, ses personnages, cartes, illustrations et textes sont la propriété de Mega Crit Games. Les données et illustrations proviennent de la bible du projet (patch v0.111.0 Beta). Le moteur Butano est distribué sous licence zlib par Gustavo Valiente. Pour toute demande de retrait, écrivez à l'adresse ci-dessus.</p>
+<p>Slay the GBA est un fan-game non officiel, sans lien avec Mega Crit. <i>Slay the Spire</i>, ses personnages, cartes, illustrations et textes sont la propriété de Mega Crit Games. Les données et illustrations proviennent de la bible du projet (patch v0.111.0 Beta). Le code du projet est sous licence MIT (code uniquement : le contenu de Mega Crit en est exclu, voir <a href="https://github.com/Boblebol/slay_the_gba/blob/main/NOTICE.md">NOTICE.md</a>). Le moteur Butano est distribué sous licence zlib par Gustavo Valiente. Le jeu est gratuit et ne doit pas être vendu. Pour toute demande de retrait, écrivez à l'adresse ci-dessus.</p>
 <h2>Données personnelles &amp; cookies</h2>
 <p>Ce site ne dépose aucun cookie, n'utilise aucun outil de mesure d'audience et ne collecte aucune donnée personnelle. Les polices sont chargées depuis Google Fonts, qui peut recevoir votre adresse IP lors du chargement. L'hébergeur conserve des journaux techniques de connexion pour la sécurité du service.</p>
 <h2>ROMs</h2>
@@ -1321,7 +1321,7 @@ def build_legal_page() -> None:
 <h2>Hosting</h2>
 <p>Netlify, Inc., 512 2nd Street, Suite 200, San Francisco, CA 94107, United States — <a href="https://www.netlify.com" rel="noopener">netlify.com</a>.</p>
 <h2>Intellectual property</h2>
-<p>Slay the GBA is an unofficial fan game with no ties to Mega Crit. <i>Slay the Spire</i>, its characters, cards, art and texts are the property of Mega Crit Games. The data and art come from the project bible (patch v0.111.0 Beta). The Butano engine is distributed under the zlib licence by Gustavo Valiente. For any takedown request, write to the address above.</p>
+<p>Slay the GBA is an unofficial fan game with no ties to Mega Crit. <i>Slay the Spire</i>, its characters, cards, art and texts are the property of Mega Crit Games. The data and art come from the project bible (patch v0.111.0 Beta). The project's code is under the MIT licence (code only: Mega Crit content is excluded, see <a href="https://github.com/Boblebol/slay_the_gba/blob/main/NOTICE.md">NOTICE.md</a>). The Butano engine is distributed under the zlib licence by Gustavo Valiente. The game is free and must not be sold. For any takedown request, write to the address above.</p>
 <h2>Personal data &amp; cookies</h2>
 <p>This site sets no cookie, uses no audience measurement tool and collects no personal data. Fonts are loaded from Google Fonts, which may receive your IP address when they load. The host keeps technical connection logs for the security of the service.</p>
 <h2>ROMs</h2>

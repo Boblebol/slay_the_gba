@@ -6,6 +6,7 @@
 ![Platform: Game Boy Advance](https://img.shields.io/badge/platform-Game%20Boy%20Advance-5a2d82)
 [![Engine: Butano](https://img.shields.io/badge/engine-Butano-orange)](https://github.com/GValiente/butano)
 ![Language: French](https://img.shields.io/badge/langue-fran%C3%A7ais-blue)
+[![License: MIT (code only)](https://img.shields.io/badge/license-MIT%20(code%20only)-green)](NOTICE.md)
 ![Fan game, unofficial](https://img.shields.io/badge/fan%20game-unofficial-lightgrey)
 
 **Slay the Spire 2 demade for the Game Boy Advance.** Five heroes, five cartridges, one Spire to climb, in 240×160
@@ -153,9 +154,9 @@ approved by Mega Crit or Nintendo.
 * If you hold rights on any of this content and want something changed or removed, open an issue or write to
   [alexandre.enouf@gmail.com](mailto:alexandre.enouf@gmail.com): it will be handled promptly.
 
-**License:** no license has been chosen yet for the project's own code, so the default applies (all rights
-reserved, reading and forking on GitHub allowed by GitHub's terms). The content listed above belongs to its owners
-and will never be covered by this project's license.
+**License:** the project's own code, hero sprites, music and sound effects are under the [MIT license](LICENSE).
+The Mega Crit content listed above is **not**: [`NOTICE.md`](NOTICE.md) says exactly what the license covers, and
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) lists the licenses of Butano and the libraries in the ROMs.
 
 ## 🌐 Website
 
