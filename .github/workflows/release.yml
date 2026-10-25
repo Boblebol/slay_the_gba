@@ -101,6 +101,24 @@ jobs:
           LAST: ${{ steps.plan.outputs.last }}
         run: |
           {
+            echo "## Jouer / Play"
+            echo
+            echo "Une cartouche par héros : télécharger le \`.gba\` ci-dessous et l'ouvrir dans un émulateur GBA"
+            echo "([mGBA](https://mgba.io/downloads.html), Delta, My Boy!, RetroArch) ou sur une vraie console avec un linker."
+            echo "One cartridge per hero: download a \`.gba\` below and open it in a GBA emulator. The game is in French."
+            echo
+            echo "| Héros | Cartouche |"
+            echo "|---|---|"
+            echo "| Soldat de Fer (Ironclad) | \`slay_ironclad.gba\` |"
+            echo "| La Silencieuse (Silent) | \`slay_silent.gba\` |"
+            echo "| Le Défectueux (Defect) | \`slay_defect.gba\` |"
+            echo "| Le Régent (Regent) | \`slay_regent.gba\` |"
+            echo "| La Nécrolieuse (Necrobinder) | \`slay_necrobinder.gba\` |"
+            echo
+            echo "[Site](https://slay-the-gba.alexandre-enouf.fr/) · [English page](https://slay-the-gba.alexandre-enouf.fr/en/index.html) · [Signaler un bug / Report a bug](https://github.com/Boblebol/slay_the_gba/issues/new?template=bug_report.yml)"
+            echo
+            echo "*Fan game non officiel et gratuit, sans lien avec Mega Crit ni Nintendo. Unofficial free fan game, not affiliated with Mega Crit or Nintendo.*"
+            echo
             uv run scripts/progress.py --release-notes
             echo
             echo "## Changements"
