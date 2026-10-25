@@ -1,0 +1,116 @@
+name: Signaler un bug
+description: Un plantage, un blocage, un affichage cassé ou un effet qui ne fait pas ce qu'il dit.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de prendre le temps de signaler ce bug ! Plus le rapport est précis, plus il sera vite corrigé.
+        Les ROM sont sur la page [Releases](https://github.com/Boblebol/slay_the_gba/releases).
+
+  - type: input
+    id: version
+    attributes:
+      label: Version du jeu
+      description: Affichée dans un coin de l'écran titre, ou dans le nom de la release téléchargée.
+      placeholder: "v0.90.4"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: hero
+    attributes:
+      label: Héros (ROM)
+      options:
+        - Soldat de Fer (Ironclad)
+        - La Silencieuse (Silent)
+        - Le Défectueux (Defect)
+        - Le Régent (Regent)
+        - La Nécrolieuse (Necrobinder)
+        - Plusieurs / tous
+    validations:
+      required: true
+
+  - type: dropdown
+    id: support
+    attributes:
+      label: Où jouez-vous ?
+      options:
+        - mGBA
+        - VisualBoyAdvance / VBA-M
+        - RetroArch (préciser le cœur ci-dessous)
+        - Autre émulateur (préciser ci-dessous)
+        - Vraie GBA / GBA SP / Micro (linker)
+        - Game Boy Player, DS ou autre console réelle
+    validations:
+      required: true
+
+  - type: input
+    id: support_details
+    attributes:
+      label: Précisions sur l'émulateur ou la console
+      description: Version de l'émulateur, cœur RetroArch, modèle de linker, téléphone/PC…
+      placeholder: "mGBA 0.10.3 sur Windows"
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type de problème
+      options:
+        - Plantage / écran figé (crash)
+        - Blocage, impossible de continuer (softlock)
+        - Affichage (texte coupé, sprite, couleurs…)
+        - Carte, relique, potion ou ennemi qui ne fait pas ce qu'il dit
+        - Son
+        - Autre
+    validations:
+      required: true
+
+  - type: input
+    id: where
+    attributes:
+      label: Où dans la partie ?
+      description: Acte, étage, type de salle (combat, élite, boss, événement, boutique, feu de camp…) et ennemi ou carte concernés.
+      placeholder: "Acte 2, étage 24, combat contre l'Insatiable, en jouant Heurt"
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Étapes pour reproduire
+      description: Que faisiez-vous juste avant ? Le bug revient-il à chaque fois ?
+      placeholder: |
+        1. Lancer une partie avec…
+        2. Aller sur…
+        3. Jouer la carte…
+        4. Le jeu se fige
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Résultat attendu
+      placeholder: "La carte inflige 8 dégâts et applique Vulnérable (2)."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Résultat obtenu
+      placeholder: "L'écran devient noir et le jeu ne répond plus."
+    validations:
+      required: true
+
+  - type: textarea
+    id: media
+    attributes:
+      label: Capture d'écran ou vidéo
+      description: Glissez-déposez vos images ou vidéos ici. Une capture de l'écran fautif aide énormément.
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Autre chose ?
+      description: Deck, reliques, Ascension, options modifiées, sauvegarde d'émulateur (.sav, .ss) en pièce jointe…
