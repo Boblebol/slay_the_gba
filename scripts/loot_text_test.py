@@ -44,10 +44,12 @@ SIDE_BY_SIDE = [
 ]
 # Texts alone on their line.
 ALONE = [
-    (SHOP_SCENE, "A Acheter   L R Changer de rayon"),
+    (SHOP_SCENE, "A Acheter   B Retour"),
+    (SHOP_SCENE, "◄ ► Choisir   A Acheter   B Retour"),
+    (SHOP_SCENE, "A Choisir   B Quitter"),
     (SHOP_SCENE, "A Remplacer   B Retour"),
     (SHOP_SCENE, "Jeter quelle potion ?"),
-    (SHOP_SCENE, "◄ L   RELIQUES   R ►"),
+    (SHOP_SCENE, "Retire définitivement une carte du deck."),
     (LOOT_TEXT_SOURCE, "Relique du marchand"),
     (LOOT_TEXT_SOURCE, "Relique peu commune"),
 ]
