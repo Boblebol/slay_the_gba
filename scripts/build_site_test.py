@@ -421,3 +421,18 @@ def test_sitemap_ranks_english_pages_like_their_french_counterparts(isolated_sit
     assert f"<loc>{base}/en/index.html</loc><priority>1.0</priority>" in sitemap
     assert f"<loc>{base}/en/heros/silent.html</loc><priority>0.8</priority>" in sitemap
     assert f"<loc>{base}/en/cartes.html</loc><priority>0.6</priority>" in sitemap
+
+
+def test_page_shell_has_compendium_menu_dock_and_local_font() -> None:
+    out = build_site.page("Cartes", "", path="cartes.html", active="cartes.html")
+    assert "fonts.googleapis.com" not in out and 'href="assets/fonts/slay-gba.woff2"' in out
+    assert '<li class="dd on"><details><summary>Compendium</summary>' in out  # the current page's group is lit
+    assert out.count('href="cartes.html" class="on" aria-current="page"') == 2  # header drop-down and START menu
+    assert 'id="start-menu"' in out and out.count("data-menu") == 1 and 'class="dock"' in out
+    assert '<span class="lang on" aria-current="true">FR</span>' in out and "data-readable" in out
+
+
+def test_console_cycles_real_captures() -> None:
+    out = build_site.console()
+    assert 'id="console-shot"' in out and 'src="assets/screens/title.png"' in out
+    assert out.count("assets/screens/") == len(build_site.ATTRACT_SCREENS) + 1
