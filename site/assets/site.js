@@ -97,6 +97,20 @@ document.querySelectorAll("[data-progress]").forEach((box) => {
   apply();
 });
 
+// Landing page: the console plays captures of the ROM in a loop, like a cartridge's attract mode.
+const consoleShot = document.getElementById("console-shot");
+const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let attract = 0;
+if (consoleShot && !still) {
+  const shots = consoleShot.dataset.cycle.split(",");
+  shots.forEach((src) => { new Image().src = src; });
+  let shown = 0;
+  attract = setInterval(() => {
+    shown = (shown + 1) % shots.length;
+    consoleShot.src = shots[shown];
+  }, 2600);
+}
+
 // Landing page: edition picker (hero sprites and cartridge tabs) and screenshot gallery.
 const editionButtons = document.querySelectorAll("[data-edition]");
 if (editionButtons.length) {
@@ -105,6 +119,12 @@ if (editionButtons.length) {
     document.body.className = [...document.body.classList].filter((c) => !c.startsWith("hero-")).concat(`hero-${id}`).join(" ");
     editionButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.edition === id)));
     document.querySelectorAll("[data-panel]").forEach((p) => { p.hidden = p.dataset.panel !== id; });
+    // The console of the title screen stops its demo loop and shows the picked hero's battle.
+    const pick = document.querySelector(`.pick[data-edition="${id}"]`);
+    if (consoleShot && pick) {
+      clearInterval(attract);
+      consoleShot.src = pick.dataset.shot;
+    }
   };
   editionButtons.forEach((button) => button.addEventListener("click", () => select(button.dataset.edition)));
 }
@@ -121,3 +141,38 @@ if (galleryMain) {
     });
   });
 }
+
+// START menu (phones): a modal window opened from the dock, closed by its button, Escape or a tap outside.
+const startMenu = document.getElementById("start-menu");
+if (startMenu && typeof startMenu.showModal === "function") {
+  const openers = document.querySelectorAll("[data-menu]");
+  const setExpanded = (open) => openers.forEach((b) => b.setAttribute("aria-expanded", String(open)));
+  openers.forEach((b) => b.addEventListener("click", () => { startMenu.showModal(); setExpanded(true); }));
+  startMenu.addEventListener("close", () => setExpanded(false));
+  startMenu.querySelector("[data-close]").addEventListener("click", () => startMenu.close());
+  startMenu.addEventListener("click", (event) => {
+    if (event.target === startMenu || event.target.closest("a")) startMenu.close();
+  });
+}
+
+// Compendium drop-down (wide screens): one open at a time, closed by a click elsewhere or Escape.
+const dropdowns = document.querySelectorAll(".dd details");
+document.addEventListener("click", (event) => {
+  dropdowns.forEach((d) => { if (!d.contains(event.target)) d.open = false; });
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") dropdowns.forEach((d) => { if (d.open) { d.open = false; d.querySelector("summary").focus(); } });
+});
+
+// "Readable text" option: the system font for paragraphs, remembered in this browser only.
+const readableButtons = document.querySelectorAll("[data-readable]");
+const showReadable = () => {
+  const on = document.documentElement.classList.contains("readable");
+  readableButtons.forEach((b) => b.setAttribute("aria-pressed", String(on)));
+};
+readableButtons.forEach((button) => button.addEventListener("click", () => {
+  const on = document.documentElement.classList.toggle("readable");
+  try { localStorage.setItem("readable", on ? "1" : "0"); } catch (e) { /* private mode: the option lasts for the page */ }
+  showReadable();
+}));
+showReadable();

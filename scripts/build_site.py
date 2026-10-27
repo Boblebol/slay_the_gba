@@ -239,20 +239,44 @@ def img_path(image_path: str, depth: int) -> str:
 # Layout
 # ---------------------------------------------------------------------------------------------
 
-# (page, French label, English label). The bible is only in French: the English menu links the French tomes.
+# (page, French label, English label, group). The bible is only in French: the English menu links the French tomes.
+# The compendium pages share one drop-down on wide screens; the START menu (phones) lists every group.
 NAV = [
-    ("index.html", "Accueil", "Home"),
-    ("heros.html", "Héros", "Heroes"),
-    ("cartes.html", "Cartes", "Cards"),
-    ("bestiaire.html", "Bestiaire", "Bestiary"),
-    ("reliques.html", "Reliques", "Relics"),
-    ("potions.html", "Potions", "Potions"),
-    ("evenements.html", "Évènements", "Events"),
-    ("anciens.html", "Anciens", "Ancients"),
-    ("avancement.html", "Avancement", "Progress"),
-    ("guide.html", "Guide", "Guide"),
-    ("bible/index.html", "Bible", "Bible (FR)"),
+    ("index.html", "Accueil", "Home", "jeu"),
+    ("heros.html", "Héros", "Heroes", "jeu"),
+    ("guide.html", "Guide", "Guide", "jeu"),
+    ("cartes.html", "Cartes", "Cards", "compendium"),
+    ("bestiaire.html", "Bestiaire", "Bestiary", "compendium"),
+    ("reliques.html", "Reliques", "Relics", "compendium"),
+    ("potions.html", "Potions", "Potions", "compendium"),
+    ("evenements.html", "Évènements", "Events", "compendium"),
+    ("anciens.html", "Anciens", "Ancients", "compendium"),
+    ("avancement.html", "Avancement", "Progress", "projet"),
+    ("bible/index.html", "Bible", "Bible (FR)", "projet"),
 ]
+NAV_GROUPS = {"jeu": ("Le jeu", "The game"), "compendium": ("Compendium", "Compendium"), "projet": ("Le projet", "The project")}
+
+# Pixel icons of the phone dock, 10x10, drawn for the site (MIT).
+ICONS = {
+    "home": ["....##....", "...####...", "..######..", ".########.", "##########", ".########.", ".##....##.",
+             ".##.##.##.", ".##.##.##.", ".########."],
+    "hero": ["........##", ".......###", "......###.", ".....###..", "#...###...", "##.###....", ".####.....",
+             "..##......", ".####.....", "##..#....."],
+    "cards": ["...#######", "...#.....#", "#######..#", "#.....#..#", "#.###.#..#", "#.###.#..#", "#.....####",
+              "#.....#...", "#.....#...", "#######..."],
+    "play": ["....##....", "....##....", "....##....", ".########.", "..######..", "...####...", "....##....",
+             "..........", "##########", "##########"],
+    "menu": ["..........", "##########", "##########", "..........", "##########", "##########", "..........",
+             "##########", "##########", ".........."],
+}
+
+
+def icon(name: str) -> str:
+    """Inline SVG of a pixel icon, in the text colour."""
+    rects = "".join(f'<rect x="{x}" y="{y}" width="1" height="1"/>' for y, row in enumerate(ICONS[name])
+                    for x, ch in enumerate(row) if ch == "#")
+    return (f'<svg class="ico" viewBox="0 0 10 10" width="20" height="20" aria-hidden="true" '
+            f'shape-rendering="crispEdges" fill="currentColor">{rects}</svg>')
 
 
 def page(title: str, body: str, *, depth: int = 0, active: str = "", theme: str = "", description: str = "",
@@ -298,12 +322,32 @@ def page(title: str, body: str, *, depth: int = 0, active: str = "", theme: str 
         other = tr("/en/", "/") + target
     else:
         other = "../" * depth + tr("en/", "../") + target
-    switch = tr(f'<a class="lang" href="{other}" hreflang="en" lang="en" title="English version">EN</a>',
-                f'<a class="lang" href="{other}" hreflang="fr" lang="fr" title="Version française">FR</a>')
-    links = "".join(
-        f'<a href="{up if href.startswith("bible/") else home}{href}"{" class=\"on\"" if href == active else ""}>'
-        f'{esc(tr(fr, en_label))}</a>' for href, fr, en_label in NAV
-    )
+    switch = tr(f'<span class="lang on" aria-current="true">FR</span><a class="lang" href="{other}" hreflang="en" lang="en" title="English version">EN</a>',
+                f'<a class="lang" href="{other}" hreflang="fr" lang="fr" title="Version française">FR</a><span class="lang on" aria-current="true">EN</span>')
+    switch = f'<div class="langs" role="group" aria-label="{tr("Langue", "Language")}">{switch}</div>'
+
+    def link(href: str, fr: str, en_label: str) -> str:
+        current = ' class="on" aria-current="page"' if href == active else ""
+        return f'<a href="{up if href.startswith("bible/") else home}{href}"{current}>{esc(tr(fr, en_label))}</a>'
+
+    # Wide screens: the brand is the way home and the compendium pages share a drop-down after "Héros".
+    compendium = "".join(f"<li>{link(href, fr, en_label)}</li>" for href, fr, en_label, group in NAV if group == "compendium")
+    in_compendium = any(href == active for href, _, _, group in NAV if group == "compendium")
+    dropdown = (f'<li class="dd{" on" if in_compendium else ""}"><details><summary>Compendium</summary>'
+                f'<ul class="win">{compendium}</ul></details></li>')
+    links = "".join(f"<li>{link(href, fr, en_label)}</li>" + (dropdown if href == "heros.html" else "")
+                    for href, fr, en_label, group in NAV if group != "compendium" and href != "index.html")
+    # Phones: the START menu lists every page by group, and the dock keeps four shortcuts under the thumb.
+    menu = "".join(
+        f'<section><h2>{esc(tr(*NAV_GROUPS[group]))}</h2><ul>'
+        + "".join(f"<li>{link(href, fr, en_label)}</li>" for href, fr, en_label, g in NAV if g == group)
+        + "</ul></section>" for group in NAV_GROUPS)
+    shortcuts = (("index.html", "home", tr("Accueil", "Home")), ("heros.html", "hero", tr("Héros", "Heroes")),
+                 ("cartes.html", "cards", tr("Cartes", "Cards")), ("index.html#telecharger", "play", tr("Jouer", "Play")))
+    dock = "".join(f'<a href="{home}{href}"{" aria-current=\"page\"" if href == active else ""}>{icon(ico)}<span>{label}</span></a>'
+                   for href, ico, label in shortcuts)
+    readable = (f'<button type="button" class="opt" data-readable aria-pressed="false">'
+                f'<span aria-hidden="true">Aa</span> {tr("Texte lisible", "Readable text")}</button>')
     foot = tr(
         f"""<p>Slay the GBA — fan-game non officiel. <i>Slay the Spire</i> © Mega Crit. Moteur Butano © Gustavo Valiente.</p>
   <p>Données : bible du projet (patch v0.111.0 Beta). <a href="{home}mentions.html">Mentions légales &amp; confidentialité</a> · <a href="{ARTICLE_URL}" target="_blank" rel="noopener">Comment ce jeu a été vibe codé</a></p>""",
@@ -318,23 +362,31 @@ def page(title: str, body: str, *, depth: int = 0, active: str = "", theme: str 
 <title>{esc(title)} — Slay the GBA</title>
 <meta name="description" content="{esc(desc)}">
 {seo}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="preload" href="{up}assets/fonts/slay-gba.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{up}assets/style.css">
 <link rel="icon" href="{up}assets/sprites/icon.png">
+<script>try{{if(localStorage.getItem("readable")==="1")document.documentElement.classList.add("readable")}}catch(e){{}}</script>
 </head>
 <body class="{theme}">
+<a class="skip" href="#main">{tr("Aller au contenu", "Skip to content")}</a>
 <header class="top">
-  <a class="brand" href="{home}index.html"><img src="{up}assets/sprites/icon.png" alt="">SLAY THE GBA</a>
-  <button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')">☰</button>
-  <nav>{links}{switch}</nav>
+  <a class="brand" href="{home}index.html"{' aria-current="page"' if active == "index.html" else ""}><img src="{up}assets/sprites/icon.png" alt="" width="32" height="32"><span>SLAY THE GBA</span></a>
+  <nav class="nav" aria-label="{tr("Menu principal", "Main menu")}"><ul>{links}</ul></nav>
+  {switch}
+  <a class="btn small get" href="{home}index.html#telecharger">▼ {tr("Télécharger", "Download")}</a>
 </header>
-<main>
+<dialog class="start-menu win" id="start-menu" aria-label="Menu">
+  <div class="menu-head"><b>MENU</b><button type="button" class="close" data-close aria-label="{tr("Fermer le menu", "Close the menu")}">×</button></div>
+  <nav aria-label="{tr("Toutes les pages", "Every page")}">{menu}</nav>
+  <section><h2>Options</h2>{switch}{readable}</section>
+</dialog>
+<nav class="dock" aria-label="{tr("Raccourcis", "Shortcuts")}">{dock}<button type="button" data-menu aria-controls="start-menu" aria-expanded="false">{icon("menu")}<span>Menu</span></button></nav>
+<main id="main">
 {body}
 </main>
 <footer class="foot">
   {foot}
+  <p class="foot-tools">{readable}<a class="btn small ghost" href="#main">▲ {tr("Haut de page", "Back to top")}</a></p>
   <div class="ae-footer">
     <a class="ae-logo" href="https://alexandre-enouf.fr/" target="_blank" rel="noopener">Alexandre <em>Enouf</em></a>
     <span class="ae-tag">{tag}</span>
@@ -630,13 +682,34 @@ def counters(tally: progress.Tally) -> str:
 
 
 def launch_sprites() -> str:
-    """Hero picker of the banner: one sprite button per edition."""
+    """Hero picker of the banner: one sprite button per edition, which also shows its battle on the console."""
     return "".join(
-        f'<button type="button" class="pick" data-edition="{h.slug}" style="--hc:{h.color};--ha:{h.accent}" '
+        f'<button type="button" class="pick" data-edition="{h.slug}" data-shot="{root()}assets/screens/{h.screenshot}.png" '
+        f'style="--hc:{h.color};--ha:{h.accent}" '
         f'title="{esc(hero_name(h))}" aria-pressed="{"true" if h.slug == DEFAULT_EDITION else "false"}">'
         f'<img class="pix" src="{root()}assets/sprites/hero_{h.slug}.png" alt="{esc(hero_name(h))}"></button>'
         for h in HEROES
     )
+
+
+ATTRACT_SCREENS = ("title", "map", "combat", "card_flight", "impact", "shop", "rewards")  # the console's demo loop
+
+
+def console() -> str:
+    """A handheld drawn in CSS, in the colour of the picked edition, playing real captures of the ROM. It wears the
+    game's name, not a console maker's logo."""
+    up = root()
+    shots = ",".join(f"{up}assets/screens/{name}.png" for name in ATTRACT_SCREENS)
+    alt = tr("Capture réelle de la ROM", "Real capture of the ROM")
+    return f"""<div class="console">
+    <span class="shoulder l" aria-hidden="true"></span><span class="shoulder r" aria-hidden="true"></span>
+    <div class="pad" aria-hidden="true"><span class="dpad"></span><span class="ss">SELECT</span></div>
+    <div class="bezel">
+      <p class="bezel-name" aria-hidden="true"><span class="led"></span>SLAY THE GBA</p>
+      <div class="lcd"><img class="pix" id="console-shot" src="{up}assets/screens/title.png" width="240" height="160" alt="{alt}" data-cycle="{shots}"></div>
+    </div>
+    <div class="pad" aria-hidden="true"><span class="ab"><i>B</i><i>A</i></span><span class="ss">START</span></div>
+  </div>"""
 
 
 def edition_tab(h: Hero) -> str:
@@ -848,11 +921,12 @@ def build_index(cards: list[dict], monsters: list[dict], relics: list[dict], pot
     <div class="cta"><a class="btn big" href="#telecharger">▼ Download for free</a><a class="btn ghost big" href="#editions">Pick my edition</a><span class="press-start">▶ PRESS START</span></div>
     <p class="pick-label">Choose your hero</p>""")
     body = f"""
-<section class="hero-banner landing" style="background-image:url({up}assets/bg/title.png)">
-  <div class="hero-inner">
+<section class="title-screen">
+  <div class="ts-text">
     {banner}
     <div class="picks">{launch_sprites()}</div>
   </div>
+  {console()}
 </section>
 
 <div class="stats">{stat_html}</div>
@@ -1312,7 +1386,7 @@ def build_legal_page() -> None:
 <h2>Propriété intellectuelle</h2>
 <p>Slay the GBA est un fan-game non officiel, sans lien avec Mega Crit. <i>Slay the Spire</i>, ses personnages, cartes, illustrations et textes sont la propriété de Mega Crit Games. Les données et illustrations proviennent de la bible du projet (patch v0.111.0 Beta). Le code du projet est sous licence MIT (code uniquement : le contenu de Mega Crit en est exclu, voir <a href="https://github.com/Boblebol/slay_the_gba/blob/main/NOTICE.md">NOTICE.md</a>). Le moteur Butano est distribué sous licence zlib par Gustavo Valiente. Le jeu est gratuit et ne doit pas être vendu. Pour toute demande de retrait, écrivez à l'adresse ci-dessus.</p>
 <h2>Données personnelles &amp; cookies</h2>
-<p>Ce site ne dépose aucun cookie, n'utilise aucun outil de mesure d'audience et ne collecte aucune donnée personnelle. Les polices sont chargées depuis Google Fonts, qui peut recevoir votre adresse IP lors du chargement. L'hébergeur conserve des journaux techniques de connexion pour la sécurité du service.</p>
+<p>Ce site ne dépose aucun cookie, n'utilise aucun outil de mesure d'audience et ne collecte aucune donnée personnelle. Les polices sont servies par le site lui-même : aucune ressource n'est chargée depuis un service tiers. L'hébergeur conserve des journaux techniques de connexion pour la sécurité du service.</p>
 <h2>ROMs</h2>
 <p>Les fichiers <code>.gba</code> proposés sont des créations homebrew compilées depuis le code du projet ; aucune ROM commerciale n'est distribuée.</p>""",
                     """<h1>Legal notice &amp; privacy</h1>
@@ -1323,7 +1397,7 @@ def build_legal_page() -> None:
 <h2>Intellectual property</h2>
 <p>Slay the GBA is an unofficial fan game with no ties to Mega Crit. <i>Slay the Spire</i>, its characters, cards, art and texts are the property of Mega Crit Games. The data and art come from the project bible (patch v0.111.0 Beta). The project's code is under the MIT licence (code only: Mega Crit content is excluded, see <a href="https://github.com/Boblebol/slay_the_gba/blob/main/NOTICE.md">NOTICE.md</a>). The Butano engine is distributed under the zlib licence by Gustavo Valiente. The game is free and must not be sold. For any takedown request, write to the address above.</p>
 <h2>Personal data &amp; cookies</h2>
-<p>This site sets no cookie, uses no audience measurement tool and collects no personal data. Fonts are loaded from Google Fonts, which may receive your IP address when they load. The host keeps technical connection logs for the security of the service.</p>
+<p>This site sets no cookie, uses no audience measurement tool and collects no personal data. Fonts are served by the site itself: nothing is loaded from a third-party service. The host keeps technical connection logs for the security of the service.</p>
 <h2>ROMs</h2>
 <p>The <code>.gba</code> files offered here are homebrew builds compiled from the project's code; no commercial ROM is distributed.</p>"""))
     write_page("mentions.html", page(

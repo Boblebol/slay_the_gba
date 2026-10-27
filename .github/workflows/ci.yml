@@ -19,7 +19,7 @@ jobs:
         run: make test test-e2e
       # Every scripts/*_test.py: tracker, cartridge memory check, site and art builders, card text widths.
       - name: Script tests
-        run: uv run --with pytest --with pillow --with numpy --with markdown pytest scripts
+        run: uv run --with pytest --with pillow --with numpy --with markdown --with fonttools --with brotli pytest scripts
       # Fails when avancement.toml is invalid or the detection no longer matches the engine sources.
       - name: Tracker runs
         run: uv run scripts/progress.py
